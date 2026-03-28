@@ -1,7 +1,16 @@
 # Benchmarks
 
-Permanent microbenchmark suites for QUIC parsing, encoding, decoding, serialization, and other hot paths belong here.
+This directory contains permanent BenchmarkDotNet suites for the QUIC parser hot paths.
 
-Use BenchmarkDotNet for checked-in benchmark suites. Link benchmark results from the relevant verification artifacts under [`specs/verification/quic`](../specs/verification/quic).
+## Current Suite
 
-Temporary investigation-only benchmarks do not need to stay in the repository unless they become part of the standing performance regression suite.
+- `Incursa.Quic.Benchmarks`
+
+## Run
+
+```bash
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicHeaderParsingBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --filter "*QuicHeaderParsingBenchmarks*"
+```
+
+Use `--filter` to narrow to a subset of benchmarks when iterating locally.
