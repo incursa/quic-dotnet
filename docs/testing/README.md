@@ -6,8 +6,9 @@ For protocol work, testing is only one part of the proof burden. The repository 
 
 ## Tooling
 
-- The repository includes the `incursa.testdocs.cli` local tool in [`.config/dotnet-tools.json`](../../.config/dotnet-tools.json).
-- When tests exist, run `dotnet tool restore` and then use the CLI to generate docs for the test inventory.
+- The repository uses [`.config/dotnet-tools.json`](../../.config/dotnet-tools.json) for repo-local tools.
+- `dotnet-stryker` is available there for mutation testing of the parser and test suite.
+- Run `dotnet tool restore` before invoking repo-local tools.
 
 ## Current state
 

@@ -1,0 +1,31 @@
+namespace Incursa.Quic;
+
+/// <summary>
+/// A parsed short-header-form packet view with an opaque remainder.
+/// </summary>
+public readonly ref struct QuicShortHeaderPacket
+{
+    private readonly byte headerControlBits;
+    private readonly ReadOnlySpan<byte> remainder;
+
+    internal QuicShortHeaderPacket(byte headerControlBits, ReadOnlySpan<byte> remainder)
+    {
+        this.headerControlBits = headerControlBits;
+        this.remainder = remainder;
+    }
+
+    /// <summary>
+    /// Gets the version-independent header form.
+    /// </summary>
+    public QuicHeaderForm HeaderForm => QuicHeaderForm.Short;
+
+    /// <summary>
+    /// Gets the seven non-form bits from the first byte.
+    /// </summary>
+    public byte HeaderControlBits => headerControlBits;
+
+    /// <summary>
+    /// Gets the bytes after the first byte as an opaque remainder.
+    /// </summary>
+    public ReadOnlySpan<byte> Remainder => remainder;
+}
