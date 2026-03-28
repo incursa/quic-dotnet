@@ -1,1 +1,38 @@
 #nullable enable
+Incursa.Quic.QuicHeaderForm
+Incursa.Quic.QuicHeaderForm.Short = 0 -> Incursa.Quic.QuicHeaderForm
+Incursa.Quic.QuicHeaderForm.Long = 1 -> Incursa.Quic.QuicHeaderForm
+Incursa.Quic.QuicPacketParser
+static Incursa.Quic.QuicPacketParser.TryClassifyHeaderForm(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicHeaderForm headerForm) -> bool
+static Incursa.Quic.QuicPacketParser.TryParseLongHeader(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicLongHeaderPacket header) -> bool
+static Incursa.Quic.QuicPacketParser.TryParseShortHeader(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicShortHeaderPacket header) -> bool
+static Incursa.Quic.QuicPacketParser.TryParseVersionNegotiation(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicVersionNegotiationPacket header) -> bool
+Incursa.Quic.QuicLongHeaderPacket
+Incursa.Quic.QuicLongHeaderPacket.QuicLongHeaderPacket() -> void
+Incursa.Quic.QuicLongHeaderPacket.HeaderForm.get -> Incursa.Quic.QuicHeaderForm
+Incursa.Quic.QuicLongHeaderPacket.HeaderControlBits.get -> byte
+Incursa.Quic.QuicLongHeaderPacket.Version.get -> uint
+Incursa.Quic.QuicLongHeaderPacket.IsVersionNegotiation.get -> bool
+Incursa.Quic.QuicLongHeaderPacket.DestinationConnectionId.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicLongHeaderPacket.DestinationConnectionIdLength.get -> int
+Incursa.Quic.QuicLongHeaderPacket.SourceConnectionId.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicLongHeaderPacket.SourceConnectionIdLength.get -> int
+Incursa.Quic.QuicLongHeaderPacket.VersionSpecificData.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicShortHeaderPacket
+Incursa.Quic.QuicShortHeaderPacket.QuicShortHeaderPacket() -> void
+Incursa.Quic.QuicShortHeaderPacket.HeaderForm.get -> Incursa.Quic.QuicHeaderForm
+Incursa.Quic.QuicShortHeaderPacket.HeaderControlBits.get -> byte
+Incursa.Quic.QuicShortHeaderPacket.Remainder.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicVersionNegotiationPacket
+Incursa.Quic.QuicVersionNegotiationPacket.QuicVersionNegotiationPacket() -> void
+Incursa.Quic.QuicVersionNegotiationPacket.HeaderForm.get -> Incursa.Quic.QuicHeaderForm
+Incursa.Quic.QuicVersionNegotiationPacket.HeaderControlBits.get -> byte
+Incursa.Quic.QuicVersionNegotiationPacket.Version.get -> uint
+Incursa.Quic.QuicVersionNegotiationPacket.IsVersionNegotiation.get -> bool
+Incursa.Quic.QuicVersionNegotiationPacket.DestinationConnectionId.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicVersionNegotiationPacket.DestinationConnectionIdLength.get -> int
+Incursa.Quic.QuicVersionNegotiationPacket.SourceConnectionId.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicVersionNegotiationPacket.SourceConnectionIdLength.get -> int
+Incursa.Quic.QuicVersionNegotiationPacket.SupportedVersionBytes.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicVersionNegotiationPacket.SupportedVersionCount.get -> int
+Incursa.Quic.QuicVersionNegotiationPacket.GetSupportedVersion(int index) -> uint

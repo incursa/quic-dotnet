@@ -118,7 +118,7 @@ Trace:
   - VER-QUIC-HDR-0001
 
 Notes:
-- The destination connection ID boundary in a short-header packet is version-specific and remains an open gap for the first implementation slice.
+- The current implementation preserves the bytes after the first byte as an opaque remainder in `QuicShortHeaderPacket` because RFC 8999 does not encode a unique destination connection ID boundary for a version-independent parser.
 
 ## REQ-QUIC-HDR-0008 Version Negotiation Identification
 The parser MUST identify a Version Negotiation packet as a long-header-form packet whose Version field is `0x00000000`.
@@ -158,4 +158,4 @@ Notes:
 
 ## Open Questions
 
-- How should the version-independent parser represent the bytes that follow the first byte of a short-header packet when the destination connection ID length is not encoded?
+- None for this slice. The short-header boundary is represented as an opaque remainder until a later version-specific parser refines it.

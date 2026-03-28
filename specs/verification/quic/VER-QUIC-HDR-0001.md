@@ -3,7 +3,7 @@ artifact_id: VER-QUIC-HDR-0001
 artifact_type: verification
 title: Version-Independent QUIC Packet Header Verification
 domain: quic
-status: planned
+status: passed
 owner: quic-maintainers
 verifies:
   - REQ-QUIC-HDR-0001
@@ -66,12 +66,14 @@ Each requirement in `verifies` has at least one traceable proof path, malformed 
 ## Evidence
 
 - Requirement-tagged xUnit tests under [`../../../tests/Incursa.Quic.Tests`](../../../tests/Incursa.Quic.Tests/README.md)
-- Fuzz or property-test corpus and shrink results for parser inputs
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj` -> 24 passed, 0 failed
+- Deterministic fuzz-style parser coverage in [`../../../tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs`](../../../tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs)
 - BenchmarkDotNet output under [`../../../benchmarks`](../../../benchmarks/README.md)
+- `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --filter *QuicHeaderParsing* --job Dry` -> 5 benchmark cases validated
 
 ## Status
 
-planned
+passed
 
 ## Related Artifacts
 
