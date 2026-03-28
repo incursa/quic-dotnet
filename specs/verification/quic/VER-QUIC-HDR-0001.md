@@ -43,7 +43,7 @@ Verify the version-independent packet header parsing and validation rules define
 
 ## Verification Method
 
-Use xUnit tests for positive and negative parsing cases, fuzz or property-based tests for byte-oriented parser inputs, and BenchmarkDotNet suites for parse and validation hot paths.
+Use xUnit tests for positive and negative parsing cases, FsCheck property-based tests and deterministic fuzz coverage for byte-oriented parser inputs, Stryker mutation testing for assertion-strength validation, and BenchmarkDotNet suites for parse and validation hot paths.
 
 ## Preconditions
 
@@ -56,8 +56,9 @@ Use xUnit tests for positive and negative parsing cases, fuzz or property-based 
 1. Run positive tests over valid long-header, short-header, and Version Negotiation byte sequences.
 2. Run negative tests over malformed, truncated, reserved, and unsupported byte sequences.
 3. Run fuzz or property tests against the byte-span parser and any boundary-sensitive helpers.
-4. Run BenchmarkDotNet suites for header classification, field extraction, and fail-fast validation paths.
-5. Confirm that the test inventory and benchmark evidence are linked back to the requirement IDs.
+4. Run Stryker against the test project and review surviving or timed-out mutants for equivalent behavior or missing boundary coverage.
+5. Run BenchmarkDotNet suites for header classification, field extraction, and fail-fast validation paths.
+6. Confirm that the test inventory and benchmark evidence are linked back to the requirement IDs.
 
 ## Expected Result
 
@@ -66,8 +67,11 @@ Each requirement in `verifies` has at least one traceable proof path, malformed 
 ## Evidence
 
 - Requirement-tagged xUnit tests under [`../../../tests/Incursa.Quic.Tests`](../../../tests/Incursa.Quic.Tests/README.md)
-- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj` -> 24 passed, 0 failed
+- FsCheck-backed property tests under [`../../../tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs`](../../../tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs)
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release` -> 35 passed, 0 failed
 - Deterministic fuzz-style parser coverage in [`../../../tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs`](../../../tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs)
+- SharpFuzz harness project under [`../../../fuzz/`](../../../fuzz/README.md)
+- `dotnet tool run dotnet-stryker -- --config-file stryker-config.json` from [`../../../tests/Incursa.Quic.Tests`](../../../tests/Incursa.Quic.Tests/README.md) -> final mutation score 96.49% (50 killed, 2 survived, 5 timeout)
 - BenchmarkDotNet output under [`../../../benchmarks`](../../../benchmarks/README.md)
 - `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --filter *QuicHeaderParsing* --job Dry` -> 5 benchmark cases validated
 

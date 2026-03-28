@@ -34,6 +34,38 @@ public sealed class QuicVersionNegotiationPacketTests
         Assert.Equal((uint)0xAABBCCDD, header.GetSupportedVersion(2));
         int supportedVersionOffset = 1 + sizeof(uint) + 1 + destinationConnectionId.Length + 1 + sourceConnectionId.Length;
         Assert.True(packet.AsSpan(supportedVersionOffset).SequenceEqual(header.SupportedVersionBytes));
+
+        bool threw = false;
+        try
+        {
+            _ = header.GetSupportedVersion(3);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            threw = true;
+        }
+
+        Assert.True(threw);
+    }
+
+    [Fact]
+    [Trait("Requirement", "REQ-QUIC-HDR-0010")]
+    [Trait("Category", "Negative")]
+    public void TryParseVersionNegotiation_RejectsEmptyInput()
+    {
+        Assert.False(QuicPacketParser.TryParseVersionNegotiation([], out _));
+    }
+
+    [Fact]
+    [Trait("Requirement", "REQ-QUIC-HDR-0008")]
+    [Trait("Category", "Negative")]
+    public void TryParseVersionNegotiation_RejectsShortHeaderForm()
+    {
+        byte[] shortHeader = QuicHeaderTestData.BuildShortHeader(
+            headerControlBits: 0x00,
+            remainder: [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04]);
+
+        Assert.False(QuicPacketParser.TryParseVersionNegotiation(shortHeader, out _));
     }
 
     [Fact]

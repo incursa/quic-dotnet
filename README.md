@@ -10,8 +10,9 @@ The repository is also prepared for a SpecTrace-first workflow so RFC-derived pr
 
 - [`specs/`](specs/README.md): canonical requirements, gaps, architecture, work items, verification artifacts, and generated traceability outputs
 - [`benchmarks/`](benchmarks/README.md): permanent microbenchmark suites and performance evidence
+- [`fuzz/`](fuzz/README.md): SharpFuzz harnesses for wire-facing parser slices
 - [`Incursa.Quic`](src/Incursa.Quic/README.md): the packable library project and NuGet package root
-- [`Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md): the test project with scaffold smoke and blocking checks
+- [`Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md): the test project with requirement-tagged positive, negative, property, fuzz, and smoke checks
 - [`docs/`](docs/README.md): repository documentation
 - [`docs/requirements-workflow.md`](docs/requirements-workflow.md): local order of operations for requirements, testing, fuzzing, and benchmarking
 - [`quality/testing-intent.yaml`](quality/testing-intent.yaml): repo-level testing intent for quality tooling
@@ -21,7 +22,7 @@ The repository is also prepared for a SpecTrace-first workflow so RFC-derived pr
 - [`AGENTS.md`](AGENTS.md): repository-specific agent instructions
 - [`LLMS.txt`](LLMS.txt): AI bootstrap and reading order
 - [`NOTICE.md`](NOTICE.md): generated dependency inventory
-- [`.config/dotnet-tools.json`](.config/dotnet-tools.json): local tooling manifest for Workbench, test docs, and related utilities
+- [`.config/dotnet-tools.json`](.config/dotnet-tools.json): local tooling manifest for mutation and fuzz tooling
 
 ## Quick start
 
@@ -46,6 +47,7 @@ pwsh -File cleanup.ps1
 
 - [`specs`](specs)
 - [`benchmarks`](benchmarks)
+- [`fuzz`](fuzz)
 - [`src/Incursa.Quic`](src/Incursa.Quic)
 - [`tests/Incursa.Quic.Tests`](tests/Incursa.Quic.Tests)
 - [`docs`](docs)
@@ -59,11 +61,10 @@ pwsh -File cleanup.ps1
 
 ## Documentation tooling
 
-The repository carries the same local docs-oriented toolchain used in the other Incursa repositories:
+The repository carries repo-local quality tooling for mutation and fuzz support:
 
 - `dotnet-stryker`
-- `workbench`
-- `incursa-testdocs`
+- `SharpFuzz.CommandLine`
 
 Install them with:
 

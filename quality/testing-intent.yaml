@@ -12,12 +12,17 @@ expectations:
     - inventory
     - results
     - coverage
+    - property
     - fuzz
+    - mutation
+    - benchmark
   confidenceTarget: high
   requiredTestKinds:
     - positive
     - negative
+    - property
     - fuzz
+    - mutation
     - benchmark
   criticalAreas:
     - Packet parsing, header parsing, and version-dependent or version-independent invariants.

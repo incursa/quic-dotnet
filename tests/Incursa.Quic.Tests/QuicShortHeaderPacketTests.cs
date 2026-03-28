@@ -20,6 +20,14 @@ public sealed class QuicShortHeaderPacketTests
     [Fact]
     [Trait("Requirement", "REQ-QUIC-HDR-0007")]
     [Trait("Category", "Negative")]
+    public void TryParseShortHeader_RejectsEmptyInput()
+    {
+        Assert.False(QuicPacketParser.TryParseShortHeader([], out _));
+    }
+
+    [Fact]
+    [Trait("Requirement", "REQ-QUIC-HDR-0007")]
+    [Trait("Category", "Negative")]
     public void TryParseShortHeader_RejectsLongHeaderForm()
     {
         byte[] packet = QuicHeaderTestData.BuildLongHeader(
