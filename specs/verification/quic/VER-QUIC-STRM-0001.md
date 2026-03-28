@@ -3,7 +3,7 @@ artifact_id: VER-QUIC-STRM-0001
 artifact_type: verification
 title: QUIC Stream Identifier and STREAM Frame Verification
 domain: quic
-status: planned
+status: passed
 owner: quic-maintainers
 verifies:
   - REQ-QUIC-STRM-0001
@@ -16,6 +16,7 @@ verifies:
   - REQ-QUIC-STRM-0008
   - REQ-QUIC-STRM-0009
   - REQ-QUIC-STRM-0010
+  - REQ-QUIC-STRM-0011
 related_artifacts:
   - SPEC-QUIC-STRM
   - SPEC-QUIC-VINT
@@ -42,6 +43,7 @@ Verify the stream-identifier and STREAM-frame parsing rules defined in [`SPEC-QU
 - REQ-QUIC-STRM-0008
 - REQ-QUIC-STRM-0009
 - REQ-QUIC-STRM-0010
+- REQ-QUIC-STRM-0011
 
 ## Verification Method
 
@@ -70,9 +72,11 @@ Each requirement in `verifies` has at least one traceable proof path, malformed 
 
 - Requirement-tagged xUnit tests under [`../../../tests/Incursa.Quic.Tests`](../../../tests/Incursa.Quic.Tests/README.md)
 - Property-based tests and fuzz harnesses under [`../../../tests/Incursa.Quic.Tests`](../../../tests/Incursa.Quic.Tests/README.md) and [`../../../fuzz/`](../../../fuzz/README.md)
-- Mutation testing evidence to be collected with [`../../../tests/Incursa.Quic.Tests/stryker-config.json`](../../../tests/Incursa.Quic.Tests/stryker-config.json)
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release` -> 103 passed, 0 failed
+- `dotnet tool run dotnet-stryker -- --config-file stryker-config.json` from [`../../../tests/Incursa.Quic.Tests`](../../../tests/Incursa.Quic.Tests/README.md) -> final mutation score 91.47% (192 killed, 15 survived, 1 timeout)
+- `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*Quic*Benchmarks*"` -> 16 benchmark cases validated; all hot-path cases reported `Allocated = -`
 - BenchmarkDotNet output under [`../../../benchmarks`](../../../benchmarks/README.md)
 
 ## Status
 
-planned
+passed

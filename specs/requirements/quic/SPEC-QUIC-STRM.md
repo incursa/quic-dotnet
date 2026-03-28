@@ -158,6 +158,19 @@ Trace:
 Notes:
 - This is a byte-visible semantic rule for zero-length STREAM data.
 
+## REQ-QUIC-STRM-0011 Stream Offset Ceiling
+The parser MUST reject a STREAM frame whose offset plus data length exceeds `2^62-1`.
+
+Trace:
+- Source Refs:
+  - RFC 9000 Section 19.8
+- Verified By:
+  - VER-QUIC-STRM-0001
+
+Notes:
+- This requirement captures the byte-visible upper bound on delivered stream data.
+- The precise connection-error classification for the violation is deferred to later stateful stream-processing.
+
 ## Open Questions
 
-- None for this slice. Stream identifier reuse, out-of-order opening, `STREAM_STATE_ERROR` handling, and flow-control enforcement are intentionally deferred to later stateful stream-management specs.
+- None for this slice. Stream identifier reuse, out-of-order opening, `STREAM_STATE_ERROR` handling, and stream lifecycle semantics are intentionally deferred to later stateful stream-management specs.
