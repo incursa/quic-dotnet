@@ -18,6 +18,14 @@ public sealed class QuicPacketParserTests
         Assert.Equal(expectedForm, actualForm);
     }
 
+    [Fact]
+    [Trait("Requirement", "REQ-QUIC-HDR-0001")]
+    [Trait("Category", "Negative")]
+    public void TryClassifyHeaderForm_RejectsEmptyInput()
+    {
+        Assert.False(QuicPacketParser.TryClassifyHeaderForm([], out _));
+    }
+
     public static TheoryData<byte[], byte, bool> HeaderControlBitCases => new()
     {
         { QuicHeaderTestData.BuildLongHeader(0x55, 0x01020304, [0x11, 0x12], [0x21], [0x31, 0x32]), 0x55, true },

@@ -8,9 +8,9 @@ namespace Incursa.Quic.Benchmarks;
 [MemoryDiagnoser]
 public class QuicHeaderParsingBenchmarks
 {
-    private byte[] _longHeader = [];
-    private byte[] _shortHeader = [];
-    private byte[] _versionNegotiationHeader = [];
+    private byte[] longHeader = [];
+    private byte[] shortHeader = [];
+    private byte[] versionNegotiationHeader = [];
 
     /// <summary>
     /// Prepares representative packet buffers for the benchmarks.
@@ -18,7 +18,7 @@ public class QuicHeaderParsingBenchmarks
     [GlobalSetup]
     public void GlobalSetup()
     {
-        _shortHeader = new byte[]
+        shortHeader = new byte[]
         {
             0x40,
             0x11,
@@ -31,7 +31,7 @@ public class QuicHeaderParsingBenchmarks
             0x88,
         };
 
-        _longHeader = new byte[]
+        longHeader = new byte[]
         {
             0xC3,
             0x00,
@@ -52,7 +52,7 @@ public class QuicHeaderParsingBenchmarks
             0xAA,
         };
 
-        _versionNegotiationHeader = new byte[]
+        versionNegotiationHeader = new byte[]
         {
             0xC1,
             0x00,
@@ -86,7 +86,7 @@ public class QuicHeaderParsingBenchmarks
     [Benchmark]
     public int ClassifyShortHeader()
     {
-        return QuicPacketParser.TryClassifyHeaderForm(_shortHeader, out QuicHeaderForm headerForm)
+        return QuicPacketParser.TryClassifyHeaderForm(shortHeader, out QuicHeaderForm headerForm)
             ? (int)headerForm
             : -1;
     }
@@ -97,7 +97,7 @@ public class QuicHeaderParsingBenchmarks
     [Benchmark]
     public int ClassifyLongHeader()
     {
-        return QuicPacketParser.TryClassifyHeaderForm(_longHeader, out QuicHeaderForm headerForm)
+        return QuicPacketParser.TryClassifyHeaderForm(longHeader, out QuicHeaderForm headerForm)
             ? (int)headerForm
             : -1;
     }
@@ -108,7 +108,7 @@ public class QuicHeaderParsingBenchmarks
     [Benchmark]
     public int ParseLongHeader()
     {
-        return QuicPacketParser.TryParseLongHeader(_longHeader, out QuicLongHeaderPacket header)
+        return QuicPacketParser.TryParseLongHeader(longHeader, out QuicLongHeaderPacket header)
             ? header.DestinationConnectionIdLength + header.SourceConnectionIdLength + header.VersionSpecificData.Length
             : -1;
     }
@@ -119,7 +119,7 @@ public class QuicHeaderParsingBenchmarks
     [Benchmark]
     public int ParseVersionNegotiation()
     {
-        return QuicPacketParser.TryParseVersionNegotiation(_versionNegotiationHeader, out QuicVersionNegotiationPacket header)
+        return QuicPacketParser.TryParseVersionNegotiation(versionNegotiationHeader, out QuicVersionNegotiationPacket header)
             ? header.SupportedVersionCount
             : -1;
     }
@@ -130,7 +130,7 @@ public class QuicHeaderParsingBenchmarks
     [Benchmark]
     public int ParseShortHeader()
     {
-        return QuicPacketParser.TryParseShortHeader(_shortHeader, out QuicShortHeaderPacket header)
+        return QuicPacketParser.TryParseShortHeader(shortHeader, out QuicShortHeaderPacket header)
             ? header.Remainder.Length
             : -1;
     }

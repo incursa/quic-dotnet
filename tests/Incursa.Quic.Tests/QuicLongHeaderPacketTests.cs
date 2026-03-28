@@ -66,4 +66,34 @@ public sealed class QuicLongHeaderPacketTests
         Assert.Equal((uint)0, header.Version);
         Assert.True(header.IsVersionNegotiation);
     }
+
+    [Theory]
+    [InlineData(0x00)]
+    [InlineData(0x3F)]
+    [Trait("Requirement", "REQ-QUIC-HDR-0003")]
+    [Trait("Category", "Negative")]
+    public void TryParseLongHeader_RejectsShortHeaderForm(byte headerControlBits)
+    {
+        byte[] shortHeader = QuicHeaderTestData.BuildShortHeader(
+            headerControlBits,
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+
+        Assert.False(QuicPacketParser.TryParseLongHeader(shortHeader, out _));
+    }
+
+    [Fact]
+    [Trait("Requirement", "REQ-QUIC-HDR-0004")]
+    [Trait("Category", "Negative")]
+    public void TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte()
+    {
+        byte[] packet = QuicHeaderTestData.BuildTruncatedLongHeader(
+            headerControlBits: 0x12,
+            version: 0x01020304,
+            destinationConnectionId: [0x11, 0x12],
+            sourceConnectionId: [0x21, 0x22],
+            versionSpecificData: [],
+            truncateBy: 3);
+
+        Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
+    }
 }
