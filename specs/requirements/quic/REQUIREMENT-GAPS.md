@@ -20,3 +20,9 @@ Use this file to record missing, ambiguous, or blocked QUIC requirements before 
   Needed decision: Decide whether the version-independent short-header model will preserve the post-first-byte bytes as an opaque remainder, require version-specific parsing hooks, or use another deterministic boundary rule.
   Affected spec slice: [`SPEC-QUIC-HDR`](./SPEC-QUIC-HDR.md)
   Resolution: Preserve the bytes after the first byte as an opaque remainder in `QuicShortHeaderPacket`; defer version-specific boundary handling to later parsing layers.
+
+- Source: RFC 9000 Sections 12.3 through 12.5 and 19.8
+  Gap: Those sections describe packet-number-space lifecycle, packet-number reuse, duplicate suppression, frame-policy markings, and stream-frame internals that require connection-state context beyond the byte-oriented packet/frame container slice.
+  Needed decision: Defer those semantics to later stateful packet-processing and stream-frame specs rather than fold them into the current packet/frame container slice.
+  Affected spec slice: [`SPEC-QUIC-PKT-FRM`](./SPEC-QUIC-PKT-FRM.md)
+  Resolution: The current packet/frame slice stops at packet delimitation, coalesced packet preservation, and generic frame-container validation.
