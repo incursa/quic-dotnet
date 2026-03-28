@@ -1,0 +1,49 @@
+default_language_version:
+  python: python3
+
+minimum_pre_commit_version: "4.0.0"
+default_stages: [pre-commit]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        files: "(?i)\\.(md|markdown|mdx|ya?ml|json|ps1|sh|cmd|bat|csproj|slnx?|props|targets|config|editorconfig|txt)$"
+      - id: end-of-file-fixer
+        files: "(?i)\\.(md|markdown|mdx|ya?ml|json|ps1|sh|cmd|bat|csproj|slnx?|props|targets|config|editorconfig|txt)$"
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=5120"]
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+        files: "(?i)\\.(cs|csproj|sln|slnx|props|targets|md|markdown|mdx|ya?ml|json|ps1|sh|cmd|bat|config|editorconfig|txt)$"
+      - id: check-xml
+
+  - repo: local
+    hooks:
+      - id: dotnet-build
+        name: dotnet build
+        language: system
+        entry: pwsh -NoProfile -Command "dotnet build Incursa.Quic.slnx -c Release"
+        stages: [manual]
+        files: "(?i)\\.(cs|csproj|sln|slnx|props|targets)$"
+        pass_filenames: false
+      - id: smoke-tests
+        name: smoke tests
+        language: system
+        entry: pwsh -NoProfile -File scripts/quality/run-smoke-tests.ps1
+        stages: [pre-push, manual]
+        files: "(?i)\\.(cs|csproj|sln|slnx|props|targets|runsettings|json|ya?ml|ps1)$"
+        pass_filenames: false
+      - id: blocking-tests
+        name: blocking tests
+        language: system
+        entry: pwsh -NoProfile -File scripts/quality/run-blocking-tests.ps1
+        stages: [manual]
+        files: "(?i)\\.(cs|csproj|sln|slnx|props|targets|runsettings|json|ya?ml|ps1)$"
+        pass_filenames: false

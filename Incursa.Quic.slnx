@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Incursa.Quic/Incursa.Quic.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj" />
+  </Folder>
+</Solution>
