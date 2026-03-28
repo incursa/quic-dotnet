@@ -1,0 +1,46 @@
+{
+  "Paths": {
+    "DocsRoot": "docs",
+    "SpecsRoot": "specs",
+    "ArchitectureDir": "specs/architecture",
+    "WorkItemsSpecsDir": "specs/work-items",
+    "GeneratedDir": "specs/generated",
+    "SpecsTemplatesDir": "specs/templates",
+    "SpecsSchemasDir": "specs/schemas",
+    "WorkRoot": "specs/work-items",
+    "ItemsDir": "specs/work-items/quic",
+    "DoneDir": "specs/work-items/done",
+    "TemplatesDir": "specs/templates",
+    "WorkboardFile": "specs/work-items/README.md"
+  },
+  "Ids": {
+    "Width": 4
+  },
+  "Git": {
+    "BranchPattern": "work/{id}-{slug}",
+    "CommitMessagePattern": "Promote {id}: {title}",
+    "DefaultBaseBranch": "main",
+    "RequireCleanWorkingTree": true
+  },
+  "Github": {
+    "Provider": "octokit",
+    "DefaultDraft": false,
+    "Host": "github.com",
+    "Owner": "incursa",
+    "Repository": "quic-dotnet",
+    "Sync": {
+      "Mode": "generate",
+      "ConflictDefault": "fail",
+      "ScheduleEnabled": false
+    }
+  },
+  "Validation": {
+    "LinkExclude": [],
+    "DocExclude": []
+  },
+  "Tui": {
+    "Theme": "powershell",
+    "UseEmoji": false,
+    "AutoRefreshSeconds": 60
+  }
+}

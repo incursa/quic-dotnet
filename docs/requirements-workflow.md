@@ -6,7 +6,7 @@ This note captures the working order for RFC-derived QUIC work in `Incursa.Quic`
 
 1. Capture source material.
    - Record the RFC section, extracted behavior, open questions, and any interoperability or wire-format concern.
-   - If a rule is unclear, add it to [`specs/requirements/REQUIREMENT-GAPS.md`](../specs/requirements/REQUIREMENT-GAPS.md) before implementation.
+   - If a rule is unclear, add it to [`../specs/requirements/quic/REQUIREMENT-GAPS.md`](../specs/requirements/quic/REQUIREMENT-GAPS.md) before implementation.
 2. Draft the smallest stable requirement slice.
    - Keep each spec narrow and grouped by stable technical concern.
    - Keep normative statements separate from notes, examples, and rationale.
@@ -23,6 +23,14 @@ This note captures the working order for RFC-derived QUIC work in `Incursa.Quic`
 - Fuzz or property tests should target untrusted input paths, length handling, state machines, and any parser that accepts attacker-controlled bytes.
 - Benchmarks should cover parsing, serialization, encoding, decoding, and other allocation-sensitive or throughput-sensitive code paths.
 - Regression tests should be added for every bug found during implementation or fuzzing.
+
+## Canonical Paths
+
+- Requirements: [`../specs/requirements/quic/`](../specs/requirements/quic/)
+- Architecture: [`../specs/architecture/quic/`](../specs/architecture/quic/)
+- Work items: [`../specs/work-items/quic/`](../specs/work-items/quic/)
+- Verification: [`../specs/verification/quic/`](../specs/verification/quic/)
+- Generated outputs: [`../specs/generated/`](../specs/generated/)
 
 ## Notes For QUIC Work
 

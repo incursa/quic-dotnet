@@ -1,0 +1,41 @@
+version: 2
+domain: testing
+
+scope:
+  solutionPath: Incursa.Quic.slnx
+  includes:
+    - src/Incursa.Quic
+    - tests/Incursa.Quic.Tests
+
+expectations:
+  evidence:
+    - inventory
+    - results
+    - coverage
+    - fuzz
+  confidenceTarget: high
+  requiredTestKinds:
+    - positive
+    - negative
+    - fuzz
+    - benchmark
+  criticalAreas:
+    - Packet parsing, header parsing, and version-dependent or version-independent invariants.
+    - Encoding, decoding, and serialization paths that transform wire bytes.
+    - Error handling for malformed, truncated, unsupported, or reserved inputs.
+
+intentionalGaps:
+  - subject: benchmarks
+    rationale: Benchmark evidence is mandatory for processing and serialization hot paths, but Workbench quality sync does not currently normalize benchmark output. Keep benchmark suites under benchmarks/ and link results from verification artifacts.
+
+related:
+  docs:
+    - /docs/requirements-workflow.md
+    - /docs/testing/README.md
+  files:
+    - benchmarks/README.md
+    - specs/requirements/quic/SPEC-QUIC-HDR.md
+    - specs/verification/quic/VER-QUIC-HDR-0001.md
+    - specs/requirements/quic/REQUIREMENT-GAPS.md
+    - specs/templates/spec-template.md
+    - specs/templates/verification-template.md

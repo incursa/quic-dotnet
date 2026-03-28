@@ -1,28 +1,35 @@
-# Incursa.Quic Agent Instructions
+# Incursa.Quic Agent Guidance
 
-This repository is the scaffold for the Incursa QUIC library. It currently contains build, test, packaging, and documentation structure only. Treat future protocol work as requirements-driven: capture the behavior first, then design, then verification, then code.
+This repository is trace-first. Do not start protocol implementation from RFC prose alone when the canonical requirement or gap record does not exist yet.
 
-## Authority
+## Required Order Of Operations
 
-Follow this order when working here:
+1. Check [`docs/requirements-workflow.md`](docs/requirements-workflow.md).
+2. Check [`specs/requirements/quic/REQUIREMENT-GAPS.md`](specs/requirements/quic/REQUIREMENT-GAPS.md) and the nearest owning `SPEC-...` file.
+3. If the requirement is missing or ambiguous, record or refine the gap before implementation.
+4. Author or revise the canonical requirement in [`specs/requirements/quic`](specs/requirements/quic).
+5. Create or update architecture, work-item, and verification artifacts in [`specs/architecture/quic`](specs/architecture/quic), [`specs/work-items/quic`](specs/work-items/quic), and [`specs/verification/quic`](specs/verification/quic) as needed.
+6. Implement only after the requirement and proof plan are stable enough to trace.
+7. Close the loop with verification evidence.
 
-1. [`specs/README.md`](specs/README.md) and [`specs/requirements/REQUIREMENT-GAPS.md`](specs/requirements/REQUIREMENT-GAPS.md) for future RFC-derived behavior and open questions
-2. [`docs/requirements-workflow.md`](docs/requirements-workflow.md) for the local order of operations and quality expectations
-3. root guidance such as [`README.md`](README.md), [`docs/README.md`](docs/README.md), [`docs/testing/README.md`](docs/testing/README.md), and [`CONTRIBUTING.md`](CONTRIBUTING.md)
-4. this file and [`LLMS.txt`](LLMS.txt) as convenience surfaces
+## Proof Burden
 
-If two sources conflict, prefer the higher item in the list.
+Every protocol slice MUST define how it will be proven before code review is considered complete.
 
-## Working Rules
+- Positive tests are required.
+- Negative tests are required.
+- Fuzzing is required for wire-facing parsers, serializers, decoders, encoders, and boundary-heavy state transitions.
+- Benchmarks are required for processing, parsing, encoding, decoding, and serialization hot paths. Keep permanent suites under [`benchmarks`](benchmarks).
+- Verification artifacts in [`specs/verification/quic`](specs/verification/quic) must record the evidence used to prove the requirement set.
 
-- For any protocol behavior change, start from the source RFC and record unresolved questions in [`specs/requirements/REQUIREMENT-GAPS.md`](specs/requirements/REQUIREMENT-GAPS.md) before implementation work begins.
-- Do not invent missing rules in work items, test names, implementation comments, or benchmark plans.
-- Keep requirements, architecture, work items, verification, tests, and benchmarks as separate artifacts.
-- Slice future protocol work by stable technical concern, not by release date or sprint.
-- For parser, serializer, encoder, decoder, packet-processing, or frame-processing code, plan:
-  - positive tests for valid inputs and expected transitions
-  - negative tests for malformed, truncated, out-of-range, or forbidden inputs
-  - fuzz or property tests for untrusted input paths and state transitions
-  - benchmarks for hot paths and allocation-sensitive code
-- Prefer relative links in repository Markdown.
-- Preserve the scaffold until a requirement or verification artifact says otherwise.
+## Tooling Alignment
+
+- Use the repo-local Workbench configuration in [`.workbench/config.json`](.workbench/config.json) for canonical artifact paths.
+- Use the SpecTrace templates in [`specs/templates`](specs/templates) when creating new artifacts.
+- Use the quality intent contract in [`quality/testing-intent.yaml`](quality/testing-intent.yaml) as the repo-level testing bar, but do not treat coverage percentages as a substitute for protocol correctness evidence.
+
+## Guardrails
+
+- Do not hide missing requirements inside work items, tests, or code comments.
+- Do not treat a passing happy-path test as sufficient evidence for packet or frame handling.
+- Do not merge new protocol behavior without a stable requirement ID and a linked verification plan.
