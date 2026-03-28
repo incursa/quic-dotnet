@@ -1,0 +1,56 @@
+{
+  "name": "incursa/quic-dotnet metadata catalog",
+  "version": 6,
+  "artifact_id_format": {
+    "summary": "PREFIX-DOMAIN(-GROUPING...)",
+    "grouping_segments": {
+      "minimum": 0,
+      "maximum": null,
+      "segment_pattern": "^[A-Z][A-Z0-9]*$",
+      "segment_must_start_with_letter": true
+    },
+    "sequence": {
+      "minimum_digits": 4,
+      "pattern": "^\\d{4,}$"
+    }
+  },
+  "requirement_id_format": {
+    "summary": "REQ-DOMAIN(-GROUPING...)-SEQUENCE",
+    "grouping_segments": {
+      "minimum": 0,
+      "maximum": null,
+      "segment_pattern": "^[A-Z][A-Z0-9]*$",
+      "segment_must_start_with_letter": true
+    },
+    "sequence": {
+      "minimum_digits": 4,
+      "pattern": "^\\d{4,}$"
+    }
+  },
+  "sequence": {
+    "minimum_digits": 4,
+    "pattern": "^\\d{4,}$"
+  },
+  "segments": {
+    "domain": {
+      "pattern": "^[A-Z][A-Z0-9]*$"
+    },
+    "grouping": {
+      "pattern": "^[A-Z][A-Z0-9]*$",
+      "allow_multiple": true
+    }
+  },
+  "artifact_id_templates": {
+    "specification": "SPEC-{domain}{grouping}",
+    "architecture": "ARC-{domain}{grouping}-{sequence}",
+    "work_item": "WI-{domain}{grouping}-{sequence}",
+    "verification": "VER-{domain}{grouping}-{sequence}"
+  },
+  "requirement_id_template": "REQ-{domain}{grouping}-{sequence}",
+  "notes": [
+    "Use domain QUIC for repository-wide protocol artifacts unless a more specific domain is intentionally introduced.",
+    "Prefer stable technical grouping keys such as RFC sections, packet families, or capability areas instead of dates, owners, or sprint names.",
+    "Architecture, work-item, and verification identifiers use zero-padded terminal sequences with at least four digits.",
+    "Requirement identifiers trace canonical normative clauses and must be stable enough to survive implementation refactors."
+  ]
+}

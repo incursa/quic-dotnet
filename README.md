@@ -4,13 +4,17 @@
 
 `Incursa.Quic` is the starter repository for the Incursa QUIC library. It currently contains the build, test, packaging, and documentation scaffold only. The runtime implementation will be added later.
 
+The repository is also prepared for a SpecTrace-first workflow so RFC-derived protocol slices can be translated into canonical requirements, gaps, work items, verification artifacts, and generated outputs before implementation.
+
 ## What is included
 
-- [`specs/`](specs/README.md): landing zone for future RFC-derived requirement artifacts and gap tracking
+- [`specs/`](specs/README.md): canonical requirements, gaps, architecture, work items, verification artifacts, and generated traceability outputs
+- [`benchmarks/`](benchmarks/README.md): permanent microbenchmark suites and performance evidence
 - [`Incursa.Quic`](src/Incursa.Quic/README.md): the packable library project and NuGet package root
 - [`Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md): the test project with scaffold smoke and blocking checks
 - [`docs/`](docs/README.md): repository documentation
 - [`docs/requirements-workflow.md`](docs/requirements-workflow.md): local order of operations for requirements, testing, fuzzing, and benchmarking
+- [`quality/testing-intent.yaml`](quality/testing-intent.yaml): repo-level testing intent for quality tooling
 - [`scripts/quality`](scripts/quality/README.md): smoke and blocking test lanes
 - [`scripts/release`](scripts/release/README.md): versioning and release-policy checks
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): contribution and validation guidance
@@ -40,7 +44,8 @@ pwsh -File cleanup.ps1
 
 ## Repository layout
 
-- [`specs/`](specs/README.md)
+- [`specs`](specs)
+- [`benchmarks`](benchmarks)
 - [`src/Incursa.Quic`](src/Incursa.Quic)
 - [`tests/Incursa.Quic.Tests`](tests/Incursa.Quic.Tests)
 - [`docs`](docs)
@@ -69,6 +74,7 @@ dotnet tool restore
 Then use the repository docs pages for the build and packaging flow:
 
 - [Repository docs](docs/README.md)
+- [Requirements workflow](docs/requirements-workflow.md)
 - [Quickstart](docs/quickstart.md)
 - [Packaging](docs/packaging.md)
 - [Testing docs](docs/testing/README.md)
