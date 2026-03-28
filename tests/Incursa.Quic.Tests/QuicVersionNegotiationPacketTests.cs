@@ -51,6 +51,32 @@ public sealed class QuicVersionNegotiationPacketTests
     [Fact]
     [Trait("Requirement", "REQ-QUIC-HDR-0010")]
     [Trait("Category", "Negative")]
+    public void TryParseVersionNegotiation_RejectsNegativeSupportedVersionIndex()
+    {
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x5A,
+            destinationConnectionId: [0x11],
+            sourceConnectionId: [0x22],
+            supportedVersions: 0x01020304);
+
+        Assert.True(QuicPacketParser.TryParseVersionNegotiation(packet, out QuicVersionNegotiationPacket header));
+
+        bool threw = false;
+        try
+        {
+            _ = header.GetSupportedVersion(-1);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            threw = true;
+        }
+
+        Assert.True(threw);
+    }
+
+    [Fact]
+    [Trait("Requirement", "REQ-QUIC-HDR-0010")]
+    [Trait("Category", "Negative")]
     public void TryParseVersionNegotiation_RejectsEmptyInput()
     {
         Assert.False(QuicPacketParser.TryParseVersionNegotiation([], out _));

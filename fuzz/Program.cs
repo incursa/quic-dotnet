@@ -17,6 +17,10 @@ public static class Program
 
         ReadOnlySpan<byte> packet = buffer.GetBuffer().AsSpan(0, checked((int)buffer.Length));
 
+        QuicVariableLengthInteger.TryParse(packet, out _, out _);
+        QuicStreamParser.TryParseStreamIdentifier(packet, out _, out _);
+        QuicStreamParser.TryParseStreamFrame(packet, out _);
+
         QuicPacketParser.TryClassifyHeaderForm(packet, out _);
         QuicPacketParser.TryParseLongHeader(packet, out _);
         QuicPacketParser.TryParseShortHeader(packet, out _);

@@ -36,3 +36,36 @@ Incursa.Quic.QuicVersionNegotiationPacket.SourceConnectionIdLength.get -> int
 Incursa.Quic.QuicVersionNegotiationPacket.SupportedVersionBytes.get -> System.ReadOnlySpan<byte>
 Incursa.Quic.QuicVersionNegotiationPacket.SupportedVersionCount.get -> int
 Incursa.Quic.QuicVersionNegotiationPacket.GetSupportedVersion(int index) -> uint
+Incursa.Quic.QuicVariableLengthInteger
+const Incursa.Quic.QuicVariableLengthInteger.MaxValue = 4611686018427387903 -> ulong
+static Incursa.Quic.QuicVariableLengthInteger.TryParse(System.ReadOnlySpan<byte> encoded, out ulong value, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicVariableLengthInteger.TryFormat(ulong value, System.Span<byte> destination, out int bytesWritten) -> bool
+Incursa.Quic.QuicStreamType
+Incursa.Quic.QuicStreamType.ClientInitiatedBidirectional = 0 -> Incursa.Quic.QuicStreamType
+Incursa.Quic.QuicStreamType.ServerInitiatedBidirectional = 1 -> Incursa.Quic.QuicStreamType
+Incursa.Quic.QuicStreamType.ClientInitiatedUnidirectional = 2 -> Incursa.Quic.QuicStreamType
+Incursa.Quic.QuicStreamType.ServerInitiatedUnidirectional = 3 -> Incursa.Quic.QuicStreamType
+Incursa.Quic.QuicStreamId
+Incursa.Quic.QuicStreamId.QuicStreamId() -> void
+Incursa.Quic.QuicStreamId.Value.get -> ulong
+Incursa.Quic.QuicStreamId.StreamType.get -> Incursa.Quic.QuicStreamType
+Incursa.Quic.QuicStreamId.IsClientInitiated.get -> bool
+Incursa.Quic.QuicStreamId.IsServerInitiated.get -> bool
+Incursa.Quic.QuicStreamId.IsBidirectional.get -> bool
+Incursa.Quic.QuicStreamId.IsUnidirectional.get -> bool
+Incursa.Quic.QuicStreamFrame
+Incursa.Quic.QuicStreamFrame.QuicStreamFrame() -> void
+Incursa.Quic.QuicStreamFrame.FrameType.get -> byte
+Incursa.Quic.QuicStreamFrame.StreamId.get -> Incursa.Quic.QuicStreamId
+Incursa.Quic.QuicStreamFrame.StreamType.get -> Incursa.Quic.QuicStreamType
+Incursa.Quic.QuicStreamFrame.HasOffset.get -> bool
+Incursa.Quic.QuicStreamFrame.Offset.get -> ulong
+Incursa.Quic.QuicStreamFrame.HasLength.get -> bool
+Incursa.Quic.QuicStreamFrame.Length.get -> ulong
+Incursa.Quic.QuicStreamFrame.IsFin.get -> bool
+Incursa.Quic.QuicStreamFrame.StreamData.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicStreamFrame.StreamDataLength.get -> int
+Incursa.Quic.QuicStreamFrame.ConsumedLength.get -> int
+Incursa.Quic.QuicStreamParser
+static Incursa.Quic.QuicStreamParser.TryParseStreamIdentifier(System.ReadOnlySpan<byte> encoded, out Incursa.Quic.QuicStreamId streamId, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicStreamParser.TryParseStreamFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicStreamFrame frame) -> bool
