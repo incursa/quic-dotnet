@@ -1,0 +1,5 @@
+<RunSettings>
+  <RunConfiguration>
+    <ResultsDirectory>artifacts/test-results/blocking</ResultsDirectory>
+  </RunConfiguration>
+</RunSettings>
