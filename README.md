@@ -6,12 +6,16 @@
 
 ## What is included
 
+- [`specs/`](specs/README.md): landing zone for future RFC-derived requirement artifacts and gap tracking
 - [`Incursa.Quic`](src/Incursa.Quic/README.md): the packable library project and NuGet package root
 - [`Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md): the test project with scaffold smoke and blocking checks
 - [`docs/`](docs/README.md): repository documentation
+- [`docs/requirements-workflow.md`](docs/requirements-workflow.md): local order of operations for requirements, testing, fuzzing, and benchmarking
 - [`scripts/quality`](scripts/quality/README.md): smoke and blocking test lanes
 - [`scripts/release`](scripts/release/README.md): versioning and release-policy checks
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): contribution and validation guidance
+- [`AGENTS.md`](AGENTS.md): repository-specific agent instructions
+- [`LLMS.txt`](LLMS.txt): AI bootstrap and reading order
 - [`NOTICE.md`](NOTICE.md): generated dependency inventory
 - [`.config/dotnet-tools.json`](.config/dotnet-tools.json): local tooling manifest for Workbench, test docs, and related utilities
 
@@ -36,11 +40,14 @@ pwsh -File cleanup.ps1
 
 ## Repository layout
 
+- [`specs/`](specs/README.md)
 - [`src/Incursa.Quic`](src/Incursa.Quic)
 - [`tests/Incursa.Quic.Tests`](tests/Incursa.Quic.Tests)
 - [`docs`](docs)
 - [`scripts`](scripts)
 - [`assets`](assets)
+- [`AGENTS.md`](AGENTS.md)
+- [`LLMS.txt`](LLMS.txt)
 - [`.githooks`](.githooks)
 - [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - [`NOTICE.md`](NOTICE.md)

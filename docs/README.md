@@ -4,6 +4,8 @@ This repository is a starter scaffold for the Incursa QUIC library. The docs her
 
 ## Core references
 
+- [Requirements workflow](requirements-workflow.md)
+- [Specs landing page](../specs/README.md)
 - [Quickstart](quickstart.md)
 - [Packaging](packaging.md)
 - [Testing docs](testing/README.md)
@@ -12,6 +14,8 @@ This repository is a starter scaffold for the Incursa QUIC library. The docs her
 
 ## Recommended reading order
 
-1. [Quickstart](quickstart.md)
-2. [Packaging](packaging.md)
-3. [Testing docs](testing/README.md)
+1. [Requirements workflow](requirements-workflow.md)
+2. [Specs landing page](../specs/README.md)
+3. [Quickstart](quickstart.md)
+4. [Packaging](packaging.md)
+5. [Testing docs](testing/README.md)

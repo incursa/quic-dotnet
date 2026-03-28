@@ -4,6 +4,8 @@ Keep changes focused, reviewable, and aligned with the library shape this reposi
 
 - Prefer shared defaults in [`Directory.Build.props`](Directory.Build.props), [`Directory.Build.targets`](Directory.Build.targets), and [`Directory.Packages.props`](Directory.Packages.props) over copy-pasting settings into individual projects.
 - Keep public API changes synchronized with [`src/Incursa.Quic/PublicAPI.Shipped.txt`](src/Incursa.Quic/PublicAPI.Shipped.txt) and [`src/Incursa.Quic/PublicAPI.Unshipped.txt`](src/Incursa.Quic/PublicAPI.Unshipped.txt).
+- For protocol behavior changes, start with [`docs/requirements-workflow.md`](docs/requirements-workflow.md) and record unresolved RFC questions in [`specs/requirements/REQUIREMENT-GAPS.md`](specs/requirements/REQUIREMENT-GAPS.md) before implementation.
+- For parser, serializer, or packet-processing code, add positive, negative, fuzz/property, and benchmark coverage as part of the same change.
 - Run the baseline validation before opening a pull request.
 
 ```powershell
