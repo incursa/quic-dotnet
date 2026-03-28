@@ -1,0 +1,28 @@
+# Incursa.Quic
+
+> AI-readable bootstrap for the `Incursa.Quic` repository. This file is non-authoritative. The prep docs and repo-local instructions should be treated as guidance, not as the source of truth.
+
+`Incursa.Quic` is the scaffold repository for a managed QUIC library. Future RFC-derived requirement work should stay explicit, traceable, and test-heavy.
+
+When working in this repository:
+
+- Follow this authority order: `specs/` landing pages and gap tracker, `docs/requirements-workflow.md`, root docs, then `AGENTS.md`, then this file.
+- Record unresolved RFC questions in `specs/requirements/REQUIREMENT-GAPS.md` before implementation.
+- Keep requirements, architecture, work items, verification, tests, and benchmarks separate.
+- For parsing, serialization, encoding, decoding, or packet-processing code, expect positive tests, negative tests, fuzz/property coverage, and benchmarks.
+- Use stable file paths and relative links for repo-local Markdown.
+- Do not infer missing protocol rules into code until the requirement slice exists.
+
+## Useful Starting Points
+
+- [`README.md`](./README.md)
+- [`docs/requirements-workflow.md`](./docs/requirements-workflow.md)
+- [`docs/README.md`](./docs/README.md)
+- [`docs/testing/README.md`](./docs/testing/README.md)
+- [`specs/README.md`](./specs/README.md)
+- [`specs/requirements/REQUIREMENT-GAPS.md`](./specs/requirements/REQUIREMENT-GAPS.md)
+
+## Current State
+
+- The library project is still empty.
+- Build, packaging, and test scaffolding are already in place.
