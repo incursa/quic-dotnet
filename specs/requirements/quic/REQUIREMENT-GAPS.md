@@ -26,3 +26,9 @@ Use this file to record missing, ambiguous, or blocked QUIC requirements before 
   Needed decision: Defer those semantics to later stateful packet-processing and stream-frame specs rather than fold them into the current packet/frame container slice.
   Affected spec slice: [`SPEC-QUIC-PKT-FRM`](./SPEC-QUIC-PKT-FRM.md)
   Resolution: The current packet/frame slice stops at packet delimitation, coalesced packet preservation, and generic frame-container validation.
+
+- Source: RFC 9000 Sections 2.1 and 19.8 stream-management semantics
+  Gap: Stream identifier reuse, out-of-order stream opening, `STREAM_STATE_ERROR` handling, and flow-control enforcement depend on connection state and stream accounting that are beyond the byte-oriented parser slice.
+  Needed decision: Defer those behaviors to a later stateful stream-management specification rather than fold them into the current stream-identifier and STREAM-frame parsing slice.
+  Affected spec slice: [`SPEC-QUIC-STRM`](./SPEC-QUIC-STRM.md)
+  Resolution: The current stream slice covers stream identifier classification and STREAM frame byte shape only.

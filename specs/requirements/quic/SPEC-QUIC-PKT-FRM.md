@@ -15,6 +15,7 @@ tags:
   - coalescing
 related_artifacts:
   - SPEC-QUIC-HDR
+  - SPEC-QUIC-VINT
   - VER-QUIC-PKT-FRM-0001
 ---
 
