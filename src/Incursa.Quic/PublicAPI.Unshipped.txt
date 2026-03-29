@@ -89,6 +89,62 @@ Incursa.Quic.QuicStopSendingFrame.QuicStopSendingFrame() -> void
 Incursa.Quic.QuicStopSendingFrame.QuicStopSendingFrame(ulong streamId, ulong applicationProtocolErrorCode) -> void
 Incursa.Quic.QuicStopSendingFrame.StreamId.get -> ulong
 Incursa.Quic.QuicStopSendingFrame.ApplicationProtocolErrorCode.get -> ulong
+Incursa.Quic.QuicCryptoFrame
+Incursa.Quic.QuicCryptoFrame.QuicCryptoFrame() -> void
+Incursa.Quic.QuicCryptoFrame.QuicCryptoFrame(ulong offset, System.ReadOnlySpan<byte> cryptoData) -> void
+Incursa.Quic.QuicCryptoFrame.Offset.get -> ulong
+Incursa.Quic.QuicCryptoFrame.CryptoData.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicNewTokenFrame
+Incursa.Quic.QuicNewTokenFrame.QuicNewTokenFrame() -> void
+Incursa.Quic.QuicNewTokenFrame.QuicNewTokenFrame(System.ReadOnlySpan<byte> token) -> void
+Incursa.Quic.QuicNewTokenFrame.Token.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicMaxDataFrame
+Incursa.Quic.QuicMaxDataFrame.QuicMaxDataFrame() -> void
+Incursa.Quic.QuicMaxDataFrame.QuicMaxDataFrame(ulong maximumData) -> void
+Incursa.Quic.QuicMaxDataFrame.MaximumData.get -> ulong
+Incursa.Quic.QuicMaxStreamDataFrame
+Incursa.Quic.QuicMaxStreamDataFrame.QuicMaxStreamDataFrame() -> void
+Incursa.Quic.QuicMaxStreamDataFrame.QuicMaxStreamDataFrame(ulong streamId, ulong maximumStreamData) -> void
+Incursa.Quic.QuicMaxStreamDataFrame.StreamId.get -> ulong
+Incursa.Quic.QuicMaxStreamDataFrame.MaximumStreamData.get -> ulong
+Incursa.Quic.QuicMaxStreamsFrame
+Incursa.Quic.QuicMaxStreamsFrame.QuicMaxStreamsFrame() -> void
+Incursa.Quic.QuicMaxStreamsFrame.QuicMaxStreamsFrame(bool isBidirectional, ulong maximumStreams) -> void
+Incursa.Quic.QuicMaxStreamsFrame.IsBidirectional.get -> bool
+Incursa.Quic.QuicMaxStreamsFrame.MaximumStreams.get -> ulong
+Incursa.Quic.QuicDataBlockedFrame
+Incursa.Quic.QuicDataBlockedFrame.QuicDataBlockedFrame() -> void
+Incursa.Quic.QuicDataBlockedFrame.QuicDataBlockedFrame(ulong maximumData) -> void
+Incursa.Quic.QuicDataBlockedFrame.MaximumData.get -> ulong
+Incursa.Quic.QuicStreamDataBlockedFrame
+Incursa.Quic.QuicStreamDataBlockedFrame.QuicStreamDataBlockedFrame() -> void
+Incursa.Quic.QuicStreamDataBlockedFrame.QuicStreamDataBlockedFrame(ulong streamId, ulong maximumStreamData) -> void
+Incursa.Quic.QuicStreamDataBlockedFrame.StreamId.get -> ulong
+Incursa.Quic.QuicStreamDataBlockedFrame.MaximumStreamData.get -> ulong
+Incursa.Quic.QuicStreamsBlockedFrame
+Incursa.Quic.QuicStreamsBlockedFrame.QuicStreamsBlockedFrame() -> void
+Incursa.Quic.QuicStreamsBlockedFrame.QuicStreamsBlockedFrame(bool isBidirectional, ulong maximumStreams) -> void
+Incursa.Quic.QuicStreamsBlockedFrame.IsBidirectional.get -> bool
+Incursa.Quic.QuicStreamsBlockedFrame.MaximumStreams.get -> ulong
+Incursa.Quic.QuicNewConnectionIdFrame
+Incursa.Quic.QuicNewConnectionIdFrame.QuicNewConnectionIdFrame() -> void
+Incursa.Quic.QuicNewConnectionIdFrame.QuicNewConnectionIdFrame(ulong sequenceNumber, ulong retirePriorTo, System.ReadOnlySpan<byte> connectionId, System.ReadOnlySpan<byte> statelessResetToken) -> void
+Incursa.Quic.QuicNewConnectionIdFrame.SequenceNumber.get -> ulong
+Incursa.Quic.QuicNewConnectionIdFrame.RetirePriorTo.get -> ulong
+Incursa.Quic.QuicNewConnectionIdFrame.ConnectionId.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicNewConnectionIdFrame.StatelessResetToken.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicRetireConnectionIdFrame
+Incursa.Quic.QuicRetireConnectionIdFrame.QuicRetireConnectionIdFrame() -> void
+Incursa.Quic.QuicRetireConnectionIdFrame.QuicRetireConnectionIdFrame(ulong sequenceNumber) -> void
+Incursa.Quic.QuicRetireConnectionIdFrame.SequenceNumber.get -> ulong
+Incursa.Quic.QuicPathChallengeFrame
+Incursa.Quic.QuicPathChallengeFrame.QuicPathChallengeFrame() -> void
+Incursa.Quic.QuicPathChallengeFrame.QuicPathChallengeFrame(System.ReadOnlySpan<byte> data) -> void
+Incursa.Quic.QuicPathChallengeFrame.Data.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicPathResponseFrame
+Incursa.Quic.QuicPathResponseFrame.QuicPathResponseFrame() -> void
+Incursa.Quic.QuicPathResponseFrame.QuicPathResponseFrame(System.ReadOnlySpan<byte> data) -> void
+Incursa.Quic.QuicPathResponseFrame.Data.get -> System.ReadOnlySpan<byte>
 Incursa.Quic.QuicFrameCodec
 static Incursa.Quic.QuicFrameCodec.TryParsePaddingFrame(System.ReadOnlySpan<byte> packetPayload, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatPaddingFrame(System.Span<byte> destination, out int bytesWritten) -> bool
@@ -100,6 +156,30 @@ static Incursa.Quic.QuicFrameCodec.TryParseResetStreamFrame(System.ReadOnlySpan<
 static Incursa.Quic.QuicFrameCodec.TryFormatResetStreamFrame(Incursa.Quic.QuicResetStreamFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryParseStopSendingFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicStopSendingFrame frame, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatStopSendingFrame(Incursa.Quic.QuicStopSendingFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseCryptoFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicCryptoFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatCryptoFrame(Incursa.Quic.QuicCryptoFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseNewTokenFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicNewTokenFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatNewTokenFrame(Incursa.Quic.QuicNewTokenFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseMaxDataFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicMaxDataFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatMaxDataFrame(Incursa.Quic.QuicMaxDataFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseMaxStreamDataFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicMaxStreamDataFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatMaxStreamDataFrame(Incursa.Quic.QuicMaxStreamDataFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseMaxStreamsFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicMaxStreamsFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatMaxStreamsFrame(Incursa.Quic.QuicMaxStreamsFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseDataBlockedFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicDataBlockedFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatDataBlockedFrame(Incursa.Quic.QuicDataBlockedFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseStreamDataBlockedFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicStreamDataBlockedFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatStreamDataBlockedFrame(Incursa.Quic.QuicStreamDataBlockedFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseStreamsBlockedFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicStreamsBlockedFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatStreamsBlockedFrame(Incursa.Quic.QuicStreamsBlockedFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseNewConnectionIdFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicNewConnectionIdFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatNewConnectionIdFrame(Incursa.Quic.QuicNewConnectionIdFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseRetireConnectionIdFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicRetireConnectionIdFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatRetireConnectionIdFrame(Incursa.Quic.QuicRetireConnectionIdFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParsePathChallengeFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicPathChallengeFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatPathChallengeFrame(Incursa.Quic.QuicPathChallengeFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParsePathResponseFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicPathResponseFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatPathResponseFrame(Incursa.Quic.QuicPathResponseFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
 Incursa.Quic.QuicStreamType
 Incursa.Quic.QuicStreamType.ClientInitiatedBidirectional = 0 -> Incursa.Quic.QuicStreamType
 Incursa.Quic.QuicStreamType.ServerInitiatedBidirectional = 1 -> Incursa.Quic.QuicStreamType

@@ -1,0 +1,1981 @@
+{
+  "summary": {
+    "chunk_id": "9000-26-frame-encodings-part-3",
+    "rfc": 9000,
+    "section_tokens": [
+      "S19P6",
+      "S19P7",
+      "S19P8",
+      "S19P9",
+      "S19P10",
+      "S19P11"
+    ],
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "counts": {
+      "implemented_and_tested": 46,
+      "partially_implemented": 6,
+      "blocked_by_concrete_technical_dependency": 26,
+      "intentionally_deferred": 0
+    },
+    "changed_files": [
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "src/Incursa.Quic/QuicCryptoFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/QuicMaxDataFrame.cs",
+      "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+      "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+      "src/Incursa.Quic/QuicNewTokenFrame.cs",
+      "src/Incursa.Quic/QuicStreamFrame.cs",
+      "src/Incursa.Quic/QuicStreamParser.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+      "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicStreamTestData.cs"
+    ],
+    "tests_run": [
+      "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --logger \"console;verbosity=minimal\"",
+      "Result: Passed",
+      "Summary: 165 passed, 0 failed, 0 skipped"
+    ],
+    "notes": [
+      "The earlier reconciliation artifact remains a pre-implementation snapshot; this implementation summary reflects the current code and tests.",
+      "The repository still lacks the connection-state and flow-control subsystems needed for the blocked behavioral requirements.",
+      "The selected chunk is now covered by explicit frame codec tests, fuzz coverage, and updated public API entries for the newly added frame views."
+    ]
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0001",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A connection-layer transport/handshake surface is missing.",
+      "notes": "No handshake, packet-type, or connection-error surface exists to express CRYPTO transport semantics."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0002",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A connection-layer transport/handshake surface is missing.",
+      "notes": "No handshake, packet-type, or connection-error surface exists to express CRYPTO transport semantics."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0003",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A connection-layer transport/handshake surface is missing.",
+      "notes": "No handshake, packet-type, or connection-error surface exists to express CRYPTO transport semantics."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "CRYPTO frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "CRYPTO frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0006",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "CRYPTO frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0007",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "CRYPTO frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0008",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "CRYPTO frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0009",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "CRYPTO frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
+      "completion_status": "partially implemented",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Connection-error classification is still not represented in the current API surface.",
+      "notes": "Parser rejects oversized offset+length values, but the repo still lacks a connection-error surface for FRAME_ENCODING_ERROR / CRYPTO_BUFFER_EXCEEDED classification."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
+      "completion_status": "partially implemented",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Connection-error classification is still not represented in the current API surface.",
+      "notes": "Parser rejects oversized offset+length values, but the repo still lacks a connection-error surface for FRAME_ENCODING_ERROR / CRYPTO_BUFFER_EXCEEDED classification."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0012",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "CRYPTO frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0013",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "CRYPTO frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "NEW_TOKEN frame wire layout, empty-token rejection, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "NEW_TOKEN frame wire layout, empty-token rejection, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "NEW_TOKEN frame wire layout, empty-token rejection, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "NEW_TOKEN frame wire layout, empty-token rejection, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "NEW_TOKEN frame wire layout, empty-token rejection, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0006",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "NEW_TOKEN frame wire layout, empty-token rejection, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0007",
+      "completion_status": "partially implemented",
+      "files_changed": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Connection-error classification is still not represented in the current API surface.",
+      "notes": "Empty-token inputs are rejected locally, but the protocol-level connection error path is still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0008",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Endpoint-role and token-handling state are missing.",
+      "notes": "No endpoint state or token-store surface exists to enforce NEW_TOKEN send/receive semantics."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0009",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Endpoint-role and token-handling state are missing.",
+      "notes": "No endpoint state or token-store surface exists to enforce NEW_TOKEN send/receive semantics."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0010",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Endpoint-role and token-handling state are missing.",
+      "notes": "No endpoint state or token-store surface exists to enforce NEW_TOKEN send/receive semantics."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0006",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0007",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "A stream-state / connection-error layer is missing.",
+      "notes": "Locally initiated and send-only stream state enforcement is not represented in this repo."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0008",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0009",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0010",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0011",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0012",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0013",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0014",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0015",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0016",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0017",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0018",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0019",
+      "completion_status": "partially implemented",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "Connection-error classification is still not represented in the current API surface.",
+      "notes": "Ceiling validation is enforced in the parser, but the repo still lacks a connection-error surface for STREAM_STATE_ERROR / FLOW_CONTROL_ERROR classification."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0020",
+      "completion_status": "partially implemented",
+      "files_changed": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "remaining_gap": "Connection-error classification is still not represented in the current API surface.",
+      "notes": "Ceiling validation is enforced in the parser, but the repo still lacks a connection-error surface for STREAM_STATE_ERROR / FLOW_CONTROL_ERROR classification."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0001",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A flow-control engine is missing.",
+      "notes": "No flow-control manager exists to send, update, or enforce connection-wide data limits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_DATA frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_DATA frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_DATA frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_DATA frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0006",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A flow-control engine is missing.",
+      "notes": "No flow-control manager exists to send, update, or enforce connection-wide data limits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0007",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A flow-control engine is missing.",
+      "notes": "No flow-control manager exists to send, update, or enforce connection-wide data limits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0008",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A flow-control engine is missing.",
+      "notes": "No flow-control manager exists to send, update, or enforce connection-wide data limits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0001",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Per-stream flow-control state is missing.",
+      "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0002",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Per-stream flow-control state is missing.",
+      "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0003",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Per-stream flow-control state is missing.",
+      "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0004",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Per-stream flow-control state is missing.",
+      "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_STREAM_DATA frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0006",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_STREAM_DATA frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0007",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_STREAM_DATA frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0008",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_STREAM_DATA frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0009",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_STREAM_DATA frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0010",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_STREAM_DATA frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0011",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Per-stream flow-control state is missing.",
+      "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0012",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Per-stream flow-control state is missing.",
+      "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0013",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Per-stream flow-control state is missing.",
+      "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0014",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Per-stream flow-control state is missing.",
+      "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_STREAMS frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_STREAMS frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_STREAMS frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_STREAMS frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "MAX_STREAMS frame wire layout and round-trip coverage are in place."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0006",
+      "completion_status": "partially implemented",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "Connection-error classification is still not represented in the current API surface.",
+      "notes": "Oversize values are rejected locally, but the repo still lacks the connection-error path for FRAME_ENCODING_ERROR classification."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0007",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A stream-limit engine is missing.",
+      "notes": "No stream-limit tracking or open-stream enforcement layer exists."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0008",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A stream-limit engine is missing.",
+      "notes": "No stream-limit tracking or open-stream enforcement layer exists."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0009",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A stream-limit engine is missing.",
+      "notes": "No stream-limit tracking or open-stream enforcement layer exists."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0010",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A stream-limit engine is missing.",
+      "notes": "No stream-limit tracking or open-stream enforcement layer exists."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0011",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A stream-limit engine is missing.",
+      "notes": "No stream-limit tracking or open-stream enforcement layer exists."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0012",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A stream-limit engine is missing.",
+      "notes": "No stream-limit tracking or open-stream enforcement layer exists."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0013",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": "A stream-limit engine is missing.",
+      "notes": "No stream-limit tracking or open-stream enforcement layer exists."
+    }
+  ]
+}

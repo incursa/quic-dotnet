@@ -55,6 +55,37 @@ public sealed class QuicFrameCodecFuzzTests
     [Trait("Requirement", "REQ-QUIC-RFC9000-S19P5-0008")]
     [Trait("Requirement", "REQ-QUIC-RFC9000-S19P5-0009")]
     [Trait("Requirement", "REQ-QUIC-RFC9000-S19P5-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0012")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0001")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P9-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P9-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P9-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P9-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0001")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0005")]
     [Trait("Category", "Fuzz")]
     public void Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation()
     {
@@ -62,7 +93,7 @@ public sealed class QuicFrameCodecFuzzTests
 
         for (int iteration = 0; iteration < 128; iteration++)
         {
-            switch (random.Next(6))
+            switch (random.Next(11))
             {
                 case 0:
                     RoundTripPaddingFrame();
@@ -79,8 +110,23 @@ public sealed class QuicFrameCodecFuzzTests
                 case 4:
                     RoundTripResetStreamFrame(random);
                     break;
-                default:
+                case 5:
                     RoundTripStopSendingFrame(random);
+                    break;
+                case 6:
+                    RoundTripCryptoFrame(random);
+                    break;
+                case 7:
+                    RoundTripNewTokenFrame(random);
+                    break;
+                case 8:
+                    RoundTripMaxDataFrame(random);
+                    break;
+                case 9:
+                    RoundTripMaxStreamDataFrame(random);
+                    break;
+                default:
+                    RoundTripMaxStreamsFrame(random);
                     break;
             }
         }
@@ -220,5 +266,101 @@ public sealed class QuicFrameCodecFuzzTests
         Assert.Equal(packet.Length, bytesWritten);
         Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
         Assert.False(QuicFrameCodec.TryParseStopSendingFrame(packet[..Math.Max(0, packet.Length - 1)], out _, out _));
+    }
+
+    private static void RoundTripCryptoFrame(Random random)
+    {
+        byte[] cryptoData = RandomBytes(random, random.Next(0, 16));
+        ulong offset = (ulong)random.Next(0, 4096);
+        QuicCryptoFrame frame = new(offset, cryptoData);
+        byte[] packet = QuicFrameTestData.BuildCryptoFrame(frame);
+
+        Assert.True(QuicFrameCodec.TryParseCryptoFrame(packet, out QuicCryptoFrame parsed, out int bytesConsumed));
+        Assert.Equal(frame.Offset, parsed.Offset);
+        Assert.True(frame.CryptoData.SequenceEqual(parsed.CryptoData));
+        Assert.Equal(packet.Length, bytesConsumed);
+
+        Span<byte> destination = stackalloc byte[64];
+        Assert.True(QuicFrameCodec.TryFormatCryptoFrame(parsed, destination, out int bytesWritten));
+        Assert.Equal(packet.Length, bytesWritten);
+        Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
+        Assert.False(QuicFrameCodec.TryParseCryptoFrame(packet[..Math.Max(0, packet.Length - 1)], out _, out _));
+    }
+
+    private static void RoundTripNewTokenFrame(Random random)
+    {
+        byte[] token = RandomBytes(random, random.Next(1, 16));
+        QuicNewTokenFrame frame = new(token);
+        byte[] packet = QuicFrameTestData.BuildNewTokenFrame(frame);
+
+        Assert.True(QuicFrameCodec.TryParseNewTokenFrame(packet, out QuicNewTokenFrame parsed, out int bytesConsumed));
+        Assert.True(token.AsSpan().SequenceEqual(parsed.Token));
+        Assert.Equal(packet.Length, bytesConsumed);
+
+        Span<byte> destination = stackalloc byte[64];
+        Assert.True(QuicFrameCodec.TryFormatNewTokenFrame(parsed, destination, out int bytesWritten));
+        Assert.Equal(packet.Length, bytesWritten);
+        Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
+        Assert.False(QuicFrameCodec.TryParseNewTokenFrame(packet[..Math.Max(0, packet.Length - 1)], out _, out _));
+    }
+
+    private static void RoundTripMaxDataFrame(Random random)
+    {
+        QuicMaxDataFrame frame = new((ulong)random.Next(0, 1 << 20));
+        byte[] packet = QuicFrameTestData.BuildMaxDataFrame(frame);
+
+        Assert.True(QuicFrameCodec.TryParseMaxDataFrame(packet, out QuicMaxDataFrame parsed, out int bytesConsumed));
+        Assert.Equal(frame.MaximumData, parsed.MaximumData);
+        Assert.Equal(packet.Length, bytesConsumed);
+
+        Span<byte> destination = stackalloc byte[16];
+        Assert.True(QuicFrameCodec.TryFormatMaxDataFrame(parsed, destination, out int bytesWritten));
+        Assert.Equal(packet.Length, bytesWritten);
+        Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
+        Assert.False(QuicFrameCodec.TryParseMaxDataFrame(packet[..Math.Max(0, packet.Length - 1)], out _, out _));
+    }
+
+    private static void RoundTripMaxStreamDataFrame(Random random)
+    {
+        QuicMaxStreamDataFrame frame = new(
+            (ulong)random.Next(0, 4096),
+            (ulong)random.Next(0, 1 << 20));
+
+        byte[] packet = QuicFrameTestData.BuildMaxStreamDataFrame(frame);
+
+        Assert.True(QuicFrameCodec.TryParseMaxStreamDataFrame(packet, out QuicMaxStreamDataFrame parsed, out int bytesConsumed));
+        Assert.Equal(frame.StreamId, parsed.StreamId);
+        Assert.Equal(frame.MaximumStreamData, parsed.MaximumStreamData);
+        Assert.Equal(packet.Length, bytesConsumed);
+
+        Span<byte> destination = stackalloc byte[32];
+        Assert.True(QuicFrameCodec.TryFormatMaxStreamDataFrame(parsed, destination, out int bytesWritten));
+        Assert.Equal(packet.Length, bytesWritten);
+        Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
+        Assert.False(QuicFrameCodec.TryParseMaxStreamDataFrame(packet[..Math.Max(0, packet.Length - 1)], out _, out _));
+    }
+
+    private static void RoundTripMaxStreamsFrame(Random random)
+    {
+        QuicMaxStreamsFrame frame = new(random.Next(2) == 0, (ulong)random.Next(0, 1 << 20));
+        byte[] packet = QuicFrameTestData.BuildMaxStreamsFrame(frame);
+
+        Assert.True(QuicFrameCodec.TryParseMaxStreamsFrame(packet, out QuicMaxStreamsFrame parsed, out int bytesConsumed));
+        Assert.Equal(frame.IsBidirectional, parsed.IsBidirectional);
+        Assert.Equal(frame.MaximumStreams, parsed.MaximumStreams);
+        Assert.Equal(packet.Length, bytesConsumed);
+
+        Span<byte> destination = stackalloc byte[16];
+        Assert.True(QuicFrameCodec.TryFormatMaxStreamsFrame(parsed, destination, out int bytesWritten));
+        Assert.Equal(packet.Length, bytesWritten);
+        Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
+        Assert.False(QuicFrameCodec.TryParseMaxStreamsFrame(packet[..Math.Max(0, packet.Length - 1)], out _, out _));
+    }
+
+    private static byte[] RandomBytes(Random random, int length)
+    {
+        byte[] bytes = new byte[length];
+        random.NextBytes(bytes);
+        return bytes;
     }
 }

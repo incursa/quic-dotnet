@@ -80,6 +80,111 @@ internal static class QuicFrameTestData
         return bytes.ToArray();
     }
 
+    public static byte[] BuildCryptoFrame(QuicCryptoFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(0x06));
+        bytes.AddRange(EncodeVarint(frame.Offset));
+        bytes.AddRange(EncodeVarint((ulong)frame.CryptoData.Length));
+        bytes.AddRange(frame.CryptoData.ToArray());
+        return bytes.ToArray();
+    }
+
+    public static byte[] BuildNewTokenFrame(QuicNewTokenFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(0x07));
+        bytes.AddRange(EncodeVarint((ulong)frame.Token.Length));
+        bytes.AddRange(frame.Token.ToArray());
+        return bytes.ToArray();
+    }
+
+    public static byte[] BuildMaxDataFrame(QuicMaxDataFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(0x10));
+        bytes.AddRange(EncodeVarint(frame.MaximumData));
+        return bytes.ToArray();
+    }
+
+    public static byte[] BuildMaxStreamDataFrame(QuicMaxStreamDataFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(0x11));
+        bytes.AddRange(EncodeVarint(frame.StreamId));
+        bytes.AddRange(EncodeVarint(frame.MaximumStreamData));
+        return bytes.ToArray();
+    }
+
+    public static byte[] BuildMaxStreamsFrame(QuicMaxStreamsFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint((ulong)(frame.IsBidirectional ? 0x12 : 0x13)));
+        bytes.AddRange(EncodeVarint(frame.MaximumStreams));
+        return bytes.ToArray();
+    }
+
+    public static byte[] BuildDataBlockedFrame(QuicDataBlockedFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(0x14));
+        bytes.AddRange(EncodeVarint(frame.MaximumData));
+        return bytes.ToArray();
+    }
+
+    public static byte[] BuildStreamDataBlockedFrame(QuicStreamDataBlockedFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(0x15));
+        bytes.AddRange(EncodeVarint(frame.StreamId));
+        bytes.AddRange(EncodeVarint(frame.MaximumStreamData));
+        return bytes.ToArray();
+    }
+
+    public static byte[] BuildStreamsBlockedFrame(QuicStreamsBlockedFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint((ulong)(frame.IsBidirectional ? 0x16 : 0x17)));
+        bytes.AddRange(EncodeVarint(frame.MaximumStreams));
+        return bytes.ToArray();
+    }
+
+    public static byte[] BuildNewConnectionIdFrame(QuicNewConnectionIdFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(0x18));
+        bytes.AddRange(EncodeVarint(frame.SequenceNumber));
+        bytes.AddRange(EncodeVarint(frame.RetirePriorTo));
+        bytes.Add((byte)frame.ConnectionId.Length);
+        bytes.AddRange(frame.ConnectionId.ToArray());
+        bytes.AddRange(frame.StatelessResetToken.ToArray());
+        return bytes.ToArray();
+    }
+
+    public static byte[] BuildRetireConnectionIdFrame(QuicRetireConnectionIdFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(0x19));
+        bytes.AddRange(EncodeVarint(frame.SequenceNumber));
+        return bytes.ToArray();
+    }
+
+    public static byte[] BuildPathChallengeFrame(QuicPathChallengeFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(0x1A));
+        bytes.AddRange(frame.Data.ToArray());
+        return bytes.ToArray();
+    }
+
+    public static byte[] BuildPathResponseFrame(QuicPathResponseFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(0x1B));
+        bytes.AddRange(frame.Data.ToArray());
+        return bytes.ToArray();
+    }
+
     private static byte[] EncodeVarint(ulong value)
     {
         Span<byte> buffer = stackalloc byte[8];
