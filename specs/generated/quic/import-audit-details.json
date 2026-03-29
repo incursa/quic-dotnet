@@ -1,0 +1,141 @@
+{
+  "rfcs": {
+    "8999": {
+      "drafted_count": 8,
+      "final_count": 8,
+      "merged_count": 0,
+      "overlap_count": 3,
+      "missing_draft_accounting": [],
+      "missing_source_refs": [],
+      "clause_shape_errors": [],
+      "id_shape_errors": [],
+      "validator_policy_mismatches": [
+        {
+          "code": "REQ-CLAUSE",
+          "kind": "validator-policy-mismatch",
+          "count": 8,
+          "message": "Current validation compares the exact requirement namespace to SPEC-QUIC-RFC8999 and rejects valid extra section grouping segments such as S...",
+          "representative_examples": [
+            "REQ-QUIC-RFC8999-S5P1-0001",
+            "REQ-QUIC-RFC8999-S5P1-0002",
+            "REQ-QUIC-RFC8999-S5P1-0003"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    "9000": {
+      "drafted_count": 1524,
+      "final_count": 1443,
+      "merged_count": 64,
+      "overlap_count": 75,
+      "missing_draft_accounting": [],
+      "missing_source_refs": [],
+      "clause_shape_errors": [],
+      "id_shape_errors": [],
+      "validator_policy_mismatches": [
+        {
+          "code": "REQ-CLAUSE",
+          "kind": "validator-policy-mismatch",
+          "count": 1443,
+          "message": "Current validation compares the exact requirement namespace to SPEC-QUIC-RFC9000 and rejects valid extra section grouping segments such as S...",
+          "representative_examples": [
+            "REQ-QUIC-RFC9000-S2-0001",
+            "REQ-QUIC-RFC9000-S2-0002",
+            "REQ-QUIC-RFC9000-S2-0003"
+          ]
+        }
+      ],
+      "notes": [
+        "Advisory title-shape drift: 623 final titles in RFC 9000 include approved normative keywords and read like clauses rather than short descriptive labels. This is a `REQ-TPL-0029` SHOULD-level issue, not an identifier invalidity or clause-body blocker.",
+        "Assembly-map accounting is consistent in the current working tree: the only live one-to-many draft lineage is `REQ-RFC9000-S8-0007`, and that split is explicit in `9000.assembly-map.json`.",
+        "No merged duplicate currently loses source provenance in `9000.assembly-map.json`.",
+        "The repaired step-2 coverage artifact in `step2_out/9000/10.coverage.json` now accounts for `REQ-RFC9000-S103-0022`."
+      ],
+      "merge_accounting_problems": []
+    },
+    "9001": {
+      "drafted_count": 61,
+      "final_count": 61,
+      "merged_count": 0,
+      "overlap_count": 15,
+      "missing_draft_accounting": [],
+      "missing_source_refs": [],
+      "clause_shape_errors": [],
+      "id_shape_errors": [],
+      "validator_policy_mismatches": [
+        {
+          "code": "REQ-CLAUSE",
+          "kind": "validator-policy-mismatch",
+          "count": 61,
+          "message": "Current validation compares the exact requirement namespace to SPEC-QUIC-RFC9001 and rejects valid extra section grouping segments such as S...",
+          "representative_examples": [
+            "REQ-QUIC-RFC9001-S1-0001",
+            "REQ-QUIC-RFC9001-S3-0001",
+            "REQ-QUIC-RFC9001-S6-0001"
+          ]
+        }
+      ],
+      "notes": [
+        "The repaired step-2 coverage artifact in `step2_out/9001/1-6.coverage.json` now matches the actual draft requirement surface for sections 1 through 6."
+      ]
+    },
+    "9002": {
+      "drafted_count": 224,
+      "final_count": 224,
+      "merged_count": 0,
+      "overlap_count": 10,
+      "missing_draft_accounting": [],
+      "missing_source_refs": [],
+      "clause_shape_errors": [],
+      "id_shape_errors": [],
+      "validator_policy_mismatches": [
+        {
+          "code": "REQ-CLAUSE",
+          "kind": "validator-policy-mismatch",
+          "count": 224,
+          "message": "Current validation compares the exact requirement namespace to SPEC-QUIC-RFC9002 and rejects valid extra section grouping segments such as S...",
+          "representative_examples": [
+            "REQ-QUIC-RFC9002-S2-0001",
+            "REQ-QUIC-RFC9002-S3-0001",
+            "REQ-QUIC-RFC9002-SAP11-0003"
+          ]
+        }
+      ],
+      "notes": []
+    }
+  },
+  "global_findings": {
+    "true_import_defects": [],
+    "validator_policy_mismatches": [
+      {
+        "scope": "./specs/requirements/quic",
+        "source": "./specs/generated/quic/core-validation.json",
+        "issue": "All 1736 QUIC validation errors are emitted as REQ-CLAUSE namespace-alignment failures because the validator requires an exact namespace match and does not allow extra section grouping segments after the specification context.",
+        "representative_examples": [
+          "REQ-QUIC-RFC8999-S5P1-0001",
+          "REQ-QUIC-RFC9000-S10P3P2-0001",
+          "REQ-QUIC-RFC9002-SAP11-0003"
+        ],
+        "conclusion": "The section-scoped IDs satisfy SPEC-ID and artifact-id-policy rules; the blocker is validator policy mismatch, not imported-content invalidity."
+      }
+    ],
+    "repo_state_issues": [
+      {
+        "scope": "./specs/requirements/spec-trace",
+        "issue": "Running the repository validator on the canonical spec-trace suite yields 8 REQ-CLAUSE errors and 0 discovered requirements because the helper does not recognize the suite's linked REQ headings.",
+        "evidence": "./scripts/Test-SpecTraceRepository.ps1 -Profile core -InputPath ./specs/requirements/spec-trace"
+      }
+    ],
+    "expected_non_blockers": [
+      {
+        "scope": "./specs/generated/quic/core-validation.json",
+        "issue": "REQ-DOWNSTREAM warnings are expected because this QUIC import run did not create ARC artifacts, WI artifacts, or VER artifacts."
+      },
+      {
+        "scope": "./specs/generated/quic/core-validation.json",
+        "issue": "REQ-COVERAGE warnings are expected for the same reason and do not block this import audit."
+      }
+    ]
+  }
+}

@@ -1,0 +1,5249 @@
+{
+  "rfc": "RFC 9002",
+  "spec_artifact_id": "SPEC-QUIC-RFC9002",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.md",
+  "input_batches": [
+    "1-4",
+    "5-8",
+    "9-end"
+  ],
+  "final_requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0001",
+      "title": "Interpret all-caps BCP 14 keywords",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S2-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §2 RFC9002-S2-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-001"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0002",
+      "title": "Classify non-control frames as ack-eliciting",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S2-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §2 RFC9002-S2-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-002"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0003",
+      "title": "Acknowledge ack-eliciting packets promptly",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S2-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §2 RFC9002-S2-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-003"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0004",
+      "title": "Define packets in flight",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S2-B6-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §2 RFC9002-S2-B6-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-004"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0001",
+      "title": "Attach packet-level headers to transmissions",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-005"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0002",
+      "title": "Indicate encryption level in packet headers",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-006"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0003",
+      "title": "Carry packet numbers in packet headers",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-007"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0004",
+      "title": "Map encryption level to packet number space",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-008"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0005",
+      "title": "Prohibit packet number reuse",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B2-P1-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B2-P1-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-009"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0006",
+      "title": "Send packet numbers monotonically",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B2-P1-S4"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B2-P1-S4",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-010"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0007",
+      "title": "Allow intentional packet number gaps",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B2-P1-S5"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B2-P1-S5",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-011"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0008",
+      "title": "Permit mixed frame types per packet",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-012"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0009",
+      "title": "Ensure reliable delivery outcome",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B4-P3-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B4-P3-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-013"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0010",
+      "title": "Allow retransmission in new packets",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B4-P3-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B4-P3-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-014"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0011",
+      "title": "Acknowledge all packets",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-015"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0012",
+      "title": "Delay acknowledgment for non-ack-eliciting packets",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-016"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0013",
+      "title": "Shorten CRYPTO acknowledgment timers",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B6-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B6-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-017"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0014",
+      "title": "Count non-ACK packets toward congestion limits",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B7-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B7-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-018"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0015",
+      "title": "Treat non-ACK packets as in flight",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B7-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B7-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-019"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0016",
+      "title": "Count PADDING toward bytes in flight",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B8-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B8-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-020"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0017",
+      "title": "Suppress direct ACKs for PADDING",
+      "source_batches": [
+        "1-4"
+      ],
+      "source_sections": [
+        "3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S3-B8-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §3 RFC9002-S3-B8-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-021"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5-0001",
+      "title": "Compute RTT path values",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5-B2-P1-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §5 RFC9002-S5-B2-P1-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-022"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0001",
+      "title": "Gate RTT sample generation",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.1-B1-P0-S1",
+        "RFC9002-S5.1-B3-P0-S1",
+        "RFC9002-S5.1-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.1 RFC9002-S5.1-B1-P0-S1",
+        "RFC 9002 §5.1 RFC9002-S5.1-B3-P0-S1",
+        "RFC 9002 §5.1 RFC9002-S5.1-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-023"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0002",
+      "title": "Measure latest RTT from the largest acknowledged packet",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.1-B5-P2-S1",
+        "RFC9002-S5.1-B6-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.1 RFC9002-S5.1-B5-P2-S1",
+        "RFC 9002 §5.1 RFC9002-S5.1-B6-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-024"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0003",
+      "title": "Use only the largest acknowledged packet",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.1-B7-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.1 RFC9002-S5.1-B7-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-025"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0004",
+      "title": "Skip duplicate RTT updates",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.1-B8-P4-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.1 RFC9002-S5.1-B8-P4-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-026"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0005",
+      "title": "Require ack-eliciting progress",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.1-B9-P5-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.1 RFC9002-S5.1-B9-P5-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-027"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0001",
+      "title": "Initialize min_rtt from the first sample",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.2-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.2 RFC9002-S5.2-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-028"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0002",
+      "title": "Update min_rtt on later samples",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.2-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.2 RFC9002-S5.2-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-029"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0003",
+      "title": "Compute min_rtt from local observations",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.2-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.2 RFC9002-S5.2-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-030"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0004",
+      "title": "Ignore peer delay in min_rtt",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.2-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.2 RFC9002-S5.2-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-031"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0005",
+      "title": "Refresh min_rtt after persistent congestion",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.2-B6-P5-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.2 RFC9002-S5.2-B6-P5-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-032"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0006",
+      "title": "Allow opportunistic min_rtt reestablishment",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.2-B7-P6-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.2 RFC9002-S5.2-B7-P6-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-033"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0007",
+      "title": "Avoid over-refreshing min_rtt",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.2-B7-P6-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.2 RFC9002-S5.2-B7-P6-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-034"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0001",
+      "title": "Use adjusted RTT samples for smoothed RTT",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-035"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0002",
+      "title": "Ignore max_ack_delay before handshake confirmation",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B4-P3-S2",
+        "RFC9002-S5.3-B7-P6-S1",
+        "RFC9002-S5.3-B9-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B4-P3-S2",
+        "RFC 9002 §5.3 RFC9002-S5.3-B7-P6-S1",
+        "RFC 9002 §5.3 RFC9002-S5.3-B9-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-036"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0003",
+      "title": "Allow dropping some adjusted samples",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B5-P4-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B5-P4-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-037"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0004",
+      "title": "Subtract local decryption delay",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B12-P7-S1",
+        "RFC9002-S5.3-B12-P7-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B12-P7-S1",
+        "RFC 9002 §5.3 RFC9002-S5.3-B12-P7-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-038"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0005",
+      "title": "Initialize the RTT estimator at connection start",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B14-P9-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B14-P9-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-039"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0006",
+      "title": "Seed new-path RTT estimation with the initial RTT",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B14-P9-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B14-P9-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-040"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0007",
+      "title": "Initialize smoothed RTT and variation",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B15-P10-S1",
+        "RFC9002-S5.3-B16-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B15-P10-S1",
+        "RFC 9002 §5.3 RFC9002-S5.3-B16-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-041"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0008",
+      "title": "Reset the estimator on the first post-init sample",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B18-P12-S1",
+        "RFC9002-S5.3-B19-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B18-P12-S1",
+        "RFC 9002 §5.3 RFC9002-S5.3-B19-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-042"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0009",
+      "title": "Clamp ACK delay after handshake confirmation",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B10-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B10-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-043"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0010",
+      "title": "Update RTT estimates on subsequent samples",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B20-P13-S1",
+        "RFC9002-S5.3-B21-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B20-P13-S1",
+        "RFC 9002 §5.3 RFC9002-S5.3-B21-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-044"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0011",
+      "title": "Ignore ACK delay for Initial packets",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B8-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B8-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-045"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0012",
+      "title": "Bound adjusted RTT by min_rtt",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5.3-B11-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5.3-B11-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-046"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6-0001",
+      "title": "Separate loss detection by packet number space",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6 RFC9002-S6-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-047"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1-0001",
+      "title": "Declare loss only for packets that satisfy the basic loss criteria",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.1-B3-P2-S1",
+        "RFC9002-S6.1-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.1 RFC9002-S6.1-B3-P2-S1",
+        "RFC 9002 §6.1 RFC9002-S6.1-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-048"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1-0002",
+      "title": "Allow smaller initial reordering thresholds with adaptation",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.1-B7-P4-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.1 RFC9002-S6.1-B7-P4-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-049"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P1-0001",
+      "title": "Recommend a packet threshold of three",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.1.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.1.1-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.1.1 RFC9002-S6.1.1-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-050"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P1-0002",
+      "title": "Avoid packet thresholds below three",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.1.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.1.1-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.1.1 RFC9002-S6.1.1-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-051"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0001",
+      "title": "Declare earlier packets lost after sufficient time",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.1.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.1.2-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.1.2 RFC9002-S6.1.2-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-052"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0002",
+      "title": "Bound the time threshold by timer granularity",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.1.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.1.2-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.1.2 RFC9002-S6.1.2-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-053"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0003",
+      "title": "Compute the time threshold from RTT and granularity",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.1.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.1.2-B3-P0-S1",
+        "RFC9002-S6.1.2-B4-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.1.2 RFC9002-S6.1.2-B3-P0-S1",
+        "RFC 9002 §6.1.2 RFC9002-S6.1.2-B4-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-054"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0004",
+      "title": "Schedule a timer for the remaining time before declaring loss",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.1.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.1.2-B4-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.1.2 RFC9002-S6.1.2-B4-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-055"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0005",
+      "title": "Use the recommended packet-threshold multiplier",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.1.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.1.2-B8-P4-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.1.2 RFC9002-S6.1.2-B8-P4-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-056"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0006",
+      "title": "Use a one-millisecond timer granularity",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.1.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.1.2-B8-P4-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.1.2 RFC9002-S6.1.2-B8-P4-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-057"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0007",
+      "title": "Allow alternative time-threshold experiments",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.1.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.1.2-B9-P5-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.1.2 RFC9002-S6.1.2-B9-P5-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-058"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2-0001",
+      "title": "Send probe datagrams on PTO expiration or address-validation uncertainty",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2 RFC9002-S6.2-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-059"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2-0002",
+      "title": "Compute PTO per packet number space",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2-B3-P2-S1",
+        "RFC9002-S6.2-B3-P2-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2 RFC9002-S6.2-B3-P2-S1",
+        "RFC 9002 §6.2 RFC9002-S6.2-B3-P2-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-060"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2-0003",
+      "title": "Do not infer loss from PTO expiration",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2 RFC9002-S6.2-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-061"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0001",
+      "title": "Schedule PTO after ack-eliciting transmission",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.1-B2-P1-S1",
+        "RFC9002-S6.2.1-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B2-P1-S1",
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-062"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0002",
+      "title": "Set max_ack_delay to zero for early handshake spaces",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.1-B5-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B5-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-063"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0003",
+      "title": "Keep PTO above granularity",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.1-B6-P4-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B6-P4-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-064"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0004",
+      "title": "Use the earlier PTO across Initial and Handshake spaces",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.1-B7-P5-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B7-P5-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-065"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0005",
+      "title": "Defer application-data PTO until handshake confirmation",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.1-B8-P6-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B8-P6-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-066"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
+      "title": "Restart PTO on send, acknowledgment, or key discard",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.1-B9-P7-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B9-P7-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-067"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0007",
+      "title": "Increase PTO backoff on timeout",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.1-B10-P8-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B10-P8-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-068"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0008",
+      "title": "Reset PTO backoff on acknowledgment",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.1-B10-P8-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B10-P8-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-069"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0009",
+      "title": "Suppress PTO-backoff reset on unvalidated Initial acknowledgments",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.1-B10-P8-S4",
+        "RFC9002-S6.2.1-B10-P8-S5"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B10-P8-S4",
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B10-P8-S5",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-070"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0010",
+      "title": "Avoid conflicting timers",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.1-B13-P11-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.1 RFC9002-S6.2.1-B13-P11-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-071"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0001",
+      "title": "Reuse prior-smoothed RTT on resumed connections",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.2-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.2 RFC9002-S6.2.2-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-072"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0002",
+      "title": "Default initial RTT to 333 milliseconds",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.2-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.2 RFC9002-S6.2.2-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-073"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0003",
+      "title": "Use PATH_CHALLENGE and PATH_RESPONSE timing for initial RTT",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.2-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.2 RFC9002-S6.2.2-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-074"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0004",
+      "title": "Do not treat PATH_CHALLENGE/PATH_RESPONSE delay as an RTT sample",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.2-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.2 RFC9002-S6.2.2-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-075"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0005",
+      "title": "Reset timers when keys are discarded",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.2-B4-P3-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.2 RFC9002-S6.2.2-B4-P3-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-076"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+      "title": "Delay server PTO until address validation traffic arrives",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.2.1-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-077"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0002",
+      "title": "Reset the server PTO when the client sends data",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.2.1-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-078"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0003",
+      "title": "Fire a past-due PTO immediately",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.2.1-B3-P2-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B3-P2-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-079"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0004",
+      "title": "Arm the client PTO before handshake confirmation",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.2.1-B4-P3-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-080"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+      "title": "Send Handshake probes when keys are available",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.2.1-B4-P3-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-081"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "title": "Send Initial probes otherwise",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.2.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.2.1-B4-P3-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-082"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P3-0001",
+      "title": "Permit early CRYPTO probes for handshake speedup",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.3-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.3 RFC9002-S6.2.3-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-083"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0001",
+      "title": "Probe with at least one ack-eliciting packet",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.4-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.4 RFC9002-S6.2.4-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-084"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0002",
+      "title": "Allow two full-sized PTO datagrams",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.4-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.4 RFC9002-S6.2.4-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-085"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0003",
+      "title": "Keep PTO probe packets ack-eliciting",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.4-B2-P1-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.4 RFC9002-S6.2.4-B2-P1-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-086"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0004",
+      "title": "Use other packet number spaces for PTO probes",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.4-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.4 RFC9002-S6.2.4-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-087"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0005",
+      "title": "Include new data in PTO probes",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.4-B5-P4-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.4 RFC9002-S6.2.4-B5-P4-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-088"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0006",
+      "title": "Allow previously sent data in PTO probes",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.4-B5-P4-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.4 RFC9002-S6.2.4-B5-P4-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-089"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0007",
+      "title": "Allow alternative probe-content strategies",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.4-B5-P4-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.4 RFC9002-S6.2.4-B5-P4-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-090"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0008",
+      "title": "Send a PING when no probe data exists",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.4-B6-P5-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.4 RFC9002-S6.2.4-B6-P5-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-091"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0009",
+      "title": "Allow declaring in-flight packets lost instead of probing",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.2.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.2.4-B7-P6-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.2.4 RFC9002-S6.2.4-B7-P6-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-092"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0001",
+      "title": "Reject Retry as an acknowledgment",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.3-B2-P1-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.3 RFC9002-S6.3-B2-P1-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-093"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0002",
+      "title": "Reset recovery and congestion state on Retry",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.3-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.3 RFC9002-S6.3-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-094"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0003",
+      "title": "Retain cryptographic handshake state across Retry",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.3-B3-P2-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.3 RFC9002-S6.3-B3-P2-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-095"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0004",
+      "title": "Permit RTT estimation from Retry timing",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.3-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.3 RFC9002-S6.3-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-096"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0005",
+      "title": "Allow using Retry-derived RTT as the initial RTT",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.3-B4-P3-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.3 RFC9002-S6.3-B4-P3-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-097"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P4-0001",
+      "title": "Discard recovery state when protection keys go away",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.4-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.4 RFC9002-S6.4-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-098"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P4-0002",
+      "title": "Remove discarded packets from bytes in flight",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.4-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.4 RFC9002-S6.4-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-099"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P4-0003",
+      "title": "Discard recovery state for rejected 0-RTT packets",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.4-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.4 RFC9002-S6.4-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-100"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P4-0004",
+      "title": "Discard secrets as soon as the replacement keys exist",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "6.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S6.4-B6-P5-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §6.4 RFC9002-S6.4-B6-P5-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-101"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0001",
+      "title": "Require alternate controllers to obey RFC 8085",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7 RFC9002-S7-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-102"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0002",
+      "title": "Exclude ACK-only packets from bytes in flight",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7-B5-P4-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7 RFC9002-S7-B5-P4-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-103"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0003",
+      "title": "Exclude ACK-only packets from congestion control",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7-B5-P4-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7 RFC9002-S7-B5-P4-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-104"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0004",
+      "title": "Allow ACK-only loss signals to influence control",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7-B5-P4-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7 RFC9002-S7-B5-P4-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-105"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0005",
+      "title": "Keep congestion control per path",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7-B6-P5-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7 RFC9002-S7-B6-P5-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-106"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0006",
+      "title": "Respect the bytes-in-flight ceiling",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7-B8-P7-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7 RFC9002-S7-B8-P7-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-107"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P1-0001",
+      "title": "Treat ECN CE as congestion on validated paths",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.1-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.1 RFC9002-S7.1-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-108"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0001",
+      "title": "Start each connection in slow start",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.2-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.2 RFC9002-S7.2-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-109"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0002",
+      "title": "Recommend the initial congestion window",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.2-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.2 RFC9002-S7.2-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-110"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0003",
+      "title": "Recompute the initial window when datagram size changes",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.2-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.2 RFC9002-S7.2-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-111"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0004",
+      "title": "Reset the initial window after handshake-driven MTU reduction",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.2-B3-P2-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.2 RFC9002-S7.2-B3-P2-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-112"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0005",
+      "title": "Recommend a two-packet minimum congestion window",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.2-B5-P4-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.2 RFC9002-S7.2-B5-P4-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-113"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P1-0001",
+      "title": "Enter recovery on loss or ECN-CE increase",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.1",
+        "7.3.2",
+        "7.3.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.1-B4-P3-S1",
+        "RFC9002-S7.3.2-B2-P1-S1",
+        "RFC9002-S7.3.3-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.1 RFC9002-S7.3.1-B4-P3-S1",
+        "RFC 9002 §7.3.2 RFC9002-S7.3.2-B2-P1-S1",
+        "RFC 9002 §7.3.3 RFC9002-S7.3.3-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-114"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P1-0002",
+      "title": "Enter slow start when the window is below threshold",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.1-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.1 RFC9002-S7.3.1-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-146"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P1-0003",
+      "title": "Increase cwnd by acknowledged bytes in slow start",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.1-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.1 RFC9002-S7.3.1-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-147"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0001",
+      "title": "Stay in recovery once entered",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.2-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.2 RFC9002-S7.3.2-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-115"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0002",
+      "title": "Do not reenter recovery while already there",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.2-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.2 RFC9002-S7.3.2-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-116"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0003",
+      "title": "Cut the slow start threshold on recovery entry",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.2-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.2 RFC9002-S7.3.2-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-117"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0004",
+      "title": "Restore congestion window before leaving recovery",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.2-B3-P2-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.2 RFC9002-S7.3.2-B3-P2-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-118"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0005",
+      "title": "Permit gentler recovery-window reduction",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.2-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.2 RFC9002-S7.3.2-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-119"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0006",
+      "title": "Hold the congestion window steady during recovery",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.2-B5-P4-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.2 RFC9002-S7.3.2-B5-P4-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-120"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0007",
+      "title": "Leave recovery when a recovery-period packet is acknowledged",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.2-B6-P5-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.2 RFC9002-S7.3.2-B6-P5-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-121"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P3-0001",
+      "title": "Remain in congestion avoidance only while the window is above the threshold",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.3-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.3 RFC9002-S7.3.3-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-122"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P3-0002",
+      "title": "Limit congestion-avoidance growth to one datagram per acknowledged window",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.3.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.3.3-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.3.3 RFC9002-S7.3.3-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-123"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P4-0001",
+      "title": "Ignore undecryptable packet loss before keys are available",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.4-B2-P1-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.4 RFC9002-S7.4-B2-P1-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-124"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P4-0002",
+      "title": "Do not ignore later packet loss",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.4-B2-P1-S4"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.4 RFC9002-S7.4-B2-P1-S4",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-125"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P5-0001",
+      "title": "Do not block probe packets with congestion control",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.5-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.5 RFC9002-S7.5-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-126"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P5-0002",
+      "title": "Count probe packets as additional flight",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.5-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.5 RFC9002-S7.5-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-127"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6-0001",
+      "title": "Declare persistent congestion when all long-duration packets are lost",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.6"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.6-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.6 RFC9002-S7.6-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-128"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P1-0001",
+      "title": "Compute persistent congestion duration from RTT and max_ack_delay",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.6.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.6.1-B2-P1-S1",
+        "RFC9002-S7.6.1-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.6.1 RFC9002-S7.6.1-B2-P1-S1",
+        "RFC 9002 §7.6.1 RFC9002-S7.6.1-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-129"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P1-0002",
+      "title": "Include max_ack_delay in persistent congestion duration",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.6.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.6.1-B4-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.6.1 RFC9002-S7.6.1-B4-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-130"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P1-0003",
+      "title": "Recommend a persistent congestion threshold of three",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.6.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.6.1-B7-P5-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.6.1 RFC9002-S7.6.1-B7-P5-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-131"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0001",
+      "title": "Establish persistent congestion after the full loss test passes",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.6.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.6.2-B2-P1-S1",
+        "RFC9002-S7.6.2-B3-P0-S1",
+        "RFC9002-S7.6.2-B4-P0-S1",
+        "RFC9002-S7.6.2-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.6.2 RFC9002-S7.6.2-B2-P1-S1",
+        "RFC 9002 §7.6.2 RFC9002-S7.6.2-B3-P0-S1",
+        "RFC 9002 §7.6.2 RFC9002-S7.6.2-B4-P0-S1",
+        "RFC 9002 §7.6.2 RFC9002-S7.6.2-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-132"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0002",
+      "title": "Require the two declared-lost packets to be ack-eliciting",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.6.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.6.2-B6-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.6.2 RFC9002-S7.6.2-B6-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-133"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0003",
+      "title": "Delay persistent congestion until at least one RTT sample exists",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.6.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.6.2-B7-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.6.2 RFC9002-S7.6.2-B7-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-134"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0004",
+      "title": "Consider packet number spaces when declaring persistent congestion",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.6.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.6.2-B8-P4-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.6.2 RFC9002-S7.6.2-B8-P4-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-135"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0005",
+      "title": "Allow limited packet-number-space state when necessary",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.6.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.6.2-B8-P4-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.6.2 RFC9002-S7.6.2-B8-P4-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-136"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0006",
+      "title": "Reset cwnd to the minimum on persistent congestion",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.6.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.6.2-B9-P5-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.6.2 RFC9002-S7.6.2-B9-P5-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-137"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0001",
+      "title": "Pace all in-flight packets",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.7-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.7 RFC9002-S7.7-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-138"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0002",
+      "title": "Either pace or cap bursts",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.7-B3-P2-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.7 RFC9002-S7.7-B3-P2-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-139"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0003",
+      "title": "Limit bursts to the initial congestion window",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.7-B3-P2-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.7 RFC9002-S7.7-B3-P2-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-140"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0004",
+      "title": "Allow larger bursts when the path can absorb them",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.7-B3-P2-S4"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.7 RFC9002-S7.7-B3-P2-S4",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-141"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0005",
+      "title": "Do not pace pure ACK packets",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.7-B5-P4-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.7 RFC9002-S7.7-B5-P4-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-142"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P8-0001",
+      "title": "Do not increase cwnd when underutilized",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.8-B2-P1-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.8 RFC9002-S7.8-B2-P1-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-143"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P8-0002",
+      "title": "Do not call yourself application-limited because of pacing delay",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.8-B3-P2-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.8 RFC9002-S7.8-B3-P2-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-144"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P8-0003",
+      "title": "Allow alternate cwnd-updating mechanisms after underutilization",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "7.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S7.8-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §7.8 RFC9002-S7.8-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-145"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP1-0001",
+      "title": "Track ack-eliciting packets until resolution",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.1-B2-P1-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.1 RFC9002-SA.1-B2-P1-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-151"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP1-0002",
+      "title": "Index tracked packet state by packet number and crypto context",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.1-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.1 RFC9002-SA.1-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-152"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP1-0003",
+      "title": "Store per-packet recovery fields",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.1-B2-P1-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.1 RFC9002-SA.1-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-153"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP1-0004",
+      "title": "Allow retained state for lost packets",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.1-B3-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.1 RFC9002-SA.1-B3-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-154"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP1-0005",
+      "title": "Track sent packets per packet number space",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.1-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.1 RFC9002-SA.1-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-155"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP1-0006",
+      "title": "Limit ACK processing to one packet number space",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.1-B4-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.1 RFC9002-SA.1-B4-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-156"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP1P1-0001",
+      "title": "Record packet numbers in sent-packet state",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.1.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.1.1-B2-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.1.1 RFC9002-SA.1.1-B2-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-157"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP1P1-0002",
+      "title": "Record ACK-eliciting status in sent-packet state",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.1.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.1.1-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.1.1 RFC9002-SA.1.1-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-158"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP1P1-0003",
+      "title": "Record bytes-in-flight participation in sent-packet state",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.1.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.1.1-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.1.1 RFC9002-SA.1.1-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-159"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP1P1-0004",
+      "title": "Record sent bytes in sent-packet state",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.1.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.1.1-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.1.1 RFC9002-SA.1.1-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-160"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP1P1-0005",
+      "title": "Record packet send time in sent-packet state",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.1.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.1.1-B6-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.1.1 RFC9002-SA.1.1-B6-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-161"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP2-0001",
+      "title": "Use the recommended packet-threshold value",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.2-B3-P0-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.2 RFC9002-SA.2-B3-P0-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-162"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP2-0002",
+      "title": "Use the recommended time-threshold value",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.2-B4-P0-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.2 RFC9002-SA.2-B4-P0-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-163"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP2-0003",
+      "title": "Use the recommended timer granularity",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.2-B5-P0-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.2 RFC9002-SA.2-B5-P0-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-164"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP2-0004",
+      "title": "Use the recommended initial RTT",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.2-B6-P0-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.2 RFC9002-SA.2-B6-P0-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-165"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP2-0005",
+      "title": "Enumerate the three packet number spaces",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.2-B7-P0-S1",
+        "RFC9002-SA.2-B8-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.2 RFC9002-SA.2-B7-P0-S1",
+        "RFC 9002 §A.2 RFC9002-SA.2-B8-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-166"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP4-0001",
+      "title": "Initialize loss detection state at connection start",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.4-B2-P1-S1",
+        "RFC9002-SA.4-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.4 RFC9002-SA.4-B2-P1-S1",
+        "RFC 9002 §A.4 RFC9002-SA.4-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-167"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP5-0001",
+      "title": "Store packet metadata when sending",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.5-B2-P1-S1",
+        "RFC9002-SA.5-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.5 RFC9002-SA.5-B2-P1-S1",
+        "RFC 9002 §A.5 RFC9002-SA.5-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-168"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP5-0002",
+      "title": "Update last ack-eliciting send time for in-flight ack-eliciting packets",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.5-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.5 RFC9002-SA.5-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-169"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP5-0003",
+      "title": "Account sent bytes and refresh the loss timer on send",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.5-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.5 RFC9002-SA.5-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-170"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP6-0001",
+      "title": "Rearm the loss detection timer when datagram receipt unblocks amplification",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.6"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.6-B2-P1-S1",
+        "RFC9002-SA.6-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.6 RFC9002-SA.6-B2-P1-S1",
+        "RFC 9002 §A.6 RFC9002-SA.6-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.6"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-171"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP6-0002",
+      "title": "Process an expired timer after amplification blocking",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.6"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.6-B2-P1-S2",
+        "RFC9002-SA.6-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.6 RFC9002-SA.6-B2-P1-S2",
+        "RFC 9002 §A.6 RFC9002-SA.6-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.6"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-172"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP7-0001",
+      "title": "Update the largest acknowledged packet per space",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.7-B2-P1-S1",
+        "RFC9002-SA.7-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.7 RFC9002-SA.7-B2-P1-S1",
+        "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-173"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP7-0002",
+      "title": "Remove newly acknowledged packets before further ACK processing",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.7-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-174"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP7-0003",
+      "title": "Update RTT only for newly acknowledged ack-eliciting packets",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.7-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-175"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP7-0004",
+      "title": "Process ECN and loss state on acknowledgment",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.7-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-176"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP7-0005",
+      "title": "Reset PTO backoff after validated acknowledgment",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.7-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-177"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP7-0006",
+      "title": "Refresh the loss detection timer after acknowledgment processing",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.7-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-178"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP7-0007",
+      "title": "Initialize RTT estimation on the first sample",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.7-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-179"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP7-0008",
+      "title": "Update min_rtt and cap ack delay after handshake confirmation",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.7-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-180"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP7-0009",
+      "title": "Update RTT estimates from adjusted RTT samples",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.7-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-181"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP8-0001",
+      "title": "Return the earliest pending loss time",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.8-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-182"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP8-0002",
+      "title": "Start PTO timing from now when no ack-eliciting packets are in flight",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.8-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-183"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP8-0003",
+      "title": "Suppress Application Data PTO until handshake confirmation",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.8-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-184"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP8-0004",
+      "title": "Include max_ack_delay and backoff in Application Data PTO",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.8-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-185"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP8-0005",
+      "title": "Complete address validation for servers and validated clients",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.8-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-186"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP8-0006",
+      "title": "Set or cancel the loss detection timer according to loss and PTO state",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.8-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-187"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP9-0001",
+      "title": "Handle timeout-driven loss detection first",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.9"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.9-B2-P1-S1",
+        "RFC9002-SA.9-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.9 RFC9002-SA.9-B2-P1-S1",
+        "RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-188"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP9-0002",
+      "title": "Send anti-deadlock probes when nothing is in flight",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.9"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.9-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-189"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP9-0003",
+      "title": "Use PTO to send data or PING probes",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.9"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.9-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-190"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP9-0004",
+      "title": "Probe with one or two ack-eliciting packets on PTO",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.9"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.9-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-191"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP9-0005",
+      "title": "Increase PTO backoff after timeout handling",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.9"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.9-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-192"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP10-0001",
+      "title": "Require a known largest acknowledged packet for loss detection",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.10"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.10-B2-P1-S1",
+        "RFC9002-SA.10-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.10 RFC9002-SA.10-B2-P1-S1",
+        "RFC 9002 §A.10 RFC9002-SA.10-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.10"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-193"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP10-0002",
+      "title": "Compute the loss delay from RTT and timer granularity",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.10"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.10-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.10 RFC9002-SA.10-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.10"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-194"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP10-0003",
+      "title": "Remove lost packets and schedule future loss marking",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.10"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.10-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.10 RFC9002-SA.10-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.10"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-195"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP10-0004",
+      "title": "Skip packets beyond the largest acknowledged packet",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.10"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.10-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.10 RFC9002-SA.10-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.10"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-196"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP11-0001",
+      "title": "Discard packets in the lost space when keys are dropped",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.11"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.11-B2-P1-S1",
+        "RFC9002-SA.11-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.11 RFC9002-SA.11-B2-P1-S1",
+        "RFC 9002 §A.11 RFC9002-SA.11-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.11"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-197"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP11-0002",
+      "title": "Remove discarded packets from bytes in flight and sent-packet state",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.11"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.11-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.11 RFC9002-SA.11-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.11"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-198"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SAP11-0003",
+      "title": "Reset timer state when keys are discarded",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "A.11"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SA.11-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §A.11 RFC9002-SA.11-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.11"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-199"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [
+        "REQ-QUIC-RFC9002-SBP9-0003"
+      ],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP1-0001",
+      "title": "Use the recommended loss reduction factor",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.1-B5-P0-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.1 RFC9002-SB.1-B5-P0-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-200"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP1-0002",
+      "title": "Use the recommended persistent congestion threshold",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.1"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.1-B6-P0-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.1 RFC9002-SB.1-B6-P0-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.1"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-201"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP2-0001",
+      "title": "Set the maximum datagram size from path MTU",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.2-B3-P0-S1",
+        "RFC9002-SB.2-B3-P0-S4"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.2 RFC9002-SB.2-B3-P0-S1",
+        "RFC 9002 §B.2 RFC9002-SB.2-B3-P0-S4",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-202"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP2-0002",
+      "title": "Count eligible packets in bytes in flight",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.2-B5-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.2 RFC9002-SB.2-B5-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-203"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP2-0003",
+      "title": "Exclude transport overhead from bytes in flight",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.2-B5-P0-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.2 RFC9002-SB.2-B5-P0-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-204"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP2-0004",
+      "title": "Exclude ACK-only packets from bytes in flight",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.2-B5-P0-S3"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.2 RFC9002-SB.2-B5-P0-S3",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-205"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP2-0005",
+      "title": "Track ECN-CE counters per packet number space",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.2"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.2-B4-P0-S1",
+        "RFC9002-SB.2-B4-P0-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.2 RFC9002-SB.2-B4-P0-S1",
+        "RFC 9002 §B.2 RFC9002-SB.2-B4-P0-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.2"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-206"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP3-0001",
+      "title": "Initialize congestion control state at connection start",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.3-B2-P1-S1",
+        "RFC9002-SB.3-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.3 RFC9002-SB.3-B2-P1-S1",
+        "RFC 9002 §B.3 RFC9002-SB.3-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-207"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP4-0001",
+      "title": "Increase bytes in flight when sending non-ACK packets",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.4"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.4-B2-P1-S1",
+        "RFC9002-SB.4-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.4 RFC9002-SB.4-B2-P1-S1",
+        "RFC 9002 §B.4 RFC9002-SB.4-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.4"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-208"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP5-0001",
+      "title": "Ignore acknowledgments for packets not in flight",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.5-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-209"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP5-0002",
+      "title": "Remove acknowledged bytes from bytes in flight",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.5-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-210"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP5-0003",
+      "title": "Suppress window growth when application or flow control is limiting",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.5-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-211"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP5-0004",
+      "title": "Suppress window growth during recovery",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.5-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-212"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP5-0005",
+      "title": "Grow the congestion window by acknowledged bytes in slow start",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.5-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-213"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP5-0006",
+      "title": "Grow the congestion window proportionally in congestion avoidance",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.5"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.5-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-214"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP6-0001",
+      "title": "Ignore congestion events while already in recovery",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.6"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.6-B2-P1-S1",
+        "RFC9002-SB.6-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.6 RFC9002-SB.6-B2-P1-S1",
+        "RFC 9002 §B.6 RFC9002-SB.6-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.6"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-215"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP6-0002",
+      "title": "Enter recovery and reduce the congestion window on a congestion event",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.6"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.6-B2-P1-S2",
+        "RFC9002-SB.6-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.6 RFC9002-SB.6-B2-P1-S2",
+        "RFC 9002 §B.6 RFC9002-SB.6-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.6"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-216"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP6-0003",
+      "title": "Allow one extra packet to speed recovery",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.6"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.6-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.6 RFC9002-SB.6-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.6"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-217"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP7-0001",
+      "title": "Treat increased ECN-CE counts as congestion",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.7-B2-P1-S1",
+        "RFC9002-SB.7-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.7 RFC9002-SB.7-B2-P1-S1",
+        "RFC 9002 §B.7 RFC9002-SB.7-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-218"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP7-0002",
+      "title": "Use the largest acknowledged packet time for ECN signaling",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.7"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.7-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.7 RFC9002-SB.7-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.7"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-219"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP8-0001",
+      "title": "Remove in-flight lost packets from bytes in flight",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.8-B2-P1-S1",
+        "RFC9002-SB.8-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.8 RFC9002-SB.8-B2-P1-S1",
+        "RFC 9002 §B.8 RFC9002-SB.8-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-220"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP8-0002",
+      "title": "Trigger congestion response on loss of in-flight packets",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.8-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.8 RFC9002-SB.8-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-221"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP8-0003",
+      "title": "Defer persistent congestion checks until an RTT sample exists",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.8-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.8 RFC9002-SB.8-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-222"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP8-0004",
+      "title": "Limit persistent congestion checks to packets sent after the first RTT sample",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.8-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.8 RFC9002-SB.8-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-223"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP8-0005",
+      "title": "Collapse the congestion window on persistent congestion",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.8"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.8-B3-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.8 RFC9002-SB.8-B3-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.8"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-224"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP9-0001",
+      "title": "Stop counting discarded packets in bytes in flight",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.9"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.9-B2-P1-S1",
+        "RFC9002-SB.9-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.9 RFC9002-SB.9-B2-P1-S1",
+        "RFC 9002 §B.9 RFC9002-SB.9-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.9"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-225"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP9-0002",
+      "title": "Remove discarded packets from congestion accounting",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.9"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.9-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.9 RFC9002-SB.9-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.9"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-226"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-SBP9-0003",
+      "title": "Reset recovery timers after discarding keys",
+      "source_batches": [
+        "9-end"
+      ],
+      "source_sections": [
+        "B.9"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-SB.9-B4-P0-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §B.9 RFC9002-SB.9-B4-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.9"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-227"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [
+        "REQ-QUIC-RFC9002-SAP11-0003"
+      ],
+      "notes": []
+    }
+  ],
+  "rejected_or_merged_drafts": []
+}

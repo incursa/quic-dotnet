@@ -58,8 +58,8 @@ Each requirement in `verifies` has at least one traceable proof path, malformed 
 
 - Requirement-tagged xUnit tests under [`../../../tests/Incursa.Quic.Tests`](../../../tests/Incursa.Quic.Tests/README.md)
 - Property-based tests and fuzz harnesses under [`../../../tests/Incursa.Quic.Tests`](../../../tests/Incursa.Quic.Tests/README.md) and [`../../../fuzz/`](../../../fuzz/README.md)
-- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release` -> 103 passed, 0 failed
-- `dotnet tool run dotnet-stryker -- --config-file stryker-config.json` from [`../../../tests/Incursa.Quic.Tests`](../../../tests/Incursa.Quic.Tests/README.md) -> final mutation score 91.47% (192 killed, 15 survived, 1 timeout)
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release` -> 105 passed, 0 failed
+- `dotnet tool run dotnet-stryker -- --config-file stryker-config.json` from [`../../../tests/Incursa.Quic.Tests`](../../../tests/Incursa.Quic.Tests/README.md) -> final mutation score 92.42% (195 killed, 15 survived, 0 timeout)
 - `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*Quic*Benchmarks*"` -> 16 benchmark cases validated; all hot-path cases reported `Allocated = -`
 - BenchmarkDotNet output under [`../../../benchmarks`](../../../benchmarks/README.md)
 
