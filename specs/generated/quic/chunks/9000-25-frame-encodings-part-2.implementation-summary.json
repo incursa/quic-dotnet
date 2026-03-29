@@ -1,0 +1,1739 @@
+{
+  "chunk_id": "9000-25-frame-encodings-part-2",
+  "rfc": "9000",
+  "section_tokens": [
+    "S19P1",
+    "S19P2",
+    "S19P3",
+    "S19P3P1",
+    "S19P3P2",
+    "S19P4",
+    "S19P5"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --logger \"console;verbosity=minimal\"",
+    "result": "Passed",
+    "summary": "155 passed, 0 failed, 0 skipped"
+  },
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9000-S19P1-0002",
+    "REQ-QUIC-RFC9000-S19P1-0003",
+    "REQ-QUIC-RFC9000-S19P2-0001",
+    "REQ-QUIC-RFC9000-S19P2-0004",
+    "REQ-QUIC-RFC9000-S19P3-0004",
+    "REQ-QUIC-RFC9000-S19P3-0005",
+    "REQ-QUIC-RFC9000-S19P3-0006",
+    "REQ-QUIC-RFC9000-S19P3-0007",
+    "REQ-QUIC-RFC9000-S19P3-0008",
+    "REQ-QUIC-RFC9000-S19P4-0001",
+    "REQ-QUIC-RFC9000-S19P4-0002",
+    "REQ-QUIC-RFC9000-S19P4-0003",
+    "REQ-QUIC-RFC9000-S19P5-0001",
+    "REQ-QUIC-RFC9000-S19P5-0002",
+    "REQ-QUIC-RFC9000-S19P5-0003",
+    "REQ-QUIC-RFC9000-S19P5-0004"
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P1-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame",
+        "TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The codec now formats and parses the type-only PADDING frame as a single-byte, no-content frame."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P1-0002",
+      "completion_status": "intentionally deferred",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Using PADDING to enlarge packets requires packet assembly policy that the current repo does not expose.",
+      "notes": "The codec can emit a PADDING frame, but packet size management remains outside this slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P1-0003",
+      "completion_status": "intentionally deferred",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Initial-packet minimum-size enforcement needs packet construction and handshake packet shaping.",
+      "notes": "This requirement belongs to packet assembly rather than frame byte encoding."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P1-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame",
+        "TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The codec now formats and parses the type-only PADDING frame as a single-byte, no-content frame."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P1-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame",
+        "TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The codec now formats and parses the type-only PADDING frame as a single-byte, no-content frame."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P1-0006",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame",
+        "TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The codec now formats and parses the type-only PADDING frame as a single-byte, no-content frame."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P2-0001",
+      "completion_status": "intentionally deferred",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Peer liveness and reachability checks require connection-level timers and path management.",
+      "notes": "The codec can encode PING, but it does not own connection liveness behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P2-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes",
+        "TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The codec now formats and parses the type-only PING frame as a single-byte, no-content frame."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P2-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes",
+        "TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The codec now formats and parses the type-only PING frame as a single-byte, no-content frame."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P2-0004",
+      "completion_status": "intentionally deferred",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Keeping a connection alive requires idle-timeout policy and transmission scheduling.",
+      "notes": "The codec-only slice intentionally stops at wire format."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0004",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Using ECN feedback to manage congestion state requires a congestion controller and ACK processing state.",
+      "notes": "The codec only parses and formats the ECN counters."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0005",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Remembering acknowledgments across frames requires ACK state tracking by packet number space.",
+      "notes": "No packet-history model exists in this repo yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0006",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet number space handling is missing from the current frame-only surface.",
+      "notes": "The codec does not model Initial, Handshake, or Application packet number spaces."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0007",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "An acknowledgment cannot be bound to a packet number space without surrounding packet context.",
+      "notes": "Packet context is outside this codec slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0008",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Rejecting ACKs for Version Negotiation and Retry packets requires packet-type integration.",
+      "notes": "The frame codec does not inspect enclosing packet headers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0009",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0010",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0011",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0012",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0013",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0014",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0015",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0016",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0017",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0018",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0019",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0020",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0006",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0007",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0008",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0009",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0010",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P2-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK type 0x03 now round-trips ECN feedback counters as QUIC variable-length integers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P2-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK type 0x03 now round-trips ECN feedback counters as QUIC variable-length integers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P2-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK type 0x03 now round-trips ECN feedback counters as QUIC variable-length integers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P2-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK type 0x03 now round-trips ECN feedback counters as QUIC variable-length integers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P2-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK type 0x03 now round-trips ECN feedback counters as QUIC variable-length integers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P2-0006",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK type 0x03 now round-trips ECN feedback counters as QUIC variable-length integers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P3P2-0007",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK type 0x03 now round-trips ECN feedback counters as QUIC variable-length integers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0001",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Abruptly terminating the sending part of a stream requires a stream state machine.",
+      "notes": "This slice only proves RESET_STREAM wire encoding and decoding."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0002",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Discarding received stream data is receiver-side stream-buffer behavior outside the codec.",
+      "notes": "No stream receive buffer model exists here."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0003",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Detecting send-only stream misuse requires stream direction and state enforcement.",
+      "notes": "That enforcement belongs to a later stream-state layer."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseResetStreamFrame_ParsesAndFormatsAllFields",
+        "TryParseResetStreamFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "RESET_STREAM encoding and decoding now covers the type, stream identifier, application error code, and final size fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseResetStreamFrame_ParsesAndFormatsAllFields",
+        "TryParseResetStreamFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "RESET_STREAM encoding and decoding now covers the type, stream identifier, application error code, and final size fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0006",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseResetStreamFrame_ParsesAndFormatsAllFields",
+        "TryParseResetStreamFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "RESET_STREAM encoding and decoding now covers the type, stream identifier, application error code, and final size fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0007",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseResetStreamFrame_ParsesAndFormatsAllFields",
+        "TryParseResetStreamFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "RESET_STREAM encoding and decoding now covers the type, stream identifier, application error code, and final size fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0008",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseResetStreamFrame_ParsesAndFormatsAllFields",
+        "TryParseResetStreamFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "RESET_STREAM encoding and decoding now covers the type, stream identifier, application error code, and final size fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0009",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseResetStreamFrame_ParsesAndFormatsAllFields",
+        "TryParseResetStreamFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "RESET_STREAM encoding and decoding now covers the type, stream identifier, application error code, and final size fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0010",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseResetStreamFrame_ParsesAndFormatsAllFields",
+        "TryParseResetStreamFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "RESET_STREAM encoding and decoding now covers the type, stream identifier, application error code, and final size fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0011",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseResetStreamFrame_ParsesAndFormatsAllFields",
+        "TryParseResetStreamFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "RESET_STREAM encoding and decoding now covers the type, stream identifier, application error code, and final size fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0001",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Communicating application-requested discard requires stream lifecycle integration.",
+      "notes": "This slice only proves STOP_SENDING wire encoding and decoding."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0002",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Recv/Size Known state gating requires a stream state machine.",
+      "notes": "The repo does not yet model STOP_SENDING send conditions."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0003",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Detecting locally initiated streams that do not yet exist requires connection stream bookkeeping.",
+      "notes": "That bookkeeping is outside the frame codec."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0004",
+      "completion_status": "blocked by concrete technical dependency",
+      "files_changed": [
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Receive-only stream enforcement requires stream direction and state tracking.",
+      "notes": "The frame codec does not own stream-state validation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseStopSendingFrame_ParsesAndFormatsAllFields",
+        "TryParseStopSendingFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "STOP_SENDING encoding and decoding now covers the type, stream identifier, and application error code fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0006",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseStopSendingFrame_ParsesAndFormatsAllFields",
+        "TryParseStopSendingFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "STOP_SENDING encoding and decoding now covers the type, stream identifier, and application error code fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0007",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseStopSendingFrame_ParsesAndFormatsAllFields",
+        "TryParseStopSendingFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "STOP_SENDING encoding and decoding now covers the type, stream identifier, and application error code fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0008",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseStopSendingFrame_ParsesAndFormatsAllFields",
+        "TryParseStopSendingFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "STOP_SENDING encoding and decoding now covers the type, stream identifier, and application error code fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0009",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseStopSendingFrame_ParsesAndFormatsAllFields",
+        "TryParseStopSendingFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "STOP_SENDING encoding and decoding now covers the type, stream identifier, and application error code fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0010",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckRange.cs",
+        "src/Incursa.Quic/QuicEcnCounts.cs",
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryParseStopSendingFrame_ParsesAndFormatsAllFields",
+        "TryParseStopSendingFrame_RejectsTruncatedInputs",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "STOP_SENDING encoding and decoding now covers the type, stream identifier, and application error code fields."
+    }
+  ]
+}
