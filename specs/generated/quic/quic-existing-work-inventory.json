@@ -1,0 +1,529 @@
+{
+  "rfcs": {
+    "8999": {
+      "section_families": [
+        {
+          "section_token": "S5P1",
+          "status": "implemented_and_tested",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicPacketParser.cs",
+            "src/Incursa.Quic/QuicPacketParsing.cs",
+            "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+            "src/Incursa.Quic/QuicHeaderForm.cs",
+            "src/Incursa.Quic/QuicVersionNegotiationPacket.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+            "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+            "benchmarks/QuicHeaderParsingBenchmarks.cs"
+          ],
+          "stale_requirement_refs": [],
+          "confidence": "high",
+          "notes": [
+            "Generated closeout docs mark the RFC 8999 slice complete and free of stale requirement refs."
+          ]
+        }
+      ]
+    },
+    "9000": {
+      "section_families": [
+        {
+          "section_token": "S2/S2P1/S2P2/S2P3/S2P4",
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicStreamId.cs",
+            "src/Incursa.Quic/QuicStreamType.cs",
+            "src/Incursa.Quic/QuicStreamFrame.cs",
+            "src/Incursa.Quic/QuicStreamParser.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+            "tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs",
+            "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+            "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+            "benchmarks/QuicStreamParsingBenchmarks.cs"
+          ],
+          "stale_requirement_refs": [
+            "REQ-QUIC-STRM-0001",
+            "REQ-QUIC-STRM-0002",
+            "REQ-QUIC-STRM-0003",
+            "REQ-QUIC-STRM-0004"
+          ],
+          "confidence": "high",
+          "notes": [
+            "S2P1 and S2P2 are already represented; S2P3 and S2P4 remain greenfield.",
+            "The shared stream fuzz file also carries VINT tags that are accounted for under RFC 9000-15."
+          ]
+        },
+        {
+          "section_token": "S3/S3P1/S3P2/S3P3/S3P4/S3P5",
+          "status": "no_evidence",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "high",
+          "notes": [
+            "Greenfield stream-state-machine work."
+          ]
+        },
+        {
+          "section_token": "S4/S4P1/S4P2/S4P4/S4P5/S4P6",
+          "status": "no_evidence",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "high",
+          "notes": [
+            "Greenfield stream-operations and flow-control work."
+          ]
+        },
+        {
+          "section_token": "S5/S5P1/S5P1P1/S5P1P2/S5P2/S5P2P1/S5P2P2/S5P2P3",
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicPacketParser.cs",
+            "src/Incursa.Quic/QuicPacketParsing.cs",
+            "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+            "src/Incursa.Quic/QuicVersionNegotiationPacket.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+            "benchmarks/QuicHeaderParsingBenchmarks.cs"
+          ],
+          "stale_requirement_refs": [
+            "REQ-QUIC-HDR-0008",
+            "REQ-QUIC-HDR-0009",
+            "REQ-QUIC-HDR-0010"
+          ],
+          "confidence": "high",
+          "notes": [
+            "Packet classification and Version Negotiation parsing exist; CID policy and connection-establishment semantics remain greenfield."
+          ]
+        },
+        {
+          "section_token": "S5P3/S6/S6P1/S6P2/S6P3/S7/S7P2/S7P3/S7P4/S7P4P1/S7P4P2/S7P5/S8/S8P1/S8P1P1/S8P1P2/S8P1P3/S8P1P4/S8P2/S8P2P1/S8P2P2/S8P2P3/S8P2P4/S9/S9P1/S9P2/S9P3/S9P3P1/S9P3P2/S9P3P3/S9P4/S9P5/S9P6/S9P6P1/S9P6P2/S9P6P3/S9P7/S10/S10P1/S10P1P1/S10P1P2/S10P2/S10P2P1/S10P2P2/S10P2P3/S10P3/S10P3P1/S10P3P2/S10P3P3/S11/S11P1/S11P2/S12P1/S12P2/S12P3/S12P4/S12P5/S13/S13P1/S13P2/S13P2P1/S13P2P2/S13P2P3/S13P2P4/S13P2P5/S13P2P6/S13P2P7/S13P3/S13P4/S13P4P1/S13P4P2/S13P4P2P1/S13P4P2P2/S14/S14P1/S14P2/S14P2P1/S14P3/S14P4",
+          "status": "no_evidence",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "high",
+          "notes": [
+            "Connection establishment, migration, lifecycle, packet protection, ACK, ECN, datagram, and PMTU work are still greenfield in live code/tests."
+          ]
+        },
+        {
+          "section_token": "S15/S16/S17/S17P1/S17P2",
+          "status": "implemented_and_tested",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicVariableLengthInteger.cs",
+            "src/Incursa.Quic/QuicPacketParser.cs",
+            "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+            "src/Incursa.Quic/QuicHeaderForm.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicVariableLengthIntegerTests.cs",
+            "tests/Incursa.Quic.Tests/QuicVariableLengthIntegerPropertyTests.cs",
+            "tests/Incursa.Quic.Tests/QuicVariableLengthIntegerPropertyGenerators.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
+            "benchmarks/QuicVariableLengthIntegerBenchmarks.cs",
+            "benchmarks/QuicHeaderParsingBenchmarks.cs"
+          ],
+          "stale_requirement_refs": [
+            "REQ-QUIC-VINT-0001",
+            "REQ-QUIC-VINT-0002",
+            "REQ-QUIC-VINT-0003",
+            "REQ-QUIC-VINT-0004",
+            "REQ-QUIC-VINT-0005"
+          ],
+          "confidence": "high",
+          "notes": [
+            "Varint parse/format and packet-header wire format are live.",
+            "The shared stream fuzz file uses VINT tags to exercise parser boundary cases."
+          ]
+        },
+        {
+          "section_token": "S17P2P1/S17P2P2",
+          "status": "implemented_and_tested",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicPacketParser.cs",
+            "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
+            "src/Incursa.Quic/QuicLongHeaderPacket.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+            "benchmarks/QuicHeaderParsingBenchmarks.cs"
+          ],
+          "stale_requirement_refs": [
+            "REQ-QUIC-HDR-0008",
+            "REQ-QUIC-HDR-0009",
+            "REQ-QUIC-HDR-0010"
+          ],
+          "confidence": "high",
+          "notes": [
+            "Version Negotiation and Initial packet header parsing are live."
+          ]
+        },
+        {
+          "section_token": "S17P2P3/S17P2P4/S17P2P5/S17P2P5P1/S17P2P5P2/S17P2P5P3",
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicPacketParser.cs",
+            "src/Incursa.Quic/QuicLongHeaderPacket.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+          ],
+          "stale_requirement_refs": [],
+          "confidence": "medium",
+          "notes": [
+            "The long-header envelope is present, but 0-RTT, Handshake, and Retry packet semantics remain greenfield."
+          ]
+        },
+        {
+          "section_token": "S17P3/S17P3P1/S17P4",
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+            "src/Incursa.Quic/QuicPacketParser.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+            "benchmarks/QuicHeaderParsingBenchmarks.cs"
+          ],
+          "stale_requirement_refs": [
+            "REQ-QUIC-HDR-0007"
+          ],
+          "confidence": "high",
+          "notes": [
+            "Short-header parsing exists; spin-bit observability does not."
+          ]
+        },
+        {
+          "section_token": "S18/S18P1/S18P2/S19P1/S19P2/S19P3/S19P3P1/S19P3P2",
+          "status": "no_evidence",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "high",
+          "notes": [
+            "Transport-parameter encoding, PADDING, PING, and ACK frame formats are greenfield in live code/tests."
+          ]
+        },
+        {
+          "section_token": "S19P4/S19P5/S19P6/S19P7/S19P8",
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicStreamFrame.cs",
+            "src/Incursa.Quic/QuicStreamParser.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+            "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
+            "benchmarks/QuicStreamParsingBenchmarks.cs"
+          ],
+          "stale_requirement_refs": [
+            "REQ-QUIC-STRM-0005",
+            "REQ-QUIC-STRM-0006",
+            "REQ-QUIC-STRM-0007",
+            "REQ-QUIC-STRM-0008",
+            "REQ-QUIC-STRM-0009",
+            "REQ-QUIC-STRM-0010",
+            "REQ-QUIC-STRM-0011"
+          ],
+          "confidence": "high",
+          "notes": [
+            "STREAM frame parsing is live; RESET_STREAM, STOP_SENDING, and CRYPTO frame formats are still greenfield."
+          ]
+        },
+        {
+          "section_token": "S19P9/S19P10/S19P11/S19P12/S19P13/S19P14/S19P15/S19P16/S19P17/S19P18/S19P19/S19P20/S19P21/S20P1/S20P2/S21P1P1P1/S21P2/S21P3/S21P4/S21P5/S21P5P3/S21P5P6/S21P6/S21P7/S21P9/S21P10/S21P11/S21P12/S22P1P1/S22P1P2/S22P1P3/S22P1P4/S22P2/S22P3/S22P4/S22P5",
+          "status": "no_evidence",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "high",
+          "notes": [
+            "Flow-control frames, CID/path-probe frames, connection-close frames, transport-error policy, security considerations, and IANA registry rules are greenfield."
+          ]
+        }
+      ]
+    },
+    "9001": {
+      "section_families": [
+        {
+          "section_token": "S2/S3/S4/S5",
+          "status": "no_evidence",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "high",
+          "notes": [
+            "The generated chunk doc treats S2 as document-convention-only/unclear, and there are no live RFC 9001 implementation or test refs."
+          ]
+        },
+        {
+          "section_token": "S6/S7/S8/S9/S10/SB/SBP1P1/SBP1P2/SBP2",
+          "status": "no_evidence",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "high",
+          "notes": [
+            "Key update, security considerations, and AEAD limit material are greenfield in live code/tests."
+          ]
+        }
+      ]
+    },
+    "9002": {
+      "section_families": [
+        {
+          "section_token": "S2/S3/S5/S5P1/S5P2/S5P3",
+          "status": "no_evidence",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "high",
+          "notes": [
+            "Ack-eliciting packets, packets in flight, RTT estimation, and related recovery metrics are greenfield in live code/tests."
+          ]
+        },
+        {
+          "section_token": "S6/S6P1/S6P1P1/S6P1P2/S6P2/S6P2P1/S6P2P2/S6P2P2P1/S6P2P3/S6P2P4/S6P3/S6P4",
+          "status": "no_evidence",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "high",
+          "notes": [
+            "Loss detection and PTO scheduling are greenfield in live code/tests."
+          ]
+        },
+        {
+          "section_token": "S7/S7P1/S7P2/S7P3P1/S7P3P2/S7P3P3/S7P4/S7P5/S7P6/S7P6P1/S7P6P2/S7P7/S7P8",
+          "status": "no_evidence",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "high",
+          "notes": [
+            "Congestion control, ECN, and persistent congestion are greenfield in live code/tests."
+          ]
+        },
+        {
+          "section_token": "SAP1/SAP1P1/SAP2/SAP4/SAP5/SAP6/SAP7/SAP8/SAP9/SAP10/SAP11",
+          "status": "unclear",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "medium",
+          "notes": [
+            "Appendix A is greenfield except for the retained overlap pair that keeps SAP11 under review."
+          ]
+        },
+        {
+          "section_token": "SBP1/SBP2/SBP3/SBP4/SBP5/SBP6/SBP7/SBP8/SBP9",
+          "status": "unclear",
+          "implementation_refs": [],
+          "test_refs": [],
+          "stale_requirement_refs": [],
+          "confidence": "medium",
+          "notes": [
+            "Appendix B is greenfield except for the counterpart to the retained SAP11/BP9 overlap pair."
+          ]
+        }
+      ]
+    }
+  },
+  "recommended_chunks": [
+    {
+      "chunk_name": "RFC8999-01",
+      "rfc": "8999",
+      "section_tokens": [
+        "S5P1"
+      ],
+      "status": "skip",
+      "reason": "Already implemented, tested, fuzzed, benchmarked, and closed out.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9000-01",
+      "rfc": "9000",
+      "section_tokens": [
+        "S2/S2P1/S2P2/S2P3/S2P4"
+      ],
+      "status": "prompt2_then_prompt3_then_prompt4",
+      "reason": "Existing stream parser, stream-ID parser, and STREAM-frame tests already exist, so this needs legacy-ID reconciliation before the greenfield parts are expanded.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9000-02-03",
+      "rfc": "9000",
+      "section_tokens": [
+        "S3/S3P1/S3P2/S3P3/S3P4/S3P5",
+        "S4/S4P1/S4P2/S4P4/S4P5/S4P6"
+      ],
+      "status": "prompt3_then_prompt4",
+      "reason": "Greenfield stream-state-machine and stream-operations/flow-control work.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9000-04",
+      "rfc": "9000",
+      "section_tokens": [
+        "S5/S5P1/S5P1P1/S5P1P2/S5P2/S5P2P1/S5P2P2/S5P2P3"
+      ],
+      "status": "prompt2_then_prompt3_then_prompt4",
+      "reason": "Existing packet-classification and Version Negotiation parser/tests already exist, so this needs reconciliation before the remaining CID and connection-establishment semantics are filled in.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9000-05-14",
+      "rfc": "9000",
+      "section_tokens": [
+        "S5P3/S6/S6P1/S6P2/S6P3/S7/S7P2/S7P3/S7P4/S7P4P1/S7P4P2/S7P5/S8/S8P1/S8P1P1/S8P1P2/S8P1P3/S8P1P4/S8P2/S8P2P1/S8P2P2/S8P2P3/S8P2P4/S9/S9P1/S9P2/S9P3/S9P3P1/S9P3P2/S9P3P3/S9P4/S9P5/S9P6/S9P6P1/S9P6P2/S9P6P3/S9P7/S10/S10P1/S10P1P1/S10P1P2/S10P2/S10P2P1/S10P2P2/S10P2P3/S10P3/S10P3P1/S10P3P2/S10P3P3/S11/S11P1/S11P2/S12P1/S12P2/S12P3/S12P4/S12P5/S13/S13P1/S13P2/S13P2P1/S13P2P2/S13P2P3/S13P2P4/S13P2P5/S13P2P6/S13P2P7/S13P3/S13P4/S13P4P1/S13P4P2/S13P4P2P1/S13P4P2P2/S14/S14P1/S14P2/S14P2P1/S14P3/S14P4"
+      ],
+      "status": "prompt3_then_prompt4",
+      "reason": "Connection establishment, migration, lifecycle, packet protection, ACK, ECN, datagram, and PMTU work are still greenfield.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9000-15",
+      "rfc": "9000",
+      "section_tokens": [
+        "S15/S16/S17/S17P1/S17P2"
+      ],
+      "status": "prompt2_then_prompt3_then_prompt4",
+      "reason": "The varint parser and packet-header wire-format path already exist and still carry stale VINT IDs, so reconciliation should happen before extending the remaining header work.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9000-16",
+      "rfc": "9000",
+      "section_tokens": [
+        "S17P2P1/S17P2P2"
+      ],
+      "status": "prompt2_then_prompt3_then_prompt4",
+      "reason": "Version Negotiation and Initial packet header parser/tests already exist and still carry stale HDR IDs.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9000-17",
+      "rfc": "9000",
+      "section_tokens": [
+        "S17P2P3/S17P2P4/S17P2P5/S17P2P5P1/S17P2P5P2/S17P2P5P3"
+      ],
+      "status": "prompt2_then_prompt3_then_prompt4",
+      "reason": "The long-header envelope already exists and is covered by tests, but packet-type semantics for 0-RTT, Handshake, and Retry are still greenfield.",
+      "confidence": "medium"
+    },
+    {
+      "chunk_name": "RFC9000-18",
+      "rfc": "9000",
+      "section_tokens": [
+        "S17P3/S17P3P1/S17P4"
+      ],
+      "status": "prompt2_then_prompt3_then_prompt4",
+      "reason": "Short-header parsing already exists and still carries a stale HDR trait, while spin-bit observability remains greenfield.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9000-19-20",
+      "rfc": "9000",
+      "section_tokens": [
+        "S18/S18P1/S18P2/S19P1/S19P2/S19P3/S19P3P1/S19P3P2"
+      ],
+      "status": "prompt3_then_prompt4",
+      "reason": "Greenfield transport-parameter and PADDING/PING/ACK frame work.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9000-21",
+      "rfc": "9000",
+      "section_tokens": [
+        "S19P4/S19P5/S19P6/S19P7/S19P8"
+      ],
+      "status": "prompt2_then_prompt3_then_prompt4",
+      "reason": "Existing STREAM-frame parser/tests already exist and still carry stale STRM IDs.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9000-22-26",
+      "rfc": "9000",
+      "section_tokens": [
+        "S19P9/S19P10/S19P11/S19P12/S19P13/S19P14/S19P15/S19P16/S19P17/S19P18/S19P19/S19P20/S19P21/S20P1/S20P2/S21P1P1P1/S21P2/S21P3/S21P4/S21P5/S21P5P3/S21P5P6/S21P6/S21P7/S21P9/S21P10/S21P11/S21P12/S22P1P1/S22P1P2/S22P1P3/S22P1P4/S22P2/S22P3/S22P4/S22P5"
+      ],
+      "status": "prompt3_then_prompt4",
+      "reason": "Flow-control frames, CID/path-probe frames, connection-close frames, transport-error policy, security considerations, and IANA registry rules are greenfield.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9001-01",
+      "rfc": "9001",
+      "section_tokens": [
+        "S2/S3/S4/S5"
+      ],
+      "status": "prompt3_then_prompt4",
+      "reason": "There is no live RFC 9001 implementation or test surface, and the generated chunk doc treats S2 as document-convention-only/unclear.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9001-02",
+      "rfc": "9001",
+      "section_tokens": [
+        "S6/S7/S8/S9/S10/SB/SBP1P1/SBP1P2/SBP2"
+      ],
+      "status": "prompt3_then_prompt4",
+      "reason": "Key update, security considerations, and AEAD-limit work are greenfield in live code/tests.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9002-01-03",
+      "rfc": "9002",
+      "section_tokens": [
+        "S2/S3/S5/S5P1/S5P2/S5P3",
+        "S6/S6P1/S6P1P1/S6P1P2/S6P2/S6P2P1/S6P2P2/S6P2P2P1/S6P2P3/S6P2P4/S6P3/S6P4",
+        "S7/S7P1/S7P2/S7P3P1/S7P3P2/S7P3P3/S7P4/S7P5/S7P6/S7P6P1/S7P6P2/S7P7/S7P8"
+      ],
+      "status": "prompt3_then_prompt4",
+      "reason": "Recovery metrics, loss detection, PTO, and congestion control are greenfield in live code/tests.",
+      "confidence": "high"
+    },
+    {
+      "chunk_name": "RFC9002-04",
+      "rfc": "9002",
+      "section_tokens": [
+        "SAP1/SAP1P1/SAP2/SAP4/SAP5/SAP6/SAP7/SAP8/SAP9/SAP10/SAP11"
+      ],
+      "status": "human_review_first",
+      "reason": "The appendix A/B overlap pair is intentionally retained for manual review before automation.",
+      "confidence": "medium"
+    },
+    {
+      "chunk_name": "RFC9002-05",
+      "rfc": "9002",
+      "section_tokens": [
+        "SBP1/SBP2/SBP3/SBP4/SBP5/SBP6/SBP7/SBP8/SBP9"
+      ],
+      "status": "human_review_first",
+      "reason": "The appendix A/B overlap pair is intentionally retained for manual review before automation.",
+      "confidence": "medium"
+    }
+  ]
+}

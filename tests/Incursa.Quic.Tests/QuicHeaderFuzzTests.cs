@@ -3,12 +3,26 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicHeaderFuzzTests
 {
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0001")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0002")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0003")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0004")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0005")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0016")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0001")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0011")]
     [Trait("Category", "Fuzz")]
     public void Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation()
     {
@@ -16,8 +30,13 @@ public sealed class QuicHeaderFuzzTests
 
         for (int iteration = 0; iteration < 128; iteration++)
         {
-            byte headerControlBits = (byte)random.Next(0, 0x80);
+            byte headerControlBits = (byte)(0x40 | random.Next(0, 0x40));
             uint version = (uint)random.Next(0, int.MaxValue);
+            if (version == 1)
+            {
+                version = 2;
+            }
+
             byte[] destinationConnectionId = QuicHeaderTestData.RandomBytes(random, random.Next(0, 8));
             byte[] sourceConnectionId = QuicHeaderTestData.RandomBytes(random, random.Next(0, 8));
             byte[] versionSpecificData = [];
@@ -31,6 +50,11 @@ public sealed class QuicHeaderFuzzTests
             Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
             Assert.Equal(QuicHeaderForm.Long, header.HeaderForm);
             Assert.Equal(headerControlBits, header.HeaderControlBits);
+            Assert.True(header.FixedBit);
+            Assert.Equal((byte)((headerControlBits & 0x30) >> 4), header.LongPacketTypeBits);
+            Assert.Equal((byte)(headerControlBits & 0x03), header.PacketNumberLengthBits);
+            Assert.Equal((byte)(headerControlBits & 0x0F), header.TypeSpecificBits);
+            Assert.Equal((byte)((headerControlBits & 0x0C) >> 2), header.ReservedBits);
             Assert.Equal(version, header.Version);
             Assert.Equal(version == 0, header.IsVersionNegotiation);
             Assert.True(destinationConnectionId.AsSpan().SequenceEqual(header.DestinationConnectionId));
@@ -43,9 +67,113 @@ public sealed class QuicHeaderFuzzTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0008")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0009")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0012")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0014")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0015")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0017")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0001")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0012")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0014")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0015")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0016")]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation()
+    {
+        Random random = new(0x5150_2028);
+
+        for (int iteration = 0; iteration < 128; iteration++)
+        {
+            bool isInitial = (iteration & 1) == 0;
+            byte[] destinationConnectionId = QuicHeaderTestData.RandomBytes(random, random.Next(0, 21));
+            byte[] sourceConnectionId = QuicHeaderTestData.RandomBytes(random, random.Next(0, 21));
+            byte[] packetNumber = QuicHeaderTestData.RandomBytes(random, random.Next(1, 5));
+            byte[] protectedPayload = QuicHeaderTestData.RandomBytes(random, random.Next(0, 8));
+            byte[] versionSpecificData = isInitial
+                ? QuicHeaderTestData.BuildInitialVersionSpecificData(
+                    QuicHeaderTestData.RandomBytes(random, random.Next(0, 8)),
+                    packetNumber,
+                    protectedPayload)
+                : QuicHeaderTestData.BuildZeroRttVersionSpecificData(packetNumber, protectedPayload);
+            byte headerControlBits = (byte)((isInitial ? 0x40 : 0x50) | (packetNumber.Length - 1));
+            byte[] packet = QuicHeaderTestData.BuildLongHeader(
+                headerControlBits,
+                version: 1,
+                destinationConnectionId,
+                sourceConnectionId,
+                versionSpecificData);
+
+            Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+            Assert.Equal((byte)(isInitial ? 0x00 : 0x01), header.LongPacketTypeBits);
+            Assert.True(versionSpecificData.AsSpan().SequenceEqual(header.VersionSpecificData));
+
+            if (versionSpecificData.Length > 0)
+            {
+                int truncateBy = random.Next(1, versionSpecificData.Length + 1);
+                byte[] truncatedPacket = packet[..^truncateBy];
+                Assert.False(QuicPacketParser.TryParseLongHeader(truncatedPacket, out _));
+            }
+        }
+    }
+
+    [Fact]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0012")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0014")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0015")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0016")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0017")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0019")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0020")]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero()
+    {
+        Random random = new(0x5150_2029);
+
+        for (int iteration = 0; iteration < 128; iteration++)
+        {
+            byte headerControlBits = (byte)(0x40 | (random.Next(0, 0x40) & 0x27));
+            byte[] remainder = QuicHeaderTestData.RandomBytes(random, random.Next(0, 32));
+            byte[] packet = QuicHeaderTestData.BuildShortHeader(headerControlBits, remainder);
+
+            Assert.True(QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket header));
+            Assert.Equal(QuicHeaderForm.Short, header.HeaderForm);
+            Assert.Equal(headerControlBits, header.HeaderControlBits);
+            Assert.True(header.FixedBit);
+            Assert.Equal((headerControlBits & 0x20) != 0, header.SpinBit);
+            Assert.Equal((byte)((headerControlBits & 0x18) >> 3), header.ReservedBits);
+            Assert.Equal((headerControlBits & 0x04) != 0, header.KeyPhase);
+            Assert.Equal((byte)(headerControlBits & 0x03), header.PacketNumberLengthBits);
+            Assert.True(remainder.AsSpan().SequenceEqual(header.Remainder));
+
+            byte[] invalidPacket = packet.ToArray();
+            invalidPacket[0] = (byte)(invalidPacket[0] & ~0x40);
+            Assert.False(QuicPacketParser.TryParseShortHeader(invalidPacket, out _));
+
+            byte[] invalidReservedPacket = packet.ToArray();
+            invalidReservedPacket[0] = (byte)(invalidReservedPacket[0] | 0x18);
+            Assert.False(QuicPacketParser.TryParseShortHeader(invalidReservedPacket, out _));
+        }
+    }
+
+    [Fact]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0019")]
     [Trait("Category", "Fuzz")]
     public void Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation()
     {

@@ -1,0 +1,260 @@
+{
+  "chunk_id": "8999-01-invariants",
+  "rfc": "8999",
+  "section_tokens": [
+    "S5P1"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC8999.md",
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests\"",
+    "passed": 32,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 154
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0001",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11",
+        "src/Incursa.Quic/QuicPacketParsing.cs:24"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:15",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:24",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:10",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:83",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:15",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:57",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:93"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0001",
+        "REQ-QUIC-HDR-0003",
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Rewrote in-scope classification and short-header rejection traits to the imported RFC 8999 requirement ID."
+      ],
+      "remaining_gap": null,
+      "notes": "Out-of-scope short-header-only tests still use a legacy ID and are deferred to the RFC 9000 short-header reconciliation pass."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0002",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:28",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:36",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:35"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:39",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:14",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:30",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:71",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:15",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:57",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0002",
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Rewrote preserved-control-bit traits to the imported RFC 8999 requirement ID."
+      ],
+      "remaining_gap": null,
+      "notes": "The implementation intentionally preserves these bits as opaque version-specific state rather than interpreting them."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0003",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:29",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:41",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:40"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:14",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:64",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:30",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:71",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:15",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:57",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0003",
+        "REQ-QUIC-HDR-0006",
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Rewrote version-field traits to the imported RFC 8999 requirement ID."
+      ],
+      "remaining_gap": null,
+      "notes": "Coverage includes ordinary long headers and the Version Negotiation `version == 0` case."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0004",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:31",
+        "src/Incursa.Quic/QuicPacketParsing.cs:45"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:14",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:115",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:30",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:71",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:15",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:57",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0003",
+        "REQ-QUIC-HDR-0004",
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Rewrote destination-length traits to the imported RFC 8999 requirement ID.",
+        "Added explicit maximum-length coverage through the new max-length long-header test."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser reads the length as an 8-bit wire value at offset 5."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0005",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:45",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:56",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:55"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:14",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:115",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:30",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:71",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:15",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:57",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0005",
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Rewrote destination-size traits to the imported RFC 8999 requirement ID.",
+        "Added explicit 255-byte Destination Connection ID coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "Property and fuzz coverage already exercised zero-length IDs; this pass added the upper bound."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0006",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:33",
+        "src/Incursa.Quic/QuicPacketParsing.cs:39"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:14",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:95",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:115",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:30",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:71",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:15",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:57",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0004",
+        "REQ-QUIC-HDR-0006",
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Rewrote source-length traits to the imported RFC 8999 requirement ID."
+      ],
+      "remaining_gap": null,
+      "notes": "Negative coverage explicitly checks the missing Source Connection ID length byte path."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0007",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:66",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:65"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:14",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:115",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:30",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:71",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:15",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:57",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0006",
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Rewrote source-size traits to the imported RFC 8999 requirement ID.",
+        "Added explicit 255-byte Source Connection ID coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "Property and fuzz coverage already exercised zero-length IDs; this pass added the upper bound."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0008",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:47",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:71",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:70"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:14",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:115",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:30",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:71",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:15",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:57",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Rewrote version-specific remainder traits to the imported RFC 8999 requirement ID.",
+        "Extended explicit coverage through the new maximum-length long-header test."
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packet tests also exercise the shared opaque trailing-data behavior for this chunk."
+    }
+  ]
+}

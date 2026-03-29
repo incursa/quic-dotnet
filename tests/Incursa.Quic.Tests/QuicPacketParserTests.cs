@@ -5,12 +5,16 @@ public sealed class QuicPacketParserTests
     public static TheoryData<byte[], QuicHeaderForm> HeaderFormCases => new()
     {
         { QuicHeaderTestData.BuildLongHeader(0x12, 0x01020304, [0x11], [0x22], [0x33]), QuicHeaderForm.Long },
-        { QuicHeaderTestData.BuildShortHeader(0x34, [0xAA, 0xBB, 0xCC]), QuicHeaderForm.Short },
+        { QuicHeaderTestData.BuildShortHeader(0x24, [0xAA, 0xBB, 0xCC]), QuicHeaderForm.Short },
     };
 
     [Theory]
     [MemberData(nameof(HeaderFormCases))]
-    [Trait("Requirement", "REQ-QUIC-HDR-0001")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0012")]
     [Trait("Category", "Positive")]
     public void TryClassifyHeaderForm_UsesTheFirstByteHighBit(byte[] packet, QuicHeaderForm expectedForm)
     {
@@ -19,7 +23,6 @@ public sealed class QuicPacketParserTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0001")]
     [Trait("Category", "Negative")]
     public void TryClassifyHeaderForm_RejectsEmptyInput()
     {
@@ -29,12 +32,29 @@ public sealed class QuicPacketParserTests
     public static TheoryData<byte[], byte, bool> HeaderControlBitCases => new()
     {
         { QuicHeaderTestData.BuildLongHeader(0x55, 0x01020304, [0x11, 0x12], [0x21], [0x31, 0x32]), 0x55, true },
-        { QuicHeaderTestData.BuildShortHeader(0x66, [0x41, 0x42, 0x43]), 0x66, false },
+        { QuicHeaderTestData.BuildShortHeader(0x27, [0x41, 0x42, 0x43]), 0x67, false },
     };
 
     [Theory]
     [MemberData(nameof(HeaderControlBitCases))]
-    [Trait("Requirement", "REQ-QUIC-HDR-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0016")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0016")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0017")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0015")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0019")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0020")]
     [Trait("Category", "Positive")]
     public void TryParseHeader_PreservesTheSevenControlBits(byte[] packet, byte expectedControlBits, bool isLongHeader)
     {
@@ -42,10 +62,16 @@ public sealed class QuicPacketParserTests
         {
             Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket longHeader));
             Assert.Equal(expectedControlBits, longHeader.HeaderControlBits);
+            Assert.Equal((byte)(expectedControlBits & 0x03), longHeader.PacketNumberLengthBits);
             return;
         }
 
         Assert.True(QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket shortHeader));
         Assert.Equal(expectedControlBits, shortHeader.HeaderControlBits);
+        Assert.True(shortHeader.FixedBit);
+        Assert.Equal((expectedControlBits & 0x20) != 0, shortHeader.SpinBit);
+        Assert.Equal((byte)((expectedControlBits & 0x18) >> 3), shortHeader.ReservedBits);
+        Assert.Equal((expectedControlBits & 0x04) != 0, shortHeader.KeyPhase);
+        Assert.Equal((byte)(expectedControlBits & 0x03), shortHeader.PacketNumberLengthBits);
     }
 }

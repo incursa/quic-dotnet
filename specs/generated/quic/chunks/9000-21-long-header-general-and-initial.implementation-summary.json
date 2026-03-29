@@ -1,0 +1,661 @@
+{
+  "chunk_id": "9000-21-long-header-general-and-initial",
+  "rfc": "9000",
+  "section_tokens": [
+    "S17",
+    "S17P1",
+    "S17P2"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests\"",
+    "result": "Passed",
+    "summary": "38 passed, 0 failed, 0 skipped"
+  },
+  "notes": "This pass closed the long-header fixed-bit and bitfield exposure gaps; packet-number, packet-protection, and Version Negotiation formation work remain open.",
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9000-S17P1-0001",
+    "REQ-QUIC-RFC9000-S17P1-0002",
+    "REQ-QUIC-RFC9000-S17P1-0003",
+    "REQ-QUIC-RFC9000-S17P1-0004",
+    "REQ-QUIC-RFC9000-S17P2-0010",
+    "REQ-QUIC-RFC9000-S17P2-0011",
+    "REQ-QUIC-RFC9000-S17P2-0022",
+    "REQ-QUIC-RFC9000-S17P2-0026",
+    "REQ-QUIC-RFC9000-S17P2-0028",
+    "REQ-QUIC-RFC9000-S17P2-0029",
+    "REQ-QUIC-RFC9000-S17P2-0030",
+    "REQ-QUIC-RFC9000-S17P2-0031",
+    "REQ-QUIC-RFC9000-S17P2-0032",
+    "REQ-QUIC-RFC9000-S17P2-0033"
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11-20",
+        "src/Incursa.Quic/QuicPacketParsing.cs:23-29",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-25"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:11-26",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:7-26",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0001"
+      ],
+      "remaining_gap": null,
+      "notes": "Big-endian numeric ordering is exercised via the parser and test-data builders."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11-20",
+        "src/Incursa.Quic/QuicPacketParsing.cs:23-25",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-36"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:11-26",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:7-26",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0001"
+      ],
+      "remaining_gap": null,
+      "notes": "Header-form classification is shared across the parser and long-header tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11-20",
+        "src/Incursa.Quic/QuicPacketParsing.cs:23-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-71",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-52"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:11-26",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:7-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0003"
+      ],
+      "remaining_gap": null,
+      "notes": "Version parsing is shared by the parser, packet model, and builders."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0006",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11-20",
+        "src/Incursa.Quic/QuicPacketParsing.cs:23-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-71",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-52"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:11-26",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:7-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0004"
+      ],
+      "remaining_gap": null,
+      "notes": "Destination CID length-byte parsing is direct and round-tripped."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0007",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11-20",
+        "src/Incursa.Quic/QuicPacketParsing.cs:23-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-71",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-52"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:11-26",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:7-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0005"
+      ],
+      "remaining_gap": null,
+      "notes": "Version 1 is capped at 20 bytes and non-v1 long headers still exercise longer CID reads."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0008",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11-20",
+        "src/Incursa.Quic/QuicPacketParsing.cs:23-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-71",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-52"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:11-26",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:7-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0006"
+      ],
+      "remaining_gap": null,
+      "notes": "Source CID length-byte parsing is direct and round-tripped."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0009",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11-20",
+        "src/Incursa.Quic/QuicPacketParsing.cs:23-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-71",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-52"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:11-26",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:7-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0006"
+      ],
+      "remaining_gap": null,
+      "notes": "Source CID slicing follows the encoded length and the non-v1 long-CID test still passes."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0012",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11-20",
+        "src/Incursa.Quic/QuicPacketParsing.cs:23-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-71",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-52"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:35-50",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The long-header envelope is parsed and the control bits are preserved."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0013",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11-20",
+        "src/Incursa.Quic/QuicPacketParsing.cs:23-25",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-36"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:11-26",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:79-90",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:7-26",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0001",
+        "REQ-QUIC-HDR-0003"
+      ],
+      "remaining_gap": null,
+      "notes": "The first-byte high bit is used to classify long headers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0017",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:23-29",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:41-46",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:37-45"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:62-77",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:69-102",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:47-97"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0006"
+      ],
+      "remaining_gap": null,
+      "notes": "Version zero maps to the Version Negotiation parse state."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0018",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:31-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:50-71",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-35"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:49-107",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0004"
+      ],
+      "remaining_gap": null,
+      "notes": "The destination CID field is sliced using the encoded length."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0019",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:31-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:50-71",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-35"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:49-107",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0004"
+      ],
+      "remaining_gap": null,
+      "notes": "The destination CID length remains an 8-bit wire value."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0023",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:31-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:50-71",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-35"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:49-107",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0003"
+      ],
+      "remaining_gap": null,
+      "notes": "The destination CID field is sliced using the encoded length."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0024",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:31-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:50-71",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-35"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:49-107",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0004"
+      ],
+      "remaining_gap": null,
+      "notes": "The source CID length byte is read after the destination CID field."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0025",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:31-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:50-71",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-35"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:49-107",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0004"
+      ],
+      "remaining_gap": null,
+      "notes": "The source CID field is sliced using the encoded length."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0020",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:31-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:54-56",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-25"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:133-170"
+      ],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": null,
+      "notes": "Version 1 long headers with a destination CID up to 20 bytes are accepted."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0021",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:31-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:54-56",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-25"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:133-170"
+      ],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": null,
+      "notes": "Version 1 long headers with a destination CID longer than 20 bytes are rejected."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0022",
+      "completion_status": "tested but implementation mapping unclear",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:31-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:54-56",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-25"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:110-130"
+      ],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The parser can read longer non-v1 CIDs, but there is no server-side Version Negotiation formation path in this repo.",
+      "notes": "Parser-side only capability proof for longer connection IDs on non-v1 packets."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:28-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:36",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:35",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:69-72"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:35-50",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The fixed bit is validated for non-Version Negotiation long headers and exposed on the packet view."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:28-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:36",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:35",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:69-72"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:35-50",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The long packet type bits are surfaced as a dedicated `LongPacketTypeBits` property."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:28-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:36",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:35",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:69-72"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:35-50",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The 4-bit type-specific field is surfaced as a dedicated `TypeSpecificBits` property."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0014",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:28-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:36",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:35",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:69-72"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:35-50",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "Non-Version Negotiation long headers now enforce the fixed-bit requirement, while version-zero packets remain parsable as Version Negotiation state."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0015",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:28-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:36",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:35",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:69-72"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:35-50",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "Packets with a zero fixed bit are discarded unless they are Version Negotiation packets."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0016",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:28-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:36",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:35",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:69-72"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:35-50",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The packet-type bits are extracted and exposed without changing the preserved header-control bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0026",
+      "completion_status": "partially implemented",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:28-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:36",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:35",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:69-72"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:35-50",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0002"
+      ],
+      "remaining_gap": "The later packet-type-specific long-header fields are not parsed in this chunk.",
+      "notes": "Trailing version-specific bytes are preserved as opaque data."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0027",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:28-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:36",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:35",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:69-72"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:35-50",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-HDR-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The reserved bits are surfaced as a dedicated `ReservedBits` property; enforcement remains deferred to later packet-protection work."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P1-0001",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No packet-number encoding surface exists.",
+      "notes": "No live packet-number surface exists under src, tests, or benchmarks."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P1-0002",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No packet-number-space acknowledgement state exists.",
+      "notes": "No live packet-number surface exists under src, tests, or benchmarks."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P1-0003",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sender-side packet-number sizing policy exists.",
+      "notes": "No live packet-number surface exists under src, tests, or benchmarks."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P1-0004",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No packet-number recovery heuristic exists.",
+      "notes": "No live packet-number surface exists under src, tests, or benchmarks."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0010",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sender-path logic for pre-1-RTT packet selection.",
+      "notes": "The repository currently has no packet-protection phase."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0011",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sender-path logic for switching to short headers after 1-RTT keys.",
+      "notes": "The repository currently has no packet-protection phase."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0028",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No encoder or protection stage zeroes the pre-protection value.",
+      "notes": "The repository currently has no packet-protection phase."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0029",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No post-protection protocol-error path.",
+      "notes": "The repository currently has no packet-protection phase."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0031",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-number field parsing and encoding do not exist.",
+      "notes": "The repository currently has no packet-protection phase."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0032",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-number length handling is absent.",
+      "notes": "The repository currently has no packet-protection phase."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0033",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-number length bits are not modeled.",
+      "notes": "The repository currently has no packet-protection phase."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0030",
+      "completion_status": "unclear / needs human review",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:28-35",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:36"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:69-72",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:28-54"
+      ],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No packet-protection stage exists, so this security note cannot be closed by local code or tests alone.",
+      "notes": "Security guidance only; treat as a review item until packet protection exists."
+    }
+  ]
+}

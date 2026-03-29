@@ -3,9 +3,15 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicVersionNegotiationPacketTests
 {
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0008")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0009")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0019")]
     [Trait("Category", "Positive")]
     public void TryParseVersionNegotiation_ExposesSupportedVersions()
     {
@@ -49,7 +55,6 @@ public sealed class QuicVersionNegotiationPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0010")]
     [Trait("Category", "Negative")]
     public void TryParseVersionNegotiation_RejectsNegativeSupportedVersionIndex()
     {
@@ -75,7 +80,6 @@ public sealed class QuicVersionNegotiationPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0010")]
     [Trait("Category", "Negative")]
     public void TryParseVersionNegotiation_RejectsEmptyInput()
     {
@@ -83,7 +87,7 @@ public sealed class QuicVersionNegotiationPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0003")]
     [Trait("Category", "Negative")]
     public void TryParseVersionNegotiation_RejectsShortHeaderForm()
     {
@@ -95,7 +99,6 @@ public sealed class QuicVersionNegotiationPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0010")]
     [Trait("Category", "Negative")]
     public void TryParseVersionNegotiation_RejectsPacketsWithoutSupportedVersions()
     {
@@ -112,7 +115,6 @@ public sealed class QuicVersionNegotiationPacketTests
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    [Trait("Requirement", "REQ-QUIC-HDR-0010")]
     [Trait("Category", "Negative")]
     public void TryParseVersionNegotiation_RejectsTruncatedSupportedVersions(int truncateBy)
     {
@@ -128,7 +130,7 @@ public sealed class QuicVersionNegotiationPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0005")]
     [Trait("Category", "Negative")]
     public void TryParseVersionNegotiation_RejectsOrdinaryLongHeaders()
     {

@@ -5,7 +5,16 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicHeaderPropertyTests
 {
     [Property(Arbitrary = new[] { typeof(QuicHeaderPropertyGenerators) })]
-    [Trait("Requirement", "REQ-QUIC-HDR-0001")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Trait("Category", "Property")]
     public void TryClassifyHeaderForm_UsesTheFirstByteHighBit(HeaderFormPacket packet)
     {
@@ -19,10 +28,26 @@ public sealed class QuicHeaderPropertyTests
     }
 
     [Property(Arbitrary = new[] { typeof(QuicHeaderPropertyGenerators) })]
-    [Trait("Requirement", "REQ-QUIC-HDR-0002")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0003")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0005")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0016")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0001")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0011")]
     [Trait("Category", "Property")]
     public void TryParseLongHeader_RoundTripsHeaderFields(LongHeaderScenario scenario)
     {
@@ -35,6 +60,11 @@ public sealed class QuicHeaderPropertyTests
 
         Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
         Assert.Equal((byte)(scenario.HeaderControlBits & 0x7F), header.HeaderControlBits);
+        Assert.True(header.FixedBit);
+        Assert.Equal((byte)((scenario.HeaderControlBits & 0x30) >> 4), header.LongPacketTypeBits);
+        Assert.Equal((byte)(scenario.HeaderControlBits & 0x03), header.PacketNumberLengthBits);
+        Assert.Equal((byte)(scenario.HeaderControlBits & 0x0F), header.TypeSpecificBits);
+        Assert.Equal((byte)((scenario.HeaderControlBits & 0x0C) >> 2), header.ReservedBits);
         Assert.Equal(scenario.Version, header.Version);
         Assert.Equal(scenario.Version == 0, header.IsVersionNegotiation);
         Assert.True(scenario.DestinationConnectionId.AsSpan().SequenceEqual(header.DestinationConnectionId));
@@ -43,7 +73,18 @@ public sealed class QuicHeaderPropertyTests
     }
 
     [Property(Arbitrary = new[] { typeof(QuicHeaderPropertyGenerators) })]
-    [Trait("Requirement", "REQ-QUIC-HDR-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0012")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0015")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0016")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0017")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0019")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0020")]
     [Trait("Category", "Property")]
     public void TryParseShortHeader_PreservesOpaqueRemainder(ShortHeaderScenario scenario)
     {
@@ -52,13 +93,24 @@ public sealed class QuicHeaderPropertyTests
         Assert.True(QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket header));
         Assert.Equal(QuicHeaderForm.Short, header.HeaderForm);
         Assert.Equal(scenario.HeaderControlBits, header.HeaderControlBits);
+        Assert.True(header.FixedBit);
+        Assert.Equal((scenario.HeaderControlBits & 0x20) != 0, header.SpinBit);
+        Assert.Equal((byte)((scenario.HeaderControlBits & 0x18) >> 3), header.ReservedBits);
+        Assert.Equal((scenario.HeaderControlBits & 0x04) != 0, header.KeyPhase);
+        Assert.Equal((byte)(scenario.HeaderControlBits & 0x03), header.PacketNumberLengthBits);
         Assert.True(scenario.Remainder.AsSpan().SequenceEqual(header.Remainder));
     }
 
     [Property(Arbitrary = new[] { typeof(QuicHeaderPropertyGenerators) })]
-    [Trait("Requirement", "REQ-QUIC-HDR-0008")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0009")]
-    [Trait("Requirement", "REQ-QUIC-HDR-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0019")]
     [Trait("Category", "Property")]
     public void TryParseVersionNegotiation_RoundTripsSupportedVersions(VersionNegotiationScenario scenario)
     {

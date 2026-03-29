@@ -1,0 +1,461 @@
+{
+  "chunk_id": "9001-01-tls-core",
+  "rfc": "9001",
+  "section_tokens": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.md",
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+    "passed": 106,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 155
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S2-0001",
+      "status": "unclear / needs human review",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Document-level BCP 14 interpretation rule; no live code/test artifact is expected in the current repo.",
+      "notes": "Spec-level rule only; treat as document-only until a canonical artifact is defined."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0009",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0010",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0011",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0012",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0009",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0010",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0011",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0009",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0010",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0009",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0010",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
+      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+    }
+  ]
+}

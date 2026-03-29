@@ -25,6 +25,31 @@ public readonly ref struct QuicShortHeaderPacket
     public byte HeaderControlBits => headerControlBits;
 
     /// <summary>
+    /// Gets whether the fixed bit is set in byte 0.
+    /// </summary>
+    public bool FixedBit => (headerControlBits & 0x40) != 0;
+
+    /// <summary>
+    /// Gets whether the spin bit is set in byte 0.
+    /// </summary>
+    public bool SpinBit => (headerControlBits & 0x20) != 0;
+
+    /// <summary>
+    /// Gets the reserved bits from byte 0.
+    /// </summary>
+    public byte ReservedBits => (byte)((headerControlBits & 0x18) >> 3);
+
+    /// <summary>
+    /// Gets whether the key phase bit is set in byte 0.
+    /// </summary>
+    public bool KeyPhase => (headerControlBits & 0x04) != 0;
+
+    /// <summary>
+    /// Gets the packet number length bits from byte 0.
+    /// </summary>
+    public byte PacketNumberLengthBits => (byte)(headerControlBits & 0x03);
+
+    /// <summary>
     /// Gets the bytes after the first byte as an opaque remainder.
     /// </summary>
     public ReadOnlySpan<byte> Remainder => remainder;

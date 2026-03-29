@@ -1,0 +1,1613 @@
+{
+  "summary": {
+    "chunk_id": "9000-23-retry-version-short-header",
+    "rfc": 9000,
+    "section_tokens": [
+      "S17P2P4",
+      "S17P2P5",
+      "S17P2P5P1",
+      "S17P2P5P2",
+      "S17P2P5P3",
+      "S17P3",
+      "S17P3P1",
+      "S17P4"
+    ],
+    "counts": {
+      "total": 96,
+      "implemented_and_tested": 14,
+      "tested_but_implementation_mapping_unclear": 20,
+      "not_implemented": 62
+    },
+    "changed_files": [
+      "src/Incursa.Quic/QuicPacketParser.cs",
+      "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+      "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+      "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+    ],
+    "tests_run": [
+      "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicShortHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicLongHeaderPacketTests\"",
+      "Result: 63 passed, 0 failed, 0 skipped"
+    ]
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Handshake packet type 0x02, packet-number parsing, frame validation, and connection-error behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0002",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Handshake packet type 0x02, packet-number parsing, frame validation, and connection-error behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0004",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0005",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0006",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0007",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0008",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0009",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0010",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0011",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0012",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0013",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0014",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0015",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Handshake packet type 0x02, packet-number parsing, frame validation, and connection-error behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0016",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Handshake packet type 0x02, packet-number parsing, frame validation, and connection-error behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0017",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Handshake packet type 0x02, packet-number parsing, frame validation, and connection-error behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0018",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Handshake packet type 0x02, packet-number parsing, frame validation, and connection-error behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0019",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Handshake packet type 0x02, packet-number parsing, frame validation, and connection-error behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0020",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Handshake packet type 0x02, packet-number parsing, frame validation, and connection-error behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0021",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Handshake packet type 0x02, packet-number parsing, frame validation, and connection-error behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0003",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0004",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0005",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0006",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0007",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0008",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0009",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0010",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0011",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0012",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0013",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0014",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0015",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5-0016",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Server Retry generation behavior is not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Server Retry generation behavior is not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Server Retry generation behavior is not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Server Retry generation behavior is not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Server Retry generation behavior is not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Server Retry generation behavior is not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Server Retry generation behavior is not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Server Retry generation behavior is not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Client Retry processing and token-bearing Initial re-send behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Client Retry processing and token-bearing Initial re-send behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Client Retry processing and token-bearing Initial re-send behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Client Retry processing and token-bearing Initial re-send behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Client Retry processing and token-bearing Initial re-send behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Client Retry processing and token-bearing Initial re-send behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Client Retry processing and token-bearing Initial re-send behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Client Retry processing and token-bearing Initial re-send behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0009",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Client Retry processing and token-bearing Initial re-send behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3-0001",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicPacketParsing.cs",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet.",
+      "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "1-RTT packet number parsing and the short-header payload/state machine are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "1-RTT packet number parsing and the short-header payload/state machine are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0003",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0004",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0005",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0006",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0007",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0008",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0009",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "1-RTT packet number parsing and the short-header payload/state machine are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0010",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "1-RTT packet number parsing and the short-header payload/state machine are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0011",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "1-RTT packet number parsing and the short-header payload/state machine are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0012",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0013",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0014",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0015",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0016",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": null,
+      "notes": "Short-header reserved bits are now normalized in valid inputs and rejected when non-zero.",
+      "completion_status": "implemented and tested"
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": null,
+      "notes": "Short-header reserved bits are now normalized in valid inputs and rejected when non-zero.",
+      "completion_status": "implemented and tested"
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0018",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "1-RTT packet number parsing and the short-header payload/state machine are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0019",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0020",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "changes_made": [
+        "Added short-header bitfield accessors and fixed-bit validation.",
+        "Updated test helpers to generate valid short headers.",
+        "Retagged the short-header tests to canonical RFC 9000 requirement IDs."
+      ],
+      "remaining_gap": "",
+      "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0021",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "1-RTT packet number parsing and the short-header payload/state machine are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0022",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "1-RTT packet number parsing and the short-header payload/state machine are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0023",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "1-RTT packet number parsing and the short-header payload/state machine are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0009",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0010",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet.",
+      "notes": "No direct implementation or test evidence in the current chunk."
+    }
+  ]
+}

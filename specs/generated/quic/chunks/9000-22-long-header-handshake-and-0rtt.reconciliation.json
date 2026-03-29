@@ -1,0 +1,2510 @@
+{
+  "chunk_id": "9000-22-long-header-handshake-and-0rtt",
+  "rfc": "9000",
+  "section_tokens": [
+    "S17P2P1",
+    "S17P2P2",
+    "S17P2P3"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests\"",
+    "passed": 40,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 160
+  },
+  "notes": "This pass closed the long-header packet-number-length field exposure gap and rewrote the in-scope tests to canonical RFC 9000 section-specific IDs. Packet-number, token-length, Length, Initial/0-RTT sender behavior, and packet-protection work remain open.",
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9000-S17P2P1-0001",
+    "REQ-QUIC-RFC9000-S17P2P1-0002",
+    "REQ-QUIC-RFC9000-S17P2P1-0010",
+    "REQ-QUIC-RFC9000-S17P2P1-0011",
+    "REQ-QUIC-RFC9000-S17P2P1-0012",
+    "REQ-QUIC-RFC9000-S17P2P1-0014",
+    "REQ-QUIC-RFC9000-S17P2P1-0015",
+    "REQ-QUIC-RFC9000-S17P2P1-0016",
+    "REQ-QUIC-RFC9000-S17P2P1-0017",
+    "REQ-QUIC-RFC9000-S17P2P1-0018",
+    "REQ-QUIC-RFC9000-S17P2P1-0020",
+    "REQ-QUIC-RFC9000-S17P2P2-0009",
+    "REQ-QUIC-RFC9000-S17P2P2-0011",
+    "REQ-QUIC-RFC9000-S17P2P2-0012",
+    "REQ-QUIC-RFC9000-S17P2P2-0013",
+    "REQ-QUIC-RFC9000-S17P2P2-0014",
+    "REQ-QUIC-RFC9000-S17P2P2-0015",
+    "REQ-QUIC-RFC9000-S17P2P2-0017",
+    "REQ-QUIC-RFC9000-S17P2P2-0018",
+    "REQ-QUIC-RFC9000-S17P2P2-0019",
+    "REQ-QUIC-RFC9000-S17P2P2-0020",
+    "REQ-QUIC-RFC9000-S17P2P2-0021",
+    "REQ-QUIC-RFC9000-S17P2P2-0022",
+    "REQ-QUIC-RFC9000-S17P2P2-0023",
+    "REQ-QUIC-RFC9000-S17P2P2-0024",
+    "REQ-QUIC-RFC9000-S17P2P2-0025",
+    "REQ-QUIC-RFC9000-S17P2P2-0026",
+    "REQ-QUIC-RFC9000-S17P2P3-0001",
+    "REQ-QUIC-RFC9000-S17P2P3-0003",
+    "REQ-QUIC-RFC9000-S17P2P3-0004",
+    "REQ-QUIC-RFC9000-S17P2P3-0011",
+    "REQ-QUIC-RFC9000-S17P2P3-0012",
+    "REQ-QUIC-RFC9000-S17P2P3-0014",
+    "REQ-QUIC-RFC9000-S17P2P3-0015",
+    "REQ-QUIC-RFC9000-S17P2P3-0016",
+    "REQ-QUIC-RFC9000-S17P2P3-0017",
+    "REQ-QUIC-RFC9000-S17P2P3-0018",
+    "REQ-QUIC-RFC9000-S17P2P3-0019",
+    "REQ-QUIC-RFC9000-S17P2P3-0020",
+    "REQ-QUIC-RFC9000-S17P2P3-0021",
+    "REQ-QUIC-RFC9000-S17P2P3-0022",
+    "REQ-QUIC-RFC9000-S17P2P3-0023"
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0001",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No Version Negotiation emission, ACK, or retry-handling path exists.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0002",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No Version Negotiation emission, ACK, or retry-handling path exists.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0003",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0004",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0005",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0006",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0007",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0008",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0009",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0010",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
+      ],
+      "remaining_gap": "No Version Negotiation sender/client behavior exists in this repository; these tests only prove parser-side preservation of the unused bits.",
+      "notes": "The parser preserves arbitrary unused-bit values, but the repository has no VN emitter or client reaction logic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0011",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
+      ],
+      "remaining_gap": "No Version Negotiation sender/client behavior exists in this repository; these tests only prove parser-side preservation of the unused bits.",
+      "notes": "The parser preserves arbitrary unused-bit values, but the repository has no VN emitter or client reaction logic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0012",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No Version Negotiation emission, ACK, or retry-handling path exists.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0013",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0014",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No Version Negotiation emission, ACK, or retry-handling path exists.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0015",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No Version Negotiation emission, ACK, or retry-handling path exists.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0016",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No Version Negotiation emission, ACK, or retry-handling path exists.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0017",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No Version Negotiation emission, ACK, or retry-handling path exists.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0018",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No Version Negotiation emission, ACK, or retry-handling path exists.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0019",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "changes_made": [
+        "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0020",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:73-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-85",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:16-57",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:102-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:88-105",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:65-97",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No Version Negotiation emission, ACK, or retry-handling path exists.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0001",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0002",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0003",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0004",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0005",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0006",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0007",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0008",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0009",
+      "status": "partially implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "The parser slices the CID bytes but does not enforce the Initial 160-bit CID cap because it does not model Initial packet types separately.",
+      "notes": "CID bytes are parsed, but packet-type-specific 160-bit limits are not enforced."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0010",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0011",
+      "status": "partially implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "The parser slices the CID bytes but does not enforce the Initial 160-bit CID cap because it does not model Initial packet types separately.",
+      "notes": "CID bytes are parsed, but packet-type-specific 160-bit limits are not enforced."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0012",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0013",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0014",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0015",
+      "status": "partially implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "The parser stops after the source CID and leaves the rest as opaque data; Initial Length and Packet Number fields are not decoded.",
+      "notes": "The long-header view does not model Initial Length or Packet Number fields."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0016",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0017",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0018",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0019",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0020",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0021",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0022",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0023",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0024",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0025",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0026",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "Token Length, Length, Packet Number, and Initial payload semantics are absent.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0001",
+      "status": "partially implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "The parser exposes the 0-RTT envelope bits, but it does not model the 0-RTT Length and Packet Number fields or enforce the 160-bit CID cap.",
+      "notes": "0-RTT-specific length, packet-number, and CID-cap behavior remains unmodeled."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0002",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the 0-RTT envelope bits, including packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0003",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "0-RTT payload, resend, ACK, and packet-protection semantics are absent.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0004",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "0-RTT payload, resend, ACK, and packet-protection semantics are absent.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0005",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the 0-RTT envelope bits, including packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0006",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the 0-RTT envelope bits, including packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0007",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the 0-RTT envelope bits, including packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0008",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the 0-RTT envelope bits, including packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0009",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the 0-RTT envelope bits, including packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0010",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the 0-RTT envelope bits, including packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0011",
+      "status": "partially implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "The parser exposes the 0-RTT envelope bits, but it does not model the 0-RTT Length and Packet Number fields or enforce the 160-bit CID cap.",
+      "notes": "0-RTT-specific length, packet-number, and CID-cap behavior remains unmodeled."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0012",
+      "status": "partially implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "The parser exposes the 0-RTT envelope bits, but it does not model the 0-RTT Length and Packet Number fields or enforce the 160-bit CID cap.",
+      "notes": "0-RTT-specific length, packet-number, and CID-cap behavior remains unmodeled."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0013",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the 0-RTT envelope bits, including packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0014",
+      "status": "partially implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "The parser exposes the 0-RTT envelope bits, but it does not model the 0-RTT Length and Packet Number fields or enforce the 160-bit CID cap.",
+      "notes": "0-RTT-specific length, packet-number, and CID-cap behavior remains unmodeled."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0015",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "0-RTT payload, resend, ACK, and packet-protection semantics are absent.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0016",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "0-RTT payload, resend, ACK, and packet-protection semantics are absent.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0017",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "0-RTT payload, resend, ACK, and packet-protection semantics are absent.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0018",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "0-RTT payload, resend, ACK, and packet-protection semantics are absent.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0019",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "0-RTT payload, resend, ACK, and packet-protection semantics are absent.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0020",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "0-RTT payload, resend, ACK, and packet-protection semantics are absent.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0021",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "0-RTT payload, resend, ACK, and packet-protection semantics are absent.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0022",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "0-RTT payload, resend, ACK, and packet-protection semantics are absent.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0023",
+      "status": "not implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-68"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:17-90",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-171",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:19-61",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-61",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-56"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-RFC9000-S17P2-0001",
+        "REQ-QUIC-RFC9000-S17P2-0002",
+        "REQ-QUIC-RFC9000-S17P2-0003",
+        "REQ-QUIC-RFC9000-S17P2-0013",
+        "REQ-QUIC-RFC9000-S17P2-0014",
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P2-0016",
+        "REQ-QUIC-RFC9000-S17P2-0017",
+        "REQ-QUIC-RFC9000-S17P2-0018",
+        "REQ-QUIC-RFC9000-S17P2-0019",
+        "REQ-QUIC-RFC9000-S17P2-0023",
+        "REQ-QUIC-RFC9000-S17P2-0024",
+        "REQ-QUIC-RFC9000-S17P2-0025",
+        "REQ-QUIC-RFC9000-S17P2-0026",
+        "REQ-QUIC-RFC9000-S17P2-0027"
+      ],
+      "changes_made": [
+        "Retagged shared long-header tests to canonical Initial / 0-RTT IDs and added PacketNumberLengthBits coverage."
+      ],
+      "remaining_gap": "0-RTT payload, resend, ACK, and packet-protection semantics are absent.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    }
+  ]
+}

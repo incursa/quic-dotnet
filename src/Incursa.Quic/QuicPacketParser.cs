@@ -37,6 +37,23 @@ public static class QuicPacketParser
             return false;
         }
 
+        if (version != 0 && (headerControlBits & 0x40) == 0)
+        {
+            header = default;
+            return false;
+        }
+
+        if (!QuicPacketParsing.TryValidateVersionSpecificLongHeaderFields(
+            headerControlBits,
+            version,
+            destinationConnectionId.Length,
+            sourceConnectionId.Length,
+            versionSpecificData))
+        {
+            header = default;
+            return false;
+        }
+
         header = new QuicLongHeaderPacket(
             headerControlBits,
             version,
@@ -51,7 +68,7 @@ public static class QuicPacketParser
     /// </summary>
     public static bool TryParseShortHeader(ReadOnlySpan<byte> packet, out QuicShortHeaderPacket header)
     {
-        if (packet.IsEmpty || (packet[0] & 0x80) != 0)
+        if (packet.IsEmpty || (packet[0] & 0x80) != 0 || (packet[0] & 0x40) == 0 || (packet[0] & 0x18) != 0)
         {
             header = default;
             return false;

@@ -1,0 +1,178 @@
+{
+  "chunk_id": "8999-01-invariants",
+  "rfc": "8999",
+  "section_tokens": [
+    "S5P1"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC8999.md",
+  "audit_result": "clean",
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+    "result": "Passed",
+    "summary": "106 passed, 0 failed, 0 skipped"
+  },
+  "code_requirement_refs": [],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0001",
+      "status": "covered",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11-19"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_RejectsEmptyInput",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsShortHeaderForm",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Header-form classification and long-header rejection paths use the canonical RFC 8999 trait."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0002",
+      "status": "covered",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:23-28",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-36"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The seven non-form bits are preserved as opaque header-control bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0003",
+      "status": "covered",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:29",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:41-46"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesZeroVersionAsVersionNegotiationState"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The version field is parsed as a 32-bit big-endian value and zero is surfaced as the Version Negotiation case."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0004",
+      "status": "covered",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:31-33",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:51-56"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Destination CID length decoding is exercised at normal, truncated, and maximum-length boundaries."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0005",
+      "status": "covered",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:46-47",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:51-56"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Destination CID bytes are preserved exactly and the maximum 255-byte boundary is covered."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0006",
+      "status": "covered",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:32-40",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:61-66"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Source CID length decoding is covered by normal, truncated, and maximum-length tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0007",
+      "status": "covered",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:40-47",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:61-66"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Source CID bytes are preserved exactly and the 255-byte upper bound is covered."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0008",
+      "status": "covered",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParsing.cs:47",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:71"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The trailing version-specific remainder is exposed as a span-backed view."
+    }
+  ],
+  "out_of_scope_legacy_refs": [
+    {
+      "file": "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+      "requirement_ids": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "status": "deferred_out_of_scope",
+      "note": "Short-header traits belong to the later RFC 9000 reconciliation pass, not the selected RFC 8999 S5P1 chunk."
+    },
+    {
+      "file": "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+      "requirement_ids": [
+        "REQ-QUIC-HDR-0007"
+      ],
+      "status": "deferred_out_of_scope",
+      "note": "The short-header property test in this mixed file belongs to the later RFC 9000 reconciliation pass, not the selected RFC 8999 S5P1 chunk."
+    },
+    {
+      "file": "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
+      "requirement_ids": [
+        "REQ-QUIC-HDR-0008",
+        "REQ-QUIC-HDR-0009",
+        "REQ-QUIC-HDR-0010"
+      ],
+      "status": "deferred_out_of_scope",
+      "note": "Version Negotiation traits belong to the later RFC 9000 reconciliation pass, not the selected RFC 8999 S5P1 chunk."
+    }
+  ],
+  "notes": [
+    "No requirement refs are present in src/Incursa.Quic for this chunk.",
+    "The in-scope test slice uses canonical RFC 8999 S5P1 requirement IDs only."
+  ]
+}

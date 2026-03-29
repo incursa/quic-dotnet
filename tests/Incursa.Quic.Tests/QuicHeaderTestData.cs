@@ -7,7 +7,7 @@ internal static class QuicHeaderTestData
     public static byte[] BuildShortHeader(byte headerControlBits, ReadOnlySpan<byte> remainder)
     {
         byte[] packet = new byte[1 + remainder.Length];
-        packet[0] = (byte)(headerControlBits & 0x7F);
+        packet[0] = (byte)(0x40 | (headerControlBits & 0x3F));
         remainder.CopyTo(packet.AsSpan(1));
         return packet;
     }
@@ -52,6 +52,51 @@ internal static class QuicHeaderTestData
         return BuildLongHeader(headerControlBits, 0, destinationConnectionId, sourceConnectionId, supportedVersionBytes);
     }
 
+    public static byte[] BuildInitialVersionSpecificData(
+        ReadOnlySpan<byte> token,
+        ReadOnlySpan<byte> packetNumber,
+        ReadOnlySpan<byte> protectedPayload)
+    {
+        byte[] tokenLengthBytes = EncodeVarint((ulong)token.Length);
+        byte[] payloadLengthBytes = EncodeVarint((ulong)(packetNumber.Length + protectedPayload.Length));
+        byte[] versionSpecificData = new byte[
+            tokenLengthBytes.Length
+            + token.Length
+            + payloadLengthBytes.Length
+            + packetNumber.Length
+            + protectedPayload.Length];
+
+        int offset = 0;
+        tokenLengthBytes.CopyTo(versionSpecificData, offset);
+        offset += tokenLengthBytes.Length;
+        token.CopyTo(versionSpecificData.AsSpan(offset));
+        offset += token.Length;
+        payloadLengthBytes.CopyTo(versionSpecificData, offset);
+        offset += payloadLengthBytes.Length;
+        packetNumber.CopyTo(versionSpecificData.AsSpan(offset));
+        offset += packetNumber.Length;
+        protectedPayload.CopyTo(versionSpecificData.AsSpan(offset));
+
+        return versionSpecificData;
+    }
+
+    public static byte[] BuildZeroRttVersionSpecificData(
+        ReadOnlySpan<byte> packetNumber,
+        ReadOnlySpan<byte> protectedPayload)
+    {
+        byte[] payloadLengthBytes = EncodeVarint((ulong)(packetNumber.Length + protectedPayload.Length));
+        byte[] versionSpecificData = new byte[payloadLengthBytes.Length + packetNumber.Length + protectedPayload.Length];
+
+        int offset = 0;
+        payloadLengthBytes.CopyTo(versionSpecificData, offset);
+        offset += payloadLengthBytes.Length;
+        packetNumber.CopyTo(versionSpecificData.AsSpan(offset));
+        offset += packetNumber.Length;
+        protectedPayload.CopyTo(versionSpecificData.AsSpan(offset));
+
+        return versionSpecificData;
+    }
+
     public static byte[] BuildTruncatedLongHeader(
         byte headerControlBits,
         uint version,
@@ -75,5 +120,12 @@ internal static class QuicHeaderTestData
         byte[] data = new byte[length];
         random.NextBytes(data);
         return data;
+    }
+
+    private static byte[] EncodeVarint(ulong value)
+    {
+        Span<byte> buffer = stackalloc byte[8];
+        Assert.True(QuicVariableLengthInteger.TryFormat(value, buffer, out int bytesWritten));
+        return buffer[..bytesWritten].ToArray();
     }
 }

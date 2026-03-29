@@ -31,8 +31,8 @@ internal static class QuicHeaderPropertyGenerators
     public static Arbitrary<LongHeaderScenario> LongHeaderScenario()
     {
         return Arb.ToArbitrary(
-            from headerControlBits in GenerateHeaderControlBits()
-            from version in GenerateUInt32()
+            from headerControlBits in GenerateLongHeaderControlBits()
+            from version in GenerateLongHeaderVersion()
             from destinationConnectionId in GenerateBytes(0, 8)
             from sourceConnectionId in GenerateBytes(0, 8)
             from versionSpecificData in GenerateBytes(0, 16)
@@ -68,7 +68,12 @@ internal static class QuicHeaderPropertyGenerators
 
     private static Gen<byte> GenerateHeaderControlBits()
     {
-        return GenerateByte().Select(value => (byte)(value & 0x7F));
+        return GenerateByte().Select(value => (byte)(0x40 | (value & 0x27)));
+    }
+
+    private static Gen<byte> GenerateLongHeaderControlBits()
+    {
+        return GenerateByte().Select(value => (byte)(0x40 | (value & 0x3F)));
     }
 
     private static Gen<byte[]> GenerateBytes(int minLength, int maxLength)
@@ -87,6 +92,14 @@ internal static class QuicHeaderPropertyGenerators
     private static Gen<uint> GenerateUInt32()
     {
         return Gen.Choose(int.MinValue, int.MaxValue).Select(value => unchecked((uint)value));
+    }
+
+    private static Gen<uint> GenerateLongHeaderVersion()
+    {
+        return Gen.OneOf(
+            Gen.Constant(0u),
+            Gen.Choose(2, int.MaxValue).Select(value => (uint)value),
+            Gen.Choose(int.MinValue, -1).Select(value => unchecked((uint)value)));
     }
 
     private static Gen<uint[]> GenerateSupportedVersions(int minLength, int maxLength)

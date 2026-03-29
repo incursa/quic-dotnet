@@ -11,6 +11,11 @@ Incursa.Quic.QuicLongHeaderPacket
 Incursa.Quic.QuicLongHeaderPacket.QuicLongHeaderPacket() -> void
 Incursa.Quic.QuicLongHeaderPacket.HeaderForm.get -> Incursa.Quic.QuicHeaderForm
 Incursa.Quic.QuicLongHeaderPacket.HeaderControlBits.get -> byte
+Incursa.Quic.QuicLongHeaderPacket.FixedBit.get -> bool
+Incursa.Quic.QuicLongHeaderPacket.LongPacketTypeBits.get -> byte
+Incursa.Quic.QuicLongHeaderPacket.PacketNumberLengthBits.get -> byte
+Incursa.Quic.QuicLongHeaderPacket.TypeSpecificBits.get -> byte
+Incursa.Quic.QuicLongHeaderPacket.ReservedBits.get -> byte
 Incursa.Quic.QuicLongHeaderPacket.Version.get -> uint
 Incursa.Quic.QuicLongHeaderPacket.IsVersionNegotiation.get -> bool
 Incursa.Quic.QuicLongHeaderPacket.DestinationConnectionId.get -> System.ReadOnlySpan<byte>
@@ -22,6 +27,11 @@ Incursa.Quic.QuicShortHeaderPacket
 Incursa.Quic.QuicShortHeaderPacket.QuicShortHeaderPacket() -> void
 Incursa.Quic.QuicShortHeaderPacket.HeaderForm.get -> Incursa.Quic.QuicHeaderForm
 Incursa.Quic.QuicShortHeaderPacket.HeaderControlBits.get -> byte
+Incursa.Quic.QuicShortHeaderPacket.FixedBit.get -> bool
+Incursa.Quic.QuicShortHeaderPacket.SpinBit.get -> bool
+Incursa.Quic.QuicShortHeaderPacket.ReservedBits.get -> byte
+Incursa.Quic.QuicShortHeaderPacket.KeyPhase.get -> bool
+Incursa.Quic.QuicShortHeaderPacket.PacketNumberLengthBits.get -> byte
 Incursa.Quic.QuicShortHeaderPacket.Remainder.get -> System.ReadOnlySpan<byte>
 Incursa.Quic.QuicVersionNegotiationPacket
 Incursa.Quic.QuicVersionNegotiationPacket.QuicVersionNegotiationPacket() -> void
