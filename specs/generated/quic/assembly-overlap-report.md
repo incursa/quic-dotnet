@@ -150,4 +150,3 @@ This report records overlap findings that were intentionally retained for review
 - RFC 9002 5-8: RFC9002-S7.*: congestion-control, ECN, recovery, and persistent-congestion rules overlap RFC 5681, RFC 3168, RFC 8311, RFC 8511, RFC 7661, RFC 8085, and RFC 9000 recovery semantics.
 - RFC 9002 9-end: Appendix A packet-tracking, RTT-estimation, loss-detection, and PTO behavior overlaps RFC 9000 transport recovery semantics and RFC 6298 timer behavior.
 - RFC 9002 9-end: Appendix B congestion-control, ECN, recovery, and persistent-congestion behavior overlaps RFC 5681, RFC 6675, RFC 6928, RFC 7661, RFC 8085, RFC 8311, RFC 8511, RFC 8985, and RFC 3168.
-
