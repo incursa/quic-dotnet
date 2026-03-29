@@ -1,0 +1,215 @@
+{
+  "rfc": "RFC 8999",
+  "spec_artifact_id": "SPEC-QUIC-RFC8999",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC8999.md",
+  "input_batches": [
+    "5.1"
+  ],
+  "final_requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0001",
+      "title": "Header Form Bit",
+      "source_batches": [
+        "5.1"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC8999-S5.1-B3-P0-S2",
+        "RFC8999-S5.1-B5-P2-S1"
+      ],
+      "source_refs": [
+        "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S2",
+        "RFC 8999 §5.1 RFC8999-S5.1-B5-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "REQ-R8999-S5H1-001"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0002",
+      "title": "Version-Specific Bits",
+      "source_batches": [
+        "5.1"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC8999-S5.1-B3-P0-S3",
+        "RFC8999-S5.1-B5-P2-S2"
+      ],
+      "source_refs": [
+        "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S3",
+        "RFC 8999 §5.1 RFC8999-S5.1-B5-P2-S2",
+        "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "REQ-R8999-S5H1-002"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0003",
+      "title": "Version Field",
+      "source_batches": [
+        "5.1"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC8999-S5.1-B3-P0-S4",
+        "RFC8999-S5.1-B6-P3-S1"
+      ],
+      "source_refs": [
+        "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S4",
+        "RFC 8999 §5.1 RFC8999-S5.1-B6-P3-S1",
+        "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "REQ-R8999-S5H1-003"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0004",
+      "title": "Destination Connection ID Length Encoding",
+      "source_batches": [
+        "5.1"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC8999-S5.1-B3-P0-S5",
+        "RFC8999-S5.1-B7-P4-S1",
+        "RFC8999-S5.1-B7-P4-S2"
+      ],
+      "source_refs": [
+        "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S5",
+        "RFC 8999 §5.1 RFC8999-S5.1-B7-P4-S1",
+        "RFC 8999 §5.1 RFC8999-S5.1-B7-P4-S2",
+        "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "REQ-R8999-S5H1-004"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0005",
+      "title": "Destination Connection ID Size",
+      "source_batches": [
+        "5.1"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC8999-S5.1-B3-P0-S6",
+        "RFC8999-S5.1-B7-P4-S3"
+      ],
+      "source_refs": [
+        "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S6",
+        "RFC 8999 §5.1 RFC8999-S5.1-B7-P4-S3",
+        "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "REQ-R8999-S5H1-005"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0006",
+      "title": "Source Connection ID Length Encoding",
+      "source_batches": [
+        "5.1"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC8999-S5.1-B3-P0-S7",
+        "RFC8999-S5.1-B8-P5-S1",
+        "RFC8999-S5.1-B8-P5-S2"
+      ],
+      "source_refs": [
+        "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S7",
+        "RFC 8999 §5.1 RFC8999-S5.1-B8-P5-S1",
+        "RFC 8999 §5.1 RFC8999-S5.1-B8-P5-S2",
+        "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "REQ-R8999-S5H1-006"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0007",
+      "title": "Source Connection ID Size",
+      "source_batches": [
+        "5.1"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC8999-S5.1-B3-P0-S8",
+        "RFC8999-S5.1-B8-P5-S3"
+      ],
+      "source_refs": [
+        "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S8",
+        "RFC 8999 §5.1 RFC8999-S5.1-B8-P5-S3",
+        "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "REQ-R8999-S5H1-007"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC8999-S5P1-0008",
+      "title": "Version-Specific Remainder",
+      "source_batches": [
+        "5.1"
+      ],
+      "source_sections": [
+        "5.1"
+      ],
+      "source_sentence_ids": [
+        "RFC8999-S5.1-B3-P0-S9",
+        "RFC8999-S5.1-B9-P6-S1"
+      ],
+      "source_refs": [
+        "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S9",
+        "RFC 8999 §5.1 RFC8999-S5.1-B9-P6-S1",
+        "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+      ],
+      "merged_from_draft_ids": [
+        "REQ-R8999-S5H1-008"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": []
+    }
+  ],
+  "rejected_or_merged_drafts": []
+}

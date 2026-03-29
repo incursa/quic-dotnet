@@ -72,6 +72,15 @@ public sealed class QuicStreamFrameTests
 
     [Fact]
     [Trait("Requirement", "REQ-QUIC-STRM-0005")]
+    [Trait("Requirement", "REQ-QUIC-STRM-0006")]
+    [Trait("Category", "Negative")]
+    public void TryParseStreamFrame_RejectsEmptyInput()
+    {
+        Assert.False(QuicStreamParser.TryParseStreamFrame(Array.Empty<byte>(), out _));
+    }
+
+    [Fact]
+    [Trait("Requirement", "REQ-QUIC-STRM-0005")]
     [Trait("Category", "Negative")]
     public void TryParseStreamFrame_RejectsNonShortestFrameTypeEncoding()
     {
@@ -101,6 +110,25 @@ public sealed class QuicStreamFrameTests
             offset: 0x11223344);
 
         byte[] truncated = packet[..Math.Max(0, packet.Length - truncateBy)];
+
+        Assert.False(QuicStreamParser.TryParseStreamFrame(truncated, out _));
+    }
+
+    [Fact]
+    [Trait("Requirement", "REQ-QUIC-STRM-0007")]
+    [Trait("Category", "Negative")]
+    public void TryParseStreamFrame_RejectsTruncatedOffsetField()
+    {
+        Span<byte> offsetEncoding = stackalloc byte[8];
+        Assert.True(QuicVariableLengthInteger.TryFormat(QuicVariableLengthInteger.MaxValue, offsetEncoding, out int offsetBytes));
+
+        byte[] packet = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0C,
+            streamId: 0x04,
+            streamData: [0xAA],
+            offset: QuicVariableLengthInteger.MaxValue);
+
+        byte[] truncated = packet[..(1 + 1 + offsetBytes - 1)];
 
         Assert.False(QuicStreamParser.TryParseStreamFrame(truncated, out _));
     }
