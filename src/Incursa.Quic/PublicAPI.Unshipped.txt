@@ -50,6 +50,56 @@ Incursa.Quic.QuicVariableLengthInteger
 const Incursa.Quic.QuicVariableLengthInteger.MaxValue = 4611686018427387903 -> ulong
 static Incursa.Quic.QuicVariableLengthInteger.TryParse(System.ReadOnlySpan<byte> encoded, out ulong value, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicVariableLengthInteger.TryFormat(ulong value, System.Span<byte> destination, out int bytesWritten) -> bool
+Incursa.Quic.QuicAckRange
+Incursa.Quic.QuicAckRange.QuicAckRange() -> void
+Incursa.Quic.QuicAckRange.QuicAckRange(ulong gap, ulong ackRangeLength, ulong smallestAcknowledged, ulong largestAcknowledged) -> void
+Incursa.Quic.QuicAckRange.Gap.get -> ulong
+Incursa.Quic.QuicAckRange.AckRangeLength.get -> ulong
+Incursa.Quic.QuicAckRange.SmallestAcknowledged.get -> ulong
+Incursa.Quic.QuicAckRange.LargestAcknowledged.get -> ulong
+Incursa.Quic.QuicAckFrame
+Incursa.Quic.QuicAckFrame.QuicAckFrame() -> void
+Incursa.Quic.QuicAckFrame.FrameType.get -> byte
+Incursa.Quic.QuicAckFrame.FrameType.set -> void
+Incursa.Quic.QuicAckFrame.LargestAcknowledged.get -> ulong
+Incursa.Quic.QuicAckFrame.LargestAcknowledged.set -> void
+Incursa.Quic.QuicAckFrame.AckDelay.get -> ulong
+Incursa.Quic.QuicAckFrame.AckDelay.set -> void
+Incursa.Quic.QuicAckFrame.FirstAckRange.get -> ulong
+Incursa.Quic.QuicAckFrame.FirstAckRange.set -> void
+Incursa.Quic.QuicAckFrame.AdditionalRanges.get -> Incursa.Quic.QuicAckRange[]!
+Incursa.Quic.QuicAckFrame.AdditionalRanges.set -> void
+Incursa.Quic.QuicAckFrame.EcnCounts.get -> Incursa.Quic.QuicEcnCounts?
+Incursa.Quic.QuicAckFrame.EcnCounts.set -> void
+Incursa.Quic.QuicAckFrame.AckRangeCount.get -> ulong
+Incursa.Quic.QuicEcnCounts
+Incursa.Quic.QuicEcnCounts.QuicEcnCounts() -> void
+Incursa.Quic.QuicEcnCounts.QuicEcnCounts(ulong ect0Count, ulong ect1Count, ulong ecnCeCount) -> void
+Incursa.Quic.QuicEcnCounts.Ect0Count.get -> ulong
+Incursa.Quic.QuicEcnCounts.Ect1Count.get -> ulong
+Incursa.Quic.QuicEcnCounts.EcnCeCount.get -> ulong
+Incursa.Quic.QuicResetStreamFrame
+Incursa.Quic.QuicResetStreamFrame.QuicResetStreamFrame() -> void
+Incursa.Quic.QuicResetStreamFrame.QuicResetStreamFrame(ulong streamId, ulong applicationProtocolErrorCode, ulong finalSize) -> void
+Incursa.Quic.QuicResetStreamFrame.StreamId.get -> ulong
+Incursa.Quic.QuicResetStreamFrame.ApplicationProtocolErrorCode.get -> ulong
+Incursa.Quic.QuicResetStreamFrame.FinalSize.get -> ulong
+Incursa.Quic.QuicStopSendingFrame
+Incursa.Quic.QuicStopSendingFrame.QuicStopSendingFrame() -> void
+Incursa.Quic.QuicStopSendingFrame.QuicStopSendingFrame(ulong streamId, ulong applicationProtocolErrorCode) -> void
+Incursa.Quic.QuicStopSendingFrame.StreamId.get -> ulong
+Incursa.Quic.QuicStopSendingFrame.ApplicationProtocolErrorCode.get -> ulong
+Incursa.Quic.QuicFrameCodec
+static Incursa.Quic.QuicFrameCodec.TryParsePaddingFrame(System.ReadOnlySpan<byte> packetPayload, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatPaddingFrame(System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParsePingFrame(System.ReadOnlySpan<byte> packetPayload, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatPingFrame(System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseAckFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicAckFrame! frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatAckFrame(Incursa.Quic.QuicAckFrame! frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseResetStreamFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicResetStreamFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatResetStreamFrame(Incursa.Quic.QuicResetStreamFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseStopSendingFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicStopSendingFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatStopSendingFrame(Incursa.Quic.QuicStopSendingFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
 Incursa.Quic.QuicStreamType
 Incursa.Quic.QuicStreamType.ClientInitiatedBidirectional = 0 -> Incursa.Quic.QuicStreamType
 Incursa.Quic.QuicStreamType.ServerInitiatedBidirectional = 1 -> Incursa.Quic.QuicStreamType
@@ -79,3 +129,51 @@ Incursa.Quic.QuicStreamFrame.ConsumedLength.get -> int
 Incursa.Quic.QuicStreamParser
 static Incursa.Quic.QuicStreamParser.TryParseStreamIdentifier(System.ReadOnlySpan<byte> encoded, out Incursa.Quic.QuicStreamId streamId, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicStreamParser.TryParseStreamFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicStreamFrame frame) -> bool
+Incursa.Quic.QuicTransportParameterRole
+Incursa.Quic.QuicTransportParameterRole.Client = 0 -> Incursa.Quic.QuicTransportParameterRole
+Incursa.Quic.QuicTransportParameterRole.Server = 1 -> Incursa.Quic.QuicTransportParameterRole
+Incursa.Quic.QuicPreferredAddress
+Incursa.Quic.QuicPreferredAddress.QuicPreferredAddress() -> void
+Incursa.Quic.QuicPreferredAddress.IPv4Address.get -> byte[]!
+Incursa.Quic.QuicPreferredAddress.IPv4Address.set -> void
+Incursa.Quic.QuicPreferredAddress.IPv4Port.get -> ushort
+Incursa.Quic.QuicPreferredAddress.IPv4Port.set -> void
+Incursa.Quic.QuicPreferredAddress.IPv6Address.get -> byte[]!
+Incursa.Quic.QuicPreferredAddress.IPv6Address.set -> void
+Incursa.Quic.QuicPreferredAddress.IPv6Port.get -> ushort
+Incursa.Quic.QuicPreferredAddress.IPv6Port.set -> void
+Incursa.Quic.QuicPreferredAddress.ConnectionId.get -> byte[]!
+Incursa.Quic.QuicPreferredAddress.ConnectionId.set -> void
+Incursa.Quic.QuicPreferredAddress.StatelessResetToken.get -> byte[]!
+Incursa.Quic.QuicPreferredAddress.StatelessResetToken.set -> void
+Incursa.Quic.QuicTransportParameters
+Incursa.Quic.QuicTransportParameters.QuicTransportParameters() -> void
+Incursa.Quic.QuicTransportParameters.OriginalDestinationConnectionId.get -> byte[]?
+Incursa.Quic.QuicTransportParameters.OriginalDestinationConnectionId.set -> void
+Incursa.Quic.QuicTransportParameters.MaxIdleTimeout.get -> ulong?
+Incursa.Quic.QuicTransportParameters.MaxIdleTimeout.set -> void
+Incursa.Quic.QuicTransportParameters.StatelessResetToken.get -> byte[]?
+Incursa.Quic.QuicTransportParameters.StatelessResetToken.set -> void
+Incursa.Quic.QuicTransportParameters.MaxUdpPayloadSize.get -> ulong?
+Incursa.Quic.QuicTransportParameters.MaxUdpPayloadSize.set -> void
+Incursa.Quic.QuicTransportParameters.InitialMaxData.get -> ulong?
+Incursa.Quic.QuicTransportParameters.InitialMaxData.set -> void
+Incursa.Quic.QuicTransportParameters.InitialMaxStreamsBidi.get -> ulong?
+Incursa.Quic.QuicTransportParameters.InitialMaxStreamsBidi.set -> void
+Incursa.Quic.QuicTransportParameters.InitialMaxStreamsUni.get -> ulong?
+Incursa.Quic.QuicTransportParameters.InitialMaxStreamsUni.set -> void
+Incursa.Quic.QuicTransportParameters.MaxAckDelay.get -> ulong?
+Incursa.Quic.QuicTransportParameters.MaxAckDelay.set -> void
+Incursa.Quic.QuicTransportParameters.DisableActiveMigration.get -> bool
+Incursa.Quic.QuicTransportParameters.DisableActiveMigration.set -> void
+Incursa.Quic.QuicTransportParameters.PreferredAddress.get -> Incursa.Quic.QuicPreferredAddress?
+Incursa.Quic.QuicTransportParameters.PreferredAddress.set -> void
+Incursa.Quic.QuicTransportParameters.ActiveConnectionIdLimit.get -> ulong?
+Incursa.Quic.QuicTransportParameters.ActiveConnectionIdLimit.set -> void
+Incursa.Quic.QuicTransportParameters.InitialSourceConnectionId.get -> byte[]?
+Incursa.Quic.QuicTransportParameters.InitialSourceConnectionId.set -> void
+Incursa.Quic.QuicTransportParameters.RetrySourceConnectionId.get -> byte[]?
+Incursa.Quic.QuicTransportParameters.RetrySourceConnectionId.set -> void
+Incursa.Quic.QuicTransportParametersCodec
+static Incursa.Quic.QuicTransportParametersCodec.TryParseTransportParameters(System.ReadOnlySpan<byte> encoded, Incursa.Quic.QuicTransportParameterRole receiverRole, out Incursa.Quic.QuicTransportParameters! parameters) -> bool
+static Incursa.Quic.QuicTransportParametersCodec.TryFormatTransportParameters(Incursa.Quic.QuicTransportParameters! parameters, Incursa.Quic.QuicTransportParameterRole senderRole, System.Span<byte> destination, out int bytesWritten) -> bool

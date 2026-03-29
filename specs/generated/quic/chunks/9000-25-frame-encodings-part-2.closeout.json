@@ -1,0 +1,205 @@
+{
+  "chunk_id": "9000-25-frame-encodings-part-2",
+  "rfc": "9000",
+  "section_tokens": [
+    "S19P1",
+    "S19P2",
+    "S19P3",
+    "S19P3P1",
+    "S19P3P2",
+    "S19P4",
+    "S19P5"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "audit_result": "trace-consistent-with-open-and-deferred-items",
+  "source_artifacts": {
+    "implementation_summary": {
+      "path": "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json",
+      "status": "authoritative"
+    },
+    "reconciliation_artifact": {
+      "path": "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.reconciliation.json",
+      "status": "stale-no-evidence-snapshot"
+    }
+  },
+  "counts": {
+    "total": 68,
+    "implemented_and_tested": 52,
+    "deferred": 4,
+    "blocked": 12,
+    "open_total": 16,
+    "stale_ids_found": 0,
+    "silent_gaps_found": 0
+  },
+  "requirements_by_section": [
+    {
+      "section": "S19P1",
+      "completed": [
+        "REQ-QUIC-RFC9000-S19P1-0001",
+        "REQ-QUIC-RFC9000-S19P1-0004",
+        "REQ-QUIC-RFC9000-S19P1-0005",
+        "REQ-QUIC-RFC9000-S19P1-0006"
+      ],
+      "open": [
+        "REQ-QUIC-RFC9000-S19P1-0002",
+        "REQ-QUIC-RFC9000-S19P1-0003"
+      ]
+    },
+    {
+      "section": "S19P2",
+      "completed": [
+        "REQ-QUIC-RFC9000-S19P2-0002",
+        "REQ-QUIC-RFC9000-S19P2-0003"
+      ],
+      "open": [
+        "REQ-QUIC-RFC9000-S19P2-0001",
+        "REQ-QUIC-RFC9000-S19P2-0004"
+      ]
+    },
+    {
+      "section": "S19P3",
+      "completed": [
+        "REQ-QUIC-RFC9000-S19P3-0001",
+        "REQ-QUIC-RFC9000-S19P3-0002",
+        "REQ-QUIC-RFC9000-S19P3-0003",
+        "REQ-QUIC-RFC9000-S19P3-0009",
+        "REQ-QUIC-RFC9000-S19P3-0010",
+        "REQ-QUIC-RFC9000-S19P3-0011",
+        "REQ-QUIC-RFC9000-S19P3-0012",
+        "REQ-QUIC-RFC9000-S19P3-0013",
+        "REQ-QUIC-RFC9000-S19P3-0014",
+        "REQ-QUIC-RFC9000-S19P3-0015",
+        "REQ-QUIC-RFC9000-S19P3-0016",
+        "REQ-QUIC-RFC9000-S19P3-0017",
+        "REQ-QUIC-RFC9000-S19P3-0018",
+        "REQ-QUIC-RFC9000-S19P3-0019",
+        "REQ-QUIC-RFC9000-S19P3-0020"
+      ],
+      "open": [
+        "REQ-QUIC-RFC9000-S19P3-0004",
+        "REQ-QUIC-RFC9000-S19P3-0005",
+        "REQ-QUIC-RFC9000-S19P3-0006",
+        "REQ-QUIC-RFC9000-S19P3-0007",
+        "REQ-QUIC-RFC9000-S19P3-0008"
+      ]
+    },
+    {
+      "section": "S19P3P1",
+      "completed": [
+        "REQ-QUIC-RFC9000-S19P3P1-0001",
+        "REQ-QUIC-RFC9000-S19P3P1-0002",
+        "REQ-QUIC-RFC9000-S19P3P1-0003",
+        "REQ-QUIC-RFC9000-S19P3P1-0004",
+        "REQ-QUIC-RFC9000-S19P3P1-0005",
+        "REQ-QUIC-RFC9000-S19P3P1-0006",
+        "REQ-QUIC-RFC9000-S19P3P1-0007",
+        "REQ-QUIC-RFC9000-S19P3P1-0008",
+        "REQ-QUIC-RFC9000-S19P3P1-0009",
+        "REQ-QUIC-RFC9000-S19P3P1-0010"
+      ],
+      "open": []
+    },
+    {
+      "section": "S19P3P2",
+      "completed": [
+        "REQ-QUIC-RFC9000-S19P3P2-0001",
+        "REQ-QUIC-RFC9000-S19P3P2-0002",
+        "REQ-QUIC-RFC9000-S19P3P2-0003",
+        "REQ-QUIC-RFC9000-S19P3P2-0004",
+        "REQ-QUIC-RFC9000-S19P3P2-0005",
+        "REQ-QUIC-RFC9000-S19P3P2-0006",
+        "REQ-QUIC-RFC9000-S19P3P2-0007"
+      ],
+      "open": []
+    },
+    {
+      "section": "S19P4",
+      "completed": [
+        "REQ-QUIC-RFC9000-S19P4-0004",
+        "REQ-QUIC-RFC9000-S19P4-0005",
+        "REQ-QUIC-RFC9000-S19P4-0006",
+        "REQ-QUIC-RFC9000-S19P4-0007",
+        "REQ-QUIC-RFC9000-S19P4-0008",
+        "REQ-QUIC-RFC9000-S19P4-0009",
+        "REQ-QUIC-RFC9000-S19P4-0010",
+        "REQ-QUIC-RFC9000-S19P4-0011"
+      ],
+      "open": [
+        "REQ-QUIC-RFC9000-S19P4-0001",
+        "REQ-QUIC-RFC9000-S19P4-0002",
+        "REQ-QUIC-RFC9000-S19P4-0003"
+      ]
+    },
+    {
+      "section": "S19P5",
+      "completed": [
+        "REQ-QUIC-RFC9000-S19P5-0005",
+        "REQ-QUIC-RFC9000-S19P5-0006",
+        "REQ-QUIC-RFC9000-S19P5-0007",
+        "REQ-QUIC-RFC9000-S19P5-0008",
+        "REQ-QUIC-RFC9000-S19P5-0009",
+        "REQ-QUIC-RFC9000-S19P5-0010"
+      ],
+      "open": [
+        "REQ-QUIC-RFC9000-S19P5-0001",
+        "REQ-QUIC-RFC9000-S19P5-0002",
+        "REQ-QUIC-RFC9000-S19P5-0003",
+        "REQ-QUIC-RFC9000-S19P5-0004"
+      ]
+    }
+  ],
+  "consistency_check": {
+    "code_and_test_roots_searched": [
+      "C:/src/incursa/quic-dotnet/src/Incursa.Quic",
+      "C:/src/incursa/quic-dotnet/tests"
+    ],
+    "canonical_in_scope_test_files": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "canonical_in_scope_src_files": [
+      "src/Incursa.Quic/QuicAckFrame.cs",
+      "src/Incursa.Quic/QuicAckRange.cs",
+      "src/Incursa.Quic/QuicEcnCounts.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/QuicResetStreamFrame.cs",
+      "src/Incursa.Quic/QuicStopSendingFrame.cs"
+    ],
+    "source_requirement_refs_found": [],
+    "test_requirement_traits_found_count": 52,
+    "stale_or_wrong_refs_found_in_scope": [],
+    "implemented_requirements_with_traits": 52,
+    "open_requirements_with_traits": 0,
+    "reconciliation_artifact_status": "stale-no-evidence-snapshot",
+    "notes": [
+      "All implemented requirements in the chunk have at least one canonical requirement trait in the frame codec tests or fuzz tests.",
+      "No in-scope requirement refs or XML-comment requirement refs were found in src/Incursa.Quic.",
+      "The reconciliation artifact is stale and reports no evidence; the implementation summary and live scan are authoritative for this audit."
+    ]
+  },
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --logger \"console;verbosity=minimal\"",
+    "result": "Passed",
+    "summary": "155 passed, 0 failed, 0 skipped"
+  },
+  "files_reviewed": [
+    "specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json",
+    "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.reconciliation.json",
+    "src/Incursa.Quic/QuicAckFrame.cs",
+    "src/Incursa.Quic/QuicAckRange.cs",
+    "src/Incursa.Quic/QuicEcnCounts.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicResetStreamFrame.cs",
+    "src/Incursa.Quic/QuicStopSendingFrame.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+  ],
+  "notes": [
+    "The open requirements are explicitly deferred or blocked and remain isolated to packet assembly, connection-state, or runtime-policy layers outside this codec slice.",
+    "The stale reconciliation artifact should be regenerated if any tooling still consumes it as an audit input."
+  ],
+  "conclusion": "No stale requirement IDs remain in scope. No silent gaps remain in scope. The chunk is trace-consistent and ready for repo-wide trace/audit tooling."
+}

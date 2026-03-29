@@ -1,0 +1,146 @@
+{
+  "chunk_id": "9000-24-frame-encodings-part-1",
+  "rfc": "9000",
+  "section_tokens": [
+    "S18",
+    "S18P1",
+    "S18P2"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --logger \"console;verbosity=minimal\"",
+    "result": "Passed",
+    "summary": "145 passed, 0 failed, 0 skipped"
+  },
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9000-S18-0001",
+    "REQ-QUIC-RFC9000-S18-0007",
+    "REQ-QUIC-RFC9000-S18P2-0007",
+    "REQ-QUIC-RFC9000-S18P2-0003",
+    "REQ-QUIC-RFC9000-S18P2-0006",
+    "REQ-QUIC-RFC9000-S18P2-0009",
+    "REQ-QUIC-RFC9000-S18P2-0011",
+    "REQ-QUIC-RFC9000-S18P2-0012",
+    "REQ-QUIC-RFC9000-S18P2-0014",
+    "REQ-QUIC-RFC9000-S18P2-0017",
+    "REQ-QUIC-RFC9000-S18P2-0018",
+    "REQ-QUIC-RFC9000-S18P2-0019",
+    "REQ-QUIC-RFC9000-S18P2-0024",
+    "REQ-QUIC-RFC9000-S18P2-0025",
+    "REQ-QUIC-RFC9000-S18P2-0026",
+    "REQ-QUIC-RFC9000-S18P2-0027",
+    "REQ-QUIC-RFC9000-S18P2-0034",
+    "REQ-QUIC-RFC9000-S18P2-0036",
+    "REQ-QUIC-RFC9000-S18P2-0038"
+  ],
+  "requirements": [
+    {
+      "requirement_id": [
+        "REQ-QUIC-RFC9000-S18-0002",
+        "REQ-QUIC-RFC9000-S18-0003",
+        "REQ-QUIC-RFC9000-S18-0004",
+        "REQ-QUIC-RFC9000-S18-0005",
+        "REQ-QUIC-RFC9000-S18-0006",
+        "REQ-QUIC-RFC9000-S18P1-0001",
+        "REQ-QUIC-RFC9000-S18P1-0002",
+        "REQ-QUIC-RFC9000-S18P2-0001",
+        "REQ-QUIC-RFC9000-S18P2-0002",
+        "REQ-QUIC-RFC9000-S18P2-0004",
+        "REQ-QUIC-RFC9000-S18P2-0005",
+        "REQ-QUIC-RFC9000-S18P2-0008",
+        "REQ-QUIC-RFC9000-S18P2-0010",
+        "REQ-QUIC-RFC9000-S18P2-0013",
+        "REQ-QUIC-RFC9000-S18P2-0015",
+        "REQ-QUIC-RFC9000-S18P2-0016",
+        "REQ-QUIC-RFC9000-S18P2-0020",
+        "REQ-QUIC-RFC9000-S18P2-0021",
+        "REQ-QUIC-RFC9000-S18P2-0022",
+        "REQ-QUIC-RFC9000-S18P2-0023",
+        "REQ-QUIC-RFC9000-S18P2-0028",
+        "REQ-QUIC-RFC9000-S18P2-0029",
+        "REQ-QUIC-RFC9000-S18P2-0030",
+        "REQ-QUIC-RFC9000-S18P2-0031",
+        "REQ-QUIC-RFC9000-S18P2-0032",
+        "REQ-QUIC-RFC9000-S18P2-0033",
+        "REQ-QUIC-RFC9000-S18P2-0035",
+        "REQ-QUIC-RFC9000-S18P2-0037"
+      ],
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParameterRole.cs",
+        "src/Incursa.Quic/QuicPreferredAddress.cs",
+        "src/Incursa.Quic/QuicTransportParameters.cs",
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParameterTestData.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+        "specs/generated/quic/chunks/9000-24-frame-encodings-part-1.implementation-summary.md",
+        "specs/generated/quic/chunks/9000-24-frame-encodings-part-1.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryFormatTransportParameters_WritesExactTupleSequence",
+        "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+        "TryParseTransportParameters_AcceptsPreferredAddressWithZeroedIpv4Family",
+        "TryParseTransportParameters_RejectsTruncatedTupleValue",
+        "TryParseTransportParameters_IgnoresReservedGreaseParameters",
+        "TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient",
+        "TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer",
+        "TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId",
+        "TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo",
+        "TryParseTransportParameters_RejectsTruncatedPreferredAddressValue",
+        "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParameterTestData.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "This slice now covers the transport-parameter wire format, GREASE handling, preferred-address encoding, and server-only gating at the codec boundary."
+    },
+    {
+      "requirement_id": [
+        "REQ-QUIC-RFC9000-S18-0001",
+        "REQ-QUIC-RFC9000-S18-0007",
+        "REQ-QUIC-RFC9000-S18P2-0003",
+        "REQ-QUIC-RFC9000-S18P2-0006",
+        "REQ-QUIC-RFC9000-S18P2-0007",
+        "REQ-QUIC-RFC9000-S18P2-0009",
+        "REQ-QUIC-RFC9000-S18P2-0011",
+        "REQ-QUIC-RFC9000-S18P2-0012",
+        "REQ-QUIC-RFC9000-S18P2-0014",
+        "REQ-QUIC-RFC9000-S18P2-0017",
+        "REQ-QUIC-RFC9000-S18P2-0018",
+        "REQ-QUIC-RFC9000-S18P2-0019",
+        "REQ-QUIC-RFC9000-S18P2-0024",
+        "REQ-QUIC-RFC9000-S18P2-0025",
+        "REQ-QUIC-RFC9000-S18P2-0026",
+        "REQ-QUIC-RFC9000-S18P2-0027",
+        "REQ-QUIC-RFC9000-S18P2-0034",
+        "REQ-QUIC-RFC9000-S18P2-0036",
+        "REQ-QUIC-RFC9000-S18P2-0038"
+      ],
+      "completion_status": "deferred",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient",
+        "TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer",
+        "TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId",
+        "TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "remaining_gap": "The repository still lacks the connection-layer and TLS integration needed to turn these boundary checks into full QUIC state changes, connection errors, stateless-reset policy, and stream-control side effects.",
+      "notes": "The codec now rejects invalid inputs for several of these cases, but the full runtime consequence remains deferred."
+    }
+  ],
+  "notes": "No reconciliation artifacts existed for this chunk. A pre-existing unrelated worktree edit remains in specs/quic-phase-prompts/Phase-01-Foundation-Wire-Format-and-Packet-Frame-Substrate.md and was left untouched."
+}
