@@ -1,0 +1,1440 @@
+{
+  "chunk_id": "9000-22-long-header-handshake-and-0rtt",
+  "rfc": "9000",
+  "section_tokens": [
+    "S17P2P1",
+    "S17P2P2",
+    "S17P2P3"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "audit_result": "trace-consistent-with-open-items",
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests\"",
+    "result": "Passed",
+    "summary": "60 passed, 0 failed, 0 skipped"
+  },
+  "code_requirement_refs": [],
+  "live_ref_audit": {
+    "code_and_test_roots_searched": [
+      "C:/src/incursa/quic-dotnet/src/Incursa.Quic",
+      "C:/src/incursa/quic-dotnet/tests"
+    ],
+    "canonical_in_scope_test_files": [
+      "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+      "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+    ],
+    "canonical_in_scope_src_files": [],
+    "stale_or_wrong_refs_found_in_scope": []
+  },
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9000-S17P2P1-0001",
+    "REQ-QUIC-RFC9000-S17P2P1-0002",
+    "REQ-QUIC-RFC9000-S17P2P1-0010",
+    "REQ-QUIC-RFC9000-S17P2P1-0012",
+    "REQ-QUIC-RFC9000-S17P2P1-0014",
+    "REQ-QUIC-RFC9000-S17P2P1-0015",
+    "REQ-QUIC-RFC9000-S17P2P1-0016",
+    "REQ-QUIC-RFC9000-S17P2P1-0017",
+    "REQ-QUIC-RFC9000-S17P2P1-0018",
+    "REQ-QUIC-RFC9000-S17P2P1-0020",
+    "REQ-QUIC-RFC9000-S17P2P2-0018",
+    "REQ-QUIC-RFC9000-S17P2P2-0019",
+    "REQ-QUIC-RFC9000-S17P2P2-0020",
+    "REQ-QUIC-RFC9000-S17P2P2-0021",
+    "REQ-QUIC-RFC9000-S17P2P2-0022",
+    "REQ-QUIC-RFC9000-S17P2P2-0023",
+    "REQ-QUIC-RFC9000-S17P2P2-0024",
+    "REQ-QUIC-RFC9000-S17P2P2-0025",
+    "REQ-QUIC-RFC9000-S17P2P2-0026",
+    "REQ-QUIC-RFC9000-S17P2P3-0003",
+    "REQ-QUIC-RFC9000-S17P2P3-0004",
+    "REQ-QUIC-RFC9000-S17P2P3-0017",
+    "REQ-QUIC-RFC9000-S17P2P3-0018",
+    "REQ-QUIC-RFC9000-S17P2P3-0019",
+    "REQ-QUIC-RFC9000-S17P2P3-0020",
+    "REQ-QUIC-RFC9000-S17P2P3-0021",
+    "REQ-QUIC-RFC9000-S17P2P3-0022",
+    "REQ-QUIC-RFC9000-S17P2P3-0023"
+  ],
+  "counts": {
+    "total": 69,
+    "covered": 41,
+    "partial": 0,
+    "blocked": 28,
+    "needs_review": 0
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0001",
+      "section": "S17P2P1",
+      "title": "The Version Negotiation packet is a response to a client packet that contains a version t...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0002",
+      "section": "S17P2P1",
+      "title": "It MUST only be sent by servers",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0003",
+      "section": "S17P2P1",
+      "title": "The Header Form field MUST be 1 bits long with value 1",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-82",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:6-145",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-96",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-131",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-44"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Long headers are classified from the first-byte high bit."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0004",
+      "section": "S17P2P1",
+      "title": "The Unused field MUST be 7 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-82",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:6-145",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-96",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-131",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-44"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets preserve the 7-bit unused field without making parse decisions from its value."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0005",
+      "section": "S17P2P1",
+      "title": "The Version field MUST be 32 bits long with value 0",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-82",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:6-145",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-96",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-131",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-44"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version zero maps to Version Negotiation and is preserved by the parser."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0006",
+      "section": "S17P2P1",
+      "title": "The Destination Connection ID Length field MUST be 8 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-82",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:6-145",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-96",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-131",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-44"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The connection ID length byte is parsed as an 8-bit field and round-tripped by the parser and tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0007",
+      "section": "S17P2P1",
+      "title": "The Destination Connection ID field MUST be between 0 and 2040 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-82",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:6-145",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-96",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-131",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-44"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets can carry longer connection IDs when forming the packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0008",
+      "section": "S17P2P1",
+      "title": "The Source Connection ID Length field MUST be 8 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-82",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:6-145",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-96",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-131",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-44"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The connection ID length byte is parsed as an 8-bit field and round-tripped by the parser and tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0009",
+      "section": "S17P2P1",
+      "title": "The Source Connection ID field MUST be between 0 and 2040 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-82",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:6-145",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-96",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-131",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-44"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets can carry longer connection IDs when forming the packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0010",
+      "section": "S17P2P1",
+      "title": "The value in the Unused field MUST be set to an arbitrary value by the server",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
+      "notes": "The parser preserves arbitrary unused-bit values, but the repository has no VN emitter or client reaction logic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0011",
+      "section": "S17P2P1",
+      "title": "Clients MUST ignore the value of this field",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-82",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:6-145",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-96",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-131",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-44"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version Negotiation parsing accepts arbitrary Unused-field values and preserves them without making parse decisions based on those bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0012",
+      "section": "S17P2P1",
+      "title": "Where QUIC might be multiplexed with other protocols (see [RFC7983]), servers SHOULD set...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0013",
+      "section": "S17P2P1",
+      "title": "The Version field of a Version Negotiation packet MUST be set to 0x00000000",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-82",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:6-145",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-96",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-131",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-44"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version zero is parsed as a Version Negotiation packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0014",
+      "section": "S17P2P1",
+      "title": "The server MUST include the value from the Source Connection ID field of the packet it re...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0015",
+      "section": "S17P2P1",
+      "title": "The value for Source Connection ID MUST be copied from the Destination Connection ID of t...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0016",
+      "section": "S17P2P1",
+      "title": "Version-specific rules for the connection ID therefore MUST NOT influence a decision abou...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0017",
+      "section": "S17P2P1",
+      "title": "A Version Negotiation packet MUST NOT be acknowledged",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0018",
+      "section": "S17P2P1",
+      "title": "It is only sent in response to a packet that MUST indicate an unsupported version; see Se...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0019",
+      "section": "S17P2P1",
+      "title": "The Version Negotiation packet MUST NOT include the Packet Number and Length fields prese...",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-94",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-52",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs:30-82",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:38-52"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:6-145",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-96",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-131",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-44"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0020",
+      "section": "S17P2P1",
+      "title": "A server MUST NOT send more than one Version Negotiation packet in response to a single U...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
+      "notes": "Server/client behavior for VN packets is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0001",
+      "section": "S17P2P2",
+      "title": "An Initial packet MUST use long headers with a type value of 0x00",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0002",
+      "section": "S17P2P2",
+      "title": "The Header Form field MUST be 1 bits long with value 1",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Long headers are classified from the first-byte high bit."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0003",
+      "section": "S17P2P2",
+      "title": "The Fixed Bit field MUST be 1 bits long with value 1",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Non-Version Negotiation long headers validate the fixed bit before accepting the packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0004",
+      "section": "S17P2P2",
+      "title": "The Long Packet Type field MUST be 2 bits long with value 0",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The long-packet-type bits are exposed separately on the packet view."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0005",
+      "section": "S17P2P2",
+      "title": "The Reserved Bits field MUST be 2 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The reserved bits are surfaced on the packet view; enforcement is deferred to later packet-protection work."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0006",
+      "section": "S17P2P2",
+      "title": "The Packet Number Length field MUST be 2 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The packet-number-length bits are surfaced on the long-header view."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0007",
+      "section": "S17P2P2",
+      "title": "The Version field MUST be 32 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version parsing is round-tripped, with version zero mapping to Version Negotiation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0008",
+      "section": "S17P2P2",
+      "title": "The Destination Connection ID Length field MUST be 8 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The connection ID length byte is parsed as an 8-bit field and round-tripped by the parser and tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0009",
+      "section": "S17P2P2",
+      "title": "The Destination Connection ID field MUST be between 0 and 160 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version-1 long headers reject connection IDs longer than 20 bytes."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0010",
+      "section": "S17P2P2",
+      "title": "The Source Connection ID Length field MUST be 8 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The connection ID length byte is parsed as an 8-bit field and round-tripped by the parser and tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0011",
+      "section": "S17P2P2",
+      "title": "The Source Connection ID field MUST be between 0 and 160 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version-1 long headers reject connection IDs longer than 20 bytes."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0012",
+      "section": "S17P2P2",
+      "title": "The Token Length field MUST be encoded as a variable-length integer",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The parser requires a parseable varint length before accepting the packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0013",
+      "section": "S17P2P2",
+      "title": "The Length field MUST be encoded as a variable-length integer",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The parser requires a parseable varint length before accepting the packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0014",
+      "section": "S17P2P2",
+      "title": "The Packet Number field MUST be between 8 and 32 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The parser validates the packet-number bytes implied by the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0015",
+      "section": "S17P2P2",
+      "title": "The Initial packet MUST contain a long header as well as the Length and Packet Number fie...",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Initial packets are parsed through the long-header view and the remaining handshake semantics stay deferred."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0016",
+      "section": "S17P2P2",
+      "title": "The first byte MUST contain the Reserved and Packet Number Length bits; see also Section...",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The packet-number-length bits are exposed on the long-header view."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0017",
+      "section": "S17P2P2",
+      "title": "The Token Length field MUST be variable-length integer specifying the length of the Token...",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:50-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:8-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:6-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The parser validates the token length before accepting the Initial packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0018",
+      "section": "S17P2P2",
+      "title": "Reject non-zero Token Length on client receipt",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing endpoint-role-aware Initial receive path; the parser cannot tell whether the local endpoint is a client.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0019",
+      "section": "S17P2P2",
+      "title": "Set Token Length to 0 for server Initial packets",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Initial packet serialization and server send path.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0020",
+      "section": "S17P2P2",
+      "title": "This protection does not provide confidentiality or integrity against attackers that can...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0021",
+      "section": "S17P2P2",
+      "title": "The client and server use the Initial packet type for any packet that MUST contain an ini...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0022",
+      "section": "S17P2P2",
+      "title": "This MUST include all cases where a new packet containing the initial cryptographic messa...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0023",
+      "section": "S17P2P2",
+      "title": "A server MAY send multiple Initial packets",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0024",
+      "section": "S17P2P2",
+      "title": "The payload of an Initial packet MUST include a CRYPTO frame (or frames) containing a cry...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0025",
+      "section": "S17P2P2",
+      "title": "An endpoint that receives an Initial packet containing other frames MAY either discard th...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0026",
+      "section": "S17P2P2",
+      "title": "The first packet sent by a client always includes a CRYPTO frame that MUST contain the st...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state.",
+      "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0001",
+      "section": "S17P2P3",
+      "title": "A 0-RTT packet MUST use long headers with a type value of 0x01, followed by the Length an...",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "0-RTT packets are parsed through the long-header view and the remaining early-data semantics stay deferred."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0002",
+      "section": "S17P2P3",
+      "title": "The first byte MUST contain the Reserved and Packet Number Length bits; see Section 17.2",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The packet-number-length bits are exposed on the long-header view."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0003",
+      "section": "S17P2P3",
+      "title": "A 0-RTT packet MUST be used to carry \"early\" data from the client to the server as part o...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing TLS early-data negotiation and 0-RTT send/receive behavior.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0004",
+      "section": "S17P2P3",
+      "title": "As part of the TLS handshake, the server MAY accept or reject this early data",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing TLS early-data negotiation and 0-RTT send/receive behavior.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0005",
+      "section": "S17P2P3",
+      "title": "The Header Form field MUST be 1 bits long with value 1",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Long headers are classified from the first-byte high bit."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0006",
+      "section": "S17P2P3",
+      "title": "The Fixed Bit field MUST be 1 bits long with value 1",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Non-Version Negotiation long headers validate the fixed bit before accepting the packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0007",
+      "section": "S17P2P3",
+      "title": "The Long Packet Type field MUST be 2 bits long with value 1",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The long-packet-type bits are exposed separately on the packet view."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0008",
+      "section": "S17P2P3",
+      "title": "The Reserved Bits field MUST be 2 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The reserved bits are surfaced on the packet view; enforcement is deferred to later packet-protection work."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0009",
+      "section": "S17P2P3",
+      "title": "The Packet Number Length field MUST be 2 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The packet-number-length bits are surfaced on the long-header view."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0010",
+      "section": "S17P2P3",
+      "title": "The Version field MUST be 32 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version parsing is round-tripped, with version zero mapping to Version Negotiation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0011",
+      "section": "S17P2P3",
+      "title": "The Destination Connection ID Length field MUST be 8 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The connection ID length byte is parsed as an 8-bit field and round-tripped by the parser and tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0012",
+      "section": "S17P2P3",
+      "title": "The Destination Connection ID field MUST be between 0 and 160 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version-1 long headers reject connection IDs longer than 20 bytes."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0013",
+      "section": "S17P2P3",
+      "title": "The Source Connection ID Length field MUST be 8 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The connection ID length byte is parsed as an 8-bit field and round-tripped by the parser and tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0014",
+      "section": "S17P2P3",
+      "title": "The Source Connection ID field MUST be between 0 and 160 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "Version-1 long headers reject connection IDs longer than 20 bytes."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0015",
+      "section": "S17P2P3",
+      "title": "The Length field MUST be encoded as a variable-length integer",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The parser requires a parseable varint length before accepting the packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0016",
+      "section": "S17P2P3",
+      "title": "The Packet Number field MUST be between 8 and 32 bits long",
+      "status": "covered",
+      "completion_status": "implemented and tested",
+      "evidence_type": "implementation and test evidence",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:26-50",
+        "src/Incursa.Quic/QuicPacketParsing.cs:9-46",
+        "src/Incursa.Quic/QuicLongHeaderPacket.cs:31-96",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt:13-18",
+        "tests/Incursa.Quic.Tests/QuicHeaderTestData.cs:15-108",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs:31-72"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:56-374",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:42-115",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:17-159",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:13-56"
+      ],
+      "direct_refs_state": "canonical",
+      "remaining_gap": null,
+      "notes": "The parser validates the packet-number bytes implied by the packet-number-length bits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0017",
+      "section": "S17P2P3",
+      "title": "A client SHOULD attempt to resend data in 0-RTT packets after it sends a new Initial packet",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing 0-RTT transmission state, packet number management, and resend coordination.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0018",
+      "section": "S17P2P3",
+      "title": "New packet numbers MUST be used for any new packets that are sent; as described in Sectio...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing 0-RTT transmission state, packet number management, and resend coordination.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0019",
+      "section": "S17P2P3",
+      "title": "A client MUST NOT send 0-RTT packets once it starts processing 1-RTT packets from the server",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing 0-RTT transmission state, packet number management, and resend coordination.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0020",
+      "section": "S17P2P3",
+      "title": "This means that 0-RTT packets MUST NOT contain any response to frames from 1-RTT packets",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing 0-RTT/1-RTT ACK handling, remembered transport limits, and connection state.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0021",
+      "section": "S17P2P3",
+      "title": "For instance, a client MUST NOT send an ACK frame in a 0-RTT packet, because that can onl...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing 0-RTT/1-RTT ACK handling, remembered transport limits, and connection state.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0022",
+      "section": "S17P2P3",
+      "title": "An acknowledgment for a 1-RTT packet MUST be carried in a 1-RTT packet",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing 0-RTT/1-RTT ACK handling, remembered transport limits, and connection state.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0023",
+      "section": "S17P2P3",
+      "title": "A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection er...",
+      "status": "blocked",
+      "completion_status": "blocked",
+      "evidence_type": "explicit blocker note",
+      "implementation_refs": [],
+      "test_refs": [],
+      "direct_refs_state": "none_present",
+      "remaining_gap": "Blocked by missing 0-RTT/1-RTT ACK handling, remembered transport limits, and connection state.",
+      "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
+    }
+  ]
+}

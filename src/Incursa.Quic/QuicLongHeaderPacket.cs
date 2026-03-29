@@ -36,6 +36,31 @@ public readonly ref struct QuicLongHeaderPacket
     public byte HeaderControlBits => headerControlBits;
 
     /// <summary>
+    /// Gets whether the fixed bit is set in byte 0.
+    /// </summary>
+    public bool FixedBit => (headerControlBits & 0x40) != 0;
+
+    /// <summary>
+    /// Gets the two-bit long packet type field from byte 0.
+    /// </summary>
+    public byte LongPacketTypeBits => (byte)((headerControlBits & 0x30) >> 4);
+
+    /// <summary>
+    /// Gets the two-bit packet number length field from byte 0.
+    /// </summary>
+    public byte PacketNumberLengthBits => (byte)(headerControlBits & 0x03);
+
+    /// <summary>
+    /// Gets the four type-specific bits from byte 0.
+    /// </summary>
+    public byte TypeSpecificBits => (byte)(headerControlBits & 0x0F);
+
+    /// <summary>
+    /// Gets the reserved bits from the type-specific bit field.
+    /// </summary>
+    public byte ReservedBits => (byte)((headerControlBits & 0x0C) >> 2);
+
+    /// <summary>
     /// Gets the encoded QUIC version.
     /// </summary>
     public uint Version => version;

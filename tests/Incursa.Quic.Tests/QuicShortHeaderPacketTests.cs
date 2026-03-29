@@ -3,22 +3,61 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicShortHeaderPacketTests
 {
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0012")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0015")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0016")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0017")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0019")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0020")]
     [Trait("Category", "Positive")]
     public void TryParseShortHeader_PreservesOpaqueRemainder()
     {
         byte[] packet = QuicHeaderTestData.BuildShortHeader(
-            headerControlBits: 0x3D,
+            headerControlBits: 0x65,
             remainder: [0xA1, 0xA2, 0xA3, 0xA4]);
 
         Assert.True(QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket header));
         Assert.Equal(QuicHeaderForm.Short, header.HeaderForm);
-        Assert.Equal((byte)0x3D, header.HeaderControlBits);
+        Assert.Equal((byte)0x65, header.HeaderControlBits);
+        Assert.True(header.FixedBit);
+        Assert.True(header.SpinBit);
+        Assert.Equal((byte)0x00, header.ReservedBits);
+        Assert.True(header.KeyPhase);
+        Assert.Equal((byte)0x01, header.PacketNumberLengthBits);
         Assert.True(packet.AsSpan(1).SequenceEqual(header.Remainder));
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0012")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0014")]
+    [Trait("Category", "Negative")]
+    public void TryParseShortHeader_RejectsFixedBitZero()
+    {
+        byte[] packet = [0x3D, 0xA1, 0xA2, 0xA3];
+
+        Assert.False(QuicPacketParser.TryParseShortHeader(packet, out _));
+    }
+
+    [Fact]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0016")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0017")]
+    [Trait("Category", "Negative")]
+    public void TryParseShortHeader_RejectsReservedBitsNonZero()
+    {
+        byte[] packet = [0x5D, 0xA1, 0xA2, 0xA3];
+
+        Assert.False(QuicPacketParser.TryParseShortHeader(packet, out _));
+    }
+
+    [Fact]
     [Trait("Category", "Negative")]
     public void TryParseShortHeader_RejectsEmptyInput()
     {
@@ -26,7 +65,7 @@ public sealed class QuicShortHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-HDR-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0012")]
     [Trait("Category", "Negative")]
     public void TryParseShortHeader_RejectsLongHeaderForm()
     {
