@@ -5,11 +5,20 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicStreamFrameTests
 {
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0005")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0006")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0007")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0008")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0001")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0012")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0014")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0015")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0016")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0017")]
     [Trait("Category", "Positive")]
     public void TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes()
     {
@@ -36,9 +45,13 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0006")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0008")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0012")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0018")]
     [Trait("Category", "Positive")]
     public void TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent()
     {
@@ -61,8 +74,7 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0005")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0008")]
     [Trait("Category", "Negative")]
     public void TryParseStreamFrame_RejectsFramesWithNonStreamTypes()
     {
@@ -71,8 +83,7 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0005")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0008")]
     [Trait("Category", "Negative")]
     public void TryParseStreamFrame_RejectsEmptyInput()
     {
@@ -80,7 +91,7 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0008")]
     [Trait("Category", "Negative")]
     public void TryParseStreamFrame_RejectsNonShortestFrameTypeEncoding()
     {
@@ -97,9 +108,9 @@ public sealed class QuicStreamFrameTests
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    [Trait("Requirement", "REQ-QUIC-STRM-0006")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0007")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0011")]
     [Trait("Category", "Negative")]
     public void TryParseStreamFrame_RejectsTruncatedFixedFields(int truncateBy)
     {
@@ -115,7 +126,7 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0007")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0010")]
     [Trait("Category", "Negative")]
     public void TryParseStreamFrame_RejectsTruncatedOffsetField()
     {
@@ -134,10 +145,8 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0007")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0008")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0009")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0019")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0020")]
     [Trait("Category", "Negative")]
     public void TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeiling()
     {
@@ -161,10 +170,7 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0007")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0008")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0009")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0019")]
     [Trait("Category", "Positive")]
     public void TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeiling()
     {
@@ -186,10 +192,9 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0007")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0008")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0010")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0018")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0019")]
     [Trait("Category", "Positive")]
     public void TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeilingWithoutALengthField()
     {
@@ -211,10 +216,10 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0007")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0008")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0010")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0018")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0019")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0020")]
     [Trait("Category", "Negative")]
     public void TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeilingWithoutALengthField()
     {
@@ -228,8 +233,20 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0009")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0001")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0012")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0014")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0015")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0016")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0017")]
     [Trait("Category", "Positive")]
     public void TryParseStreamFrame_PreservesZeroLengthPayloadOffsets()
     {
@@ -250,11 +267,7 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0006")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0007")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0008")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0009")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0019")]
     [Trait("Category", "Positive")]
     public void TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsPresent()
     {
@@ -278,10 +291,9 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-STRM-0006")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0007")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0008")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0018")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0019")]
     [Trait("Category", "Positive")]
     public void TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsAbsent()
     {
@@ -306,11 +318,23 @@ public sealed class QuicStreamFrameTests
     }
 
     [Property(Arbitrary = new[] { typeof(QuicStreamFramePropertyGenerators) })]
-    [Trait("Requirement", "REQ-QUIC-STRM-0005")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0006")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0007")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0008")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0001")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0002")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0003")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0004")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0005")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0006")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0008")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0009")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0010")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0011")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0012")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0013")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0014")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0015")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0016")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0017")]
+    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P8-0018")]
     [Trait("Category", "Property")]
     public void TryParseStreamFrame_RoundTripsRepresentableStreamShapes(StreamFrameScenario scenario)
     {

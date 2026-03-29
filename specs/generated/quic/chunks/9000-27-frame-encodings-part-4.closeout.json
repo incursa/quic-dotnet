@@ -1,0 +1,1068 @@
+[
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P12-0003",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added DATA_BLOCKED frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added DATA_BLOCKED frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P12-0004",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added DATA_BLOCKED frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added DATA_BLOCKED frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P12-0005",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added DATA_BLOCKED frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added DATA_BLOCKED frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P12-0006",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added DATA_BLOCKED frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added DATA_BLOCKED frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P13-0003",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P13-0004",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P13-0005",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P13-0006",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P13-0007",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P13-0008",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAM_DATA_BLOCKED frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P14-0002",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P14-0004",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P14-0005",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P14-0006",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P14-0007",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P14-0008",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests.",
+    "remaining_gap": "none",
+    "notes": "Added STREAMS_BLOCKED frame carrier, shared stream-limit codec helper, and limit tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0002",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests.",
+    "remaining_gap": "none",
+    "notes": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0003",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests.",
+    "remaining_gap": "none",
+    "notes": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0004",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests.",
+    "remaining_gap": "none",
+    "notes": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0005",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests.",
+    "remaining_gap": "none",
+    "notes": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0006",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests.",
+    "remaining_gap": "none",
+    "notes": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0007",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests.",
+    "remaining_gap": "none",
+    "notes": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0008",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests.",
+    "remaining_gap": "none",
+    "notes": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0009",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests.",
+    "remaining_gap": "none",
+    "notes": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0010",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests.",
+    "remaining_gap": "none",
+    "notes": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0012",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests.",
+    "remaining_gap": "none",
+    "notes": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0013",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests.",
+    "remaining_gap": "none",
+    "notes": "Added NEW_CONNECTION_ID frame carrier, codec validation for CID length and Retire Prior To, and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P16-0004",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicRetireConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added RETIRE_CONNECTION_ID frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added RETIRE_CONNECTION_ID frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P16-0005",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicRetireConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added RETIRE_CONNECTION_ID frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added RETIRE_CONNECTION_ID frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P16-0006",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicRetireConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added RETIRE_CONNECTION_ID frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added RETIRE_CONNECTION_ID frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P17-0002",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicPathChallengeFrame.cs",
+      "src/Incursa.Quic/QuicPathResponseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added PATH_CHALLENGE frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added PATH_CHALLENGE frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P17-0003",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicPathChallengeFrame.cs",
+      "src/Incursa.Quic/QuicPathResponseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added PATH_CHALLENGE frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added PATH_CHALLENGE frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P17-0004",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicPathChallengeFrame.cs",
+      "src/Incursa.Quic/QuicPathResponseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added PATH_CHALLENGE frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added PATH_CHALLENGE frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P17-0005",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicPathChallengeFrame.cs",
+      "src/Incursa.Quic/QuicPathResponseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added PATH_CHALLENGE frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added PATH_CHALLENGE frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P18-0001",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicPathChallengeFrame.cs",
+      "src/Incursa.Quic/QuicPathResponseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added PATH_RESPONSE frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added PATH_RESPONSE frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P18-0002",
+    "status": "implemented and tested",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicPathChallengeFrame.cs",
+      "src/Incursa.Quic/QuicPathResponseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Added PATH_RESPONSE frame carrier plus codec parse/format support and tests.",
+    "remaining_gap": "none",
+    "notes": "Added PATH_RESPONSE frame carrier plus codec parse/format support and tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P14-0009",
+    "status": "partially implemented",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Codec rejects oversize stream-limit values, but the connection-layer STREAM_LIMIT_ERROR / FRAME_ENCODING_ERROR mapping is still deferred.",
+    "remaining_gap": "Codec rejects oversize stream-limit values, but the connection-layer STREAM_LIMIT_ERROR / FRAME_ENCODING_ERROR mapping is still deferred.",
+    "notes": "Codec rejects oversize stream-limit values, but the connection-layer STREAM_LIMIT_ERROR / FRAME_ENCODING_ERROR mapping is still deferred."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0011",
+    "status": "partially implemented",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Codec rejects invalid CID lengths, but the repository does not yet surface a connection-layer FRAME_ENCODING_ERROR.",
+    "remaining_gap": "Codec rejects invalid CID lengths, but the repository does not yet surface a connection-layer FRAME_ENCODING_ERROR.",
+    "notes": "Codec rejects invalid CID lengths, but the repository does not yet surface a connection-layer FRAME_ENCODING_ERROR."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0019",
+    "status": "partially implemented",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Codec validates Retire Prior To <= Sequence Number, but peer CID-retirement bookkeeping is not present in this slice.",
+    "remaining_gap": "Codec validates Retire Prior To <= Sequence Number, but peer CID-retirement bookkeeping is not present in this slice.",
+    "notes": "Codec validates Retire Prior To <= Sequence Number, but peer CID-retirement bookkeeping is not present in this slice."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0020",
+    "status": "partially implemented",
+    "implementation_refs": [
+      "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "test_refs": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "Codec rejects Retire Prior To values greater than Sequence Number, but the connection-layer FRAME_ENCODING_ERROR mapping is still deferred.",
+    "remaining_gap": "Codec rejects Retire Prior To values greater than Sequence Number, but the connection-layer FRAME_ENCODING_ERROR mapping is still deferred.",
+    "notes": "Codec rejects Retire Prior To values greater than Sequence Number, but the connection-layer FRAME_ENCODING_ERROR mapping is still deferred."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P12-0001",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires sender-side flow-control state and heuristics that are not implemented in this slice.",
+    "notes": "Requires sender-side flow-control state and heuristics that are not implemented in this slice."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P12-0002",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires sender-side flow-control state and heuristics that are not implemented in this slice.",
+    "notes": "Requires sender-side flow-control state and heuristics that are not implemented in this slice."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P13-0001",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires stream-state tracking and send-only handling that is not implemented in this slice.",
+    "notes": "Requires stream-state tracking and send-only handling that is not implemented in this slice."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P13-0002",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires stream-state tracking and send-only handling that is not implemented in this slice.",
+    "notes": "Requires stream-state tracking and send-only handling that is not implemented in this slice."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P14-0001",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires stream-opening accounting in the connection/stream manager, beyond frame encoding.",
+    "notes": "Requires stream-opening accounting in the connection/stream manager, beyond frame encoding."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P14-0003",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires stream-opening accounting in the connection/stream manager, beyond frame encoding.",
+    "notes": "Requires stream-opening accounting in the connection/stream manager, beyond frame encoding."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0001",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec.",
+    "notes": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0014",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec.",
+    "notes": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0015",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec.",
+    "notes": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0016",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec.",
+    "notes": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0017",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec.",
+    "notes": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0018",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec.",
+    "notes": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0021",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec.",
+    "notes": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0022",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec.",
+    "notes": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0023",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec.",
+    "notes": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P16-0001",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec.",
+    "notes": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P16-0002",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec.",
+    "notes": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P16-0003",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec.",
+    "notes": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P16-0007",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec.",
+    "notes": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P16-0008",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec.",
+    "notes": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P16-0009",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec.",
+    "notes": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P16-0010",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec.",
+    "notes": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P16-0011",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec.",
+    "notes": "Requires peer-issued CID lifecycle tracking and destination-CID checks outside the frame codec."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P17-0001",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires path-validation response generation in the connection/path manager.",
+    "notes": "Requires path-validation response generation in the connection/path manager."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P17-0006",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires path-validation response generation in the connection/path manager.",
+    "notes": "Requires path-validation response generation in the connection/path manager."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P18-0003",
+    "status": "blocked",
+    "implementation_refs": [],
+    "test_refs": [],
+    "old_requirement_refs_rewritten": [],
+    "changes_made": "No implementation changes in this slice; deferred pending the blocked dependency.",
+    "remaining_gap": "Requires path-validation comparison/state in the connection/path manager.",
+    "notes": "Requires path-validation comparison/state in the connection/path manager."
+  }
+]

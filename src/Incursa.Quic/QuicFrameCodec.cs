@@ -11,6 +11,24 @@ public static class QuicFrameCodec
     private const ulong AckEcnFrameType = 0x03;
     private const ulong ResetStreamFrameType = 0x04;
     private const ulong StopSendingFrameType = 0x05;
+    private const ulong CryptoFrameType = 0x06;
+    private const ulong NewTokenFrameType = 0x07;
+    private const ulong MaxDataFrameType = 0x10;
+    private const ulong MaxStreamDataFrameType = 0x11;
+    private const ulong MaxStreamsBidirectionalFrameType = 0x12;
+    private const ulong MaxStreamsUnidirectionalFrameType = 0x13;
+    private const ulong DataBlockedFrameType = 0x14;
+    private const ulong StreamDataBlockedFrameType = 0x15;
+    private const ulong StreamsBlockedBidirectionalFrameType = 0x16;
+    private const ulong StreamsBlockedUnidirectionalFrameType = 0x17;
+    private const ulong NewConnectionIdFrameType = 0x18;
+    private const ulong RetireConnectionIdFrameType = 0x19;
+    private const ulong PathChallengeFrameType = 0x1A;
+    private const ulong PathResponseFrameType = 0x1B;
+    private const ulong MaximumStreamLimit = 1UL << 60;
+    private const int MaximumConnectionIdLength = 20;
+    private const int StatelessResetTokenLength = 16;
+    private const int PathFrameDataLength = 8;
 
     /// <summary>
     /// Parses a PADDING frame from the start of a packet payload slice.
@@ -287,6 +305,569 @@ public static class QuicFrameCodec
         return true;
     }
 
+    /// <summary>
+    /// Parses a CRYPTO frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseCryptoFrame(ReadOnlySpan<byte> packetPayload, out QuicCryptoFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseFixedType(packetPayload, CryptoFrameType, out int index))
+        {
+            return false;
+        }
+
+        if (!TryParseVarint(packetPayload, ref index, out ulong offset)
+            || !TryParseVarint(packetPayload, ref index, out ulong cryptoDataLength))
+        {
+            return false;
+        }
+
+        if (cryptoDataLength > (ulong)(packetPayload.Length - index))
+        {
+            return false;
+        }
+
+        if (offset > QuicVariableLengthInteger.MaxValue - cryptoDataLength)
+        {
+            return false;
+        }
+
+        frame = new QuicCryptoFrame(offset, packetPayload.Slice(index, (int)cryptoDataLength));
+        bytesConsumed = index + (int)cryptoDataLength;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a CRYPTO frame.
+    /// </summary>
+    public static bool TryFormatCryptoFrame(QuicCryptoFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        int index = 0;
+        if (!TryWriteVarint(CryptoFrameType, destination, ref index)
+            || !TryWriteVarint(frame.Offset, destination, ref index)
+            || !TryWriteVarint((ulong)frame.CryptoData.Length, destination, ref index))
+        {
+            return false;
+        }
+
+        if (destination.Length < index + frame.CryptoData.Length)
+        {
+            return false;
+        }
+
+        frame.CryptoData.CopyTo(destination[index..]);
+        bytesWritten = index + frame.CryptoData.Length;
+        return true;
+    }
+
+    /// <summary>
+    /// Parses a NEW_TOKEN frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseNewTokenFrame(ReadOnlySpan<byte> packetPayload, out QuicNewTokenFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseFixedType(packetPayload, NewTokenFrameType, out int index))
+        {
+            return false;
+        }
+
+        if (!TryParseVarint(packetPayload, ref index, out ulong tokenLength) || tokenLength is 0)
+        {
+            return false;
+        }
+
+        if (tokenLength > (ulong)(packetPayload.Length - index))
+        {
+            return false;
+        }
+
+        frame = new QuicNewTokenFrame(packetPayload.Slice(index, (int)tokenLength));
+        bytesConsumed = index + (int)tokenLength;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a NEW_TOKEN frame.
+    /// </summary>
+    public static bool TryFormatNewTokenFrame(QuicNewTokenFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        if (frame.Token.IsEmpty)
+        {
+            return false;
+        }
+
+        int index = 0;
+        if (!TryWriteVarint(NewTokenFrameType, destination, ref index)
+            || !TryWriteVarint((ulong)frame.Token.Length, destination, ref index))
+        {
+            return false;
+        }
+
+        if (destination.Length < index + frame.Token.Length)
+        {
+            return false;
+        }
+
+        frame.Token.CopyTo(destination[index..]);
+        bytesWritten = index + frame.Token.Length;
+        return true;
+    }
+
+    /// <summary>
+    /// Parses a MAX_DATA frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseMaxDataFrame(ReadOnlySpan<byte> packetPayload, out QuicMaxDataFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseFixedType(packetPayload, MaxDataFrameType, out int index)
+            || !TryParseVarint(packetPayload, ref index, out ulong maximumData))
+        {
+            return false;
+        }
+
+        frame = new QuicMaxDataFrame(maximumData);
+        bytesConsumed = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a MAX_DATA frame.
+    /// </summary>
+    public static bool TryFormatMaxDataFrame(QuicMaxDataFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        int index = 0;
+        if (!TryWriteVarint(MaxDataFrameType, destination, ref index)
+            || !TryWriteVarint(frame.MaximumData, destination, ref index))
+        {
+            return false;
+        }
+
+        bytesWritten = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Parses a DATA_BLOCKED frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseDataBlockedFrame(ReadOnlySpan<byte> packetPayload, out QuicDataBlockedFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseFixedType(packetPayload, DataBlockedFrameType, out int index)
+            || !TryParseVarint(packetPayload, ref index, out ulong maximumData))
+        {
+            return false;
+        }
+
+        frame = new QuicDataBlockedFrame(maximumData);
+        bytesConsumed = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a DATA_BLOCKED frame.
+    /// </summary>
+    public static bool TryFormatDataBlockedFrame(QuicDataBlockedFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        int index = 0;
+        if (!TryWriteVarint(DataBlockedFrameType, destination, ref index)
+            || !TryWriteVarint(frame.MaximumData, destination, ref index))
+        {
+            return false;
+        }
+
+        bytesWritten = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Parses a STREAM_DATA_BLOCKED frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseStreamDataBlockedFrame(ReadOnlySpan<byte> packetPayload, out QuicStreamDataBlockedFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseFixedType(packetPayload, StreamDataBlockedFrameType, out int index)
+            || !TryParseVarint(packetPayload, ref index, out ulong streamId)
+            || !TryParseVarint(packetPayload, ref index, out ulong maximumStreamData))
+        {
+            return false;
+        }
+
+        frame = new QuicStreamDataBlockedFrame(streamId, maximumStreamData);
+        bytesConsumed = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a STREAM_DATA_BLOCKED frame.
+    /// </summary>
+    public static bool TryFormatStreamDataBlockedFrame(QuicStreamDataBlockedFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        int index = 0;
+        if (!TryWriteVarint(StreamDataBlockedFrameType, destination, ref index)
+            || !TryWriteVarint(frame.StreamId, destination, ref index)
+            || !TryWriteVarint(frame.MaximumStreamData, destination, ref index))
+        {
+            return false;
+        }
+
+        bytesWritten = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Parses a MAX_STREAM_DATA frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseMaxStreamDataFrame(ReadOnlySpan<byte> packetPayload, out QuicMaxStreamDataFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseFixedType(packetPayload, MaxStreamDataFrameType, out int index)
+            || !TryParseVarint(packetPayload, ref index, out ulong streamId)
+            || !TryParseVarint(packetPayload, ref index, out ulong maximumStreamData))
+        {
+            return false;
+        }
+
+        frame = new QuicMaxStreamDataFrame(streamId, maximumStreamData);
+        bytesConsumed = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a MAX_STREAM_DATA frame.
+    /// </summary>
+    public static bool TryFormatMaxStreamDataFrame(QuicMaxStreamDataFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        int index = 0;
+        if (!TryWriteVarint(MaxStreamDataFrameType, destination, ref index)
+            || !TryWriteVarint(frame.StreamId, destination, ref index)
+            || !TryWriteVarint(frame.MaximumStreamData, destination, ref index))
+        {
+            return false;
+        }
+
+        bytesWritten = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Parses a MAX_STREAMS frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseMaxStreamsFrame(ReadOnlySpan<byte> packetPayload, out QuicMaxStreamsFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseStreamLimitFrame(
+                packetPayload,
+                MaxStreamsBidirectionalFrameType,
+                MaxStreamsUnidirectionalFrameType,
+                out bool isBidirectional,
+                out ulong maximumStreams,
+                out int index))
+        {
+            return false;
+        }
+
+        frame = new QuicMaxStreamsFrame(isBidirectional, maximumStreams);
+        bytesConsumed = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a MAX_STREAMS frame.
+    /// </summary>
+    public static bool TryFormatMaxStreamsFrame(QuicMaxStreamsFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        return TryFormatStreamLimitFrame(
+            frame.IsBidirectional,
+            frame.MaximumStreams,
+            MaxStreamsBidirectionalFrameType,
+            MaxStreamsUnidirectionalFrameType,
+            destination,
+            out bytesWritten);
+    }
+
+    /// <summary>
+    /// Parses a STREAMS_BLOCKED frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseStreamsBlockedFrame(ReadOnlySpan<byte> packetPayload, out QuicStreamsBlockedFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseStreamLimitFrame(
+                packetPayload,
+                StreamsBlockedBidirectionalFrameType,
+                StreamsBlockedUnidirectionalFrameType,
+                out bool isBidirectional,
+                out ulong maximumStreams,
+                out int index))
+        {
+            return false;
+        }
+
+        frame = new QuicStreamsBlockedFrame(isBidirectional, maximumStreams);
+        bytesConsumed = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a STREAMS_BLOCKED frame.
+    /// </summary>
+    public static bool TryFormatStreamsBlockedFrame(QuicStreamsBlockedFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        return TryFormatStreamLimitFrame(
+            frame.IsBidirectional,
+            frame.MaximumStreams,
+            StreamsBlockedBidirectionalFrameType,
+            StreamsBlockedUnidirectionalFrameType,
+            destination,
+            out bytesWritten);
+    }
+
+    /// <summary>
+    /// Parses a NEW_CONNECTION_ID frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseNewConnectionIdFrame(ReadOnlySpan<byte> packetPayload, out QuicNewConnectionIdFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseFixedType(packetPayload, NewConnectionIdFrameType, out int index)
+            || !TryParseVarint(packetPayload, ref index, out ulong sequenceNumber)
+            || !TryParseVarint(packetPayload, ref index, out ulong retirePriorTo)
+            || !TryParseVarint(packetPayload, ref index, out ulong connectionIdLengthValue))
+        {
+            return false;
+        }
+
+        if (connectionIdLengthValue is 0 or > MaximumConnectionIdLength)
+        {
+            return false;
+        }
+
+        int connectionIdLength = (int)connectionIdLengthValue;
+        int remainingLength = packetPayload.Length - index;
+        if (remainingLength < connectionIdLength + StatelessResetTokenLength)
+        {
+            return false;
+        }
+
+        if (retirePriorTo > sequenceNumber)
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> connectionId = packetPayload.Slice(index, connectionIdLength);
+        index += connectionIdLength;
+        ReadOnlySpan<byte> statelessResetToken = packetPayload.Slice(index, StatelessResetTokenLength);
+        index += StatelessResetTokenLength;
+
+        frame = new QuicNewConnectionIdFrame(sequenceNumber, retirePriorTo, connectionId, statelessResetToken);
+        bytesConsumed = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a NEW_CONNECTION_ID frame.
+    /// </summary>
+    public static bool TryFormatNewConnectionIdFrame(QuicNewConnectionIdFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        if (frame.ConnectionId.Length is 0 or > MaximumConnectionIdLength
+            || frame.StatelessResetToken.Length != StatelessResetTokenLength
+            || frame.RetirePriorTo > frame.SequenceNumber)
+        {
+            return false;
+        }
+
+        int index = 0;
+        if (!TryWriteVarint(NewConnectionIdFrameType, destination, ref index)
+            || !TryWriteVarint(frame.SequenceNumber, destination, ref index)
+            || !TryWriteVarint(frame.RetirePriorTo, destination, ref index))
+        {
+            return false;
+        }
+
+        if (destination.Length < index + 1 + frame.ConnectionId.Length + StatelessResetTokenLength)
+        {
+            return false;
+        }
+
+        destination[index++] = (byte)frame.ConnectionId.Length;
+        frame.ConnectionId.CopyTo(destination[index..]);
+        index += frame.ConnectionId.Length;
+        frame.StatelessResetToken.CopyTo(destination[index..]);
+        index += StatelessResetTokenLength;
+
+        bytesWritten = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Parses a RETIRE_CONNECTION_ID frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseRetireConnectionIdFrame(ReadOnlySpan<byte> packetPayload, out QuicRetireConnectionIdFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseFixedType(packetPayload, RetireConnectionIdFrameType, out int index)
+            || !TryParseVarint(packetPayload, ref index, out ulong sequenceNumber))
+        {
+            return false;
+        }
+
+        frame = new QuicRetireConnectionIdFrame(sequenceNumber);
+        bytesConsumed = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a RETIRE_CONNECTION_ID frame.
+    /// </summary>
+    public static bool TryFormatRetireConnectionIdFrame(QuicRetireConnectionIdFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        int index = 0;
+        if (!TryWriteVarint(RetireConnectionIdFrameType, destination, ref index)
+            || !TryWriteVarint(frame.SequenceNumber, destination, ref index))
+        {
+            return false;
+        }
+
+        bytesWritten = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Parses a PATH_CHALLENGE frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParsePathChallengeFrame(ReadOnlySpan<byte> packetPayload, out QuicPathChallengeFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseFixedType(packetPayload, PathChallengeFrameType, out int index))
+        {
+            return false;
+        }
+
+        if (packetPayload.Length - index < PathFrameDataLength)
+        {
+            return false;
+        }
+
+        frame = new QuicPathChallengeFrame(packetPayload.Slice(index, PathFrameDataLength));
+        bytesConsumed = index + PathFrameDataLength;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a PATH_CHALLENGE frame.
+    /// </summary>
+    public static bool TryFormatPathChallengeFrame(QuicPathChallengeFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        if (frame.Data.Length != PathFrameDataLength)
+        {
+            return false;
+        }
+
+        int index = 0;
+        if (!TryWriteVarint(PathChallengeFrameType, destination, ref index))
+        {
+            return false;
+        }
+
+        if (destination.Length < index + PathFrameDataLength)
+        {
+            return false;
+        }
+
+        frame.Data.CopyTo(destination[index..]);
+        bytesWritten = index + PathFrameDataLength;
+        return true;
+    }
+
+    /// <summary>
+    /// Parses a PATH_RESPONSE frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParsePathResponseFrame(ReadOnlySpan<byte> packetPayload, out QuicPathResponseFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseFixedType(packetPayload, PathResponseFrameType, out int index))
+        {
+            return false;
+        }
+
+        if (packetPayload.Length - index < PathFrameDataLength)
+        {
+            return false;
+        }
+
+        frame = new QuicPathResponseFrame(packetPayload.Slice(index, PathFrameDataLength));
+        bytesConsumed = index + PathFrameDataLength;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a PATH_RESPONSE frame.
+    /// </summary>
+    public static bool TryFormatPathResponseFrame(QuicPathResponseFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        if (frame.Data.Length != PathFrameDataLength)
+        {
+            return false;
+        }
+
+        int index = 0;
+        if (!TryWriteVarint(PathResponseFrameType, destination, ref index))
+        {
+            return false;
+        }
+
+        if (destination.Length < index + PathFrameDataLength)
+        {
+            return false;
+        }
+
+        frame.Data.CopyTo(destination[index..]);
+        bytesWritten = index + PathFrameDataLength;
+        return true;
+    }
+
     private static bool TryParseFixedType(ReadOnlySpan<byte> packetPayload, ulong expectedTypeValue, out int bytesConsumed)
     {
         bytesConsumed = default;
@@ -320,6 +901,62 @@ public static class QuicFrameCodec
     {
         bytesWritten = default;
         return TryWriteVarint(frameTypeValue, destination, ref bytesWritten);
+    }
+
+    private static bool TryParseStreamLimitFrame(
+        ReadOnlySpan<byte> packetPayload,
+        ulong bidirectionalFrameType,
+        ulong unidirectionalFrameType,
+        out bool isBidirectional,
+        out ulong maximumStreams,
+        out int bytesConsumed)
+    {
+        isBidirectional = default;
+        maximumStreams = default;
+        bytesConsumed = default;
+
+        if (!QuicVariableLengthInteger.TryParse(packetPayload, out ulong frameTypeValue, out int index)
+            || index != 1
+            || (frameTypeValue != bidirectionalFrameType && frameTypeValue != unidirectionalFrameType))
+        {
+            return false;
+        }
+
+        if (!TryParseVarint(packetPayload, ref index, out maximumStreams) || maximumStreams > MaximumStreamLimit)
+        {
+            return false;
+        }
+
+        isBidirectional = frameTypeValue == bidirectionalFrameType;
+        bytesConsumed = index;
+        return true;
+    }
+
+    private static bool TryFormatStreamLimitFrame(
+        bool isBidirectional,
+        ulong maximumStreams,
+        ulong bidirectionalFrameType,
+        ulong unidirectionalFrameType,
+        Span<byte> destination,
+        out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        if (maximumStreams > MaximumStreamLimit)
+        {
+            return false;
+        }
+
+        int index = 0;
+        ulong frameType = isBidirectional ? bidirectionalFrameType : unidirectionalFrameType;
+        if (!TryWriteVarint(frameType, destination, ref index)
+            || !TryWriteVarint(maximumStreams, destination, ref index))
+        {
+            return false;
+        }
+
+        bytesWritten = index;
+        return true;
     }
 
     private static bool TryWriteVarint(ulong value, Span<byte> destination, ref int index)

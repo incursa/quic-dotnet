@@ -1,0 +1,1322 @@
+{
+  "summary": {
+    "chunk_id": "9000-26-frame-encodings-part-3",
+    "rfc": 9000,
+    "section_tokens": [
+      "S19P6",
+      "S19P7",
+      "S19P8",
+      "S19P9",
+      "S19P10",
+      "S19P11"
+    ],
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "counts": {
+      "total": 78,
+      "implemented_and_tested": 17,
+      "implemented_but_missing_tests": 0,
+      "tested_but_implementation_mapping_unclear": 0,
+      "partially_implemented": 2,
+      "not_implemented": 59,
+      "unclear_or_needs_human_review": 0
+    },
+    "section_counts": {
+      "S19P6": 13,
+      "S19P7": 10,
+      "S19P8": 20,
+      "S19P9": 8,
+      "S19P10": 14,
+      "S19P11": 13
+    },
+    "changed_files": [
+      "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
+      "specs/generated/quic/chunks/9000-26-frame-encodings-part-3.reconciliation.md",
+      "specs/generated/quic/chunks/9000-26-frame-encodings-part-3.reconciliation.json"
+    ],
+    "tests_run": [
+      "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --logger \"console;verbosity=minimal\"",
+      "Result: Passed",
+      "Summary: 155 passed, 0 failed, 0 skipped"
+    ],
+    "consulted_inputs": [
+      "docs/requirements-workflow.md",
+      "docs/spec-trace-prep.md",
+      "specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+      "specs/generated/quic/import-audit-summary.md",
+      "specs/generated/quic/import-missing-coverage.md",
+      "specs/generated/quic/import-validator-mismatch.md",
+      "specs/generated/quic/quic-existing-work-inventory.md",
+      "specs/generated/quic/quic-existing-work-inventory.json",
+      "specs/generated/quic/implementation-chunk-manifest.json"
+    ],
+    "notes": [
+      "The requirements-gap ledger path referenced by repo guidance does not exist in this checkout, so the pass used the owning spec plus generated audit outputs instead.",
+      "Only S19P8 has live implementation/test evidence in this chunk; S19P6, S19P7, S19P9, S19P10, and S19P11 remain greenfield.",
+      "The generated inventory snapshot was not regenerated in this pass and still reflects the pre-rewrite legacy STREAM tags."
+    ]
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0001",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0002",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0003",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0005",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0006",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0007",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0008",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0009",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0012",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0013",
+      "section": "S19P6",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No CRYPTO frame encoder/decoder or handshake-message transport surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0001",
+      "section": "S19P7",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No NEW_TOKEN frame encoder/decoder or token-validation surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0002",
+      "section": "S19P7",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No NEW_TOKEN frame encoder/decoder or token-validation surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0003",
+      "section": "S19P7",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No NEW_TOKEN frame encoder/decoder or token-validation surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0004",
+      "section": "S19P7",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No NEW_TOKEN frame encoder/decoder or token-validation surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0005",
+      "section": "S19P7",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No NEW_TOKEN frame encoder/decoder or token-validation surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0006",
+      "section": "S19P7",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No NEW_TOKEN frame encoder/decoder or token-validation surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0007",
+      "section": "S19P7",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No NEW_TOKEN frame encoder/decoder or token-validation surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0008",
+      "section": "S19P7",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No NEW_TOKEN frame encoder/decoder or token-validation surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0009",
+      "section": "S19P7",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No NEW_TOKEN frame encoder/decoder or token-validation surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0010",
+      "section": "S19P7",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No NEW_TOKEN frame encoder/decoder or token-validation surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0001",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0002",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0003",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0004",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0005",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0006",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0007",
+      "section": "S19P8",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state API exists to detect unopened locally initiated or send-only streams and raise STREAM_STATE_ERROR.",
+      "notes": "Parser-level byte-shape validation exists, but no connection-state enforcement surface is implemented."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0008",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0009",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0010",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0011",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0012",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0013",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0014",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0015",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0016",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0017",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0018",
+      "section": "S19P8",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "",
+      "notes": "Live parser/view code and rewritten stream-frame tests cover the byte layout, field presence, and truncation behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0019",
+      "section": "S19P8",
+      "status": "partially implemented",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-222",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:259-297"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "The parser enforces the offset ceiling, but the repo has no connection-layer error reporting surface for FRAME_ENCODING_ERROR or FLOW_CONTROL_ERROR.",
+      "notes": "Parser-level offset ceiling checks exist, but the repository does not yet expose a connection-layer error path for the normative error requirement."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0020",
+      "section": "S19P8",
+      "status": "partially implemented",
+      "implementation_refs": [
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs:26-106",
+        "C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs:6-93"
+      ],
+      "test_refs": [
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:14-54",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:67-114",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-197",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:219-337",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs:36-51",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs:7-22",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamTestData.cs:5-78",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:129-222",
+        "C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs:259-297"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0005",
+        "REQ-QUIC-STRM-0006",
+        "REQ-QUIC-STRM-0007",
+        "REQ-QUIC-STRM-0008",
+        "REQ-QUIC-STRM-0009",
+        "REQ-QUIC-STRM-0010",
+        "REQ-QUIC-STRM-0011"
+      ],
+      "changes_made": [
+        "Rewrote the selected stream-frame test traits from legacy `REQ-QUIC-STRM-*` identifiers to canonical `REQ-QUIC-RFC9000-S19P8-*` identifiers."
+      ],
+      "remaining_gap": "The parser enforces the offset ceiling, but the repo has no connection-layer error reporting surface for FRAME_ENCODING_ERROR or FLOW_CONTROL_ERROR.",
+      "notes": "Parser-level offset ceiling checks exist, but the repository does not yet expose a connection-layer error path for the normative error requirement."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0001",
+      "section": "S19P9",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0002",
+      "section": "S19P9",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0003",
+      "section": "S19P9",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0004",
+      "section": "S19P9",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0005",
+      "section": "S19P9",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0006",
+      "section": "S19P9",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0007",
+      "section": "S19P9",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0008",
+      "section": "S19P9",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0001",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0002",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0003",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0004",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0005",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0006",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0007",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0008",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0009",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0010",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0011",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0012",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0013",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0014",
+      "section": "S19P10",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAM_DATA frame encoder/decoder or flow-control-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0001",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0002",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0003",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0004",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0005",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0006",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0007",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0008",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0009",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0010",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0011",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0012",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0013",
+      "section": "S19P11",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No MAX_STREAMS frame encoder/decoder or stream-limit-frame surface exists in the current repo.",
+      "notes": "No live implementation or test evidence was found under the selected roots."
+    }
+  ]
+}
