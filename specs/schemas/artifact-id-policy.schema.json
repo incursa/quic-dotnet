@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "artifact-id-policy.schema.json",
+  "title": "Identifier Policy Metadata Catalog",
+  "description": "Reference schema for the shared identifier and grouping-key metadata catalog used by the spec-trace repository.",
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "formatObject": {
+      "type": "object",
+      "required": [
+        "summary",
+        "grouping_segments",
+        "sequence"
+      ],
+      "properties": {
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "grouping_segments": {
+          "type": "object",
+          "required": [
+            "minimum",
+            "maximum",
+            "segment_pattern",
+            "segment_must_start_with_letter"
+          ],
+          "properties": {
+            "minimum": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maximum": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "segment_pattern": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "segment_must_start_with_letter": {
+              "const": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "sequence": {
+          "type": "object",
+          "required": [
+            "minimum_digits",
+            "pattern"
+          ],
+          "properties": {
+            "minimum_digits": {
+              "type": "integer",
+              "minimum": 4
+            },
+            "pattern": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "name",
+    "version",
+    "artifact_id_format",
+    "requirement_id_format",
+    "sequence",
+    "segments",
+    "artifact_id_templates",
+    "requirement_id_template",
+    "grouping_key_registry",
+    "notes"
+  ],
+  "properties": {
+    "name": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "artifact_id_format": {
+      "$ref": "#/$defs/formatObject"
+    },
+    "requirement_id_format": {
+      "$ref": "#/$defs/formatObject"
+    },
+    "sequence": {
+      "type": "object",
+      "required": [
+        "minimum_digits",
+        "pattern"
+      ],
+      "properties": {
+        "minimum_digits": {
+          "type": "integer",
+          "minimum": 4
+        },
+        "pattern": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "additionalProperties": false
+    },
+    "segments": {
+      "type": "object",
+      "required": [
+        "domain",
+        "grouping"
+      ],
+      "properties": {
+        "domain": {
+          "type": "object",
+          "required": [
+            "pattern"
+          ],
+          "properties": {
+            "pattern": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          },
+          "additionalProperties": false
+        },
+        "grouping": {
+          "type": "object",
+          "required": [
+            "pattern",
+            "allow_multiple"
+          ],
+          "properties": {
+            "pattern": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "allow_multiple": {
+              "const": true
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact_id_templates": {
+      "type": "object",
+      "required": [
+        "specification",
+        "architecture",
+        "work_item",
+        "verification"
+      ],
+      "properties": {
+        "specification": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "architecture": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "work_item": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "verification": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "additionalProperties": false
+    },
+    "requirement_id_template": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "grouping_key_registry": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "description"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9]*$"
+          },
+          "name": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "description": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false
+}

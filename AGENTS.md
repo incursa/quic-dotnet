@@ -19,13 +19,13 @@ Every protocol slice MUST define how it will be proven before code review is con
 - Positive tests are required.
 - Negative tests are required.
 - Fuzzing is required for wire-facing parsers, serializers, decoders, encoders, and boundary-heavy state transitions.
-- Benchmarks are required for processing, parsing, encoding, decoding, and serialization hot paths. Keep permanent suites under [`benchmarks`](benchmarks).
-- Verification artifacts in [`specs/verification/quic`](specs/verification/quic) must record the evidence used to prove the requirement set.
+- Benchmarks are required for processing, parsing, encoding, decoding, and serialization hot paths. Keep permanent suites under [`benchmarks/README.md`](benchmarks/README.md).
+- Verification artifacts in [`specs/verification/quic/README.md`](specs/verification/quic/README.md) must record the evidence used to prove the requirement set.
 
 ## Tooling Alignment
 
 - Use the repo-local Workbench configuration in [`.workbench/config.json`](.workbench/config.json) for canonical artifact paths.
-- Use the SpecTrace templates in [`specs/templates`](specs/templates) when creating new artifacts.
+- Use the SpecTrace templates in [`specs/templates/README.md`](specs/templates/README.md) when creating new artifacts.
 - Use the quality intent contract in [`quality/testing-intent.yaml`](quality/testing-intent.yaml) as the repo-level testing bar, but do not treat coverage percentages as a substitute for protocol correctness evidence.
 
 ## Guardrails

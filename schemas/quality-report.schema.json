@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Workbench Quality Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "domain",
+    "reportId",
+    "generatedAt",
+    "authored",
+    "observed",
+    "assessment"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "domain": { "type": "string", "const": "testing" },
+    "reportId": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "authored": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contractPath"],
+      "properties": {
+        "contractPath": { "type": "string" },
+        "version": { "type": ["integer", "null"] },
+        "confidenceTarget": { "type": ["string", "null"] },
+        "expectedEvidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["inventory", "results", "coverage", "analyzers", "mutation", "fuzz"]
+          }
+        },
+        "requiredTests": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "criticalFiles": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "intentionalGaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["subject", "rationale"],
+            "properties": {
+              "subject": { "type": "string" },
+              "rationale": { "type": "string" },
+              "relatedWorkItem": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "links": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "docs": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "workItems": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "files": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "codeRefs": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "observed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inventoryPath", "runSummaryPath", "coverageSummaryPath"],
+      "properties": {
+        "inventoryPath": { "type": ["string", "null"] },
+        "runSummaryPath": { "type": ["string", "null"] },
+        "coverageSummaryPath": { "type": ["string", "null"] },
+        "inventoryGeneratedAt": { "type": ["string", "null"], "format": "date-time" },
+        "runObservedAt": { "type": ["string", "null"], "format": "date-time" },
+        "coverageObservedAt": { "type": ["string", "null"], "format": "date-time" },
+        "summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "discoveredTests": { "type": "integer", "minimum": 0 },
+            "passed": { "type": "integer", "minimum": 0 },
+            "failed": { "type": "integer", "minimum": 0 },
+            "skipped": { "type": "integer", "minimum": 0 },
+            "lineRate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "branchRate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "confidenceVerdict", "findings"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["ok", "warn", "fail", "incomplete"]
+        },
+        "confidenceVerdict": {
+          "type": "string",
+          "enum": ["aligned", "under-target", "not-assessed"]
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "severity", "message"],
+            "properties": {
+              "code": { "type": "string" },
+              "severity": { "type": "string", "enum": ["info", "warn", "error"] },
+              "message": { "type": "string" },
+              "subjectType": {
+                "type": ["string", "null"],
+                "enum": [null, "test", "project", "file", "contract", "report"]
+              },
+              "subjectRef": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "markdownPath": { "type": ["string", "null"] }
+  }
+}

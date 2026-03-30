@@ -1,0 +1,318 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "artifact-frontmatter.schema.json",
+  "title": "Artifact Front Matter",
+  "description": "Strict reference schema for file-level YAML front matter used by the specification, architecture, work-item, and verification Markdown artifacts in this package. Core fields stay strict, and optional namespaced x_ extension keys are allowed for local metadata.",
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "specificationId": {
+      "type": "string",
+      "pattern": "^SPEC-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*$"
+    },
+    "requirementId": {
+      "type": "string",
+      "pattern": "^REQ-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "architectureId": {
+      "type": "string",
+      "pattern": "^ARC-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "workItemId": {
+      "type": "string",
+      "pattern": "^WI-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "verificationId": {
+      "type": "string",
+      "pattern": "^VER-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "traceArtifactId": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/specificationId"
+        },
+        {
+          "$ref": "#/$defs/architectureId"
+        },
+        {
+          "$ref": "#/$defs/workItemId"
+        },
+        {
+          "$ref": "#/$defs/verificationId"
+        }
+      ]
+    },
+    "stringArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "requirementReferenceArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirementId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "architectureReferenceArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/architectureId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "verificationReferenceArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/verificationId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "traceArtifactReferenceArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/traceArtifactId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "oneOf": [
+    {
+      "title": "Specification Front Matter",
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "title",
+        "domain",
+        "capability",
+        "status",
+        "owner"
+      ],
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^SPEC-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*$"
+        },
+        "artifact_type": {
+          "const": "specification"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "domain": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "capability": {
+          "description": "Capability, behavior area, interface, or technical concern grouped by the specification.",
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "proposed",
+            "approved",
+            "implemented",
+            "verified",
+            "superseded",
+            "retired"
+          ]
+        },
+        "owner": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "tags": {
+          "description": "Optional topical tags for search and navigation.",
+          "$ref": "#/$defs/stringArray"
+        },
+        "related_artifacts": {
+          "description": "Optional direct artifact IDs for documents materially related to this specification.",
+          "$ref": "#/$defs/traceArtifactReferenceArray"
+        }
+      },
+      "patternProperties": {
+        "^x_[a-z][a-z0-9_]*$": {}
+      },
+      "additionalProperties": false
+    },
+    {
+      "title": "Architecture Front Matter",
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "title",
+        "domain",
+        "status",
+        "owner",
+        "satisfies"
+      ],
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^ARC-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+        },
+        "artifact_type": {
+          "const": "architecture"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "domain": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "proposed",
+            "approved",
+            "implemented",
+            "verified",
+            "superseded",
+            "retired"
+          ]
+        },
+        "owner": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "satisfies": {
+          "description": "Requirement IDs satisfied by this architecture or design artifact.",
+          "$ref": "#/$defs/requirementReferenceArray"
+        },
+        "related_artifacts": {
+          "description": "Optional direct artifact IDs for documents materially related to this architecture.",
+          "$ref": "#/$defs/traceArtifactReferenceArray"
+        }
+      },
+      "patternProperties": {
+        "^x_[a-z][a-z0-9_]*$": {}
+      },
+      "additionalProperties": false
+    },
+    {
+      "title": "Work Item Front Matter",
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "title",
+        "domain",
+        "status",
+        "owner",
+        "addresses",
+        "design_links",
+        "verification_links"
+      ],
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^WI-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+        },
+        "artifact_type": {
+          "const": "work_item"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "domain": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "status": {
+          "enum": [
+            "planned",
+            "in_progress",
+            "blocked",
+            "complete",
+            "cancelled",
+            "superseded"
+          ]
+        },
+        "owner": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "addresses": {
+          "description": "Requirement IDs addressed by this work item.",
+          "$ref": "#/$defs/requirementReferenceArray"
+        },
+        "design_links": {
+          "description": "Architecture artifact IDs used as design inputs for this work item.",
+          "$ref": "#/$defs/architectureReferenceArray"
+        },
+        "verification_links": {
+          "description": "Verification artifact IDs associated with this work item.",
+          "$ref": "#/$defs/verificationReferenceArray"
+        },
+        "related_artifacts": {
+          "description": "Optional direct artifact IDs for documents materially related to this work item.",
+          "$ref": "#/$defs/traceArtifactReferenceArray"
+        }
+      },
+      "patternProperties": {
+        "^x_[a-z][a-z0-9_]*$": {}
+      },
+      "additionalProperties": false
+    },
+    {
+      "title": "Verification Front Matter",
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "title",
+        "domain",
+        "status",
+        "owner",
+        "verifies"
+      ],
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^VER-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+        },
+        "artifact_type": {
+          "const": "verification"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "domain": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "status": {
+          "enum": [
+            "planned",
+            "passed",
+            "failed",
+            "blocked",
+            "waived",
+            "obsolete"
+          ]
+        },
+        "owner": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "verifies": {
+          "description": "Requirement IDs verified by this verification artifact.",
+          "$ref": "#/$defs/requirementReferenceArray"
+        },
+        "related_artifacts": {
+          "description": "Optional direct artifact IDs for documents materially related to this verification artifact.",
+          "$ref": "#/$defs/traceArtifactReferenceArray"
+        }
+      },
+      "patternProperties": {
+        "^x_[a-z][a-z0-9_]*$": {}
+      },
+      "additionalProperties": false
+    }
+  ]
+}

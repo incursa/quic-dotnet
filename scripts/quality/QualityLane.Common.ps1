@@ -42,6 +42,73 @@ function Initialize-ArtifactDirectory {
     return (Resolve-Path $Path).Path
 }
 
+function Normalize-CoberturaCoverageFiles {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+
+        [Parameter(Mandatory)]
+        [string]$CoverageDirectory
+    )
+
+    if (-not (Test-Path $CoverageDirectory)) {
+        return
+    }
+
+    $coverageFiles = @(
+        Get-ChildItem -Path $CoverageDirectory -Filter *.cobertura.xml -File -Recurse -ErrorAction SilentlyContinue |
+            Sort-Object FullName
+    )
+
+    foreach ($coverageFile in $coverageFiles) {
+        try {
+            [xml]$xml = Get-Content -LiteralPath $coverageFile.FullName
+            $sourceNodes = $xml.SelectNodes('//sources/source')
+            if ($null -eq $sourceNodes -or $sourceNodes.Count -eq 0) {
+                continue
+            }
+
+            $sources = @(
+                $sourceNodes |
+                    ForEach-Object { $_.'#text' } |
+                    Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+            )
+
+            if ($sources.Count -eq 0) {
+                continue
+            }
+
+            $changed = $false
+            foreach ($classNode in $xml.SelectNodes('//class[@filename]')) {
+                $filename = $classNode.GetAttribute('filename')
+                if ([string]::IsNullOrWhiteSpace($filename) -or [System.IO.Path]::IsPathRooted($filename)) {
+                    continue
+                }
+
+                $repoRelativeCandidate = Join-Path $RepoRoot $filename
+                if (Test-Path $repoRelativeCandidate) {
+                    continue
+                }
+
+                foreach ($source in $sources) {
+                    $candidate = [System.IO.Path]::GetFullPath((Join-Path $source $filename))
+                    if (Test-Path $candidate) {
+                        $classNode.SetAttribute('filename', $candidate)
+                        $changed = $true
+                        break
+                    }
+                }
+            }
+
+            if ($changed) {
+                $xml.Save($coverageFile.FullName)
+            }
+        } catch {
+            throw "Failed to normalize Cobertura coverage file '$($coverageFile.FullName)': $($_.Exception.Message)"
+        }
+    }
+}
+
 function Invoke-TestPrerequisites {
     param(
         [Parameter(Mandatory)]

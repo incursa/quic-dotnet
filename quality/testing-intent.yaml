@@ -12,35 +12,54 @@ expectations:
     - inventory
     - results
     - coverage
-    - property
-    - fuzz
-    - mutation
-    - benchmark
   confidenceTarget: high
-  requiredTestKinds:
-    - positive
-    - negative
-    - property
-    - fuzz
-    - mutation
-    - benchmark
-  criticalAreas:
-    - Packet parsing, header parsing, and version-dependent or version-independent invariants.
-    - Encoding, decoding, and serialization paths that transform wire bytes.
-    - Error handling for malformed, truncated, unsupported, or reserved inputs.
+
+coverage:
+  lineMin: 0.50
+  branchMin: 0.40
+  criticalFiles:
+    - src/Incursa.Quic/QuicPacketParser.cs
+    - src/Incursa.Quic/QuicFrameCodec.cs
+    - src/Incursa.Quic/QuicStreamParser.cs
+    - src/Incursa.Quic/QuicTransportParametersCodec.cs
+    - src/Incursa.Quic/QuicVariableLengthInteger.cs
+
+scenarios:
+  requiredTests:
+    - tests/Incursa.Quic.Tests/ScaffoldTests.cs::LibraryAssemblyCanBeLoaded
+    - tests/Incursa.Quic.Tests/ScaffoldTests.cs::PublicApiBaselineFilesExist
 
 intentionalGaps:
   - subject: benchmarks
-    rationale: Benchmark evidence is mandatory for processing and serialization hot paths, but Workbench quality sync does not currently normalize benchmark output. Keep benchmark suites under benchmarks/ and link results from verification artifacts.
+    rationale: Permanent benchmark suites live under `benchmarks/`, but the normalized quality sync surface only ingests test and coverage evidence.
 
 related:
   docs:
-    - /docs/requirements-workflow.md
-    - /docs/testing/README.md
+    - docs/requirements-workflow.md
+    - docs/spec-trace-prep.md
+    - overview.md
+    - layout.md
+    - authoring.md
   files:
     - benchmarks/README.md
+    - fuzz/README.md
+    - src/Incursa.Quic/README.md
+    - tests/Incursa.Quic.Tests/README.md
+    - specs/requirements/quic/README.md
+    - specs/architecture/quic/README.md
+    - specs/architecture/quic/ARC-QUIC-HDR-0001.md
+    - specs/work-items/quic/README.md
+    - specs/verification/quic/README.md
     - specs/requirements/quic/SPEC-QUIC-HDR.md
     - specs/verification/quic/VER-QUIC-HDR-0001.md
     - specs/requirements/quic/REQUIREMENT-GAPS.md
     - specs/templates/spec-template.md
     - specs/templates/verification-template.md
+  workItems:
+    - specs/work-items/quic/WI-QUIC-HDR-0001.md
+  codeRefs:
+    - src/Incursa.Quic/QuicPacketParser.cs
+    - src/Incursa.Quic/QuicFrameCodec.cs
+    - src/Incursa.Quic/QuicStreamParser.cs
+    - src/Incursa.Quic/QuicTransportParametersCodec.cs
+    - src/Incursa.Quic/QuicVariableLengthInteger.cs

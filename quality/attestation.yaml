@@ -1,72 +1,69 @@
-version: 1
-
 scope:
-  include:
-    - specs/requirements
-    - specs/architecture
-    - specs/work-items
-    - specs/verification
+  includes:
+    - specs/requirements/quic
+    - specs/architecture/quic
+    - specs/work-items/quic
+    - specs/verification/quic
+  excludes:
+    - specs/requirements/spec-trace
 
-outputs:
-  directory: artifacts/quality/attestation
-  emit: both
+evidenceRoots:
+  qualityTesting:
+    - artifacts/quality/testing
+  testResults:
+    - artifacts/quality/raw/test-results
+  coverage:
+    - artifacts/quality/raw/coverage
+  benchmarks:
+    - quality/benchmarks
+  manualQa:
+    - quality/manual-qa
 
-sources:
-  results: artifacts/quality/raw/test-results
-  coverage: artifacts/quality/raw/coverage
-  benchmarks: artifacts/quality/raw/benchmarks
-  manual_qa: artifacts/quality/raw/manual-qa
+execution:
+  tests:
+    command: pwsh
+    args:
+      - -NoLogo
+      - -NoProfile
+      - -File
+      - scripts/quality/run-quality-evidence.ps1
+  coverage:
+    command: dotnet
+    args:
+      - tool
+      - run
+      - workbench
+      - quality
+      - sync
+      - --results
+      - artifacts/quality/raw/test-results
+      - --coverage
+      - artifacts/quality/raw/coverage
 
-refresh:
-  commands:
-    - name: generate-raw-quality-evidence
-      command: pwsh -File scripts/quality/run-smoke-tests.ps1
-
-    - name: sync-quality-evidence
-      command: dotnet tool run workbench quality sync --results artifacts/quality/raw/test-results --coverage artifacts/quality/raw/coverage
-
-status_maps:
-  work_items:
+statusPolicy:
+  workItems:
     done:
-      - done
-      - closed
       - completed
-      - shipped
-    in_progress:
+      - complete
+      - cancelled
+      - superseded
+    inProgress:
       - in_progress
-      - in-progress
-      - active
-      - doing
     open:
-      - open
-      - todo
       - planned
-      - new
     blocked:
       - blocked
-      - waiting
-      - on_hold
 
-  verification:
+  verifications:
     passing:
       - passed
-      - pass
-      - complete
-      - verified
+      - waived
     failing:
       - failed
-      - fail
-      - regression
     pending:
-      - pending
       - planned
-      - in_progress
-      - in-progress
-      - not_run
-    unknown:
-      - unknown
+    stale:
+      - obsolete
 
 freshness:
-  verification_days: 14
-  benchmarks_days: 14
-  manual_qa_days: 30
+  staleAfterDays: 14

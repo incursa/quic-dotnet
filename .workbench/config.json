@@ -8,10 +8,7 @@
     "SpecsTemplatesDir": "specs/templates",
     "SpecsSchemasDir": "specs/schemas",
     "WorkRoot": "specs/work-items",
-    "ItemsDir": "specs/work-items/quic",
-    "DoneDir": "specs/work-items/done",
-    "TemplatesDir": "specs/templates",
-    "WorkboardFile": "specs/work-items/README.md"
+    "ItemsDir": "specs/work-items/quic"
   },
   "Ids": {
     "Width": 4
