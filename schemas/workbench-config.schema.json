@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Workbench Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["Paths", "Ids", "Git", "Github"],
+  "properties": {
+    "Paths": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "DocsRoot",
+        "SpecsRoot",
+        "ArchitectureDir",
+        "WorkItemsSpecsDir",
+        "GeneratedDir",
+        "SpecsTemplatesDir",
+        "SpecsSchemasDir",
+        "WorkRoot",
+        "ItemsDir"
+      ],
+      "properties": {
+        "DocsRoot": { "type": "string", "minLength": 1 },
+        "SpecsRoot": { "type": "string", "minLength": 1 },
+        "ArchitectureDir": { "type": "string", "minLength": 1 },
+        "WorkItemsSpecsDir": { "type": "string", "minLength": 1 },
+        "GeneratedDir": { "type": "string", "minLength": 1 },
+        "SpecsTemplatesDir": { "type": "string", "minLength": 1 },
+        "SpecsSchemasDir": { "type": "string", "minLength": 1 },
+        "WorkRoot": { "type": "string", "minLength": 1 },
+        "ItemsDir": { "type": "string", "minLength": 1 }
+      }
+    },
+    "Ids": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["Width"],
+      "properties": {
+        "Width": { "type": "integer", "minimum": 1, "maximum": 8 }
+      }
+    },
+    "Git": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["BranchPattern", "CommitMessagePattern", "DefaultBaseBranch", "RequireCleanWorkingTree"],
+      "properties": {
+        "BranchPattern": { "type": "string", "minLength": 1 },
+        "CommitMessagePattern": { "type": "string", "minLength": 1 },
+        "DefaultBaseBranch": { "type": "string", "minLength": 1 },
+        "RequireCleanWorkingTree": { "type": "boolean" }
+      }
+    },
+    "Github": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["Provider", "DefaultDraft", "Sync"],
+      "properties": {
+        "Provider": { "type": "string", "enum": ["octokit", "gh"] },
+        "DefaultDraft": { "type": "boolean" },
+        "Host": { "type": "string" },
+        "Owner": { "type": ["string", "null"], "minLength": 1 },
+        "Repository": { "type": ["string", "null"], "minLength": 1 },
+        "Sync": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["Mode", "ConflictDefault", "ScheduleEnabled"],
+          "properties": {
+            "Mode": { "type": "string", "enum": ["manual", "generate", "active"] },
+            "ConflictDefault": { "type": "string", "enum": ["fail", "local", "github"] },
+            "ScheduleEnabled": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "Validation": {
+      "type": "object"
+    },
+    "Tui": {
+      "type": "object"
+    }
+  }
+}

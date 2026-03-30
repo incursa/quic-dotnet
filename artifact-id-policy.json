@@ -1,5 +1,5 @@
 {
-  "name": "incursa/quic-dotnet metadata catalog",
+  "name": "incursa/workbench metadata catalog",
   "version": 6,
   "artifact_id_format": {
     "summary": "PREFIX-DOMAIN(-GROUPING...)",
@@ -47,10 +47,53 @@
     "verification": "VER-{domain}{grouping}-{sequence}"
   },
   "requirement_id_template": "REQ-{domain}{grouping}-{sequence}",
+  "grouping_key_registry": [
+    {
+      "code": "STD",
+      "name": "Standard",
+      "description": "Core definitions, traceability model, and publication rules"
+    },
+    {
+      "code": "ID",
+      "name": "Identifier Policy",
+      "description": "Identifier rules and grouping-key metadata"
+    },
+    {
+      "code": "LAY",
+      "name": "Layout",
+      "description": "Repository layout and artifact placement"
+    },
+    {
+      "code": "PRF",
+      "name": "Profiles",
+      "description": "Conformance profiles and enforcement levels"
+    },
+    {
+      "code": "TPL",
+      "name": "Templates",
+      "description": "Document templates and compact requirement grammar"
+    },
+    {
+      "code": "SCH",
+      "name": "Schemas",
+      "description": "Schema and validation rules"
+    },
+    {
+      "code": "EXM",
+      "name": "Examples",
+      "description": "Worked examples and traceability coverage"
+    }
+  ],
   "notes": [
-    "Use domain QUIC for repository-wide protocol artifacts unless a more specific domain is intentionally introduced.",
-    "Prefer stable technical grouping keys such as RFC sections, packet families, or capability areas instead of dates, owners, or sprint names.",
-    "Architecture, work-item, and verification identifiers use zero-padded terminal sequences with at least four digits.",
-    "Requirement identifiers trace canonical normative clauses and must be stable enough to survive implementation refactors."
+    "specification identifiers use the SPEC-{domain}{grouping} template and stop after the optional grouping segments",
+    "architecture, work-item, and verification identifiers continue to use terminal sequences",
+    "grouping expands to zero or more '-SEGMENT' tokens after the domain token",
+    "grouping segments must start with a letter, so numeric-only grouping values are invalid",
+    "the terminal sequence is zero-padded to at least four digits",
+    "domain and grouping segments use the same uppercase alphanumeric token pattern",
+    "the reference package allows zero or more grouping segments and does not set a hard maximum",
+    "grouping-key registry entries provide the human-readable names and descriptions for the abbreviated codes used in the spec suite",
+    "requirement identifiers use the same domain and grouping rules as specification identifiers but use the REQ prefix and terminal sequence because they identify clauses within specifications",
+    "tests and code may reference requirement identifiers directly"
   ]
 }

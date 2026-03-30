@@ -16,6 +16,7 @@ The repository is also prepared for a SpecTrace-first workflow so RFC-derived pr
 - [`docs/`](docs/README.md): repository documentation
 - [`docs/requirements-workflow.md`](docs/requirements-workflow.md): local order of operations for requirements, testing, fuzzing, and benchmarking
 - [`quality/testing-intent.yaml`](quality/testing-intent.yaml): repo-level testing intent for quality tooling
+- [`schemas/`](schemas/README.md): repository-level quality and config schemas
 - [`scripts/quality`](scripts/quality/README.md): smoke and blocking test lanes
 - [`scripts/release`](scripts/release/README.md): versioning and release-policy checks
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): contribution and validation guidance
@@ -45,14 +46,15 @@ pwsh -File cleanup.ps1
 
 ## Repository layout
 
-- [`specs`](specs)
-- [`benchmarks`](benchmarks)
-- [`fuzz`](fuzz)
-- [`src/Incursa.Quic`](src/Incursa.Quic)
-- [`tests/Incursa.Quic.Tests`](tests/Incursa.Quic.Tests)
-- [`docs`](docs)
-- [`scripts`](scripts)
-- [`assets`](assets)
+- [`specs`](specs/README.md)
+- [`benchmarks`](benchmarks/README.md)
+- [`fuzz`](fuzz/README.md)
+- [`src/Incursa.Quic`](src/Incursa.Quic/README.md)
+- [`tests/Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md)
+- [`docs`](docs/README.md)
+- [`schemas`](schemas/README.md)
+- [`scripts`](scripts/README.md)
+- [`assets`](assets/README.md)
 - [`AGENTS.md`](AGENTS.md)
 - [`LLMS.txt`](LLMS.txt)
 - [`.githooks`](.githooks)

@@ -1,5 +1,5 @@
 <RunSettings>
   <RunConfiguration>
-    <ResultsDirectory>artifacts/test-results/smoke</ResultsDirectory>
+    <ResultsDirectory>artifacts/quality/raw/test-results/smoke</ResultsDirectory>
   </RunConfiguration>
 </RunSettings>

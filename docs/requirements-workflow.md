@@ -26,11 +26,11 @@ This note captures the working order for RFC-derived QUIC work in `Incursa.Quic`
 
 ## Canonical Paths
 
-- Requirements: [`../specs/requirements/quic/`](../specs/requirements/quic/)
-- Architecture: [`../specs/architecture/quic/`](../specs/architecture/quic/)
-- Work items: [`../specs/work-items/quic/`](../specs/work-items/quic/)
-- Verification: [`../specs/verification/quic/`](../specs/verification/quic/)
-- Generated outputs: [`../specs/generated/`](../specs/generated/)
+- Requirements: [`../specs/requirements/quic/README.md`](../specs/requirements/quic/README.md)
+- Architecture: [`../specs/architecture/quic/README.md`](../specs/architecture/quic/README.md)
+- Work items: [`../specs/work-items/quic/README.md`](../specs/work-items/quic/README.md)
+- Verification: [`../specs/verification/quic/README.md`](../specs/verification/quic/README.md)
+- Generated outputs: [`../specs/generated/README.md`](../specs/generated/README.md)
 
 ## Notes For QUIC Work
 

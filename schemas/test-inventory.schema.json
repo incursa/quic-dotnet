@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Workbench Test Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "domain",
+    "generatedAt",
+    "source",
+    "summary",
+    "projects",
+    "tests"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "domain": { "type": "string", "const": "testing" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command", "inputPaths"],
+      "properties": {
+        "command": { "type": "string" },
+        "toolVersion": { "type": ["string", "null"] },
+        "inputPaths": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "solutionPath": { "type": ["string", "null"] },
+        "includes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "excludes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["projects", "tests"],
+      "properties": {
+        "projects": { "type": "integer", "minimum": 0 },
+        "tests": { "type": "integer", "minimum": 0 },
+        "frameworks": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "discoveryWarnings": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "projectPath",
+          "assemblyName",
+          "targetFrameworks",
+          "testCount",
+          "discoveryMethod"
+        ],
+        "properties": {
+          "projectPath": { "type": "string" },
+          "assemblyName": { "type": "string" },
+          "targetFrameworks": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "testCount": { "type": "integer", "minimum": 0 },
+          "discoveryMethod": {
+            "type": "string",
+            "enum": ["dotnet-list-tests", "trx", "adapter", "source-scan", "unknown"]
+          },
+          "traits": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "testId",
+          "fullyQualifiedName",
+          "displayName",
+          "projectPath",
+          "assemblyName",
+          "targetFramework"
+        ],
+        "properties": {
+          "testId": { "type": "string" },
+          "fullyQualifiedName": { "type": "string" },
+          "displayName": { "type": "string" },
+          "projectPath": { "type": "string" },
+          "assemblyName": { "type": "string" },
+          "targetFramework": { "type": "string" },
+          "sourcePath": { "type": ["string", "null"] },
+          "line": { "type": ["integer", "null"], "minimum": 1 },
+          "traits": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "classification": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["kind", "source"],
+            "properties": {
+              "kind": { "type": "string" },
+              "source": {
+                "type": "string",
+                "enum": ["trait", "project", "path", "manual", "unknown"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

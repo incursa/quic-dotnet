@@ -19,12 +19,12 @@ For protocol work, testing is only one part of the proof burden. The repository 
 
 ## Quality expectations
 
-- As protocol work lands, add positive and negative tests for each behavior slice, plus FsCheck-backed property coverage for byte-oriented parsers, fuzz harnesses for wire-facing code, and permanent benchmarks under [`../../benchmarks`](../../benchmarks/README.md) for hot serialization or parsing paths.
+- As protocol work lands, add positive and negative tests for each behavior slice, plus FsCheck-backed property coverage for byte-oriented parsers, fuzz harnesses for wire-facing code, and permanent benchmarks under [`../../benchmarks/README.md`](../../benchmarks/README.md) for hot serialization or parsing paths.
 - Use [`../requirements-workflow.md`](../requirements-workflow.md) as the ordering guide for when to add gaps, requirements, verification, tests, and benchmarks.
-- Record canonical proof outcomes under [`../../specs/verification/quic/`](../../specs/verification/quic/).
+- Record canonical proof outcomes under [`../../specs/verification/quic/README.md`](../../specs/verification/quic/README.md).
 
 ## Requirement Tagging
 
 - Tag requirement-linked xUnit tests with `[Trait("Requirement", "REQ-...")]` so the test inventory can map evidence back to canonical requirement IDs.
 - Add a category trait such as `[Trait("Category", "Positive")]`, `[Trait("Category", "Negative")]`, `[Trait("Category", "Property")]`, or `[Trait("Category", "Fuzz")]` when it helps downstream filtering or coverage checks.
-- Keep benchmark suites in [`../../benchmarks`](../../benchmarks/README.md) and cross-link their results from the relevant verification artifact.
+- Keep benchmark suites in [`../../benchmarks/README.md`](../../benchmarks/README.md) and cross-link their results from the relevant verification artifact.

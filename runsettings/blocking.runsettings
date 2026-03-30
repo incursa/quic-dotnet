@@ -1,5 +1,5 @@
 <RunSettings>
   <RunConfiguration>
-    <ResultsDirectory>artifacts/test-results/blocking</ResultsDirectory>
+    <ResultsDirectory>artifacts/quality/raw/test-results/blocking</ResultsDirectory>
   </RunConfiguration>
 </RunSettings>

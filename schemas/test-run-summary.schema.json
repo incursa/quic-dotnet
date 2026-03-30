@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Workbench Test Run Summary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "domain",
+    "runId",
+    "observedAt",
+    "source",
+    "summary",
+    "projects",
+    "tests"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "domain": { "type": "string", "const": "testing" },
+    "runId": { "type": "string" },
+    "observedAt": { "type": "string", "format": "date-time" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command", "inputPaths"],
+      "properties": {
+        "command": { "type": "string" },
+        "toolVersion": { "type": ["string", "null"] },
+        "inputPaths": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "solutionPath": { "type": ["string", "null"] },
+        "projectPaths": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "filter": { "type": ["string", "null"] }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "total",
+        "passed",
+        "failed",
+        "skipped",
+        "notExecuted",
+        "durationMs"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["passed", "failed", "partial", "no-data"]
+        },
+        "total": { "type": "integer", "minimum": 0 },
+        "passed": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "skipped": { "type": "integer", "minimum": 0 },
+        "notExecuted": { "type": "integer", "minimum": 0 },
+        "durationMs": { "type": "number", "minimum": 0 }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "projectPath",
+          "targetFramework",
+          "status",
+          "total",
+          "passed",
+          "failed",
+          "skipped",
+          "notExecuted",
+          "durationMs",
+          "artifactPaths"
+        ],
+        "properties": {
+          "projectPath": { "type": "string" },
+          "targetFramework": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["passed", "failed", "partial", "no-data"]
+          },
+          "total": { "type": "integer", "minimum": 0 },
+          "passed": { "type": "integer", "minimum": 0 },
+          "failed": { "type": "integer", "minimum": 0 },
+          "skipped": { "type": "integer", "minimum": 0 },
+          "notExecuted": { "type": "integer", "minimum": 0 },
+          "durationMs": { "type": "number", "minimum": 0 },
+          "artifactPaths": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fullyQualifiedName",
+          "projectPath",
+          "targetFramework",
+          "outcome"
+        ],
+        "properties": {
+          "testId": { "type": ["string", "null"] },
+          "fullyQualifiedName": { "type": "string" },
+          "displayName": { "type": ["string", "null"] },
+          "projectPath": { "type": "string" },
+          "targetFramework": { "type": "string" },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed",
+              "skipped",
+              "notExecuted",
+              "timeout",
+              "aborted",
+              "unknown"
+            ]
+          },
+          "durationMs": { "type": ["number", "null"], "minimum": 0 },
+          "errorMessage": { "type": ["string", "null"] },
+          "artifactPath": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

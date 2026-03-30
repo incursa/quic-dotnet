@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "work-item-trace-fields.schema.json",
+  "title": "Work Item Trace Fields",
+  "description": "Reference schema for the canonical labels used in a work-item Trace Links section, with family-typed requirement, architecture, and verification IDs.",
+  "$defs": {
+    "requirementId": {
+      "type": "string",
+      "pattern": "^REQ-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "architectureId": {
+      "type": "string",
+      "pattern": "^ARC-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "verificationId": {
+      "type": "string",
+      "pattern": "^VER-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "requirementIdArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirementId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "architectureIdArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/architectureId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "verificationIdArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/verificationId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Addresses": {
+      "description": "Requirement IDs addressed by the work item.",
+      "$ref": "#/$defs/requirementIdArray"
+    },
+    "Uses Design": {
+      "description": "Architecture artifact IDs used as inputs for the work item.",
+      "$ref": "#/$defs/architectureIdArray"
+    },
+    "Verified By": {
+      "description": "Verification artifact IDs associated with the work item.",
+      "$ref": "#/$defs/verificationIdArray"
+    }
+  },
+  "additionalProperties": false
+}

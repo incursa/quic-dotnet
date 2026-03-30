@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "requirement-trace-fields.schema.json",
+  "title": "Requirement Trace Fields",
+  "description": "Reference schema for the canonical labels used inside a requirement Trace block, including family-typed direct links, optional lineage, and free-form upstream source fields.",
+  "$defs": {
+    "requirementId": {
+      "type": "string",
+      "pattern": "^REQ-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "specificationId": {
+      "type": "string",
+      "pattern": "^SPEC-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*$"
+    },
+    "architectureId": {
+      "type": "string",
+      "pattern": "^ARC-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "workItemId": {
+      "type": "string",
+      "pattern": "^WI-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "verificationId": {
+      "type": "string",
+      "pattern": "^VER-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "traceArtifactId": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/specificationId"
+        },
+        {
+          "$ref": "#/$defs/architectureId"
+        },
+        {
+          "$ref": "#/$defs/workItemId"
+        },
+        {
+          "$ref": "#/$defs/verificationId"
+        }
+      ]
+    },
+    "freeFormStringArray": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "requirementIdArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirementId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "architectureIdArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/architectureId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "workItemIdArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/workItemId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "verificationIdArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/verificationId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "traceArtifactIdArray": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/requirementId"
+          },
+          {
+            "$ref": "#/$defs/traceArtifactId"
+          }
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Satisfied By": {
+      "description": "Architecture artifact IDs that satisfy this requirement.",
+      "$ref": "#/$defs/architectureIdArray"
+    },
+    "Implemented By": {
+      "description": "Work-item artifact IDs that implement this requirement.",
+      "$ref": "#/$defs/workItemIdArray"
+    },
+    "Verified By": {
+      "description": "Verification artifact IDs that verify this requirement.",
+      "$ref": "#/$defs/verificationIdArray"
+    },
+    "Derived From": {
+      "description": "Requirement IDs that this requirement refines or inherits from.",
+      "$ref": "#/$defs/requirementIdArray"
+    },
+    "Supersedes": {
+      "description": "Requirement IDs that this requirement replaces or closes forward.",
+      "$ref": "#/$defs/requirementIdArray"
+    },
+    "Source Refs": {
+      "description": "Free-form external references that motivated or influenced the requirement.",
+      "$ref": "#/$defs/freeFormStringArray"
+    },
+    "Test Refs": {
+      "description": "Implementation-specific string references to tests that exist because of this requirement or verify it directly.",
+      "$ref": "#/$defs/freeFormStringArray"
+    },
+    "Code Refs": {
+      "description": "Implementation-specific string references to code symbols, source locations, or code metadata tied to this requirement.",
+      "$ref": "#/$defs/freeFormStringArray"
+    },
+    "Related": {
+      "description": "Requirement IDs or artifact IDs materially related to this requirement.",
+      "$ref": "#/$defs/traceArtifactIdArray"
+    }
+  },
+  "additionalProperties": false
+}

@@ -4,13 +4,14 @@ This note defines how `Incursa.Quic` will move from RFC text to traceable implem
 
 ## Canonical Homes
 
-- Requirements live under [`../specs/requirements/quic`](../specs/requirements/quic).
+- Requirements live under [`../specs/requirements/quic/README.md`](../specs/requirements/quic/README.md).
 - Requirement gaps live in [`../specs/requirements/quic/REQUIREMENT-GAPS.md`](../specs/requirements/quic/REQUIREMENT-GAPS.md).
-- Architecture and design artifacts live under [`../specs/architecture/quic`](../specs/architecture/quic).
-- Work items live under [`../specs/work-items/quic`](../specs/work-items/quic).
-- Verification artifacts live under [`../specs/verification/quic`](../specs/verification/quic).
-- Derived navigation and matrices belong under [`../specs/generated`](../specs/generated).
-- Permanent benchmark suites belong under [`../benchmarks`](../benchmarks).
+- Architecture and design artifacts live under [`../specs/architecture/quic/README.md`](../specs/architecture/quic/README.md).
+- Work items live under [`../specs/work-items/quic/README.md`](../specs/work-items/quic/README.md).
+- Verification artifacts live under [`../specs/verification/quic/README.md`](../specs/verification/quic/README.md).
+- Derived navigation and matrices belong under [`../specs/generated/README.md`](../specs/generated/README.md).
+- SpecTrace schemas live under [`../specs/schemas/README.md`](../specs/schemas/README.md).
+- Permanent benchmark suites belong under [`../benchmarks/README.md`](../benchmarks/README.md).
 - Repo-level testing intent lives in [`../quality/testing-intent.yaml`](../quality/testing-intent.yaml).
 
 ## Order Of Operations
@@ -47,7 +48,7 @@ dotnet tool run workbench -- config show --format json
 dotnet tool run workbench -- doctor --json
 ```
 
-Use the templates under [`../specs/templates`](../specs/templates) when the first requirement, architecture, work-item, or verification artifacts are created.
+Use the templates under [`../specs/templates/README.md`](../specs/templates/README.md) when the first requirement, architecture, work-item, or verification artifacts are created.
 
 ## Current Scope
 
