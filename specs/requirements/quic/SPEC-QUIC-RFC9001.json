@@ -1,0 +1,1299 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9001-0001",
+    "WI-QUIC-RFC9001-0001",
+    "VER-QUIC-RFC9001-0001"
+  ],
+  "artifact_id": "SPEC-QUIC-RFC9001",
+  "scope": "This specification covers the reviewed RFC 9001 extraction outputs and preserves the distinction between RFC 9001 packet-protection behavior and overlapping TLS or transport references.",
+  "artifact_type": "specification",
+  "status": "draft",
+  "purpose": "Capture the QUIC TLS and packet-protection requirements defined by RFC 9001 as canonical spec-trace clauses.",
+  "context": "RFC 9001 refines TLS behavior for QUIC packet protection and key updates. The assembly keeps RFC 9001 as a single RFC-level concern while reporting overlap with RFC 9000 and TLS references in generated review output.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9001-S2-0001",
+      "title": "Interpret uppercase BCP 14 keywords",
+      "statement": "Uppercase BCP 14 keywords in this document MUST be interpreted as described in RFC 2119 and RFC 8174 when they appear in all capitals.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §2 RFC9001-S2-B2-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-2"
+        ]
+      },
+      "notes": [
+        "The sentence defines the interpretation rule for all-caps normative keywords in this document."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0001",
+      "title": "Assume packet confidentiality",
+      "statement": "QUIC MUST assume responsibility for the confidentiality and integrity protection of packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B2-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "High-level packet protection responsibility stated in the introduction."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0002",
+      "title": "Derive packet keys from TLS handshake",
+      "statement": "QUIC MUST use keys derived from a TLS handshake.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B2-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "The source sentence ties packet protection to keys derived from the TLS handshake."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0003",
+      "title": "Carry handshake and alert messages directly",
+      "statement": "TLS handshake and alert messages MUST be carried directly over the QUIC transport.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B2-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "The source sentence contrasts this with TLS records over TCP."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0004",
+      "title": "Replace the TLS record layer",
+      "statement": "QUIC transport MUST take over the responsibilities of the TLS record layer.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B2-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "The source sentence presents QUIC transport as replacing the TLS record layer for this traffic."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0005",
+      "title": "Rely on TLS for security-critical functions",
+      "statement": "QUIC MUST rely on TLS for authentication and negotiation of parameters that are critical to security and performance.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B5-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "The source sentence states that TLS handles authentication and critical parameter negotiation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0006",
+      "title": "Use the TLS handshake",
+      "statement": "QUIC MUST use the TLS handshake.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B6-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "This is the first half of the cooperation sentence."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0007",
+      "title": "Use QUIC-provided delivery services",
+      "statement": "TLS MUST use the reliability, ordered delivery, and record layer provided by QUIC.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B6-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "This is the second half of the cooperation sentence."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0008",
+      "title": "Send TLS messages via QUIC",
+      "statement": "The TLS component MUST send and receive messages via the QUIC component.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B8-P0-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "The source sentence also says QUIC provides TLS a reliable stream abstraction."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0009",
+      "title": "Provide a reliable stream abstraction",
+      "statement": "QUIC MUST provide a reliable stream abstraction to TLS.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B8-P0-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "This is the other half of the first interaction sentence."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0010",
+      "title": "Provide TLS updates to QUIC",
+      "statement": "The TLS component MUST provide a series of updates to the QUIC component.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B9-P0-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "The source sentence gives keys and state changes as examples of those updates."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0011",
+      "title": "Do not use TLS Application Data records",
+      "statement": "QUIC applications that want to send data MUST NOT send it using TLS Application Data records.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B13-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "This is the negative form of the contrast with TLS over TCP."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S3-0012",
+      "title": "Send data as QUIC frames",
+      "statement": "QUIC applications that want to send data MUST send it as QUIC STREAM frames or other frame types carried in QUIC packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §3 RFC9001-S3-B13-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ]
+      },
+      "notes": [
+        "The source sentence allows STREAM frames or other frame types; the open set is preserved."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S4-0001",
+      "title": "Carry handshake data in CRYPTO frames",
+      "statement": "QUIC MUST carry TLS handshake data in CRYPTO frames.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §4 RFC9001-S4-B2-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S4-0002",
+      "title": "Define CRYPTO frame boundaries",
+      "statement": "Each CRYPTO frame MUST consist of a contiguous block of handshake data identified by an offset and length.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §4 RFC9001-S4-B2-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling",
+          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields",
+          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S4-0003",
+      "title": "Package and encrypt CRYPTO frames",
+      "statement": "Those frames MUST be packaged into QUIC packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §4 RFC9001-S4-B2-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S4-0004",
+      "title": "Package and encrypt CRYPTO frames",
+      "statement": "Those frames MUST be encrypted under the current encryption level.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §4 RFC9001-S4-B2-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S4-0005",
+      "title": "Deliver handshake data reliably",
+      "statement": "Once TLS handshake data has been delivered to QUIC, QUIC MUST deliver it reliably.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §4 RFC9001-S4-B2-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S4-0006",
+      "title": "Associate TLS-produced chunks with current keys",
+      "statement": "Each chunk of data that is produced by TLS MUST be associated with the set of keys that TLS is currently using.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §4 RFC9001-S4-B2-P1-S4",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S4-0007",
+      "title": "Retransmit with the same keys",
+      "statement": "If QUIC needs to retransmit that data, it MUST use the same keys even if TLS has already updated to newer keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §4 RFC9001-S4-B2-P1-S5",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S4-0008",
+      "title": "Map encryption levels to packet number spaces",
+      "statement": "Each encryption level MUST correspond to a packet number space.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §4 RFC9001-S4-B3-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S4-0009",
+      "title": "Let packet number space determine frame semantics",
+      "statement": "The packet number space that is used MUST determine the semantics of frames.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §4 RFC9001-S4-B3-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S4-0010",
+      "title": "Indicate packet keys via packet type",
+      "statement": "QUIC MUST use the packet type to indicate which keys were used to protect a given packet.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §4 RFC9001-S4-B4-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S4-0011",
+      "title": "Prefer coalesced packets",
+      "statement": "When packets of different types need to be sent, endpoints SHOULD use coalesced packets to send them in the same UDP datagram.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §4 RFC9001-S4-B4-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S5-0001",
+      "title": "Protect packets with TLS-derived keys",
+      "statement": "QUIC MUST protect packets with keys derived from the TLS handshake.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §5 RFC9001-S5-B2-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S5-0002",
+      "title": "Use the TLS-negotiated AEAD",
+      "statement": "QUIC MUST use the AEAD algorithm negotiated by TLS.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §5 RFC9001-S5-B2-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S5-0003",
+      "title": "Leave Version Negotiation packets unprotected",
+      "statement": "Version Negotiation packets MUST NOT have cryptographic protection.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §5 RFC9001-S5-B4-P0-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S5-0004",
+      "title": "Protect Retry packets with AEAD_AES_128_GCM",
+      "statement": "Retry packets MUST use AEAD_AES_128_GCM to provide protection against accidental modification and limit the entities that can produce a valid Retry.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §5 RFC9001-S5-B5-P0-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S5-0005",
+      "title": "Use AEAD_AES_128_GCM for Initial packets",
+      "statement": "Initial packets MUST use AEAD_AES_128_GCM.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §5 RFC9001-S5-B6-P0-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S5-0006",
+      "title": "Derive Initial keys from the first client Initial",
+      "statement": "The keys for Initial packets MUST be derived from the Destination Connection ID field of the first Initial packet sent by the client.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §5 RFC9001-S5-B6-P0-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S5-0007",
+      "title": "Protect all other packets cryptographically",
+      "statement": "All other packets MUST have strong cryptographic protections for confidentiality and integrity using keys and algorithms negotiated by TLS.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §5 RFC9001-S5-B7-P0-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S5-0008",
+      "title": "Apply the same protection process to Initial packets",
+      "statement": "The same packet protection process MUST be applied to Initial packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §5 RFC9001-S5-B8-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S5-0009",
+      "title": "Treat Initial packets as lacking confidentiality and integrity protection",
+      "statement": "Initial packets MUST NOT be considered to have confidentiality or integrity protection.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §5 RFC9001-S5-B8-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S5-0010",
+      "title": "Use a fixed key for Retry packets",
+      "statement": "Retry packets MUST use a fixed key.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §5 RFC9001-S5-B8-P3-S4",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6-0001",
+      "title": "Allow key update after handshake confirmation",
+      "statement": "Once the handshake is confirmed, an endpoint MAY initiate a key update.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6 RFC9001-S6-B2-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6-0002",
+      "title": "Identify packet protection keys with Key Phase",
+      "statement": "The Key Phase bit MUST indicate which packet protection keys are used to protect the packet.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6 RFC9001-S6-B3-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6-0003",
+      "title": "Initialize Key Phase to zero",
+      "statement": "The Key Phase bit MUST initially be set to 0 for the first set of 1-RTT packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6 RFC9001-S6-B3-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6-0004",
+      "title": "Toggle Key Phase on each update",
+      "statement": "The Key Phase bit MUST be toggled to signal each subsequent key update.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6 RFC9001-S6-B3-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6-0005",
+      "title": "Let Key Phase detect key changes",
+      "statement": "The Key Phase bit MUST allow a recipient to detect a change in keying material without needing to receive the first packet that triggered the change.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6 RFC9001-S6-B4-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6-0006",
+      "title": "Update keys when Key Phase changes",
+      "statement": "An endpoint that notices a changed Key Phase bit MUST update keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6 RFC9001-S6-B4-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6-0007",
+      "title": "Decrypt the packet with the changed Key Phase",
+      "statement": "An endpoint that notices a changed Key Phase bit MUST decrypt the packet that contains the changed value.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6 RFC9001-S6-B4-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6-0008",
+      "title": "Update both endpoints on key update",
+      "statement": "Initiating a key update MUST result in both endpoints updating keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6 RFC9001-S6-B5-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6-0009",
+      "title": "Prohibit TLS KeyUpdate messages",
+      "statement": "Endpoints MUST NOT send a TLS KeyUpdate message.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6 RFC9001-S6-B6-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6-0010",
+      "title": "Treat TLS KeyUpdate as a connection error",
+      "statement": "Endpoints MUST treat the receipt of a TLS KeyUpdate message as a connection error of type 0x010a, equivalent to a fatal TLS alert of unexpected_message.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6 RFC9001-S6-B6-P5-S3",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S7-0001",
+      "title": "Use caution with unauthenticated Initial data",
+      "statement": "Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §7 RFC9001-S7-B3-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-7"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S7-0002",
+      "title": "Fail on Handshake tampering",
+      "statement": "Any tampering with data carried in Handshake packets that requires modifying TLS handshake messages MUST cause the TLS handshake to fail.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §7 RFC9001-S7-B4-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-7"
+        ]
+      },
+      "notes": [
+        "This restates the causal consequence in the source sentence as a normative invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S8-0001",
+      "title": "Carry QUIC transport parameters",
+      "statement": "The TLS handshake MUST carry values for QUIC transport parameters.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §8 RFC9001-S8-B3-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S8-0002",
+      "title": "Authenticate QUIC transport parameters",
+      "statement": "The TLS handshake MUST authenticate values for QUIC transport parameters.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §8 RFC9001-S8-B3-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S9-0001",
+      "title": "Apply TLS security considerations to QUIC",
+      "statement": "All security considerations that apply to TLS MUST also apply to the use of TLS in QUIC.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §9 RFC9001-S9-B2-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-9"
+        ]
+      },
+      "notes": [
+        "This is a scope rule for security analysis rather than a packet-processing rule."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S10-0001",
+      "title": "Register quic_transport_parameters at codepoint 57",
+      "statement": "IANA MUST register codepoint 57 (0x39) for the quic_transport_parameters extension in the TLS ExtensionType Values registry.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §10 RFC9001-S10-B2-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-10"
+        ]
+      },
+      "notes": [
+        "The source sentence reports the completed registration in past tense; this clause restates the registry action normatively."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S10-0002",
+      "title": "Mark Recommended as Yes",
+      "statement": "The Recommended column for the quic_transport_parameters extension MUST be marked Yes.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §10 RFC9001-S10-B3-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-10"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S10-0003",
+      "title": "Include CH and EE in TLS 1.3 column",
+      "statement": "The TLS 1.3 column for the quic_transport_parameters extension MUST include CH (ClientHello) and EE (EncryptedExtensions).",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §10 RFC9001-S10-B3-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-10"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-SB-0001",
+      "title": "Restrict larger packet-size-derived limits",
+      "statement": "Only endpoints that strictly limit packet size MAY use the larger confidentiality and integrity limits derived using the smaller packet size.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §B RFC9001-SB-B10-P2-S4",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-SB-0002",
+      "title": "Require AEAD usage limits",
+      "statement": "Any AEAD that is used with QUIC MUST have limits on use that ensure that both confidentiality and integrity are preserved.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §B RFC9001-SB-B2-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-SBP1P1-0001",
+      "title": "Limit GCM confidentiality at 2^11 bytes",
+      "statement": "Endpoints that do not send packets larger than 2^11 bytes MUST NOT protect more than 2^28 packets in a single connection.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §B.1.1 RFC9001-SB.1.1-B6-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-SBP1P1-0002",
+      "title": "Limit GCM confidentiality at 2^16 bytes",
+      "statement": "Endpoints that allow packets as large as 2^16 bytes MUST NOT protect more than 2^23 packets in a single connection.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §B.1.1 RFC9001-SB.1.1-B6-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-SBP1P2-0001",
+      "title": "Limit GCM integrity at 2^11 bytes",
+      "statement": "Endpoints that do not attempt to remove protection from packets larger than 2^11 bytes MUST NOT attempt to remove protection from more than 2^57 packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §B.1.2 RFC9001-SB.1.2-B6-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-SBP1P2-0002",
+      "title": "Limit GCM integrity at unrestricted size",
+      "statement": "Endpoints that do not restrict the size of processed packets MUST NOT attempt to remove protection from more than 2^52 packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §B.1.2 RFC9001-SB.1.2-B6-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-SBP1P2-0003",
+      "title": "Apply one GCM integrity limit to both functions",
+      "statement": "The same integrity limit SHOULD be applied to AEAD_AES_128_GCM and AEAD_AES_256_GCM.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §B.1.2 RFC9001-SB.1.2-B9-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-SBP2-0001",
+      "title": "Limit CCM at 2^11 bytes",
+      "statement": "Endpoints that limit packets to 2^11 bytes MUST have both confidentiality and integrity limits of 2^26.5 packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §B.2 RFC9001-SB.2-B12-P8-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-SBP2-0002",
+      "title": "Limit CCM at unrestricted packet size",
+      "statement": "Endpoints that do not restrict packet size MUST have a limit of 2^21.5 packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §B.2 RFC9001-SB.2-B12-P8-S3",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ]
+      }
+    }
+  ],
+  "capability": "tls",
+  "title": "QUIC TLS (RFC 9001)",
+  "owner": "quic-maintainers",
+  "domain": "quic"
+}

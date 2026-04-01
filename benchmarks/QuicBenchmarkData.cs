@@ -41,4 +41,17 @@ internal static class QuicBenchmarkData
         packet.AddRange(streamData.ToArray());
         return packet.ToArray();
     }
+
+    public static byte[] BuildCryptoFrame(ulong offset, ReadOnlySpan<byte> cryptoData)
+    {
+        List<byte> packet = new(1 + 8 + 8 + cryptoData.Length)
+        {
+            0x06,
+        };
+
+        packet.AddRange(EncodeVarInt(offset));
+        packet.AddRange(EncodeVarInt((ulong)cryptoData.Length));
+        packet.AddRange(cryptoData.ToArray());
+        return packet.ToArray();
+    }
 }

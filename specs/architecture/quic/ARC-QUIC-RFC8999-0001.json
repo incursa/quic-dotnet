@@ -1,0 +1,56 @@
+{
+  "purpose": "Describe how the shared QUIC packet parsing and packet modeling surface\npreserves the version-independent invariants from RFC 8999 while staying\nsmall enough to avoid baking in version-specific behavior.",
+  "design_summary": "The shared packet parser classifies the packet form from the first-byte high\nbit and delegates to packet-specific helpers that preserve the remainder of the\nwire shape.",
+  "artifact_type": "architecture",
+  "key_components": [
+    "[`QuicPacketParser`](../../../src/Incursa.Quic/QuicPacketParser.cs)",
+    "[`QuicPacketParsing`](../../../src/Incursa.Quic/QuicPacketParsing.cs)",
+    "[`QuicLongHeaderPacket`](../../../src/Incursa.Quic/QuicLongHeaderPacket.cs)",
+    "[`QuicVersionNegotiationPacket`](../../../src/Incursa.Quic/QuicVersionNegotiationPacket.cs)",
+    "[`QuicHeaderForm`](../../../src/Incursa.Quic/QuicHeaderForm.cs)",
+    "[`QuicVariableLengthInteger`](../../../src/Incursa.Quic/QuicVariableLengthInteger.cs)"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC8999-S5P1-0001",
+    "REQ-QUIC-RFC8999-S5P1-0002",
+    "REQ-QUIC-RFC8999-S5P1-0003",
+    "REQ-QUIC-RFC8999-S5P1-0004",
+    "REQ-QUIC-RFC8999-S5P1-0005",
+    "REQ-QUIC-RFC8999-S5P1-0006",
+    "REQ-QUIC-RFC8999-S5P1-0007",
+    "REQ-QUIC-RFC8999-S5P1-0008"
+  ],
+  "alternatives_considered": [
+    "Fold all packet variants into one parser type and infer version-specific semantics in the shared layer."
+  ],
+  "title": "QUIC RFC 8999 Invariants Architecture",
+  "edge_cases_and_constraints": [
+    "Truncated long headers should fail early.",
+    "Shared wire-shape tests may be dual-tagged when they prove both RFC 8999 and later RFC 9000 clauses.",
+    "The architecture should stay narrow enough that version-specific semantics can evolve without rewriting the shared parser model."
+  ],
+  "owner": "quic-maintainers",
+  "open_questions": [
+    "Which future packet slices should reuse this shared wire-shape model without inheriting the long-header-only invariants?"
+  ],
+  "data_and_state_considerations": "- The form bit controls packet classification.\n- The remaining seven control bits stay opaque to the shared layer.\n- Connection-ID length bytes are preserved on the wire and bounded by 255\n  bytes.\n- The version-specific remainder is preserved as trailing opaque data.",
+  "status": "draft",
+  "domain": "quic",
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC8999",
+    "WI-QUIC-RFC8999-0001",
+    "VER-QUIC-RFC8999-0001"
+  ],
+  "artifact_id": "ARC-QUIC-RFC8999-0001",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers the long-header substrate handled by\n[`QuicPacketParser`](../../../src/Incursa.Quic/QuicPacketParser.cs), the\nparsed long-header and version-negotiation packet models, the preservation of\nopaque control bits and trailing payload data, and the connection-ID length and\nsize rules that are common across the RFC 8999 slice.\n\nIt does not define later RFC 9000 short-header semantics or packet-level\nversion-specific extensions outside the shared long-header invariant surface."
+    }
+  ],
+  "risks": [
+    "Over-broad shared parsing would make it harder to keep RFC 8999 invariants separate from later RFC 9000 packet semantics.",
+    "Overlapping tests need deliberate requirement tags so shared coverage is not miscounted."
+  ]
+}

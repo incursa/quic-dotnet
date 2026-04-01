@@ -1,6 +1,7 @@
 # Specs
 
 This tree contains the canonical artifact families used by the repository.
+For the SpecTrace document families, sibling `.json` files are canonical.
 
 ## Canonical Areas
 
@@ -10,7 +11,7 @@ This tree contains the canonical artifact families used by the repository.
 - [`work-items/`](work-items/README.md): implementation work that addresses requirements
 - [`verification/`](verification/README.md): proof artifacts for requirement sets
 - [`generated/`](generated/README.md): derived traceability outputs and review material
-- [`templates/`](templates/README.md): copy-ready authoring templates
+- [`templates/`](templates/README.md): copy-ready canonical JSON templates
 
 ## Supporting Files
 
@@ -21,4 +22,4 @@ This tree contains the canonical artifact families used by the repository.
 - [`../schemas/README.md`](../schemas/README.md): repository-level quality and config schemas
 - [`../quality/README.md`](../quality/README.md)
 
-The canonical spec-trace suite lives in [`requirements/spec-trace/`](requirements/spec-trace/), and the QUIC slice lives in [`requirements/quic/`](requirements/quic/).
+This repository currently carries the QUIC requirement slice in [`requirements/quic/`](requirements/quic/), using the published SpecTrace model and the repo-local JSON templates.

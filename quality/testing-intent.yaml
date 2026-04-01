@@ -47,16 +47,28 @@ related:
     - tests/Incursa.Quic.Tests/README.md
     - specs/requirements/quic/README.md
     - specs/architecture/quic/README.md
-    - specs/architecture/quic/ARC-QUIC-HDR-0001.md
+    - specs/architecture/quic/ARC-QUIC-RFC8999-0001.json
+    - specs/architecture/quic/ARC-QUIC-RFC9000-0001.json
+    - specs/architecture/quic/ARC-QUIC-RFC9001-0001.json
+    - specs/architecture/quic/ARC-QUIC-RFC9002-0001.json
     - specs/work-items/quic/README.md
     - specs/verification/quic/README.md
-    - specs/requirements/quic/SPEC-QUIC-HDR.md
-    - specs/verification/quic/VER-QUIC-HDR-0001.md
+    - specs/requirements/quic/SPEC-QUIC-RFC8999.json
+    - specs/requirements/quic/SPEC-QUIC-RFC9000.json
+    - specs/requirements/quic/SPEC-QUIC-RFC9001.json
+    - specs/requirements/quic/SPEC-QUIC-RFC9002.json
+    - specs/verification/quic/VER-QUIC-RFC8999-0001.json
+    - specs/verification/quic/VER-QUIC-RFC9000-0001.json
+    - specs/verification/quic/VER-QUIC-RFC9001-0001.json
+    - specs/verification/quic/VER-QUIC-RFC9002-0001.json
     - specs/requirements/quic/REQUIREMENT-GAPS.md
-    - specs/templates/spec-template.md
-    - specs/templates/verification-template.md
+    - specs/templates/spec-template.json
+    - specs/templates/verification-template.json
   workItems:
-    - specs/work-items/quic/WI-QUIC-HDR-0001.md
+    - specs/work-items/quic/WI-QUIC-RFC8999-0001.json
+    - specs/work-items/quic/WI-QUIC-RFC9000-0001.json
+    - specs/work-items/quic/WI-QUIC-RFC9001-0001.json
+    - specs/work-items/quic/WI-QUIC-RFC9002-0001.json
   codeRefs:
     - src/Incursa.Quic/QuicPacketParser.cs
     - src/Incursa.Quic/QuicFrameCodec.cs

@@ -1,6 +1,8 @@
 # Work Items
 
 This directory holds implementation work that traces back to canonical requirements.
+Canonical work-item artifacts are authored in `.json`, and `workbench` now
+points at those canonical JSON artifacts directly.
 
 ## Domain Areas
 

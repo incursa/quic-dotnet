@@ -4,7 +4,7 @@
 
 - RFC: 8999
 - Section tokens: `S5P1`
-- Canonical spec: `specs/requirements/quic/SPEC-QUIC-RFC8999.md`
+- Canonical spec: `specs/requirements/quic/SPEC-QUIC-RFC8999.json`
 
 ## Requirements In Scope
 
@@ -31,9 +31,9 @@
 
 ## Deferred Legacy Refs
 
-- [`QuicShortHeaderPacketTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs) still carries legacy `REQ-QUIC-HDR-0007` traits.
-- [`QuicHeaderPropertyTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs) still carries a legacy `REQ-QUIC-HDR-0007` trait on the short-header property test in that mixed file.
-- [`QuicVersionNegotiationPacketTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs) still carries legacy `REQ-QUIC-HDR-0008`, `REQ-QUIC-HDR-0009`, and `REQ-QUIC-HDR-0010` traits.
+- [`QuicShortHeaderPacketTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs) still carries legacy header ID 0007 traits.
+- [`QuicHeaderPropertyTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs) still carries a legacy header ID 0007 trait on the short-header property test in that mixed file.
+- [`QuicVersionNegotiationPacketTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs) still carries legacy header IDs 0008, 0009, and 0010 traits.
 - These files are outside the selected `S5P1` chunk and are deferred to the RFC 9000 reconciliation pass.
 
 ## Tests Run And Results

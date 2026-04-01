@@ -4,7 +4,7 @@
   "section_tokens": [
     "S5P1"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC8999.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC8999.json",
   "audit_result": "clean",
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
@@ -147,7 +147,7 @@
     {
       "file": "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
       "requirement_ids": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "status": "deferred_out_of_scope",
       "note": "Short-header traits belong to the later RFC 9000 reconciliation pass, not the selected RFC 8999 S5P1 chunk."
@@ -155,7 +155,7 @@
     {
       "file": "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
       "requirement_ids": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "status": "deferred_out_of_scope",
       "note": "The short-header property test in this mixed file belongs to the later RFC 9000 reconciliation pass, not the selected RFC 8999 S5P1 chunk."
@@ -163,9 +163,9 @@
     {
       "file": "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
       "requirement_ids": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "status": "deferred_out_of_scope",
       "note": "Version Negotiation traits belong to the later RFC 9000 reconciliation pass, not the selected RFC 8999 S5P1 chunk."

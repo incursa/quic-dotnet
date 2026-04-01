@@ -2,7 +2,7 @@
 
 ## Requirements in scope
 
-Source: `specs/requirements/quic/SPEC-QUIC-RFC8999.md`
+Source: `specs/requirements/quic/SPEC-QUIC-RFC8999.json`
 
 - `REQ-QUIC-RFC8999-S5P1-0001` Header Form Bit
 - `REQ-QUIC-RFC8999-S5P1-0002` Version-Specific Bits
@@ -121,22 +121,22 @@ Source: `specs/requirements/quic/SPEC-QUIC-RFC8999.md`
 
 ## Old -> new requirement ID mappings applied
 
-- `REQ-QUIC-HDR-0001` -> `REQ-QUIC-RFC8999-S5P1-0001` for the in-scope classification tests.
-- `REQ-QUIC-HDR-0002` -> `REQ-QUIC-RFC8999-S5P1-0002` for preserved long-header control-bit coverage.
-- Legacy `REQ-QUIC-HDR-0003` through `REQ-QUIC-HDR-0006` tags were rewritten test-by-test to `REQ-QUIC-RFC8999-S5P1-0003` through `REQ-QUIC-RFC8999-S5P1-0007` where the assertions directly cover the imported RFC 8999 invariants.
-- Legacy `REQ-QUIC-HDR-0008` through `REQ-QUIC-HDR-0010` tags were rewritten to the matching `REQ-QUIC-RFC8999-S5P1-*` IDs only in mixed long-header/Version Negotiation tests that still prove the shared RFC 8999 invariant surface.
+- Legacy header ID 0001 -> `REQ-QUIC-RFC8999-S5P1-0001` for the in-scope classification tests.
+- Legacy header ID 0002 -> `REQ-QUIC-RFC8999-S5P1-0002` for preserved long-header control-bit coverage.
+- Legacy header IDs 0003 through 0006 were rewritten test-by-test to `REQ-QUIC-RFC8999-S5P1-0003` through `REQ-QUIC-RFC8999-S5P1-0007` where the assertions directly cover the imported RFC 8999 invariants.
+- Legacy header IDs 0008 through 0010 were rewritten to the matching `REQ-QUIC-RFC8999-S5P1-*` IDs only in mixed long-header/Version Negotiation tests that still prove the shared RFC 8999 invariant surface.
 
 ## Gaps fixed in this pass
 
-- Rewrote in-scope xUnit `Trait("Requirement", "...")` tags from legacy `REQ-QUIC-HDR-*` identifiers to canonical `REQ-QUIC-RFC8999-S5P1-*` identifiers.
+- Rewrote in-scope xUnit `Trait("Requirement", "...")` tags from legacy header identifiers to canonical `REQ-QUIC-RFC8999-S5P1-*` identifiers.
 - Added `TryParseLongHeader_AcceptsMaximumLengthConnectionIds` to cover the 255-byte upper bound for both connection IDs and preserve the trailing version-specific remainder.
 - Left short-header-only and Version Negotiation-specific legacy requirement tags untouched when they belong to later RFC 9000 reconciliation work rather than RFC 8999 Section 5.1.
 
 ## Remaining gaps
 
 - The documented `specs/requirements/quic/REQUIREMENT-GAPS.md` path is not present in the repository, so there is no chunk-local gap ledger to update for this pass.
-- Short-header tests still carry the legacy `REQ-QUIC-HDR-0007` tag and must be reconciled with the later RFC 9000 short-header chunk, not with `8999-01-invariants`.
-- Several Version Negotiation-specific negative tests still carry legacy `REQ-QUIC-HDR-0010` and `REQ-QUIC-HDR-0008` tags because they verify later RFC 9000 semantics rather than the RFC 8999 shared long-header invariant set.
+- Short-header tests still carry the legacy header ID 0007 tag and must be reconciled with the later RFC 9000 short-header chunk, not with `8999-01-invariants`.
+- Several Version Negotiation-specific negative tests still carry legacy header IDs 0010 and 0008 because they verify later RFC 9000 semantics rather than the RFC 8999 shared long-header invariant set.
 - The import summary still notes that no ARC, WI, or VER artifacts were created by the import run; this pass did not author those canonical proof artifacts.
 
 ## Requirements needing deeper implementation work

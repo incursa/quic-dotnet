@@ -3,15 +3,22 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicVersionNegotiationPacketTests
 {
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0008")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0009")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0013")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0019")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0004")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
     [Trait("Category", "Positive")]
     public void TryParseVersionNegotiation_ExposesSupportedVersions()
     {
@@ -40,6 +47,8 @@ public sealed class QuicVersionNegotiationPacketTests
         Assert.Equal((uint)0xAABBCCDD, header.GetSupportedVersion(2));
         int supportedVersionOffset = 1 + sizeof(uint) + 1 + destinationConnectionId.Length + 1 + sourceConnectionId.Length;
         Assert.True(packet.AsSpan(supportedVersionOffset).SequenceEqual(header.SupportedVersionBytes));
+        Assert.True(header.ContainsSupportedVersion(0x11223344));
+        Assert.False(header.ContainsSupportedVersion(0x01020305));
 
         bool threw = false;
         try
@@ -52,6 +61,40 @@ public sealed class QuicVersionNegotiationPacketTests
         }
 
         Assert.True(threw);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0004")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S6P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S6P3-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S6P3-0002")]
+    [Trait("Category", "Positive")]
+    public void TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions()
+    {
+        uint reservedVersion = 0x0A0A0A0A;
+        uint selectedVersion = 0x11223344;
+        uint otherVersion = 0xAABBCCDD;
+
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x4C,
+            destinationConnectionId: [0x01, 0x02],
+            sourceConnectionId: [0x03],
+            reservedVersion,
+            otherVersion,
+            selectedVersion);
+
+        Assert.True(QuicPacketParser.TryParseVersionNegotiation(packet, out QuicVersionNegotiationPacket header));
+        Assert.Equal(3, header.SupportedVersionCount);
+        Assert.Equal(reservedVersion, header.GetSupportedVersion(0));
+        Assert.Equal(otherVersion, header.GetSupportedVersion(1));
+        Assert.Equal(selectedVersion, header.GetSupportedVersion(2));
+        Assert.True(header.ContainsSupportedVersion(reservedVersion));
+        Assert.True(header.ContainsSupportedVersion(selectedVersion));
+        Assert.False(header.ContainsSupportedVersion(0xDEADBEEF));
     }
 
     [Fact]
@@ -87,7 +130,7 @@ public sealed class QuicVersionNegotiationPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0003")]
     [Trait("Category", "Negative")]
     public void TryParseVersionNegotiation_RejectsShortHeaderForm()
     {
@@ -130,7 +173,7 @@ public sealed class QuicVersionNegotiationPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0005")]
     [Trait("Category", "Negative")]
     public void TryParseVersionNegotiation_RejectsOrdinaryLongHeaders()
     {

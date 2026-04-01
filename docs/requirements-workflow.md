@@ -32,6 +32,9 @@ This note captures the working order for RFC-derived QUIC work in `Incursa.Quic`
 - Verification: [`../specs/verification/quic/README.md`](../specs/verification/quic/README.md)
 - Generated outputs: [`../specs/generated/README.md`](../specs/generated/README.md)
 
+Canonical artifacts in those families are authored as sibling `.json` files.
+The repository does not keep sibling canonical `.md` companions for those families.
+
 ## Notes For QUIC Work
 
 - For version-independent packet handling, version negotiation, connection ID handling, and related wire-format work, keep the requirement slices small and stable.

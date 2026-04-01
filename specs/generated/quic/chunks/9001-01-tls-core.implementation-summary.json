@@ -5,16 +5,398 @@
     "S2",
     "S3",
     "S4",
-    "S5",
-    "S6"
+    "S5"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.json",
+  "files_changed": [
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+    "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+    "benchmarks/QuicBenchmarkData.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs",
+    "benchmarks/README.md",
+    "specs/generated/quic/chunks/9001-01-tls-core.implementation-summary.md",
+    "specs/generated/quic/chunks/9001-01-tls-core.implementation-summary.json"
+  ],
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
     "result": "Passed",
-    "summary": "106 passed, 0 failed, 0 skipped"
+    "summary": "198 passed, 0 failed, 0 skipped"
   },
-  "notes": "No production source files or tests changed in this pass; the chunk remains blocked by the absence of RFC 9001 TLS/protection implementation surfaces in the repository.",
+  "benchmark_run": {
+    "command": "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*\"",
+    "result": "Passed",
+    "summary": "2 benchmarks executed successfully in Dry mode"
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S2-0001",
+      "title": "Interpret uppercase BCP 14 keywords",
+      "completion_status": "intentionally deferred",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Document-level BCP 14 interpretation rule; no live code/test artifact is expected in the current repo.",
+      "notes": "Spec-level rule only; keep it document-only until a canonical artifact is defined."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0001",
+      "title": "Assume packet confidentiality",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0002",
+      "title": "Derive packet keys from TLS handshake",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0003",
+      "title": "Carry handshake and alert messages directly",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0004",
+      "title": "Replace the TLS record layer",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0005",
+      "title": "Rely on TLS for security-critical functions",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0006",
+      "title": "Use the TLS handshake",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0007",
+      "title": "Use QUIC-provided delivery services",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0008",
+      "title": "Send TLS messages via QUIC",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0009",
+      "title": "Provide a reliable stream abstraction",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0010",
+      "title": "Provide TLS updates to QUIC",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0011",
+      "title": "Do not use TLS Application Data records",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S3-0012",
+      "title": "Send data as QUIC frames",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0001",
+      "title": "Carry handshake data in CRYPTO frames",
+      "completion_status": "implemented",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "benchmarks/QuicBenchmarkData.cs",
+        "benchmarks/QuicFrameCodecBenchmarks.cs",
+        "benchmarks/README.md"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields -> REQ-QUIC-RFC9001-S4-0001"
+      ],
+      "remaining_gap": "",
+      "notes": "Covered by CRYPTO frame parse/format round-trip coverage; a benchmark lane was added for the hot path."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0002",
+      "title": "Define CRYPTO frame boundaries",
+      "completion_status": "implemented",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "benchmarks/QuicBenchmarkData.cs",
+        "benchmarks/QuicFrameCodecBenchmarks.cs",
+        "benchmarks/README.md"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields -> REQ-QUIC-RFC9001-S4-0002",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling -> REQ-QUIC-RFC9001-S4-0002",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling -> REQ-QUIC-RFC9001-S4-0002"
+      ],
+      "remaining_gap": "",
+      "notes": "Covered by CRYPTO frame boundary and truncation checks; the benchmark lane exercises the same serialize/parse path."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0003",
+      "title": "Package and encrypt CRYPTO frames",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0004",
+      "title": "Package and encrypt CRYPTO frames",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0005",
+      "title": "Deliver handshake data reliably",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0006",
+      "title": "Associate TLS-produced chunks with current keys",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0007",
+      "title": "Retransmit with the same keys",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0008",
+      "title": "Map encryption levels to packet number spaces",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0009",
+      "title": "Let packet number space determine frame semantics",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0010",
+      "title": "Indicate packet keys via packet type",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S4-0011",
+      "title": "Prefer coalesced packets",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0003",
+      "title": "Leave Version Negotiation packets unprotected",
+      "completion_status": "implemented",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions -> REQ-QUIC-RFC9001-S5-0003"
+      ],
+      "remaining_gap": "",
+      "notes": "The existing formatter emits Version Negotiation packets as raw bytes; this repo has no packet-protection layer."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0001",
+      "title": "Protect packets with TLS-derived keys",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0002",
+      "title": "Use the TLS-negotiated AEAD",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0004",
+      "title": "Protect Retry packets with AEAD_AES_128_GCM",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0005",
+      "title": "Use AEAD_AES_128_GCM for Initial packets",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0006",
+      "title": "Derive Initial keys from the first client Initial",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0007",
+      "title": "Protect all other packets cryptographically",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0008",
+      "title": "Apply the same protection process to Initial packets",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0009",
+      "title": "Treat Initial packets as lacking confidentiality and integrity protection",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0010",
+      "title": "Use a fixed key for Retry packets",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
+      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+    }
+  ],
   "remaining_open_requirements": [
     "REQ-QUIC-RFC9001-S2-0001",
     "REQ-QUIC-RFC9001-S3-0001",
@@ -29,8 +411,6 @@
     "REQ-QUIC-RFC9001-S3-0010",
     "REQ-QUIC-RFC9001-S3-0011",
     "REQ-QUIC-RFC9001-S3-0012",
-    "REQ-QUIC-RFC9001-S4-0001",
-    "REQ-QUIC-RFC9001-S4-0002",
     "REQ-QUIC-RFC9001-S4-0003",
     "REQ-QUIC-RFC9001-S4-0004",
     "REQ-QUIC-RFC9001-S4-0005",
@@ -42,421 +422,13 @@
     "REQ-QUIC-RFC9001-S4-0011",
     "REQ-QUIC-RFC9001-S5-0001",
     "REQ-QUIC-RFC9001-S5-0002",
-    "REQ-QUIC-RFC9001-S5-0003",
     "REQ-QUIC-RFC9001-S5-0004",
     "REQ-QUIC-RFC9001-S5-0005",
     "REQ-QUIC-RFC9001-S5-0006",
     "REQ-QUIC-RFC9001-S5-0007",
     "REQ-QUIC-RFC9001-S5-0008",
     "REQ-QUIC-RFC9001-S5-0009",
-    "REQ-QUIC-RFC9001-S5-0010",
-    "REQ-QUIC-RFC9001-S6-0001",
-    "REQ-QUIC-RFC9001-S6-0002",
-    "REQ-QUIC-RFC9001-S6-0003",
-    "REQ-QUIC-RFC9001-S6-0004",
-    "REQ-QUIC-RFC9001-S6-0005",
-    "REQ-QUIC-RFC9001-S6-0006",
-    "REQ-QUIC-RFC9001-S6-0007",
-    "REQ-QUIC-RFC9001-S6-0008",
-    "REQ-QUIC-RFC9001-S6-0009",
-    "REQ-QUIC-RFC9001-S6-0010"
+    "REQ-QUIC-RFC9001-S5-0010"
   ],
-  "requirements": [
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S2-0001",
-      "completion_status": "intentionally deferred",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Document-level BCP 14 interpretation rule; no live code/test artifact is expected in the current repo.",
-      "notes": "Spec-level rule only; treat as document-only until a canonical artifact is defined."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0001",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0002",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0003",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0004",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0005",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0006",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0007",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0008",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0009",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0010",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0011",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S3-0012",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S4-0001",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S4-0002",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S4-0003",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S4-0004",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S4-0005",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S4-0006",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S4-0007",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S4-0008",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S4-0009",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S4-0010",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S4-0011",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S5-0001",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S5-0002",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S5-0003",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S5-0004",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S5-0005",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S5-0006",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S5-0007",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S5-0008",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S5-0009",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S5-0010",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0001",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0002",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0003",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0004",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0005",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0006",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0007",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0008",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0009",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0010",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No RFC 9001 TLS packet-protection, CRYPTO delivery, or key-update implementation surface exists in src/Incursa.Quic.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
-    }
-  ]
+  "notes": "RFC 9001 packet-protection, TLS integration, and key-update clauses remain blocked; CRYPTO-frame and plaintext Version Negotiation evidence was added in this pass."
 }

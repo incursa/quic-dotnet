@@ -1,0 +1,75 @@
+# RFC 9000 Chunk Implementation Summary: `9000-04-connection-ids-basics`
+
+## Scope
+
+Source: `./specs/requirements/quic/SPEC-QUIC-RFC9000.json`
+RFC: `9000`
+Section tokens: `S5, S5P1, S5P1P1`
+
+## Requirements Completed
+
+- `REQ-QUIC-RFC9000-S5P1-0008`: long-header CID fields are parsed and preserved; the trace coverage was already in place from the prior pass and remains valid.
+- `REQ-QUIC-RFC9000-S5P1P1-0005`: additional connection IDs are communicated with `NEW_CONNECTION_ID` frames; the existing frame codec tests and fuzz coverage are now tagged with the imported ID.
+- `REQ-QUIC-RFC9000-S5P1P1-0011`: endpoints advertise `active_connection_id_limit` with transport parameters; the coverage now includes a client-role round-trip test in addition to the existing server-role and fuzz coverage.
+
+## Files Changed
+
+- Prior trace pass carried forward:
+  - `tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs`
+  - `tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs`
+  - `tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs`
+  - `tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs`
+- This pass:
+  - `tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs`
+  - `tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs`
+  - `tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs`
+  - `tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs`
+- Generated reports:
+  - `specs/generated/quic/chunks/9000-04-connection-ids-basics.implementation-summary.md`
+  - `specs/generated/quic/chunks/9000-04-connection-ids-basics.implementation-summary.json`
+
+## Tests Added or Updated
+
+- `REQ-QUIC-RFC9000-S5P1-0008`
+  - `QuicLongHeaderPacketTests.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload`
+  - `QuicHeaderPropertyTests.TryParseLongHeader_RoundTripsHeaderFields`
+  - `QuicHeaderFuzzTests.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation`
+- `REQ-QUIC-RFC9000-S5P1P1-0005`
+  - `QuicFrameCodecPart4Tests.TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields`
+  - `QuicFrameCodecPart4Tests.TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths`
+  - `QuicFrameCodecPart4FuzzTests.Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation`
+- `REQ-QUIC-RFC9000-S5P1P1-0011`
+  - `QuicTransportParametersTests.TryFormatTransportParameters_WritesExactTupleSequence`
+  - `QuicTransportParametersTests.TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient`
+  - `QuicTransportParametersTests.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress`
+  - `QuicTransportParametersFuzzTests.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation`
+- `REQ-QUIC-RFC9000-S5P1-0012`
+  - `QuicVersionNegotiationPacketTests.TryParseVersionNegotiation_ExposesSupportedVersions`
+  - `QuicHeaderPropertyTests.TryParseVersionNegotiation_RoundTripsSupportedVersions`
+  - `QuicHeaderFuzzTests.Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation`
+
+## Tests Run and Results
+
+- Command: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicFrameCodecPart4Tests|FullyQualifiedName~QuicFrameCodecPart4FuzzTests|FullyQualifiedName~QuicTransportParametersTests|FullyQualifiedName~QuicTransportParametersFuzzTests"`
+- Passed: 88
+- Failed: 0
+- Skipped: 0
+- Duration: 181 ms
+
+## Remaining Open Requirements in Scope
+
+- `REQ-QUIC-RFC9000-S5-0001` through `REQ-QUIC-RFC9000-S5-0007`
+- `REQ-QUIC-RFC9000-S5-0008`
+- `REQ-QUIC-RFC9000-S5P1-0001` through `REQ-QUIC-RFC9000-S5P1-0007`
+- `REQ-QUIC-RFC9000-S5P1-0009` through `REQ-QUIC-RFC9000-S5P1-0010`
+- `REQ-QUIC-RFC9000-S5P1-0012` through `REQ-QUIC-RFC9000-S5P1-0015`
+- `REQ-QUIC-RFC9000-S5P1P1-0001` through `REQ-QUIC-RFC9000-S5P1P1-0004`
+- `REQ-QUIC-RFC9000-S5P1P1-0006` through `REQ-QUIC-RFC9000-S5P1P1-0010`
+- `REQ-QUIC-RFC9000-S5P1P1-0012` through `REQ-QUIC-RFC9000-S5P1P1-0021`
+- `REQ-QUIC-RFC9000-S5P1P1-0002` remains wire-level evidence only; the repo still does not model the connection-state semantics that would close the initial-CID ownership rule.
+
+## Risks / Follow-up Notes
+
+- The repo still lacks a CID lifecycle / migration manager, so the stateful parts of Section 5.1.1 remain out of scope.
+- The imported trace coverage is now clean for the wire-format pieces, but endpoint behavior such as CID issuance, retirement, replenishment, and limit enforcement still needs a separate implementation slice.
+- No production source files changed in this pass; the underlying codecs already existed, and the work was limited to traceability plus one small client-role proof test.

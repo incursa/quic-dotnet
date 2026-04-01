@@ -45,7 +45,19 @@ Incursa.Quic.QuicVersionNegotiationPacket.SourceConnectionId.get -> System.ReadO
 Incursa.Quic.QuicVersionNegotiationPacket.SourceConnectionIdLength.get -> int
 Incursa.Quic.QuicVersionNegotiationPacket.SupportedVersionBytes.get -> System.ReadOnlySpan<byte>
 Incursa.Quic.QuicVersionNegotiationPacket.SupportedVersionCount.get -> int
+Incursa.Quic.QuicVersionNegotiationPacket.ContainsSupportedVersion(uint version) -> bool
 Incursa.Quic.QuicVersionNegotiationPacket.GetSupportedVersion(int index) -> uint
+Incursa.Quic.QuicVersionNegotiation
+const Incursa.Quic.QuicVersionNegotiation.VersionNegotiationVersion = 0 -> uint
+const Incursa.Quic.QuicVersionNegotiation.Version1 = 1 -> uint
+const Incursa.Quic.QuicVersionNegotiation.Version1MinimumDatagramPayloadSize = 1200 -> int
+static Incursa.Quic.QuicVersionNegotiation.TryGetRequiredInitialDatagramPayloadSize(System.ReadOnlySpan<uint> supportedVersions, out int requiredPayloadSize) -> bool
+static Incursa.Quic.QuicVersionNegotiation.ShouldSendVersionNegotiation(uint clientSelectedVersion, System.ReadOnlySpan<uint> serverSupportedVersions) -> bool
+static Incursa.Quic.QuicVersionNegotiation.TryFormatVersionNegotiationResponse(uint clientSelectedVersion, System.ReadOnlySpan<byte> clientDestinationConnectionId, System.ReadOnlySpan<byte> clientSourceConnectionId, System.ReadOnlySpan<uint> serverSupportedVersions, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicVersionNegotiation.ShouldDiscardVersionNegotiation(Incursa.Quic.QuicVersionNegotiationPacket packet, uint selectedVersion, bool hasSuccessfullyProcessedAnotherPacket) -> bool
+static Incursa.Quic.QuicVersionNegotiation.ShouldAbandonConnectionAttempt(Incursa.Quic.QuicVersionNegotiationPacket packet, uint selectedVersion, System.ReadOnlySpan<uint> clientSupportedVersions, bool hasSuccessfullyProcessedAnotherPacket) -> bool
+static Incursa.Quic.QuicVersionNegotiation.IsReservedVersion(uint version) -> bool
+static Incursa.Quic.QuicVersionNegotiation.CreateReservedVersion(uint template) -> uint
 Incursa.Quic.QuicVariableLengthInteger
 const Incursa.Quic.QuicVariableLengthInteger.MaxValue = 4611686018427387903 -> ulong
 static Incursa.Quic.QuicVariableLengthInteger.TryParse(System.ReadOnlySpan<byte> encoded, out ulong value, out int bytesConsumed) -> bool

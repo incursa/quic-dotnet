@@ -4,7 +4,7 @@
 
 - RFC: `9000`
 - Section tokens: `S19P6`, `S19P7`, `S19P8`, `S19P9`, `S19P10`, `S19P11`
-- Canonical spec: [`SPEC-QUIC-RFC9000.md`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.md)
+- Canonical spec: [`SPEC-QUIC-RFC9000.json`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.json)
 - Requirements in scope: `78`
 - Implemented and tested: `17`
 - Implemented but missing tests: `0`
@@ -108,7 +108,7 @@
 ## Existing Implementation Evidence
 
 - Selected live byte-layout implementation: [QuicStreamParser.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamParser.cs) and [QuicStreamFrame.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStreamFrame.cs) cover STREAM-frame parsing and parsed-frame projection for S19P8 only.
-- No live CRYPTO, NEW_TOKEN, MAX_DATA, MAX_STREAM_DATA, or MAX_STREAMS frame implementation refs were found under [src](C:/src/incursa/quic-dotnet/src) for this chunk.
+- No live CRYPTO, NEW_TOKEN, MAX_DATA, MAX_STREAM_DATA, or MAX_STREAMS frame implementation refs were found under `src/Incursa.Quic` for this chunk.
 
 ## Existing Test Evidence
 

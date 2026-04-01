@@ -1,0 +1,36 @@
+{
+  "title": "<Verification Title>",
+  "preconditions": [
+    "<precondition>"
+  ],
+  "verification_method": "Describe the method in tooling-agnostic terms, such as execution, inspection, analysis, or manual review.",
+  "owner": "<team-or-role>",
+  "artifact_type": "verification",
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "status": "planned",
+  "domain": "<domain>",
+  "verifies": [
+    "REQ-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+  ],
+  "evidence": [
+    "<evidence or test reference>"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "<Optional Heading>",
+      "content": "<Optional supporting prose or list-formatted Markdown>"
+    }
+  ],
+  "status_summary": "Optional. Add a short status explanation when the artifact status alone is not enough.",
+  "scope": "State what is being verified.",
+  "procedure": [
+    "<step or approach detail>"
+  ],
+  "expected_result": "Describe the expected outcome in plain language.",
+  "related_artifacts": [
+    "SPEC-<DOMAIN>[-<GROUPING>...]",
+    "ARC-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>",
+    "WI-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+  ],
+  "artifact_id": "VER-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+}

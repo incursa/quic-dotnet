@@ -10,7 +10,7 @@
       "S19P10",
       "S19P11"
     ],
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "counts": {
       "implemented_and_tested": 46,
       "partially_implemented": 6,

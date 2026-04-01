@@ -4,11 +4,11 @@
 
 - [`specs/generated/quic/core-validation.json`](./core-validation.json) reports 1736 errors under code `REQ-CLAUSE`, one for every QUIC requirement.
 - The message is namespace-alignment text of the form "requirement ... does not align with specification namespace ..." rather than a malformed-identifier complaint.
-- The same validator family also fails against the repository’s own canonical suite under [`specs/requirements/spec-trace`](../../requirements/spec-trace/) because it misses linked REQ headings there.
+- Historical validator behavior also failed against the reference SpecTrace suite because it missed linked REQ headings there; that issue is separate from the QUIC import corpus itself.
 
 ## Do The Section-Scoped REQ IDs Satisfy Spec Trace Rules?
 
-- Yes. [`SPEC-ID.md`](../../requirements/spec-trace/SPEC-ID.md) defines requirement IDs as `REQ-<DOMAIN>(-<GROUPING>...)-<SEQUENCE:4+>`.
+- Yes. `artifact-id-policy.json` and the published SpecTrace model use requirement identifiers of the form `REQ-<DOMAIN>(-<GROUPING>...)-<SEQUENCE:4+>`.
 - Yes. [`artifact-id-policy.json`](../../../artifact-id-policy.json) allows zero or more grouping segments and constrains each grouping segment only to `^[A-Z][A-Z0-9]*$`.
 - Yes. Tokens such as `S5P1`, `S10P3P2`, and `SAP11` are uppercase alphanumeric and letter-starting, so they satisfy the published grouping-token rule.
 

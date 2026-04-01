@@ -6,7 +6,7 @@
     "S17P1",
     "S17P2"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
   "audit_result": "trace-consistent-with-open-items",
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests\"",
@@ -789,7 +789,7 @@
     {
       "file": "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
       "requirement_ids": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "status": "deferred_out_of_scope",
       "note": "Short-header traits belong to the later RFC 9000 pass, not the selected long-header/general/initial chunk."
@@ -797,7 +797,7 @@
     {
       "file": "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
       "requirement_ids": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "status": "deferred_out_of_scope",
       "note": "The short-header property test in this mixed file belongs to the later RFC 9000 pass, not the selected chunk."
@@ -805,9 +805,9 @@
     {
       "file": "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
       "requirement_ids": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "status": "deferred_out_of_scope",
       "note": "Version Negotiation traits belong to the later RFC 9000 pass, not the selected chunk."
@@ -816,7 +816,7 @@
   "notes": [
     "No in-scope source-file requirement refs were found.",
     "In-scope tests use canonical RFC 9000 requirement IDs only.",
-    "Legacy REQ-QUIC-HDR refs remain only in out-of-scope later-chunk tests.",
+    "Legacy legacy header refs remain only in out-of-scope later-chunk tests.",
     "The generated reconciliation and implementation-summary artifacts keep historical mapping data by design."
   ]
 }

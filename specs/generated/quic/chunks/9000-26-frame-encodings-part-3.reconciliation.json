@@ -10,7 +10,7 @@
       "S19P10",
       "S19P11"
     ],
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "counts": {
       "total": 78,
       "implemented_and_tested": 17,
@@ -42,7 +42,7 @@
     "consulted_inputs": [
       "docs/requirements-workflow.md",
       "docs/spec-trace-prep.md",
-      "specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+      "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
       "specs/generated/quic/import-audit-summary.md",
       "specs/generated/quic/import-missing-coverage.md",
       "specs/generated/quic/import-validator-mismatch.md",

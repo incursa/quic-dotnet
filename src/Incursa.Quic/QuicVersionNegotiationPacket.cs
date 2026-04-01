@@ -75,6 +75,22 @@ public readonly ref struct QuicVersionNegotiationPacket
     public int SupportedVersionCount => supportedVersionBytes.Length / 4;
 
     /// <summary>
+    /// Gets whether the supported-version list contains the specified version.
+    /// </summary>
+    public bool ContainsSupportedVersion(uint version)
+    {
+        for (int offset = 0; offset < supportedVersionBytes.Length; offset += 4)
+        {
+            if (BinaryPrimitives.ReadUInt32BigEndian(supportedVersionBytes.Slice(offset, 4)) == version)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Gets a supported version by zero-based index.
     /// </summary>
     public uint GetSupportedVersion(int index)

@@ -14,6 +14,9 @@ This note defines how `Incursa.Quic` will move from RFC text to traceable implem
 - Permanent benchmark suites belong under [`../benchmarks/README.md`](../benchmarks/README.md).
 - Repo-level testing intent lives in [`../quality/testing-intent.yaml`](../quality/testing-intent.yaml).
 
+For canonical SpecTrace families, author the sibling `.json` file and keep
+workflow references pointed at the canonical JSON path.
+
 ## Order Of Operations
 
 1. Start from the relevant RFC section or protocol concern.
@@ -44,14 +47,18 @@ Useful commands:
 
 ```bash
 dotnet tool restore
+pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core
 dotnet tool run workbench -- config show --format json
+dotnet tool run workbench -- --format json validate --profile core
 dotnet tool run workbench -- doctor --json
 ```
+
+`Validate-SpecTraceJson.ps1` pulls the canonical model schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) so this repository does not have to mirror that file locally.
 
 Use the templates under [`../specs/templates/README.md`](../specs/templates/README.md) when the first requirement, architecture, work-item, or verification artifacts are created.
 
 ## Current Scope
 
-The first QUIC requirement slice now exists under [`../specs/requirements/quic/SPEC-QUIC-HDR.md`](../specs/requirements/quic/SPEC-QUIC-HDR.md) with a planned verification artifact under [`../specs/verification/quic/VER-QUIC-HDR-0001.md`](../specs/verification/quic/VER-QUIC-HDR-0001.md).
+The first QUIC requirement slice now exists under [`../specs/requirements/quic/SPEC-QUIC-RFC8999.json`](../specs/requirements/quic/SPEC-QUIC-RFC8999.json) with a verification artifact under [`../specs/verification/quic/VER-QUIC-RFC8999-0001.json`](../specs/verification/quic/VER-QUIC-RFC8999-0001.json).
 
 Future RFC slices should follow the same order of operations: translate the RFC into canonical requirements and gap records first, then add design, work-item, verification, and implementation details after the requirement text is stable.

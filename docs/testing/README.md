@@ -14,7 +14,7 @@ For protocol work, testing is only one part of the proof burden. The repository 
 
 ## Current state
 
-- The repository includes scaffold smoke and blocking tests that verify the package and API-baseline files are wired correctly.
+- The repository includes scaffold smoke and blocking tests that verify the package and API-baseline files are wired correctly, plus a broader requirement-tagged xUnit suite that the quality attestation wrapper now runs.
 - Extend this folder and the test project as the real QUIC implementation lands.
 
 ## Quality expectations

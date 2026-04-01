@@ -32,8 +32,16 @@
     }
   },
   "Validation": {
-    "LinkExclude": [],
-    "DocExclude": []
+    "LinkExclude": [
+      "artifacts/spec-trace-migration/backups/",
+      "artifacts/spec-trace-json-migration/backups/",
+      "specs_old/"
+    ],
+    "DocExclude": [
+      "artifacts/spec-trace-migration/backups/",
+      "artifacts/spec-trace-json-migration/backups/",
+      "specs_old/"
+    ]
   },
   "Tui": {
     "Theme": "powershell",

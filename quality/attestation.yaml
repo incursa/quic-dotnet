@@ -4,8 +4,6 @@ scope:
     - specs/architecture/quic
     - specs/work-items/quic
     - specs/verification/quic
-  excludes:
-    - specs/requirements/spec-trace
 
 evidenceRoots:
   qualityTesting:

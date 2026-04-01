@@ -4,7 +4,7 @@
 
 - RFC: 9000
 - Section tokens: `S19P1`, `S19P2`, `S19P3`, `S19P3P1`, `S19P3P2`, `S19P4`, `S19P5`
-- Canonical spec: [`SPEC-QUIC-RFC9000.md`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.md)
+- Canonical spec: [`SPEC-QUIC-RFC9000.json`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.json)
 - Implementation summary: [`9000-25-frame-encodings-part-2.implementation-summary.json`](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json)
 - Reconciliation artifact: [`9000-25-frame-encodings-part-2.reconciliation.json`](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9000-25-frame-encodings-part-2.reconciliation.json) (stale no-evidence snapshot; not authoritative)
 
@@ -134,7 +134,7 @@
 
 ## Files Reviewed
 
-- `specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- `specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - `specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json`
 - `specs/generated/quic/chunks/9000-25-frame-encodings-part-2.reconciliation.json`
 - `src/Incursa.Quic/QuicAckFrame.cs`

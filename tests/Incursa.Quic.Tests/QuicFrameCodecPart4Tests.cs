@@ -3,10 +3,10 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicFrameCodecPart4Tests
 {
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P12-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P12-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P12-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P12-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0006")]
     [Trait("Category", "Positive")]
     public void TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField()
     {
@@ -24,9 +24,9 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P12-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P12-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P12-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0006")]
     [Trait("Category", "Negative")]
     public void TryParseDataBlockedFrame_RejectsTruncatedInput()
     {
@@ -36,12 +36,12 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P13-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P13-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P13-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P13-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P13-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P13-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0008")]
     [Trait("Category", "Positive")]
     public void TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields()
     {
@@ -60,11 +60,11 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P13-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P13-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P13-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P13-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P13-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0008")]
     [Trait("Category", "Negative")]
     public void TryParseStreamDataBlockedFrame_RejectsTruncatedInput()
     {
@@ -76,11 +76,11 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0007")]
     [Trait("Category", "Positive")]
     public void TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants(bool isBidirectional)
     {
@@ -101,12 +101,12 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0008")]
     [Trait("Category", "Positive")]
     public void TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit(bool isBidirectional)
     {
@@ -126,8 +126,8 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0008")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P14-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0009")]
     [Trait("Category", "Negative")]
     public void TryParseStreamsBlockedFrame_RejectsValuesAboveTheEncodingLimit()
     {
@@ -139,18 +139,20 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0008")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0009")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0010")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0013")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P2-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P1-0005")]
     [Trait("Category", "Positive")]
     public void TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields()
     {
@@ -180,12 +182,14 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(1)]
     [InlineData(20)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0010")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0011")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P2-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P1-0005")]
     [Trait("Category", "Positive")]
     public void TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths(int connectionIdLength)
     {
@@ -209,10 +213,10 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0010")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0011")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
     [Trait("Category", "Negative")]
     public void TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues()
     {
@@ -233,9 +237,9 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(1)]
     [InlineData(17)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0008")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
     [Trait("Category", "Negative")]
     public void TryParseNewConnectionIdFrame_RejectsTruncatedInput(int truncateBy)
     {
@@ -252,8 +256,8 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0019")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P15-0020")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0020")]
     [Trait("Category", "Negative")]
     public void TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber()
     {
@@ -271,9 +275,11 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P16-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P16-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P16-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P16-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P16-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P16-0006")]
     [Trait("Category", "Positive")]
     public void TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber()
     {
@@ -292,8 +298,10 @@ public sealed class QuicFrameCodecPart4Tests
 
     [Theory]
     [InlineData(1)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P16-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P16-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P16-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P16-0006")]
     [Trait("Category", "Negative")]
     public void TryParseRetireConnectionIdFrame_RejectsTruncatedInput(int truncateBy)
     {
@@ -306,12 +314,12 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P17-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P17-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P17-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P17-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P18-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P18-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P17-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P17-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P17-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P17-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P18-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S19P18-0002")]
     [Trait("Category", "Positive")]
     public void TryParsePathFrames_ParsesAndFormatsTheEightBytePayload(bool isChallenge)
     {
@@ -352,12 +360,12 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P17-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P17-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P17-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P17-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P18-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P18-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P17-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P17-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P17-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P17-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P18-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S19P18-0002")]
     [Trait("Category", "Negative")]
     public void TryParsePathFrames_RejectsTruncatedInput(bool isChallenge)
     {

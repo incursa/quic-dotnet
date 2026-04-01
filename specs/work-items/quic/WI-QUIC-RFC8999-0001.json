@@ -1,0 +1,42 @@
+{
+  "title": "QUIC RFC 8999 Invariants Work Item",
+  "verification_links": [
+    "VER-QUIC-RFC8999-0001"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC8999"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "out_of_scope": [
+    "RFC 9000-only short-header semantics.",
+    "Protocol behavior that does not affect the shared RFC 8999 wire shape."
+  ],
+  "status": "planned",
+  "domain": "quic",
+  "summary": "Keep the RFC 8999 packet-invariant surface, tests, and evidence wiring aligned\nwith the canonical requirements and their overlapping RFC 9000 neighbors.",
+  "verification_plan": "Prove the slice through unit tests, property tests, fuzz tests, benchmark\ncoverage, and repo-local JSON validation and quality evidence passes.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicPacketParser.cs`](../../../src/Incursa.Quic/QuicPacketParser.cs)\n- [`QuicLongHeaderPacket.cs`](../../../src/Incursa.Quic/QuicLongHeaderPacket.cs)\n- [`QuicVersionNegotiationPacket.cs`](../../../src/Incursa.Quic/QuicVersionNegotiationPacket.cs)\n- [`QuicPacketParserTests.cs`](../../../tests/Incursa.Quic.Tests/QuicPacketParserTests.cs)\n- [`QuicHeaderPropertyTests.cs`](../../../tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs)\n- [`QuicLongHeaderPacketTests.cs`](../../../tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs)\n- [`QuicHeaderFuzzTests.cs`](../../../tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs)\n- [`QuicVersionNegotiationPacketTests.cs`](../../../tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs)\n- [`QuicVersionNegotiationTests.cs`](../../../tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs)\n- [`QuicHeaderParsingBenchmarks.cs`](../../../benchmarks/QuicHeaderParsingBenchmarks.cs)"
+    }
+  ],
+  "artifact_type": "work_item",
+  "planned_changes": "- Keep the packet-form discriminator strict in\n  [QuicPacketParser](../../../src/Incursa.Quic/QuicPacketParser.cs).\n- Preserve the packet-specific parsing model in the long-header and\n  version-negotiation packet types.\n- Keep the property, fuzz, and regression tests aligned with the shared wire\n  shape and the dual-tagged RFC 8999 / RFC 9000 overlap cases.\n- Keep benchmark coverage for the parsing and formatting hot paths in place.\n- Keep the repo-local quality evidence and validation surfaces able to discover the\n  requirement traits for this slice.",
+  "design_links": [
+    "ARC-QUIC-RFC8999-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC8999-S5P1-0001",
+    "REQ-QUIC-RFC8999-S5P1-0002",
+    "REQ-QUIC-RFC8999-S5P1-0003",
+    "REQ-QUIC-RFC8999-S5P1-0004",
+    "REQ-QUIC-RFC8999-S5P1-0005",
+    "REQ-QUIC-RFC8999-S5P1-0006",
+    "REQ-QUIC-RFC8999-S5P1-0007",
+    "REQ-QUIC-RFC8999-S5P1-0008"
+  ],
+  "artifact_id": "WI-QUIC-RFC8999-0001"
+}

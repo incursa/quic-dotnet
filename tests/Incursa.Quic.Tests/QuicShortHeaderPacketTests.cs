@@ -3,19 +3,19 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicShortHeaderPacketTests
 {
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0008")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0013")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0015")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0016")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0017")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0019")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0020")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0017")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0020")]
     [Trait("Category", "Positive")]
     public void TryParseShortHeader_PreservesOpaqueRemainder()
     {
@@ -35,9 +35,9 @@ public sealed class QuicShortHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0013")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0014")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0014")]
     [Trait("Category", "Negative")]
     public void TryParseShortHeader_RejectsFixedBitZero()
     {
@@ -47,8 +47,8 @@ public sealed class QuicShortHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0016")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0017")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0017")]
     [Trait("Category", "Negative")]
     public void TryParseShortHeader_RejectsReservedBitsNonZero()
     {
@@ -65,7 +65,7 @@ public sealed class QuicShortHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P3P1-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0012")]
     [Trait("Category", "Negative")]
     public void TryParseShortHeader_RejectsLongHeaderForm()
     {

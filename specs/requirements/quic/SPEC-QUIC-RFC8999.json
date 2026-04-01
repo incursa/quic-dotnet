@@ -1,0 +1,272 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "related_artifacts": [
+    "ARC-QUIC-RFC8999-0001",
+    "WI-QUIC-RFC8999-0001",
+    "VER-QUIC-RFC8999-0001"
+  ],
+  "artifact_id": "SPEC-QUIC-RFC8999",
+  "scope": "This specification covers the normative obligations assembled from the reviewed RFC 8999 extraction outputs and preserves RFC section and sentence provenance in `Source Refs`.",
+  "artifact_type": "specification",
+  "status": "draft",
+  "purpose": "Capture the version-independent QUIC requirements defined by RFC 8999 as canonical spec-trace clauses.",
+  "context": "RFC 8999 defines version-independent QUIC properties that overlap with RFC 9000 transport packet structure, so the assembly keeps RFC 8999 obligations intact while surfacing overlap in generated review reports.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC8999-S5P1-0001",
+      "title": "Header Form Bit",
+      "statement": "The first bit of a QUIC long header packet MUST be set to 1.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC8999-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC8999-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC8999-0001"
+        ],
+        "upstream_refs": [
+          "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S2",
+          "RFC 8999 §5.1 RFC8999-S5.1-B5-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses",
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC8999-S5P1-0002",
+      "title": "Version-Specific Bits",
+      "statement": "The other seven bits in the first byte of a QUIC long header packet MUST be version-specific.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC8999-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC8999-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC8999-0001"
+        ],
+        "upstream_refs": [
+          "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S3",
+          "RFC 8999 §5.1 RFC8999-S5.1-B5-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC8999-S5P1-0003",
+      "title": "Version Field",
+      "statement": "The four bytes after the first byte in a QUIC long header packet MUST contain a 32-bit Version field.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC8999-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC8999-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC8999-0001"
+        ],
+        "upstream_refs": [
+          "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S4",
+          "RFC 8999 §5.1 RFC8999-S5.1-B6-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses",
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC8999-S5P1-0004",
+      "title": "Destination Connection ID Length Encoding",
+      "statement": "The byte after the Version field MUST encode the Destination Connection ID length as an 8-bit unsigned integer.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC8999-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC8999-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC8999-0001"
+        ],
+        "upstream_refs": [
+          "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S5",
+          "RFC 8999 §5.1 RFC8999-S5.1-B7-P4-S1",
+          "RFC 8999 §5.1 RFC8999-S5.1-B7-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses",
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC8999-S5P1-0005",
+      "title": "Destination Connection ID Size",
+      "statement": "The Destination Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC8999-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC8999-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC8999-0001"
+        ],
+        "upstream_refs": [
+          "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S6",
+          "RFC 8999 §5.1 RFC8999-S5.1-B7-P4-S3",
+          "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC8999-S5P1-0006",
+      "title": "Source Connection ID Length Encoding",
+      "statement": "The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC8999-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC8999-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC8999-0001"
+        ],
+        "upstream_refs": [
+          "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S7",
+          "RFC 8999 §5.1 RFC8999-S5.1-B8-P5-S1",
+          "RFC 8999 §5.1 RFC8999-S5.1-B8-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses",
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC8999-S5P1-0007",
+      "title": "Source Connection ID Size",
+      "statement": "The Source Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC8999-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC8999-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC8999-0001"
+        ],
+        "upstream_refs": [
+          "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S8",
+          "RFC 8999 §5.1 RFC8999-S5.1-B8-P5-S3",
+          "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC8999-S5P1-0008",
+      "title": "Version-Specific Remainder",
+      "statement": "The remainder of a QUIC long header packet MUST contain version-specific content.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC8999-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC8999-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC8999-0001"
+        ],
+        "upstream_refs": [
+          "RFC 8999 §5.1 RFC8999-S5.1-B3-P0-S9",
+          "RFC 8999 §5.1 RFC8999-S5.1-B9-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses",
+          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions"
+        ]
+      }
+    }
+  ],
+  "capability": "version-independent-invariants",
+  "title": "QUIC Invariants (RFC 8999)",
+  "owner": "quic-maintainers",
+  "domain": "quic"
+}

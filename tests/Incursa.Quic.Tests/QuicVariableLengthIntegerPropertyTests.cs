@@ -5,9 +5,9 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicVariableLengthIntegerPropertyTests
 {
     [Property(Arbitrary = new[] { typeof(QuicVariableLengthIntegerPropertyGenerators) })]
-    [Trait("Requirement", "REQ-QUIC-VINT-0001")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0002")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0003")]
+    [Requirement("REQ-QUIC-VINT-0001")]
+    [Requirement("REQ-QUIC-VINT-0002")]
+    [Requirement("REQ-QUIC-VINT-0003")]
     [Trait("Category", "Property")]
     public void TryFormatAndParse_RoundTripsRepresentableValues(ulong value)
     {

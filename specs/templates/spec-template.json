@@ -1,0 +1,66 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "related_artifacts": [
+    "ARC-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>",
+    "WI-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>",
+    "VER-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+  ],
+  "artifact_id": "SPEC-<DOMAIN>[-<GROUPING>...]",
+  "scope": "Optional. State what is in scope and, if useful, what is out of scope.",
+  "artifact_type": "specification",
+  "status": "draft",
+  "purpose": "State the purpose of the specification in one or two direct paragraphs.",
+  "context": "Optional. Capture the business or technical context shared by the grouped requirements.",
+  "open_questions": [
+    "<optional open question>"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>",
+      "title": "<Requirement Title>",
+      "statement": "The system MUST <direct, testable behavior>.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+        ],
+        "implemented_by": [
+          "WI-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+        ],
+        "verified_by": [
+          "VER-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+        ],
+        "derived_from": [
+          "REQ-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+        ],
+        "supersedes": [
+          "REQ-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+        ],
+        "upstream_refs": [
+          "<external reference>"
+        ],
+        "related": [
+          "<artifact or requirement ID>"
+        ],
+        "x_test_refs": [
+          "<test reference>"
+        ],
+        "x_code_refs": [
+          "<code reference>"
+        ]
+      },
+      "notes": [
+        "<optional clarification that narrows interpretation without changing the requirement>"
+      ]
+    }
+  ],
+  "capability": "<capability-or-concern>",
+  "title": "<Specification Title>",
+  "owner": "<team-or-role>",
+  "supplemental_sections": [
+    {
+      "heading": "<Optional Heading>",
+      "content": "<Optional supporting prose or list-formatted Markdown>"
+    }
+  ],
+  "domain": "<domain>"
+}

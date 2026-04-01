@@ -6,7 +6,7 @@
     "S17P1",
     "S17P2"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests\"",
     "result": "Passed",
@@ -44,7 +44,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0001"
+        "legacy header 0001"
       ],
       "remaining_gap": null,
       "notes": "Big-endian numeric ordering is exercised via the parser and test-data builders."
@@ -64,7 +64,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0001"
+        "legacy header 0001"
       ],
       "remaining_gap": null,
       "notes": "Header-form classification is shared across the parser and long-header tests."
@@ -85,7 +85,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0003"
+        "legacy header 0003"
       ],
       "remaining_gap": null,
       "notes": "Version parsing is shared by the parser, packet model, and builders."
@@ -106,7 +106,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0004"
+        "legacy header 0004"
       ],
       "remaining_gap": null,
       "notes": "Destination CID length-byte parsing is direct and round-tripped."
@@ -127,7 +127,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0005"
+        "legacy header 0005"
       ],
       "remaining_gap": null,
       "notes": "Version 1 is capped at 20 bytes and non-v1 long headers still exercise longer CID reads."
@@ -148,7 +148,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0006"
+        "legacy header 0006"
       ],
       "remaining_gap": null,
       "notes": "Source CID length-byte parsing is direct and round-tripped."
@@ -169,7 +169,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0006"
+        "legacy header 0006"
       ],
       "remaining_gap": null,
       "notes": "Source CID slicing follows the encoded length and the non-v1 long-CID test still passes."
@@ -190,7 +190,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "remaining_gap": null,
       "notes": "The long-header envelope is parsed and the control bits are preserved."
@@ -210,8 +210,8 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0001",
-        "REQ-QUIC-HDR-0003"
+        "legacy header 0001",
+        "legacy header 0003"
       ],
       "remaining_gap": null,
       "notes": "The first-byte high bit is used to classify long headers."
@@ -230,7 +230,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:47-97"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0006"
+        "legacy header 0006"
       ],
       "remaining_gap": null,
       "notes": "Version zero maps to the Version Negotiation parse state."
@@ -249,7 +249,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0004"
+        "legacy header 0004"
       ],
       "remaining_gap": null,
       "notes": "The destination CID field is sliced using the encoded length."
@@ -268,7 +268,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0004"
+        "legacy header 0004"
       ],
       "remaining_gap": null,
       "notes": "The destination CID length remains an 8-bit wire value."
@@ -287,7 +287,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0003"
+        "legacy header 0003"
       ],
       "remaining_gap": null,
       "notes": "The destination CID field is sliced using the encoded length."
@@ -306,7 +306,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0004"
+        "legacy header 0004"
       ],
       "remaining_gap": null,
       "notes": "The source CID length byte is read after the destination CID field."
@@ -325,7 +325,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0004"
+        "legacy header 0004"
       ],
       "remaining_gap": null,
       "notes": "The source CID field is sliced using the encoded length."
@@ -391,7 +391,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "remaining_gap": null,
       "notes": "The fixed bit is validated for non-Version Negotiation long headers and exposed on the packet view."
@@ -412,7 +412,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "remaining_gap": null,
       "notes": "The long packet type bits are surfaced as a dedicated `LongPacketTypeBits` property."
@@ -433,7 +433,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "remaining_gap": null,
       "notes": "The 4-bit type-specific field is surfaced as a dedicated `TypeSpecificBits` property."
@@ -454,7 +454,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "remaining_gap": null,
       "notes": "Non-Version Negotiation long headers now enforce the fixed-bit requirement, while version-zero packets remain parsable as Version Negotiation state."
@@ -475,7 +475,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "remaining_gap": null,
       "notes": "Packets with a zero fixed bit are discarded unless they are Version Negotiation packets."
@@ -496,7 +496,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "remaining_gap": null,
       "notes": "The packet-type bits are extracted and exposed without changing the preserved header-control bits."
@@ -517,7 +517,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "remaining_gap": "The later packet-type-specific long-header fields are not parsed in this chunk.",
       "notes": "Trailing version-specific bytes are preserved as opaque data."
@@ -538,7 +538,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "remaining_gap": null,
       "notes": "The reserved bits are surfaced as a dedicated `ReservedBits` property; enforcement remains deferred to later packet-protection work."

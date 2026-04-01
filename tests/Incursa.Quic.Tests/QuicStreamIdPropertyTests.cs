@@ -5,10 +5,10 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicStreamIdPropertyTests
 {
     [Property(Arbitrary = new[] { typeof(QuicVariableLengthIntegerPropertyGenerators) })]
-    [Trait("Requirement", "REQ-QUIC-STRM-0001")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0002")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0003")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0004")]
+    [Requirement("REQ-QUIC-STRM-0001")]
+    [Requirement("REQ-QUIC-STRM-0002")]
+    [Requirement("REQ-QUIC-STRM-0003")]
+    [Requirement("REQ-QUIC-STRM-0004")]
     [Trait("Category", "Property")]
     public void TryParseStreamIdentifier_RoundTripsTheStreamTypeBits(ulong value)
     {
