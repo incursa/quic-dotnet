@@ -2,83 +2,82 @@
 
 ## Scope
 
-- RFC: 9001
-- Section tokens: `S2`, `S3`, `S4`, `S5`, `S6`
-- Canonical spec: `specs/requirements/quic/SPEC-QUIC-RFC9001.md`
+- RFC: `9001`
+- Section tokens: `S2`, `S3`, `S4`, `S5`
+- Canonical spec: [`SPEC-QUIC-RFC9001.json`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9001.json)
+- Implementation summary: [`9001-01-tls-core.implementation-summary.json`](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9001-01-tls-core.implementation-summary.json) (authoritative)
+- Reconciliation artifact: [`9001-01-tls-core.reconciliation.json`](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9001-01-tls-core.reconciliation.json) (stale no-evidence snapshot)
 
-## Requirements in Scope
+## Summary
 
-| Requirement ID | Title | Status | Evidence |
-| --- | --- | --- | --- |
-| `REQ-QUIC-RFC9001-S2-0001` | Interpret uppercase BCP 14 keywords | deferred | explicit deferred note |
-| `REQ-QUIC-RFC9001-S3-0001` | Assume packet confidentiality | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S3-0002` | Derive packet keys from TLS handshake | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S3-0003` | Carry handshake and alert messages directly | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S3-0004` | Replace the TLS record layer | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S3-0005` | Rely on TLS for security-critical functions | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S3-0006` | Use the TLS handshake | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S3-0007` | Use QUIC-provided delivery services | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S3-0008` | Send TLS messages via QUIC | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S3-0009` | Provide a reliable stream abstraction | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S3-0010` | Provide TLS updates to QUIC | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S3-0011` | Do not use TLS Application Data records | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S3-0012` | Send data as QUIC frames | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S4-0001` | Carry handshake data in CRYPTO frames | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S4-0002` | Define CRYPTO frame boundaries | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S4-0003` | Package and encrypt CRYPTO frames | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S4-0004` | Package and encrypt CRYPTO frames | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S4-0005` | Deliver handshake data reliably | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S4-0006` | Associate TLS-produced chunks with current keys | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S4-0007` | Retransmit with the same keys | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S4-0008` | Map encryption levels to packet number spaces | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S4-0009` | Let packet number space determine frame semantics | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S4-0010` | Indicate packet keys via packet type | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S4-0011` | Prefer coalesced packets | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S5-0001` | Protect packets with TLS-derived keys | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S5-0002` | Use the TLS-negotiated AEAD | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S5-0003` | Leave Version Negotiation packets unprotected | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S5-0004` | Protect Retry packets with AEAD_AES_128_GCM | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S5-0005` | Use AEAD_AES_128_GCM for Initial packets | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S5-0006` | Derive Initial keys from the first client Initial | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S5-0007` | Protect all other packets cryptographically | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S5-0008` | Apply the same protection process to Initial packets | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S5-0009` | Treat Initial packets as lacking confidentiality and integrity protection | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S5-0010` | Use a fixed key for Retry packets | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S6-0001` | Allow key update after handshake confirmation | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S6-0002` | Identify packet protection keys with Key Phase | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S6-0003` | Initialize Key Phase to zero | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S6-0004` | Toggle Key Phase on each update | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S6-0005` | Let Key Phase detect key changes | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S6-0006` | Update keys when Key Phase changes | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S6-0007` | Decrypt the packet with the changed Key Phase | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S6-0008` | Update both endpoints on key update | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S6-0009` | Prohibit TLS KeyUpdate messages | blocked | explicit blocker note |
-| `REQ-QUIC-RFC9001-S6-0010` | Treat TLS KeyUpdate as a connection error | blocked | explicit blocker note |
+- Requirements in scope: `34`
+- Implemented and tested: `3`
+- Deferred: `1`
+- Blocked by concrete dependency: `30`
+- Stale IDs found in scope: `0`
+- Silent gaps found in scope: `0`
 
-## Consistency Check
+## Requirements Completed
 
-- Live search under `src/Incursa.Quic`, `tests`, and `benchmarks` found no RFC 9001 requirement refs in `.cs` files.
-- The reconciliation and implementation-summary artifacts agree that no in-scope requirement has implementation or test evidence in the current repository.
-- No stale or wrong in-scope requirement IDs were found in live code or tests.
-- Historical draft IDs remain only in generated provenance files outside the live code/test roots; the canonical final IDs are already recorded in `specs/generated/quic/9001.assembly-map.json`.
+- `REQ-QUIC-RFC9001-S4-0001` Carry handshake data in CRYPTO frames.
+- `REQ-QUIC-RFC9001-S4-0002` Define CRYPTO frame boundaries.
+- `REQ-QUIC-RFC9001-S5-0003` Leave Version Negotiation packets unprotected.
 
 ## Remaining Open Requirements
 
-- Deferred: `REQ-QUIC-RFC9001-S2-0001`.
-- Blocked: `REQ-QUIC-RFC9001-S3-0001` through `REQ-QUIC-RFC9001-S3-0012`.
-- Blocked: `REQ-QUIC-RFC9001-S4-0001` through `REQ-QUIC-RFC9001-S4-0011`.
-- Blocked: `REQ-QUIC-RFC9001-S5-0001` through `REQ-QUIC-RFC9001-S5-0010`.
-- Blocked: `REQ-QUIC-RFC9001-S6-0001` through `REQ-QUIC-RFC9001-S6-0010`.
-- The chunk has explicit blocker/deferred notes for all 44 in-scope requirements, so there are no silent gaps.
+### Deferred
 
-## Tests Run And Results
+- `REQ-QUIC-RFC9001-S2-0001` Interpret uppercase BCP 14 keywords.
+
+### Blocked by Concrete Technical Dependency
+
+- `REQ-QUIC-RFC9001-S3-0001` through `REQ-QUIC-RFC9001-S3-0012`
+- `REQ-QUIC-RFC9001-S4-0003` through `REQ-QUIC-RFC9001-S4-0011`
+- `REQ-QUIC-RFC9001-S5-0001`, `REQ-QUIC-RFC9001-S5-0002`, `REQ-QUIC-RFC9001-S5-0004` through `REQ-QUIC-RFC9001-S5-0010`
+
+## Consistency Check
+
+- The selected tests now carry canonical RFC 9001 requirement traits only:
+  - [`QuicFrameCodecPart3Tests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs)
+  - [`QuicVersionNegotiationTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs)
+- No RFC 9001 requirement refs were found in `src` or `benchmarks`.
+- The requirement refs present in tests are the expected ones:
+  - `REQ-QUIC-RFC9001-S4-0001`
+  - `REQ-QUIC-RFC9001-S4-0002`
+  - `REQ-QUIC-RFC9001-S5-0003`
+- No stale or wrong requirement IDs were found in scope.
+
+## Files Changed
+
+- [`tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs)
+- [`tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs)
+- [`benchmarks/QuicBenchmarkData.cs`](C:/src/incursa/quic-dotnet/benchmarks/QuicBenchmarkData.cs)
+- [`benchmarks/QuicFrameCodecBenchmarks.cs`](C:/src/incursa/quic-dotnet/benchmarks/QuicFrameCodecBenchmarks.cs)
+- [`benchmarks/README.md`](C:/src/incursa/quic-dotnet/benchmarks/README.md)
+- [`specs/generated/quic/chunks/9001-01-tls-core.implementation-summary.md`](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9001-01-tls-core.implementation-summary.md)
+- [`specs/generated/quic/chunks/9001-01-tls-core.implementation-summary.json`](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9001-01-tls-core.implementation-summary.json)
+- [`specs/generated/quic/chunks/9001-01-tls-core.closeout.md`](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9001-01-tls-core.closeout.md)
+- [`specs/generated/quic/chunks/9001-01-tls-core.closeout.json`](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9001-01-tls-core.closeout.json)
+
+## Tests Run and Results
 
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj`
 - Result: Passed
-- Summary: 106 passed, 0 failed, 0 skipped
+- Summary: `198 passed, 0 failed, 0 skipped`
+- `dotnet build benchmarks/Incursa.Quic.Benchmarks.csproj -c Release`
+- Result: Passed
+- `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicFrameCodecBenchmarks*"`
+- Result: Passed
+- Summary: `2 benchmarks executed successfully in Dry mode`
+
+## Risks / Follow-up Notes
+
+- The remaining RFC 9001 clauses still depend on TLS handshake, packet protection, and key-update plumbing that is not present in this repository.
+- The benchmark lane for CRYPTO frames was validated in Dry mode only.
+- The reconciliation artifact remains useful as provenance, but the implementation summary is the authoritative audit input for this chunk.
 
 ## Conclusion
 
 - No stale requirement IDs remain in scope.
 - No silent gaps remain in scope.
-- The chunk is trace-consistent and ready for repo-wide trace/audit tooling, but it is not implementation-complete because the RFC 9001 TLS/protection surface is not present in the repository.
+- The chunk is trace-consistent and ready for repo-wide trace/audit tooling, but it is not fully closed because 31 requirements remain intentionally deferred or blocked.

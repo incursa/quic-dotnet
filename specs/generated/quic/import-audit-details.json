@@ -120,13 +120,7 @@
         "conclusion": "The section-scoped IDs satisfy SPEC-ID and artifact-id-policy rules; the blocker is validator policy mismatch, not imported-content invalidity."
       }
     ],
-    "repo_state_issues": [
-      {
-        "scope": "./specs/requirements/spec-trace",
-        "issue": "Running the repository validator on the canonical spec-trace suite yields 8 REQ-CLAUSE errors and 0 discovered requirements because the helper does not recognize the suite's linked REQ headings.",
-        "evidence": "./scripts/Test-SpecTraceRepository.ps1 -Profile core -InputPath ./specs/requirements/spec-trace"
-      }
-    ],
+    "repo_state_issues": [],
     "expected_non_blockers": [
       {
         "scope": "./specs/generated/quic/core-validation.json",

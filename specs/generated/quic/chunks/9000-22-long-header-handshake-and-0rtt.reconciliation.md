@@ -26,7 +26,7 @@
 - [QuicVersionNegotiationPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs#L16) covers supported-version enumeration and malformed-input rejection.
 
 ## Old->New Requirement ID Mappings Applied
-- Legacy `REQ-QUIC-HDR-0008`, `REQ-QUIC-HDR-0009`, and `REQ-QUIC-HDR-0010` traits were rewritten to the canonical RFC 9000 Version Negotiation IDs in [QuicVersionNegotiationPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs#L16).
+- Legacy header IDs 0008, 0009, and 0010 traits were rewritten to the canonical RFC 9000 Version Negotiation IDs in [QuicVersionNegotiationPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs#L16).
 - Generic `REQ-QUIC-RFC9000-S17P2-*` traits were rewritten in the shared long-header tests to the section-specific `REQ-QUIC-RFC9000-S17P2P1/P2/P3-*` IDs in [QuicLongHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs#L17), [QuicHeaderPropertyTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs#L19), [QuicHeaderFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs#L17), and [QuicPacketParserTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicPacketParserTests.cs#L17).
 - The only remaining legacy `REQ-QUIC-RFC9000-S17P2-0020` and `REQ-QUIC-RFC9000-S17P2-0021` traits are on the out-of-scope version-1 CID-cap tests in [QuicLongHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs#L194) and were intentionally left untouched in this chunk.
 

@@ -20,5 +20,5 @@ dotnet pack src/Incursa.Quic/Incursa.Quic.csproj -c Release
 ## What to expect
 
 - The library project currently builds as an empty packable assembly.
-- The test project already contains scaffold smoke and blocking tests that validate the package and public API baseline wiring.
+- The test project already contains scaffold smoke and blocking tests that validate the package and public API baseline wiring, plus the broader requirement-tagged suite used by the quality attestation path.
 - Versioning and package metadata are defined centrally in the repository root.

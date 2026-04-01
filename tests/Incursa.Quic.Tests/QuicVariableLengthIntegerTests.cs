@@ -44,9 +44,9 @@ public sealed class QuicVariableLengthIntegerTests
 
     [Theory]
     [MemberData(nameof(EncodedLengthCases))]
-    [Trait("Requirement", "REQ-QUIC-VINT-0001")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0002")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0003")]
+    [Requirement("REQ-QUIC-VINT-0001")]
+    [Requirement("REQ-QUIC-VINT-0002")]
+    [Requirement("REQ-QUIC-VINT-0003")]
     [Trait("Category", "Positive")]
     public void TryParse_DecodesValuesUsingTheExpectedEncodedLength(ulong value, int expectedLength)
     {
@@ -60,9 +60,9 @@ public sealed class QuicVariableLengthIntegerTests
 
     [Theory]
     [MemberData(nameof(ExactParseCases))]
-    [Trait("Requirement", "REQ-QUIC-VINT-0001")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0002")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0003")]
+    [Requirement("REQ-QUIC-VINT-0001")]
+    [Requirement("REQ-QUIC-VINT-0002")]
+    [Requirement("REQ-QUIC-VINT-0003")]
     [Trait("Category", "Positive")]
     public void TryParse_DecodesExactWireEncodings(byte[] encoded, ulong expectedValue, int expectedLength)
     {
@@ -75,7 +75,7 @@ public sealed class QuicVariableLengthIntegerTests
     [InlineData(0UL, 2)]
     [InlineData(1UL, 4)]
     [InlineData(63UL, 8)]
-    [Trait("Requirement", "REQ-QUIC-VINT-0005")]
+    [Requirement("REQ-QUIC-VINT-0005")]
     [Trait("Category", "Positive")]
     public void TryParse_AcceptsNonMinimalEncodings(ulong value, int encodedLength)
     {
@@ -87,7 +87,7 @@ public sealed class QuicVariableLengthIntegerTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-VINT-0004")]
+    [Requirement("REQ-QUIC-VINT-0004")]
     [Trait("Category", "Negative")]
     public void TryParse_RejectsEmptyInput()
     {
@@ -98,7 +98,7 @@ public sealed class QuicVariableLengthIntegerTests
     [InlineData(new byte[] { 0x40 })]
     [InlineData(new byte[] { 0x80, 0x00, 0x00 })]
     [InlineData(new byte[] { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 })]
-    [Trait("Requirement", "REQ-QUIC-VINT-0004")]
+    [Requirement("REQ-QUIC-VINT-0004")]
     [Trait("Category", "Negative")]
     public void TryParse_RejectsTruncatedInputs(byte[] encoded)
     {
@@ -106,9 +106,9 @@ public sealed class QuicVariableLengthIntegerTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-VINT-0001")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0002")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0003")]
+    [Requirement("REQ-QUIC-VINT-0001")]
+    [Requirement("REQ-QUIC-VINT-0002")]
+    [Requirement("REQ-QUIC-VINT-0003")]
     [Trait("Category", "Positive")]
     public void TryFormat_WritesTheShortestRoundTrippableEncoding()
     {
@@ -123,9 +123,9 @@ public sealed class QuicVariableLengthIntegerTests
 
     [Theory]
     [MemberData(nameof(ExactFormatCases))]
-    [Trait("Requirement", "REQ-QUIC-VINT-0001")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0002")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0003")]
+    [Requirement("REQ-QUIC-VINT-0001")]
+    [Requirement("REQ-QUIC-VINT-0002")]
+    [Requirement("REQ-QUIC-VINT-0003")]
     [Trait("Category", "Positive")]
     public void TryFormat_WritesExactWireEncodings(ulong value, byte[] expectedEncoding)
     {
@@ -140,9 +140,9 @@ public sealed class QuicVariableLengthIntegerTests
     [InlineData(0UL, 0)]
     [InlineData(64UL, 1)]
     [InlineData(16_384UL, 3)]
-    [Trait("Requirement", "REQ-QUIC-VINT-0001")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0002")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0003")]
+    [Requirement("REQ-QUIC-VINT-0001")]
+    [Requirement("REQ-QUIC-VINT-0002")]
+    [Requirement("REQ-QUIC-VINT-0003")]
     [Trait("Category", "Negative")]
     public void TryFormat_RejectsInsufficientDestinationSpace(ulong value, int destinationLength)
     {
@@ -152,9 +152,9 @@ public sealed class QuicVariableLengthIntegerTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-VINT-0001")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0002")]
-    [Trait("Requirement", "REQ-QUIC-VINT-0003")]
+    [Requirement("REQ-QUIC-VINT-0001")]
+    [Requirement("REQ-QUIC-VINT-0002")]
+    [Requirement("REQ-QUIC-VINT-0003")]
     [Trait("Category", "Negative")]
     public void TryFormat_RejectsValuesAboveTheCeiling()
     {

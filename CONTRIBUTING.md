@@ -9,8 +9,12 @@ Keep changes focused, reviewable, and aligned with the library shape this reposi
 - Keep public API changes synchronized with [`src/Incursa.Quic/PublicAPI.Shipped.txt`](src/Incursa.Quic/PublicAPI.Shipped.txt) and [`src/Incursa.Quic/PublicAPI.Unshipped.txt`](src/Incursa.Quic/PublicAPI.Unshipped.txt).
 - Run the baseline validation before opening a pull request.
 
+`Validate-SpecTraceJson.ps1` downloads the upstream SpecTrace schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) by default, so the validation step requires network access unless you override `-SchemaUri`.
+
 ```powershell
 dotnet tool restore
+pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core
+dotnet tool run workbench -- --format json validate --profile core
 dotnet restore
 dotnet build
 dotnet test

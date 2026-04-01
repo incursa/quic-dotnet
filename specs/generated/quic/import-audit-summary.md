@@ -11,9 +11,9 @@ This summary reflects the refreshed QUIC import state after repair. Supporting d
 
 ## What Was Repaired
 
-- RFC 9000 [`SPEC-QUIC-RFC9000.md`](../../requirements/quic/SPEC-QUIC-RFC9000.md) now carries the atomic `REQ-QUIC-RFC9000-S8-0001`, with `REQ-QUIC-RFC9000-S8P1-0002` preserving the section-scoped restatement from RFC 9000 Section 8.1.
-- RFC 9000 step-2 coverage for [`10.coverage.json`](../../../step2_out/9000/10.coverage.json) now includes `REQ-RFC9000-S103-0022`.
-- RFC 9001 step-2 coverage for [`1-6.coverage.json`](../../../step2_out/9001/1-6.coverage.json) now includes `REQ-9001-S6-010` and no longer carries stale extras.
+- RFC 9000 [`SPEC-QUIC-RFC9000.json`](../../requirements/quic/SPEC-QUIC-RFC9000.json) now carries the atomic `REQ-QUIC-RFC9000-S8-0001`, with `REQ-QUIC-RFC9000-S8P1-0002` preserving the section-scoped restatement from RFC 9000 Section 8.1.
+- RFC 9000 step-2 coverage for `10.coverage.json` now includes `REQ-RFC9000-S103-0022`.
+- RFC 9001 step-2 coverage for `1-6.coverage.json` now includes `REQ-9001-S6-010` and no longer carries stale extras.
 - RFC 9000 assembly-map provenance in [`9000.assembly-map.json`](./9000.assembly-map.json) is explicit for retained splits and merges; no draft id remains mapped to multiple finals without split accounting.
 
 ## Counts

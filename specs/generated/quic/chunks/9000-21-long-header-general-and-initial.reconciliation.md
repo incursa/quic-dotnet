@@ -2,7 +2,7 @@
 
 ## Scope
 
-Source: `specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+Source: `specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 RFC: `9000`
 Section tokens: `S17`, `S17P1`, `S17P2`
 
@@ -96,16 +96,16 @@ Section tokens: `S17`, `S17P1`, `S17P2`
 
 ## Old -> New Requirement ID Mappings Applied
 
-- `REQ-QUIC-HDR-0001` was retagged to the imported RFC 9000 header-form ID set, including `REQ-QUIC-RFC9000-S17P2-0013`.
-- `REQ-QUIC-HDR-0002` was retagged to `REQ-QUIC-RFC9000-S17P2-0012`.
-- `REQ-QUIC-HDR-0003` through `REQ-QUIC-HDR-0006` were split across the atomic RFC 9000 long-header field IDs for version, CID lengths, CID payloads, and trailing data.
-- `REQ-QUIC-HDR-0007` remains on the short-header chunk and was intentionally not rewritten here.
-- `REQ-QUIC-HDR-0008` through `REQ-QUIC-HDR-0010` remain on the Version Negotiation-specific chunk and were intentionally not rewritten here.
+- Legacy header ID 0001 was retagged to the imported RFC 9000 header-form ID set, including `REQ-QUIC-RFC9000-S17P2-0013`.
+- Legacy header ID 0002 was retagged to `REQ-QUIC-RFC9000-S17P2-0012`.
+- Legacy header IDs 0003 through 0006 were split across the atomic RFC 9000 long-header field IDs for version, CID lengths, CID payloads, and trailing data.
+- Legacy header ID 0007 remains on the short-header chunk and was intentionally not rewritten here.
+- Legacy header IDs 0008 through 0010 remain on the Version Negotiation-specific chunk and were intentionally not rewritten here.
 - `tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs` gained two new canonical RFC 9000 boundary tests for `REQ-QUIC-RFC9000-S17P2-0020` and `REQ-QUIC-RFC9000-S17P2-0021`.
 
 ## Gaps Fixed in This Pass
 
-- Rewrote the in-scope xUnit requirement traits from the legacy `REQ-QUIC-HDR-*` names to the imported RFC 9000 IDs.
+- Rewrote the in-scope xUnit requirement traits from the legacy header names to the imported RFC 9000 IDs.
 - Added a parser check that rejects version 1 long headers whose destination CID length exceeds 20 bytes.
 - Added explicit positive and negative boundary tests for that version 1 CID limit.
 - Added an explicit long-CID round-trip test for a non-v1 long header to preserve the Version Negotiation read capability.

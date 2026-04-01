@@ -1,0 +1,488 @@
+{
+  "chunk_id": "9000-04-connection-ids-basics",
+  "rfc": "9000",
+  "section_tokens": [
+    "S5",
+    "S5P1",
+    "S5P1P1"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "status_summary": {
+    "implemented_and_tested": 3,
+    "partially_implemented": 1,
+    "tested_but_implementation_mapping_unclear": 4,
+    "not_implemented": 36,
+    "unclear_or_needs_human_review": 0
+  },
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicFrameCodecPart4Tests|FullyQualifiedName~QuicFrameCodecPart4FuzzTests|FullyQualifiedName~QuicTransportParametersTests|FullyQualifiedName~QuicTransportParametersFuzzTests\"",
+    "passed": 88,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 181
+  },
+  "files_changed": [
+    "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+    "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+    "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+    "specs/generated/quic/chunks/9000-04-connection-ids-basics.implementation-summary.md",
+    "specs/generated/quic/chunks/9000-04-connection-ids-basics.implementation-summary.json"
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5-0001",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No connection or handshake state machine exists in this parser-centric chunk.",
+      "notes": "This clause requires connection lifecycle behavior that is not represented in the current source set."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5-0002",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No connection or handshake state machine exists in this parser-centric chunk.",
+      "notes": "This clause requires connection lifecycle behavior that is not represented in the current source set."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5-0003",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No connection or handshake state machine exists in this parser-centric chunk.",
+      "notes": "This clause requires connection lifecycle behavior that is not represented in the current source set."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5-0004",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No connection or handshake state machine exists in this parser-centric chunk.",
+      "notes": "This clause requires connection lifecycle behavior that is not represented in the current source set."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5-0005",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No connection or handshake state machine exists in this parser-centric chunk.",
+      "notes": "This clause requires connection lifecycle behavior that is not represented in the current source set."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5-0006",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No connection or handshake state machine exists in this parser-centric chunk.",
+      "notes": "This clause requires connection lifecycle behavior that is not represented in the current source set."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5-0007",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No connection or handshake state machine exists in this parser-centric chunk.",
+      "notes": "This clause requires connection lifecycle behavior that is not represented in the current source set."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5-0008",
+      "completion_status": "partially implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:19-43",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:53-67",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:28-45"
+      ],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Long-header CID handling is present, but migration and CID-management behavior are absent.",
+      "notes": "The parser and packet model expose connection IDs, but nothing in this chunk uses them to move a connection to a new path."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0001",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No CID lifecycle, routing, or peer-selection manager exists in this chunk.",
+      "notes": "This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0002",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No CID lifecycle, routing, or peer-selection manager exists in this chunk.",
+      "notes": "This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0003",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No CID lifecycle, routing, or peer-selection manager exists in this chunk.",
+      "notes": "This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0004",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No CID lifecycle, routing, or peer-selection manager exists in this chunk.",
+      "notes": "This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0005",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No CID lifecycle, routing, or peer-selection manager exists in this chunk.",
+      "notes": "This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0006",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No CID lifecycle, routing, or peer-selection manager exists in this chunk.",
+      "notes": "This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0007",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No CID lifecycle, routing, or peer-selection manager exists in this chunk.",
+      "notes": "This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0008",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:TryParseLongHeader_RoundTripsHeaderFields",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S5P1-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "Long-header CID-field coverage was already present and remains carried forward from the prior trace pass."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0009",
+      "completion_status": "tested but implementation mapping unclear",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs:20-42",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:90-106",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:138-156"
+      ],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The parser preserves the short-header remainder, but it does not identify the destination-CID boundary or its length.",
+      "notes": "This is a wire-level remainder-preservation proof, not a full destination-CID parse or length-knowledge proof."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0010",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No CID lifecycle, routing, or peer-selection manager exists in this chunk.",
+      "notes": "This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0011",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No CID lifecycle, routing, or peer-selection manager exists in this chunk.",
+      "notes": "This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0012",
+      "completion_status": "tested but implementation mapping unclear",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:TryParseVersionNegotiation_ExposesSupportedVersions",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:TryParseVersionNegotiation_RoundTripsSupportedVersions",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S5P1-0012"
+      ],
+      "remaining_gap": "The repo has no production-side Version Negotiation generator, so the current evidence only proves helper-built packets and parser round-trips.",
+      "notes": "Version Negotiation echo coverage was already present and remains carried forward from the prior trace pass."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0013",
+      "completion_status": "tested but implementation mapping unclear",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:53-67",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:28-45",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:19-43"
+      ],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Zero-length CIDs are accepted by generators and parsers, but the routing precondition for using them is not represented.",
+      "notes": "The wire-level acceptance is present, but the requirement depends on routing context that this repo does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0014",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No CID lifecycle, routing, or peer-selection manager exists in this chunk.",
+      "notes": "This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0015",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No CID lifecycle, routing, or peer-selection manager exists in this chunk.",
+      "notes": "This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0001",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0002",
+      "completion_status": "tested but implementation mapping unclear",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-136",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:85-126"
+      ],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Long-header source CID bytes round-trip, but the handshake semantics that make the field the initial CID are not modeled.",
+      "notes": "The packet parser preserves source CID bytes; the initial-CID ownership rule is still a connection-state concern."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0003",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0004",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0005",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs:TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs:TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs:Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S5P1P1-0005"
+      ],
+      "remaining_gap": null,
+      "notes": "NEW_CONNECTION_ID frame coverage is now explicitly tagged under the imported RFC 9000 requirement; no protocol code changes were needed."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0006",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0007",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0008",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0009",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0010",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0011",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:TryFormatTransportParameters_WritesExactTupleSequence",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs:Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S5P1P1-0011"
+      ],
+      "remaining_gap": null,
+      "notes": "Active connection ID limit coverage now includes a client-role format/parse test in addition to the existing server-role round-trip and fuzz tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0012",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0013",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0014",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0015",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0016",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0017",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0018",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0019",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0020",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0021",
+      "completion_status": "not implemented",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.",
+      "notes": "This section depends on connection state that the current parser-only implementation does not model."
+    }
+  ]
+}

@@ -6,7 +6,7 @@
     "S17P1",
     "S17P2"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests\"",
     "passed": 38,
@@ -29,7 +29,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0001"
+        "legacy header 0001"
       ],
       "changes_made": [
         "Retagged numeric-order coverage to the imported RFC 9000 ID."
@@ -52,7 +52,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0001"
+        "legacy header 0001"
       ],
       "changes_made": [
         "Retagged header-form coverage to the imported RFC 9000 ID."
@@ -76,7 +76,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0003"
+        "legacy header 0003"
       ],
       "changes_made": [
         "Retagged long-header field coverage to the imported RFC 9000 IDs."
@@ -100,7 +100,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0004"
+        "legacy header 0004"
       ],
       "changes_made": [
         "Retagged long-header field coverage to the imported RFC 9000 IDs."
@@ -124,7 +124,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0005"
+        "legacy header 0005"
       ],
       "changes_made": [
         "Retagged long-header field coverage to the imported RFC 9000 IDs."
@@ -148,7 +148,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0006"
+        "legacy header 0006"
       ],
       "changes_made": [
         "Retagged long-header field coverage to the imported RFC 9000 IDs."
@@ -172,7 +172,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0006"
+        "legacy header 0006"
       ],
       "changes_made": [
         "Retagged long-header field coverage to the imported RFC 9000 IDs."
@@ -196,7 +196,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "changes_made": [
         "Retagged the long-header envelope coverage to the imported RFC 9000 ID."
@@ -219,8 +219,8 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0001",
-        "REQ-QUIC-HDR-0003"
+        "legacy header 0001",
+        "legacy header 0003"
       ],
       "changes_made": [
         "Retagged header-form coverage to the imported RFC 9000 ID."
@@ -242,7 +242,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:47-97"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0006"
+        "legacy header 0006"
       ],
       "changes_made": [
         "Retagged the Version Negotiation version-zero coverage to the imported RFC 9000 ID."
@@ -264,7 +264,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0004"
+        "legacy header 0004"
       ],
       "changes_made": [
         "Retagged length-encoded field coverage to the imported RFC 9000 IDs."
@@ -286,7 +286,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0004"
+        "legacy header 0004"
       ],
       "changes_made": [
         "Retagged length-encoded field coverage to the imported RFC 9000 IDs."
@@ -308,7 +308,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0003"
+        "legacy header 0003"
       ],
       "changes_made": [
         "Retagged length-encoded field coverage to the imported RFC 9000 IDs."
@@ -330,7 +330,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0004"
+        "legacy header 0004"
       ],
       "changes_made": [
         "Retagged length-encoded field coverage to the imported RFC 9000 IDs."
@@ -352,7 +352,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:5-45"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0004"
+        "legacy header 0004"
       ],
       "changes_made": [
         "Retagged length-encoded field coverage to the imported RFC 9000 IDs."
@@ -430,7 +430,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "changes_made": [
         "Retagged the existing control-bit preservation tests to the imported RFC 9000 family."
@@ -454,7 +454,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "changes_made": [
         "Retagged the existing control-bit preservation tests to the imported RFC 9000 family."
@@ -478,7 +478,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "changes_made": [
         "Retagged the existing control-bit preservation tests to the imported RFC 9000 family."
@@ -502,7 +502,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "changes_made": [
         "Retagged the existing control-bit preservation tests to the imported RFC 9000 family."
@@ -526,7 +526,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "changes_made": [
         "Retagged the existing control-bit preservation tests to the imported RFC 9000 family."
@@ -550,7 +550,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "changes_made": [
         "Retagged the existing control-bit preservation tests to the imported RFC 9000 family."
@@ -574,7 +574,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "changes_made": [
         "Retagged the existing control-bit preservation tests to the imported RFC 9000 family."
@@ -598,7 +598,7 @@
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:5-37"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0002"
+        "legacy header 0002"
       ],
       "changes_made": [
         "Retagged the existing control-bit preservation tests to the imported RFC 9000 family."

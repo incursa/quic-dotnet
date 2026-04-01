@@ -4,7 +4,7 @@
 
 - RFC: 9000
 - Section tokens: `S17`, `S17P1`, `S17P2`
-- Canonical spec: [`SPEC-QUIC-RFC9000.md`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.md)
+- Canonical spec: [`SPEC-QUIC-RFC9000.json`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.json)
 
 ## Requirements in Scope
 
@@ -54,7 +54,7 @@
 - In-scope tests carry canonical RFC 9000 requirement traits only: [`QuicPacketParserTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicPacketParserTests.cs), [`QuicLongHeaderPacketTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs), [`QuicHeaderPropertyTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs), [`QuicHeaderFuzzTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs).
 - `src/Incursa.Quic` contains no requirement traits or XML-comment requirement refs for this chunk.
 - No stale or wrong requirement IDs remain in the selected chunk.
-- Legacy `REQ-QUIC-HDR-*` traits remain only in out-of-scope later-chunk test files.
+- Legacy header traits remain only in out-of-scope later-chunk test files.
 - The generated reconciliation and implementation-summary artifacts retain historical mapping data by design.
 
 ## Remaining Open Requirements

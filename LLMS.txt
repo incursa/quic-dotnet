@@ -7,11 +7,14 @@
 When working in this repository:
 
 - Follow this authority order: `specs/` landing pages and gap tracker, `docs/requirements-workflow.md`, root docs, then `AGENTS.md`, then this file.
+- Canonical SpecTrace artifacts are authored in sibling `.json` files, and the repository does not keep canonical sibling `.md` companions in the normal workflow.
 - Record unresolved RFC questions in `specs/requirements/quic/REQUIREMENT-GAPS.md` before implementation.
 - Keep requirements, architecture, work items, verification, tests, and benchmarks separate.
 - For parsing, serialization, encoding, decoding, or packet-processing code, expect positive tests, negative tests, fuzz/property coverage, and benchmarks.
 - Use stable file paths and relative links for repo-local Markdown.
 - Do not infer missing protocol rules into code until the requirement slice exists.
+- Before finishing a trace-surface change, run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core` and `dotnet tool run workbench -- --format json validate --profile core`.
+- `Validate-SpecTraceJson.ps1` downloads the upstream SpecTrace model schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) unless you override `-SchemaUri`.
 
 ## Useful Starting Points
 
@@ -20,7 +23,7 @@ When working in this repository:
 - [`docs/README.md`](./docs/README.md)
 - [`docs/testing/README.md`](./docs/testing/README.md)
 - [`specs/README.md`](./specs/README.md)
-- [`specs/requirements/quic/_index.md`](./specs/requirements/quic/_index.md)
+- [`specs/requirements/quic/README.md`](./specs/requirements/quic/README.md)
 
 ## Current State
 

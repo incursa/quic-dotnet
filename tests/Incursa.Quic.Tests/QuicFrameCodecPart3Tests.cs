@@ -3,14 +3,16 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicFrameCodecPart3Tests
 {
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0008")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0009")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0013")]
+    [Requirement("REQ-QUIC-RFC9001-S4-0001")]
+    [Requirement("REQ-QUIC-RFC9001-S4-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0013")]
     [Trait("Category", "Positive")]
     public void TryParseCryptoFrame_ParsesAndFormatsAllFields()
     {
@@ -30,8 +32,9 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0010")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0011")]
+    [Requirement("REQ-QUIC-RFC9001-S4-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
     [Trait("Category", "Positive")]
     public void TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling()
     {
@@ -45,8 +48,9 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0010")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P6-0011")]
+    [Requirement("REQ-QUIC-RFC9001-S4-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
     [Trait("Category", "Negative")]
     public void TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling()
     {
@@ -56,12 +60,12 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0006")]
     [Trait("Category", "Positive")]
     public void TryParseNewTokenFrame_ParsesAndFormatsAllFields()
     {
@@ -80,8 +84,8 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P7-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0007")]
     [Trait("Category", "Negative")]
     public void TryParseNewTokenFrame_RejectsEmptyTokens()
     {
@@ -94,10 +98,10 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P9-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P9-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P9-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P9-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P9-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P9-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P9-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P9-0005")]
     [Trait("Category", "Positive")]
     public void TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField()
     {
@@ -115,12 +119,12 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0008")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0009")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P10-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S19P10-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P10-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P10-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P10-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P10-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S19P10-0010")]
     [Trait("Category", "Positive")]
     public void TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields()
     {
@@ -141,11 +145,11 @@ public sealed class QuicFrameCodecPart3Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P11-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S19P11-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P11-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P11-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P11-0005")]
     [Trait("Category", "Positive")]
     public void TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants(bool isBidirectional)
     {
@@ -164,8 +168,8 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S19P11-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P11-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P11-0006")]
     [Trait("Category", "Negative")]
     public void TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit()
     {

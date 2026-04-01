@@ -3,17 +3,24 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicLongHeaderPacketTests
 {
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0008")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0009")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0010")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0011")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0016")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0004")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0008")]
     [Trait("Category", "Positive")]
     public void TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload()
     {
@@ -47,19 +54,25 @@ public sealed class QuicLongHeaderPacketTests
     [Theory]
     [InlineData((byte)0x4A, (byte)0x00)]
     [InlineData((byte)0x5A, (byte)0x01)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0016")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0008")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0009")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0004")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0009")]
     [Trait("Category", "Positive")]
     public void TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits(
         byte headerControlBits,
@@ -80,14 +93,14 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0009")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0011")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0013")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0014")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0015")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0017")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0014")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0017")]
     [Trait("Category", "Positive")]
     public void TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields()
     {
@@ -110,12 +123,12 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0011")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0014")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0015")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0016")]
     [Trait("Category", "Positive")]
     public void TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields()
     {
@@ -167,14 +180,15 @@ public sealed class QuicLongHeaderPacketTests
 
     [Theory]
     [MemberData(nameof(TruncatedLongHeaderCases))]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0008")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0009")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0010")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0011")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0011")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0013")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0014")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
     [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsTruncatedInputs(byte[] packet)
     {
@@ -183,11 +197,11 @@ public sealed class QuicLongHeaderPacketTests
 
     [Theory]
     [MemberData(nameof(InvalidInitialVersionSpecificDataCases))]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0013")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0014")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0015")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0017")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0014")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0017")]
     [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields(
         byte[] versionSpecificData)
@@ -204,9 +218,9 @@ public sealed class QuicLongHeaderPacketTests
 
     [Theory]
     [MemberData(nameof(InvalidZeroRttVersionSpecificDataCases))]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0015")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0016")]
     [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsVersion1ZeroRttPacketsWithInvalidStructuralFields(
         byte[] versionSpecificData)
@@ -222,8 +236,8 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0013")]
     [Trait("Category", "Positive")]
     public void TryParseLongHeader_ExposesZeroVersionAsVersionNegotiationState()
     {
@@ -243,8 +257,8 @@ public sealed class QuicLongHeaderPacketTests
     [Theory]
     [InlineData(0x00)]
     [InlineData(0x3F)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0005")]
     [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsShortHeaderForm(byte headerControlBits)
     {
@@ -256,8 +270,8 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0006")]
     [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsNonVersionNegotiationPacketsWithZeroFixedBit()
     {
@@ -272,10 +286,10 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0010")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0011")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0013")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0014")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
     [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte()
     {
@@ -291,8 +305,8 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P1-0009")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0005")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0007")]
     [Trait("Category", "Positive")]
     public void TryParseLongHeader_AcceptsMaximumLengthConnectionIds()
     {
@@ -317,10 +331,10 @@ public sealed class QuicLongHeaderPacketTests
     [Theory]
     [InlineData(0x40)]
     [InlineData(0x50)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0009")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0011")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0014")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
     [Trait("Category", "Positive")]
     public void TryParseLongHeader_AllowsInitialAndZeroRttConnectionIdsUpTo20Bytes(byte headerControlBits)
     {
@@ -345,10 +359,10 @@ public sealed class QuicLongHeaderPacketTests
     [Theory]
     [InlineData(0x40)]
     [InlineData(0x50)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0009")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0011")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0014")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
     [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsInitialAndZeroRttDestinationConnectionIdsLongerThan20Bytes(
         byte headerControlBits)
@@ -366,10 +380,10 @@ public sealed class QuicLongHeaderPacketTests
     [Theory]
     [InlineData(0x40)]
     [InlineData(0x50)]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0009")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P2-0011")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0012")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2P3-0014")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
     [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsInitialAndZeroRttSourceConnectionIdsLongerThan20Bytes(
         byte headerControlBits)
@@ -385,7 +399,7 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2-0020")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2-0020")]
     [Trait("Category", "Positive")]
     public void TryParseLongHeader_AllowsVersion1DestinationConnectionIdUpTo20Bytes()
     {
@@ -409,7 +423,7 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S17P2-0021")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2-0021")]
     [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsVersion1DestinationConnectionIdLongerThan20Bytes()
     {

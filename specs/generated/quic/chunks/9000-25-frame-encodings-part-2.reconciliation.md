@@ -4,7 +4,7 @@
 
 - RFC: `9000`
 - Section tokens: `S19P1`, `S19P2`, `S19P3`, `S19P3P1`, `S19P3P2`, `S19P4`, `S19P5`
-- Canonical spec: [`SPEC-QUIC-RFC9000.md`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.md)
+- Canonical spec: [`SPEC-QUIC-RFC9000.json`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.json)
 - Requirements in scope: `68`
 - Implemented and tested: `0`
 - Implemented but missing tests: `0`
@@ -131,7 +131,7 @@
 
 ## Consulted Generated Inputs
 
-- `specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- `specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - `specs/generated/quic/import-audit-summary.md`
 - `specs/generated/quic/quic-existing-work-inventory.md`
 - `specs/generated/quic/implementation-chunk-manifest.md`

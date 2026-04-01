@@ -11,6 +11,10 @@ public class QuicHeaderParsingBenchmarks
     private byte[] longHeader = [];
     private byte[] shortHeader = [];
     private byte[] versionNegotiationHeader = [];
+    private byte[] versionNegotiationDestination = [];
+    private byte[] versionNegotiationClientDestinationConnectionId = [];
+    private byte[] versionNegotiationClientSourceConnectionId = [];
+    private uint[] versionNegotiationSupportedVersions = [];
 
     /// <summary>
     /// Prepares representative packet buffers for the benchmarks.
@@ -78,6 +82,15 @@ public class QuicHeaderParsingBenchmarks
             0x00,
             0x02,
         };
+
+        versionNegotiationClientDestinationConnectionId = [0x11, 0x22, 0x33, 0x44];
+        versionNegotiationClientSourceConnectionId = [0x55, 0x66, 0x77, 0x88];
+        versionNegotiationSupportedVersions =
+        [
+            QuicVersionNegotiation.Version1,
+            QuicVersionNegotiation.CreateReservedVersion(0x10203040),
+        ];
+        versionNegotiationDestination = new byte[64];
     }
 
     /// <summary>
@@ -132,6 +145,23 @@ public class QuicHeaderParsingBenchmarks
     {
         return QuicPacketParser.TryParseShortHeader(shortHeader, out QuicShortHeaderPacket header)
             ? header.Remainder.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures Version Negotiation response formatting.
+    /// </summary>
+    [Benchmark]
+    public int FormatVersionNegotiationResponse()
+    {
+        return QuicVersionNegotiation.TryFormatVersionNegotiationResponse(
+            clientSelectedVersion: 0xA0B0C0D0,
+            versionNegotiationClientDestinationConnectionId,
+            versionNegotiationClientSourceConnectionId,
+            versionNegotiationSupportedVersions,
+            versionNegotiationDestination,
+            out int bytesWritten)
+            ? bytesWritten
             : -1;
     }
 }

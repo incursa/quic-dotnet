@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "verification_method": "Execution, inspection, fuzzing, and benchmark evidence.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC8999",
+    "ARC-QUIC-RFC8999-0001",
+    "WI-QUIC-RFC8999-0001"
+  ],
+  "expected_result": "- The parser distinguishes long and short headers correctly.\n- Truncated inputs fail consistently.\n- Shared wire-shape tests are attached to the RFC 8999 requirements they prove.\n- The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.",
+  "artifact_id": "VER-QUIC-RFC8999-0001",
+  "verifies": [
+    "REQ-QUIC-RFC8999-S5P1-0001",
+    "REQ-QUIC-RFC8999-S5P1-0002",
+    "REQ-QUIC-RFC8999-S5P1-0003",
+    "REQ-QUIC-RFC8999-S5P1-0004",
+    "REQ-QUIC-RFC8999-S5P1-0005",
+    "REQ-QUIC-RFC8999-S5P1-0006",
+    "REQ-QUIC-RFC8999-S5P1-0007",
+    "REQ-QUIC-RFC8999-S5P1-0008"
+  ],
+  "artifact_type": "verification",
+  "status": "planned",
+  "procedure": [
+    "Run the RFC 8999 and overlap-focused unit and property tests.",
+    "Run the header and version-negotiation fuzz suites.",
+    "Capture the long-header parsing benchmark output.",
+    "Run the repo-local quality evidence scripts.",
+    "Re-run the JSON render and validation checks so the downstream trace surface reflects the updated requirement links."
+  ],
+  "scope": "Verify the RFC 8999 long-header invariant slice, including the shared wire\nshape used by version negotiation, the connection-ID length rules, and the\npreservation of opaque version-specific data.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+    "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+    "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+    "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
+    "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+    "benchmarks/QuicHeaderParsingBenchmarks.cs",
+    "quality/benchmarks/header-parsing-benchmarks.md",
+    "quality/testing-intent.yaml"
+  ],
+  "title": "QUIC RFC 8999 Invariants Verification",
+  "owner": "quic-maintainers",
+  "preconditions": [
+    "The `Incursa.Quic` solution builds successfully.",
+    "The RFC 8999 requirement traits are discoverable by the quality inventory.",
+    "The parser, property, fuzz, and benchmark suites remain runnable in the local workbench flow."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- [`QuicPacketParserTests.cs`](../../../tests/Incursa.Quic.Tests/QuicPacketParserTests.cs)\n- [`QuicLongHeaderPacketTests.cs`](../../../tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs)\n- [`QuicHeaderPropertyTests.cs`](../../../tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs)\n- [`QuicHeaderFuzzTests.cs`](../../../tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs)\n- [`QuicVersionNegotiationPacketTests.cs`](../../../tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs)\n- [`QuicVersionNegotiationTests.cs`](../../../tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs)\n- [`QuicHeaderParsingBenchmarks.cs`](../../../benchmarks/QuicHeaderParsingBenchmarks.cs)\n- [`header-parsing-benchmarks.md`](../../../quality/benchmarks/header-parsing-benchmarks.md)\n- [`testing-intent.yaml`](../../../quality/testing-intent.yaml)"
+    }
+  ],
+  "domain": "quic"
+}

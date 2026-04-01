@@ -1,0 +1,45 @@
+{
+  "purpose": "State the design intent for the slice.",
+  "design_summary": "Explain how the implementation satisfies the requirement slice.",
+  "artifact_type": "architecture",
+  "key_components": [
+    "<component, subsystem, or file>"
+  ],
+  "satisfies": [
+    "REQ-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+  ],
+  "alternatives_considered": [
+    "<rejected option and why>"
+  ],
+  "title": "<Architecture Title>",
+  "edge_cases_and_constraints": [
+    "<constraint or invariant>"
+  ],
+  "owner": "<team-or-role>",
+  "open_questions": [
+    "<optional open question>"
+  ],
+  "data_and_state_considerations": "Optional. Capture noteworthy state handling, persisted data, caches, or invariants.",
+  "status": "draft",
+  "domain": "<domain>",
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "related_artifacts": [
+    "SPEC-<DOMAIN>[-<GROUPING>...]",
+    "WI-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>",
+    "VER-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+  ],
+  "artifact_id": "ARC-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "Optional. Describe the architectural boundaries for this slice."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`<file>`](../../../src/<path>)"
+    }
+  ],
+  "risks": [
+    "<risk or tradeoff>"
+  ]
+}

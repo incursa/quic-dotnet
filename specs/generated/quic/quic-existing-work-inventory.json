@@ -98,9 +98,9 @@
             "benchmarks/QuicHeaderParsingBenchmarks.cs"
           ],
           "stale_requirement_refs": [
-            "REQ-QUIC-HDR-0008",
-            "REQ-QUIC-HDR-0009",
-            "REQ-QUIC-HDR-0010"
+            "legacy header 0008",
+            "legacy header 0009",
+            "legacy header 0010"
           ],
           "confidence": "high",
           "notes": [
@@ -166,9 +166,9 @@
             "benchmarks/QuicHeaderParsingBenchmarks.cs"
           ],
           "stale_requirement_refs": [
-            "REQ-QUIC-HDR-0008",
-            "REQ-QUIC-HDR-0009",
-            "REQ-QUIC-HDR-0010"
+            "legacy header 0008",
+            "legacy header 0009",
+            "legacy header 0010"
           ],
           "confidence": "high",
           "notes": [
@@ -207,7 +207,7 @@
             "benchmarks/QuicHeaderParsingBenchmarks.cs"
           ],
           "stale_requirement_refs": [
-            "REQ-QUIC-HDR-0007"
+            "legacy header 0007"
           ],
           "confidence": "high",
           "notes": [
@@ -420,7 +420,7 @@
         "S17P2P1/S17P2P2"
       ],
       "status": "prompt2_then_prompt3_then_prompt4",
-      "reason": "Version Negotiation and Initial packet header parser/tests already exist and still carry stale HDR IDs.",
+      "reason": "Version Negotiation and Initial packet header parser/tests already exist and still carry stale header IDs.",
       "confidence": "high"
     },
     {
@@ -440,7 +440,7 @@
         "S17P3/S17P3P1/S17P4"
       ],
       "status": "prompt2_then_prompt3_then_prompt4",
-      "reason": "Short-header parsing already exists and still carries a stale HDR trait, while spin-bit observability remains greenfield.",
+      "reason": "Short-header parsing already exists and still carries a stale header trait, while spin-bit observability remains greenfield.",
       "confidence": "high"
     },
     {

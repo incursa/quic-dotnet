@@ -6,7 +6,7 @@
 - RFC 9000 is mixed. The stream, varint, and packet-header foundation slices already exist, but most transport, frame, and registry work is still greenfield.
 - RFC 9001 and RFC 9002 have no live implementation or test surface in `src` or `tests`; they are greenfield apart from the generated canonical spec artifacts and overlap notes.
 - Live tests use xUnit `Trait("Requirement", "...")`. The source tree has no `REQ-QUIC-*` refs or XML comments.
-- The only live stale requirement IDs are the legacy `REQ-QUIC-HDR`, `REQ-QUIC-VINT`, and `REQ-QUIC-STRM` traits in tests. The RFC 8999 chunk already remapped its live traits to canonical IDs.
+- The only live stale requirement IDs are the legacy header IDs, `REQ-QUIC-VINT`, and `REQ-QUIC-STRM` traits in tests. The RFC 8999 chunk already remapped its live traits to canonical IDs.
 - The import audit says there are no true import defects left. The remaining validator issue is namespace-policy mismatch only.
 
 ## Repo-Wide Findings
@@ -63,7 +63,7 @@
 - `RFC9000-04` (`S5/S5P1/S5P1P1/S5P1P2/S5P2/S5P2P1/S5P2P2/S5P2P3`) is `partial`.
 - Code evidence: `src/Incursa.Quic/QuicPacketParser.cs`, `src/Incursa.Quic/QuicPacketParsing.cs`, `src/Incursa.Quic/QuicLongHeaderPacket.cs`, `src/Incursa.Quic/QuicVersionNegotiationPacket.cs`.
 - Test evidence: `tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs`, `benchmarks/QuicHeaderParsingBenchmarks.cs`.
-- Stale requirement refs: `REQ-QUIC-HDR-0008`, `REQ-QUIC-HDR-0009`, `REQ-QUIC-HDR-0010`.
+- Stale requirement refs: legacy header ID 0008, legacy header ID 0009, legacy header ID 0010.
 - Notes: packet classification and Version Negotiation parsing exist; CID policy and connection-establishment semantics are still greenfield.
 - Confidence: high.
 
@@ -83,7 +83,7 @@
 - `RFC9000-16` (`S17P2P1/S17P2P2`) is `implemented_and_tested`.
 - Code evidence: `src/Incursa.Quic/QuicPacketParser.cs`, `src/Incursa.Quic/QuicVersionNegotiationPacket.cs`, `src/Incursa.Quic/QuicLongHeaderPacket.cs`.
 - Test evidence: `tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs`, `benchmarks/QuicHeaderParsingBenchmarks.cs`.
-- Stale requirement refs: `REQ-QUIC-HDR-0008`, `REQ-QUIC-HDR-0009`, `REQ-QUIC-HDR-0010`.
+- Stale requirement refs: legacy header ID 0008, legacy header ID 0009, legacy header ID 0010.
 - Notes: Version Negotiation and Initial packet header parsing are live; the surrounding packet-type semantics remain only partially evidenced.
 - Confidence: high.
 
@@ -97,7 +97,7 @@
 - `RFC9000-18` (`S17P3/S17P3P1/S17P4`) is `partial`.
 - Code evidence: `src/Incursa.Quic/QuicShortHeaderPacket.cs`, `src/Incursa.Quic/QuicPacketParser.cs`.
 - Test evidence: `tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyGenerators.cs`, `benchmarks/QuicHeaderParsingBenchmarks.cs`.
-- Stale requirement refs: `REQ-QUIC-HDR-0007`.
+- Stale requirement refs: legacy header ID 0007.
 - Notes: short-header parsing exists; spin-bit observability does not.
 - Confidence: high.
 

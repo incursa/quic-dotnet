@@ -1,0 +1,34 @@
+{
+  "title": "<Work Item Title>",
+  "verification_links": [
+    "VER-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+  ],
+  "owner": "<team-or-role>",
+  "related_artifacts": [
+    "SPEC-<DOMAIN>[-<GROUPING>...]"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "out_of_scope": [
+    "<out-of-scope item>"
+  ],
+  "status": "planned",
+  "domain": "<domain>",
+  "summary": "Describe the delivery outcome for the slice.",
+  "verification_plan": "Describe the test, fuzz, benchmark, and evidence plan.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`<file>`](../../../src/<path>)"
+    }
+  ],
+  "artifact_type": "work_item",
+  "planned_changes": "- <planned change>",
+  "design_links": [
+    "ARC-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+  ],
+  "addresses": [
+    "REQ-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+  ],
+  "artifact_id": "WI-<DOMAIN>[-<GROUPING>...]-<SEQUENCE:4+>"
+}

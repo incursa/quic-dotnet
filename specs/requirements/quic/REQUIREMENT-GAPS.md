@@ -1,3 +1,12 @@
+---
+workbench:
+  type: specification
+  workItems: []
+  codeRefs: []
+  pathHistory: []
+  path: /specs/requirements/quic/REQUIREMENT-GAPS.md
+---
+
 # QUIC Requirement Gaps
 
 This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC requirement work.

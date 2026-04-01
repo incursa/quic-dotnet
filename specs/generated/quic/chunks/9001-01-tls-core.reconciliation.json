@@ -8,7 +8,7 @@
     "S5",
     "S6"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.json",
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
     "passed": 106,

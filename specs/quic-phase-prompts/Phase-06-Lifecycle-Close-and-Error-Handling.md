@@ -3,21 +3,21 @@
 Add idle timeout, connection close, stateless reset, and error signaling after the main path is alive.
 
 Code roots used in generated prompts:
-- .\src
+- ./src
 
 Test roots used in generated prompts:
-- .\tests
+- ./tests
 
 ## Chunk Order
 
-- $(@{ChunkId=9000-13-idle-and-close; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield idle-timeout and connection-close behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-13-idle-and-close; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield idle-timeout and connection-close behavior.; Confidence=high}.Mode) — Greenfield idle-timeout and connection-close behavior.
-- $(@{ChunkId=9000-14-stateless-reset; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield stateless-reset behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-14-stateless-reset; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield stateless-reset behavior.; Confidence=high}.Mode) — Greenfield stateless-reset behavior.
-- $(@{ChunkId=9000-15-error-handling; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield transport/application error-handling behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-15-error-handling; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield transport/application error-handling behavior.; Confidence=high}.Mode) — Greenfield transport/application error-handling behavior.
+- $(@{ChunkId=9000-13-idle-and-close; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield idle-timeout and connection-close behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-13-idle-and-close; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield idle-timeout and connection-close behavior.; Confidence=high}.Mode) — Greenfield idle-timeout and connection-close behavior.
+- $(@{ChunkId=9000-14-stateless-reset; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield stateless-reset behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-14-stateless-reset; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield stateless-reset behavior.; Confidence=high}.Mode) — Greenfield stateless-reset behavior.
+- $(@{ChunkId=9000-15-error-handling; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield transport/application error-handling behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-15-error-handling; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield transport/application error-handling behavior.; Confidence=high}.Mode) — Greenfield transport/application error-handling behavior.
 
 ## 9000-13-idle-and-close
 
 - RFC: `9000`
-- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - Section tokens: `S10, S10P1, S10P1P1, S10P1P2, S10P2, S10P2P1, S10P2P2, S10P2P3`
 - Mode: `P3P4`
 - Confidence: `high`
@@ -45,11 +45,11 @@ Scope:
   - S10P2P1
   - S10P2P2
   - S10P2P3
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -130,7 +130,7 @@ Scope:
   - S10P2P1
   - S10P2P2
   - S10P2P3
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -165,7 +165,7 @@ Success criteria:
 ## 9000-14-stateless-reset
 
 - RFC: `9000`
-- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - Section tokens: `S10P3, S10P3P1, S10P3P2, S10P3P3`
 - Mode: `P3P4`
 - Confidence: `high`
@@ -189,11 +189,11 @@ Scope:
   - S10P3P1
   - S10P3P2
   - S10P3P3
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -270,7 +270,7 @@ Scope:
   - S10P3P1
   - S10P3P2
   - S10P3P3
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -305,7 +305,7 @@ Success criteria:
 ## 9000-15-error-handling
 
 - RFC: `9000`
-- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - Section tokens: `S11, S11P1, S11P2`
 - Mode: `P3P4`
 - Confidence: `high`
@@ -328,11 +328,11 @@ Scope:
   - S11
   - S11P1
   - S11P2
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -408,7 +408,7 @@ Scope:
   - S11
   - S11P1
   - S11P2
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.

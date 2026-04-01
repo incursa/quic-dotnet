@@ -27,6 +27,16 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Validate SpecTrace surfaces
+        shell: pwsh
+        run: |
+          ./scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1 -Check
+          ./scripts/Validate-SpecTraceJson.ps1 -Profiles core
+          ./scripts/Assert-No-SpecTraceCue.ps1
+
       - name: Restore
         run: dotnet restore Incursa.Quic.slnx
 

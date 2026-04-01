@@ -4,7 +4,7 @@
 
 - RFC: 9000
 - Section tokens: `S17P2P4`, `S17P2P5`, `S17P2P5P1`, `S17P2P5P2`, `S17P2P5P3`, `S17P3`, `S17P3P1`, `S17P4`
-- Canonical spec: [SPEC-QUIC-RFC9000.md](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.md)
+- Canonical spec: [SPEC-QUIC-RFC9000.json](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.json)
 
 ## Summary
 

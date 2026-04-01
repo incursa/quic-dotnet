@@ -4,7 +4,7 @@
 
 - RFC: 9000
 - Section tokens: `S18`, `S18P1`, `S18P2`
-- Canonical spec: [`SPEC-QUIC-RFC9000.md`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.md)
+- Canonical spec: [`SPEC-QUIC-RFC9000.json`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.json)
 - Reconciliation artifact: none was present for this chunk
 
 ## Summary

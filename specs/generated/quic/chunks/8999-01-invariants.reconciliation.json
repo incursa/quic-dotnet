@@ -4,7 +4,7 @@
   "section_tokens": [
     "S5P1"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC8999.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC8999.json",
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests\"",
     "passed": 32,
@@ -31,11 +31,11 @@
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:93"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0001",
-        "REQ-QUIC-HDR-0003",
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0001",
+        "legacy header 0003",
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Rewrote in-scope classification and short-header rejection traits to the imported RFC 8999 requirement ID."
@@ -61,10 +61,10 @@
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0002",
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0002",
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Rewrote preserved-control-bit traits to the imported RFC 8999 requirement ID."
@@ -91,11 +91,11 @@
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0003",
-        "REQ-QUIC-HDR-0006",
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0003",
+        "legacy header 0006",
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Rewrote version-field traits to the imported RFC 8999 requirement ID."
@@ -121,11 +121,11 @@
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0003",
-        "REQ-QUIC-HDR-0004",
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0003",
+        "legacy header 0004",
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Rewrote destination-length traits to the imported RFC 8999 requirement ID.",
@@ -153,10 +153,10 @@
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0005",
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0005",
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Rewrote destination-size traits to the imported RFC 8999 requirement ID.",
@@ -184,11 +184,11 @@
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0004",
-        "REQ-QUIC-HDR-0006",
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0004",
+        "legacy header 0006",
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Rewrote source-length traits to the imported RFC 8999 requirement ID."
@@ -215,10 +215,10 @@
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0006",
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0006",
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Rewrote source-size traits to the imported RFC 8999 requirement ID.",
@@ -245,9 +245,9 @@
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:15"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Rewrote version-specific remainder traits to the imported RFC 8999 requirement ID.",

@@ -13,6 +13,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = $PSScriptRoot
 $qualityEvidenceScript = Join-Path $repoRoot "scripts/quality/run-quality-evidence.ps1"
+$benchmarkEvidenceScript = Join-Path $repoRoot "scripts/quality/run-benchmark-evidence.ps1"
 $qualityArtifactsRoot = Join-Path $repoRoot "artifacts/quality"
 $attestationOutputPath = Join-Path $repoRoot $AttestationOutputDirectory
 
@@ -21,6 +22,7 @@ Write-Host "Repository: $repoRoot" -ForegroundColor Yellow
 Write-Host "Solution: $Solution" -ForegroundColor Yellow
 Write-Host "Configuration: $Configuration" -ForegroundColor Yellow
 Write-Host ("Mode: {0}" -f ($(if ($Quick) { "quick" } else { "refresh" }))) -ForegroundColor Yellow
+Write-Host "Evidence lane: full test project suite" -ForegroundColor Yellow
 Write-Host "Attestation output: $attestationOutputPath" -ForegroundColor Yellow
 
 Push-Location $repoRoot
@@ -50,6 +52,11 @@ try {
         & pwsh -NoLogo -NoProfile -File $qualityEvidenceScript -Solution $Solution -Configuration $Configuration -NoRestore:$NoRestore -NoBuild:$NoBuild
         if ($LASTEXITCODE -ne 0) {
             throw "Quality evidence run failed with exit code $LASTEXITCODE."
+        }
+
+        & pwsh -NoLogo -NoProfile -File $benchmarkEvidenceScript -Configuration $Configuration -NoRestore:$NoRestore
+        if ($LASTEXITCODE -ne 0) {
+            throw "Benchmark evidence run failed with exit code $LASTEXITCODE."
         }
     }
 

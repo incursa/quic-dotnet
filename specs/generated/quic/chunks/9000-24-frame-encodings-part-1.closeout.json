@@ -6,7 +6,7 @@
     "S18P1",
     "S18P2"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
   "audit_result": "trace-consistent-with-open-and-deferred-items",
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --logger \"console;verbosity=minimal\"",

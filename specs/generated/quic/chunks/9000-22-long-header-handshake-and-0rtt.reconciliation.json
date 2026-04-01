@@ -6,7 +6,7 @@
     "S17P2P2",
     "S17P2P3"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests\"",
     "passed": 40,
@@ -119,9 +119,9 @@
         "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
@@ -146,9 +146,9 @@
         "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
@@ -173,9 +173,9 @@
         "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
@@ -200,9 +200,9 @@
         "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
@@ -227,9 +227,9 @@
         "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
@@ -254,9 +254,9 @@
         "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
@@ -281,9 +281,9 @@
         "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
@@ -308,9 +308,9 @@
         "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
@@ -335,9 +335,9 @@
         "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
@@ -383,9 +383,9 @@
         "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."
@@ -515,9 +515,9 @@
         "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:17-32"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0008",
-        "REQ-QUIC-HDR-0009",
-        "REQ-QUIC-HDR-0010"
+        "legacy header 0008",
+        "legacy header 0009",
+        "legacy header 0010"
       ],
       "changes_made": [
         "Retagged Version Negotiation parser and property tests to canonical RFC 9000 section-specific IDs."

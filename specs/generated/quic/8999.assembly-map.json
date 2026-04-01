@@ -1,7 +1,7 @@
 {
   "rfc": "RFC 8999",
   "spec_artifact_id": "SPEC-QUIC-RFC8999",
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC8999.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC8999.json",
   "input_batches": [
     "5.1"
   ],

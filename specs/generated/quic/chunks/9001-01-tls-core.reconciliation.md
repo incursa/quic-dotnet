@@ -2,7 +2,7 @@
 
 ## Requirements in scope
 
-Source: `specs/requirements/quic/SPEC-QUIC-RFC9001.md`
+Source: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 
 ### S2
 - `REQ-QUIC-RFC9001-S2-0001` Interpret uppercase BCP 14 keywords - `unclear / needs human review`

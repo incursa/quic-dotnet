@@ -11,7 +11,7 @@
     "S17P3P1",
     "S17P4"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicShortHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicLongHeaderPacketTests\"",
     "result": "Passed",

@@ -41,7 +41,7 @@ $chunks = @'
   {
     "chunk_id": "8999-01-invariants",
     "rfc": "8999",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC8999.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC8999.json",
     "approx_requirements": 8,
     "section_tokens": [
       "S5P1"
@@ -50,7 +50,7 @@ $chunks = @'
   {
     "chunk_id": "9001-01-tls-core",
     "rfc": "9001",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.json",
     "approx_requirements": 44,
     "section_tokens": [
       "S2",
@@ -63,7 +63,7 @@ $chunks = @'
   {
     "chunk_id": "9001-02-security-and-registry",
     "rfc": "9001",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.json",
     "approx_requirements": 8,
     "section_tokens": [
       "S7",
@@ -75,7 +75,7 @@ $chunks = @'
   {
     "chunk_id": "9001-03-appendix-b-aead-limits",
     "rfc": "9001",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.json",
     "approx_requirements": 9,
     "section_tokens": [
       "SB",
@@ -87,7 +87,7 @@ $chunks = @'
   {
     "chunk_id": "9002-01-transport-basics",
     "rfc": "9002",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
     "approx_requirements": 21,
     "section_tokens": [
       "S2",
@@ -97,7 +97,7 @@ $chunks = @'
   {
     "chunk_id": "9002-02-rtt-estimation",
     "rfc": "9002",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
     "approx_requirements": 25,
     "section_tokens": [
       "S5",
@@ -109,7 +109,7 @@ $chunks = @'
   {
     "chunk_id": "9002-03-loss-detection",
     "rfc": "9002",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
     "approx_requirements": 55,
     "section_tokens": [
       "S6",
@@ -129,7 +129,7 @@ $chunks = @'
   {
     "chunk_id": "9002-04-congestion-control",
     "rfc": "9002",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
     "approx_requirements": 46,
     "section_tokens": [
       "S7",
@@ -150,7 +150,7 @@ $chunks = @'
   {
     "chunk_id": "9002-05-appendix-a-recovery-state",
     "rfc": "9002",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
     "approx_requirements": 49,
     "section_tokens": [
       "SAP1",
@@ -169,7 +169,7 @@ $chunks = @'
   {
     "chunk_id": "9002-06-appendix-b-constants-and-examples",
     "rfc": "9002",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
     "approx_requirements": 28,
     "section_tokens": [
       "SBP1",
@@ -186,7 +186,7 @@ $chunks = @'
   {
     "chunk_id": "9000-01-streams-core",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 44,
     "section_tokens": [
       "S2",
@@ -199,7 +199,7 @@ $chunks = @'
   {
     "chunk_id": "9000-02-stream-state",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 66,
     "section_tokens": [
       "S3",
@@ -213,7 +213,7 @@ $chunks = @'
   {
     "chunk_id": "9000-03-flow-control",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 50,
     "section_tokens": [
       "S4",
@@ -227,7 +227,7 @@ $chunks = @'
   {
     "chunk_id": "9000-04-connection-ids-basics",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 44,
     "section_tokens": [
       "S5",
@@ -238,7 +238,7 @@ $chunks = @'
   {
     "chunk_id": "9000-05-connection-id-management",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 61,
     "section_tokens": [
       "S5P1P2",
@@ -252,7 +252,7 @@ $chunks = @'
   {
     "chunk_id": "9000-06-version-negotiation",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 11,
     "section_tokens": [
       "S6",
@@ -264,7 +264,7 @@ $chunks = @'
   {
     "chunk_id": "9000-07-handshake-properties",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 34,
     "section_tokens": [
       "S7",
@@ -275,7 +275,7 @@ $chunks = @'
   {
     "chunk_id": "9000-08-transport-params-and-crypto-buffers",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 22,
     "section_tokens": [
       "S7P4",
@@ -287,7 +287,7 @@ $chunks = @'
   {
     "chunk_id": "9000-09-address-validation-and-tokens",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 42,
     "section_tokens": [
       "S8",
@@ -301,7 +301,7 @@ $chunks = @'
   {
     "chunk_id": "9000-10-path-validation",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 21,
     "section_tokens": [
       "S8P2",
@@ -314,7 +314,7 @@ $chunks = @'
   {
     "chunk_id": "9000-11-migration-core",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 40,
     "section_tokens": [
       "S9",
@@ -329,7 +329,7 @@ $chunks = @'
   {
     "chunk_id": "9000-12-migration-followup",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 61,
     "section_tokens": [
       "S9P4",
@@ -344,7 +344,7 @@ $chunks = @'
   {
     "chunk_id": "9000-13-idle-and-close",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 52,
     "section_tokens": [
       "S10",
@@ -360,7 +360,7 @@ $chunks = @'
   {
     "chunk_id": "9000-14-stateless-reset",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 55,
     "section_tokens": [
       "S10P3",
@@ -372,7 +372,7 @@ $chunks = @'
   {
     "chunk_id": "9000-15-error-handling",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 18,
     "section_tokens": [
       "S11",
@@ -383,7 +383,7 @@ $chunks = @'
   {
     "chunk_id": "9000-16-packet-protection-and-coalescing",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 32,
     "section_tokens": [
       "S12P1",
@@ -394,7 +394,7 @@ $chunks = @'
   {
     "chunk_id": "9000-17-frame-and-space-rules",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 28,
     "section_tokens": [
       "S12P4",
@@ -404,7 +404,7 @@ $chunks = @'
   {
     "chunk_id": "9000-18-ack-generation",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 54,
     "section_tokens": [
       "S13",
@@ -422,7 +422,7 @@ $chunks = @'
   {
     "chunk_id": "9000-19-retransmission-and-frame-reliability",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 39,
     "section_tokens": [
       "S13P3"
@@ -431,7 +431,7 @@ $chunks = @'
   {
     "chunk_id": "9000-20-datagram-and-mtu",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 85,
     "section_tokens": [
       "S13P4",
@@ -452,7 +452,7 @@ $chunks = @'
   {
     "chunk_id": "9000-21-long-header-general-and-initial",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 58,
     "section_tokens": [
       "S17",
@@ -464,7 +464,7 @@ $chunks = @'
   {
     "chunk_id": "9000-22-long-header-handshake-and-0rtt",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 49,
     "section_tokens": [
       "S17P2P2",
@@ -474,7 +474,7 @@ $chunks = @'
   {
     "chunk_id": "9000-23-retry-version-short-header",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 96,
     "section_tokens": [
       "S17P2P4",
@@ -490,7 +490,7 @@ $chunks = @'
   {
     "chunk_id": "9000-24-frame-encodings-part-1",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 47,
     "section_tokens": [
       "S18",
@@ -501,7 +501,7 @@ $chunks = @'
   {
     "chunk_id": "9000-25-frame-encodings-part-2",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 68,
     "section_tokens": [
       "S19P1",
@@ -516,7 +516,7 @@ $chunks = @'
   {
     "chunk_id": "9000-26-frame-encodings-part-3",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 78,
     "section_tokens": [
       "S19P6",
@@ -530,7 +530,7 @@ $chunks = @'
   {
     "chunk_id": "9000-27-frame-encodings-part-4",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 66,
     "section_tokens": [
       "S19P12",
@@ -545,7 +545,7 @@ $chunks = @'
   {
     "chunk_id": "9000-28-errors-registry-and-security",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 70,
     "section_tokens": [
       "S19P19",
@@ -571,7 +571,7 @@ $chunks = @'
   {
     "chunk_id": "9000-29-iana-and-late-sections",
     "rfc": "9000",
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "approx_requirements": 52,
     "section_tokens": [
       "S22P1P1",

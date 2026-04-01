@@ -1036,7 +1036,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",
@@ -1067,7 +1067,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",
@@ -1098,7 +1098,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",
@@ -1129,7 +1129,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",
@@ -1160,7 +1160,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",
@@ -1191,7 +1191,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",
@@ -1252,7 +1252,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",
@@ -1283,7 +1283,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",
@@ -1314,7 +1314,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",
@@ -1345,7 +1345,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",
@@ -1438,7 +1438,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",
@@ -1469,7 +1469,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "old_requirement_refs_rewritten": [
-        "REQ-QUIC-HDR-0007"
+        "legacy header 0007"
       ],
       "changes_made": [
         "Added short-header bitfield accessors and fixed-bit validation.",

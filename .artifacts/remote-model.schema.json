@@ -1,0 +1,844 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "model.schema.json",
+  "title": "SpecTrace Canonical Artifact Model",
+  "description": "Authoritative JSON Schema for canonical SpecTrace artifacts, evidence snapshots, retired requirement ledgers, and generated catalogs.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/specificationArtifact"
+    },
+    {
+      "$ref": "#/$defs/architectureArtifact"
+    },
+    {
+      "$ref": "#/$defs/workItemArtifact"
+    },
+    {
+      "$ref": "#/$defs/verificationArtifact"
+    }
+  ],
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "paragraph": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "domain": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "stringList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      },
+      "minItems": 1
+    },
+    "artifactLifecycleStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "proposed",
+        "approved",
+        "implemented",
+        "verified",
+        "superseded",
+        "retired"
+      ]
+    },
+    "workItemStatus": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "in_progress",
+        "blocked",
+        "complete",
+        "cancelled",
+        "superseded"
+      ]
+    },
+    "verificationStatus": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "passed",
+        "failed",
+        "blocked",
+        "waived",
+        "obsolete"
+      ]
+    },
+    "evidenceStatus": {
+      "type": "string",
+      "enum": [
+        "observed",
+        "passed",
+        "failed",
+        "not_observed",
+        "not_collected",
+        "unsupported"
+      ]
+    },
+    "specificationId": {
+      "type": "string",
+      "pattern": "^SPEC-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*$"
+    },
+    "requirementId": {
+      "type": "string",
+      "pattern": "^REQ-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "architectureId": {
+      "type": "string",
+      "pattern": "^ARC-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "workItemId": {
+      "type": "string",
+      "pattern": "^WI-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "verificationId": {
+      "type": "string",
+      "pattern": "^VER-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "artifactId": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/specificationId"
+        },
+        {
+          "$ref": "#/$defs/architectureId"
+        },
+        {
+          "$ref": "#/$defs/workItemId"
+        },
+        {
+          "$ref": "#/$defs/verificationId"
+        }
+      ]
+    },
+    "canonicalId": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/artifactId"
+        },
+        {
+          "$ref": "#/$defs/requirementId"
+        }
+      ]
+    },
+    "artifactRefList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifactId"
+      },
+      "minItems": 1
+    },
+    "requirementRefList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirementId"
+      },
+      "minItems": 1
+    },
+    "architectureRefList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/architectureId"
+      },
+      "minItems": 1
+    },
+    "workItemRefList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/workItemId"
+      },
+      "minItems": 1
+    },
+    "verificationRefList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/verificationId"
+      },
+      "minItems": 1
+    },
+    "canonicalRefList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/canonicalId"
+      },
+      "minItems": 1
+    },
+    "requirementStatement": {
+      "type": "string",
+      "minLength": 1,
+      "allOf": [
+        {
+          "pattern": "\\b(?:MUST NOT|SHALL NOT|SHOULD NOT|MUST|SHALL|SHOULD|MAY)\\b"
+        },
+        {
+          "not": {
+            "pattern": "\\b(?:MUST NOT|SHALL NOT|SHOULD NOT|MUST|SHALL|SHOULD|MAY)\\b[\\s\\S]*\\b(?:MUST NOT|SHALL NOT|SHOULD NOT|MUST|SHALL|SHOULD|MAY)\\b"
+          }
+        }
+      ]
+    },
+    "supplementalSection": {
+      "type": "object",
+      "required": [
+        "heading",
+        "content"
+      ],
+      "properties": {
+        "heading": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "content": {
+          "$ref": "#/$defs/paragraph"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "supplementalSectionList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/supplementalSection"
+      },
+      "minItems": 1
+    },
+    "requirementTrace": {
+      "type": "object",
+      "properties": {
+        "satisfied_by": {
+          "$ref": "#/$defs/architectureRefList"
+        },
+        "implemented_by": {
+          "$ref": "#/$defs/workItemRefList"
+        },
+        "verified_by": {
+          "$ref": "#/$defs/verificationRefList"
+        },
+        "derived_from": {
+          "$ref": "#/$defs/requirementRefList"
+        },
+        "supersedes": {
+          "$ref": "#/$defs/requirementRefList"
+        },
+        "upstream_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "related": {
+          "$ref": "#/$defs/canonicalRefList"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "requirement": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "statement"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/requirementId"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "statement": {
+          "$ref": "#/$defs/requirementStatement"
+        },
+        "trace": {
+          "$ref": "#/$defs/requirementTrace"
+        },
+        "notes": {
+          "$ref": "#/$defs/stringList"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "requirementList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirement"
+      },
+      "minItems": 1
+    },
+    "retiredRequirement": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/requirementId"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "replaced_by": {
+          "$ref": "#/$defs/requirementRefList"
+        },
+        "notes": {
+          "$ref": "#/$defs/stringList"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "retiredRequirementLedger": {
+      "type": "object",
+      "required": [
+        "retired_requirements"
+      ],
+      "properties": {
+        "retired_requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/retiredRequirement"
+          },
+          "minItems": 1
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "specificationArtifact": {
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "title",
+        "domain",
+        "capability",
+        "status",
+        "owner",
+        "purpose",
+        "requirements"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "artifact_id": {
+          "$ref": "#/$defs/specificationId"
+        },
+        "artifact_type": {
+          "const": "specification"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "domain": {
+          "$ref": "#/$defs/domain"
+        },
+        "capability": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "status": {
+          "$ref": "#/$defs/artifactLifecycleStatus"
+        },
+        "owner": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "tags": {
+          "$ref": "#/$defs/stringList"
+        },
+        "related_artifacts": {
+          "$ref": "#/$defs/artifactRefList"
+        },
+        "purpose": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "scope": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "context": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "open_questions": {
+          "$ref": "#/$defs/stringList"
+        },
+        "supplemental_sections": {
+          "$ref": "#/$defs/supplementalSectionList"
+        },
+        "requirements": {
+          "$ref": "#/$defs/requirementList"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "architectureArtifact": {
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "title",
+        "domain",
+        "status",
+        "owner",
+        "satisfies",
+        "purpose",
+        "design_summary"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "artifact_id": {
+          "$ref": "#/$defs/architectureId"
+        },
+        "artifact_type": {
+          "const": "architecture"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "domain": {
+          "$ref": "#/$defs/domain"
+        },
+        "status": {
+          "$ref": "#/$defs/artifactLifecycleStatus"
+        },
+        "owner": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "related_artifacts": {
+          "$ref": "#/$defs/artifactRefList"
+        },
+        "satisfies": {
+          "$ref": "#/$defs/requirementRefList"
+        },
+        "purpose": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "design_summary": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "key_components": {
+          "$ref": "#/$defs/stringList"
+        },
+        "data_and_state_considerations": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "edge_cases_and_constraints": {
+          "$ref": "#/$defs/stringList"
+        },
+        "alternatives_considered": {
+          "$ref": "#/$defs/stringList"
+        },
+        "risks": {
+          "$ref": "#/$defs/stringList"
+        },
+        "open_questions": {
+          "$ref": "#/$defs/stringList"
+        },
+        "supplemental_sections": {
+          "$ref": "#/$defs/supplementalSectionList"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "workItemArtifact": {
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "title",
+        "domain",
+        "status",
+        "owner",
+        "addresses",
+        "design_links",
+        "verification_links",
+        "summary",
+        "planned_changes",
+        "verification_plan"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "artifact_id": {
+          "$ref": "#/$defs/workItemId"
+        },
+        "artifact_type": {
+          "const": "work_item"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "domain": {
+          "$ref": "#/$defs/domain"
+        },
+        "status": {
+          "$ref": "#/$defs/workItemStatus"
+        },
+        "owner": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "related_artifacts": {
+          "$ref": "#/$defs/artifactRefList"
+        },
+        "addresses": {
+          "$ref": "#/$defs/requirementRefList"
+        },
+        "design_links": {
+          "$ref": "#/$defs/architectureRefList"
+        },
+        "verification_links": {
+          "$ref": "#/$defs/verificationRefList"
+        },
+        "summary": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "planned_changes": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "out_of_scope": {
+          "$ref": "#/$defs/stringList"
+        },
+        "verification_plan": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "completion_notes": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "supplemental_sections": {
+          "$ref": "#/$defs/supplementalSectionList"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "verificationArtifact": {
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "title",
+        "domain",
+        "status",
+        "owner",
+        "verifies",
+        "scope",
+        "verification_method",
+        "procedure",
+        "expected_result"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "artifact_id": {
+          "$ref": "#/$defs/verificationId"
+        },
+        "artifact_type": {
+          "const": "verification"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "domain": {
+          "$ref": "#/$defs/domain"
+        },
+        "status": {
+          "$ref": "#/$defs/verificationStatus"
+        },
+        "owner": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "related_artifacts": {
+          "$ref": "#/$defs/artifactRefList"
+        },
+        "verifies": {
+          "$ref": "#/$defs/requirementRefList"
+        },
+        "scope": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "verification_method": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "preconditions": {
+          "$ref": "#/$defs/stringList"
+        },
+        "procedure": {
+          "$ref": "#/$defs/stringList"
+        },
+        "expected_result": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "evidence": {
+          "$ref": "#/$defs/stringList"
+        },
+        "status_summary": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "supplemental_sections": {
+          "$ref": "#/$defs/supplementalSectionList"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "evidenceKindToken": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "evidenceObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "status"
+      ],
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/evidenceKindToken"
+        },
+        "status": {
+          "$ref": "#/$defs/evidenceStatus"
+        },
+        "refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "summary": {
+          "$ref": "#/$defs/paragraph"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "evidenceObservationList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidenceObservation"
+      },
+      "minItems": 1
+    },
+    "requirementEvidence": {
+      "type": "object",
+      "required": [
+        "requirement_id",
+        "observations"
+      ],
+      "properties": {
+        "requirement_id": {
+          "$ref": "#/$defs/requirementId"
+        },
+        "observations": {
+          "$ref": "#/$defs/evidenceObservationList"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "requirementEvidenceList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirementEvidence"
+      },
+      "minItems": 1
+    },
+    "evidenceProducer": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "version": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "evidenceSnapshot": {
+      "type": "object",
+      "required": [
+        "snapshot_id",
+        "generated_at",
+        "producer",
+        "requirements"
+      ],
+      "properties": {
+        "snapshot_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "producer": {
+          "$ref": "#/$defs/evidenceProducer"
+        },
+        "requirements": {
+          "$ref": "#/$defs/requirementEvidenceList"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "catalogReference": {
+      "type": "object",
+      "required": [
+        "source_id",
+        "field",
+        "target_id",
+        "expected_kind"
+      ],
+      "properties": {
+        "source_id": {
+          "$ref": "#/$defs/canonicalId"
+        },
+        "field": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "target_id": {
+          "$ref": "#/$defs/canonicalId"
+        },
+        "expected_kind": {
+          "type": "string",
+          "enum": [
+            "artifact",
+            "requirement"
+          ]
+        },
+        "expected_prefix": {
+          "type": "string",
+          "enum": [
+            "SPEC",
+            "ARC",
+            "WI",
+            "VER",
+            "REQ"
+          ]
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "catalogReferenceList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/catalogReference"
+      },
+      "minItems": 1
+    },
+    "catalogEntry": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "source_path",
+        "title",
+        "domain"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/canonicalId"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "artifact",
+            "requirement"
+          ]
+        },
+        "artifact_type": {
+          "type": "string",
+          "enum": [
+            "specification",
+            "architecture",
+            "work_item",
+            "verification",
+            "requirement"
+          ]
+        },
+        "parent_id": {
+          "$ref": "#/$defs/specificationId"
+        },
+        "source_path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "domain": {
+          "$ref": "#/$defs/domain"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    },
+    "catalog": {
+      "type": "object",
+      "required": [
+        "entries"
+      ],
+      "properties": {
+        "entries": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/canonicalId"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/catalogEntry"
+          }
+        },
+        "references": {
+          "$ref": "#/$defs/catalogReferenceList"
+        }
+      },
+      "patternProperties": {
+        "^x_[A-Za-z0-9_]+$": {}
+      },
+      "additionalProperties": false
+    }
+  }
+}

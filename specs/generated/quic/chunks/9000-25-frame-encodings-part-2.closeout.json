@@ -10,7 +10,7 @@
     "S19P4",
     "S19P5"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
   "audit_result": "trace-consistent-with-open-and-deferred-items",
   "source_artifacts": {
     "implementation_summary": {
@@ -184,7 +184,7 @@
     "summary": "155 passed, 0 failed, 0 skipped"
   },
   "files_reviewed": [
-    "specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.json",
     "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.reconciliation.json",
     "src/Incursa.Quic/QuicAckFrame.cs",

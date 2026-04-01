@@ -1,7 +1,7 @@
 {
   "rfc": "RFC 9000",
   "spec_artifact_id": "SPEC-QUIC-RFC9000",
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
   "input_batches": [
     "2-5",
     "6",

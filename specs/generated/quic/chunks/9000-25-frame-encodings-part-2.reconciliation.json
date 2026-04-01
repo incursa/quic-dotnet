@@ -11,7 +11,7 @@
       "S19P4",
       "S19P5"
     ],
-    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "counts": {
       "total": 68,
       "implemented_and_tested": 0,
@@ -31,7 +31,7 @@
       "Summary: 145 passed, 0 failed, 0 skipped"
     ],
     "consulted_inputs": [
-      "specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+      "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
       "specs/generated/quic/import-audit-summary.md",
       "specs/generated/quic/quic-existing-work-inventory.md",
       "specs/generated/quic/implementation-chunk-manifest.md",

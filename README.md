@@ -5,6 +5,8 @@
 `Incursa.Quic` is the starter repository for the Incursa QUIC library. It currently contains the build, test, packaging, and documentation scaffold only. The runtime implementation will be added later.
 
 The repository is also prepared for a SpecTrace-first workflow so RFC-derived protocol slices can be translated into canonical requirements, gaps, work items, verification artifacts, and generated outputs before implementation.
+Canonical SpecTrace artifacts are authored as `.json` files under [`specs/`](specs/README.md), and the repository no longer depends on sibling Markdown companions for those canonical families.
+The repo-local JSON validator fetches the upstream SpecTrace model schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) at runtime so this repository does not carry a stale checked-in copy.
 
 ## What is included
 
@@ -17,7 +19,8 @@ The repository is also prepared for a SpecTrace-first workflow so RFC-derived pr
 - [`docs/requirements-workflow.md`](docs/requirements-workflow.md): local order of operations for requirements, testing, fuzzing, and benchmarking
 - [`quality/testing-intent.yaml`](quality/testing-intent.yaml): repo-level testing intent for quality tooling
 - [`schemas/`](schemas/README.md): repository-level quality and config schemas
-- [`scripts/quality`](scripts/quality/README.md): smoke and blocking test lanes
+- [`scripts/spec-trace`](scripts/spec-trace/README.md): JSON validation, migration, backup, and parity-check helpers
+- [`scripts/quality`](scripts/quality/README.md): smoke, blocking, and quality attestation evidence lanes
 - [`scripts/release`](scripts/release/README.md): versioning and release-policy checks
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): contribution and validation guidance
 - [`AGENTS.md`](AGENTS.md): repository-specific agent instructions
@@ -29,6 +32,8 @@ The repository is also prepared for a SpecTrace-first workflow so RFC-derived pr
 
 ```bash
 dotnet tool restore
+pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core
+dotnet tool run workbench -- --format json validate --profile core
 dotnet restore Incursa.Quic.slnx
 dotnet build Incursa.Quic.slnx -c Release
 dotnet test Incursa.Quic.slnx -c Release
@@ -63,10 +68,11 @@ pwsh -File cleanup.ps1
 
 ## Documentation tooling
 
-The repository carries repo-local quality tooling for mutation and fuzz support:
+The repository carries repo-local quality tooling for mutation, fuzz support, and SpecTrace validation:
 
 - `dotnet-stryker`
 - `SharpFuzz.CommandLine`
+- `workbench`
 
 Install them with:
 
@@ -78,6 +84,7 @@ Then use the repository docs pages for the build and packaging flow:
 
 - [Repository docs](docs/README.md)
 - [Requirements workflow](docs/requirements-workflow.md)
+- [SpecTrace prep](docs/spec-trace-prep.md)
 - [Quickstart](docs/quickstart.md)
 - [Packaging](docs/packaging.md)
 - [Testing docs](docs/testing/README.md)

@@ -3,20 +3,22 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicTransportParametersTests
 {
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0008")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0010")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0013")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0015")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0016")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0035")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0035")]
+    [Requirement("REQ-QUIC-RFC9000-S5P2P3-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P1-0011")]
     [Trait("Category", "Positive")]
     public void TryFormatTransportParameters_WritesExactTupleSequence()
     {
@@ -59,32 +61,72 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0006")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0007")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P1-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P1-0002")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0019")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0020")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0021")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0022")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0023")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0025")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0026")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0028")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0029")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0030")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0031")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0032")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0033")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0035")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P1-0011")]
+    [Trait("Category", "Positive")]
+    public void TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient()
+    {
+        QuicTransportParameters parameters = new()
+        {
+            MaxIdleTimeout = 25,
+            ActiveConnectionIdLimit = 8,
+            InitialSourceConnectionId = [0x11, 0x22],
+        };
+
+        Span<byte> destination = stackalloc byte[64];
+        Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            QuicTransportParameterRole.Client,
+            destination,
+            out int bytesWritten));
+
+        byte[] expected = QuicTransportParameterTestData.BuildTransportParameterBlock(
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x01, QuicVarintTestData.EncodeMinimal(25)),
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x0E, QuicVarintTestData.EncodeMinimal(8)),
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x0F, [0x11, 0x22]));
+
+        Assert.Equal(expected.Length, bytesWritten);
+        Assert.True(expected.AsSpan().SequenceEqual(destination[..bytesWritten]));
+
+        Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+            destination[..bytesWritten],
+            QuicTransportParameterRole.Server,
+            out QuicTransportParameters parsed));
+
+        Assert.Equal(parameters.MaxIdleTimeout, parsed.MaxIdleTimeout);
+        Assert.Equal(parameters.ActiveConnectionIdLimit, parsed.ActiveConnectionIdLimit);
+        Assert.True(parameters.InitialSourceConnectionId!.AsSpan().SequenceEqual(parsed.InitialSourceConnectionId!));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S18-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S18P1-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S18P1-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0020")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0021")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0022")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0023")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0025")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0026")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0028")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0029")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0030")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0031")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0032")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0033")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0035")]
+    [Requirement("REQ-QUIC-RFC9000-S5P2P3-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S5P2P3-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P1-0011")]
     [Trait("Category", "Positive")]
     public void TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress()
     {
@@ -147,17 +189,18 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0020")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0021")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0022")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0023")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0028")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0029")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0030")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0031")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0032")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0033")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0020")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0021")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0022")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0023")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0028")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0029")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0030")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0031")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0032")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0033")]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S5P2P3-0002")]
     public void TryParseTransportParameters_AcceptsPreferredAddressWithZeroedIpv4Family()
     {
         QuicTransportParameters parameters = new()
@@ -196,10 +239,10 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0003")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S18-0006")]
     [Trait("Category", "Negative")]
     public void TryParseTransportParameters_RejectsTruncatedTupleValue()
     {
@@ -213,8 +256,8 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P1-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P1-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S18P1-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S18P1-0002")]
     [Trait("Category", "Positive")]
     public void TryParseTransportParameters_IgnoresReservedGreaseParameters()
     {
@@ -234,10 +277,10 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0037")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0037")]
     [Trait("Category", "Negative")]
     public void TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient()
     {
@@ -265,10 +308,10 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0001")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0004")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0005")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0038")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0038")]
     [Trait("Category", "Negative")]
     public void TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer()
     {
@@ -281,19 +324,19 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0019")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0020")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0021")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0022")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0023")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0025")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0026")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0028")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0029")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0030")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0031")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0032")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0033")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0020")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0021")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0022")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0023")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0025")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0026")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0028")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0029")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0030")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0031")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0032")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0033")]
     [Trait("Category", "Negative")]
     public void TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId()
     {
@@ -314,8 +357,8 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0035")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0036")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0035")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0036")]
     [Trait("Category", "Negative")]
     public void TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo()
     {
@@ -328,17 +371,17 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0019")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0020")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0021")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0022")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0023")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0028")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0029")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0030")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0031")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0032")]
-    [Trait("Requirement", "REQ-QUIC-RFC9000-S18P2-0033")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0020")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0021")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0022")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0023")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0028")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0029")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0030")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0031")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0032")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0033")]
     [Trait("Category", "Negative")]
     public void TryParseTransportParameters_RejectsTruncatedPreferredAddressValue()
     {

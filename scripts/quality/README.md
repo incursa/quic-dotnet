@@ -4,8 +4,13 @@
 
 - [`run-smoke-tests.ps1`](run-smoke-tests.ps1) runs the fast `Category=Smoke` lane against `Incursa.Quic.slnx`.
 - [`run-blocking-tests.ps1`](run-blocking-tests.ps1) runs the `Category=Blocking` lane against `Incursa.Quic.slnx`.
-- [`run-quality-evidence.ps1`](run-quality-evidence.ps1) runs both lanes in the order expected by `quality/attestation.yaml`.
+- [`run-quality-evidence.ps1`](run-quality-evidence.ps1) runs the full repository test-project suite and records the evidence expected by `quality/attestation.yaml`.
+- [`run-benchmark-evidence.ps1`](run-benchmark-evidence.ps1) runs the header benchmark dry lane and writes benchmark evidence under `quality/benchmarks/`.
 - [`QualityLane.Common.ps1`](QualityLane.Common.ps1) hosts the shared helpers used by the quality scripts.
+
+## Attestation
+
+- The root-level [`run-quality-attestation.ps1`](../../run-quality-attestation.ps1) wrapper refreshes evidence, syncs the quality contract, and emits the derived HTML and JSON attestation artifacts.
 
 ## Supporting commands
 

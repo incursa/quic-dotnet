@@ -28,7 +28,7 @@
 
 ## Old -> New Requirement ID Mappings Applied
 
-- `REQ-QUIC-HDR-0007` was rewritten to the canonical RFC 9000 short-header IDs across `tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs`.
+- Legacy header ID 0007 was rewritten to the canonical RFC 9000 short-header IDs across `tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs`.
 
 ## Gaps Fixed in This Pass
 
@@ -161,5 +161,5 @@
 
 ## Notes
 
-- The live short-header traits no longer point at the legacy `REQ-QUIC-HDR-0007` alias.
+- The live short-header traits no longer point at the legacy header ID 0007 alias.
 - Generated repo-wide inventory files still mention the legacy alias in their historical summary text, but no live code or tests in this chunk do.

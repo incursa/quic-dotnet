@@ -1,0 +1,595 @@
+{
+  "chunk_id": "9000-05-connection-id-management",
+  "rfc": "9000",
+  "section_tokens": [
+    "S5P1P2",
+    "S5P2",
+    "S5P2P1",
+    "S5P2P2",
+    "S5P2P3"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "audit_result": "clean_with_explicit_deferments",
+  "reference_check": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9000-S5P2-0001",
+      "REQ-QUIC-RFC9000-S5P1P2-0004",
+      "REQ-QUIC-RFC9000-S5P1P2-0005",
+      "REQ-QUIC-RFC9000-S5P1P2-0008",
+      "REQ-QUIC-RFC9000-S5P2P3-0002",
+      "REQ-QUIC-RFC9000-S5P2P3-0004"
+    ],
+    "stale_requirement_refs_found": [],
+    "notes": "Current tests carry the imported IDs for the wire-level pieces in scope; no stale requirement refs were found under src/Incursa.Quic."
+  },
+  "status_summary": {
+    "implemented_and_tested": 6,
+    "implemented_but_missing_tests": 0,
+    "tested_but_implementation_mapping_unclear": 0,
+    "partially_implemented": 0,
+    "not_implemented": 44,
+    "unclear_or_needs_human_review": 0
+  },
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests|FullyQualifiedName~QuicFrameCodecPart4Tests|FullyQualifiedName~QuicFrameCodecPart4FuzzTests|FullyQualifiedName~QuicTransportParametersTests|FullyQualifiedName~QuicTransportParametersFuzzTests\"",
+    "passed": 62,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 162
+  },
+  "files_changed": [
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+    "specs/generated/quic/chunks/9000-05-connection-id-management.reconciliation.md",
+    "specs/generated/quic/chunks/9000-05-connection-id-management.reconciliation.json"
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0004",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicFrameCodec.cs:735-756"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs:284-306",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs:25-40"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [
+        "Added REQ-QUIC-RFC9000-S5P1P2-0004 traits to RETIRE_CONNECTION_ID frame round-trip and truncation coverage, plus the part-4 fuzz slice."
+      ],
+      "remaining_gap": null,
+      "notes": "The on-wire RETIRE_CONNECTION_ID signal is now directly traced."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0005",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicFrameCodec.cs:735-756"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs:284-306",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs:25-40"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [
+        "Added REQ-QUIC-RFC9000-S5P1P2-0005 traits to RETIRE_CONNECTION_ID frame round-trip and truncation coverage, plus the part-4 fuzz slice."
+      ],
+      "remaining_gap": null,
+      "notes": "The no-reuse request is covered at the wire format layer by the RETIRE_CONNECTION_ID frame codec."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0008",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicFrameCodec.cs:655-731"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs:157-194",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs:25-40"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [
+        "Added REQ-QUIC-RFC9000-S5P1P2-0008 traits to NEW_CONNECTION_ID frame round-trip and fuzz coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The wire-format Retire Prior To field is now directly traced."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0009",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0010",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0011",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0012",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0013",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0014",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0015",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0016",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-state or CID lifecycle manager exists in this parser/codec slice.",
+      "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0001",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicPacketParser.cs:11-21"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs:20-30",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:20-30"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": null,
+      "notes": "Trace coverage was already present from the prior pass; the packet-classification hook is still a direct match for the imported ID."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0009",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0010",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0011",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0012",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0013",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.",
+      "notes": "This section needs a connection-state machine and packet-processing orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No client-side packet association or version-selection state exists.",
+      "notes": "Client receive-path behavior is absent from the current surface."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No client-side packet association or version-selection state exists.",
+      "notes": "Client receive-path behavior is absent from the current surface."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No client-side packet association or version-selection state exists.",
+      "notes": "Client receive-path behavior is absent from the current surface."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No client-side packet association or version-selection state exists.",
+      "notes": "Client receive-path behavior is absent from the current surface."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No client-side packet association or version-selection state exists.",
+      "notes": "Client receive-path behavior is absent from the current surface."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.",
+      "notes": "The repo only exposes packet parsers/models for this area."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.",
+      "notes": "The repo only exposes packet parsers/models for this area."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.",
+      "notes": "The repo only exposes packet parsers/models for this area."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.",
+      "notes": "The repo only exposes packet parsers/models for this area."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.",
+      "notes": "The repo only exposes packet parsers/models for this area."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.",
+      "notes": "The repo only exposes packet parsers/models for this area."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.",
+      "notes": "The repo only exposes packet parsers/models for this area."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.",
+      "notes": "The repo only exposes packet parsers/models for this area."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0009",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.",
+      "notes": "The repo only exposes packet parsers/models for this area."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0010",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.",
+      "notes": "The repo only exposes packet parsers/models for this area."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P3-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No preferred-address migration or load-balancing runtime exists in this slice.",
+      "notes": "Transport-parameter wire support is present, but the migration runtime is still absent for the open clauses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P3-0002",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs:18-20,73-152,161-454",
+        "src/Incursa.Quic/QuicTransportParameters.cs:51-61"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:131-180",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:204-230",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs:42-80"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [
+        "Added REQ-QUIC-RFC9000-S5P2P3-0002 traits to preferred-address round-trip and fuzz coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The preferred_address transport parameter is encoded, parsed, and fuzzed; the remaining migration-policy clauses are tracked separately in this chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P3-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No preferred-address migration or load-balancing runtime exists in this slice.",
+      "notes": "Transport-parameter wire support is present, but the migration runtime is still absent for the open clauses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P3-0004",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs:18-20,73-152,161-454",
+        "src/Incursa.Quic/QuicTransportParameters.cs:51-61"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:23-60",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:131-180",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs:42-80"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [
+        "Added REQ-QUIC-RFC9000-S5P2P3-0004 traits to disable_active_migration format, parse, and fuzz coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "The disable_active_migration transport parameter is directly traced at the wire level."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P3-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No preferred-address migration or load-balancing runtime exists in this slice.",
+      "notes": "Transport-parameter wire support is present, but the migration runtime is still absent for the open clauses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S5P2P3-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No preferred-address migration or load-balancing runtime exists in this slice.",
+      "notes": "Transport-parameter wire support is present, but the migration runtime is still absent for the open clauses."
+    }
+  ]
+}

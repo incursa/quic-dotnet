@@ -14,10 +14,10 @@ public sealed class QuicStreamIdTests
 
     [Theory]
     [MemberData(nameof(StreamIdCases))]
-    [Trait("Requirement", "REQ-QUIC-STRM-0001")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0002")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0003")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0004")]
+    [Requirement("REQ-QUIC-STRM-0001")]
+    [Requirement("REQ-QUIC-STRM-0002")]
+    [Requirement("REQ-QUIC-STRM-0003")]
+    [Requirement("REQ-QUIC-STRM-0004")]
     [Trait("Category", "Positive")]
     public void TryParseStreamIdentifier_ExposesStreamTypeClassification(
         ulong value,
@@ -40,10 +40,10 @@ public sealed class QuicStreamIdTests
     [Theory]
     [InlineData(new byte[] { 0x40 })]
     [InlineData(new byte[] { 0x80, 0x00, 0x00 })]
-    [Trait("Requirement", "REQ-QUIC-STRM-0001")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0002")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0003")]
-    [Trait("Requirement", "REQ-QUIC-STRM-0004")]
+    [Requirement("REQ-QUIC-STRM-0001")]
+    [Requirement("REQ-QUIC-STRM-0002")]
+    [Requirement("REQ-QUIC-STRM-0003")]
+    [Requirement("REQ-QUIC-STRM-0004")]
     [Trait("Category", "Negative")]
     public void TryParseStreamIdentifier_RejectsTruncatedEncodings(byte[] encoded)
     {

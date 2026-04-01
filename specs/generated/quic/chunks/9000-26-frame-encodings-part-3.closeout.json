@@ -9,7 +9,7 @@
     "S19P10",
     "S19P11"
   ],
-  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
   "audit_result": "trace-consistent-with-partially-implemented-and-blocked-items",
   "source_artifacts": {
     "implementation_summary": {
@@ -62,7 +62,7 @@
     ]
   },
   "files_reviewed": [
-    "specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "specs/generated/quic/chunks/9000-26-frame-encodings-part-3.implementation-summary.json",
     "specs/generated/quic/chunks/9000-26-frame-encodings-part-3.reconciliation.json",
     "src/Incursa.Quic/QuicCryptoFrame.cs",

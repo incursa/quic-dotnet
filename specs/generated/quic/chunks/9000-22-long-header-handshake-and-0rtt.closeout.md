@@ -4,7 +4,7 @@
 
 - RFC: 9000
 - Section tokens: `S17P2P1`, `S17P2P2`, `S17P2P3`
-- Canonical spec: [`SPEC-QUIC-RFC9000.md`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.md)
+- Canonical spec: [`SPEC-QUIC-RFC9000.json`](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.json)
 
 ## Requirements in Scope
 

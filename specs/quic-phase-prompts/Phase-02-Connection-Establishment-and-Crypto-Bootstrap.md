@@ -3,26 +3,26 @@
 After the wire substrate is in place, build connection establishment, CID policy, version negotiation behavior, TLS carriage, transport parameters, and address/path validation.
 
 Code roots used in generated prompts:
-- .\src
+- ./src
 
 Test roots used in generated prompts:
-- .\tests
+- ./tests
 
 ## Chunk Order
 
-- $(@{ChunkId=9000-04-connection-ids-basics; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P2P3P4; Reason=Existing packet-classification and Version Negotiation parser/tests already exist, so CID basics should reconcile first.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-04-connection-ids-basics; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P2P3P4; Reason=Existing packet-classification and Version Negotiation parser/tests already exist, so CID basics should reconcile first.; Confidence=high}.Mode) — Existing packet-classification and Version Negotiation parser/tests already exist, so CID basics should reconcile first.
-- $(@{ChunkId=9000-05-connection-id-management; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P2P3P4; Reason=Connection-ID management builds on existing packet parsing and CID-related logic.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-05-connection-id-management; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P2P3P4; Reason=Connection-ID management builds on existing packet parsing and CID-related logic.; Confidence=high}.Mode) — Connection-ID management builds on existing packet parsing and CID-related logic.
-- $(@{ChunkId=9000-06-version-negotiation; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield Version Negotiation behavior layered on top of existing header parsing.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-06-version-negotiation; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield Version Negotiation behavior layered on top of existing header parsing.; Confidence=high}.Mode) — Greenfield Version Negotiation behavior layered on top of existing header parsing.
-- $(@{ChunkId=9001-01-tls-core; Rfc=9001; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9001.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield QUIC TLS and packet-protection core.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9001-01-tls-core; Rfc=9001; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9001.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield QUIC TLS and packet-protection core.; Confidence=high}.Mode) — Greenfield QUIC TLS and packet-protection core.
-- $(@{ChunkId=9000-07-handshake-properties; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield cryptographic handshake and connection-ID authentication semantics.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-07-handshake-properties; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield cryptographic handshake and connection-ID authentication semantics.; Confidence=high}.Mode) — Greenfield cryptographic handshake and connection-ID authentication semantics.
-- $(@{ChunkId=9000-08-transport-params-and-crypto-buffers; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield transport-parameter and CRYPTO buffering behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-08-transport-params-and-crypto-buffers; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield transport-parameter and CRYPTO buffering behavior.; Confidence=high}.Mode) — Greenfield transport-parameter and CRYPTO buffering behavior.
-- $(@{ChunkId=9000-09-address-validation-and-tokens; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield address-validation token and amplification-limit behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-09-address-validation-and-tokens; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield address-validation token and amplification-limit behavior.; Confidence=high}.Mode) — Greenfield address-validation token and amplification-limit behavior.
-- $(@{ChunkId=9000-10-path-validation; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield path-challenge/response behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-10-path-validation; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.md; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield path-challenge/response behavior.; Confidence=high}.Mode) — Greenfield path-challenge/response behavior.
+- $(@{ChunkId=9000-04-connection-ids-basics; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P2P3P4; Reason=Existing packet-classification and Version Negotiation parser/tests already exist, so CID basics should reconcile first.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-04-connection-ids-basics; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P2P3P4; Reason=Existing packet-classification and Version Negotiation parser/tests already exist, so CID basics should reconcile first.; Confidence=high}.Mode) — Existing packet-classification and Version Negotiation parser/tests already exist, so CID basics should reconcile first.
+- $(@{ChunkId=9000-05-connection-id-management; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P2P3P4; Reason=Connection-ID management builds on existing packet parsing and CID-related logic.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-05-connection-id-management; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P2P3P4; Reason=Connection-ID management builds on existing packet parsing and CID-related logic.; Confidence=high}.Mode) — Connection-ID management builds on existing packet parsing and CID-related logic.
+- $(@{ChunkId=9000-06-version-negotiation; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield Version Negotiation behavior layered on top of existing header parsing.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-06-version-negotiation; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield Version Negotiation behavior layered on top of existing header parsing.; Confidence=high}.Mode) — Greenfield Version Negotiation behavior layered on top of existing header parsing.
+- $(@{ChunkId=9001-01-tls-core; Rfc=9001; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9001.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield QUIC TLS and packet-protection core.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9001-01-tls-core; Rfc=9001; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9001.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield QUIC TLS and packet-protection core.; Confidence=high}.Mode) — Greenfield QUIC TLS and packet-protection core.
+- $(@{ChunkId=9000-07-handshake-properties; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield cryptographic handshake and connection-ID authentication semantics.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-07-handshake-properties; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield cryptographic handshake and connection-ID authentication semantics.; Confidence=high}.Mode) — Greenfield cryptographic handshake and connection-ID authentication semantics.
+- $(@{ChunkId=9000-08-transport-params-and-crypto-buffers; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield transport-parameter and CRYPTO buffering behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-08-transport-params-and-crypto-buffers; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield transport-parameter and CRYPTO buffering behavior.; Confidence=high}.Mode) — Greenfield transport-parameter and CRYPTO buffering behavior.
+- $(@{ChunkId=9000-09-address-validation-and-tokens; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield address-validation token and amplification-limit behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-09-address-validation-and-tokens; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield address-validation token and amplification-limit behavior.; Confidence=high}.Mode) — Greenfield address-validation token and amplification-limit behavior.
+- $(@{ChunkId=9000-10-path-validation; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield path-challenge/response behavior.; Confidence=high}.ChunkId) — mode $(@{ChunkId=9000-10-path-validation; Rfc=9000; SpecFile=./specs/requirements/quic/SPEC-QUIC-RFC9000.json; SectionTokens=System.String[]; Mode=P3P4; Reason=Greenfield path-challenge/response behavior.; Confidence=high}.Mode) — Greenfield path-challenge/response behavior.
 
 ## 9000-04-connection-ids-basics
 
 - RFC: `9000`
-- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - Section tokens: `S5, S5P1, S5P1P1`
 - Mode: `P2P3P4`
 - Confidence: `high`
@@ -43,11 +43,11 @@ Scope:
   - S5
   - S5P1
   - S5P1P1
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -133,11 +133,11 @@ Scope:
   - S5
   - S5P1
   - S5P1P1
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -213,7 +213,7 @@ Scope:
   - S5
   - S5P1
   - S5P1P1
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -248,7 +248,7 @@ Success criteria:
 ## 9000-05-connection-id-management
 
 - RFC: `9000`
-- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - Section tokens: `S5P1P2, S5P2, S5P2P1, S5P2P2, S5P2P3`
 - Mode: `P2P3P4`
 - Confidence: `high`
@@ -271,11 +271,11 @@ Scope:
   - S5P2P1
   - S5P2P2
   - S5P2P3
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -363,11 +363,11 @@ Scope:
   - S5P2P1
   - S5P2P2
   - S5P2P3
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -445,7 +445,7 @@ Scope:
   - S5P2P1
   - S5P2P2
   - S5P2P3
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -480,7 +480,7 @@ Success criteria:
 ## 9000-06-version-negotiation
 
 - RFC: `9000`
-- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - Section tokens: `S6, S6P1, S6P2, S6P3`
 - Mode: `P3P4`
 - Confidence: `high`
@@ -504,11 +504,11 @@ Scope:
   - S6P1
   - S6P2
   - S6P3
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -585,7 +585,7 @@ Scope:
   - S6P1
   - S6P2
   - S6P3
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -620,7 +620,7 @@ Success criteria:
 ## 9001-01-tls-core
 
 - RFC: `9001`
-- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9001.md`
+- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 - Section tokens: `S2, S3, S4, S5`
 - Mode: `P3P4`
 - Confidence: `high`
@@ -644,11 +644,11 @@ Scope:
   - S3
   - S4
   - S5
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9001.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9001.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -725,7 +725,7 @@ Scope:
   - S3
   - S4
   - S5
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9001.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9001.json
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -760,7 +760,7 @@ Success criteria:
 ## 9000-07-handshake-properties
 
 - RFC: `9000`
-- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - Section tokens: `S7, S7P2, S7P3`
 - Mode: `P3P4`
 - Confidence: `high`
@@ -783,11 +783,11 @@ Scope:
   - S7
   - S7P2
   - S7P3
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -863,7 +863,7 @@ Scope:
   - S7
   - S7P2
   - S7P3
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -898,7 +898,7 @@ Success criteria:
 ## 9000-08-transport-params-and-crypto-buffers
 
 - RFC: `9000`
-- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - Section tokens: `S7P4, S7P4P1, S7P4P2, S7P5`
 - Mode: `P3P4`
 - Confidence: `high`
@@ -922,11 +922,11 @@ Scope:
   - S7P4P1
   - S7P4P2
   - S7P5
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -1003,7 +1003,7 @@ Scope:
   - S7P4P1
   - S7P4P2
   - S7P5
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -1038,7 +1038,7 @@ Success criteria:
 ## 9000-09-address-validation-and-tokens
 
 - RFC: `9000`
-- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - Section tokens: `S8, S8P1, S8P1P1, S8P1P2, S8P1P3, S8P1P4`
 - Mode: `P3P4`
 - Confidence: `high`
@@ -1064,11 +1064,11 @@ Scope:
   - S8P1P2
   - S8P1P3
   - S8P1P4
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -1147,7 +1147,7 @@ Scope:
   - S8P1P2
   - S8P1P3
   - S8P1P4
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -1182,7 +1182,7 @@ Success criteria:
 ## 9000-10-path-validation
 
 - RFC: `9000`
-- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.md`
+- Spec file: `./specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - Section tokens: `S8P2, S8P2P1, S8P2P2, S8P2P3, S8P2P4`
 - Mode: `P3P4`
 - Confidence: `high`
@@ -1207,11 +1207,11 @@ Scope:
   - S8P2P2
   - S8P2P3
   - S8P2P4
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 - code_roots:
-  - .\src
+  - ./src
 - test_roots:
-  - .\tests
+  - ./tests
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
@@ -1289,7 +1289,7 @@ Scope:
   - S8P2P2
   - S8P2P3
   - S8P2P4
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.md
+- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
 
 Selection rule:
 - Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
