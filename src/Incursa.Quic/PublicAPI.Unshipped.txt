@@ -7,6 +7,7 @@ static Incursa.Quic.QuicPacketParser.TryClassifyHeaderForm(System.ReadOnlySpan<b
 static Incursa.Quic.QuicPacketParser.TryParseLongHeader(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicLongHeaderPacket header) -> bool
 static Incursa.Quic.QuicPacketParser.TryParseShortHeader(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicShortHeaderPacket header) -> bool
 static Incursa.Quic.QuicPacketParser.TryParseVersionNegotiation(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicVersionNegotiationPacket header) -> bool
+static Incursa.Quic.QuicPacketParser.TryGetPacketNumberSpace(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicPacketNumberSpace packetNumberSpace) -> bool
 Incursa.Quic.QuicLongHeaderPacket
 Incursa.Quic.QuicLongHeaderPacket.QuicLongHeaderPacket() -> void
 Incursa.Quic.QuicLongHeaderPacket.HeaderForm.get -> Incursa.Quic.QuicHeaderForm
@@ -212,6 +213,7 @@ static Incursa.Quic.QuicFrameCodec.TryParsePaddingFrame(System.ReadOnlySpan<byte
 static Incursa.Quic.QuicFrameCodec.TryFormatPaddingFrame(System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryParsePingFrame(System.ReadOnlySpan<byte> packetPayload, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatPingFrame(System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.IsAckElicitingFrameType(ulong frameType) -> bool
 static Incursa.Quic.QuicFrameCodec.TryParseAckFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicAckFrame! frame, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatAckFrame(Incursa.Quic.QuicAckFrame! frame, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryParseResetStreamFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicResetStreamFrame frame, out int bytesConsumed) -> bool

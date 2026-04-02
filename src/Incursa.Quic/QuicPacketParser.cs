@@ -108,4 +108,56 @@ public static class QuicPacketParser
             supportedVersionBytes);
         return true;
     }
+
+    /// <summary>
+    /// Maps a packet header to its packet number space when the packet uses a supported QUIC packet type.
+    /// </summary>
+    public static bool TryGetPacketNumberSpace(ReadOnlySpan<byte> packet, out QuicPacketNumberSpace packetNumberSpace)
+    {
+        packetNumberSpace = default;
+
+        if (!TryClassifyHeaderForm(packet, out QuicHeaderForm headerForm))
+        {
+            return false;
+        }
+
+        if (headerForm == QuicHeaderForm.Short)
+        {
+            if (!TryParseShortHeader(packet, out _))
+            {
+                return false;
+            }
+
+            packetNumberSpace = QuicPacketNumberSpace.ApplicationData;
+            return true;
+        }
+
+        if (!TryParseLongHeader(packet, out QuicLongHeaderPacket header)
+            || header.IsVersionNegotiation
+            || header.Version != 1)
+        {
+            return false;
+        }
+
+        return TryMapLongHeaderToPacketNumberSpace(header.LongPacketTypeBits, out packetNumberSpace);
+    }
+
+    private static bool TryMapLongHeaderToPacketNumberSpace(byte longPacketTypeBits, out QuicPacketNumberSpace packetNumberSpace)
+    {
+        switch (longPacketTypeBits)
+        {
+            case 0x00:
+                packetNumberSpace = QuicPacketNumberSpace.Initial;
+                return true;
+            case 0x01:
+                packetNumberSpace = QuicPacketNumberSpace.ApplicationData;
+                return true;
+            case 0x02:
+                packetNumberSpace = QuicPacketNumberSpace.Handshake;
+                return true;
+            default:
+                packetNumberSpace = default;
+                return false;
+        }
+    }
 }

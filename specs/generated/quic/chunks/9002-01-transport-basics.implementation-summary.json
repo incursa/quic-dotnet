@@ -1,0 +1,337 @@
+{
+  "chunk_id": "9002-01-transport-basics",
+  "rfc": "9002",
+  "section_tokens": [
+    "S2",
+    "S3"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
+  "completion_status": "partial_with_explicit_blockers",
+  "reconciliation_artifact_present": false,
+  "requirements_in_scope": {
+    "S2": 4,
+    "S3": 17,
+    "total": 21,
+    "implemented_and_tested": 9,
+    "deferred": 1,
+    "blocked": 11
+  },
+  "files_changed": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+    "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+    "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+    "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+    "specs/generated/quic/chunks/9002-01-transport-basics.implementation-summary.md",
+    "specs/generated/quic/chunks/9002-01-transport-basics.implementation-summary.json"
+  ],
+  "tests_run": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicFrameCodecTests|FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests|FullyQualifiedName~QuicAckGenerationStateTests\"",
+      "result": "78 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "result": "263 passed, 0 failed, 0 skipped"
+    }
+  ],
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9002-S2-0002",
+      "REQ-QUIC-RFC9002-S2-0003",
+      "REQ-QUIC-RFC9002-S3-0001",
+      "REQ-QUIC-RFC9002-S3-0002",
+      "REQ-QUIC-RFC9002-S3-0003",
+      "REQ-QUIC-RFC9002-S3-0004",
+      "REQ-QUIC-RFC9002-S3-0008",
+      "REQ-QUIC-RFC9002-S3-0011",
+      "REQ-QUIC-RFC9002-S3-0012",
+      "REQ-QUIC-RFC9002-S3-0017"
+    ],
+    "stale_or_wrong_refs_found": [],
+    "notes": "All scoped direct requirement refs are in tests; the scoped source files do not carry direct RFC 9002 refs, which matches the repo convention for this slice."
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0001",
+      "completion_status": "deferred",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Prose-only BCP 14 interpretation rule with no executable behavior in this slice.",
+      "notes": "Applies to reading the RFC text rather than runtime packet processing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The frame classifier treats ACK, PADDING, and CONNECTION_CLOSE as non-ack-eliciting and marks the remaining frame types as ack-eliciting."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay",
+        "ShouldSendAckImmediately_ForInitialAndHandshakePackets",
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay",
+        "TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The existing ACK-generation helper already records processed packets and emits ACK frames promptly for ack-eliciting traffic; this chunk added the RFC 9002 trace refs and verified the round-trip behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0004",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs send, loss, and discard tracking to define in-flight packets.",
+      "notes": "The repository still lacks the sender/recovery surfaces required to classify packets in flight."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0001",
+      "completion_status": "blocked",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "TryParseShortHeader_PreservesOpaqueRemainder"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs"
+      ],
+      "remaining_gap": "Needs a transmit/composer surface to prove emitted packets always carry packet-level headers; the current refs only cover header parsing and modeling.",
+      "notes": "The packet-header models and parser tests exist, but there is no packet emission pipeline in this slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
+        "TryGetPacketNumberSpace_MapsSupportedHeaderFormsToSpaces",
+        "TryGetPacketNumberSpace_RejectsVersionNegotiationAndRetryPackets"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The new packet-parser helper maps the supported header forms to the correct packet-number space and rejects version negotiation and Retry packets."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
+        "TryParseShortHeader_PreservesOpaqueRemainder"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The packet-header tests assert that packet-number length bits are preserved in both long and short header representations."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryGetPacketNumberSpace_MapsSupportedHeaderFormsToSpaces",
+        "TryGetPacketNumberSpace_RejectsVersionNegotiationAndRetryPackets",
+        "PacketNumberSpaces_AreTrackedIndependently"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The packet parser now resolves the packet-number space from the header form and long-header packet type, and the ACK-generation tests verify that spaces stay independent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0005",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs sender-side packet-number allocation state.",
+      "notes": "No packet sender exists in this slice to enforce reuse prevention."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0006",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs sender-side packet-number sequencing.",
+      "notes": "The repository still lacks the send-path packet-number allocator."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0007",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs sender-side packet-number gap policy.",
+      "notes": "Intentional packet-number gaps are a send-path decision that is not modeled here."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0008",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The frame codec and tests demonstrate that a packet payload can contain multiple frame types in sequence."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0009",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs retransmission and loss-detection policy.",
+      "notes": "Reliable delivery requires sender-side recovery logic that is not present yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0010",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs retransmission-in-new-packets logic.",
+      "notes": "There is no packet sender or recovery loop to move retransmissions into fresh packets."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0011",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay",
+        "TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK-generation helper emits ACK frames for the packets it has recorded, and the tests round-trip the generated frames through the codec."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0012",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK-generation helper delays ACKs for non-ack-eliciting traffic and only sends them with ack-eliciting packets or when max_ack_delay expires."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0013",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs CRYPTO-aware ACK timer shortening.",
+      "notes": "The current helper only models generic ACK timing and does not inspect CRYPTO-specific long-header behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0014",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs congestion-control accounting for non-ACK packets.",
+      "notes": "No congestion-control surface exists to count packets toward limits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0015",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs in-flight accounting for non-ACK packets.",
+      "notes": "The sender/recovery path that would maintain packets-in-flight state is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0016",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs bytes-in-flight accounting for PADDING.",
+      "notes": "There is no bytes-in-flight or congestion accounting surface to update."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0017",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "PADDING is classified as non-ack-eliciting, so it does not directly trigger ACK emission."
+    }
+  ]
+}

@@ -3,6 +3,8 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicShortHeaderPacketTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S3-0001")]
+    [Requirement("REQ-QUIC-RFC9002-S3-0003")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0004")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0005")]

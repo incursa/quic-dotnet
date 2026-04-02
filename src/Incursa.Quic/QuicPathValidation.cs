@@ -1,4 +1,6 @@
+using System.Buffers.Binary;
 using System.Security.Cryptography;
+using System.Threading;
 
 namespace Incursa.Quic;
 
@@ -7,13 +9,15 @@ namespace Incursa.Quic;
 /// </summary>
 public static class QuicPathValidation
 {
+    private static int pathChallengeSequence;
+
     /// <summary>
     /// The number of payload bytes used by PATH_CHALLENGE and PATH_RESPONSE frames.
     /// </summary>
     public const int PathChallengeDataLength = 8;
 
     /// <summary>
-    /// Fills an 8-byte PATH_CHALLENGE payload using cryptographically unpredictable data.
+    /// Fills an 8-byte PATH_CHALLENGE payload using fresh entropy and a monotonic nonce so successive calls differ.
     /// </summary>
     public static bool TryGeneratePathChallengeData(Span<byte> destination, out int bytesWritten)
     {
@@ -25,6 +29,9 @@ public static class QuicPathValidation
         }
 
         RandomNumberGenerator.Fill(destination[..PathChallengeDataLength]);
+        BinaryPrimitives.WriteUInt32BigEndian(
+            destination[..sizeof(uint)],
+            unchecked((uint)Interlocked.Increment(ref pathChallengeSequence)));
         bytesWritten = PathChallengeDataLength;
         return true;
     }

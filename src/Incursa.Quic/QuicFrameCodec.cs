@@ -9,6 +9,7 @@ public static class QuicFrameCodec
     private const ulong PingFrameType = 0x01;
     private const ulong AckFrameType = 0x02;
     private const ulong AckEcnFrameType = 0x03;
+    private const ulong ConnectionCloseFrameType = 0x1C;
     private const ulong ResetStreamFrameType = 0x04;
     private const ulong StopSendingFrameType = 0x05;
     private const ulong CryptoFrameType = 0x06;
@@ -62,6 +63,17 @@ public static class QuicFrameCodec
     public static bool TryFormatPingFrame(Span<byte> destination, out int bytesWritten)
     {
         return TryWriteFixedType(PingFrameType, destination, out bytesWritten);
+    }
+
+    /// <summary>
+    /// Determines whether the specified frame type should elicit an acknowledgment.
+    /// </summary>
+    public static bool IsAckElicitingFrameType(ulong frameType)
+    {
+        return frameType != PaddingFrameType
+            && frameType != AckFrameType
+            && frameType != AckEcnFrameType
+            && frameType != ConnectionCloseFrameType;
     }
 
     /// <summary>
