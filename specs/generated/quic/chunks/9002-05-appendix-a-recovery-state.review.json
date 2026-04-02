@@ -1,0 +1,128 @@
+{
+  "chunk_id": "9002-05-appendix-a-recovery-state",
+  "rfc": "9002",
+  "section_tokens": [
+    "SAP1",
+    "SAP1P1",
+    "SAP2",
+    "SAP4",
+    "SAP5",
+    "SAP6",
+    "SAP7",
+    "SAP8",
+    "SAP9",
+    "SAP10",
+    "SAP11"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
+  "review_result": "split_this_appendix_chunk",
+  "recommendation": "split this appendix chunk into a smaller executable subset",
+  "counts": {
+    "total_in_scope": 49,
+    "move_now": 23,
+    "defer": 26,
+    "retained_overlap": 1
+  },
+  "move_now": {
+    "requirement_ids": [
+      "REQ-QUIC-RFC9002-SAP2-0001",
+      "REQ-QUIC-RFC9002-SAP2-0002",
+      "REQ-QUIC-RFC9002-SAP2-0003",
+      "REQ-QUIC-RFC9002-SAP2-0004",
+      "REQ-QUIC-RFC9002-SAP2-0005",
+      "REQ-QUIC-RFC9002-SAP7-0001",
+      "REQ-QUIC-RFC9002-SAP7-0002",
+      "REQ-QUIC-RFC9002-SAP7-0003",
+      "REQ-QUIC-RFC9002-SAP7-0004",
+      "REQ-QUIC-RFC9002-SAP7-0005",
+      "REQ-QUIC-RFC9002-SAP7-0006",
+      "REQ-QUIC-RFC9002-SAP7-0007",
+      "REQ-QUIC-RFC9002-SAP7-0008",
+      "REQ-QUIC-RFC9002-SAP7-0009",
+      "REQ-QUIC-RFC9002-SAP8-0001",
+      "REQ-QUIC-RFC9002-SAP8-0002",
+      "REQ-QUIC-RFC9002-SAP8-0003",
+      "REQ-QUIC-RFC9002-SAP8-0004",
+      "REQ-QUIC-RFC9002-SAP8-0006",
+      "REQ-QUIC-RFC9002-SAP10-0001",
+      "REQ-QUIC-RFC9002-SAP10-0002",
+      "REQ-QUIC-RFC9002-SAP10-0003",
+      "REQ-QUIC-RFC9002-SAP10-0004"
+    ],
+    "notes": [
+      "These clauses already map to the helper-backed surfaces in `QuicRttEstimator`, `QuicRecoveryTiming`, `QuicAckGenerationState`, and `QuicCongestionControlState`.",
+      "They are appendix restatements of behavior that already has direct unit-test coverage."
+    ]
+  },
+  "defer": {
+    "requirement_ids": [
+      "REQ-QUIC-RFC9002-SAP1-0001",
+      "REQ-QUIC-RFC9002-SAP1-0002",
+      "REQ-QUIC-RFC9002-SAP1-0003",
+      "REQ-QUIC-RFC9002-SAP1-0004",
+      "REQ-QUIC-RFC9002-SAP1-0005",
+      "REQ-QUIC-RFC9002-SAP1-0006",
+      "REQ-QUIC-RFC9002-SAP1P1-0001",
+      "REQ-QUIC-RFC9002-SAP1P1-0002",
+      "REQ-QUIC-RFC9002-SAP1P1-0003",
+      "REQ-QUIC-RFC9002-SAP1P1-0004",
+      "REQ-QUIC-RFC9002-SAP1P1-0005",
+      "REQ-QUIC-RFC9002-SAP4-0001",
+      "REQ-QUIC-RFC9002-SAP5-0001",
+      "REQ-QUIC-RFC9002-SAP5-0002",
+      "REQ-QUIC-RFC9002-SAP5-0003",
+      "REQ-QUIC-RFC9002-SAP6-0001",
+      "REQ-QUIC-RFC9002-SAP6-0002",
+      "REQ-QUIC-RFC9002-SAP8-0005",
+      "REQ-QUIC-RFC9002-SAP9-0001",
+      "REQ-QUIC-RFC9002-SAP9-0002",
+      "REQ-QUIC-RFC9002-SAP9-0003",
+      "REQ-QUIC-RFC9002-SAP9-0004",
+      "REQ-QUIC-RFC9002-SAP9-0005",
+      "REQ-QUIC-RFC9002-SAP11-0001",
+      "REQ-QUIC-RFC9002-SAP11-0002",
+      "REQ-QUIC-RFC9002-SAP11-0003"
+    ],
+    "notes": [
+      "These clauses still need the sender/recovery runtime layer that owns packet records, timer ownership, probe sending, and key-discard cleanup.",
+      "The address-validation and anti-amplification helpers exist, but `SAP8-0005` still needs end-to-end PTO arming and validation orchestration.",
+      "The appendices for packet tracking and send bookkeeping are not yet anchored to a connection-owned runtime surface."
+    ]
+  },
+  "retained_overlap": {
+    "requirement_ids": [
+      "REQ-QUIC-RFC9002-SAP11-0003"
+    ],
+    "overlap_with": [
+      "REQ-QUIC-RFC9002-SBP9-0003"
+    ],
+    "notes": [
+      "Keep this clause split from Appendix B so the duplicate implementation work stays visible."
+    ]
+  },
+  "existing_code_touchpoints": [
+    "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "src/Incursa.Quic/QuicRttEstimator.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "src/Incursa.Quic/QuicIdleTimeoutState.cs",
+    "src/Incursa.Quic/QuicAddressValidation.cs",
+    "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
+    "src/Incursa.Quic/QuicPathValidation.cs"
+  ],
+  "existing_test_touchpoints": [
+    "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+    "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+    "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+    "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+    "tests/Incursa.Quic.Tests/QuicIdleTimeoutStateTests.cs",
+    "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+    "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
+    "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+  ],
+  "rationale": [
+    "The helper-backed appendix clauses already have direct code and unit-test coverage.",
+    "The deferred clauses require a fuller connection-owned recovery runtime rather than more helper math.",
+    "The only explicitly retained appendix overlap in the generated reports is `REQ-QUIC-RFC9002-SAP11-0003` / `REQ-QUIC-RFC9002-SBP9-0003`."
+  ]
+}
