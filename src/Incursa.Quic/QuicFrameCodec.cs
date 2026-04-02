@@ -11,6 +11,7 @@ public static class QuicFrameCodec
     private const ulong AckEcnFrameType = 0x03;
     private const ulong ConnectionCloseFrameType = 0x1C;
     private const ulong ApplicationConnectionCloseFrameType = 0x1D;
+    private const ulong HandshakeDoneFrameType = 0x1E;
     private const ulong ResetStreamFrameType = 0x04;
     private const ulong StopSendingFrameType = 0x05;
     private const ulong CryptoFrameType = 0x06;
@@ -412,6 +413,32 @@ public static class QuicFrameCodec
         frame.ReasonPhrase.CopyTo(destination[index..]);
         bytesWritten = index + frame.ReasonPhrase.Length;
         return true;
+    }
+
+    /// <summary>
+    /// Parses a HANDSHAKE_DONE frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseHandshakeDoneFrame(ReadOnlySpan<byte> packetPayload, out QuicHandshakeDoneFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!TryParseFixedType(packetPayload, HandshakeDoneFrameType, out int index))
+        {
+            return false;
+        }
+
+        frame = default;
+        bytesConsumed = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a HANDSHAKE_DONE frame.
+    /// </summary>
+    public static bool TryFormatHandshakeDoneFrame(QuicHandshakeDoneFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        return TryWriteFixedType(HandshakeDoneFrameType, destination, out bytesWritten);
     }
 
     /// <summary>

@@ -27,6 +27,14 @@ public readonly ref struct QuicConnectionCloseFrame
     }
 
     /// <summary>
+    /// Initializes a transport CONNECTION_CLOSE frame view using a known QUIC transport error code.
+    /// </summary>
+    public QuicConnectionCloseFrame(QuicTransportErrorCode errorCode, ulong triggeringFrameType, ReadOnlySpan<byte> reasonPhrase)
+        : this(isApplicationError: false, (ulong)errorCode, triggeringFrameType, reasonPhrase)
+    {
+    }
+
+    /// <summary>
     /// Initializes a CONNECTION_CLOSE frame view.
     /// </summary>
     private QuicConnectionCloseFrame(

@@ -96,6 +96,11 @@ internal static class QuicFrameTestData
         return bytes.ToArray();
     }
 
+    public static byte[] BuildHandshakeDoneFrame()
+    {
+        return [0x1E];
+    }
+
     public static byte[] BuildCryptoFrame(QuicCryptoFrame frame)
     {
         List<byte> bytes = [];

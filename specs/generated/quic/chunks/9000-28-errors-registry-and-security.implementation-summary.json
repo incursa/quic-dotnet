@@ -1,0 +1,1079 @@
+[
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0001",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0002",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0003",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0004",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0005",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0006",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0007",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0008",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0009",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0010",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0011",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0012",
+    "completion_status": "intentionally deferred",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "helper layer does not resolve unknown-vs-known triggering frame semantics",
+    "notes": "The frame codec carries the triggering frame type as supplied by the caller; it does not infer an unknown frame type and substitute the zero code on behalf of higher-level endpoint policy."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0013",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0014",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0015",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0016",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0017",
+    "completion_status": "intentionally deferred",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "raw reason-phrase bytes are preserved without UTF-8 validation",
+    "notes": "The repository stores CONNECTION_CLOSE reason phrases as byte spans and round-trips them, but it does not currently validate or normalize UTF-8 content."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0018",
+    "completion_status": "blocked by technical dependency",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "packet-number-space and 0-RTT/1-RTT send policy are not modeled here",
+    "notes": "The helper layer does not yet expose the connection-state and epoch tracking needed to enforce when the application-specific CONNECTION_CLOSE variant may be sent."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0019",
+    "completion_status": "blocked by technical dependency",
+    "files_changed": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "handshake-lifecycle state is not modeled here",
+    "notes": "The repository does not yet have the endpoint handshake state machine needed to decide when an application may abandon the connection with APPLICATION_ERROR during Initial or Handshake."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P20-0001",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Added HANDSHAKE_DONE frame carrier and codec helpers, with positive, negative, and fuzz coverage."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P20-0002",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Added HANDSHAKE_DONE frame carrier and codec helpers, with positive, negative, and fuzz coverage."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P20-0003",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Added HANDSHAKE_DONE frame carrier and codec helpers, with positive, negative, and fuzz coverage."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P20-0004",
+    "completion_status": "blocked by technical dependency",
+    "files_changed": [
+      "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "server role, handshake-completion tracking, and protocol-violation handling are missing",
+    "notes": "The current repository has the frame codec, but not the endpoint state machine needed to enforce who may send HANDSHAKE_DONE, when it may be sent, and how the peer reacts on receipt."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P20-0005",
+    "completion_status": "blocked by technical dependency",
+    "files_changed": [
+      "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "server role, handshake-completion tracking, and protocol-violation handling are missing",
+    "notes": "The current repository has the frame codec, but not the endpoint state machine needed to enforce who may send HANDSHAKE_DONE, when it may be sent, and how the peer reacts on receipt."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P20-0006",
+    "completion_status": "blocked by technical dependency",
+    "files_changed": [
+      "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "server role, handshake-completion tracking, and protocol-violation handling are missing",
+    "notes": "The current repository has the frame codec, but not the endpoint state machine needed to enforce who may send HANDSHAKE_DONE, when it may be sent, and how the peer reacts on receipt."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0001",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "extension-frame negotiation and registry policy are not modeled in this slice",
+    "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0002",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "extension-frame negotiation and registry policy are not modeled in this slice",
+    "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0003",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "extension-frame negotiation and registry policy are not modeled in this slice",
+    "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0004",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "extension-frame negotiation and registry policy are not modeled in this slice",
+    "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0005",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "extension-frame negotiation and registry policy are not modeled in this slice",
+    "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0006",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "extension-frame negotiation and registry policy are not modeled in this slice",
+    "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0007",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "extension-frame negotiation and registry policy are not modeled in this slice",
+    "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0008",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "extension-frame negotiation and registry policy are not modeled in this slice",
+    "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0009",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "extension-frame negotiation and registry policy are not modeled in this slice",
+    "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0010",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "extension-frame negotiation and registry policy are not modeled in this slice",
+    "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0011",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "extension-frame negotiation and registry policy are not modeled in this slice",
+    "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S20P1-0001",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicTransportErrorCode.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Added the RFC 9000 transport-error-code registry enum and covered the standard values with direct tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S20P1-0002",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicTransportErrorCode.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Added the RFC 9000 transport-error-code registry enum and covered the standard values with direct tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S20P1-0003",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicTransportErrorCode.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Added the RFC 9000 transport-error-code registry enum and covered the standard values with direct tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S20P1-0004",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicTransportErrorCode.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Added the RFC 9000 transport-error-code registry enum and covered the standard values with direct tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S20P1-0005",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicTransportErrorCode.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Added the RFC 9000 transport-error-code registry enum and covered the standard values with direct tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S20P1-0006",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicTransportErrorCode.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Added the RFC 9000 transport-error-code registry enum and covered the standard values with direct tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S20P1-0007",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicTransportErrorCode.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Added the RFC 9000 transport-error-code registry enum and covered the standard values with direct tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S20P1-0008",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "src/Incursa.Quic/QuicTransportErrorCode.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Added the RFC 9000 transport-error-code registry enum and covered the standard values with direct tests."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S20P2-0001",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Application-protocol error-code usage is already represented by the RESET_STREAM, STOP_SENDING, and application CONNECTION_CLOSE helpers, and is now tagged in-scope."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P10-0001",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "duplicate-packet race handling is not modeled by the current packet-processing helpers",
+    "notes": "The helper layer does not yet implement receiver-side duplicate-discard policy or the timing controls needed to explore this attack surface."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P11-0001",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "stateless-reset deployment policy is not modeled as a cluster or topology abstraction",
+    "notes": "The repository already has stateless-reset helpers, but it does not express the multi-instance deployment policy needed to prove these security requirements end to end."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P11-0002",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "stateless-reset deployment policy is not modeled as a cluster or topology abstraction",
+    "notes": "The repository already has stateless-reset helpers, but it does not express the multi-instance deployment policy needed to prove these security requirements end to end."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P12-0001",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Version-negotiation helpers already keep downgrade-prevention mechanisms out of the packet format and are now tagged with direct requirement refs."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P12-0002",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "future-version downgrade-prevention mechanisms are out of scope for the RFC 9000-specific helper surface",
+    "notes": "This requirement explicitly speaks about future QUIC versions, so it is not actionable inside the RFC 9000 version-negotiation helpers in this repository."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P1P1P1-0001",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Existing address-validation and anti-amplification helpers were retained and tagged with direct requirement refs."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P1P1P1-0002",
+    "completion_status": "implemented and tested",
+    "files_changed": [
+      "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+    ],
+    "tests_covering_requirement": [
+      "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+    ],
+    "remaining_gap": "none",
+    "notes": "Existing address-validation and anti-amplification helpers were retained and tagged with direct requirement refs."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P2-0001",
+    "completion_status": "blocked by technical dependency",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "connection-scoped authentication and path-state machinery are not present",
+    "notes": "These requirements depend on a connection-state machine that can compare authenticated packets, track handshake progress, and suppress address changes during the handshake."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P2-0002",
+    "completion_status": "blocked by technical dependency",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "connection-scoped authentication and path-state machinery are not present",
+    "notes": "These requirements depend on a connection-state machine that can compare authenticated packets, track handshake progress, and suppress address changes during the handshake."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P3-0001",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "deployment hardening policy is not expressed as code in this repository slice",
+    "notes": "This is a mitigation recommendation rather than a wire-format helper behavior; it remains out of scope until the repo has deployment-policy surfaces."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P4-0001",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "packet-number-skipping telemetry/heuristics are not modeled here",
+    "notes": "The current codebase does not have a send-path abstraction that could deliberately skip packet numbers as a forgery-detection heuristic."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P5-0001",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "request-forgery mitigation policy is deployment-specific and not represented by the helper layer",
+    "notes": "These are guidance requirements for deployment posture and future extension design; the repository currently has no policy surface to enforce them."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P5-0002",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "request-forgery mitigation policy is deployment-specific and not represented by the helper layer",
+    "notes": "These are guidance requirements for deployment posture and future extension design; the repository currently has no policy surface to enforce them."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P5-0003",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "request-forgery mitigation policy is deployment-specific and not represented by the helper layer",
+    "notes": "These are guidance requirements for deployment posture and future extension design; the repository currently has no policy surface to enforce them."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P5P3-0001",
+    "completion_status": "blocked by technical dependency",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "preferred-address migration and packet-classification logic are missing",
+    "notes": "The helper layer does not yet have the connection migration state needed to distinguish probing from non-probing traffic to a preferred address."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0001",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "these are address-selection and deployment-policy recommendations, not codec or parser behavior",
+    "notes": "The current repository does not carry endpoint deployment rules for loopback handling, NAT port avoidance, or problematic connection-ID pattern selection."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0002",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "these are address-selection and deployment-policy recommendations, not codec or parser behavior",
+    "notes": "The current repository does not carry endpoint deployment rules for loopback handling, NAT port avoidance, or problematic connection-ID pattern selection."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0003",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "these are address-selection and deployment-policy recommendations, not codec or parser behavior",
+    "notes": "The current repository does not carry endpoint deployment rules for loopback handling, NAT port avoidance, or problematic connection-ID pattern selection."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0004",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "these are address-selection and deployment-policy recommendations, not codec or parser behavior",
+    "notes": "The current repository does not carry endpoint deployment rules for loopback handling, NAT port avoidance, or problematic connection-ID pattern selection."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0005",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "these are address-selection and deployment-policy recommendations, not codec or parser behavior",
+    "notes": "The current repository does not carry endpoint deployment rules for loopback handling, NAT port avoidance, or problematic connection-ID pattern selection."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0006",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "these are address-selection and deployment-policy recommendations, not codec or parser behavior",
+    "notes": "The current repository does not carry endpoint deployment rules for loopback handling, NAT port avoidance, or problematic connection-ID pattern selection."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P6-0001",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "slowloris mitigation is a deployment/accept-path concern outside the current helper slice",
+    "notes": "The repo does not yet implement the connection-accept or request-admission surface needed to enforce slowloris countermeasures."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P7-0001",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "stream-fragmentation mitigation needs the missing stream-state layer",
+    "notes": "This requirement depends on stream lifecycle and buffering behavior that are not yet modeled in the current repository slice."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P9-0001",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "cost-accounting and abuse-response policy are not yet represented in code",
+    "notes": "The repository does not have the protocol-cost tracking or packet-drop policy surface described by these guidance requirements."
+  },
+  {
+    "requirement_id": "REQ-QUIC-RFC9000-S21P9-0002",
+    "completion_status": "intentionally deferred",
+    "files_changed": [],
+    "tests_covering_requirement": [],
+    "direct_refs_added_or_updated": [],
+    "remaining_gap": "cost-accounting and abuse-response policy are not yet represented in code",
+    "notes": "The repository does not have the protocol-cost tracking or packet-drop policy surface described by these guidance requirements."
+  }
+]
