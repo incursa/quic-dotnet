@@ -75,6 +75,16 @@ Incursa.Quic.QuicAntiAmplificationBudget.MarkAddressValidated() -> void
 Incursa.Quic.QuicAntiAmplificationBudget.TryRegisterReceivedDatagramPayloadBytes(int payloadBytes, bool uniquelyAttributedToSingleConnection) -> bool
 Incursa.Quic.QuicAntiAmplificationBudget.CanSend(int payloadBytes) -> bool
 Incursa.Quic.QuicAntiAmplificationBudget.TryConsumeSendBudget(int payloadBytes) -> bool
+Incursa.Quic.QuicIdleTimeoutState
+Incursa.Quic.QuicIdleTimeoutState.QuicIdleTimeoutState(ulong effectiveIdleTimeoutMicros) -> void
+Incursa.Quic.QuicIdleTimeoutState.EffectiveIdleTimeoutMicros.get -> ulong
+Incursa.Quic.QuicIdleTimeoutState.IdleTimerRestartAtMicros.get -> ulong
+Incursa.Quic.QuicIdleTimeoutState.IdleTimeoutDeadlineMicros.get -> ulong
+Incursa.Quic.QuicIdleTimeoutState.HasAckElicitingPacketBeenSentSinceLastPeerPacket.get -> bool
+static Incursa.Quic.QuicIdleTimeoutState.TryComputeEffectiveIdleTimeoutMicros(ulong? localMaxIdleTimeoutMicros, ulong? peerMaxIdleTimeoutMicros, ulong currentProbeTimeoutMicros, out ulong effectiveIdleTimeoutMicros) -> bool
+Incursa.Quic.QuicIdleTimeoutState.RecordPeerPacketProcessed(ulong receivedAtMicros) -> void
+Incursa.Quic.QuicIdleTimeoutState.RecordAckElicitingPacketSent(ulong sentAtMicros) -> void
+Incursa.Quic.QuicIdleTimeoutState.HasTimedOut(ulong nowMicros) -> bool
 Incursa.Quic.QuicVariableLengthInteger
 const Incursa.Quic.QuicVariableLengthInteger.MaxValue = 4611686018427387903 -> ulong
 static Incursa.Quic.QuicVariableLengthInteger.TryParse(System.ReadOnlySpan<byte> encoded, out ulong value, out int bytesConsumed) -> bool
