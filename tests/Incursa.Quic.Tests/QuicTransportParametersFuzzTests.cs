@@ -3,6 +3,7 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicTransportParametersFuzzTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9001-S8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S18-0002")]
     [Requirement("REQ-QUIC-RFC9000-S18-0003")]
     [Requirement("REQ-QUIC-RFC9000-S18-0004")]

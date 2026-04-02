@@ -424,6 +424,10 @@ Incursa.Quic.QuicTransportParameters.InitialSourceConnectionId.set -> void
 Incursa.Quic.QuicTransportParameters.RetrySourceConnectionId.get -> byte[]?
 Incursa.Quic.QuicTransportParameters.RetrySourceConnectionId.set -> void
 Incursa.Quic.QuicTransportParametersCodec
+const Incursa.Quic.QuicTransportParametersCodec.QuicTransportParametersExtensionType = 57 -> ushort
+const Incursa.Quic.QuicTransportParametersCodec.QuicTransportParametersRecommended = true -> bool
+const Incursa.Quic.QuicTransportParametersCodec.QuicTransportParametersClientHello = true -> bool
+const Incursa.Quic.QuicTransportParametersCodec.QuicTransportParametersEncryptedExtensions = true -> bool
 static Incursa.Quic.QuicTransportParametersCodec.TryParseTransportParameters(System.ReadOnlySpan<byte> encoded, Incursa.Quic.QuicTransportParameterRole receiverRole, out Incursa.Quic.QuicTransportParameters! parameters) -> bool
 static Incursa.Quic.QuicTransportParametersCodec.TryFormatTransportParameters(Incursa.Quic.QuicTransportParameters! parameters, Incursa.Quic.QuicTransportParameterRole senderRole, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicTransportParametersCodec.TryValidateConnectionIdBindings(Incursa.Quic.QuicTransportParameterRole receiverRole, System.ReadOnlySpan<byte> initialDestinationConnectionId, System.ReadOnlySpan<byte> initialSourceConnectionId, bool usedRetry, System.ReadOnlySpan<byte> retrySourceConnectionId, Incursa.Quic.QuicTransportParameters! peerParameters, out Incursa.Quic.QuicConnectionIdBindingValidationError validationError) -> bool
