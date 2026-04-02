@@ -16,6 +16,8 @@ public sealed class QuicAckGenerationStateTests
     [Requirement("REQ-QUIC-RFC9002-S2-0003")]
     [Requirement("REQ-QUIC-RFC9002-S3-0011")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S9P4-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S9P4-0006")]
     [Trait("Category", "Positive")]
     public void TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay()
     {
