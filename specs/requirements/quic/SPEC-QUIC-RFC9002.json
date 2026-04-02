@@ -16,6 +16,12 @@
       "id": "REQ-QUIC-RFC9002-S2-0001",
       "title": "Interpret all-caps BCP 14 keywords",
       "statement": "The key words in this document MUST be interpreted as described in BCP 14 when, and only when, they appear in all capitals.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -36,6 +42,12 @@
       "id": "REQ-QUIC-RFC9002-S2-0002",
       "title": "Classify non-control frames as ack-eliciting",
       "statement": "Frames other than ACK, PADDING, and CONNECTION_CLOSE MUST be treated as ack-eliciting.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -56,6 +68,12 @@
       "id": "REQ-QUIC-RFC9002-S2-0003",
       "title": "Acknowledge ack-eliciting packets promptly",
       "statement": "Packets that contain ack-eliciting frames MUST elicit an ACK from the receiver within the maximum acknowledgment delay.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -76,6 +94,12 @@
       "id": "REQ-QUIC-RFC9002-S2-0004",
       "title": "Define packets in flight",
       "statement": "Packets MUST be considered in flight when they are ack-eliciting or contain a PADDING frame and have been sent but are not yet acknowledged, declared lost, or discarded along with old keys.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -96,6 +120,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0001",
       "title": "Attach packet-level headers to transmissions",
       "statement": "QUIC transmissions MUST be sent with a packet-level header.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -116,6 +146,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0002",
       "title": "Indicate encryption level in packet headers",
       "statement": "The packet-level header MUST indicate the encryption level.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -136,6 +172,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0003",
       "title": "Carry packet numbers in packet headers",
       "statement": "The packet-level header MUST include a packet sequence number.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -156,6 +198,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0004",
       "title": "Map encryption level to packet number space",
       "statement": "The encryption level MUST indicate the packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -176,6 +224,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0005",
       "title": "Prohibit packet number reuse",
       "statement": "Packet numbers MUST NOT repeat within a packet number space for the lifetime of a connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -196,6 +250,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0006",
       "title": "Send packet numbers monotonically",
       "statement": "Packet numbers MUST be sent in monotonically increasing order within a space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -216,6 +276,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0007",
       "title": "Allow intentional packet number gaps",
       "statement": "Some packet numbers MAY never be used, leaving intentional gaps.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -236,6 +302,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0008",
       "title": "Permit mixed frame types per packet",
       "statement": "QUIC packets MAY contain multiple frames of different types.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -256,6 +328,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0009",
       "title": "Ensure reliable delivery outcome",
       "statement": "Data and frames that need reliable delivery MUST be acknowledged or declared lost.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -276,6 +354,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0010",
       "title": "Allow retransmission in new packets",
       "statement": "Data and frames that need reliable delivery MUST be sent in new packets as necessary.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -296,6 +380,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0011",
       "title": "Acknowledge all packets",
       "statement": "All packets MUST be acknowledged.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -316,6 +406,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0012",
       "title": "Delay acknowledgment for non-ack-eliciting packets",
       "statement": "Packets that contain no ack-eliciting frames MUST be acknowledged only along with ack-eliciting packets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -336,6 +432,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0013",
       "title": "Shorten CRYPTO acknowledgment timers",
       "statement": "Long header packets that contain CRYPTO frames MUST use shorter timers for acknowledgment.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -356,6 +458,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0014",
       "title": "Count non-ACK packets toward congestion limits",
       "statement": "Packets containing frames besides ACK or CONNECTION_CLOSE MUST count toward congestion control limits.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -376,6 +484,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0015",
       "title": "Treat non-ACK packets as in flight",
       "statement": "Packets containing frames besides ACK or CONNECTION_CLOSE MUST be considered in flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -396,6 +510,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0016",
       "title": "Count PADDING toward bytes in flight",
       "statement": "Packets containing PADDING frames MUST contribute toward bytes in flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -416,6 +536,12 @@
       "id": "REQ-QUIC-RFC9002-S3-0017",
       "title": "Suppress direct ACKs for PADDING",
       "statement": "PADDING frames MUST NOT directly cause an acknowledgment to be sent.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -436,6 +562,12 @@
       "id": "REQ-QUIC-RFC9002-S5-0001",
       "title": "Compute RTT path values",
       "statement": "An endpoint MUST compute min_rtt, smoothed_rtt, and rttvar for each path.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -456,6 +588,12 @@
       "id": "REQ-QUIC-RFC9002-S5P1-0001",
       "title": "Gate RTT sample generation",
       "statement": "An endpoint MUST generate an RTT sample on receiving an ACK frame only if the largest acknowledged packet number is newly acknowledged and at least one newly acknowledged packet was ack-eliciting.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -478,6 +616,12 @@
       "id": "REQ-QUIC-RFC9002-S5P1-0002",
       "title": "Measure latest RTT from the largest acknowledged packet",
       "statement": "latest_rtt MUST equal the time elapsed between when the largest acknowledged packet was sent and when the corresponding ACK was received.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -499,6 +643,12 @@
       "id": "REQ-QUIC-RFC9002-S5P1-0003",
       "title": "Use only the largest acknowledged packet",
       "statement": "An RTT sample MUST use only the largest acknowledged packet in the received ACK frame.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -519,6 +669,12 @@
       "id": "REQ-QUIC-RFC9002-S5P1-0004",
       "title": "Skip duplicate RTT updates",
       "statement": "An ACK frame SHOULD NOT be used to update RTT estimates if it does not newly acknowledge the largest acknowledged packet.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -539,6 +695,12 @@
       "id": "REQ-QUIC-RFC9002-S5P1-0005",
       "title": "Require ack-eliciting progress",
       "statement": "An RTT sample MUST NOT be generated on receiving an ACK frame that does not newly acknowledge at least one ack-eliciting packet.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -559,6 +721,12 @@
       "id": "REQ-QUIC-RFC9002-S5P2-0001",
       "title": "Initialize min_rtt from the first sample",
       "statement": "min_rtt MUST be set to latest_rtt on the first RTT sample.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -579,6 +747,12 @@
       "id": "REQ-QUIC-RFC9002-S5P2-0002",
       "title": "Update min_rtt on later samples",
       "statement": "On all RTT samples after the first, min_rtt MUST be set to the lesser of min_rtt and latest_rtt.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -599,6 +773,12 @@
       "id": "REQ-QUIC-RFC9002-S5P2-0003",
       "title": "Compute min_rtt from local observations",
       "statement": "An endpoint MUST use only locally observed times when computing min_rtt.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -619,6 +799,12 @@
       "id": "REQ-QUIC-RFC9002-S5P2-0004",
       "title": "Ignore peer delay in min_rtt",
       "statement": "An endpoint MUST NOT adjust min_rtt for acknowledgment delays reported by the peer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -639,6 +825,12 @@
       "id": "REQ-QUIC-RFC9002-S5P2-0005",
       "title": "Refresh min_rtt after persistent congestion",
       "statement": "Endpoints SHOULD set min_rtt to the newest RTT sample after persistent congestion is established.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -659,6 +851,12 @@
       "id": "REQ-QUIC-RFC9002-S5P2-0006",
       "title": "Allow opportunistic min_rtt reestablishment",
       "statement": "Endpoints MAY reestablish min_rtt at other times in the connection, such as when traffic volume is low and an acknowledgment is received with a low acknowledgment delay.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -679,6 +877,12 @@
       "id": "REQ-QUIC-RFC9002-S5P2-0007",
       "title": "Avoid over-refreshing min_rtt",
       "statement": "Implementations SHOULD NOT refresh the min_rtt value too often.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -699,6 +903,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0001",
       "title": "Use adjusted RTT samples for smoothed RTT",
       "statement": "The calculation of smoothed_rtt MUST use RTT samples after adjusting them for acknowledgment delays.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -719,6 +929,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0002",
       "title": "Ignore max_ack_delay before handshake confirmation",
       "statement": "The endpoint SHOULD ignore max_ack_delay until the handshake is confirmed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -741,6 +957,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0003",
       "title": "Allow dropping some adjusted samples",
       "statement": "Before handshake confirmation, an endpoint MAY ignore an RTT sample if adjusting the sample for acknowledgment delay would make it smaller than min_rtt.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -761,6 +983,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0004",
       "title": "Subtract local decryption delay",
       "statement": "When acknowledgment processing is postponed because the corresponding decryption keys are not immediately available, an endpoint SHOULD subtract that local delay from its RTT sample until the handshake is confirmed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -782,6 +1010,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0005",
       "title": "Initialize the RTT estimator at connection start",
       "statement": "An endpoint MUST initialize the RTT estimator during connection establishment and when the estimator is reset during connection migration.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -802,6 +1036,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0006",
       "title": "Seed new-path RTT estimation with the initial RTT",
       "statement": "Before any RTT samples are available for a new path, or when the estimator is reset, the RTT estimator MUST be initialized using the initial RTT.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -822,6 +1062,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0007",
       "title": "Initialize smoothed RTT and variation",
       "statement": "When the RTT estimator is initialized, `smoothed_rtt` MUST be set to `kInitialRtt` and `rttvar` to `kInitialRtt / 2`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -843,6 +1089,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0008",
       "title": "Reset the estimator on the first post-init sample",
       "statement": "On the first RTT sample after initialization, `smoothed_rtt` MUST be set to `latest_rtt` and `rttvar` to `latest_rtt / 2`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -864,6 +1116,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0009",
       "title": "Clamp ACK delay after handshake confirmation",
       "statement": "After the handshake is confirmed, an endpoint MUST use the lesser of the acknowledgment delay and the peer's max_ack_delay.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -884,6 +1142,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0010",
       "title": "Update RTT estimates on subsequent samples",
       "statement": "On subsequent RTT samples, an endpoint MUST set adjusted_rtt to latest_rtt - ack_delay when latest_rtt is at least min_rtt + ack_delay and otherwise set adjusted_rtt to latest_rtt, then update smoothed_rtt to 7/8 of its prior value plus 1/8 of adjusted_rtt and update rttvar to 3/4 of its prior value plus 1/4 of abs(smoothed_rtt - adjusted_rtt).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -905,6 +1169,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0011",
       "title": "Ignore ACK delay for Initial packets",
       "statement": "An endpoint MAY ignore the acknowledgment delay for Initial packets.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -925,6 +1195,12 @@
       "id": "REQ-QUIC-RFC9002-S5P3-0012",
       "title": "Bound adjusted RTT by min_rtt",
       "statement": "An endpoint MUST NOT subtract the acknowledgment delay from the RTT sample if the resulting value would be smaller than min_rtt.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -945,6 +1221,12 @@
       "id": "REQ-QUIC-RFC9002-S6-0001",
       "title": "Separate loss detection by packet number space",
       "statement": "Loss detection MUST be separate per packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -965,6 +1247,12 @@
       "id": "REQ-QUIC-RFC9002-S6P1-0001",
       "title": "Declare loss only for packets that satisfy the basic loss criteria",
       "statement": "A packet MUST be unacknowledged, in flight, and sent before an acknowledged packet before it can be declared lost.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -986,6 +1274,12 @@
       "id": "REQ-QUIC-RFC9002-S6P1-0002",
       "title": "Allow smaller initial reordering thresholds with adaptation",
       "statement": "Implementations with adaptive time thresholds MAY start with smaller initial reordering thresholds to minimize recovery latency.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1006,6 +1300,12 @@
       "id": "REQ-QUIC-RFC9002-S6P1P1-0001",
       "title": "Recommend a packet threshold of three",
       "statement": "The packet reordering threshold SHOULD be 3.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1026,6 +1326,12 @@
       "id": "REQ-QUIC-RFC9002-S6P1P1-0002",
       "title": "Avoid packet thresholds below three",
       "statement": "Implementations SHOULD NOT use a packet threshold less than 3.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1046,6 +1352,12 @@
       "id": "REQ-QUIC-RFC9002-S6P1P2-0001",
       "title": "Declare earlier packets lost after sufficient time",
       "statement": "Once a later packet within the same packet number space has been acknowledged, an endpoint SHOULD declare an earlier packet lost if it was sent a threshold amount of time in the past.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1066,6 +1378,12 @@
       "id": "REQ-QUIC-RFC9002-S6P1P2-0002",
       "title": "Bound the time threshold by timer granularity",
       "statement": "To avoid declaring packets lost too early, the time threshold MUST be at least the local timer granularity.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1086,6 +1404,12 @@
       "id": "REQ-QUIC-RFC9002-S6P1P2-0003",
       "title": "Compute the time threshold from RTT and granularity",
       "statement": "The time threshold MUST be max(kTimeThreshold * max(smoothed_rtt, latest_rtt), kGranularity).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1107,6 +1431,12 @@
       "id": "REQ-QUIC-RFC9002-S6P1P2-0004",
       "title": "Schedule a timer for the remaining time before declaring loss",
       "statement": "If packets sent prior to the largest acknowledged packet cannot yet be declared lost, a timer SHOULD be set for the remaining time.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1127,6 +1457,12 @@
       "id": "REQ-QUIC-RFC9002-S6P1P2-0005",
       "title": "Use the recommended packet-threshold multiplier",
       "statement": "The RECOMMENDED time threshold multiplier, kTimeThreshold, SHOULD be 9/8.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1147,6 +1483,12 @@
       "id": "REQ-QUIC-RFC9002-S6P1P2-0006",
       "title": "Use a one-millisecond timer granularity",
       "statement": "The RECOMMENDED timer granularity, kGranularity, SHOULD be 1 millisecond.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1167,6 +1509,12 @@
       "id": "REQ-QUIC-RFC9002-S6P1P2-0007",
       "title": "Allow alternative time-threshold experiments",
       "statement": "Implementations MAY experiment with absolute thresholds, thresholds from previous connections, adaptive thresholds, or RTT variation.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1187,6 +1535,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2-0001",
       "title": "Send probe datagrams on PTO expiration or address-validation uncertainty",
       "statement": "A Probe Timeout (PTO) MUST trigger the sending of one or two probe datagrams when ack-eliciting packets are not acknowledged within the expected period of time or when the server may not have validated the client's address.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1207,6 +1561,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2-0002",
       "title": "Compute PTO per packet number space",
       "statement": "The PTO MUST be computed separately for each packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1228,6 +1588,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2-0003",
       "title": "Do not infer loss from PTO expiration",
       "statement": "A PTO timer expiration MUST NOT cause prior unacknowledged packets to be marked as lost.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1248,6 +1614,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P1-0001",
       "title": "Schedule PTO after ack-eliciting transmission",
       "statement": "When an ack-eliciting packet is transmitted, the sender MUST schedule a PTO timer using PTO = smoothed_rtt + max(4*rttvar, kGranularity) + max_ack_delay.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1269,6 +1641,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P1-0002",
       "title": "Set max_ack_delay to zero for early handshake spaces",
       "statement": "When the PTO is armed for the Initial or Handshake packet number spaces, the max_ack_delay in the PTO computation MUST be set to 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1289,6 +1667,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P1-0003",
       "title": "Keep PTO above granularity",
       "statement": "The PTO period MUST be at least kGranularity.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1309,6 +1693,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P1-0004",
       "title": "Use the earlier PTO across Initial and Handshake spaces",
       "statement": "When ack-eliciting packets in multiple packet number spaces are in flight, the PTO timer MUST be set to the earlier value of the Initial and Handshake packet number spaces.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1329,6 +1719,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P1-0005",
       "title": "Defer application-data PTO until handshake confirmation",
       "statement": "An endpoint MUST NOT set its PTO timer for the Application Data packet number space until the handshake is confirmed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1349,6 +1745,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P1-0006",
       "title": "Restart PTO on send, acknowledgment, or key discard",
       "statement": "A sender SHOULD restart its PTO timer every time an ack-eliciting packet is sent or acknowledged, or when Initial or Handshake keys are discarded.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1369,6 +1771,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P1-0007",
       "title": "Increase PTO backoff on timeout",
       "statement": "When a PTO timer expires, the PTO backoff MUST be increased, which doubles the PTO period.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1389,6 +1797,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P1-0008",
       "title": "Reset PTO backoff on acknowledgment",
       "statement": "The PTO backoff factor MUST be reset when an acknowledgment is received.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1409,6 +1823,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P1-0009",
       "title": "Suppress PTO-backoff reset on unvalidated Initial acknowledgments",
       "statement": "A client that is not yet certain that the server has finished validating its address MUST NOT reset the PTO backoff factor on receiving acknowledgments in Initial packets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1430,6 +1850,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P1-0010",
       "title": "Avoid conflicting timers",
       "statement": "The PTO timer MUST NOT be set if a timer is set for time-threshold loss detection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1450,6 +1876,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P2-0001",
       "title": "Reuse prior-smoothed RTT on resumed connections",
       "statement": "Resumed connections over the same network MAY use the previous connection's final smoothed RTT value as the resumed connection's initial RTT.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1470,6 +1902,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P2-0002",
       "title": "Default initial RTT to 333 milliseconds",
       "statement": "When no previous RTT is available, the initial RTT SHOULD be set to 333 milliseconds.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1490,6 +1928,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P2-0003",
       "title": "Use PATH_CHALLENGE and PATH_RESPONSE timing for initial RTT",
       "statement": "A connection MAY use the delay between sending a PATH_CHALLENGE and receiving a PATH_RESPONSE to set the initial RTT for a new path.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1510,6 +1954,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P2-0004",
       "title": "Do not treat PATH_CHALLENGE/PATH_RESPONSE delay as an RTT sample",
       "statement": "That delay SHOULD NOT be considered an RTT sample.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1530,6 +1980,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P2-0005",
       "title": "Reset timers when keys are discarded",
       "statement": "When Initial or Handshake keys are discarded, the PTO and loss detection timers MUST be reset.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1550,6 +2006,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P2P1-0001",
       "title": "Delay server PTO until address validation traffic arrives",
       "statement": "If no additional data can be sent, the server's PTO timer MUST NOT be armed until datagrams have been received from the client.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1570,6 +2032,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P2P1-0002",
       "title": "Reset the server PTO when the client sends data",
       "statement": "When the server receives a datagram from the client, the amplification limit increases and the server MUST reset the PTO timer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1590,6 +2058,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P2P1-0003",
       "title": "Fire a past-due PTO immediately",
       "statement": "If the PTO timer is then set to a time in the past, it MUST be executed immediately.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1610,6 +2084,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P2P1-0004",
       "title": "Arm the client PTO before handshake confirmation",
       "statement": "The client MUST set the PTO timer if it has not received an acknowledgment for any of its Handshake packets and the handshake is not confirmed, even if there are no packets in flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1630,6 +2110,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P2P1-0005",
       "title": "Send Handshake probes when keys are available",
       "statement": "When the PTO fires, the client MUST send a Handshake packet if it has Handshake keys.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1650,6 +2136,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P2P1-0006",
       "title": "Send Initial probes otherwise",
       "statement": "When the PTO fires and the client does not have Handshake keys, it MUST send an Initial packet in a UDP datagram with a payload of at least 1200 bytes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1670,6 +2162,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P3-0001",
       "title": "Permit early CRYPTO probes for handshake speedup",
       "statement": "To speed up handshake completion under these conditions, an endpoint MAY, for a limited number of times per connection, send a packet containing unacknowledged CRYPTO data earlier than PTO expiry, subject to the address-validation limits.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1690,6 +2188,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P4-0001",
       "title": "Probe with at least one ack-eliciting packet",
       "statement": "When a PTO timer expires, a sender MUST send at least one ack-eliciting packet in the packet number space as a probe.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1710,6 +2214,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P4-0002",
       "title": "Allow two full-sized PTO datagrams",
       "statement": "An endpoint MAY send up to two full-sized datagrams containing ack-eliciting packets to avoid an expensive consecutive PTO expiration due to a single lost datagram or to transmit data from multiple packet number spaces.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1730,6 +2240,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P4-0003",
       "title": "Keep PTO probe packets ack-eliciting",
       "statement": "All probe packets sent on a PTO MUST be ack-eliciting.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1750,6 +2266,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P4-0004",
       "title": "Use other packet number spaces for PTO probes",
       "statement": "In addition to sending data in the packet number space for which the timer expired, the sender SHOULD send ack-eliciting packets from other packet number spaces with in-flight data, coalescing packets if possible.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1770,6 +2292,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P4-0005",
       "title": "Include new data in PTO probes",
       "statement": "An endpoint SHOULD include new data in packets that are sent on PTO expiration.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1790,6 +2318,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P4-0006",
       "title": "Allow previously sent data in PTO probes",
       "statement": "Previously sent data MAY be sent if no new data can be sent.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1810,6 +2344,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P4-0007",
       "title": "Allow alternative probe-content strategies",
       "statement": "Implementations MAY use alternative strategies for determining the content of probe packets, including sending new or retransmitted data based on the application's priorities.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1830,6 +2370,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P4-0008",
       "title": "Send a PING when no probe data exists",
       "statement": "When there is no data to send, the sender SHOULD send a PING or other ack-eliciting frame in a single packet, rearming the PTO timer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1850,6 +2396,12 @@
       "id": "REQ-QUIC-RFC9002-S6P2P4-0009",
       "title": "Allow declaring in-flight packets lost instead of probing",
       "statement": "Instead of sending an ack-eliciting packet, the sender MAY mark any packets still in flight as lost.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1870,6 +2422,12 @@
       "id": "REQ-QUIC-RFC9002-S6P3-0001",
       "title": "Reject Retry as an acknowledgment",
       "statement": "A Retry packet MUST NOT be treated as an acknowledgment.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1890,6 +2448,12 @@
       "id": "REQ-QUIC-RFC9002-S6P3-0002",
       "title": "Reset recovery and congestion state on Retry",
       "statement": "Clients that receive a Retry packet MUST reset congestion control and loss recovery state, including any pending timers.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1910,6 +2474,12 @@
       "id": "REQ-QUIC-RFC9002-S6P3-0003",
       "title": "Retain cryptographic handshake state across Retry",
       "statement": "Clients MUST retain other connection state, in particular cryptographic handshake messages.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1930,6 +2500,12 @@
       "id": "REQ-QUIC-RFC9002-S6P3-0004",
       "title": "Permit RTT estimation from Retry timing",
       "statement": "The client MAY compute an RTT estimate to the server as the time period from when the first Initial packet was sent to when a Retry or Version Negotiation packet is received.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1950,6 +2526,12 @@
       "id": "REQ-QUIC-RFC9002-S6P3-0005",
       "title": "Allow using Retry-derived RTT as the initial RTT",
       "statement": "The client MAY use this value in place of its default for the initial RTT estimate.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1970,6 +2552,12 @@
       "id": "REQ-QUIC-RFC9002-S6P4-0001",
       "title": "Discard recovery state when protection keys go away",
       "statement": "The sender MUST discard all recovery state associated with packets sent with discarded Initial or Handshake keys.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -1990,6 +2578,12 @@
       "id": "REQ-QUIC-RFC9002-S6P4-0002",
       "title": "Remove discarded packets from bytes in flight",
       "statement": "The sender MUST remove those packets from the count of bytes in flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2010,6 +2604,12 @@
       "id": "REQ-QUIC-RFC9002-S6P4-0003",
       "title": "Discard recovery state for rejected 0-RTT packets",
       "statement": "An endpoint MUST discard recovery state for all in-flight 0-RTT packets when 0-RTT is rejected.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2030,6 +2630,12 @@
       "id": "REQ-QUIC-RFC9002-S6P4-0004",
       "title": "Discard secrets as soon as the replacement keys exist",
       "statement": "Initial and Handshake secrets MUST be discarded as soon as Handshake and 1-RTT keys are proven to be available to both client and server.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2050,6 +2656,12 @@
       "id": "REQ-QUIC-RFC9002-S7-0001",
       "title": "Require alternate controllers to obey RFC 8085",
       "statement": "If a sender uses a different controller than the one specified in this document, the chosen controller MUST conform to the congestion-control guidelines in Section 3.1 of RFC 8085.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2070,6 +2682,12 @@
       "id": "REQ-QUIC-RFC9002-S7-0002",
       "title": "Exclude ACK-only packets from bytes in flight",
       "statement": "Packets containing only ACK frames MUST NOT count toward bytes in flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2090,6 +2708,12 @@
       "id": "REQ-QUIC-RFC9002-S7-0003",
       "title": "Exclude ACK-only packets from congestion control",
       "statement": "Packets containing only ACK frames MUST NOT be congestion controlled.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2110,6 +2734,12 @@
       "id": "REQ-QUIC-RFC9002-S7-0004",
       "title": "Allow ACK-only loss signals to influence control",
       "statement": "QUIC MAY use loss of ACK-only packets to adjust the congestion controller or the rate of ACK-only packets being sent.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2130,6 +2760,12 @@
       "id": "REQ-QUIC-RFC9002-S7-0005",
       "title": "Keep congestion control per path",
       "statement": "The congestion controller MUST be per path, so packets sent on other paths do not alter the current path's congestion controller.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2150,6 +2786,12 @@
       "id": "REQ-QUIC-RFC9002-S7-0006",
       "title": "Respect the bytes-in-flight ceiling",
       "statement": "An endpoint MUST NOT send a packet if it would cause bytes_in_flight to be larger than the congestion window, unless the packet is sent on a PTO timer expiration or when entering recovery.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2170,6 +2812,12 @@
       "id": "REQ-QUIC-RFC9002-S7P1-0001",
       "title": "Treat ECN CE as congestion on validated paths",
       "statement": "If a path has been validated to support ECN, QUIC MUST treat a CE codepoint in the IP header as a signal of congestion.",
+      "coverage": {
+        "positive": "required",
+        "negative": "not_applicable",
+        "edge": "not_applicable",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2190,6 +2838,12 @@
       "id": "REQ-QUIC-RFC9002-S7P2-0001",
       "title": "Start each connection in slow start",
       "statement": "QUIC MUST begin every connection in slow start with the congestion window set to an initial value.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2210,6 +2864,12 @@
       "id": "REQ-QUIC-RFC9002-S7P2-0002",
       "title": "Recommend the initial congestion window",
       "statement": "Endpoints SHOULD use an initial congestion window of ten times the maximum datagram size while limiting the window to the larger of 14,720 bytes or twice the maximum datagram size.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2230,6 +2890,12 @@
       "id": "REQ-QUIC-RFC9002-S7P2-0003",
       "title": "Recompute the initial window when datagram size changes",
       "statement": "If the maximum datagram size changes during the connection, the initial congestion window SHOULD be recalculated with the new size.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2250,6 +2916,12 @@
       "id": "REQ-QUIC-RFC9002-S7P2-0004",
       "title": "Reset the initial window after handshake-driven MTU reduction",
       "statement": "If the maximum datagram size is decreased in order to complete the handshake, the congestion window SHOULD be set to the new initial congestion window.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2270,6 +2942,12 @@
       "id": "REQ-QUIC-RFC9002-S7P2-0005",
       "title": "Recommend a two-packet minimum congestion window",
       "statement": "The minimum congestion window SHOULD be 2 * max_datagram_size.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2290,6 +2968,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P1-0001",
       "title": "Enter recovery on loss or ECN-CE increase",
       "statement": "A sender MUST enter a recovery period when it detects packet loss or when the ECN-CE count reported by its peer increases.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2314,6 +2998,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P1-0002",
       "title": "Enter slow start when the window is below threshold",
       "statement": "A NewReno sender MUST be considered in slow start any time the congestion window is below the slow start threshold.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2334,6 +3024,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P1-0003",
       "title": "Increase cwnd by acknowledged bytes in slow start",
       "statement": "While a sender is in slow start, the congestion window MUST increase by the number of bytes acknowledged when each acknowledgment is processed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2354,6 +3050,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P2-0001",
       "title": "Stay in recovery once entered",
       "statement": "A sender that is already in a recovery period MUST stay in that recovery period.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2374,6 +3076,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P2-0002",
       "title": "Do not reenter recovery while already there",
       "statement": "A sender that is already in a recovery period MUST NOT reenter it.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2394,6 +3102,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P2-0003",
       "title": "Cut the slow start threshold on recovery entry",
       "statement": "On entering a recovery period, a sender MUST set the slow start threshold to half the congestion window when loss is detected.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2414,6 +3128,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P2-0004",
       "title": "Restore congestion window before leaving recovery",
       "statement": "The congestion window MUST be set to the reduced value of the slow start threshold before exiting the recovery period.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2434,6 +3154,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P2-0005",
       "title": "Permit gentler recovery-window reduction",
       "statement": "Implementations MAY reduce the congestion window immediately upon entering a recovery period or use other mechanisms, such as Proportional Rate Reduction, to reduce the congestion window more gradually.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2454,6 +3180,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P2-0006",
       "title": "Hold the congestion window steady during recovery",
       "statement": "During a recovery period, the congestion window MUST NOT change in response to new losses or increases in the ECN-CE count.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2474,6 +3206,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P2-0007",
       "title": "Leave recovery when a recovery-period packet is acknowledged",
       "statement": "A recovery period MUST end and the sender enter congestion avoidance when a packet sent during the recovery period is acknowledged.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2494,6 +3232,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P3-0001",
       "title": "Remain in congestion avoidance only while the window is above the threshold",
       "statement": "A NewReno sender MUST be considered in congestion avoidance any time the congestion window is at or above the slow start threshold and not in a recovery period.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2514,6 +3258,12 @@
       "id": "REQ-QUIC-RFC9002-S7P3P3-0002",
       "title": "Limit congestion-avoidance growth to one datagram per acknowledged window",
       "statement": "A sender in congestion avoidance MUST limit the increase to the congestion window to at most one maximum datagram size for each congestion window that is acknowledged.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2534,6 +3284,12 @@
       "id": "REQ-QUIC-RFC9002-S7P4-0001",
       "title": "Ignore undecryptable packet loss before keys are available",
       "statement": "Endpoints MAY ignore the loss of Handshake, 0-RTT, and 1-RTT packets that might have arrived before the peer had packet protection keys to process those packets.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2554,6 +3310,12 @@
       "id": "REQ-QUIC-RFC9002-S7P4-0002",
       "title": "Do not ignore later packet loss",
       "statement": "Endpoints MUST NOT ignore the loss of packets that were sent after the earliest acknowledged packet in a given packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2574,6 +3336,12 @@
       "id": "REQ-QUIC-RFC9002-S7P5-0001",
       "title": "Do not block probe packets with congestion control",
       "statement": "Probe packets MUST NOT be blocked by the congestion controller.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2594,6 +3362,12 @@
       "id": "REQ-QUIC-RFC9002-S7P5-0002",
       "title": "Count probe packets as additional flight",
       "statement": "A sender MUST count these packets as being additionally in flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2614,6 +3388,12 @@
       "id": "REQ-QUIC-RFC9002-S7P6-0001",
       "title": "Declare persistent congestion when all long-duration packets are lost",
       "statement": "When a sender establishes loss of all packets sent over a long enough duration, the network MUST be considered to be experiencing persistent congestion.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2634,6 +3414,12 @@
       "id": "REQ-QUIC-RFC9002-S7P6P1-0001",
       "title": "Compute persistent congestion duration from RTT and max_ack_delay",
       "statement": "The persistent congestion duration MUST be computed as (smoothed_rtt + max(4*rttvar, kGranularity) + max_ack_delay) * kPersistentCongestionThreshold.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2655,6 +3441,12 @@
       "id": "REQ-QUIC-RFC9002-S7P6P1-0002",
       "title": "Include max_ack_delay in persistent congestion duration",
       "statement": "Unlike PTO computation, this duration MUST include max_ack_delay irrespective of the packet number spaces in which losses are established.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2675,6 +3467,12 @@
       "id": "REQ-QUIC-RFC9002-S7P6P1-0003",
       "title": "Recommend a persistent congestion threshold of three",
       "statement": "The RECOMMENDED value for kPersistentCongestionThreshold SHOULD be 3.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2695,6 +3493,12 @@
       "id": "REQ-QUIC-RFC9002-S7P6P2-0001",
       "title": "Establish persistent congestion after the full loss test passes",
       "statement": "A sender MUST establish persistent congestion after receipt of an acknowledgment if two ack-eliciting packets are declared lost and the conditions in the following list are all met.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2718,6 +3522,12 @@
       "id": "REQ-QUIC-RFC9002-S7P6P2-0002",
       "title": "Require the two declared-lost packets to be ack-eliciting",
       "statement": "Those two packets MUST be ack-eliciting.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2738,6 +3548,12 @@
       "id": "REQ-QUIC-RFC9002-S7P6P2-0003",
       "title": "Delay persistent congestion until at least one RTT sample exists",
       "statement": "Persistent congestion SHOULD NOT start until there is at least one RTT sample.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2758,6 +3574,12 @@
       "id": "REQ-QUIC-RFC9002-S7P6P2-0004",
       "title": "Consider packet number spaces when declaring persistent congestion",
       "statement": "Persistent congestion SHOULD consider packets sent across packet number spaces.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2778,6 +3600,12 @@
       "id": "REQ-QUIC-RFC9002-S7P6P2-0005",
       "title": "Allow limited packet-number-space state when necessary",
       "statement": "A sender that does not have state for all packet number spaces or cannot compare send times across packet number spaces MAY use state for just the packet number space that was acknowledged.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2798,6 +3626,12 @@
       "id": "REQ-QUIC-RFC9002-S7P6P2-0006",
       "title": "Reset cwnd to the minimum on persistent congestion",
       "statement": "When persistent congestion is declared, the sender's congestion window MUST be reduced to the minimum congestion window.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2818,6 +3652,12 @@
       "id": "REQ-QUIC-RFC9002-S7P7-0001",
       "title": "Pace all in-flight packets",
       "statement": "A sender SHOULD pace sending of all in-flight packets based on input from the congestion controller.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2838,6 +3678,12 @@
       "id": "REQ-QUIC-RFC9002-S7P7-0002",
       "title": "Either pace or cap bursts",
       "statement": "Senders MUST either use pacing or limit such bursts.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2858,6 +3704,12 @@
       "id": "REQ-QUIC-RFC9002-S7P7-0003",
       "title": "Limit bursts to the initial congestion window",
       "statement": "Senders SHOULD limit bursts to the initial congestion window.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2878,6 +3730,12 @@
       "id": "REQ-QUIC-RFC9002-S7P7-0004",
       "title": "Allow larger bursts when the path can absorb them",
       "statement": "A sender with knowledge that the network path can absorb larger bursts MAY use a higher limit.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2898,6 +3756,12 @@
       "id": "REQ-QUIC-RFC9002-S7P7-0005",
       "title": "Do not pace pure ACK packets",
       "statement": "Packets containing only ACK frames SHOULD therefore not be paced.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2918,6 +3782,12 @@
       "id": "REQ-QUIC-RFC9002-S7P8-0001",
       "title": "Do not increase cwnd when underutilized",
       "statement": "When bytes in flight is smaller than the congestion window and sending is not pacing limited, the congestion window SHOULD NOT be increased in either slow start or congestion avoidance.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2938,6 +3808,12 @@
       "id": "REQ-QUIC-RFC9002-S7P8-0002",
       "title": "Do not call yourself application-limited because of pacing delay",
       "statement": "A sender SHOULD NOT consider itself application limited if it would have fully utilized the congestion window without pacing delay.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2958,6 +3834,12 @@
       "id": "REQ-QUIC-RFC9002-S7P8-0003",
       "title": "Allow alternate cwnd-updating mechanisms after underutilization",
       "statement": "A sender MAY implement alternative mechanisms to update its congestion window after periods of underutilization, such as those proposed for TCP in RFC 7661.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2978,6 +3860,12 @@
       "id": "REQ-QUIC-RFC9002-SAP1-0001",
       "title": "Track ack-eliciting packets until resolution",
       "statement": "A QUIC sender MUST track every ack-eliciting packet until the packet is acknowledged or lost.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -2998,6 +3886,12 @@
       "id": "REQ-QUIC-RFC9002-SAP1-0002",
       "title": "Index tracked packet state by packet number and crypto context",
       "statement": "Implementations MUST be able to access tracked packet information by packet number and crypto context.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3018,6 +3912,12 @@
       "id": "REQ-QUIC-RFC9002-SAP1-0003",
       "title": "Store per-packet recovery fields",
       "statement": "Implementations MUST store the per-packet fields needed for loss recovery and congestion control.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3038,6 +3938,12 @@
       "id": "REQ-QUIC-RFC9002-SAP1-0004",
       "title": "Allow retained state for lost packets",
       "statement": "An endpoint MAY retain state for a packet after it is declared lost for a limited time to allow for packet reordering.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3058,6 +3964,12 @@
       "id": "REQ-QUIC-RFC9002-SAP1-0005",
       "title": "Track sent packets per packet number space",
       "statement": "Sent packets MUST be tracked separately for each packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3078,6 +3990,12 @@
       "id": "REQ-QUIC-RFC9002-SAP1-0006",
       "title": "Limit ACK processing to one packet number space",
       "statement": "ACK processing MUST apply to a single packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3098,6 +4016,12 @@
       "id": "REQ-QUIC-RFC9002-SAP1P1-0001",
       "title": "Record packet numbers in sent-packet state",
       "statement": "The sent-packet record MUST include the packet number of the sent packet.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3118,6 +4042,12 @@
       "id": "REQ-QUIC-RFC9002-SAP1P1-0002",
       "title": "Record ACK-eliciting status in sent-packet state",
       "statement": "The sent-packet record MUST include a Boolean that indicates whether the packet is ack-eliciting.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3138,6 +4068,12 @@
       "id": "REQ-QUIC-RFC9002-SAP1P1-0003",
       "title": "Record bytes-in-flight participation in sent-packet state",
       "statement": "The sent-packet record MUST include a Boolean that indicates whether the packet counts toward bytes in flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3158,6 +4094,12 @@
       "id": "REQ-QUIC-RFC9002-SAP1P1-0004",
       "title": "Record sent bytes in sent-packet state",
       "statement": "The sent-packet record MUST include the number of bytes sent in the packet, excluding UDP and IP overhead but including QUIC framing overhead.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3178,6 +4120,12 @@
       "id": "REQ-QUIC-RFC9002-SAP1P1-0005",
       "title": "Record packet send time in sent-packet state",
       "statement": "The sent-packet record MUST include the time the packet was sent.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3198,6 +4146,12 @@
       "id": "REQ-QUIC-RFC9002-SAP2-0001",
       "title": "Use the recommended packet-threshold value",
       "statement": "kPacketThreshold SHOULD be 3.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3218,6 +4172,12 @@
       "id": "REQ-QUIC-RFC9002-SAP2-0002",
       "title": "Use the recommended time-threshold value",
       "statement": "kTimeThreshold SHOULD be 9/8.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3238,6 +4198,12 @@
       "id": "REQ-QUIC-RFC9002-SAP2-0003",
       "title": "Use the recommended timer granularity",
       "statement": "kGranularity SHOULD be 1 millisecond.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3258,6 +4224,12 @@
       "id": "REQ-QUIC-RFC9002-SAP2-0004",
       "title": "Use the recommended initial RTT",
       "statement": "kInitialRtt SHOULD be 333 milliseconds.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3278,6 +4250,12 @@
       "id": "REQ-QUIC-RFC9002-SAP2-0005",
       "title": "Enumerate the three packet number spaces",
       "statement": "The packet number space enumeration MUST include Initial, Handshake, and ApplicationData.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3299,6 +4277,12 @@
       "id": "REQ-QUIC-RFC9002-SAP4-0001",
       "title": "Initialize loss detection state at connection start",
       "statement": "At the beginning of a connection, the loss detection state MUST be initialized by resetting the loss detection timer, setting pto_count to 0, setting latest_rtt to 0, setting smoothed_rtt to kInitialRtt, setting rttvar to kInitialRtt / 2, setting min_rtt to 0, setting first_rtt_sample to 0, and initializing the per-packet-number-space tracking state.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3320,6 +4304,12 @@
       "id": "REQ-QUIC-RFC9002-SAP5-0001",
       "title": "Store packet metadata when sending",
       "statement": "When a packet is sent, the sender MUST store its packet number, send time, ack-eliciting flag, in_flight flag, and sent_bytes in sent_packets[pn_space][packet_number].",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3341,6 +4331,12 @@
       "id": "REQ-QUIC-RFC9002-SAP5-0002",
       "title": "Update last ack-eliciting send time for in-flight ack-eliciting packets",
       "statement": "When a sent packet is in flight and ack-eliciting, the sender MUST update time_of_last_ack_eliciting_packet[pn_space] to now().",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3361,6 +4357,12 @@
       "id": "REQ-QUIC-RFC9002-SAP5-0003",
       "title": "Account sent bytes and refresh the loss timer on send",
       "statement": "When a sent packet is in flight, the sender MUST account for `sent_bytes` in congestion control and set the loss detection timer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3381,6 +4383,12 @@
       "id": "REQ-QUIC-RFC9002-SAP6-0001",
       "title": "Rearm the loss detection timer when datagram receipt unblocks amplification",
       "statement": "If receiving a datagram unblocks the server from anti-amplification limits, the endpoint MUST set the loss detection timer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3402,6 +4410,12 @@
       "id": "REQ-QUIC-RFC9002-SAP6-0002",
       "title": "Process an expired timer after amplification blocking",
       "statement": "If the loss detection timer would already have expired while the anti-amplification limit was applied, the endpoint MUST process the timeout immediately.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3423,6 +4437,12 @@
       "id": "REQ-QUIC-RFC9002-SAP7-0001",
       "title": "Update the largest acknowledged packet per space",
       "statement": "When an ACK frame is received, the sender MUST update largest_acked_packet[pn_space] to the larger of its current value and ack.largest_acked.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3444,6 +4464,12 @@
       "id": "REQ-QUIC-RFC9002-SAP7-0002",
       "title": "Remove newly acknowledged packets before further ACK processing",
       "statement": "When an ACK frame is received, the sender MUST remove newly acknowledged packets from `sent_packets` and return without further action if there are no newly acknowledged packets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3464,6 +4490,12 @@
       "id": "REQ-QUIC-RFC9002-SAP7-0003",
       "title": "Update RTT only for newly acknowledged ack-eliciting packets",
       "statement": "When the largest newly acknowledged packet is ack.largest_acked and at least one newly acknowledged packet is ack-eliciting, the sender MUST update latest_rtt and then update RTT estimates using ack_delay.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3484,6 +4516,12 @@
       "id": "REQ-QUIC-RFC9002-SAP7-0004",
       "title": "Process ECN and loss state on acknowledgment",
       "statement": "When an ACK frame carries ECN information, the sender MUST process it, detect and remove newly lost packets, pass any lost packets to `OnPacketsLost`, and pass newly acknowledged packets to `OnPacketsAcked`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3504,6 +4542,12 @@
       "id": "REQ-QUIC-RFC9002-SAP7-0005",
       "title": "Reset PTO backoff after validated acknowledgment",
       "statement": "If peer address validation is complete, the sender MUST reset pto_count to 0 after processing acknowledgments.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3524,6 +4568,12 @@
       "id": "REQ-QUIC-RFC9002-SAP7-0006",
       "title": "Refresh the loss detection timer after acknowledgment processing",
       "statement": "After processing an ACK frame, the sender MUST set the loss detection timer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3544,6 +4594,12 @@
       "id": "REQ-QUIC-RFC9002-SAP7-0007",
       "title": "Initialize RTT estimation on the first sample",
       "statement": "On the first RTT sample, the endpoint MUST set min_rtt to latest_rtt, smoothed_rtt to latest_rtt, rttvar to latest_rtt / 2, and first_rtt_sample to now().",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3564,6 +4620,12 @@
       "id": "REQ-QUIC-RFC9002-SAP7-0008",
       "title": "Update min_rtt and cap ack delay after handshake confirmation",
       "statement": "On later RTT samples, the endpoint MUST update `min_rtt` to the lesser of `min_rtt` and `latest_rtt`, and after handshake confirmation cap `ack_delay` at `max_ack_delay`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3584,6 +4646,12 @@
       "id": "REQ-QUIC-RFC9002-SAP7-0009",
       "title": "Update RTT estimates from adjusted RTT samples",
       "statement": "On later RTT samples, the endpoint MUST use `latest_rtt - ack_delay` when `latest_rtt` is at least `min_rtt + ack_delay`, otherwise use `latest_rtt`, and then update `rttvar` and `smoothed_rtt` using the weighted averages in the appendix pseudocode.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3604,6 +4672,12 @@
       "id": "REQ-QUIC-RFC9002-SAP8-0001",
       "title": "Return the earliest pending loss time",
       "statement": "GetLossTimeAndSpace MUST return the earliest nonzero loss_time across the packet number spaces together with the corresponding packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3624,6 +4698,12 @@
       "id": "REQ-QUIC-RFC9002-SAP8-0002",
       "title": "Start PTO timing from now when no ack-eliciting packets are in flight",
       "statement": "If no ack-eliciting packets are in flight, GetPtoTimeAndSpace MUST start PTO timing from now() + duration and select Handshake when handshake keys exist, otherwise Initial.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3644,6 +4724,12 @@
       "id": "REQ-QUIC-RFC9002-SAP8-0003",
       "title": "Suppress Application Data PTO until handshake confirmation",
       "statement": "GetPtoTimeAndSpace MUST skip Application Data until the handshake is confirmed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3664,6 +4750,12 @@
       "id": "REQ-QUIC-RFC9002-SAP8-0004",
       "title": "Include max_ack_delay and backoff in Application Data PTO",
       "statement": "When computing Application Data PTO, the sender MUST include max_ack_delay and exponential backoff.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3684,6 +4776,12 @@
       "id": "REQ-QUIC-RFC9002-SAP8-0005",
       "title": "Complete address validation for servers and validated clients",
       "statement": "`PeerCompletedAddressValidation` MUST return true for servers and for clients only after a Handshake ACK has been received or the handshake has been confirmed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3704,6 +4802,12 @@
       "id": "REQ-QUIC-RFC9002-SAP8-0006",
       "title": "Set or cancel the loss detection timer according to loss and PTO state",
       "statement": "`SetLossDetectionTimer` MUST update the timer to the earliest pending loss time when one exists, cancel the timer when the server is at the anti-amplification limit or when no ack-eliciting packets are in flight and peer address validation is complete, and otherwise update the timer to the PTO timeout.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3724,6 +4828,12 @@
       "id": "REQ-QUIC-RFC9002-SAP9-0001",
       "title": "Handle timeout-driven loss detection first",
       "statement": "When the loss detection timer expires and an earliest loss time exists, the endpoint MUST detect lost packets in that packet number space, assert that the lost-packet list is nonempty, pass the lost packets to `OnPacketsLost`, refresh the timer, and return.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3745,6 +4855,12 @@
       "id": "REQ-QUIC-RFC9002-SAP9-0002",
       "title": "Send anti-deadlock probes when nothing is in flight",
       "statement": "When no ack-eliciting packets are in flight, the endpoint MUST send a Handshake packet if it has Handshake keys; otherwise send a padded Initial packet.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3765,6 +4881,12 @@
       "id": "REQ-QUIC-RFC9002-SAP9-0003",
       "title": "Use PTO to send data or PING probes",
       "statement": "When the timer expires because of PTO rather than loss detection, the sender MUST send new data if available, otherwise retransmit old data, and if neither is available send a single PING frame.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3785,6 +4907,12 @@
       "id": "REQ-QUIC-RFC9002-SAP9-0004",
       "title": "Probe with one or two ack-eliciting packets on PTO",
       "statement": "When PTO fires, the sender MUST send one or two ack-eliciting packets in the selected packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3805,6 +4933,12 @@
       "id": "REQ-QUIC-RFC9002-SAP9-0005",
       "title": "Increase PTO backoff after timeout handling",
       "statement": "When PTO fires, the sender MUST increment `pto_count` and refresh the loss detection timer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3825,6 +4959,12 @@
       "id": "REQ-QUIC-RFC9002-SAP10-0001",
       "title": "Require a known largest acknowledged packet for loss detection",
       "statement": "DetectAndRemoveLostPackets MUST only run when largest_acked_packet[pn_space] is known.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3846,6 +4986,12 @@
       "id": "REQ-QUIC-RFC9002-SAP10-0002",
       "title": "Compute the loss delay from RTT and timer granularity",
       "statement": "`DetectAndRemoveLostPackets` MUST compute `loss_delay` as `kTimeThreshold` times the larger of `latest_rtt` and `smoothed_rtt`, and not let `loss_delay` fall below `kGranularity`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3866,6 +5012,12 @@
       "id": "REQ-QUIC-RFC9002-SAP10-0003",
       "title": "Remove lost packets and schedule future loss marking",
       "statement": "`DetectAndRemoveLostPackets` MUST remove packets that are sufficiently old or sufficiently behind the largest acknowledged packet from `sent_packets`, report them lost, and schedule `loss_time` for packets that are not yet lost.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3886,6 +5038,12 @@
       "id": "REQ-QUIC-RFC9002-SAP10-0004",
       "title": "Skip packets beyond the largest acknowledged packet",
       "statement": "DetectAndRemoveLostPackets MUST ignore packets whose packet number is greater than largest_acked_packet[pn_space].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3906,6 +5064,12 @@
       "id": "REQ-QUIC-RFC9002-SAP11-0001",
       "title": "Discard packets in the lost space when keys are dropped",
       "statement": "When Initial or Handshake keys are discarded, the endpoint MUST discard packets in that space and update loss detection state.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3927,6 +5091,12 @@
       "id": "REQ-QUIC-RFC9002-SAP11-0002",
       "title": "Remove discarded packets from bytes in flight and sent-packet state",
       "statement": "When Initial or Handshake keys are discarded, the sender MUST remove the discarded packets from bytes in flight and clear `sent_packets` for that packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3947,6 +5117,12 @@
       "id": "REQ-QUIC-RFC9002-SAP11-0003",
       "title": "Reset timer state when keys are discarded",
       "statement": "When Initial or Handshake keys are discarded, the sender MUST reset `time_of_last_ack_eliciting_packet[pn_space]`, `loss_time[pn_space]`, and `pto_count`, and set the loss detection timer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3967,6 +5143,12 @@
       "id": "REQ-QUIC-RFC9002-SBP1-0001",
       "title": "Use the recommended loss reduction factor",
       "statement": "kLossReductionFactor SHOULD be 0.5.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -3987,6 +5169,12 @@
       "id": "REQ-QUIC-RFC9002-SBP1-0002",
       "title": "Use the recommended persistent congestion threshold",
       "statement": "kPersistentCongestionThreshold SHOULD be 3.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4007,6 +5195,12 @@
       "id": "REQ-QUIC-RFC9002-SBP2-0001",
       "title": "Set the maximum datagram size from path MTU",
       "statement": "The sender MUST set `max_datagram_size` based on its Path Maximum Transmission Unit and not use a value below 1200 bytes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4028,6 +5222,12 @@
       "id": "REQ-QUIC-RFC9002-SBP2-0002",
       "title": "Count eligible packets in bytes in flight",
       "statement": "bytes_in_flight MUST count sent packets that contain at least one ack-eliciting or PADDING frame and have not been acknowledged or declared lost.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4048,6 +5248,12 @@
       "id": "REQ-QUIC-RFC9002-SBP2-0003",
       "title": "Exclude transport overhead from bytes in flight",
       "statement": "bytes_in_flight accounting MUST exclude IP and UDP overhead but include the QUIC header and AEAD overhead.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4068,6 +5274,12 @@
       "id": "REQ-QUIC-RFC9002-SBP2-0004",
       "title": "Exclude ACK-only packets from bytes in flight",
       "statement": "Packets containing only ACK frames MUST NOT count toward bytes_in_flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4088,6 +5300,12 @@
       "id": "REQ-QUIC-RFC9002-SBP2-0005",
       "title": "Track ECN-CE counters per packet number space",
       "statement": "The sender MUST track the highest ECN-CE counter value reported by the peer for each packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4109,6 +5327,12 @@
       "id": "REQ-QUIC-RFC9002-SBP3-0001",
       "title": "Initialize congestion control state at connection start",
       "statement": "At the beginning of a connection, the congestion control state MUST be initialized by setting congestion_window to kInitialWindow, bytes_in_flight to 0, congestion_recovery_start_time to 0, ssthresh to infinite, and each ECN-CE counter to 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4130,6 +5354,12 @@
       "id": "REQ-QUIC-RFC9002-SBP4-0001",
       "title": "Increase bytes in flight when sending non-ACK packets",
       "statement": "Whenever a packet containing non-ACK frames is sent, the sender MUST increase bytes_in_flight by sent_bytes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4151,6 +5381,12 @@
       "id": "REQ-QUIC-RFC9002-SBP5-0001",
       "title": "Ignore acknowledgments for packets not in flight",
       "statement": "On packet acknowledgment, the sender MUST ignore packets that are not in flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4171,6 +5407,12 @@
       "id": "REQ-QUIC-RFC9002-SBP5-0002",
       "title": "Remove acknowledged bytes from bytes in flight",
       "statement": "On packet acknowledgment, the sender MUST subtract the packet's sent_bytes from bytes_in_flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4191,6 +5433,12 @@
       "id": "REQ-QUIC-RFC9002-SBP5-0003",
       "title": "Suppress window growth when application or flow control is limiting",
       "statement": "On packet acknowledgment, the sender MUST NOT increase congestion_window when the sender is application limited or flow-control limited.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4211,6 +5459,12 @@
       "id": "REQ-QUIC-RFC9002-SBP5-0004",
       "title": "Suppress window growth during recovery",
       "statement": "On packet acknowledgment, the sender MUST NOT increase congestion_window for packets acknowledged during a recovery period.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4231,6 +5485,12 @@
       "id": "REQ-QUIC-RFC9002-SBP5-0005",
       "title": "Grow the congestion window by acknowledged bytes in slow start",
       "statement": "While in slow start, the sender MUST increase congestion_window by the number of acknowledged bytes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4251,6 +5511,12 @@
       "id": "REQ-QUIC-RFC9002-SBP5-0006",
       "title": "Grow the congestion window proportionally in congestion avoidance",
       "statement": "While in congestion avoidance, the sender MUST increase congestion_window by max_datagram_size multiplied by the acknowledged bytes and divided by congestion_window.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4271,6 +5537,12 @@
       "id": "REQ-QUIC-RFC9002-SBP6-0001",
       "title": "Ignore congestion events while already in recovery",
       "statement": "If the sender is already in a recovery period, a new congestion event MUST have no effect.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4292,6 +5564,12 @@
       "id": "REQ-QUIC-RFC9002-SBP6-0002",
       "title": "Enter recovery and reduce the congestion window on a congestion event",
       "statement": "When a new congestion event is detected, the sender MUST set `congestion_recovery_start_time` to `now()`, set `ssthresh` to `congestion_window * kLossReductionFactor`, and set `congestion_window` to the larger of `ssthresh` and `kMinimumWindow`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4313,6 +5591,12 @@
       "id": "REQ-QUIC-RFC9002-SBP6-0003",
       "title": "Allow one extra packet to speed recovery",
       "statement": "When a new congestion event is detected, the sender MAY send one packet to speed up loss recovery.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4333,6 +5617,12 @@
       "id": "REQ-QUIC-RFC9002-SBP7-0001",
       "title": "Treat increased ECN-CE counts as congestion",
       "statement": "When the peer-reported ECN-CE counter increases, the sender MUST treat the change as a new congestion event and update the stored ECN-CE counter.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4354,6 +5644,12 @@
       "id": "REQ-QUIC-RFC9002-SBP7-0002",
       "title": "Use the largest acknowledged packet time for ECN signaling",
       "statement": "When signaling congestion from ECN information, the sender MUST use the send time of the largest acknowledged packet in the packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4374,6 +5670,12 @@
       "id": "REQ-QUIC-RFC9002-SBP8-0001",
       "title": "Remove in-flight lost packets from bytes in flight",
       "statement": "When packets are declared lost, the sender MUST remove any in-flight lost packets from bytes_in_flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4395,6 +5697,12 @@
       "id": "REQ-QUIC-RFC9002-SBP8-0002",
       "title": "Trigger congestion response on loss of in-flight packets",
       "statement": "If any in-flight packet was lost, the sender MUST invoke the congestion event logic using the latest loss send time.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4415,6 +5723,12 @@
       "id": "REQ-QUIC-RFC9002-SBP8-0003",
       "title": "Defer persistent congestion checks until an RTT sample exists",
       "statement": "The sender MUST NOT evaluate persistent congestion until first_rtt_sample is nonzero.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4435,6 +5749,12 @@
       "id": "REQ-QUIC-RFC9002-SBP8-0004",
       "title": "Limit persistent congestion checks to packets sent after the first RTT sample",
       "statement": "For persistent congestion testing, the sender MUST consider only packets sent after first_rtt_sample.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4455,6 +5775,12 @@
       "id": "REQ-QUIC-RFC9002-SBP8-0005",
       "title": "Collapse the congestion window on persistent congestion",
       "statement": "If persistent congestion is detected, the sender MUST set `congestion_window` to `kMinimumWindow` and reset `congestion_recovery_start_time` to `0`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4475,6 +5801,12 @@
       "id": "REQ-QUIC-RFC9002-SBP9-0001",
       "title": "Stop counting discarded packets in bytes in flight",
       "statement": "When Initial or Handshake keys are discarded, packets in that space MUST no longer count toward bytes_in_flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4496,6 +5828,12 @@
       "id": "REQ-QUIC-RFC9002-SBP9-0002",
       "title": "Remove discarded packets from congestion accounting",
       "statement": "When Initial or Handshake keys are discarded, the sender MUST remove the discarded packets from `bytes_in_flight` and clear `sent_packets` for that packet number space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"
@@ -4516,6 +5854,12 @@
       "id": "REQ-QUIC-RFC9002-SBP9-0003",
       "title": "Reset recovery timers after discarding keys",
       "statement": "When Initial or Handshake keys are discarded, the sender MUST reset `time_of_last_ack_eliciting_packet[pn_space]`, `loss_time[pn_space]`, and `pto_count`, and set the loss detection timer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9002-0001"

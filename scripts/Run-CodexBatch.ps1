@@ -217,6 +217,7 @@ Before you finish:
 - If you made any changes, create a local git commit for the work completed.
 - If commit signing blocks the commit, retry with --no-gpg-sign.
 - Do not leave changes uncommitted if the task was completed or partially completed with useful work.
+- Do not delete/revert logs files, result files, or the working directory, as they may be needed for later analysis.
 - If no files changed, say so explicitly in your final response.
 "@
 

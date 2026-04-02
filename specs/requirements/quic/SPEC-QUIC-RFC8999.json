@@ -16,6 +16,12 @@
       "id": "REQ-QUIC-RFC8999-S5P1-0001",
       "title": "Header Form Bit",
       "statement": "The first bit of a QUIC long header packet MUST be set to 1.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC8999-0001"
@@ -52,6 +58,12 @@
       "id": "REQ-QUIC-RFC8999-S5P1-0002",
       "title": "Version-Specific Bits",
       "statement": "The other seven bits in the first byte of a QUIC long header packet MUST be version-specific.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC8999-0001"
@@ -81,6 +93,12 @@
       "id": "REQ-QUIC-RFC8999-S5P1-0003",
       "title": "Version Field",
       "statement": "The four bytes after the first byte in a QUIC long header packet MUST contain a 32-bit Version field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC8999-0001"
@@ -115,6 +133,12 @@
       "id": "REQ-QUIC-RFC8999-S5P1-0004",
       "title": "Destination Connection ID Length Encoding",
       "statement": "The byte after the Version field MUST encode the Destination Connection ID length as an 8-bit unsigned integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC8999-0001"
@@ -150,6 +174,12 @@
       "id": "REQ-QUIC-RFC8999-S5P1-0005",
       "title": "Destination Connection ID Size",
       "statement": "The Destination Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC8999-0001"
@@ -174,6 +204,12 @@
       "id": "REQ-QUIC-RFC8999-S5P1-0006",
       "title": "Source Connection ID Length Encoding",
       "statement": "The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC8999-0001"
@@ -210,6 +246,12 @@
       "id": "REQ-QUIC-RFC8999-S5P1-0007",
       "title": "Source Connection ID Size",
       "statement": "The Source Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC8999-0001"
@@ -234,6 +276,12 @@
       "id": "REQ-QUIC-RFC8999-S5P1-0008",
       "title": "Version-Specific Remainder",
       "statement": "The remainder of a QUIC long header packet MUST contain version-specific content.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC8999-0001"
