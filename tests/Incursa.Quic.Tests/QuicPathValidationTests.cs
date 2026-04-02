@@ -77,6 +77,7 @@ public sealed class QuicPathValidationTests
     [Requirement("REQ-QUIC-RFC9000-S8P2P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S8P2P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S8P2P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S9P3P1-0001")]
     [Trait("Category", "Positive")]
     public void TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows()
     {
@@ -104,6 +105,7 @@ public sealed class QuicPathValidationTests
     [Requirement("REQ-QUIC-RFC9000-S8P2P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S8P2P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S8P2P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S9P3P1-0001")]
     [Trait("Category", "Negative")]
     public void TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded()
     {
