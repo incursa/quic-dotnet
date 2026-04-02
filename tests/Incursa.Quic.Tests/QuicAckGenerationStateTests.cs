@@ -13,6 +13,9 @@ public sealed class QuicAckGenerationStateTests
     [Requirement("REQ-QUIC-RFC9000-S13P2P5-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P5-0002")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P5-0003")]
+    [Requirement("REQ-QUIC-RFC9002-S2-0003")]
+    [Requirement("REQ-QUIC-RFC9002-S3-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0010")]
     [Trait("Category", "Positive")]
     public void TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay()
     {
@@ -57,6 +60,7 @@ public sealed class QuicAckGenerationStateTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0005")]
+    [Requirement("REQ-QUIC-RFC9002-S2-0003")]
     [Trait("Category", "Positive")]
     public void ShouldSendAckImmediately_ForInitialAndHandshakePackets()
     {
@@ -105,6 +109,8 @@ public sealed class QuicAckGenerationStateTests
     [Requirement("REQ-QUIC-RFC9000-S13P2P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0010")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0011")]
+    [Requirement("REQ-QUIC-RFC9002-S2-0003")]
+    [Requirement("REQ-QUIC-RFC9002-S3-0012")]
     [Trait("Category", "Positive")]
     public void ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay()
     {
@@ -176,6 +182,7 @@ public sealed class QuicAckGenerationStateTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P2P6-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P6-0002")]
+    [Requirement("REQ-QUIC-RFC9002-S3-0004")]
     [Trait("Category", "Positive")]
     public void PacketNumberSpaces_AreTrackedIndependently()
     {
@@ -202,6 +209,8 @@ public sealed class QuicAckGenerationStateTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0014")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P5-0005")]
+    [Requirement("REQ-QUIC-RFC9002-S3-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0010")]
     [Trait("Category", "Positive")]
     public void TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed()
     {

@@ -13,7 +13,7 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
 
 ## Open Gaps
 
-- None at the moment.
+- `9000-19-retransmission-and-frame-reliability` is split across send-path, recovery, stream-lifecycle, flow-control, path-validation, connection-ID, and congestion-control behaviors that are not present in the current helper-only transport slice. The implemented subset is limited to ACK freshness and PATH_CHALLENGE payload uniqueness; the remaining S13P3 requirements stay blocked until a sender/recovery architecture exists.
 
 ## How To Use
 

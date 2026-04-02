@@ -77,4 +77,75 @@ public sealed class QuicPacketParserTests
         Assert.Equal((expectedControlBits & 0x04) != 0, shortHeader.KeyPhase);
         Assert.Equal((byte)(expectedControlBits & 0x03), shortHeader.PacketNumberLengthBits);
     }
+
+    public static TheoryData<byte[], QuicPacketNumberSpace> PacketNumberSpaceCases => new()
+    {
+        {
+            QuicHeaderTestData.BuildShortHeader(0x24, [0xAA, 0xBB, 0xCC]),
+            QuicPacketNumberSpace.ApplicationData
+        },
+        {
+            QuicHeaderTestData.BuildLongHeader(
+                0x40,
+                1,
+                [0x11],
+                [0x22],
+                QuicHeaderTestData.BuildInitialVersionSpecificData([0xAA], [0x01], [0xBB])),
+            QuicPacketNumberSpace.Initial
+        },
+        {
+            QuicHeaderTestData.BuildLongHeader(
+                0x51,
+                1,
+                [0x11],
+                [0x22],
+                QuicHeaderTestData.BuildZeroRttVersionSpecificData([0x01], [0xBB])),
+            QuicPacketNumberSpace.ApplicationData
+        },
+        {
+            QuicHeaderTestData.BuildLongHeader(
+                0x60,
+                1,
+                [0x11],
+                [0x22],
+                QuicHeaderTestData.BuildZeroRttVersionSpecificData([0x01], [0xBB])),
+            QuicPacketNumberSpace.Handshake
+        },
+    };
+
+    [Theory]
+    [MemberData(nameof(PacketNumberSpaceCases))]
+    [Requirement("REQ-QUIC-RFC9002-S3-0002")]
+    [Requirement("REQ-QUIC-RFC9002-S3-0004")]
+    [Trait("Category", "Positive")]
+    public void TryGetPacketNumberSpace_MapsSupportedHeaderFormsToSpaces(
+        byte[] packet,
+        QuicPacketNumberSpace expectedPacketNumberSpace)
+    {
+        Assert.True(QuicPacketParser.TryGetPacketNumberSpace(packet, out QuicPacketNumberSpace packetNumberSpace));
+        Assert.Equal(expectedPacketNumberSpace, packetNumberSpace);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S3-0002")]
+    [Requirement("REQ-QUIC-RFC9002-S3-0004")]
+    [Trait("Category", "Negative")]
+    public void TryGetPacketNumberSpace_RejectsVersionNegotiationAndRetryPackets()
+    {
+        byte[] versionNegotiationPacket = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x4A,
+            destinationConnectionId: [0x11, 0x12],
+            sourceConnectionId: [0x21],
+            supportedVersions: [1, 2]);
+
+        byte[] retryPacket = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x70,
+            version: 1,
+            destinationConnectionId: [0x11],
+            sourceConnectionId: [0x22],
+            versionSpecificData: [0x33]);
+
+        Assert.False(QuicPacketParser.TryGetPacketNumberSpace(versionNegotiationPacket, out _));
+        Assert.False(QuicPacketParser.TryGetPacketNumberSpace(retryPacket, out _));
+    }
 }

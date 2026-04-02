@@ -7,6 +7,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S19P1-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P1-0006")]
+    [Requirement("REQ-QUIC-RFC9002-S3-0008")]
     [Trait("Category", "Positive")]
     public void TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame()
     {
@@ -25,6 +26,24 @@ public sealed class QuicFrameCodecTests
         Assert.Equal(1, consumedBeforePing);
         Assert.True(QuicFrameCodec.TryParsePingFrame(packetWithFollowingFrame[consumedBeforePing..], out int pingConsumed));
         Assert.Equal(1, pingConsumed);
+    }
+
+    [Theory]
+    [InlineData(0x00UL, false)]
+    [InlineData(0x01UL, true)]
+    [InlineData(0x02UL, false)]
+    [InlineData(0x03UL, false)]
+    [InlineData(0x06UL, true)]
+    [InlineData(0x07UL, true)]
+    [InlineData(0x10UL, true)]
+    [InlineData(0x1AUL, true)]
+    [InlineData(0x1CUL, false)]
+    [Requirement("REQ-QUIC-RFC9002-S2-0002")]
+    [Requirement("REQ-QUIC-RFC9002-S3-0017")]
+    [Trait("Category", "Positive")]
+    public void IsAckElicitingFrameType_ClassifiesKnownFrameTypes(ulong frameType, bool expectedAckEliciting)
+    {
+        Assert.Equal(expectedAckEliciting, QuicFrameCodec.IsAckElicitingFrameType(frameType));
     }
 
     [Fact]
@@ -76,6 +95,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S19P3-0018")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0019")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0020")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0010")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P3-0002")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P3-0012")]

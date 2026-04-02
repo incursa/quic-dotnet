@@ -5,13 +5,18 @@ public sealed class QuicPathValidationTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S8P2P1-0004")]
     [Requirement("REQ-QUIC-RFC9000-S8P2P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0027")]
     [Trait("Category", "Positive")]
-    public void TryGeneratePathChallengeData_WritesEightBytesThatRoundTripThroughTheFrameCodec()
+    public void TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec()
     {
         Span<byte> challengeData = stackalloc byte[QuicPathValidation.PathChallengeDataLength];
+        Span<byte> nextChallengeData = stackalloc byte[QuicPathValidation.PathChallengeDataLength];
 
         Assert.True(QuicPathValidation.TryGeneratePathChallengeData(challengeData, out int bytesWritten));
+        Assert.True(QuicPathValidation.TryGeneratePathChallengeData(nextChallengeData, out int nextBytesWritten));
         Assert.Equal(QuicPathValidation.PathChallengeDataLength, bytesWritten);
+        Assert.Equal(QuicPathValidation.PathChallengeDataLength, nextBytesWritten);
+        Assert.False(challengeData[..bytesWritten].SequenceEqual(nextChallengeData[..nextBytesWritten]));
 
         QuicPathChallengeFrame frame = new(challengeData[..bytesWritten]);
         Span<byte> encoded = stackalloc byte[16];
