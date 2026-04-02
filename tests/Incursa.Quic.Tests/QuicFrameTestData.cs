@@ -80,6 +80,22 @@ internal static class QuicFrameTestData
         return bytes.ToArray();
     }
 
+    public static byte[] BuildConnectionCloseFrame(QuicConnectionCloseFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(frame.FrameType));
+        bytes.AddRange(EncodeVarint(frame.ErrorCode));
+
+        if (frame.HasTriggeringFrameType)
+        {
+            bytes.AddRange(EncodeVarint(frame.TriggeringFrameType));
+        }
+
+        bytes.AddRange(EncodeVarint((ulong)frame.ReasonPhrase.Length));
+        bytes.AddRange(frame.ReasonPhrase.ToArray());
+        return bytes.ToArray();
+    }
+
     public static byte[] BuildCryptoFrame(QuicCryptoFrame frame)
     {
         List<byte> bytes = [];

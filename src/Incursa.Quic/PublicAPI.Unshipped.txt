@@ -142,6 +142,16 @@ Incursa.Quic.QuicStopSendingFrame.QuicStopSendingFrame() -> void
 Incursa.Quic.QuicStopSendingFrame.QuicStopSendingFrame(ulong streamId, ulong applicationProtocolErrorCode) -> void
 Incursa.Quic.QuicStopSendingFrame.StreamId.get -> ulong
 Incursa.Quic.QuicStopSendingFrame.ApplicationProtocolErrorCode.get -> ulong
+Incursa.Quic.QuicConnectionCloseFrame
+Incursa.Quic.QuicConnectionCloseFrame.QuicConnectionCloseFrame() -> void
+Incursa.Quic.QuicConnectionCloseFrame.QuicConnectionCloseFrame(ulong errorCode, System.ReadOnlySpan<byte> reasonPhrase) -> void
+Incursa.Quic.QuicConnectionCloseFrame.QuicConnectionCloseFrame(ulong errorCode, ulong triggeringFrameType, System.ReadOnlySpan<byte> reasonPhrase) -> void
+Incursa.Quic.QuicConnectionCloseFrame.IsApplicationError.get -> bool
+Incursa.Quic.QuicConnectionCloseFrame.FrameType.get -> byte
+Incursa.Quic.QuicConnectionCloseFrame.ErrorCode.get -> ulong
+Incursa.Quic.QuicConnectionCloseFrame.HasTriggeringFrameType.get -> bool
+Incursa.Quic.QuicConnectionCloseFrame.TriggeringFrameType.get -> ulong
+Incursa.Quic.QuicConnectionCloseFrame.ReasonPhrase.get -> System.ReadOnlySpan<byte>
 Incursa.Quic.QuicCryptoFrame
 Incursa.Quic.QuicCryptoFrame.QuicCryptoFrame() -> void
 Incursa.Quic.QuicCryptoFrame.QuicCryptoFrame(ulong offset, System.ReadOnlySpan<byte> cryptoData) -> void
@@ -246,6 +256,8 @@ static Incursa.Quic.QuicFrameCodec.TryParseResetStreamFrame(System.ReadOnlySpan<
 static Incursa.Quic.QuicFrameCodec.TryFormatResetStreamFrame(Incursa.Quic.QuicResetStreamFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryParseStopSendingFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicStopSendingFrame frame, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatStopSendingFrame(Incursa.Quic.QuicStopSendingFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseConnectionCloseFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicConnectionCloseFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatConnectionCloseFrame(Incursa.Quic.QuicConnectionCloseFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryParseCryptoFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicCryptoFrame frame, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatCryptoFrame(Incursa.Quic.QuicCryptoFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatStreamFrame(byte frameType, ulong streamId, ulong offset, System.ReadOnlySpan<byte> streamData, System.Span<byte> destination, out int bytesWritten) -> bool

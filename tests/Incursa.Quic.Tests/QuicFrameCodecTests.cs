@@ -38,6 +38,7 @@ public sealed class QuicFrameCodecTests
     [InlineData(0x10UL, true)]
     [InlineData(0x1AUL, true)]
     [InlineData(0x1CUL, false)]
+    [InlineData(0x1DUL, false)]
     [Requirement("REQ-QUIC-RFC9000-S10P1P1-0001")]
     [Requirement("REQ-QUIC-RFC9002-S2-0002")]
     [Requirement("REQ-QUIC-RFC9002-S3-0017")]

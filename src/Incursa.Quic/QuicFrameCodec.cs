@@ -10,6 +10,7 @@ public static class QuicFrameCodec
     private const ulong AckFrameType = 0x02;
     private const ulong AckEcnFrameType = 0x03;
     private const ulong ConnectionCloseFrameType = 0x1C;
+    private const ulong ApplicationConnectionCloseFrameType = 0x1D;
     private const ulong ResetStreamFrameType = 0x04;
     private const ulong StopSendingFrameType = 0x05;
     private const ulong CryptoFrameType = 0x06;
@@ -73,7 +74,8 @@ public static class QuicFrameCodec
         return frameType != PaddingFrameType
             && frameType != AckFrameType
             && frameType != AckEcnFrameType
-            && frameType != ConnectionCloseFrameType;
+            && frameType != ConnectionCloseFrameType
+            && frameType != ApplicationConnectionCloseFrameType;
     }
 
     /// <summary>
@@ -314,6 +316,101 @@ public static class QuicFrameCodec
         }
 
         bytesWritten = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Parses a CONNECTION_CLOSE frame from the start of a packet payload slice.
+    /// </summary>
+    public static bool TryParseConnectionCloseFrame(ReadOnlySpan<byte> packetPayload, out QuicConnectionCloseFrame frame, out int bytesConsumed)
+    {
+        frame = default;
+        bytesConsumed = default;
+
+        if (!QuicVariableLengthInteger.TryParse(packetPayload, out ulong frameTypeValue, out int index)
+            || index != 1
+            || (frameTypeValue != ConnectionCloseFrameType && frameTypeValue != ApplicationConnectionCloseFrameType))
+        {
+            return false;
+        }
+
+        if (!TryParseVarint(packetPayload, ref index, out ulong errorCode))
+        {
+            return false;
+        }
+
+        if (frameTypeValue == ConnectionCloseFrameType)
+        {
+            if (!TryParseVarint(packetPayload, ref index, out ulong triggeringFrameType)
+                || !TryParseVarint(packetPayload, ref index, out ulong transportReasonPhraseLength))
+            {
+                return false;
+            }
+
+            if (transportReasonPhraseLength > (ulong)(packetPayload.Length - index))
+            {
+                return false;
+            }
+
+            frame = new QuicConnectionCloseFrame(
+                errorCode,
+                triggeringFrameType,
+                packetPayload.Slice(index, (int)transportReasonPhraseLength));
+            bytesConsumed = index + (int)transportReasonPhraseLength;
+            return true;
+        }
+
+        if (!TryParseVarint(packetPayload, ref index, out ulong applicationReasonPhraseLength))
+        {
+            return false;
+        }
+
+        if (applicationReasonPhraseLength > (ulong)(packetPayload.Length - index))
+        {
+            return false;
+        }
+
+        frame = new QuicConnectionCloseFrame(
+            errorCode,
+            packetPayload.Slice(index, (int)applicationReasonPhraseLength));
+        bytesConsumed = index + (int)applicationReasonPhraseLength;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a CONNECTION_CLOSE frame.
+    /// </summary>
+    public static bool TryFormatConnectionCloseFrame(QuicConnectionCloseFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        int index = 0;
+        ulong frameType = frame.IsApplicationError ? ApplicationConnectionCloseFrameType : ConnectionCloseFrameType;
+
+        if (!TryWriteVarint(frameType, destination, ref index)
+            || !TryWriteVarint(frame.ErrorCode, destination, ref index))
+        {
+            return false;
+        }
+
+        if (!frame.IsApplicationError
+            && !TryWriteVarint(frame.TriggeringFrameType, destination, ref index))
+        {
+            return false;
+        }
+
+        if (!TryWriteVarint((ulong)frame.ReasonPhrase.Length, destination, ref index))
+        {
+            return false;
+        }
+
+        if (destination.Length < index + frame.ReasonPhrase.Length)
+        {
+            return false;
+        }
+
+        frame.ReasonPhrase.CopyTo(destination[index..]);
+        bytesWritten = index + frame.ReasonPhrase.Length;
         return true;
     }
 
