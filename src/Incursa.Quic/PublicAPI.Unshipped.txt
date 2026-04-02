@@ -300,6 +300,17 @@ Incursa.Quic.QuicPreferredAddress.ConnectionId.get -> byte[]!
 Incursa.Quic.QuicPreferredAddress.ConnectionId.set -> void
 Incursa.Quic.QuicPreferredAddress.StatelessResetToken.get -> byte[]!
 Incursa.Quic.QuicPreferredAddress.StatelessResetToken.set -> void
+Incursa.Quic.QuicRttEstimator
+const Incursa.Quic.QuicRttEstimator.DefaultInitialRttMicros = 333000 -> ulong
+Incursa.Quic.QuicRttEstimator.QuicRttEstimator(ulong initialRttMicros = 333000) -> void
+Incursa.Quic.QuicRttEstimator.InitialRttMicros.get -> ulong
+Incursa.Quic.QuicRttEstimator.MinRttMicros.get -> ulong
+Incursa.Quic.QuicRttEstimator.SmoothedRttMicros.get -> ulong
+Incursa.Quic.QuicRttEstimator.RttVarMicros.get -> ulong
+Incursa.Quic.QuicRttEstimator.HasRttSample.get -> bool
+Incursa.Quic.QuicRttEstimator.Reset() -> void
+Incursa.Quic.QuicRttEstimator.RefreshMinRttFromLatestSample(ulong latestRttMicros) -> void
+Incursa.Quic.QuicRttEstimator.TryUpdateFromAck(ulong largestAcknowledgedPacketSentAtMicros, ulong ackReceivedAtMicros, bool largestAcknowledgedPacketNewlyAcknowledged, bool newlyAcknowledgedAckElicitingPacket, ulong ackDelayMicros = 0, bool handshakeConfirmed = false, ulong peerMaxAckDelayMicros = 0, ulong localProcessingDelayMicros = 0, bool isInitialPacket = false, bool ignoreAckDelayForInitialPacket = false) -> bool
 Incursa.Quic.QuicTransportParameters
 Incursa.Quic.QuicTransportParameters.QuicTransportParameters() -> void
 Incursa.Quic.QuicTransportParameters.OriginalDestinationConnectionId.get -> byte[]?

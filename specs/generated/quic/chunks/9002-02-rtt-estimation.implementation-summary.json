@@ -1,0 +1,603 @@
+{
+  "chunk_id": "9002-02-rtt-estimation",
+  "rfc": "9002",
+  "section_tokens": [
+    "S5",
+    "S5P1",
+    "S5P2",
+    "S5P3"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
+  "completion_status": "partial_with_explicit_defer",
+  "reconciliation_artifact_present": false,
+  "requirements_in_scope": {
+    "S5": 1,
+    "S5P1": 5,
+    "S5P2": 7,
+    "S5P3": 12,
+    "total": 25,
+    "implemented_and_tested": 24,
+    "deferred": 1,
+    "blocked": 0
+  },
+  "files_changed": [
+    "benchmarks/QuicRttEstimatorBenchmarks.cs",
+    "benchmarks/README.md",
+    "src/Incursa.Quic/QuicRttEstimator.cs",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+    "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+    "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+  ],
+  "tests_run": [
+    {
+      "command": "dotnet test .\\tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicRttEstimatorTests\"",
+      "result": "7 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test .\\tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj",
+      "result": "270 passed, 0 failed, 0 skipped"
+    }
+  ],
+  "benchmark_verification": {
+    "command": "dotnet build .\\benchmarks\\Incursa.Quic.Benchmarks.csproj -c Release",
+    "result": "Succeeded"
+  },
+  "direct_requirement_refs": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9002-S5-0001",
+      "REQ-QUIC-RFC9002-S5P1-0001",
+      "REQ-QUIC-RFC9002-S5P1-0002",
+      "REQ-QUIC-RFC9002-S5P1-0003",
+      "REQ-QUIC-RFC9002-S5P1-0004",
+      "REQ-QUIC-RFC9002-S5P1-0005",
+      "REQ-QUIC-RFC9002-S5P2-0001",
+      "REQ-QUIC-RFC9002-S5P2-0002",
+      "REQ-QUIC-RFC9002-S5P2-0003",
+      "REQ-QUIC-RFC9002-S5P2-0004",
+      "REQ-QUIC-RFC9002-S5P2-0005",
+      "REQ-QUIC-RFC9002-S5P2-0006",
+      "REQ-QUIC-RFC9002-S5P3-0001",
+      "REQ-QUIC-RFC9002-S5P3-0002",
+      "REQ-QUIC-RFC9002-S5P3-0003",
+      "REQ-QUIC-RFC9002-S5P3-0004",
+      "REQ-QUIC-RFC9002-S5P3-0005",
+      "REQ-QUIC-RFC9002-S5P3-0006",
+      "REQ-QUIC-RFC9002-S5P3-0007",
+      "REQ-QUIC-RFC9002-S5P3-0008",
+      "REQ-QUIC-RFC9002-S5P3-0009",
+      "REQ-QUIC-RFC9002-S5P3-0010",
+      "REQ-QUIC-RFC9002-S5P3-0011",
+      "REQ-QUIC-RFC9002-S5P3-0012"
+    ],
+    "stale_or_wrong_refs_found": [],
+    "notes": "Direct requirement refs are attached in tests only, matching the repository convention for this slice."
+  },
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9002-S5P2-0007"
+  ],
+  "notes": [
+    "The benchmark suite now includes RTT sample processing, ACK-delay clamping, and explicit min_rtt refresh coverage, and the benchmark project builds successfully.",
+    "No reconciliation artifact existed for this chunk, so the slice was treated as greenfield.",
+    "The only deferred requirement is the cadence guidance for min_rtt refresh frequency; the estimator exposes the refresh hook but does not impose policy."
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "ConstructorAndReset_InitializeEstimatorFromTheConfiguredInitialRtt"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The estimator is path-scoped by construction, with one instance per path carrying min_rtt, smoothed_rtt, and rttvar."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_RejectsAckFramesThatDoNotQualifyForSampling"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "RTT samples are only accepted when the largest acknowledged packet is newly acknowledged and at least one newly acknowledged packet was ack-eliciting."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_SeedsTheFirstSampleFromTheLargestAcknowledgedPacket"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The sample is derived from the send/ack timestamps of the largest acknowledged packet only."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_SeedsTheFirstSampleFromTheLargestAcknowledgedPacket"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The estimator ignores the rest of the ACK frame once the largest acknowledged packet has been selected."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_RejectsAckFramesThatDoNotQualifyForSampling"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Duplicate ACK progress for the largest acknowledged packet is rejected and leaves the estimator unchanged."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_RejectsAckFramesThatDoNotQualifyForSampling"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACKs that newly acknowledge no ack-eliciting packet do not produce RTT samples."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_SeedsTheFirstSampleFromTheLargestAcknowledgedPacket"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The first accepted RTT sample seeds min_rtt from the observed latest RTT."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_UsesOnlyLocalTimesWhenUpdatingMinRttAndSubtractsLocalDelayBeforeHandshakeConfirmation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Later samples keep the lesser of the current min_rtt and the newest local RTT observation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_UsesOnlyLocalTimesWhenUpdatingMinRttAndSubtractsLocalDelayBeforeHandshakeConfirmation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The estimator computes min_rtt from locally observed times rather than peer-reported delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_UsesOnlyLocalTimesWhenUpdatingMinRttAndSubtractsLocalDelayBeforeHandshakeConfirmation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Peer acknowledgment delay is not folded into min_rtt."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "RefreshMinRttFromLatestSample_ReestablishesTheMinRttExplicitly"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The estimator exposes an explicit min_rtt refresh hook for the persistent-congestion case."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0006",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "RefreshMinRttFromLatestSample_ReestablishesTheMinRttExplicitly"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The same refresh hook can be used for opportunistic reestablishment when the caller decides it is appropriate."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0007",
+      "completion_status": "intentionally deferred",
+      "files_changed": [
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The estimator exposes an explicit refresh hook but does not enforce a connection-wide cadence policy for how often min_rtt may be refreshed.",
+      "notes": "Policy for \"do not refresh too often\" belongs to a higher-level sender/controller decision, not the estimator primitive."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Subsequent smoothed_rtt updates use the adjusted RTT sample."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The peer max_ack_delay clamp is ignored until the handshake is confirmed."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_UsesOnlyLocalTimesWhenUpdatingMinRttAndSubtractsLocalDelayBeforeHandshakeConfirmation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Before handshake confirmation, the estimator can keep the unadjusted RTT sample when subtracting acknowledgment delay would undercut min_rtt."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_UsesOnlyLocalTimesWhenUpdatingMinRttAndSubtractsLocalDelayBeforeHandshakeConfirmation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Local decryption or processing delay is removed from the RTT sample until the handshake is confirmed."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "ConstructorAndReset_InitializeEstimatorFromTheConfiguredInitialRtt"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The estimator is initialized during connection establishment by the constructor path."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0006",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "ConstructorAndReset_InitializeEstimatorFromTheConfiguredInitialRtt"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Resetting the estimator reuses the configured initial RTT for a new path."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0007",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "ConstructorAndReset_InitializeEstimatorFromTheConfiguredInitialRtt"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The constructor seeds smoothed_rtt and rttvar from the initial RTT."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0008",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_SeedsTheFirstSampleFromTheLargestAcknowledgedPacket"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The first post-init RTT sample resets smoothed_rtt and rttvar to the latest observed RTT."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0009",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "After handshake confirmation, the estimator clamps the peer-reported acknowledgment delay to peer_max_ack_delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0010",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Subsequent samples update smoothed_rtt with the 7/8 and 1/8 weighting and update rttvar with the 3/4 and 1/4 weighting."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0011",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_CanIgnoreAckDelayForInitialPackets"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The estimator can ignore ACK delay for Initial packets when the caller opts into that MAY behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0012",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_UsesOnlyLocalTimesWhenUpdatingMinRttAndSubtractsLocalDelayBeforeHandshakeConfirmation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The estimator never subtracts acknowledgment delay when doing so would push the adjusted RTT below min_rtt."
+    }
+  ]
+}
