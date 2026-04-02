@@ -44,6 +44,7 @@ public sealed class QuicEcnValidationStateTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0007")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0001")]
