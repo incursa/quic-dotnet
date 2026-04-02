@@ -1,0 +1,293 @@
+{
+  "chunk_id": "9000-12-migration-followup",
+  "rfc": "9000",
+  "section_tokens": [
+    "S9P4",
+    "S9P5",
+    "S9P6",
+    "S9P6P1",
+    "S9P6P2",
+    "S9P6P3",
+    "S9P7"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "audit_result": "clean_with_explicit_blockers",
+  "reconciliation_artifact_present": false,
+  "implementation_summary_file": "./specs/generated/quic/chunks/9000-12-migration-followup.implementation-summary.json",
+  "implementation_summary_alignment": {
+    "spec_requirement_count": 61,
+    "summary_requirement_count": 61,
+    "missing_in_summary": [],
+    "extra_in_summary": [],
+    "summary_status": "partial_with_explicit_blockers"
+  },
+  "requirements_in_scope": {
+    "S9P4": 11,
+    "S9P5": 12,
+    "S9P6": 2,
+    "S9P6P1": 10,
+    "S9P6P2": 11,
+    "S9P6P3": 11,
+    "S9P7": 4,
+    "total": 61,
+    "covered": 4,
+    "blocked": 57,
+    "partial": 0,
+    "needs_review": 0
+  },
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9000-S9P4-0004",
+      "REQ-QUIC-RFC9000-S9P4-0006",
+      "REQ-QUIC-RFC9000-S9P6P1-0001",
+      "REQ-QUIC-RFC9000-S9P6P1-0007"
+    ],
+    "stale_requirement_refs_found": [],
+    "notes": "The in-scope test refs are exact matches for the chunk; no source-side requirement refs were needed for this slice, and the scoped search did not reveal stale or wrong IDs."
+  },
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicAckGenerationStateTests|FullyQualifiedName~QuicTransportParametersTests|FullyQualifiedName~QuicTransportParametersFuzzTests\"",
+    "passed": 36,
+    "failed": 0,
+    "skipped": 0
+  },
+  "requirements": [
+    {
+      "section_token": "S9P4",
+      "status": "partially_implemented",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P4-0001",
+        "REQ-QUIC-RFC9000-S9P4-0002",
+        "REQ-QUIC-RFC9000-S9P4-0003",
+        "REQ-QUIC-RFC9000-S9P4-0004",
+        "REQ-QUIC-RFC9000-S9P4-0005",
+        "REQ-QUIC-RFC9000-S9P4-0006",
+        "REQ-QUIC-RFC9000-S9P4-0007",
+        "REQ-QUIC-RFC9000-S9P4-0008",
+        "REQ-QUIC-RFC9000-S9P4-0009",
+        "REQ-QUIC-RFC9000-S9P4-0010",
+        "REQ-QUIC-RFC9000-S9P4-0011"
+      ],
+      "implemented_requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P4-0004",
+        "REQ-QUIC-RFC9000-S9P4-0006"
+      ],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P4-0001",
+        "REQ-QUIC-RFC9000-S9P4-0002",
+        "REQ-QUIC-RFC9000-S9P4-0003",
+        "REQ-QUIC-RFC9000-S9P4-0005",
+        "REQ-QUIC-RFC9000-S9P4-0007",
+        "REQ-QUIC-RFC9000-S9P4-0008",
+        "REQ-QUIC-RFC9000-S9P4-0009",
+        "REQ-QUIC-RFC9000-S9P4-0010",
+        "REQ-QUIC-RFC9000-S9P4-0011"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs:19-22"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": "Migration-aware path tracking, path-aware timers, and ACK handling for old and new paths are still missing.",
+      "notes": "The path-agnostic ACK generator covers packet-number spaces; the remaining path-specific behavior stays blocked."
+    },
+    {
+      "section_token": "S9P5",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P5-0001",
+        "REQ-QUIC-RFC9000-S9P5-0002",
+        "REQ-QUIC-RFC9000-S9P5-0003",
+        "REQ-QUIC-RFC9000-S9P5-0004",
+        "REQ-QUIC-RFC9000-S9P5-0005",
+        "REQ-QUIC-RFC9000-S9P5-0006",
+        "REQ-QUIC-RFC9000-S9P5-0007",
+        "REQ-QUIC-RFC9000-S9P5-0008",
+        "REQ-QUIC-RFC9000-S9P5-0009",
+        "REQ-QUIC-RFC9000-S9P5-0010",
+        "REQ-QUIC-RFC9000-S9P5-0011",
+        "REQ-QUIC-RFC9000-S9P5-0012"
+      ],
+      "implemented_requirement_ids": [],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P5-0001",
+        "REQ-QUIC-RFC9000-S9P5-0002",
+        "REQ-QUIC-RFC9000-S9P5-0003",
+        "REQ-QUIC-RFC9000-S9P5-0004",
+        "REQ-QUIC-RFC9000-S9P5-0005",
+        "REQ-QUIC-RFC9000-S9P5-0006",
+        "REQ-QUIC-RFC9000-S9P5-0007",
+        "REQ-QUIC-RFC9000-S9P5-0008",
+        "REQ-QUIC-RFC9000-S9P5-0009",
+        "REQ-QUIC-RFC9000-S9P5-0010",
+        "REQ-QUIC-RFC9000-S9P5-0011",
+        "REQ-QUIC-RFC9000-S9P5-0012"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet/path association and connection-ID rotation state are not modeled in the current library surface.",
+      "notes": "All 12 requirements stay blocked until the migration runtime exists."
+    },
+    {
+      "section_token": "S9P6",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P6-0001",
+        "REQ-QUIC-RFC9000-S9P6-0002"
+      ],
+      "implemented_requirement_ids": [],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P6-0001",
+        "REQ-QUIC-RFC9000-S9P6-0002"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Connection-migration runtime state is still absent from the repository slice.",
+      "notes": "Both requirements remain blocked."
+    },
+    {
+      "section_token": "S9P6P1",
+      "status": "partially_implemented",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P6P1-0001",
+        "REQ-QUIC-RFC9000-S9P6P1-0002",
+        "REQ-QUIC-RFC9000-S9P6P1-0003",
+        "REQ-QUIC-RFC9000-S9P6P1-0004",
+        "REQ-QUIC-RFC9000-S9P6P1-0005",
+        "REQ-QUIC-RFC9000-S9P6P1-0006",
+        "REQ-QUIC-RFC9000-S9P6P1-0007",
+        "REQ-QUIC-RFC9000-S9P6P1-0008",
+        "REQ-QUIC-RFC9000-S9P6P1-0009",
+        "REQ-QUIC-RFC9000-S9P6P1-0010"
+      ],
+      "implemented_requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P6P1-0001",
+        "REQ-QUIC-RFC9000-S9P6P1-0007"
+      ],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P6P1-0002",
+        "REQ-QUIC-RFC9000-S9P6P1-0003",
+        "REQ-QUIC-RFC9000-S9P6P1-0004",
+        "REQ-QUIC-RFC9000-S9P6P1-0005",
+        "REQ-QUIC-RFC9000-S9P6P1-0006",
+        "REQ-QUIC-RFC9000-S9P6P1-0008",
+        "REQ-QUIC-RFC9000-S9P6P1-0009",
+        "REQ-QUIC-RFC9000-S9P6P1-0010"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:147-150",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs:49-52"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs"
+      ],
+      "remaining_gap": "Handshake-confirmed path selection, validation orchestration, and active connection-ID selection are missing.",
+      "notes": "The preferred-address transport-parameter codec round-trips both address families and the associated connection ID in the updated parse/format and fuzz coverage."
+    },
+    {
+      "section_token": "S9P6P2",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P6P2-0001",
+        "REQ-QUIC-RFC9000-S9P6P2-0002",
+        "REQ-QUIC-RFC9000-S9P6P2-0003",
+        "REQ-QUIC-RFC9000-S9P6P2-0004",
+        "REQ-QUIC-RFC9000-S9P6P2-0005",
+        "REQ-QUIC-RFC9000-S9P6P2-0006",
+        "REQ-QUIC-RFC9000-S9P6P2-0007",
+        "REQ-QUIC-RFC9000-S9P6P2-0008",
+        "REQ-QUIC-RFC9000-S9P6P2-0009",
+        "REQ-QUIC-RFC9000-S9P6P2-0010",
+        "REQ-QUIC-RFC9000-S9P6P2-0011"
+      ],
+      "implemented_requirement_ids": [],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P6P2-0001",
+        "REQ-QUIC-RFC9000-S9P6P2-0002",
+        "REQ-QUIC-RFC9000-S9P6P2-0003",
+        "REQ-QUIC-RFC9000-S9P6P2-0004",
+        "REQ-QUIC-RFC9000-S9P6P2-0005",
+        "REQ-QUIC-RFC9000-S9P6P2-0006",
+        "REQ-QUIC-RFC9000-S9P6P2-0007",
+        "REQ-QUIC-RFC9000-S9P6P2-0008",
+        "REQ-QUIC-RFC9000-S9P6P2-0009",
+        "REQ-QUIC-RFC9000-S9P6P2-0010",
+        "REQ-QUIC-RFC9000-S9P6P2-0011"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Client/server migration validation, source-address tracking, and path-probe orchestration are not modeled yet.",
+      "notes": "All 11 requirements remain blocked."
+    },
+    {
+      "section_token": "S9P6P3",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P6P3-0001",
+        "REQ-QUIC-RFC9000-S9P6P3-0002",
+        "REQ-QUIC-RFC9000-S9P6P3-0003",
+        "REQ-QUIC-RFC9000-S9P6P3-0004",
+        "REQ-QUIC-RFC9000-S9P6P3-0005",
+        "REQ-QUIC-RFC9000-S9P6P3-0006",
+        "REQ-QUIC-RFC9000-S9P6P3-0007",
+        "REQ-QUIC-RFC9000-S9P6P3-0008",
+        "REQ-QUIC-RFC9000-S9P6P3-0009",
+        "REQ-QUIC-RFC9000-S9P6P3-0010",
+        "REQ-QUIC-RFC9000-S9P6P3-0011"
+      ],
+      "implemented_requirement_ids": [],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P6P3-0001",
+        "REQ-QUIC-RFC9000-S9P6P3-0002",
+        "REQ-QUIC-RFC9000-S9P6P3-0003",
+        "REQ-QUIC-RFC9000-S9P6P3-0004",
+        "REQ-QUIC-RFC9000-S9P6P3-0005",
+        "REQ-QUIC-RFC9000-S9P6P3-0006",
+        "REQ-QUIC-RFC9000-S9P6P3-0007",
+        "REQ-QUIC-RFC9000-S9P6P3-0008",
+        "REQ-QUIC-RFC9000-S9P6P3-0009",
+        "REQ-QUIC-RFC9000-S9P6P3-0010",
+        "REQ-QUIC-RFC9000-S9P6P3-0011"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Concurrent path-validation orchestration, attack protection on preferred-address traffic, and previous-path decision logic are missing.",
+      "notes": "All 11 requirements remain blocked."
+    },
+    {
+      "section_token": "S9P7",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P7-0001",
+        "REQ-QUIC-RFC9000-S9P7-0002",
+        "REQ-QUIC-RFC9000-S9P7-0003",
+        "REQ-QUIC-RFC9000-S9P7-0004"
+      ],
+      "implemented_requirement_ids": [],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P7-0001",
+        "REQ-QUIC-RFC9000-S9P7-0002",
+        "REQ-QUIC-RFC9000-S9P7-0003",
+        "REQ-QUIC-RFC9000-S9P7-0004"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "An IPv6 send-path or socket surface that can apply and rotate flow labels is missing.",
+      "notes": "All 4 requirements remain blocked."
+    }
+  ],
+  "findings": [
+    {
+      "severity": "info",
+      "message": "No stale or wrong in-scope requirement IDs were found in the scoped tests or generated summary."
+    },
+    {
+      "severity": "info",
+      "message": "The expected reconciliation artifact is absent at the advertised path; this closeout relies on the implementation summary and repo audit."
+    }
+  ],
+  "conclusion": "The chunk is internally consistent: all 61 in-scope requirements are accounted for, 4 are implemented and tested with exact trace refs, and the remaining 57 are explicitly blocked. No silent gaps remain in scope."
+}
