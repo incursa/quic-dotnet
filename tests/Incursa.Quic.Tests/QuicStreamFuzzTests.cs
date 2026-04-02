@@ -39,6 +39,7 @@ public sealed class QuicStreamFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S2P2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S4P5-0002")]
     [Requirement("REQ-QUIC-RFC9001-S3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0003")]

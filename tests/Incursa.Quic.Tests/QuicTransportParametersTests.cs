@@ -20,6 +20,9 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S5P2P3-0004")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0011")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S4P6-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S4P6-0005")]
     [Trait("Category", "Positive")]
     public void TryFormatTransportParameters_WritesExactTupleSequence()
     {
@@ -30,6 +33,9 @@ public sealed class QuicTransportParametersTests
             StatelessResetToken = statelessResetToken,
             MaxUdpPayloadSize = 1200,
             InitialMaxData = 1000,
+            InitialMaxStreamDataBidiLocal = 2000,
+            InitialMaxStreamDataBidiRemote = 3000,
+            InitialMaxStreamDataUni = 4000,
             InitialMaxStreamsBidi = 4,
             InitialMaxStreamsUni = 3,
             MaxAckDelay = 33,
@@ -50,6 +56,9 @@ public sealed class QuicTransportParametersTests
             QuicTransportParameterTestData.BuildTransportParameterTuple(0x02, statelessResetToken),
             QuicTransportParameterTestData.BuildTransportParameterTuple(0x03, QuicVarintTestData.EncodeMinimal(1200)),
             QuicTransportParameterTestData.BuildTransportParameterTuple(0x04, QuicVarintTestData.EncodeMinimal(1000)),
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x05, QuicVarintTestData.EncodeMinimal(2000)),
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x06, QuicVarintTestData.EncodeMinimal(3000)),
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x07, QuicVarintTestData.EncodeMinimal(4000)),
             QuicTransportParameterTestData.BuildTransportParameterTuple(0x08, QuicVarintTestData.EncodeMinimal(4)),
             QuicTransportParameterTestData.BuildTransportParameterTuple(0x09, QuicVarintTestData.EncodeMinimal(3)),
             QuicTransportParameterTestData.BuildTransportParameterTuple(0x0B, QuicVarintTestData.EncodeMinimal(33)),
@@ -132,6 +141,9 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S5P2P3-0002")]
     [Requirement("REQ-QUIC-RFC9000-S5P2P3-0004")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S4P6-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S4P6-0005")]
     [Trait("Category", "Positive")]
     public void TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress()
     {
@@ -142,6 +154,9 @@ public sealed class QuicTransportParametersTests
             StatelessResetToken = Enumerable.Range(0, 16).Select(value => (byte)(0x20 + value)).ToArray(),
             MaxUdpPayloadSize = 1350,
             InitialMaxData = 4096,
+            InitialMaxStreamDataBidiLocal = 8192,
+            InitialMaxStreamDataBidiRemote = 12288,
+            InitialMaxStreamDataUni = 16384,
             InitialMaxStreamsBidi = 6,
             InitialMaxStreamsUni = 7,
             MaxAckDelay = 33,
@@ -177,6 +192,9 @@ public sealed class QuicTransportParametersTests
         Assert.True(parameters.StatelessResetToken!.AsSpan().SequenceEqual(parsed.StatelessResetToken!));
         Assert.Equal(parameters.MaxUdpPayloadSize, parsed.MaxUdpPayloadSize);
         Assert.Equal(parameters.InitialMaxData, parsed.InitialMaxData);
+        Assert.Equal(parameters.InitialMaxStreamDataBidiLocal, parsed.InitialMaxStreamDataBidiLocal);
+        Assert.Equal(parameters.InitialMaxStreamDataBidiRemote, parsed.InitialMaxStreamDataBidiRemote);
+        Assert.Equal(parameters.InitialMaxStreamDataUni, parsed.InitialMaxStreamDataUni);
         Assert.Equal(parameters.InitialMaxStreamsBidi, parsed.InitialMaxStreamsBidi);
         Assert.Equal(parameters.InitialMaxStreamsUni, parsed.InitialMaxStreamsUni);
         Assert.Equal(parameters.MaxAckDelay, parsed.MaxAckDelay);
@@ -191,6 +209,32 @@ public sealed class QuicTransportParametersTests
         Assert.Equal(parameters.ActiveConnectionIdLimit, parsed.ActiveConnectionIdLimit);
         Assert.True(parameters.InitialSourceConnectionId!.AsSpan().SequenceEqual(parsed.InitialSourceConnectionId!));
         Assert.True(parameters.RetrySourceConnectionId!.AsSpan().SequenceEqual(parsed.RetrySourceConnectionId!));
+    }
+
+    [Theory]
+    [InlineData(0x08UL)]
+    [InlineData(0x09UL)]
+    [Requirement("REQ-QUIC-RFC9000-S4P6-0006")]
+    [Trait("Category", "Negative")]
+    public void TryParseAndFormatTransportParameters_RejectsInitialMaxStreamsAboveTheEncodingLimit(ulong parameterId)
+    {
+        ulong overLimit = (1UL << 60) + 1;
+        byte[] encoded = QuicTransportParameterTestData.BuildTransportParameterTuple(parameterId, QuicVarintTestData.EncodeMinimal(overLimit));
+
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            encoded,
+            QuicTransportParameterRole.Client,
+            out _));
+
+        QuicTransportParameters parameters = parameterId == 0x08UL
+            ? new QuicTransportParameters { InitialMaxStreamsBidi = overLimit }
+            : new QuicTransportParameters { InitialMaxStreamsUni = overLimit };
+
+        Assert.False(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            QuicTransportParameterRole.Server,
+            stackalloc byte[16],
+            out _));
     }
 
     public static IEnumerable<object[]> MatchingConnectionIdBindingCases()
@@ -686,6 +730,53 @@ public sealed class QuicTransportParametersTests
 
         Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
             truncated,
+            QuicTransportParameterRole.Client,
+            out _));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P6-0006")]
+    [Trait("Category", "Negative")]
+    public void TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit()
+    {
+        QuicTransportParameters boundaryParameters = new()
+        {
+            InitialMaxStreamsBidi = 1UL << 60,
+            InitialMaxStreamsUni = 1UL << 60,
+        };
+
+        Span<byte> boundaryDestination = stackalloc byte[64];
+        Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+            boundaryParameters,
+            QuicTransportParameterRole.Server,
+            boundaryDestination,
+            out int boundaryBytesWritten));
+
+        Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+            boundaryDestination[..boundaryBytesWritten],
+            QuicTransportParameterRole.Client,
+            out QuicTransportParameters boundaryParsed));
+        Assert.Equal(1UL << 60, boundaryParsed.InitialMaxStreamsBidi);
+        Assert.Equal(1UL << 60, boundaryParsed.InitialMaxStreamsUni);
+
+        QuicTransportParameters parameters = new()
+        {
+            InitialMaxStreamsBidi = (1UL << 60) + 1,
+            InitialMaxStreamsUni = (1UL << 60) + 1,
+        };
+
+        Assert.False(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            QuicTransportParameterRole.Server,
+            stackalloc byte[64],
+            out _));
+
+        byte[] tuple = QuicTransportParameterTestData.BuildTransportParameterTuple(
+            0x08,
+            QuicVarintTestData.EncodeMinimal((1UL << 60) + 1));
+
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            tuple,
             QuicTransportParameterRole.Client,
             out _));
     }

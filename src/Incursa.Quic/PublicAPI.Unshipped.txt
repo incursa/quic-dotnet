@@ -340,6 +340,12 @@ Incursa.Quic.QuicTransportParameters.MaxUdpPayloadSize.get -> ulong?
 Incursa.Quic.QuicTransportParameters.MaxUdpPayloadSize.set -> void
 Incursa.Quic.QuicTransportParameters.InitialMaxData.get -> ulong?
 Incursa.Quic.QuicTransportParameters.InitialMaxData.set -> void
+Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataBidiLocal.get -> ulong?
+Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataBidiLocal.set -> void
+Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataBidiRemote.get -> ulong?
+Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataBidiRemote.set -> void
+Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataUni.get -> ulong?
+Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataUni.set -> void
 Incursa.Quic.QuicTransportParameters.InitialMaxStreamsBidi.get -> ulong?
 Incursa.Quic.QuicTransportParameters.InitialMaxStreamsBidi.set -> void
 Incursa.Quic.QuicTransportParameters.InitialMaxStreamsUni.get -> ulong?

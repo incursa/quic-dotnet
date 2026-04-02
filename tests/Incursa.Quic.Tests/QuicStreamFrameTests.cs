@@ -10,6 +10,7 @@ public sealed class QuicStreamFrameTests
     [Requirement("REQ-QUIC-RFC9000-S2P2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S4P5-0002")]
     [Requirement("REQ-QUIC-RFC9001-S3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0003")]
@@ -67,6 +68,7 @@ public sealed class QuicStreamFrameTests
     [Requirement("REQ-QUIC-RFC9000-S2P2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S4P5-0002")]
     [Requirement("REQ-QUIC-RFC9001-S3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0004")]
@@ -121,9 +123,11 @@ public sealed class QuicStreamFrameTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S4-0004")]
     [Trait("Category", "Negative")]
     public void TryParseStreamFrame_RejectsFramesWithNonStreamTypes()
     {
+        Assert.False(QuicStreamParser.TryParseStreamFrame([0x06, 0x00], out _));
         Assert.False(QuicStreamParser.TryParseStreamFrame([0x07, 0x00], out _));
         Assert.False(QuicStreamParser.TryParseStreamFrame([0x10, 0x00], out _));
     }
@@ -326,6 +330,7 @@ public sealed class QuicStreamFrameTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S4P5-0002")]
     [Trait("Category", "Positive")]
     public void TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsPresent()
     {
@@ -352,6 +357,7 @@ public sealed class QuicStreamFrameTests
     [Requirement("REQ-QUIC-RFC9000-S19P8-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0018")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S4P5-0002")]
     [Trait("Category", "Positive")]
     public void TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsAbsent()
     {
@@ -382,6 +388,7 @@ public sealed class QuicStreamFrameTests
     [Requirement("REQ-QUIC-RFC9000-S2P4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
     [Requirement("REQ-QUIC-RFC9001-S3-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S4P5-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0003")]

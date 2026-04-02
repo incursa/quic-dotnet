@@ -43,6 +43,9 @@ public sealed class QuicTransportParametersFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0004")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S4P6-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S4P6-0005")]
     [Trait("Category", "Fuzz")]
     public void Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation()
     {
@@ -97,6 +100,9 @@ public sealed class QuicTransportParametersFuzzTests
             StatelessResetToken = RandomBytes(random, 16),
             MaxUdpPayloadSize = (ulong)random.Next(1200, 1600),
             InitialMaxData = (ulong)random.Next(0, 65536),
+            InitialMaxStreamDataBidiLocal = (ulong)random.Next(0, 65536),
+            InitialMaxStreamDataBidiRemote = (ulong)random.Next(0, 65536),
+            InitialMaxStreamDataUni = (ulong)random.Next(0, 65536),
             InitialMaxStreamsBidi = (ulong)random.Next(0, 32),
             InitialMaxStreamsUni = (ulong)random.Next(0, 32),
             MaxAckDelay = (ulong)random.Next(0, 64),
@@ -132,6 +138,9 @@ public sealed class QuicTransportParametersFuzzTests
         Assert.True(expected.StatelessResetToken!.AsSpan().SequenceEqual(actual.StatelessResetToken!));
         Assert.Equal(expected.MaxUdpPayloadSize, actual.MaxUdpPayloadSize);
         Assert.Equal(expected.InitialMaxData, actual.InitialMaxData);
+        Assert.Equal(expected.InitialMaxStreamDataBidiLocal, actual.InitialMaxStreamDataBidiLocal);
+        Assert.Equal(expected.InitialMaxStreamDataBidiRemote, actual.InitialMaxStreamDataBidiRemote);
+        Assert.Equal(expected.InitialMaxStreamDataUni, actual.InitialMaxStreamDataUni);
         Assert.Equal(expected.InitialMaxStreamsBidi, actual.InitialMaxStreamsBidi);
         Assert.Equal(expected.InitialMaxStreamsUni, actual.InitialMaxStreamsUni);
         Assert.Equal(expected.MaxAckDelay, actual.MaxAckDelay);

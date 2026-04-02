@@ -4,6 +4,7 @@ public sealed class QuicCryptoBufferTests
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S4-0005")]
     [Trait("Category", "Positive")]
     public void TryAddFrame_BuffersOutOfOrderFramesAndDequeuesContiguousBytes()
     {
@@ -29,6 +30,7 @@ public sealed class QuicCryptoBufferTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0001")]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S4-0005")]
     [Trait("Category", "Positive")]
     public void TryAddFrame_AllowsConfiguredCapacityDuringHandshake()
     {
@@ -46,6 +48,7 @@ public sealed class QuicCryptoBufferTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0001")]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S4-0005")]
     [Trait("Category", "Negative")]
     public void TryAddFrame_ClosesWithBufferExceededWhenCapacityIsNotExpanded()
     {
@@ -61,6 +64,7 @@ public sealed class QuicCryptoBufferTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0004")]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S4-0005")]
     [Trait("Category", "Positive")]
     public void TryAddFrame_CanDiscardOverflowFramesAfterHandshakeCompletion()
     {
@@ -81,6 +85,7 @@ public sealed class QuicCryptoBufferTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S4-0005")]
     [Trait("Category", "Negative")]
     public void TryAddFrame_CanCloseAfterHandshakeCompletionInsteadOfDiscarding()
     {

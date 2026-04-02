@@ -31,6 +31,21 @@ public sealed class QuicTransportParameters
     public ulong? InitialMaxData { get; set; }
 
     /// <summary>
+    /// Gets or sets the initial_max_stream_data_bidi_local transport parameter value.
+    /// </summary>
+    public ulong? InitialMaxStreamDataBidiLocal { get; set; }
+
+    /// <summary>
+    /// Gets or sets the initial_max_stream_data_bidi_remote transport parameter value.
+    /// </summary>
+    public ulong? InitialMaxStreamDataBidiRemote { get; set; }
+
+    /// <summary>
+    /// Gets or sets the initial_max_stream_data_uni transport parameter value.
+    /// </summary>
+    public ulong? InitialMaxStreamDataUni { get; set; }
+
+    /// <summary>
     /// Gets or sets the initial_max_streams_bidi transport parameter value.
     /// </summary>
     public ulong? InitialMaxStreamsBidi { get; set; }
