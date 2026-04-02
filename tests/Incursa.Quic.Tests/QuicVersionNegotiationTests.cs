@@ -96,6 +96,7 @@ public sealed class QuicVersionNegotiationTests
     [Requirement("REQ-QUIC-RFC8999-S5P1-0004")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S21P12-0001")]
     [Requirement("REQ-QUIC-RFC9000-S5P1-0012")]
     [Requirement("REQ-QUIC-RFC9000-S7P2-0002")]
     [Requirement("REQ-QUIC-RFC9001-S5-0003")]

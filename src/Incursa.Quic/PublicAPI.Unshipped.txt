@@ -196,6 +196,7 @@ Incursa.Quic.QuicConnectionCloseFrame
 Incursa.Quic.QuicConnectionCloseFrame.QuicConnectionCloseFrame() -> void
 Incursa.Quic.QuicConnectionCloseFrame.QuicConnectionCloseFrame(ulong errorCode, System.ReadOnlySpan<byte> reasonPhrase) -> void
 Incursa.Quic.QuicConnectionCloseFrame.QuicConnectionCloseFrame(ulong errorCode, ulong triggeringFrameType, System.ReadOnlySpan<byte> reasonPhrase) -> void
+Incursa.Quic.QuicConnectionCloseFrame.QuicConnectionCloseFrame(Incursa.Quic.QuicTransportErrorCode errorCode, ulong triggeringFrameType, System.ReadOnlySpan<byte> reasonPhrase) -> void
 Incursa.Quic.QuicConnectionCloseFrame.IsApplicationError.get -> bool
 Incursa.Quic.QuicConnectionCloseFrame.FrameType.get -> byte
 Incursa.Quic.QuicConnectionCloseFrame.ErrorCode.get -> ulong
@@ -265,6 +266,8 @@ Incursa.Quic.QuicRetireConnectionIdFrame
 Incursa.Quic.QuicRetireConnectionIdFrame.QuicRetireConnectionIdFrame() -> void
 Incursa.Quic.QuicRetireConnectionIdFrame.QuicRetireConnectionIdFrame(ulong sequenceNumber) -> void
 Incursa.Quic.QuicRetireConnectionIdFrame.SequenceNumber.get -> ulong
+Incursa.Quic.QuicHandshakeDoneFrame
+Incursa.Quic.QuicHandshakeDoneFrame.QuicHandshakeDoneFrame() -> void
 Incursa.Quic.QuicPathChallengeFrame
 Incursa.Quic.QuicPathChallengeFrame.QuicPathChallengeFrame() -> void
 Incursa.Quic.QuicPathChallengeFrame.QuicPathChallengeFrame(System.ReadOnlySpan<byte> data) -> void
@@ -308,6 +311,8 @@ static Incursa.Quic.QuicFrameCodec.TryParseStopSendingFrame(System.ReadOnlySpan<
 static Incursa.Quic.QuicFrameCodec.TryFormatStopSendingFrame(Incursa.Quic.QuicStopSendingFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryParseConnectionCloseFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicConnectionCloseFrame frame, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatConnectionCloseFrame(Incursa.Quic.QuicConnectionCloseFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryParseHandshakeDoneFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicHandshakeDoneFrame frame, out int bytesConsumed) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatHandshakeDoneFrame(Incursa.Quic.QuicHandshakeDoneFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryParseCryptoFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicCryptoFrame frame, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatCryptoFrame(Incursa.Quic.QuicCryptoFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatStreamFrame(byte frameType, ulong streamId, ulong offset, System.ReadOnlySpan<byte> streamData, System.Span<byte> destination, out int bytesWritten) -> bool
@@ -374,6 +379,24 @@ Incursa.Quic.QuicConnectionIdBindingValidationError.OriginalDestinationConnectio
 Incursa.Quic.QuicConnectionIdBindingValidationError.InitialSourceConnectionIdMismatch = 5 -> Incursa.Quic.QuicConnectionIdBindingValidationError
 Incursa.Quic.QuicConnectionIdBindingValidationError.RetrySourceConnectionIdMismatch = 6 -> Incursa.Quic.QuicConnectionIdBindingValidationError
 Incursa.Quic.QuicConnectionIdBindingValidationError.UnexpectedRetrySourceConnectionId = 7 -> Incursa.Quic.QuicConnectionIdBindingValidationError
+Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.NoError = 0 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.InternalError = 1 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.ConnectionRefused = 2 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.FlowControlError = 3 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.StreamLimitError = 4 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.StreamStateError = 5 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.FinalSizeError = 6 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.FrameEncodingError = 7 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.TransportParameterError = 8 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.ConnectionIdLimitError = 9 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.ProtocolViolation = 10 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.InvalidToken = 11 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.ApplicationError = 12 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.CryptoBufferExceeded = 13 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.KeyUpdateError = 14 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.AeadLimitReached = 15 -> Incursa.Quic.QuicTransportErrorCode
+Incursa.Quic.QuicTransportErrorCode.NoViablePath = 16 -> Incursa.Quic.QuicTransportErrorCode
 Incursa.Quic.QuicPreferredAddress
 Incursa.Quic.QuicPreferredAddress.QuicPreferredAddress() -> void
 Incursa.Quic.QuicPreferredAddress.IPv4Address.get -> byte[]!

@@ -6,6 +6,7 @@ public sealed class QuicAddressValidationTests
     [InlineData(true, 8, true)]
     [InlineData(true, 7, false)]
     [InlineData(false, 8, false)]
+    [Requirement("REQ-QUIC-RFC9000-S21P1P1P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0001")]
     [Trait("Category", "Positive")]
     public void CanConsiderPeerAddressValidated_RequiresEndpointChosenAndAtLeast64BitsOfEntropy(
