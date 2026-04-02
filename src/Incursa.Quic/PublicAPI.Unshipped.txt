@@ -376,3 +376,16 @@ Incursa.Quic.QuicTransportParametersCodec
 static Incursa.Quic.QuicTransportParametersCodec.TryParseTransportParameters(System.ReadOnlySpan<byte> encoded, Incursa.Quic.QuicTransportParameterRole receiverRole, out Incursa.Quic.QuicTransportParameters! parameters) -> bool
 static Incursa.Quic.QuicTransportParametersCodec.TryFormatTransportParameters(Incursa.Quic.QuicTransportParameters! parameters, Incursa.Quic.QuicTransportParameterRole senderRole, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicTransportParametersCodec.TryValidateConnectionIdBindings(Incursa.Quic.QuicTransportParameterRole receiverRole, System.ReadOnlySpan<byte> initialDestinationConnectionId, System.ReadOnlySpan<byte> initialSourceConnectionId, bool usedRetry, System.ReadOnlySpan<byte> retrySourceConnectionId, Incursa.Quic.QuicTransportParameters! peerParameters, out Incursa.Quic.QuicConnectionIdBindingValidationError validationError) -> bool
+Incursa.Quic.QuicStatelessReset
+const Incursa.Quic.QuicStatelessReset.StatelessResetTokenLength = 16 -> int
+const Incursa.Quic.QuicStatelessReset.MinimumUnpredictableBits = 38 -> int
+const Incursa.Quic.QuicStatelessReset.MinimumUnpredictableBytes = 5 -> int
+const Incursa.Quic.QuicStatelessReset.MinimumDatagramLength = 21 -> int
+static Incursa.Quic.QuicStatelessReset.TryGenerateStatelessResetToken(System.ReadOnlySpan<byte> connectionId, System.ReadOnlySpan<byte> secretKey, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicStatelessReset.TryGetRecommendedDatagramLength(int triggeringPacketLength, out int datagramLength) -> bool
+static Incursa.Quic.QuicStatelessReset.TryGetMinimumPacketLengthForResetResistance(int minimumConnectionIdLength, out int minimumPacketLength) -> bool
+static Incursa.Quic.QuicStatelessReset.CanSendStatelessReset(int triggeringPacketLength, int datagramLength, bool hasLoopPreventionState) -> bool
+static Incursa.Quic.QuicStatelessReset.TryFormatStatelessResetDatagram(System.ReadOnlySpan<byte> statelessResetToken, int datagramLength, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicStatelessReset.TryGetTrailingStatelessResetToken(System.ReadOnlySpan<byte> datagram, out System.ReadOnlySpan<byte> statelessResetToken) -> bool
+static Incursa.Quic.QuicStatelessReset.IsPotentialStatelessReset(System.ReadOnlySpan<byte> datagram) -> bool
+static Incursa.Quic.QuicStatelessReset.MatchesAnyStatelessResetToken(System.ReadOnlySpan<byte> datagram, System.ReadOnlySpan<byte> candidateTokens) -> bool

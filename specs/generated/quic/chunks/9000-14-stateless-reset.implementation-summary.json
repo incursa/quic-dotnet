@@ -1,0 +1,188 @@
+{
+  "chunk_id": "9000-14-stateless-reset",
+  "requirement_id": [
+    "REQ-QUIC-RFC9000-S10P3-0003",
+    "REQ-QUIC-RFC9000-S10P3-0004",
+    "REQ-QUIC-RFC9000-S10P3-0005",
+    "REQ-QUIC-RFC9000-S10P3-0006",
+    "REQ-QUIC-RFC9000-S10P3-0007",
+    "REQ-QUIC-RFC9000-S10P3-0008",
+    "REQ-QUIC-RFC9000-S10P3-0009",
+    "REQ-QUIC-RFC9000-S10P3-0010",
+    "REQ-QUIC-RFC9000-S10P3-0011",
+    "REQ-QUIC-RFC9000-S10P3-0012",
+    "REQ-QUIC-RFC9000-S10P3-0013",
+    "REQ-QUIC-RFC9000-S10P3-0016",
+    "REQ-QUIC-RFC9000-S10P3-0017",
+    "REQ-QUIC-RFC9000-S10P3-0018",
+    "REQ-QUIC-RFC9000-S10P3-0021",
+    "REQ-QUIC-RFC9000-S10P3-0022",
+    "REQ-QUIC-RFC9000-S10P3-0023",
+    "REQ-QUIC-RFC9000-S10P3-0024",
+    "REQ-QUIC-RFC9000-S10P3-0026",
+    "REQ-QUIC-RFC9000-S10P3-0027",
+    "REQ-QUIC-RFC9000-S10P3-0028",
+    "REQ-QUIC-RFC9000-S10P3P1-0001",
+    "REQ-QUIC-RFC9000-S10P3P1-0003",
+    "REQ-QUIC-RFC9000-S10P3P1-0007",
+    "REQ-QUIC-RFC9000-S10P3P1-0009",
+    "REQ-QUIC-RFC9000-S10P3P2-0001",
+    "REQ-QUIC-RFC9000-S10P3P2-0002",
+    "REQ-QUIC-RFC9000-S10P3P2-0004",
+    "REQ-QUIC-RFC9000-S10P3P2-0009",
+    "REQ-QUIC-RFC9000-S10P3P2-0010",
+    "REQ-QUIC-RFC9000-S10P3P2-0011",
+    "REQ-QUIC-RFC9000-S10P3P2-0012",
+    "REQ-QUIC-RFC9000-S10P3P3-0001"
+  ],
+  "completion_status": "partial",
+  "files_changed": [
+    "benchmarks/QuicStatelessResetBenchmarks.cs",
+    "specs/generated/quic/chunks/9000-14-stateless-reset.implementation-summary.json",
+    "specs/generated/quic/chunks/9000-14-stateless-reset.implementation-summary.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "src/Incursa.Quic/QuicStatelessReset.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+    "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+    "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+  ],
+  "tests_covering_requirement": [
+    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId",
+    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGenerateStatelessResetToken_RejectsZeroLengthConnectionIds",
+    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryFormatStatelessResetDatagram_WritesShortHeaderLayoutWithTokenAtTheTail",
+    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible",
+    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter",
+    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetMinimumPacketLengthForResetResistance_OffsetsByTwentyTwoBytes",
+    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::CanSendStatelessReset_RejectsAmplificationAndLoopingViolations",
+    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes",
+    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::IsPotentialStatelessReset_RejectsTooShortOrWronglyFormedDatagrams",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+    "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsEmptyInput",
+    "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs"
+  ],
+  "direct_refs_added_or_updated": [
+    "REQ-QUIC-RFC9000-S10P3-0003",
+    "REQ-QUIC-RFC9000-S10P3-0004",
+    "REQ-QUIC-RFC9000-S10P3-0005",
+    "REQ-QUIC-RFC9000-S10P3-0006",
+    "REQ-QUIC-RFC9000-S10P3-0007",
+    "REQ-QUIC-RFC9000-S10P3-0008",
+    "REQ-QUIC-RFC9000-S10P3-0009",
+    "REQ-QUIC-RFC9000-S10P3-0010",
+    "REQ-QUIC-RFC9000-S10P3-0011",
+    "REQ-QUIC-RFC9000-S10P3-0012",
+    "REQ-QUIC-RFC9000-S10P3-0013",
+    "REQ-QUIC-RFC9000-S10P3-0016",
+    "REQ-QUIC-RFC9000-S10P3-0017",
+    "REQ-QUIC-RFC9000-S10P3-0018",
+    "REQ-QUIC-RFC9000-S10P3-0021",
+    "REQ-QUIC-RFC9000-S10P3-0022",
+    "REQ-QUIC-RFC9000-S10P3-0023",
+    "REQ-QUIC-RFC9000-S10P3-0024",
+    "REQ-QUIC-RFC9000-S10P3-0026",
+    "REQ-QUIC-RFC9000-S10P3-0027",
+    "REQ-QUIC-RFC9000-S10P3-0028",
+    "REQ-QUIC-RFC9000-S10P3P1-0001",
+    "REQ-QUIC-RFC9000-S10P3P1-0003",
+    "REQ-QUIC-RFC9000-S10P3P1-0007",
+    "REQ-QUIC-RFC9000-S10P3P1-0009",
+    "REQ-QUIC-RFC9000-S10P3P2-0001",
+    "REQ-QUIC-RFC9000-S10P3P2-0002",
+    "REQ-QUIC-RFC9000-S10P3P2-0004",
+    "REQ-QUIC-RFC9000-S10P3P2-0009",
+    "REQ-QUIC-RFC9000-S10P3P2-0010",
+    "REQ-QUIC-RFC9000-S10P3P2-0011",
+    "REQ-QUIC-RFC9000-S10P3P2-0012",
+    "REQ-QUIC-RFC9000-S10P3P3-0001"
+  ],
+  "remaining_gap": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0002",
+      "reason": "Connection-close preference is blocked by the missing connection error routing and close-path surface."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0014",
+      "reason": "Packet-ending token recognition is helper-covered, but endpoint draining / connection shutdown is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0019",
+      "reason": "Immediate connection teardown on stateless reset requires a connection-state machine."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0020",
+      "reason": "Token invalidation on RETIRE_CONNECTION_ID needs endpoint state and retirement bookkeeping."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0029",
+      "reason": "Version-aware stateless-reset generation still needs negotiated-version policy and endpoint history."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0002",
+      "reason": "Recent-token memory by connection ID and remote address needs a receive-side token store."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0004",
+      "reason": "Skipping the token check after another packet succeeds requires a datagram-processing pipeline."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0005",
+      "reason": "Always checking the first unprocessable packet is blocked by the missing datagram-processing pipeline."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0006",
+      "reason": "Unused and retired-token filtering needs connection-scoped token bookkeeping."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0008",
+      "reason": "Entering draining and ceasing sends on a match requires connection lifecycle state."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0010",
+      "reason": "Remember-and-scope behavior spans NEW_CONNECTION_ID, transport-parameter, and retirement state that is not yet modeled."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0011",
+      "reason": "Draining-on-match is blocked by the missing connection-state machine."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0012",
+      "reason": "Stopping sends on match is blocked by the missing connection-state machine."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0003",
+      "reason": "Recoverable connection-ID length handling for static-key tokens is not modeled."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0005",
+      "reason": "Preventing reuse of the CID/static-key pair needs endpoint state and allocation policy."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0006",
+      "reason": "Preventing reuse of reset CIDs across shared static keys needs cross-endpoint policy state."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0007",
+      "reason": "Enforcing one token per CID needs a token registry."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0008",
+      "reason": "Treating duplicates as protocol violations needs connection-level token issuance state."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S10P3P3-0002",
+      "reason": "Reset-send limiting requires stateful accounting of emitted Stateless Resets."
+    }
+  ],
+  "notes": [
+    "The helper slice closes packet-layout, token-generation, and token-matching behavior without inventing a connection-state machine.",
+    "The repository now has explicit trace refs for the existing NEW_CONNECTION_ID, transport-parameter, and invalid-too-small-packet tests that already exercised stateless-reset-adjacent behavior.",
+    "Verification passed after a transient parallel-build file lock was resolved by rerunning the test pass serially."
+  ]
+}
