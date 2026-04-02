@@ -201,7 +201,7 @@ function Get-TestMethodRecords {
 
     $records = [System.Collections.Generic.List[object]]::new()
     $files = Get-ChildItem -Path $TestsRoot -Filter '*.cs' -File -Recurse |
-        Where-Object { $_.FullName -notmatch '\\bin\\|\\obj\\|\\RequirementHomes\\' }
+        Where-Object { $_.FullName -notmatch '\\bin\\|\\obj\\' }
 
     foreach ($file in $files)
     {
@@ -733,7 +733,7 @@ $markdown = [System.Text.StringBuilder]::new()
 [void]$markdown.AppendLine()
 [void]$markdown.AppendLine('- Canonical specs: `specs/requirements/quic/SPEC-QUIC-RFC8999.json`, `SPEC-QUIC-RFC9000.json`, `SPEC-QUIC-RFC9001.json`, `SPEC-QUIC-RFC9002.json`.')
 [void]$markdown.AppendLine('- Deferral and blocker ledger: `specs/requirements/quic/REQUIREMENT-GAPS.md`.')
-[void]$markdown.AppendLine('- Test evidence: executable methods under `tests/Incursa.Quic.Tests`; empty `RequirementHomes` scaffolds were excluded as non-proof.')
+[void]$markdown.AppendLine('- Test evidence: executable methods under `tests/Incursa.Quic.Tests`, including requirement-owned homes; empty scaffolds still contribute no evidence.')
 [void]$markdown.AppendLine('- Evidence tags: `RequirementAttribute`, `Trait("Category", ...)`, and any canonical `trace.x_test_refs` that still resolve to source.')
 [void]$markdown.AppendLine()
 [void]$markdown.AppendLine('## Summary')
