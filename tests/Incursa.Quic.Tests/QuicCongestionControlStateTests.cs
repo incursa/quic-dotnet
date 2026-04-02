@@ -78,6 +78,8 @@ public sealed class QuicCongestionControlStateTests
     [Requirement("REQ-QUIC-RFC9002-S7-0004")]
     [Requirement("REQ-QUIC-RFC9002-S7P1-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P3P1-0001")]
+    [Requirement("REQ-QUIC-RFC9002-S7P3P1-0002")]
+    [Requirement("REQ-QUIC-RFC9002-S7P3P1-0003")]
     [Requirement("REQ-QUIC-RFC9002-S7P3P2-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P3P2-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7P3P2-0003")]
@@ -172,6 +174,7 @@ public sealed class QuicCongestionControlStateTests
     [Requirement("REQ-QUIC-RFC9002-S7P7-0005")]
     [Requirement("REQ-QUIC-RFC9002-S7P8-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P8-0002")]
+    [Requirement("REQ-QUIC-RFC9002-S7P8-0003")]
     [Trait("Category", "Positive")]
     public void TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers()
     {
@@ -227,6 +230,7 @@ public sealed class QuicCongestionControlStateTests
     [Requirement("REQ-QUIC-RFC9002-S7P6P1-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P6P1-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7P6P1-0003")]
+    [Requirement("REQ-QUIC-RFC9002-S7P6-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P6P2-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P6P2-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7P6P2-0003")]
