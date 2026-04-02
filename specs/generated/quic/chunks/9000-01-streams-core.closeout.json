@@ -1,0 +1,228 @@
+{
+  "chunk_id": "9000-01-streams-core",
+  "rfc": 9000,
+  "section_tokens": [
+    "S2",
+    "S2P1",
+    "S2P2",
+    "S2P3",
+    "S2P4"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "audit_result": "trace-consistent-with-explicit-defer",
+  "source_artifacts": {
+    "implementation_summary": {
+      "path": "specs/generated/quic/chunks/9000-01-streams-core.implementation-summary.json",
+      "status": "authoritative"
+    },
+    "reconciliation_artifact": {
+      "path": "specs/generated/quic/chunks/9000-01-streams-core.reconciliation.json",
+      "status": "stale-no-evidence-snapshot"
+    }
+  },
+  "counts": {
+    "total": 44,
+    "implemented_and_tested": 8,
+    "tested_but_implementation_mapping_unclear": 10,
+    "partially_implemented": 1,
+    "not_implemented": 25,
+    "deferred": 36,
+    "blocked": 0,
+    "stale_ids_found": 0,
+    "silent_gaps_found": 0
+  },
+  "counts_by_section": {
+    "S2": {
+      "total": 9,
+      "implemented_and_tested": 0,
+      "deferred": 9,
+      "blocked": 0
+    },
+    "S2P1": {
+      "total": 14,
+      "implemented_and_tested": 7,
+      "deferred": 7,
+      "blocked": 0
+    },
+    "S2P2": {
+      "total": 10,
+      "implemented_and_tested": 1,
+      "deferred": 9,
+      "blocked": 0
+    },
+    "S2P3": {
+      "total": 3,
+      "implemented_and_tested": 0,
+      "deferred": 3,
+      "blocked": 0
+    },
+    "S2P4": {
+      "total": 8,
+      "implemented_and_tested": 0,
+      "deferred": 8,
+      "blocked": 0
+    }
+  },
+  "requirements_by_section": {
+    "S2": {
+      "implemented_and_tested": [],
+      "tested_but_implementation_mapping_unclear": [
+        "REQ-QUIC-RFC9000-S2-0006",
+        "REQ-QUIC-RFC9000-S2-0008",
+        "REQ-QUIC-RFC9000-S2-0009"
+      ],
+      "partially_implemented": [],
+      "not_implemented": [
+        "REQ-QUIC-RFC9000-S2-0001",
+        "REQ-QUIC-RFC9000-S2-0002",
+        "REQ-QUIC-RFC9000-S2-0003",
+        "REQ-QUIC-RFC9000-S2-0004",
+        "REQ-QUIC-RFC9000-S2-0005",
+        "REQ-QUIC-RFC9000-S2-0007"
+      ]
+    },
+    "S2P1": {
+      "implemented_and_tested": [
+        "REQ-QUIC-RFC9000-S2P1-0003",
+        "REQ-QUIC-RFC9000-S2P1-0004",
+        "REQ-QUIC-RFC9000-S2P1-0006",
+        "REQ-QUIC-RFC9000-S2P1-0008",
+        "REQ-QUIC-RFC9000-S2P1-0009",
+        "REQ-QUIC-RFC9000-S2P1-0010",
+        "REQ-QUIC-RFC9000-S2P1-0011"
+      ],
+      "tested_but_implementation_mapping_unclear": [
+        "REQ-QUIC-RFC9000-S2P1-0001",
+        "REQ-QUIC-RFC9000-S2P1-0002"
+      ],
+      "partially_implemented": [],
+      "not_implemented": [
+        "REQ-QUIC-RFC9000-S2P1-0005",
+        "REQ-QUIC-RFC9000-S2P1-0007",
+        "REQ-QUIC-RFC9000-S2P1-0012",
+        "REQ-QUIC-RFC9000-S2P1-0013",
+        "REQ-QUIC-RFC9000-S2P1-0014"
+      ]
+    },
+    "S2P2": {
+      "implemented_and_tested": [
+        "REQ-QUIC-RFC9000-S2P2-0001"
+      ],
+      "tested_but_implementation_mapping_unclear": [
+        "REQ-QUIC-RFC9000-S2P2-0009"
+      ],
+      "partially_implemented": [
+        "REQ-QUIC-RFC9000-S2P2-0002"
+      ],
+      "not_implemented": [
+        "REQ-QUIC-RFC9000-S2P2-0003",
+        "REQ-QUIC-RFC9000-S2P2-0004",
+        "REQ-QUIC-RFC9000-S2P2-0005",
+        "REQ-QUIC-RFC9000-S2P2-0006",
+        "REQ-QUIC-RFC9000-S2P2-0007",
+        "REQ-QUIC-RFC9000-S2P2-0008",
+        "REQ-QUIC-RFC9000-S2P2-0010"
+      ]
+    },
+    "S2P3": {
+      "implemented_and_tested": [],
+      "tested_but_implementation_mapping_unclear": [],
+      "partially_implemented": [],
+      "not_implemented": [
+        "REQ-QUIC-RFC9000-S2P3-0001",
+        "REQ-QUIC-RFC9000-S2P3-0002",
+        "REQ-QUIC-RFC9000-S2P3-0003"
+      ]
+    },
+    "S2P4": {
+      "implemented_and_tested": [],
+      "tested_but_implementation_mapping_unclear": [
+        "REQ-QUIC-RFC9000-S2P4-0004",
+        "REQ-QUIC-RFC9000-S2P4-0005",
+        "REQ-QUIC-RFC9000-S2P4-0006",
+        "REQ-QUIC-RFC9000-S2P4-0007"
+      ],
+      "partially_implemented": [],
+      "not_implemented": [
+        "REQ-QUIC-RFC9000-S2P4-0001",
+        "REQ-QUIC-RFC9000-S2P4-0002",
+        "REQ-QUIC-RFC9000-S2P4-0003",
+        "REQ-QUIC-RFC9000-S2P4-0008"
+      ]
+    }
+  },
+  "live_ref_audit": {
+    "code_and_test_roots_searched": [
+      "src/Incursa.Quic",
+      "tests/Incursa.Quic.Tests"
+    ],
+    "canonical_in_scope_test_files": [
+      "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+      "tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs",
+      "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+    ],
+    "canonical_in_scope_src_files": [
+      "src/Incursa.Quic/QuicStreamId.cs",
+      "src/Incursa.Quic/QuicStreamType.cs",
+      "src/Incursa.Quic/QuicStreamParser.cs",
+      "src/Incursa.Quic/QuicStreamFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs"
+    ],
+    "in_scope_requirement_ids_found_in_tests": [
+      "REQ-QUIC-RFC9000-S2-0006",
+      "REQ-QUIC-RFC9000-S2-0008",
+      "REQ-QUIC-RFC9000-S2-0009",
+      "REQ-QUIC-RFC9000-S2P1-0003",
+      "REQ-QUIC-RFC9000-S2P1-0004",
+      "REQ-QUIC-RFC9000-S2P1-0006",
+      "REQ-QUIC-RFC9000-S2P1-0008",
+      "REQ-QUIC-RFC9000-S2P1-0009",
+      "REQ-QUIC-RFC9000-S2P1-0010",
+      "REQ-QUIC-RFC9000-S2P1-0011",
+      "REQ-QUIC-RFC9000-S2P2-0001",
+      "REQ-QUIC-RFC9000-S2P2-0002",
+      "REQ-QUIC-RFC9000-S2P2-0009",
+      "REQ-QUIC-RFC9000-S2P4-0004",
+      "REQ-QUIC-RFC9000-S2P4-0005",
+      "REQ-QUIC-RFC9000-S2P4-0006",
+      "REQ-QUIC-RFC9000-S2P4-0007"
+    ],
+    "source_requirement_ids_found": [],
+    "stale_or_wrong_refs_found_in_scope": [],
+    "historical_legacy_refs_found_only_in_reconciliation": [
+      "REQ-QUIC-STRM-0001",
+      "REQ-QUIC-STRM-0002",
+      "REQ-QUIC-STRM-0003",
+      "REQ-QUIC-STRM-0004"
+    ],
+    "notes": [
+      "The live test scan found exact in-scope tags only; no stale or wrong IDs were present in the selected source/test surface.",
+      "The selected test files also contain unrelated RFC 9001 and later RFC 9000 section tags outside this chunk scope; they were ignored for this audit.",
+      "The implementation summary is authoritative for the current code and test state."
+    ]
+  },
+  "tests_run": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicStream\"",
+      "result": "30 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "result": "295 passed, 0 failed, 0 skipped"
+    }
+  ],
+  "uncovered_requirements": [],
+  "stale_requirement_ids": [],
+  "wrong_requirement_ids": [],
+  "summary_notes": [
+    "This pass did not modify production source or tests; it only wrote the generated closeout artifacts.",
+    "All 44 in-scope requirements are accounted for through implementation evidence, test evidence, or an explicit deferred note.",
+    "The chunk is trace-consistent and ready for repo-wide trace/audit tooling."
+  ]
+}
