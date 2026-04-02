@@ -1,0 +1,378 @@
+{
+  "chunk_id": "9002-01-transport-basics",
+  "rfc": "9002",
+  "section_tokens": [
+    "S2",
+    "S3"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
+  "audit_result": "clean_with_explicit_blockers",
+  "requirements_in_scope": {
+    "S2": 4,
+    "S3": 17,
+    "total": 21,
+    "covered": 9,
+    "blocked": 11,
+    "deferred": 1,
+    "partial": 0,
+    "needs_review": 0
+  },
+  "reconciliation_artifact_present": false,
+  "implementation_summary_file": "./specs/generated/quic/chunks/9002-01-transport-basics.implementation-summary.json",
+  "implementation_summary_alignment": {
+    "spec_requirement_ids": [
+      "REQ-QUIC-RFC9002-S2-0001",
+      "REQ-QUIC-RFC9002-S2-0002",
+      "REQ-QUIC-RFC9002-S2-0003",
+      "REQ-QUIC-RFC9002-S2-0004",
+      "REQ-QUIC-RFC9002-S3-0001",
+      "REQ-QUIC-RFC9002-S3-0002",
+      "REQ-QUIC-RFC9002-S3-0003",
+      "REQ-QUIC-RFC9002-S3-0004",
+      "REQ-QUIC-RFC9002-S3-0005",
+      "REQ-QUIC-RFC9002-S3-0006",
+      "REQ-QUIC-RFC9002-S3-0007",
+      "REQ-QUIC-RFC9002-S3-0008",
+      "REQ-QUIC-RFC9002-S3-0009",
+      "REQ-QUIC-RFC9002-S3-0010",
+      "REQ-QUIC-RFC9002-S3-0011",
+      "REQ-QUIC-RFC9002-S3-0012",
+      "REQ-QUIC-RFC9002-S3-0013",
+      "REQ-QUIC-RFC9002-S3-0014",
+      "REQ-QUIC-RFC9002-S3-0015",
+      "REQ-QUIC-RFC9002-S3-0016",
+      "REQ-QUIC-RFC9002-S3-0017"
+    ],
+    "summary_requirement_ids": [
+      "REQ-QUIC-RFC9002-S2-0001",
+      "REQ-QUIC-RFC9002-S2-0002",
+      "REQ-QUIC-RFC9002-S2-0003",
+      "REQ-QUIC-RFC9002-S2-0004",
+      "REQ-QUIC-RFC9002-S3-0001",
+      "REQ-QUIC-RFC9002-S3-0002",
+      "REQ-QUIC-RFC9002-S3-0003",
+      "REQ-QUIC-RFC9002-S3-0004",
+      "REQ-QUIC-RFC9002-S3-0005",
+      "REQ-QUIC-RFC9002-S3-0006",
+      "REQ-QUIC-RFC9002-S3-0007",
+      "REQ-QUIC-RFC9002-S3-0008",
+      "REQ-QUIC-RFC9002-S3-0009",
+      "REQ-QUIC-RFC9002-S3-0010",
+      "REQ-QUIC-RFC9002-S3-0011",
+      "REQ-QUIC-RFC9002-S3-0012",
+      "REQ-QUIC-RFC9002-S3-0013",
+      "REQ-QUIC-RFC9002-S3-0014",
+      "REQ-QUIC-RFC9002-S3-0015",
+      "REQ-QUIC-RFC9002-S3-0016",
+      "REQ-QUIC-RFC9002-S3-0017"
+    ],
+    "missing_in_summary": [],
+    "extra_in_summary": [],
+    "summary_status": "partial_with_explicit_blockers"
+  },
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9002-S2-0002",
+      "REQ-QUIC-RFC9002-S2-0003",
+      "REQ-QUIC-RFC9002-S3-0001",
+      "REQ-QUIC-RFC9002-S3-0002",
+      "REQ-QUIC-RFC9002-S3-0003",
+      "REQ-QUIC-RFC9002-S3-0004",
+      "REQ-QUIC-RFC9002-S3-0008",
+      "REQ-QUIC-RFC9002-S3-0011",
+      "REQ-QUIC-RFC9002-S3-0012",
+      "REQ-QUIC-RFC9002-S3-0017"
+    ],
+    "source_files_checked_for_requirement_ids": [
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/QuicPacketParser.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+    ],
+    "test_files_with_requirement_traits": [
+      "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+      "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+      "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs"
+    ],
+    "stale_or_wrong_refs_found": [],
+    "notes": "All scoped direct refs live in tests and use the correct RFC 9002 IDs. No in-scope source refs were present under src/Incursa.Quic, which matches the repository convention for this slice."
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0001",
+      "title": "Interpret all-caps BCP 14 keywords",
+      "completion_status": "intentionally deferred",
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Prose-only BCP 14 interpretation rule with no executable behavior in this slice.",
+      "notes": "Applies to reading the RFC text rather than runtime packet processing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0002",
+      "title": "Classify non-control frames as ack-eliciting",
+      "completion_status": "implemented and tested",
+      "tests_covering_requirement": [
+        "IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "QuicFrameCodec treats ACK, PADDING, and CONNECTION_CLOSE as non-ack-eliciting; the positive theory covers the required RFC 9002 ID."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0003",
+      "title": "Acknowledge ack-eliciting packets promptly",
+      "completion_status": "implemented and tested",
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay",
+        "ShouldSendAckImmediately_ForInitialAndHandshakePackets",
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK-generation helper emits ACKs promptly for ack-eliciting traffic and the live tests carry the RFC 9002 requirement tag."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S2-0004",
+      "title": "Define packets in flight",
+      "completion_status": "blocked by concrete dependency",
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs send, loss, and discard tracking to define in-flight packets.",
+      "notes": "The repository still lacks the sender/recovery surfaces required to classify packets in flight."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0001",
+      "title": "Attach packet-level headers to transmissions",
+      "completion_status": "blocked by concrete dependency",
+      "tests_covering_requirement": [
+        "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "TryParseShortHeader_PreservesOpaqueRemainder"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs"
+      ],
+      "remaining_gap": "Needs a transmit/composer surface to prove emitted packets always carry packet-level headers.",
+      "notes": "The long- and short-header parser/model tests carry the RFC 9002 ID, but the requirement remains blocked because the repo still lacks a packet transmit/composer surface."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0002",
+      "title": "Indicate encryption level in packet headers",
+      "completion_status": "implemented and tested",
+      "tests_covering_requirement": [
+        "TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
+        "TryGetPacketNumberSpace_MapsSupportedHeaderFormsToSpaces",
+        "TryGetPacketNumberSpace_RejectsVersionNegotiationAndRetryPackets"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The packet parser resolves the packet-number space from the header form and long-header packet type, and rejects Version Negotiation and Retry packets."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0003",
+      "title": "Carry packet numbers in packet headers",
+      "completion_status": "implemented and tested",
+      "tests_covering_requirement": [
+        "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
+        "TryParseShortHeader_PreservesOpaqueRemainder"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The packet-header tests assert that packet-number length bits are preserved in both long and short header representations."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0004",
+      "title": "Map encryption level to packet number space",
+      "completion_status": "implemented and tested",
+      "tests_covering_requirement": [
+        "TryGetPacketNumberSpace_MapsSupportedHeaderFormsToSpaces",
+        "TryGetPacketNumberSpace_RejectsVersionNegotiationAndRetryPackets",
+        "PacketNumberSpaces_AreTrackedIndependently"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The packet parser resolves the packet-number space from the header form and long-header packet type, and the ACK-generation tests verify that spaces stay independent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0005",
+      "title": "Prohibit packet number reuse",
+      "completion_status": "blocked by concrete dependency",
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs sender-side packet-number allocation state.",
+      "notes": "No packet sender exists in this slice to enforce reuse prevention."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0006",
+      "title": "Send packet numbers monotonically",
+      "completion_status": "blocked by concrete dependency",
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs sender-side packet-number sequencing.",
+      "notes": "The repository still lacks the send-path packet-number allocator."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0007",
+      "title": "Allow intentional packet number gaps",
+      "completion_status": "blocked by concrete dependency",
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs sender-side packet-number gap policy.",
+      "notes": "Intentional packet-number gaps are a send-path decision that is not modeled here."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0008",
+      "title": "Permit mixed frame types per packet",
+      "completion_status": "implemented and tested",
+      "tests_covering_requirement": [
+        "TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The frame codec and tests demonstrate that a packet payload can contain multiple frame types in sequence."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0009",
+      "title": "Ensure reliable delivery outcome",
+      "completion_status": "blocked by concrete dependency",
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs retransmission and loss-detection policy.",
+      "notes": "Reliable delivery requires sender-side recovery logic that is not present yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0010",
+      "title": "Allow retransmission in new packets",
+      "completion_status": "blocked by concrete dependency",
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs retransmission-in-new-packets logic.",
+      "notes": "There is no packet sender or recovery loop to move retransmissions into fresh packets."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0011",
+      "title": "Acknowledge all packets",
+      "completion_status": "implemented and tested",
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay",
+        "TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK-generation helper emits ACK frames for the packets it has recorded, and the tests round-trip the generated frames through the codec."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0012",
+      "title": "Delay acknowledgment for non-ack-eliciting packets",
+      "completion_status": "implemented and tested",
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK-generation helper delays ACKs for non-ack-eliciting traffic and only sends them with ack-eliciting packets or when max_ack_delay expires."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0013",
+      "title": "Shorten CRYPTO acknowledgment timers",
+      "completion_status": "blocked by concrete dependency",
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs CRYPTO-aware ACK timer shortening.",
+      "notes": "The current helper only models generic ACK timing and does not inspect CRYPTO-specific long-header behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0014",
+      "title": "Count non-ACK packets toward congestion limits",
+      "completion_status": "blocked by concrete dependency",
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs congestion-control accounting for non-ACK packets.",
+      "notes": "No congestion-control surface exists to count packets toward limits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0015",
+      "title": "Treat non-ACK packets as in flight",
+      "completion_status": "blocked by concrete dependency",
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs in-flight accounting for non-ACK packets.",
+      "notes": "The sender/recovery path that would maintain packets-in-flight state is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0016",
+      "title": "Count PADDING toward bytes in flight",
+      "completion_status": "blocked by concrete dependency",
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs bytes-in-flight accounting for PADDING.",
+      "notes": "There is no bytes-in-flight or congestion accounting surface to update."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S3-0017",
+      "title": "Suppress direct ACKs for PADDING",
+      "completion_status": "implemented and tested",
+      "tests_covering_requirement": [
+        "IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "PADDING is classified as non-ack-eliciting, so it does not directly trigger ACK emission."
+    }
+  ],
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9002-S2-0001",
+    "REQ-QUIC-RFC9002-S2-0004",
+    "REQ-QUIC-RFC9002-S3-0001",
+    "REQ-QUIC-RFC9002-S3-0005",
+    "REQ-QUIC-RFC9002-S3-0006",
+    "REQ-QUIC-RFC9002-S3-0007",
+    "REQ-QUIC-RFC9002-S3-0009",
+    "REQ-QUIC-RFC9002-S3-0010",
+    "REQ-QUIC-RFC9002-S3-0013",
+    "REQ-QUIC-RFC9002-S3-0014",
+    "REQ-QUIC-RFC9002-S3-0015",
+    "REQ-QUIC-RFC9002-S3-0016"
+  ],
+  "tests_reviewed": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicFrameCodecTests|FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests|FullyQualifiedName~QuicAckGenerationStateTests\"",
+      "result": "78 passed, 0 failed, 0 skipped",
+      "source": "implementation-summary"
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "result": "263 passed, 0 failed, 0 skipped",
+      "source": "implementation-summary"
+    }
+  ],
+  "notes": [
+    "No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.",
+    "The audit found no stale or wrong requirement IDs in the scoped source or tests.",
+    "REQ-QUIC-RFC9002-S3-0001 remains blocked despite its test refs because the repo still lacks a transmit/composer surface."
+  ]
+}
