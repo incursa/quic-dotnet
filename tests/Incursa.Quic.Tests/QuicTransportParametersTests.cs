@@ -1,5 +1,7 @@
 namespace Incursa.Quic.Tests;
 
+[Requirement("REQ-QUIC-RFC9000-S22P3-0003")]
+[Requirement("REQ-QUIC-RFC9000-S22P3-0004")]
 public sealed class QuicTransportParametersTests
 {
     [Fact]

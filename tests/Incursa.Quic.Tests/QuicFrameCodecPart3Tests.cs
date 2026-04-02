@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+[Requirement("REQ-QUIC-RFC9000-S22P4-0003")]
+[Requirement("REQ-QUIC-RFC9000-S22P4-0004")]
+[Requirement("REQ-QUIC-RFC9000-S22P4-0006")]
 public sealed class QuicFrameCodecPart3Tests
 {
     [Fact]
