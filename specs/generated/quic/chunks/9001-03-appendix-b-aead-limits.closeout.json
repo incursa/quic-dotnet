@@ -1,0 +1,260 @@
+{
+  "chunk_id": "9001-03-appendix-b-aead-limits",
+  "rfc": "9001",
+  "section_tokens": [
+    "SB",
+    "SBP1P1",
+    "SBP1P2",
+    "SBP2"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.json",
+  "audit_result": "clean",
+  "requirements_in_scope": {
+    "SB": 2,
+    "SBP1P1": 2,
+    "SBP1P2": 3,
+    "SBP2": 2,
+    "total": 9,
+    "implemented_and_tested": 9,
+    "blocked": 0,
+    "deferred": 0,
+    "silent_gaps": 0
+  },
+  "source_artifacts": {
+    "implementation_summary": {
+      "path": "specs/generated/quic/chunks/9001-03-appendix-b-aead-limits.implementation-summary.json",
+      "status": "authoritative"
+    },
+    "reconciliation_artifact": {
+      "path": "specs/generated/quic/chunks/9001-03-appendix-b-aead-limits.reconciliation.json",
+      "status": "not-present-in-repo"
+    }
+  },
+  "implementation_summary_file": "./specs/generated/quic/chunks/9001-03-appendix-b-aead-limits.implementation-summary.json",
+  "reconciliation_artifact_present": false,
+  "reconciliation_artifact_file": null,
+  "implemented_and_tested_requirements": [
+    "REQ-QUIC-RFC9001-SB-0001",
+    "REQ-QUIC-RFC9001-SB-0002",
+    "REQ-QUIC-RFC9001-SBP1P1-0001",
+    "REQ-QUIC-RFC9001-SBP1P1-0002",
+    "REQ-QUIC-RFC9001-SBP1P2-0001",
+    "REQ-QUIC-RFC9001-SBP1P2-0002",
+    "REQ-QUIC-RFC9001-SBP1P2-0003",
+    "REQ-QUIC-RFC9001-SBP2-0001",
+    "REQ-QUIC-RFC9001-SBP2-0002"
+  ],
+  "blocked_requirements": [],
+  "deferred_requirements": [],
+  "remaining_open_requirements": [],
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9001-SB-0001",
+      "REQ-QUIC-RFC9001-SB-0002",
+      "REQ-QUIC-RFC9001-SBP1P1-0001",
+      "REQ-QUIC-RFC9001-SBP1P1-0002",
+      "REQ-QUIC-RFC9001-SBP1P2-0001",
+      "REQ-QUIC-RFC9001-SBP1P2-0002",
+      "REQ-QUIC-RFC9001-SBP1P2-0003",
+      "REQ-QUIC-RFC9001-SBP2-0001",
+      "REQ-QUIC-RFC9001-SBP2-0002"
+    ],
+    "source_files_checked_for_requirement_ids": [
+      "src/Incursa.Quic/QuicAeadAlgorithm.cs",
+      "src/Incursa.Quic/QuicAeadPacketSizeProfile.cs",
+      "src/Incursa.Quic/QuicAeadUsageLimits.cs",
+      "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+    ],
+    "test_files_with_requirement_traits": [
+      "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs"
+    ],
+    "stale_or_wrong_refs_found": [],
+    "notes": "No in-scope source annotations were present. The scoped test traits use only canonical RFC 9001 requirement IDs, and the implementation summary is consistent with the current repo state."
+  },
+  "tests_run": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicAeadUsageLimitCalculatorTests\"",
+      "result": "Passed",
+      "summary": "7 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "result": "Passed",
+      "summary": "334 passed, 0 failed, 0 skipped"
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-SB-0001",
+      "title": "Restrict larger packet-size-derived limits",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetUsageLimits",
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetGcmUsageLimits",
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetCcmUsageLimits"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds"
+      ],
+      "direct_refs": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds -> REQ-QUIC-RFC9001-SB-0001",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds -> REQ-QUIC-RFC9001-SB-0001"
+      ],
+      "remaining_gap": null,
+      "notes": "The calculator exposes the Appendix B packet-size regimes only for the selected RFC 9001 cases, and the scoped tests cover both supported AEAD families."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-SB-0002",
+      "title": "Require AEAD usage limits",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetUsageLimits",
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetGcmUsageLimits",
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetCcmUsageLimits",
+        "src/Incursa.Quic/QuicAeadUsageLimits.cs::QuicAeadUsageLimits"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations"
+      ],
+      "direct_refs": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds -> REQ-QUIC-RFC9001-SB-0002",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm -> REQ-QUIC-RFC9001-SB-0002",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds -> REQ-QUIC-RFC9001-SB-0002",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations -> REQ-QUIC-RFC9001-SB-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The calculator returns paired confidentiality and integrity limits and rejects unsupported policy combinations instead of inferring extra behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-SBP1P1-0001",
+      "title": "Limit GCM confidentiality at 2^11 bytes",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetGcmConfidentialityLimitPackets"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations"
+      ],
+      "direct_refs": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds -> REQ-QUIC-RFC9001-SBP1P1-0001",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations -> REQ-QUIC-RFC9001-SBP1P1-0001"
+      ],
+      "remaining_gap": null,
+      "notes": "The GCM confidentiality limit for the 2^11-byte packet-size regime is surfaced as 2^28 packets."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-SBP1P1-0002",
+      "title": "Limit GCM confidentiality at 2^16 bytes",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetGcmConfidentialityLimitPackets"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations"
+      ],
+      "direct_refs": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds -> REQ-QUIC-RFC9001-SBP1P1-0002",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations -> REQ-QUIC-RFC9001-SBP1P1-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The GCM confidentiality limit for the 2^16-byte packet-size regime is surfaced as 2^23 packets."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-SBP1P2-0001",
+      "title": "Limit GCM integrity at 2^11 bytes",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetGcmIntegrityLimitPackets"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations"
+      ],
+      "direct_refs": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds -> REQ-QUIC-RFC9001-SBP1P2-0001",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations -> REQ-QUIC-RFC9001-SBP1P2-0001"
+      ],
+      "remaining_gap": null,
+      "notes": "The GCM integrity limit for the 2^11-byte packet-size regime is surfaced as 2^57 packets."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-SBP1P2-0002",
+      "title": "Limit GCM integrity at unrestricted size",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetGcmIntegrityLimitPackets"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations"
+      ],
+      "direct_refs": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds -> REQ-QUIC-RFC9001-SBP1P2-0002",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations -> REQ-QUIC-RFC9001-SBP1P2-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The GCM integrity limit for the unrestricted packet-size regime is surfaced as 2^52 packets."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-SBP1P2-0003",
+      "title": "Apply one GCM integrity limit to both functions",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetUsageLimits",
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetGcmUsageLimits"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm"
+      ],
+      "direct_refs": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm -> REQ-QUIC-RFC9001-SBP1P2-0003"
+      ],
+      "remaining_gap": null,
+      "notes": "The calculator returns the same integrity limit for AEAD_AES_128_GCM and AEAD_AES_256_GCM when given the same packet-size profile."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-SBP2-0001",
+      "title": "Limit CCM at 2^11 bytes",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetCcmUsageLimits"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations"
+      ],
+      "direct_refs": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds -> REQ-QUIC-RFC9001-SBP2-0001",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations -> REQ-QUIC-RFC9001-SBP2-0001"
+      ],
+      "remaining_gap": null,
+      "notes": "The CCM paired limits for the 2^11-byte packet-size regime are surfaced as 2^26.5 packets for both confidentiality and integrity."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-SBP2-0002",
+      "title": "Limit CCM at unrestricted packet size",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs::TryGetCcmUsageLimits"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations"
+      ],
+      "direct_refs": [
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds -> REQ-QUIC-RFC9001-SBP2-0002",
+        "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations -> REQ-QUIC-RFC9001-SBP2-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The CCM paired limits for the unrestricted packet-size regime are surfaced as 2^21.5 packets for both confidentiality and integrity."
+    }
+  ]
+}
