@@ -14,10 +14,13 @@ public sealed class QuicStreamIdTests
 
     [Theory]
     [MemberData(nameof(StreamIdCases))]
-    [Requirement("REQ-QUIC-STRM-0001")]
-    [Requirement("REQ-QUIC-STRM-0002")]
-    [Requirement("REQ-QUIC-STRM-0003")]
-    [Requirement("REQ-QUIC-STRM-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0011")]
     [Trait("Category", "Positive")]
     public void TryParseStreamIdentifier_ExposesStreamTypeClassification(
         ulong value,
@@ -40,13 +43,33 @@ public sealed class QuicStreamIdTests
     [Theory]
     [InlineData(new byte[] { 0x40 })]
     [InlineData(new byte[] { 0x80, 0x00, 0x00 })]
-    [Requirement("REQ-QUIC-STRM-0001")]
-    [Requirement("REQ-QUIC-STRM-0002")]
-    [Requirement("REQ-QUIC-STRM-0003")]
-    [Requirement("REQ-QUIC-STRM-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0006")]
     [Trait("Category", "Negative")]
     public void TryParseStreamIdentifier_RejectsTruncatedEncodings(byte[] encoded)
     {
         Assert.False(QuicStreamParser.TryParseStreamIdentifier(encoded, out _, out _));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0011")]
+    [Trait("Category", "Positive")]
+    public void TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId()
+    {
+        byte[] encoded = QuicStreamTestData.BuildStreamIdentifier(QuicVariableLengthInteger.MaxValue);
+
+        Assert.True(QuicStreamParser.TryParseStreamIdentifier(encoded, out QuicStreamId streamId, out int bytesConsumed));
+        Assert.Equal(QuicVariableLengthInteger.MaxValue, streamId.Value);
+        Assert.Equal(encoded.Length, bytesConsumed);
+        Assert.Equal(QuicStreamType.ServerInitiatedUnidirectional, streamId.StreamType);
+        Assert.False(streamId.IsClientInitiated);
+        Assert.True(streamId.IsServerInitiated);
+        Assert.False(streamId.IsBidirectional);
+        Assert.True(streamId.IsUnidirectional);
     }
 }

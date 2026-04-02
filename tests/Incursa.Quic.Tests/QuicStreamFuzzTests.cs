@@ -5,6 +5,7 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicStreamFuzzTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P2-0001")]
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
@@ -33,6 +34,7 @@ public sealed class QuicStreamFuzzTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P2-0001")]
     [Requirement("REQ-QUIC-RFC9001-S3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0003")]

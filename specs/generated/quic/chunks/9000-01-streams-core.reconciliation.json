@@ -1,0 +1,655 @@
+{
+  "chunk_id": "9000-01-streams-core",
+  "rfc": "9000",
+  "section_tokens": [
+    "S2",
+    "S2P1",
+    "S2P2",
+    "S2P3",
+    "S2P4"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicStream\"",
+    "passed": 30,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 122
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "The repository does not expose an ordered application-facing stream abstraction.",
+      "notes": "This clause depends on a stateful stream surface that is not present in the current codebase."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "There is no connection or send-path surface that creates streams by sending data.",
+      "notes": "Stream creation is still a greenfield state-machine concern."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-scoped stream lifetime model exists.",
+      "notes": "The repository only exposes byte-oriented parsers and frame codecs."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "The parser classifies initiator bits, but it does not model endpoint-driven stream creation.",
+      "notes": "Endpoint-driven creation policy is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No scheduler or multiplexing surface models interleaved concurrent stream transmission.",
+      "notes": "Concurrent stream scheduling remains unmodeled."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2-0006",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicFrameCodec.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [
+        "Added RFC 9000 S2 requirement tags to RESET_STREAM and STOP_SENDING codec tests."
+      ],
+      "remaining_gap": "RESET_STREAM and STOP_SENDING wire formats exist, but there is no stream lifecycle implementation behind them.",
+      "notes": "The coverage is wire-level only; the stream-management behavior remains stateful and unmodeled."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "There is no delivery layer that could enforce or expose cross-stream ordering semantics.",
+      "notes": "Cross-stream ordering guarantees remain out of scope for the current implementation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2-0008",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicFrameCodec.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [
+        "Added RFC 9000 S2 requirement tags to MAX_STREAMS and STREAMS_BLOCKED codec tests and fuzz coverage."
+      ],
+      "remaining_gap": "MAX_STREAMS and related frame codecs exist, but no live stream manager operates concurrent streams.",
+      "notes": "The repository only proves the wire encodings, not the stream-limit enforcement path."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2-0009",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicFrameCodec.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [
+        "Added RFC 9000 S2 requirement tags to MAX_STREAM_DATA, DATA_BLOCKED, and STREAM_DATA_BLOCKED codec tests and fuzz coverage."
+      ],
+      "remaining_gap": "Flow-control-related frame codecs exist, but there is no sender-side enforcement or per-stream data accounting.",
+      "notes": "The stream-data limit semantics are only visible at the codec layer here."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0001",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamId.cs",
+        "src/Incursa.Quic/QuicStreamType.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicVariableLengthInteger.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Stream-ID classification shows unidirectional types, but no data-path enforcement restricts direction.",
+      "notes": "Directionality is exposed by the parsed representation, not enforced by a send/receive state machine."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0002",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamId.cs",
+        "src/Incursa.Quic/QuicStreamType.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicVariableLengthInteger.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "Stream-ID classification shows bidirectional types, but no bidirectional send/receive surface exists.",
+      "notes": "The implementation exposes the type bits but not the directional transport behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0003",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamId.cs",
+        "src/Incursa.Quic/QuicStreamType.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicVariableLengthInteger.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0001"
+      ],
+      "changes_made": [
+        "Rewrote the legacy stream-ID placeholder traits in the stream-ID test suite to canonical RFC 9000 Section 2.1 IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "QuicStreamId and TryParseStreamIdentifier expose stream IDs as first-class values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0004",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamId.cs",
+        "src/Incursa.Quic/QuicStreamType.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicVariableLengthInteger.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0001"
+      ],
+      "changes_made": [
+        "Rewrote the legacy stream-ID placeholder traits in the stream-ID test suite to canonical RFC 9000 Section 2.1 IDs.",
+        "Added explicit maximum representable stream-ID coverage."
+      ],
+      "remaining_gap": null,
+      "notes": "Stream IDs are parsed through the shared QUIC varint helper and bounded by the 62-bit QUIC varint ceiling."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No connection-scoped stream registry enforces uniqueness.",
+      "notes": "Uniqueness is not modeled in the current parser-centric implementation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0006",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamId.cs",
+        "src/Incursa.Quic/QuicStreamType.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicVariableLengthInteger.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0001"
+      ],
+      "changes_made": [
+        "Rewrote the legacy stream-ID placeholder traits in the stream-ID test suite to canonical RFC 9000 Section 2.1 IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Stream IDs are encoded and parsed as QUIC variable-length integers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No stream allocation or reuse prevention surface exists.",
+      "notes": "Stream reuse prevention requires a stateful registry that is not present."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0008",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamId.cs",
+        "src/Incursa.Quic/QuicStreamType.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicVariableLengthInteger.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0002",
+        "REQ-QUIC-STRM-0004"
+      ],
+      "changes_made": [
+        "Rewrote the legacy stream-ID placeholder traits in the stream-ID test suite to canonical RFC 9000 Section 2.1 IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "The least significant bit is exposed as initiator classification."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0009",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamId.cs",
+        "src/Incursa.Quic/QuicStreamType.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicVariableLengthInteger.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0002",
+        "REQ-QUIC-STRM-0004"
+      ],
+      "changes_made": [
+        "Rewrote the legacy stream-ID placeholder traits in the stream-ID test suite to canonical RFC 9000 Section 2.1 IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Even-valued stream IDs classify as client-initiated."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0010",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamId.cs",
+        "src/Incursa.Quic/QuicStreamType.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicVariableLengthInteger.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0002",
+        "REQ-QUIC-STRM-0004"
+      ],
+      "changes_made": [
+        "Rewrote the legacy stream-ID placeholder traits in the stream-ID test suite to canonical RFC 9000 Section 2.1 IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "Odd-valued stream IDs classify as server-initiated."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0011",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamId.cs",
+        "src/Incursa.Quic/QuicStreamType.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicVariableLengthInteger.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [
+        "REQ-QUIC-STRM-0003",
+        "REQ-QUIC-STRM-0004"
+      ],
+      "changes_made": [
+        "Rewrote the legacy stream-ID placeholder traits in the stream-ID test suite to canonical RFC 9000 Section 2.1 IDs."
+      ],
+      "remaining_gap": null,
+      "notes": "The second least significant bit is exposed as bidirectional versus unidirectional classification."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0012",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No stream ID allocator establishes the per-type minimum starting points.",
+      "notes": "The repository does not yet allocate stream IDs."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0013",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No stream ID allocator enforces monotonic creation.",
+      "notes": "Monotonic allocation is a stateful transport concern that is still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0014",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No stream manager opens lower-numbered streams when IDs arrive out of order.",
+      "notes": "Out-of-order opening depends on connection state that is not implemented."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0001",
+      "status": "implemented and tested",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [
+        "Added RFC 9000 S2P2 requirement tags to STREAM frame parser, property, and fuzz tests."
+      ],
+      "remaining_gap": null,
+      "notes": "STREAM frame parsing and formatting preserve stream payload bytes."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0002",
+      "status": "partially implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No ordered reassembly or buffering layer exists to turn parsed fields into an application delivery path.",
+      "notes": "The parser exposes Stream ID and Offset fields, but no reassembly layer places data for delivery."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No application-facing ordered byte-stream delivery surface exists.",
+      "notes": "This is still a stateful stream-management gap."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0004",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No out-of-order buffering or flow-control-bounded reassembly exists.",
+      "notes": "Buffering is not modeled in the current codebase."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0005",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No optional out-of-order delivery API exists.",
+      "notes": "The implementation does not expose an application delivery API at all."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0006",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No receive-state implementation can discard already-received data.",
+      "notes": "Discard semantics are not represented in the current codebase."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0007",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No retransmission/send-state surface ensures byte stability at offsets.",
+      "notes": "This remains unimplemented until a full stream send state exists."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No conflicting-retransmission detection or error path exists.",
+      "notes": "Conflict detection requires stream-state tracking that is not present."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0009",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicFrameCodec.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "The parser exposes stream payload as opaque bytes, but there is no higher-level stream abstraction to prove the API shape.",
+      "notes": "Wire-level byte exposure is present, but the policy layer that would make the requirement fully explicit is absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0010",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No sender-side flow-control enforcement exists.",
+      "notes": "Sender-side flow-control is still a greenfield transport concern."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P3-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "The repository has no stream scheduling or prioritization interface.",
+      "notes": "No prioritization API is implemented."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P3-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "The repository has no application-visible priority controls.",
+      "notes": "This is absent from the current surface area."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P3-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "The repository has no resource allocator that consumes stream priority information.",
+      "notes": "Resource allocation based on stream priority is not modeled."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P4-0001",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No application-facing stream interface exists.",
+      "notes": "The current codebase stops at parser and codec helpers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P4-0002",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No application-facing stream interface exists to constrain or subset.",
+      "notes": "Protocol-specific API narrowing is not represented here."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P4-0003",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No write API or flow-credit reservation surface exists.",
+      "notes": "Application write authorization is not modeled."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P4-0004",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamId.cs",
+        "src/Incursa.Quic/QuicStreamType.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicVariableLengthInteger.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "STREAM frame FIN support exists at the codec layer, but no stream API exposes clean termination.",
+      "notes": "The byte-level FIN bit is covered, but the application-facing end-of-stream behavior is not."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P4-0005",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicFrameCodec.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "RESET_STREAM frame support exists at the codec layer, but no stream API exposes abrupt reset semantics.",
+      "notes": "The reset wire format is present; the stateful stream termination semantics are not."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P4-0006",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicStreamId.cs",
+        "src/Incursa.Quic/QuicStreamType.cs",
+        "src/Incursa.Quic/QuicStreamParser.cs",
+        "src/Incursa.Quic/QuicStreamFrame.cs",
+        "src/Incursa.Quic/QuicVariableLengthInteger.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "STREAM parsing exposes readable payload bytes, but no stream API models application reads.",
+      "notes": "Readable byte delivery is only represented as parsed frame data."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P4-0007",
+      "status": "tested but implementation mapping unclear",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicFrameCodec.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "STOP_SENDING frame support exists at the codec layer, but no stream API models aborting reads.",
+      "notes": "The abort-read wire format is implemented, not the application behavior behind it."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S2P4-0008",
+      "status": "not implemented",
+      "implementation_refs": [],
+      "test_refs": [],
+      "old_requirement_refs_rewritten": [],
+      "changes_made": [],
+      "remaining_gap": "No notification or callback surface exists for stream state changes.",
+      "notes": "Stream state-change notifications remain greenfield."
+    }
+  ]
+}

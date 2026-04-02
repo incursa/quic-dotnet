@@ -3,6 +3,8 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicFrameCodecPart4FuzzTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0005")]
