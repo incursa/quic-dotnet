@@ -3,6 +3,7 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicAntiAmplificationBudgetTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S14P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0002")]
     [Requirement("REQ-QUIC-RFC9000-S9P3P1-0001")]
@@ -52,6 +53,7 @@ public sealed class QuicAntiAmplificationBudgetTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S14P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S9P3P1-0001")]
     [Trait("Category", "Positive")]

@@ -1,0 +1,712 @@
+{
+  "chunk_id": "9000-20-datagram-and-mtu",
+  "rfc": "9000",
+  "section_tokens": [
+    "S13P4",
+    "S13P4P1",
+    "S13P4P2",
+    "S13P4P2P1",
+    "S13P4P2P2",
+    "S14",
+    "S14P1",
+    "S14P2",
+    "S14P2P1",
+    "S14P3",
+    "S14P4"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "reconciliation_artifact_present": false,
+  "completion_status": "partial",
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4-0001",
+        "REQ-QUIC-RFC9000-S13P4P1-0004",
+        "REQ-QUIC-RFC9000-S13P4P1-0005",
+        "REQ-QUIC-RFC9000-S13P4P1-0006"
+      ],
+      "remaining_gap": null,
+      "notes": "Introduced ECN validation helper state and round-trip coverage."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P1-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P1-0004",
+        "REQ-QUIC-RFC9000-S13P4P1-0005",
+        "REQ-QUIC-RFC9000-S13P4P1-0006"
+      ],
+      "remaining_gap": null,
+      "notes": "ECN validation now tracks ACK counts and packet number spaces."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P1-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P1-0004",
+        "REQ-QUIC-RFC9000-S13P4P1-0005",
+        "REQ-QUIC-RFC9000-S13P4P1-0006"
+      ],
+      "remaining_gap": null,
+      "notes": "Positive and negative ECN accounting paths are covered."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P1-0006",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P1-0004",
+        "REQ-QUIC-RFC9000-S13P4P1-0005",
+        "REQ-QUIC-RFC9000-S13P4P1-0006"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK ECN frame coverage was tightened to match the helper state."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2-0001",
+        "REQ-QUIC-RFC9000-S13P4P2-0006"
+      ],
+      "remaining_gap": null,
+      "notes": "Helper state now validates sender-reported ECN counts."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2-0006",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2-0001",
+        "REQ-QUIC-RFC9000-S13P4P2-0006"
+      ],
+      "remaining_gap": null,
+      "notes": "Validation failure now disables ECN until re-enabled explicitly."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "Per-packet-number-space ECN accounting is covered by positive and negative tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "Reordered ACK processing remains valid once counts reconcile."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "Counts exceeding sent ECT traffic now fail validation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK ECN updates are stable across repeated validation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "Per-space and per-counter validation remain aligned."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "Counts are validated even when ACK frames arrive out of order."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0008",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+        "REQ-QUIC-RFC9000-S13P4P2P1-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "Validation failure disables ECN and positive revalidation restores it."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P2-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P2-0001",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0004",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0005"
+      ],
+      "remaining_gap": null,
+      "notes": "ECN validation failure path now has explicit test coverage."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P2-0001",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0004",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0005"
+      ],
+      "remaining_gap": null,
+      "notes": "Packet-number-space accounting and disable/re-enable paths are covered."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P2-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P2-0001",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0004",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0005"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper rejects impossible counter combinations."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P2-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P2-0001",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0004",
+        "REQ-QUIC-RFC9000-S13P4P2P2-0005"
+      ],
+      "remaining_gap": null,
+      "notes": "ECN disable/re-enable behavior now has direct tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S14-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicVersionNegotiationTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S14-0003",
+        "REQ-QUIC-RFC9000-S14-0004"
+      ],
+      "remaining_gap": null,
+      "notes": "Initial payload size helper coverage was tagged and retained."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S14-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicVersionNegotiationTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S14-0003",
+        "REQ-QUIC-RFC9000-S14-0004"
+      ],
+      "remaining_gap": null,
+      "notes": "Minimum Initial payload rules are covered by the version negotiation helper tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S14P1-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicAddressValidationTests",
+        "QuicAntiAmplificationBudgetTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S14P1-0001",
+        "REQ-QUIC-RFC9000-S14P1-0003",
+        "REQ-QUIC-RFC9000-S14P1-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "Initial datagram padding and related anti-amplification checks are tagged."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S14P1-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicAddressValidationTests",
+        "QuicAntiAmplificationBudgetTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S14P1-0001",
+        "REQ-QUIC-RFC9000-S14P1-0003",
+        "REQ-QUIC-RFC9000-S14P1-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "The selected Initial-path validation rules are exercised in helper tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S14P1-0008",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicAddressValidationTests",
+        "QuicAntiAmplificationBudgetTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S14P1-0001",
+        "REQ-QUIC-RFC9000-S14P1-0003",
+        "REQ-QUIC-RFC9000-S14P1-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "Anti-amplification budget coverage now references the selected requirements directly."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S14P4-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicCongestionControlStateTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S14P4-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "Probe loss now unwinds bytes in flight without forcing congestion recovery."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2-0005",
+      "completion_status": "intentionally_deferred",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Permissive guidance was left unmodeled because the current helper surfaces do not need a no-op code path.",
+      "notes": "Deferred by design."
+    }
+  ],
+  "remaining_gap": [
+    {
+      "section_token": "S13P4P1",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S13P4P1-0001",
+        "REQ-QUIC-RFC9000-S13P4P1-0002",
+        "REQ-QUIC-RFC9000-S13P4P1-0003",
+        "REQ-QUIC-RFC9000-S13P4P1-0007",
+        "REQ-QUIC-RFC9000-S13P4P1-0008",
+        "REQ-QUIC-RFC9000-S13P4P1-0009"
+      ],
+      "reason": "Requires a fuller packet/path/ECN negotiation surface than exists today."
+    },
+    {
+      "section_token": "S13P4P2",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S13P4P2-0002",
+        "REQ-QUIC-RFC9000-S13P4P2-0003",
+        "REQ-QUIC-RFC9000-S13P4P2-0004",
+        "REQ-QUIC-RFC9000-S13P4P2-0005"
+      ],
+      "reason": "Deferred beyond the helper-level ECN validation slice."
+    },
+    {
+      "section_token": "S13P4P2P2",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S13P4P2P2-0002"
+      ],
+      "reason": "Needs additional wire-facing ECN state transitions."
+    },
+    {
+      "section_token": "S14",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S14-0001",
+        "REQ-QUIC-RFC9000-S14-0002",
+        "REQ-QUIC-RFC9000-S14-0005",
+        "REQ-QUIC-RFC9000-S14-0006",
+        "REQ-QUIC-RFC9000-S14-0007",
+        "REQ-QUIC-RFC9000-S14-0008",
+        "REQ-QUIC-RFC9000-S14-0009"
+      ],
+      "reason": "Datagram coalescing, PMTU, and ICMP validation are not yet wired into packet assembly or path management."
+    },
+    {
+      "section_token": "S14P1",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S14P1-0002",
+        "REQ-QUIC-RFC9000-S14P1-0004",
+        "REQ-QUIC-RFC9000-S14P1-0005",
+        "REQ-QUIC-RFC9000-S14P1-0006",
+        "REQ-QUIC-RFC9000-S14P1-0007"
+      ],
+      "reason": "Requires the remaining address-validation and anti-amplification behaviors beyond the covered helpers."
+    },
+    {
+      "section_token": "S14P2",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S14P2-0001",
+        "REQ-QUIC-RFC9000-S14P2-0002",
+        "REQ-QUIC-RFC9000-S14P2-0003",
+        "REQ-QUIC-RFC9000-S14P2-0004",
+        "REQ-QUIC-RFC9000-S14P2-0005",
+        "REQ-QUIC-RFC9000-S14P2-0006",
+        "REQ-QUIC-RFC9000-S14P2-0007",
+        "REQ-QUIC-RFC9000-S14P2-0008",
+        "REQ-QUIC-RFC9000-S14P2-0009",
+        "REQ-QUIC-RFC9000-S14P2-0010"
+      ],
+      "reason": "Packetization and coalescing logic are still absent."
+    },
+    {
+      "section_token": "S14P2P1",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S14P2P1-0001",
+        "REQ-QUIC-RFC9000-S14P2P1-0002",
+        "REQ-QUIC-RFC9000-S14P2P1-0003",
+        "REQ-QUIC-RFC9000-S14P2P1-0004",
+        "REQ-QUIC-RFC9000-S14P2P1-0005",
+        "REQ-QUIC-RFC9000-S14P2P1-0006",
+        "REQ-QUIC-RFC9000-S14P2P1-0007"
+      ],
+      "reason": "Needs the coalesced datagram encoder and its boundary checks."
+    },
+    {
+      "section_token": "S14P3",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S14P3-0001",
+        "REQ-QUIC-RFC9000-S14P3-0002",
+        "REQ-QUIC-RFC9000-S14P3-0003",
+        "REQ-QUIC-RFC9000-S14P3-0004"
+      ],
+      "reason": "ICMP-based PMTU validation remains blocked by missing probe and path surfaces."
+    },
+    {
+      "section_token": "S14P4",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S14P4-0001"
+      ],
+      "reason": "DPLPMTUD probe scheduling and packet assembly are not yet implemented."
+    }
+  ],
+  "files_changed": [
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "src/Incursa.Quic/QuicEcnMarking.cs",
+    "src/Incursa.Quic/QuicEcnValidationState.cs",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+    "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+    "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
+    "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+    "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+    "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+    "specs/generated/quic/chunks/9000-20-datagram-and-mtu.implementation-summary.md",
+    "specs/generated/quic/chunks/9000-20-datagram-and-mtu.implementation-summary.json"
+  ],
+  "tests_run": [
+    {
+      "command": "dotnet test .\\tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicEcnValidationStateTests|FullyQualifiedName~QuicCongestionControlStateTests|FullyQualifiedName~QuicAckGenerationStateTests|FullyQualifiedName~QuicFrameCodecTests|FullyQualifiedName~QuicAddressValidationTests|FullyQualifiedName~QuicAntiAmplificationBudgetTests|FullyQualifiedName~QuicVersionNegotiationTests\"",
+      "result": "59 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test .\\tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj",
+      "result": "338 passed, 0 failed, 0 skipped"
+    }
+  ],
+  "notes": [
+    "Implemented the helper-level ECN and probe-loss behaviors that were reachable without adding packet-assembly or path-management infrastructure.",
+    "Left unrelated worktree changes in place."
+  ]
+}

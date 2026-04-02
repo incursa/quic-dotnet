@@ -283,6 +283,7 @@ public sealed class QuicCongestionControlState
         bool packetCanBeDecrypted = true,
         bool keysAvailable = true,
         bool sentAfterEarliestAcknowledgedPacket = true,
+        bool isProbePacket = false,
         bool allowAckOnlyLossSignal = false)
     {
         if (!packetInFlight && !allowAckOnlyLossSignal)
@@ -298,6 +299,11 @@ public sealed class QuicCongestionControlState
         if (packetInFlight)
         {
             BytesInFlightBytes = SubtractSaturating(BytesInFlightBytes, sentBytes);
+        }
+
+        if (isProbePacket)
+        {
+            return true;
         }
 
         EnterRecovery(sentAtMicros);

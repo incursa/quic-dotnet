@@ -83,6 +83,8 @@ public sealed class QuicFrameCodecTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0003")]

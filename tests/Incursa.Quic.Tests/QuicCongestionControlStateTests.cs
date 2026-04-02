@@ -3,6 +3,8 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicCongestionControlStateTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P4-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7-0005")]
     [Requirement("REQ-QUIC-RFC9002-S7P2-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P2-0002")]
@@ -224,6 +226,27 @@ public sealed class QuicCongestionControlStateTests
             packetInFlight: true,
             pacingLimited: true));
         Assert.Equal(13_200UL, state.CongestionWindowBytes);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S14P4-0002")]
+    [Trait("Category", "Positive")]
+    public void TryRegisterLoss_IgnoresProbePacketLossForCongestionControl()
+    {
+        QuicCongestionControlState state = new();
+
+        state.RegisterPacketSent(1_200, isProbePacket: true);
+        Assert.Equal(1_200UL, state.BytesInFlightBytes);
+
+        Assert.True(state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 2_000,
+            packetInFlight: true,
+            isProbePacket: true));
+
+        Assert.Equal(0UL, state.BytesInFlightBytes);
+        Assert.False(state.HasRecoveryStartTime);
+        Assert.Equal(12_000UL, state.CongestionWindowBytes);
     }
 
     [Fact]
