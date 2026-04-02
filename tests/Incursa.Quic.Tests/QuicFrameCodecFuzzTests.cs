@@ -4,6 +4,8 @@ public sealed class QuicFrameCodecFuzzTests
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0007")]
     [Requirement("REQ-QUIC-RFC9000-S2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9001-S4-0001")]
