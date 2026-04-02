@@ -12,6 +12,9 @@ public static class QuicTransportParametersCodec
     private const ulong StatelessResetTokenId = 0x02;
     private const ulong MaxUdpPayloadSizeId = 0x03;
     private const ulong InitialMaxDataId = 0x04;
+    private const ulong InitialMaxStreamDataBidiLocalId = 0x05;
+    private const ulong InitialMaxStreamDataBidiRemoteId = 0x06;
+    private const ulong InitialMaxStreamDataUniId = 0x07;
     private const ulong InitialMaxStreamsBidiId = 0x08;
     private const ulong InitialMaxStreamsUniId = 0x09;
     private const ulong MaxAckDelayId = 0x0B;
@@ -20,6 +23,7 @@ public static class QuicTransportParametersCodec
     private const ulong ActiveConnectionIdLimitId = 0x0E;
     private const ulong InitialSourceConnectionIdId = 0x0F;
     private const ulong RetrySourceConnectionIdId = 0x10;
+    private const ulong MaximumStreamLimit = 1UL << 60;
     private const int PreferredAddressMinimumLength = 4 + 2 + 16 + 2 + 1 + 16;
     private const int PreferredAddressMaximumConnectionIdLength = 20;
     private const int StatelessResetTokenLength = 16;
@@ -109,16 +113,40 @@ public static class QuicTransportParametersCodec
             return false;
         }
 
-        if (parameters.InitialMaxStreamsBidi is ulong initialMaxStreamsBidi
-            && !TryWriteVarintParameter(InitialMaxStreamsBidiId, initialMaxStreamsBidi, destination, ref index))
+        if (parameters.InitialMaxStreamDataBidiLocal is ulong initialMaxStreamDataBidiLocal
+            && !TryWriteVarintParameter(InitialMaxStreamDataBidiLocalId, initialMaxStreamDataBidiLocal, destination, ref index))
         {
             return false;
         }
 
-        if (parameters.InitialMaxStreamsUni is ulong initialMaxStreamsUni
-            && !TryWriteVarintParameter(InitialMaxStreamsUniId, initialMaxStreamsUni, destination, ref index))
+        if (parameters.InitialMaxStreamDataBidiRemote is ulong initialMaxStreamDataBidiRemote
+            && !TryWriteVarintParameter(InitialMaxStreamDataBidiRemoteId, initialMaxStreamDataBidiRemote, destination, ref index))
         {
             return false;
+        }
+
+        if (parameters.InitialMaxStreamDataUni is ulong initialMaxStreamDataUni
+            && !TryWriteVarintParameter(InitialMaxStreamDataUniId, initialMaxStreamDataUni, destination, ref index))
+        {
+            return false;
+        }
+
+        if (parameters.InitialMaxStreamsBidi is ulong initialMaxStreamsBidi)
+        {
+            if (initialMaxStreamsBidi > MaximumStreamLimit
+                || !TryWriteVarintParameter(InitialMaxStreamsBidiId, initialMaxStreamsBidi, destination, ref index))
+            {
+                return false;
+            }
+        }
+
+        if (parameters.InitialMaxStreamsUni is ulong initialMaxStreamsUni)
+        {
+            if (initialMaxStreamsUni > MaximumStreamLimit
+                || !TryWriteVarintParameter(InitialMaxStreamsUniId, initialMaxStreamsUni, destination, ref index))
+            {
+                return false;
+            }
         }
 
         if (parameters.MaxAckDelay is ulong maxAckDelay
@@ -299,8 +327,40 @@ public static class QuicTransportParametersCodec
                 parameters.InitialMaxData = initialMaxData;
                 return true;
 
+            case InitialMaxStreamDataBidiLocalId:
+                if (!TryParseVarintValue(value, out ulong initialMaxStreamDataBidiLocal))
+                {
+                    return false;
+                }
+
+                parameters.InitialMaxStreamDataBidiLocal = initialMaxStreamDataBidiLocal;
+                return true;
+
+            case InitialMaxStreamDataBidiRemoteId:
+                if (!TryParseVarintValue(value, out ulong initialMaxStreamDataBidiRemote))
+                {
+                    return false;
+                }
+
+                parameters.InitialMaxStreamDataBidiRemote = initialMaxStreamDataBidiRemote;
+                return true;
+
+            case InitialMaxStreamDataUniId:
+                if (!TryParseVarintValue(value, out ulong initialMaxStreamDataUni))
+                {
+                    return false;
+                }
+
+                parameters.InitialMaxStreamDataUni = initialMaxStreamDataUni;
+                return true;
+
             case InitialMaxStreamsBidiId:
                 if (!TryParseVarintValue(value, out ulong initialMaxStreamsBidi))
+                {
+                    return false;
+                }
+
+                if (initialMaxStreamsBidi > MaximumStreamLimit)
                 {
                     return false;
                 }
@@ -310,6 +370,11 @@ public static class QuicTransportParametersCodec
 
             case InitialMaxStreamsUniId:
                 if (!TryParseVarintValue(value, out ulong initialMaxStreamsUni))
+                {
+                    return false;
+                }
+
+                if (initialMaxStreamsUni > MaximumStreamLimit)
                 {
                     return false;
                 }

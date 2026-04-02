@@ -8,6 +8,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P12-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0014")]
     [Trait("Category", "Positive")]
     public void TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField()
     {
@@ -45,6 +46,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P13-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0007")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0014")]
     [Trait("Category", "Positive")]
     public void TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields()
     {
@@ -86,6 +88,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P14-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S4P6-0012")]
     [Trait("Category", "Positive")]
     public void TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants(bool isBidirectional)
     {

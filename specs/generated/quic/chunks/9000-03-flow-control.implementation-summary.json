@@ -1,0 +1,295 @@
+{
+  "chunk_id": "9000-03-flow-control",
+  "completion_status": "partial_with_explicit_blockers",
+  "files_changed": [
+    "benchmarks/QuicTransportParametersBenchmarks.cs",
+    "benchmarks/README.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+    "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+    "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+  ],
+  "tests_run": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore",
+      "result": "298 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicTransportParametersBenchmarks*\"",
+      "result": "BenchmarkDotNet dry run completed successfully; ParseTransportParameters and FormatTransportParameters both executed"
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParseCryptoFrame_ParsesAndFormatsAllFields",
+        "TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling",
+        "TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+        "TryFormatCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "CRYPTO frames remain outside stream-style flow control and still round-trip independently."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryAddFrame_BuffersOutOfOrderFramesAndDequeuesContiguousBytes",
+        "TryAddFrame_AllowsConfiguredCapacityDuringHandshake",
+        "TryAddFrame_ClosesWithBufferExceededWhenCapacityIsNotExpanded",
+        "TryAddFrame_CanDiscardOverflowFramesAfterHandshakeCompletion",
+        "TryAddFrame_CanCloseAfterHandshakeCompletionInsteadOfDiscarding"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The crypto buffer helper already enforces its own capacity and overflow behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0005 through REQ-QUIC-RFC9000-S4P1-0009",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParameters.cs",
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryFormatTransportParameters_WritesExactTupleSequence",
+        "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+        "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+        "TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField",
+        "TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The transport-parameter codec now round-trips the three initial_max_stream_data_* fields and preserves the MAX_DATA / MAX_STREAM_DATA wire coverage."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0014",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField",
+        "TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields",
+        "Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The blocked-frame helpers already round-trip and now carry explicit requirement tags."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P5-0002 through REQ-QUIC-RFC9000-S4P5-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
+        "TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent",
+        "TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsPresent",
+        "TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsAbsent",
+        "TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
+        "Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation",
+        "TryParseResetStreamFrame_ParsesAndFormatsAllFields",
+        "TryParseResetStreamFrame_RejectsTruncatedInputs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "STREAM FIN and RESET_STREAM final-size wire behavior already existed; the requirement tags now tie that coverage back to S4P5."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0003 through REQ-QUIC-RFC9000-S4P6-0007",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParameters.cs",
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryFormatTransportParameters_WritesExactTupleSequence",
+        "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+        "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+        "TryParseAndFormatTransportParameters_RejectsInitialMaxStreamsAboveTheEncodingLimit",
+        "TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants",
+        "TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Initial stream limits now round-trip through transport parameters, and oversized stream-count values are rejected in both parse and format paths."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0012",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants",
+        "TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit",
+        "TryParseStreamsBlockedFrame_RejectsValuesAboveTheEncodingLimit",
+        "Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "STREAMS_BLOCKED encoding and rejection behavior are already present and now explicitly trace-linked."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4-0001 through REQ-QUIC-RFC9000-S4-0003",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs a connection-scoped flow-control and stream-admission state machine that is not present in the current repository slice.",
+      "notes": "The repo can validate wire shapes, but it does not yet maintain the connection-wide credit accounting needed to enforce these requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0001 through REQ-QUIC-RFC9000-S4P1-0004",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs sender/receiver flow-control enforcement against per-stream and connection-wide credit, which is not yet implemented.",
+      "notes": "Current coverage stops at frame and transport-parameter encoding; it does not yet prevent oversend or apply credit consumption."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0010 through REQ-QUIC-RFC9000-S4P1-0013",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs cumulative connection-byte tracking, monotonic MAX-frame handling, and flow-control violation reporting.",
+      "notes": "The repository lacks the accounting layer needed to decide when a peer has exceeded connection credit or ignored smaller MAX frames."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0015",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs a periodic blocked-sender signaling policy tied to live flow-control state.",
+      "notes": "No connection-scoped sender state exists to trigger periodic updates while flow-control limited."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P2-0001 through REQ-QUIC-RFC9000-S4P2-0005",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs the flow-control autotuning and early-credit advertisement policy that belongs on top of connection-level stream state.",
+      "notes": "The current code does not yet have the higher-level policy engine that can repeatedly or opportunistically advertise credit."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P4-0001 through REQ-QUIC-RFC9000-S4P4-0004",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs RESET_STREAM lifecycle tracking that preserves the opposite direction and retains flow-control state for the unterminated side.",
+      "notes": "The repository still lacks connection-scoped stream teardown and state preservation after reset."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P5-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs stream final-size state that can be shared across STREAM FIN and RESET_STREAM paths.",
+      "notes": "The wire formats are present, but the repository does not yet coordinate final-size state across the connection."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P5-0004 through REQ-QUIC-RFC9000-S4P5-0008",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs immutable final-size tracking, connection-level accounting, and error reporting when bytes arrive beyond the final offset.",
+      "notes": "The current slice can parse and format frame fields, but it does not yet police final-size violations."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0001 through REQ-QUIC-RFC9000-S4P6-0002",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs inbound stream-open accounting and stream-ID limit enforcement.",
+      "notes": "The repo does not yet own a stream-admission layer that can reject opens beyond the advertised limit."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0008 through REQ-QUIC-RFC9000-S4P6-0011",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs connection-wide stream-limit tracking, STREAM_LIMIT_ERROR handling, and monotonic MAX_STREAMS processing.",
+      "notes": "The transport-parameter codec now validates initial counts, but the runtime stream-limit state is still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0013",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs the policy that advertises more stream credit without waiting for STREAMS_BLOCKED first.",
+      "notes": "That behavior depends on the missing stream-opening state machine."
+    }
+  ]
+}

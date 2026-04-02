@@ -6,6 +6,7 @@ This directory contains permanent BenchmarkDotNet suites for the QUIC parser hot
 
 - `Incursa.Quic.Benchmarks`
 - `QuicFrameCodecBenchmarks`: CRYPTO frame parsing and formatting, plus STREAM frame formatting
+- `QuicTransportParametersBenchmarks`: transport-parameter parsing and formatting
 - `QuicRttEstimatorBenchmarks`: RTT sample processing, ACK-delay clamping, and explicit min-RTT refresh
 
 ## Run
@@ -16,6 +17,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --f
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicVariableLengthIntegerBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicStreamParsingBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicFrameCodecBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTransportParametersBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRttEstimatorBenchmarks*"
 ```
 
