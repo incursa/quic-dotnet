@@ -3,8 +3,6 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicFrameCodecPart3Tests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9001-S4-0001")]
-    [Requirement("REQ-QUIC-RFC9001-S4-0002")]
     [Requirement("REQ-QUIC-RFC9000-S4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0005")]
@@ -33,7 +31,6 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9001-S4-0002")]
     [Requirement("REQ-QUIC-RFC9000-S4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
@@ -50,7 +47,6 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9001-S4-0002")]
     [Requirement("REQ-QUIC-RFC9000-S4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
@@ -63,7 +59,6 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9001-S4-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
     [Trait("Category", "Negative")]
