@@ -1,0 +1,271 @@
+{
+  "chunk_id": "9000-11-migration-core",
+  "rfc": "9000",
+  "section_tokens": [
+    "S9",
+    "S9P1",
+    "S9P2",
+    "S9P3",
+    "S9P3P1",
+    "S9P3P2",
+    "S9P3P3"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "audit_result": "clean_with_explicit_blockers",
+  "requirements_in_scope": {
+    "S9": 12,
+    "S9P1": 2,
+    "S9P2": 5,
+    "S9P3": 11,
+    "S9P3P1": 1,
+    "S9P3P2": 5,
+    "S9P3P3": 4,
+    "total": 40,
+    "covered": 1,
+    "blocked": 39,
+    "partial": 0,
+    "needs_review": 0
+  },
+  "reconciliation_artifact_present": false,
+  "implementation_summary_file": "./specs/generated/quic/chunks/9000-11-migration-core.implementation-summary.json",
+  "implementation_summary_alignment": {
+    "spec_requirement_ids": [
+      "REQ-QUIC-RFC9000-S9-0001",
+      "REQ-QUIC-RFC9000-S9-0002",
+      "REQ-QUIC-RFC9000-S9-0003",
+      "REQ-QUIC-RFC9000-S9-0004",
+      "REQ-QUIC-RFC9000-S9-0005",
+      "REQ-QUIC-RFC9000-S9-0006",
+      "REQ-QUIC-RFC9000-S9-0007",
+      "REQ-QUIC-RFC9000-S9-0008",
+      "REQ-QUIC-RFC9000-S9-0009",
+      "REQ-QUIC-RFC9000-S9-0010",
+      "REQ-QUIC-RFC9000-S9-0011",
+      "REQ-QUIC-RFC9000-S9-0012",
+      "REQ-QUIC-RFC9000-S9P1-0001",
+      "REQ-QUIC-RFC9000-S9P1-0002",
+      "REQ-QUIC-RFC9000-S9P2-0001",
+      "REQ-QUIC-RFC9000-S9P2-0002",
+      "REQ-QUIC-RFC9000-S9P2-0003",
+      "REQ-QUIC-RFC9000-S9P2-0004",
+      "REQ-QUIC-RFC9000-S9P2-0005",
+      "REQ-QUIC-RFC9000-S9P3-0001",
+      "REQ-QUIC-RFC9000-S9P3-0002",
+      "REQ-QUIC-RFC9000-S9P3-0003",
+      "REQ-QUIC-RFC9000-S9P3-0004",
+      "REQ-QUIC-RFC9000-S9P3-0005",
+      "REQ-QUIC-RFC9000-S9P3-0006",
+      "REQ-QUIC-RFC9000-S9P3-0007",
+      "REQ-QUIC-RFC9000-S9P3-0008",
+      "REQ-QUIC-RFC9000-S9P3-0009",
+      "REQ-QUIC-RFC9000-S9P3-0010",
+      "REQ-QUIC-RFC9000-S9P3-0011",
+      "REQ-QUIC-RFC9000-S9P3P1-0001",
+      "REQ-QUIC-RFC9000-S9P3P2-0001",
+      "REQ-QUIC-RFC9000-S9P3P2-0002",
+      "REQ-QUIC-RFC9000-S9P3P2-0003",
+      "REQ-QUIC-RFC9000-S9P3P2-0004",
+      "REQ-QUIC-RFC9000-S9P3P2-0005",
+      "REQ-QUIC-RFC9000-S9P3P3-0001",
+      "REQ-QUIC-RFC9000-S9P3P3-0002",
+      "REQ-QUIC-RFC9000-S9P3P3-0003",
+      "REQ-QUIC-RFC9000-S9P3P3-0004"
+    ],
+    "summary_requirement_ids": [
+      "REQ-QUIC-RFC9000-S9-0001",
+      "REQ-QUIC-RFC9000-S9-0002",
+      "REQ-QUIC-RFC9000-S9-0003",
+      "REQ-QUIC-RFC9000-S9-0004",
+      "REQ-QUIC-RFC9000-S9-0005",
+      "REQ-QUIC-RFC9000-S9-0006",
+      "REQ-QUIC-RFC9000-S9-0007",
+      "REQ-QUIC-RFC9000-S9-0008",
+      "REQ-QUIC-RFC9000-S9-0009",
+      "REQ-QUIC-RFC9000-S9-0010",
+      "REQ-QUIC-RFC9000-S9-0011",
+      "REQ-QUIC-RFC9000-S9-0012",
+      "REQ-QUIC-RFC9000-S9P1-0001",
+      "REQ-QUIC-RFC9000-S9P1-0002",
+      "REQ-QUIC-RFC9000-S9P2-0001",
+      "REQ-QUIC-RFC9000-S9P2-0002",
+      "REQ-QUIC-RFC9000-S9P2-0003",
+      "REQ-QUIC-RFC9000-S9P2-0004",
+      "REQ-QUIC-RFC9000-S9P2-0005",
+      "REQ-QUIC-RFC9000-S9P3-0001",
+      "REQ-QUIC-RFC9000-S9P3-0002",
+      "REQ-QUIC-RFC9000-S9P3-0003",
+      "REQ-QUIC-RFC9000-S9P3-0004",
+      "REQ-QUIC-RFC9000-S9P3-0005",
+      "REQ-QUIC-RFC9000-S9P3-0006",
+      "REQ-QUIC-RFC9000-S9P3-0007",
+      "REQ-QUIC-RFC9000-S9P3-0008",
+      "REQ-QUIC-RFC9000-S9P3-0009",
+      "REQ-QUIC-RFC9000-S9P3-0010",
+      "REQ-QUIC-RFC9000-S9P3-0011",
+      "REQ-QUIC-RFC9000-S9P3P1-0001",
+      "REQ-QUIC-RFC9000-S9P3P2-0001",
+      "REQ-QUIC-RFC9000-S9P3P2-0002",
+      "REQ-QUIC-RFC9000-S9P3P2-0003",
+      "REQ-QUIC-RFC9000-S9P3P2-0004",
+      "REQ-QUIC-RFC9000-S9P3P2-0005",
+      "REQ-QUIC-RFC9000-S9P3P3-0001",
+      "REQ-QUIC-RFC9000-S9P3P3-0002",
+      "REQ-QUIC-RFC9000-S9P3P3-0003",
+      "REQ-QUIC-RFC9000-S9P3P3-0004"
+    ],
+    "missing_in_summary": [],
+    "extra_in_summary": [],
+    "summary_status": "partial_with_explicit_blockers"
+  },
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9000-S9P3P1-0001"
+    ],
+    "source_files_checked_for_requirement_ids": [
+      "src/Incursa.Quic"
+    ],
+    "test_files_with_requirement_traits": [
+      "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
+      "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+    ],
+    "stale_or_wrong_refs_found": [],
+    "notes": "The audited tests carry the exact in-scope requirement ID on the intended cases. No source-side requirement refs were present in the scoped code, which is consistent with the repository convention for this slice."
+  },
+  "requirements": [
+    {
+      "section_token": "S9",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9-0001",
+        "REQ-QUIC-RFC9000-S9-0002",
+        "REQ-QUIC-RFC9000-S9-0003",
+        "REQ-QUIC-RFC9000-S9-0004",
+        "REQ-QUIC-RFC9000-S9-0005",
+        "REQ-QUIC-RFC9000-S9-0006",
+        "REQ-QUIC-RFC9000-S9-0007",
+        "REQ-QUIC-RFC9000-S9-0008",
+        "REQ-QUIC-RFC9000-S9-0009",
+        "REQ-QUIC-RFC9000-S9-0010",
+        "REQ-QUIC-RFC9000-S9-0011",
+        "REQ-QUIC-RFC9000-S9-0012"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This behavior needs a connection-migration state machine that can gate handshake confirmation, peer-address changes, and local-address selection before the rule can be enforced.",
+      "notes": "The current codebase only exposes helper primitives; there is no connection-level migration policy yet."
+    },
+    {
+      "section_token": "S9P1",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P1-0001",
+        "REQ-QUIC-RFC9000-S9P1-0002"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This behavior needs a migration-aware send path that can probe a new local address before moving traffic.",
+      "notes": "No migration-aware send-path exists to stage or probe a new local address."
+    },
+    {
+      "section_token": "S9P2",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P2-0001",
+        "REQ-QUIC-RFC9000-S9P2-0002",
+        "REQ-QUIC-RFC9000-S9P2-0003",
+        "REQ-QUIC-RFC9000-S9P2-0004",
+        "REQ-QUIC-RFC9000-S9P2-0005"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This behavior needs migration-aware congestion, RTT, and ECN reset state on the new path.",
+      "notes": "No migration controller exists to reset or retain congestion, RTT, or ECN state."
+    },
+    {
+      "section_token": "S9P3",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P3-0001",
+        "REQ-QUIC-RFC9000-S9P3-0002",
+        "REQ-QUIC-RFC9000-S9P3-0003",
+        "REQ-QUIC-RFC9000-S9P3-0004",
+        "REQ-QUIC-RFC9000-S9P3-0005",
+        "REQ-QUIC-RFC9000-S9P3-0006",
+        "REQ-QUIC-RFC9000-S9P3-0007",
+        "REQ-QUIC-RFC9000-S9P3-0008",
+        "REQ-QUIC-RFC9000-S9P3-0009",
+        "REQ-QUIC-RFC9000-S9P3-0010",
+        "REQ-QUIC-RFC9000-S9P3-0011"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Blocked by the missing connection-migration state machine and send-path orchestration.",
+      "notes": "Blocked by missing connection-level migration policy."
+    },
+    {
+      "section_token": "S9P3P1",
+      "status": "implemented_and_tested",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P3P1-0001"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs:CanSend_TracksTheThreeTimesAmplificationCapUntilValidation",
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs:CanSend_AllowsUnlimitedSendingAfterAddressValidation",
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs:TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs:TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The existing anti-amplification helper already enforced the send cap until validation; this pass added explicit migration-core trace refs and exercised both budget- and padding-facing entry points."
+    },
+    {
+      "section_token": "S9P3P2",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P3P2-0001",
+        "REQ-QUIC-RFC9000-S9P3P2-0002",
+        "REQ-QUIC-RFC9000-S9P3P2-0003",
+        "REQ-QUIC-RFC9000-S9P3P2-0004",
+        "REQ-QUIC-RFC9000-S9P3P2-0005"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This fallback behavior needs a connection-state machine with last-validated-address tracking and a silent-close/stateless-reset decision point.",
+      "notes": "The last-validated-address fallback requires state that is not present yet."
+    },
+    {
+      "section_token": "S9P3P3",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S9P3P3-0001",
+        "REQ-QUIC-RFC9000-S9P3P3-0002",
+        "REQ-QUIC-RFC9000-S9P3P3-0003",
+        "REQ-QUIC-RFC9000-S9P3P3-0004"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This behavior needs apparent-migration detection and previous-path validation orchestration.",
+      "notes": "The path-validation trigger and previous-path recovery logic are not represented yet."
+    }
+  ],
+  "tests_reviewed": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicAntiAmplificationBudgetTests|FullyQualifiedName~QuicPathValidationTests\"",
+      "result": "10 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "result": "298 passed, 0 failed, 0 skipped"
+    }
+  ],
+  "notes": [
+    "No reconciliation artifact existed for this chunk.",
+    "The implementation summary and spec requirement set are aligned: 40 in-scope requirement IDs, 0 missing, 0 extra.",
+    "No stale or wrong requirement refs were found in the scoped tests or source.",
+    "The only implemented slice is the anti-amplification budget guard for unvalidated addresses; the remaining requirements are intentionally blocked on missing connection-migration infrastructure."
+  ]
+}

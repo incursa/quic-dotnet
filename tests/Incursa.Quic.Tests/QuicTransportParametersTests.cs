@@ -144,6 +144,8 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S4P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0003")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S9P6P1-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S9P6P1-0007")]
     [Trait("Category", "Positive")]
     public void TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress()
     {
