@@ -1,0 +1,108 @@
+{
+  "chunk_id": "9000-29-iana-and-late-sections",
+  "rfc": "9000",
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "reconciliation_file": "./specs/generated/quic/chunks/9000-29-iana-and-late-sections.reconciliation.json",
+  "implementation_summary_file": "./specs/generated/quic/chunks/9000-29-iana-and-late-sections.implementation-summary.json",
+  "section_tokens": [
+    "S22P1P1",
+    "S22P1P2",
+    "S22P1P3",
+    "S22P1P4",
+    "S22P2",
+    "S22P3",
+    "S22P4",
+    "S22P5"
+  ],
+  "scope": {
+    "total_requirements": 52,
+    "implemented_and_tested": [
+      "REQ-QUIC-RFC9000-S22P2-0001",
+      "REQ-QUIC-RFC9000-S22P2-0002",
+      "REQ-QUIC-RFC9000-S22P2-0003",
+      "REQ-QUIC-RFC9000-S22P2-0004",
+      "REQ-QUIC-RFC9000-S22P3-0003",
+      "REQ-QUIC-RFC9000-S22P3-0004",
+      "REQ-QUIC-RFC9000-S22P4-0003",
+      "REQ-QUIC-RFC9000-S22P4-0004",
+      "REQ-QUIC-RFC9000-S22P4-0006",
+      "REQ-QUIC-RFC9000-S22P5-0003",
+      "REQ-QUIC-RFC9000-S22P5-0004",
+      "REQ-QUIC-RFC9000-S22P5-0005"
+    ],
+    "intentionally_deferred": [
+      "REQ-QUIC-RFC9000-S22P1P1-0001",
+      "REQ-QUIC-RFC9000-S22P1P1-0002",
+      "REQ-QUIC-RFC9000-S22P1P1-0003",
+      "REQ-QUIC-RFC9000-S22P1P1-0004",
+      "REQ-QUIC-RFC9000-S22P1P1-0005",
+      "REQ-QUIC-RFC9000-S22P1P1-0006",
+      "REQ-QUIC-RFC9000-S22P1P1-0007",
+      "REQ-QUIC-RFC9000-S22P1P1-0008",
+      "REQ-QUIC-RFC9000-S22P1P1-0009",
+      "REQ-QUIC-RFC9000-S22P1P1-0010",
+      "REQ-QUIC-RFC9000-S22P1P1-0011",
+      "REQ-QUIC-RFC9000-S22P1P1-0012",
+      "REQ-QUIC-RFC9000-S22P1P1-0013",
+      "REQ-QUIC-RFC9000-S22P1P1-0014",
+      "REQ-QUIC-RFC9000-S22P1P2-0001",
+      "REQ-QUIC-RFC9000-S22P1P2-0002",
+      "REQ-QUIC-RFC9000-S22P1P2-0003",
+      "REQ-QUIC-RFC9000-S22P1P2-0004",
+      "REQ-QUIC-RFC9000-S22P1P2-0005",
+      "REQ-QUIC-RFC9000-S22P1P2-0006",
+      "REQ-QUIC-RFC9000-S22P1P2-0007",
+      "REQ-QUIC-RFC9000-S22P1P3-0001",
+      "REQ-QUIC-RFC9000-S22P1P3-0002",
+      "REQ-QUIC-RFC9000-S22P1P3-0003",
+      "REQ-QUIC-RFC9000-S22P1P3-0004",
+      "REQ-QUIC-RFC9000-S22P1P4-0001",
+      "REQ-QUIC-RFC9000-S22P1P4-0002",
+      "REQ-QUIC-RFC9000-S22P1P4-0003",
+      "REQ-QUIC-RFC9000-S22P1P4-0004",
+      "REQ-QUIC-RFC9000-S22P1P4-0005",
+      "REQ-QUIC-RFC9000-S22P1P4-0006",
+      "REQ-QUIC-RFC9000-S22P1P4-0007",
+      "REQ-QUIC-RFC9000-S22P1P4-0008",
+      "REQ-QUIC-RFC9000-S22P3-0001",
+      "REQ-QUIC-RFC9000-S22P3-0002",
+      "REQ-QUIC-RFC9000-S22P4-0001",
+      "REQ-QUIC-RFC9000-S22P4-0002",
+      "REQ-QUIC-RFC9000-S22P4-0005",
+      "REQ-QUIC-RFC9000-S22P5-0001",
+      "REQ-QUIC-RFC9000-S22P5-0002"
+    ],
+    "blocked_by_technical_dependency": []
+  },
+  "verification": {
+    "stale_requirement_ids_in_scope": [],
+    "uncovered_requirements_in_scope": [],
+    "tests_referencing_in_scope_requirement_ids": [
+      "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "src_requirement_refs_found": false,
+    "reconciliation_artifact_present": false
+  },
+  "evidence_files": {
+    "tests": [
+      "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+    ],
+    "src": [
+      "src/Incursa.Quic/QuicTransportErrorCode.cs"
+    ]
+  },
+  "notes": [
+    "The requested reconciliation artifact was not present on disk, so the audit was completed from the canonical spec, the implementation summary, and repo search evidence.",
+    "No stale requirement IDs remained in the in-scope test refs.",
+    "No in-scope requirement was left uncovered without an explicit deferred note.",
+    "The code-bearing subset for S22P2, S22P3, S22P4, and S22P5 is traced through tests and metadata; the S22P1 registry-process clauses remain intentionally deferred because this repository does not model IANA administration workflows."
+  ]
+}
