@@ -1,0 +1,1092 @@
+{
+  "chunk_id": "9002-04-congestion-control",
+  "rfc": "9002",
+  "section_tokens": [
+    "S7",
+    "S7P1",
+    "S7P2",
+    "S7P3P1",
+    "S7P3P2",
+    "S7P3P3",
+    "S7P4",
+    "S7P5",
+    "S7P6",
+    "S7P6P1",
+    "S7P6P2",
+    "S7P7",
+    "S7P8"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
+  "audit_result": "trace-consistent-with-implemented-and-deferred-items",
+  "reconciliation_artifact_present": false,
+  "reconciliation_artifact_path": "./specs/generated/quic/chunks/9002-04-congestion-control.reconciliation.json",
+  "implementation_summary_file": "./specs/generated/quic/chunks/9002-04-congestion-control.implementation-summary.json",
+  "implementation_summary_alignment": {
+    "spec_requirement_ids": [
+      "REQ-QUIC-RFC9002-S7-0001",
+      "REQ-QUIC-RFC9002-S7-0002",
+      "REQ-QUIC-RFC9002-S7-0003",
+      "REQ-QUIC-RFC9002-S7-0004",
+      "REQ-QUIC-RFC9002-S7-0005",
+      "REQ-QUIC-RFC9002-S7-0006",
+      "REQ-QUIC-RFC9002-S7P1-0001",
+      "REQ-QUIC-RFC9002-S7P2-0001",
+      "REQ-QUIC-RFC9002-S7P2-0002",
+      "REQ-QUIC-RFC9002-S7P2-0003",
+      "REQ-QUIC-RFC9002-S7P2-0004",
+      "REQ-QUIC-RFC9002-S7P2-0005",
+      "REQ-QUIC-RFC9002-S7P3P1-0001",
+      "REQ-QUIC-RFC9002-S7P3P1-0002",
+      "REQ-QUIC-RFC9002-S7P3P1-0003",
+      "REQ-QUIC-RFC9002-S7P3P2-0001",
+      "REQ-QUIC-RFC9002-S7P3P2-0002",
+      "REQ-QUIC-RFC9002-S7P3P2-0003",
+      "REQ-QUIC-RFC9002-S7P3P2-0004",
+      "REQ-QUIC-RFC9002-S7P3P2-0005",
+      "REQ-QUIC-RFC9002-S7P3P2-0006",
+      "REQ-QUIC-RFC9002-S7P3P2-0007",
+      "REQ-QUIC-RFC9002-S7P3P3-0001",
+      "REQ-QUIC-RFC9002-S7P3P3-0002",
+      "REQ-QUIC-RFC9002-S7P4-0001",
+      "REQ-QUIC-RFC9002-S7P4-0002",
+      "REQ-QUIC-RFC9002-S7P5-0001",
+      "REQ-QUIC-RFC9002-S7P5-0002",
+      "REQ-QUIC-RFC9002-S7P6-0001",
+      "REQ-QUIC-RFC9002-S7P6P1-0001",
+      "REQ-QUIC-RFC9002-S7P6P1-0002",
+      "REQ-QUIC-RFC9002-S7P6P1-0003",
+      "REQ-QUIC-RFC9002-S7P6P2-0001",
+      "REQ-QUIC-RFC9002-S7P6P2-0002",
+      "REQ-QUIC-RFC9002-S7P6P2-0003",
+      "REQ-QUIC-RFC9002-S7P6P2-0004",
+      "REQ-QUIC-RFC9002-S7P6P2-0005",
+      "REQ-QUIC-RFC9002-S7P6P2-0006",
+      "REQ-QUIC-RFC9002-S7P7-0001",
+      "REQ-QUIC-RFC9002-S7P7-0002",
+      "REQ-QUIC-RFC9002-S7P7-0003",
+      "REQ-QUIC-RFC9002-S7P7-0004",
+      "REQ-QUIC-RFC9002-S7P7-0005",
+      "REQ-QUIC-RFC9002-S7P8-0001",
+      "REQ-QUIC-RFC9002-S7P8-0002",
+      "REQ-QUIC-RFC9002-S7P8-0003"
+    ],
+    "summary_requirement_ids": [
+      "REQ-QUIC-RFC9002-S7-0001",
+      "REQ-QUIC-RFC9002-S7-0002",
+      "REQ-QUIC-RFC9002-S7-0003",
+      "REQ-QUIC-RFC9002-S7-0004",
+      "REQ-QUIC-RFC9002-S7-0005",
+      "REQ-QUIC-RFC9002-S7-0006",
+      "REQ-QUIC-RFC9002-S7P1-0001",
+      "REQ-QUIC-RFC9002-S7P2-0001",
+      "REQ-QUIC-RFC9002-S7P2-0002",
+      "REQ-QUIC-RFC9002-S7P2-0003",
+      "REQ-QUIC-RFC9002-S7P2-0004",
+      "REQ-QUIC-RFC9002-S7P2-0005",
+      "REQ-QUIC-RFC9002-S7P3P1-0001",
+      "REQ-QUIC-RFC9002-S7P3P1-0002",
+      "REQ-QUIC-RFC9002-S7P3P1-0003",
+      "REQ-QUIC-RFC9002-S7P3P2-0001",
+      "REQ-QUIC-RFC9002-S7P3P2-0002",
+      "REQ-QUIC-RFC9002-S7P3P2-0003",
+      "REQ-QUIC-RFC9002-S7P3P2-0004",
+      "REQ-QUIC-RFC9002-S7P3P2-0005",
+      "REQ-QUIC-RFC9002-S7P3P2-0006",
+      "REQ-QUIC-RFC9002-S7P3P2-0007",
+      "REQ-QUIC-RFC9002-S7P3P3-0001",
+      "REQ-QUIC-RFC9002-S7P3P3-0002",
+      "REQ-QUIC-RFC9002-S7P4-0001",
+      "REQ-QUIC-RFC9002-S7P4-0002",
+      "REQ-QUIC-RFC9002-S7P5-0001",
+      "REQ-QUIC-RFC9002-S7P5-0002",
+      "REQ-QUIC-RFC9002-S7P6-0001",
+      "REQ-QUIC-RFC9002-S7P6P1-0001",
+      "REQ-QUIC-RFC9002-S7P6P1-0002",
+      "REQ-QUIC-RFC9002-S7P6P1-0003",
+      "REQ-QUIC-RFC9002-S7P6P2-0001",
+      "REQ-QUIC-RFC9002-S7P6P2-0002",
+      "REQ-QUIC-RFC9002-S7P6P2-0003",
+      "REQ-QUIC-RFC9002-S7P6P2-0004",
+      "REQ-QUIC-RFC9002-S7P6P2-0005",
+      "REQ-QUIC-RFC9002-S7P6P2-0006",
+      "REQ-QUIC-RFC9002-S7P7-0001",
+      "REQ-QUIC-RFC9002-S7P7-0002",
+      "REQ-QUIC-RFC9002-S7P7-0003",
+      "REQ-QUIC-RFC9002-S7P7-0004",
+      "REQ-QUIC-RFC9002-S7P7-0005",
+      "REQ-QUIC-RFC9002-S7P8-0001",
+      "REQ-QUIC-RFC9002-S7P8-0002",
+      "REQ-QUIC-RFC9002-S7P8-0003"
+    ],
+    "missing_in_summary": [],
+    "extra_in_summary": [],
+    "summary_status": "completed_with_deferred_items"
+  },
+  "requirements_in_scope": {
+    "S7": 6,
+    "S7P1": 1,
+    "S7P2": 5,
+    "S7P3P1": 3,
+    "S7P3P2": 7,
+    "S7P3P3": 2,
+    "S7P4": 2,
+    "S7P5": 2,
+    "S7P6": 1,
+    "S7P6P1": 3,
+    "S7P6P2": 6,
+    "S7P7": 5,
+    "S7P8": 3,
+    "total": 46,
+    "covered": 39,
+    "deferred": 7,
+    "blocked": 0,
+    "partial": 0,
+    "needs_review": 0
+  },
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9002-S7-0001",
+      "REQ-QUIC-RFC9002-S7-0002",
+      "REQ-QUIC-RFC9002-S7-0003",
+      "REQ-QUIC-RFC9002-S7-0004",
+      "REQ-QUIC-RFC9002-S7-0005",
+      "REQ-QUIC-RFC9002-S7-0006",
+      "REQ-QUIC-RFC9002-S7P1-0001",
+      "REQ-QUIC-RFC9002-S7P2-0001",
+      "REQ-QUIC-RFC9002-S7P2-0002",
+      "REQ-QUIC-RFC9002-S7P2-0003",
+      "REQ-QUIC-RFC9002-S7P2-0004",
+      "REQ-QUIC-RFC9002-S7P2-0005",
+      "REQ-QUIC-RFC9002-S7P3P1-0001",
+      "REQ-QUIC-RFC9002-S7P3P1-0002",
+      "REQ-QUIC-RFC9002-S7P3P1-0003",
+      "REQ-QUIC-RFC9002-S7P3P2-0001",
+      "REQ-QUIC-RFC9002-S7P3P2-0002",
+      "REQ-QUIC-RFC9002-S7P3P2-0003",
+      "REQ-QUIC-RFC9002-S7P3P2-0004",
+      "REQ-QUIC-RFC9002-S7P3P2-0005",
+      "REQ-QUIC-RFC9002-S7P3P2-0006",
+      "REQ-QUIC-RFC9002-S7P3P2-0007",
+      "REQ-QUIC-RFC9002-S7P3P3-0001",
+      "REQ-QUIC-RFC9002-S7P3P3-0002",
+      "REQ-QUIC-RFC9002-S7P4-0001",
+      "REQ-QUIC-RFC9002-S7P4-0002",
+      "REQ-QUIC-RFC9002-S7P5-0001",
+      "REQ-QUIC-RFC9002-S7P5-0002",
+      "REQ-QUIC-RFC9002-S7P6-0001",
+      "REQ-QUIC-RFC9002-S7P6P1-0001",
+      "REQ-QUIC-RFC9002-S7P6P1-0002",
+      "REQ-QUIC-RFC9002-S7P6P1-0003",
+      "REQ-QUIC-RFC9002-S7P6P2-0001",
+      "REQ-QUIC-RFC9002-S7P6P2-0002",
+      "REQ-QUIC-RFC9002-S7P6P2-0003",
+      "REQ-QUIC-RFC9002-S7P6P2-0004",
+      "REQ-QUIC-RFC9002-S7P6P2-0005",
+      "REQ-QUIC-RFC9002-S7P6P2-0006",
+      "REQ-QUIC-RFC9002-S7P7-0001",
+      "REQ-QUIC-RFC9002-S7P7-0002",
+      "REQ-QUIC-RFC9002-S7P7-0003",
+      "REQ-QUIC-RFC9002-S7P7-0004",
+      "REQ-QUIC-RFC9002-S7P7-0005",
+      "REQ-QUIC-RFC9002-S7P8-0001",
+      "REQ-QUIC-RFC9002-S7P8-0002",
+      "REQ-QUIC-RFC9002-S7P8-0003"
+    ],
+    "source_files_checked_for_requirement_ids": [
+      "src/Incursa.Quic/QuicCongestionControlState.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+    ],
+    "test_files_with_requirement_traits": [
+      "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+    ],
+    "stale_or_wrong_refs_found": [],
+    "notes": [
+      "The test file now carries direct tags for all scoped requirement IDs, including the explicitly deferred helper-level pacing clauses.",
+      "No in-scope requirement IDs were found in source comments, matching the repository convention for this slice."
+    ]
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0001",
+      "title": "Require alternate controllers to obey RFC 8085",
+      "section_token": "S7",
+      "status": "deferred",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": "No alternate-controller or RFC 8085 send-policy surface exists yet.",
+      "notes": "The helper slice exercises the core congestion-control math, but the full sender/pacer behavior required by the RFC clause remains deferred."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0002",
+      "title": "Exclude ACK-only packets from bytes in flight",
+      "section_token": "S7",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0003",
+      "title": "Exclude ACK-only packets from congestion control",
+      "section_token": "S7",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0004",
+      "title": "Allow ACK-only loss signals to influence control",
+      "section_token": "S7",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight",
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0005",
+      "title": "Keep congestion control per path",
+      "section_token": "S7",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0006",
+      "title": "Respect the bytes-in-flight ceiling",
+      "section_token": "S7",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P1-0001",
+      "title": "Treat ECN CE as congestion on validated paths",
+      "section_token": "S7P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0001",
+      "title": "Start each connection in slow start",
+      "section_token": "S7P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0002",
+      "title": "Recommend the initial congestion window",
+      "section_token": "S7P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0003",
+      "title": "Recompute the initial window when datagram size changes",
+      "section_token": "S7P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent",
+        "ComputeInitialWindowAndResetToInitialWindow_FollowTheDatagramSize"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0004",
+      "title": "Reset the initial window after handshake-driven MTU reduction",
+      "section_token": "S7P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent",
+        "ComputeInitialWindowAndResetToInitialWindow_FollowTheDatagramSize"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0005",
+      "title": "Recommend a two-packet minimum congestion window",
+      "section_token": "S7P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P1-0001",
+      "title": "Enter recovery on loss or ECN-CE increase",
+      "section_token": "S7P3P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P1-0002",
+      "title": "Enter slow start when the window is below threshold",
+      "section_token": "S7P3P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P1-0003",
+      "title": "Increase cwnd by acknowledged bytes in slow start",
+      "section_token": "S7P3P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0001",
+      "title": "Stay in recovery once entered",
+      "section_token": "S7P3P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0002",
+      "title": "Do not reenter recovery while already there",
+      "section_token": "S7P3P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0003",
+      "title": "Cut the slow start threshold on recovery entry",
+      "section_token": "S7P3P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0004",
+      "title": "Restore congestion window before leaving recovery",
+      "section_token": "S7P3P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0005",
+      "title": "Permit gentler recovery-window reduction",
+      "section_token": "S7P3P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0006",
+      "title": "Hold the congestion window steady during recovery",
+      "section_token": "S7P3P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0007",
+      "title": "Leave recovery when a recovery-period packet is acknowledged",
+      "section_token": "S7P3P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P3-0001",
+      "title": "Remain in congestion avoidance only while the window is above the threshold",
+      "section_token": "S7P3P3",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P3P3-0002",
+      "title": "Limit congestion-avoidance growth to one datagram per acknowledged window",
+      "section_token": "S7P3P3",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P4-0001",
+      "title": "Ignore undecryptable packet loss before keys are available",
+      "section_token": "S7P4",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P4-0002",
+      "title": "Do not ignore later packet loss",
+      "section_token": "S7P4",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P5-0001",
+      "title": "Do not block probe packets with congestion control",
+      "section_token": "S7P5",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P5-0002",
+      "title": "Count probe packets as additional flight",
+      "section_token": "S7P5",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6-0001",
+      "title": "Declare persistent congestion when all long-duration packets are lost",
+      "section_token": "S7P6",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P1-0001",
+      "title": "Compute persistent congestion duration from RTT and max_ack_delay",
+      "section_token": "S7P6P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P1-0002",
+      "title": "Include max_ack_delay in persistent congestion duration",
+      "section_token": "S7P6P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P1-0003",
+      "title": "Recommend a persistent congestion threshold of three",
+      "section_token": "S7P6P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0001",
+      "title": "Establish persistent congestion after the full loss test passes",
+      "section_token": "S7P6P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0002",
+      "title": "Require the two declared-lost packets to be ack-eliciting",
+      "section_token": "S7P6P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0003",
+      "title": "Delay persistent congestion until at least one RTT sample exists",
+      "section_token": "S7P6P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0004",
+      "title": "Consider packet number spaces when declaring persistent congestion",
+      "section_token": "S7P6P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0005",
+      "title": "Allow limited packet-number-space state when necessary",
+      "section_token": "S7P6P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0006",
+      "title": "Reset cwnd to the minimum on persistent congestion",
+      "section_token": "S7P6P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0001",
+      "title": "Pace all in-flight packets",
+      "section_token": "S7P7",
+      "status": "deferred",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": "The repo still lacks a real packet scheduler/send loop that can pace every in-flight packet.",
+      "notes": "The helper slice exercises the core congestion-control math, but the full sender/pacer behavior required by the RFC clause remains deferred."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0002",
+      "title": "Either pace or cap bursts",
+      "section_token": "S7P7",
+      "status": "deferred",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": "Burst capping versus pacing is only modeled as helper math; enforcement belongs in sender orchestration.",
+      "notes": "The helper slice exercises the core congestion-control math, but the full sender/pacer behavior required by the RFC clause remains deferred."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0003",
+      "title": "Limit bursts to the initial congestion window",
+      "section_token": "S7P7",
+      "status": "deferred",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": "Initial-window burst capping is not yet wired to a concrete transmit queue.",
+      "notes": "The helper slice exercises the core congestion-control math, but the full sender/pacer behavior required by the RFC clause remains deferred."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0004",
+      "title": "Allow larger bursts when the path can absorb them",
+      "section_token": "S7P7",
+      "status": "deferred",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": "Larger-burst allowance needs path-level scheduling decisions that are outside the current helper slice.",
+      "notes": "The helper slice exercises the core congestion-control math, but the full sender/pacer behavior required by the RFC clause remains deferred."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0005",
+      "title": "Do not pace pure ACK packets",
+      "section_token": "S7P7",
+      "status": "deferred",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": "The helper can skip pacing pure ACKs, but the sender layer that decides which packets are ACK-only is still missing.",
+      "notes": "The helper slice exercises the core congestion-control math, but the full sender/pacer behavior required by the RFC clause remains deferred."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P8-0001",
+      "title": "Do not increase cwnd when underutilized",
+      "section_token": "S7P8",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P8-0002",
+      "title": "Do not call yourself application-limited because of pacing delay",
+      "section_token": "S7P8",
+      "status": "deferred",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": "Application-limited classification due to pacing delay is a sender-state concern that is not represented yet.",
+      "notes": "The helper slice exercises the core congestion-control math, but the full sender/pacer behavior required by the RFC clause remains deferred."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P8-0003",
+      "title": "Allow alternate cwnd-updating mechanisms after underutilization",
+      "section_token": "S7P8",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
+    }
+  ],
+  "deferred_requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0001",
+      "reason": "No alternate-controller or RFC 8085 send-policy surface exists yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0001",
+      "reason": "The repo still lacks a real packet scheduler/send loop that can pace every in-flight packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0002",
+      "reason": "Burst capping versus pacing is only modeled as helper math; enforcement belongs in sender orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0003",
+      "reason": "Initial-window burst capping is not yet wired to a concrete transmit queue."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0004",
+      "reason": "Larger-burst allowance needs path-level scheduling decisions that are outside the current helper slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0005",
+      "reason": "The helper can skip pacing pure ACKs, but the sender layer that decides which packets are ACK-only is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P8-0002",
+      "reason": "Application-limited classification due to pacing delay is a sender-state concern that is not represented yet."
+    }
+  ],
+  "verification": {
+    "tests_run": [
+      {
+        "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicCongestionControlStateTests\"",
+        "result": "6/6 passed"
+      },
+      {
+        "command": "dotnet build benchmarks/Incursa.Quic.Benchmarks.csproj",
+        "result": "Succeeded"
+      },
+      {
+        "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+        "result": "326/326 passed"
+      }
+    ]
+  },
+  "notes": [
+    "No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.",
+    "The helper slice intentionally defers the full sender/pacer behavior for RFC 9002 Section 7.7 and the pacing-delay portion of Section 7.8."
+  ]
+}
