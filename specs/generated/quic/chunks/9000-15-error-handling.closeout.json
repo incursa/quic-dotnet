@@ -1,0 +1,181 @@
+{
+  "chunk_id": "9000-15-error-handling",
+  "rfc": "9000",
+  "section_tokens": [
+    "S11",
+    "S11P1",
+    "S11P2"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "reconciliation_artifact_present": false,
+  "reconciliation_artifact_path": "./specs/generated/quic/chunks/9000-15-error-handling.reconciliation.json",
+  "implementation_summary_file": "./specs/generated/quic/chunks/9000-15-error-handling.implementation-summary.json",
+  "audit_result": "trace-consistent-with-implemented-and-deferred-items",
+  "requirements_in_scope": {
+    "total": 18,
+    "covered": 7,
+    "deferred": 11,
+    "uncovered": 0,
+    "stale_ids": 0,
+    "wrong_ids": 0
+  },
+  "scope_inventory": {
+    "S11": [
+      "REQ-QUIC-RFC9000-S11-0001",
+      "REQ-QUIC-RFC9000-S11-0002",
+      "REQ-QUIC-RFC9000-S11-0003",
+      "REQ-QUIC-RFC9000-S11-0004",
+      "REQ-QUIC-RFC9000-S11-0005"
+    ],
+    "S11P1": [
+      "REQ-QUIC-RFC9000-S11P1-0001",
+      "REQ-QUIC-RFC9000-S11P1-0002",
+      "REQ-QUIC-RFC9000-S11P1-0003",
+      "REQ-QUIC-RFC9000-S11P1-0004",
+      "REQ-QUIC-RFC9000-S11P1-0005",
+      "REQ-QUIC-RFC9000-S11P1-0006",
+      "REQ-QUIC-RFC9000-S11P1-0007",
+      "REQ-QUIC-RFC9000-S11P1-0008"
+    ],
+    "S11P2": [
+      "REQ-QUIC-RFC9000-S11P2-0001",
+      "REQ-QUIC-RFC9000-S11P2-0002",
+      "REQ-QUIC-RFC9000-S11P2-0003",
+      "REQ-QUIC-RFC9000-S11P2-0004",
+      "REQ-QUIC-RFC9000-S11P2-0005"
+    ]
+  },
+  "coverage": {
+    "covered_requirement_ids": [
+      "REQ-QUIC-RFC9000-S11-0001",
+      "REQ-QUIC-RFC9000-S11-0002",
+      "REQ-QUIC-RFC9000-S11-0003",
+      "REQ-QUIC-RFC9000-S11-0004",
+      "REQ-QUIC-RFC9000-S11P1-0001",
+      "REQ-QUIC-RFC9000-S11P1-0002",
+      "REQ-QUIC-RFC9000-S11P1-0003"
+    ],
+    "deferred_requirement_ids": [
+      "REQ-QUIC-RFC9000-S11-0005",
+      "REQ-QUIC-RFC9000-S11P1-0004",
+      "REQ-QUIC-RFC9000-S11P1-0005",
+      "REQ-QUIC-RFC9000-S11P1-0006",
+      "REQ-QUIC-RFC9000-S11P1-0007",
+      "REQ-QUIC-RFC9000-S11P1-0008",
+      "REQ-QUIC-RFC9000-S11P2-0001",
+      "REQ-QUIC-RFC9000-S11P2-0002",
+      "REQ-QUIC-RFC9000-S11P2-0003",
+      "REQ-QUIC-RFC9000-S11P2-0004",
+      "REQ-QUIC-RFC9000-S11P2-0005"
+    ],
+    "uncovered_requirement_ids": []
+  },
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      {
+        "file": "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+        "requirement_ids": [
+          "REQ-QUIC-RFC9000-S11-0001",
+          "REQ-QUIC-RFC9000-S11-0002",
+          "REQ-QUIC-RFC9000-S11-0003",
+          "REQ-QUIC-RFC9000-S11-0004",
+          "REQ-QUIC-RFC9000-S11P1-0001",
+          "REQ-QUIC-RFC9000-S11P1-0002",
+          "REQ-QUIC-RFC9000-S11P1-0003"
+        ]
+      },
+      {
+        "file": "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+        "requirement_ids": [
+          "REQ-QUIC-RFC9000-S11-0001",
+          "REQ-QUIC-RFC9000-S11-0002",
+          "REQ-QUIC-RFC9000-S11-0003",
+          "REQ-QUIC-RFC9000-S11-0004",
+          "REQ-QUIC-RFC9000-S11P1-0001",
+          "REQ-QUIC-RFC9000-S11P1-0002",
+          "REQ-QUIC-RFC9000-S11P1-0003"
+        ]
+      }
+    ],
+    "stale_requirement_refs_found": [],
+    "wrong_requirement_refs_found": [],
+    "out_of_scope_requirement_refs_found": [
+      {
+        "file": "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "requirement_id": "REQ-QUIC-RFC9000-S10P1P1-0001",
+        "line": 42,
+        "note": "This is a liveness-probe requirement from RFC 9000 Section 10.1.1, not an in-scope S11 error-handling requirement."
+      }
+    ],
+    "notes": [
+      "The source tree contains no in-scope S11/S11P1/S11P2 requirement IDs outside the generated summary and the targeted tests.",
+      "The classifier test in QuicFrameCodecTests.cs is carrying an older Section 10.1.1 requirement tag that does not belong to this chunk's scope."
+    ]
+  },
+  "evidence": {
+    "implementation_files": [
+      "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+    ],
+    "test_files": [
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
+    ],
+    "notes": [
+      "The implementation summary reports successful test runs for the frame-codec error-handling slice and the full suite; this closeout did not rerun them.",
+      "The missing reconciliation artifact path is treated as absent, not stale."
+    ]
+  },
+  "deferred_requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S11-0005",
+      "reason": "Stateless-reset suppression still needs connection-state awareness."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0004",
+      "reason": "Retransmitting a terminal close packet after additional traffic needs a send path."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0005",
+      "reason": "Bounding terminal retransmissions needs connection-lifecycle policy."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0006",
+      "reason": "Attempting stateless reset after close needs receive-path and stateful termination logic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0007",
+      "reason": "Invalid Initial discard depends on handshake authentication and packet-processing pipeline."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0008",
+      "reason": "Safe discard after reverting side effects needs a reversible receive pipeline."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S11P2-0001",
+      "reason": "RESET_STREAM instigation needs application-protocol and stream-state orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S11P2-0002",
+      "reason": "Only the application protocol can instigate RESET_STREAM."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S11P2-0003",
+      "reason": "Stream termination policy is owned by the application protocol."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S11P2-0004",
+      "reason": "STOP_SENDING-driven RESET_STREAM needs an application-protocol callback surface."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S11P2-0005",
+      "reason": "Premature-cancel handling is application-specific."
+    }
+  ],
+  "uncovered_requirements": [],
+  "conclusion": "The selected S11/S11P1/S11P2 slice is trace-consistent: implemented requirements have code and test evidence, deferred requirements are explicitly blocked in the implementation summary, and no silent gaps remain in scope. One out-of-scope stale test tag remains in QuicFrameCodecTests.cs and should be retagged if the repository wants that classifier test to carry the error-handling trace."
+}
