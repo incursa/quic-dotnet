@@ -383,6 +383,11 @@
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B13-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
+          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent",
+          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryFormatStreamFrame_RejectsInvalidTypesAndOffsetMismatches"
         ]
       },
       "notes": [
@@ -1472,6 +1477,10 @@
         "upstream_refs": [
           "RFC 9001 §B RFC9001-SB-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds",
+          "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds"
         ]
       }
     },
@@ -1602,6 +1611,9 @@
         "upstream_refs": [
           "RFC 9001 §B.1.2 RFC9001-SB.1.2-B9-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm"
         ]
       }
     },
