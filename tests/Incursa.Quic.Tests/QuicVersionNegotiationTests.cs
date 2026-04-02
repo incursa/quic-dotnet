@@ -1,5 +1,9 @@
 namespace Incursa.Quic.Tests;
 
+[Requirement("REQ-QUIC-RFC9000-S22P2-0001")]
+[Requirement("REQ-QUIC-RFC9000-S22P2-0002")]
+[Requirement("REQ-QUIC-RFC9000-S22P2-0003")]
+[Requirement("REQ-QUIC-RFC9000-S22P2-0004")]
 public sealed class QuicVersionNegotiationTests
 {
     [Fact]
