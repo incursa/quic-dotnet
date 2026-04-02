@@ -1,0 +1,354 @@
+{
+  "chunk_id": "9002-02-rtt-estimation",
+  "rfc": "9002",
+  "section_tokens": [
+    "S5",
+    "S5P1",
+    "S5P2",
+    "S5P3"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
+  "audit_result": "pass_with_explicit_defer",
+  "reconciliation_artifact_present": false,
+  "coverage_summary": {
+    "total_in_scope": 25,
+    "implemented_and_tested": 24,
+    "deferred": 1,
+    "blocked": 0,
+    "uncovered": 0
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5-0001",
+      "section_token": "S5",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0001",
+      "section_token": "S5P1",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_UsesTheLargestNewlyAcknowledgedAckElicitingPacketAsTheFirstSample",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_RejectsDuplicateLargestAcknowledgmentsAndAckOnlyProgress"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0002",
+      "section_token": "S5P1",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_UsesTheLargestNewlyAcknowledgedAckElicitingPacketAsTheFirstSample"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0003",
+      "section_token": "S5P1",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_UsesTheLargestNewlyAcknowledgedAckElicitingPacketAsTheFirstSample"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0004",
+      "section_token": "S5P1",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_RejectsDuplicateLargestAcknowledgmentsAndAckOnlyProgress"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P1-0005",
+      "section_token": "S5P1",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_RejectsDuplicateLargestAcknowledgmentsAndAckOnlyProgress"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0001",
+      "section_token": "S5P2",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_UsesTheLargestNewlyAcknowledgedAckElicitingPacketAsTheFirstSample"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0002",
+      "section_token": "S5P2",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_AdjustsForAckDelayBeforeHandshakeConfirmationWithoutClampingToPeerMax",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_SubtractsLocalProcessingDelayBeforeHandshakeConfirmationOnSubsequentSamples"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0003",
+      "section_token": "S5P2",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_AdjustsForAckDelayBeforeHandshakeConfirmationWithoutClampingToPeerMax",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_SubtractsLocalProcessingDelayBeforeHandshakeConfirmationOnSubsequentSamples"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0004",
+      "section_token": "S5P2",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_AdjustsForAckDelayBeforeHandshakeConfirmationWithoutClampingToPeerMax",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_SubtractsLocalProcessingDelayBeforeHandshakeConfirmationOnSubsequentSamples"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0005",
+      "section_token": "S5P2",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0006",
+      "section_token": "S5P2",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0007",
+      "section_token": "S5P2",
+      "status": "deferred",
+      "deferred_note": "The estimator exposes `RefreshMinRttFromLatestSample`, but it does not enforce a connection-wide cadence policy for how often min_rtt may be refreshed."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0001",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_AdjustsForAckDelayBeforeHandshakeConfirmationWithoutClampingToPeerMax"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0002",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_AdjustsForAckDelayBeforeHandshakeConfirmationWithoutClampingToPeerMax"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0003",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_AdjustsForAckDelayBeforeHandshakeConfirmationWithoutClampingToPeerMax"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0004",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_SubtractsLocalProcessingDelayBeforeHandshakeConfirmationOnSubsequentSamples"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0005",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0006",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0007",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0008",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_UsesTheLargestNewlyAcknowledgedAckElicitingPacketAsTheFirstSample"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0009",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmationAndDoesNotReduceAdjustedRttBelowMinRtt"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0010",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmationAndDoesNotReduceAdjustedRttBelowMinRtt"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0011",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_CanIgnoreAckDelayForInitialPackets"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0012",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmationAndDoesNotReduceAdjustedRttBelowMinRtt"
+      ]
+    }
+  ],
+  "direct_requirement_refs": {
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9002-S5-0001",
+      "REQ-QUIC-RFC9002-S5P1-0001",
+      "REQ-QUIC-RFC9002-S5P1-0002",
+      "REQ-QUIC-RFC9002-S5P1-0003",
+      "REQ-QUIC-RFC9002-S5P1-0004",
+      "REQ-QUIC-RFC9002-S5P1-0005",
+      "REQ-QUIC-RFC9002-S5P2-0001",
+      "REQ-QUIC-RFC9002-S5P2-0002",
+      "REQ-QUIC-RFC9002-S5P2-0003",
+      "REQ-QUIC-RFC9002-S5P2-0004",
+      "REQ-QUIC-RFC9002-S5P2-0005",
+      "REQ-QUIC-RFC9002-S5P2-0006",
+      "REQ-QUIC-RFC9002-S5P3-0001",
+      "REQ-QUIC-RFC9002-S5P3-0002",
+      "REQ-QUIC-RFC9002-S5P3-0003",
+      "REQ-QUIC-RFC9002-S5P3-0004",
+      "REQ-QUIC-RFC9002-S5P3-0005",
+      "REQ-QUIC-RFC9002-S5P3-0006",
+      "REQ-QUIC-RFC9002-S5P3-0007",
+      "REQ-QUIC-RFC9002-S5P3-0008",
+      "REQ-QUIC-RFC9002-S5P3-0009",
+      "REQ-QUIC-RFC9002-S5P3-0010",
+      "REQ-QUIC-RFC9002-S5P3-0011",
+      "REQ-QUIC-RFC9002-S5P3-0012"
+    ],
+    "source_requirement_refs_found": [],
+    "xml_comment_requirement_refs_found": [],
+    "stale_or_wrong_refs_found": []
+  },
+  "uncovered_requirements": [],
+  "deferred_requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0007",
+      "reason": "The estimator exposes `RefreshMinRttFromLatestSample`, but it does not enforce a connection-wide cadence policy for how often min_rtt may be refreshed."
+    }
+  ],
+  "verification": {
+    "tests_run": [
+      {
+        "command": "dotnet test .\\tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicRttEstimatorTests\"",
+        "result": "7 passed, 0 failed, 0 skipped"
+      },
+      {
+        "command": "dotnet test .\\tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj",
+        "result": "270 passed, 0 failed, 0 skipped"
+      }
+    ],
+    "benchmark_verification": {
+      "command": "dotnet build .\\benchmarks\\Incursa.Quic.Benchmarks.csproj -c Release",
+      "result": "Succeeded"
+    }
+  },
+  "notes": [
+    "No reconciliation artifact existed for this chunk; the implementation summary was the source of truth for the audit.",
+    "Direct requirement refs are attached only in tests, matching the repository convention for this slice."
+  ]
+}
