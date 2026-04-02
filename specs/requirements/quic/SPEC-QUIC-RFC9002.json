@@ -61,6 +61,9 @@
         "upstream_refs": [
           "RFC 9002 §2 RFC9002-S2-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
         ]
       }
     },
@@ -165,6 +168,9 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryGetPacketNumberSpace_MapsSupportedHeaderFormsToSpaces"
         ]
       }
     },
@@ -399,6 +405,9 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
         ]
       }
     },
@@ -870,6 +879,9 @@
         "upstream_refs": [
           "RFC 9002 §5.2 RFC9002-S5.2-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment"
         ]
       }
     },
@@ -1029,6 +1041,9 @@
         "upstream_refs": [
           "RFC 9002 §5.3 RFC9002-S5.3-B14-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
         ]
       }
     },
@@ -1082,6 +1097,9 @@
           "RFC 9002 §5.3 RFC9002-S5.3-B15-P10-S1",
           "RFC 9002 §5.3 RFC9002-S5.3-B16-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
         ]
       }
     },
@@ -1502,6 +1520,9 @@
         "upstream_refs": [
           "RFC 9002 §6.1.2 RFC9002-S6.1.2-B8-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeLossDelayMicros_UsesTheRttAndGranularityThresholds"
         ]
       }
     },
@@ -1790,6 +1811,9 @@
         "upstream_refs": [
           "RFC 9002 §6.2.1 RFC9002-S6.2.1-B10-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeProbeTimeoutWithBackoffMicros_DoublesTheBasePtoOnTimeout"
         ]
       }
     },
@@ -1947,6 +1971,9 @@
         "upstream_refs": [
           "RFC 9002 §6.2.2 RFC9002-S6.2.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState"
         ]
       }
     },
@@ -1973,6 +2000,9 @@
         "upstream_refs": [
           "RFC 9002 §6.2.2 RFC9002-S6.2.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState"
         ]
       }
     },
@@ -2753,6 +2783,9 @@
         "upstream_refs": [
           "RFC 9002 §7 RFC9002-S7-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight"
         ]
       }
     },
@@ -2779,6 +2812,9 @@
         "upstream_refs": [
           "RFC 9002 §7 RFC9002-S7-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent"
         ]
       }
     },
@@ -3381,6 +3417,9 @@
         "upstream_refs": [
           "RFC 9002 §7.5 RFC9002-S7.5-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight"
         ]
       }
     },

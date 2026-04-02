@@ -196,7 +196,7 @@
           "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0005.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds"
         ]
       }
     },
@@ -268,7 +268,7 @@
           "https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0005.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds"
         ]
       }
     },
