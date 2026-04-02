@@ -135,7 +135,7 @@ Incursa.Quic.QuicCongestionControlState.UpdateMaxDatagramSize(ulong maxDatagramS
 Incursa.Quic.QuicCongestionControlState.CanSend(ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false) -> bool
 Incursa.Quic.QuicCongestionControlState.RegisterPacketSent(ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false) -> void
 Incursa.Quic.QuicCongestionControlState.TryRegisterAcknowledgedPacket(ulong sentBytes, ulong sentAtMicros, bool packetInFlight = true, bool applicationLimited = false, bool flowControlLimited = false, bool pacingLimited = false) -> bool
-Incursa.Quic.QuicCongestionControlState.TryRegisterLoss(ulong sentBytes, ulong sentAtMicros, bool packetInFlight, bool packetCanBeDecrypted = true, bool keysAvailable = true, bool sentAfterEarliestAcknowledgedPacket = true, bool allowAckOnlyLossSignal = false) -> bool
+Incursa.Quic.QuicCongestionControlState.TryRegisterLoss(ulong sentBytes, ulong sentAtMicros, bool packetInFlight, bool packetCanBeDecrypted = true, bool keysAvailable = true, bool sentAfterEarliestAcknowledgedPacket = true, bool isProbePacket = false, bool allowAckOnlyLossSignal = false) -> bool
 Incursa.Quic.QuicCongestionControlState.TryProcessEcn(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong reportedEcnCeCount, ulong largestAcknowledgedPacketSentAtMicros, bool pathValidated) -> bool
 static Incursa.Quic.QuicCongestionControlState.TryComputePersistentCongestionDurationMicros(ulong smoothedRttMicros, ulong rttVarMicros, ulong maxAckDelayMicros, out ulong persistentCongestionDurationMicros, int persistentCongestionThreshold = 3, ulong timerGranularityMicros = 1000) -> bool
 Incursa.Quic.QuicCongestionControlState.TryDetectPersistentCongestion(System.ReadOnlySpan<Incursa.Quic.QuicPersistentCongestionPacket> packets, ulong firstRttSampleMicros, ulong smoothedRttMicros, ulong rttVarMicros, ulong maxAckDelayMicros, out bool persistentCongestionDetected, bool applyReset = true) -> bool
@@ -156,6 +156,17 @@ Incursa.Quic.QuicEcnCounts.QuicEcnCounts(ulong ect0Count, ulong ect1Count, ulong
 Incursa.Quic.QuicEcnCounts.Ect0Count.get -> ulong
 Incursa.Quic.QuicEcnCounts.Ect1Count.get -> ulong
 Incursa.Quic.QuicEcnCounts.EcnCeCount.get -> ulong
+Incursa.Quic.QuicEcnMarking
+Incursa.Quic.QuicEcnMarking.NotEct = 0 -> Incursa.Quic.QuicEcnMarking
+Incursa.Quic.QuicEcnMarking.Ect0 = 1 -> Incursa.Quic.QuicEcnMarking
+Incursa.Quic.QuicEcnMarking.Ect1 = 2 -> Incursa.Quic.QuicEcnMarking
+Incursa.Quic.QuicEcnValidationState
+Incursa.Quic.QuicEcnValidationState.QuicEcnValidationState() -> void
+Incursa.Quic.QuicEcnValidationState.IsEcnEnabled.get -> bool
+Incursa.Quic.QuicEcnValidationState.DisableEcn() -> void
+Incursa.Quic.QuicEcnValidationState.ReenableEcn() -> void
+Incursa.Quic.QuicEcnValidationState.RecordPacketSent(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, Incursa.Quic.QuicEcnMarking ecnMarking) -> void
+Incursa.Quic.QuicEcnValidationState.TryValidateAcknowledgedEcnCounts(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, Incursa.Quic.QuicEcnCounts? reportedCounts, ulong newlyAcknowledgedEct0Packets, ulong newlyAcknowledgedEct1Packets, bool largestAcknowledgedPacketNumberIncreased, out bool validationFailed) -> bool
 Incursa.Quic.QuicPacketNumberSpace
 Incursa.Quic.QuicPacketNumberSpace.Initial = 0 -> Incursa.Quic.QuicPacketNumberSpace
 Incursa.Quic.QuicPacketNumberSpace.Handshake = 1 -> Incursa.Quic.QuicPacketNumberSpace

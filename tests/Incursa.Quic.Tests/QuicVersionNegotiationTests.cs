@@ -3,6 +3,8 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicVersionNegotiationTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S14-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S14-0004")]
     [Requirement("REQ-QUIC-RFC9000-S6-0001")]
     [Requirement("REQ-QUIC-RFC9000-S6-0002")]
     [Trait("Category", "Positive")]

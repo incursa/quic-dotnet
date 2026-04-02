@@ -3,6 +3,8 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicAckGenerationStateTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S13P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S13P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0002")]
@@ -182,6 +184,7 @@ public sealed class QuicAckGenerationStateTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0006")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P6-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P6-0002")]
     [Requirement("REQ-QUIC-RFC9002-S3-0004")]
@@ -190,10 +193,30 @@ public sealed class QuicAckGenerationStateTests
     {
         QuicAckGenerationState tracker = new();
 
-        tracker.RecordProcessedPacket(QuicPacketNumberSpace.Initial, 1, ackEliciting: true, receivedAtMicros: 1000);
-        tracker.RecordProcessedPacket(QuicPacketNumberSpace.Initial, 2, ackEliciting: true, receivedAtMicros: 1010);
-        tracker.RecordProcessedPacket(QuicPacketNumberSpace.Handshake, 7, ackEliciting: true, receivedAtMicros: 1020);
-        tracker.RecordProcessedPacket(QuicPacketNumberSpace.ApplicationData, 4, ackEliciting: true, receivedAtMicros: 1030);
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.Initial,
+            1,
+            ackEliciting: true,
+            receivedAtMicros: 1000,
+            ecnCounts: new QuicEcnCounts(1, 0, 0));
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.Initial,
+            2,
+            ackEliciting: true,
+            receivedAtMicros: 1010,
+            ecnCounts: new QuicEcnCounts(2, 0, 0));
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.Handshake,
+            7,
+            ackEliciting: true,
+            receivedAtMicros: 1020,
+            ecnCounts: new QuicEcnCounts(0, 1, 0));
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            4,
+            ackEliciting: true,
+            receivedAtMicros: 1030,
+            ecnCounts: new QuicEcnCounts(0, 0, 2));
 
         Assert.True(tracker.ShouldSendAckImmediately(QuicPacketNumberSpace.Initial));
         Assert.True(tracker.ShouldSendAckImmediately(QuicPacketNumberSpace.Handshake));
@@ -204,11 +227,22 @@ public sealed class QuicAckGenerationStateTests
         Assert.True(tracker.TryBuildAckFrame(QuicPacketNumberSpace.ApplicationData, nowMicros: 1100, out QuicAckFrame applicationFrame));
 
         Assert.Equal(2UL, initialFrame.LargestAcknowledged);
+        Assert.Equal(2UL, initialFrame.EcnCounts!.Value.Ect0Count);
+        Assert.Equal(0UL, initialFrame.EcnCounts!.Value.Ect1Count);
+        Assert.Equal(0UL, initialFrame.EcnCounts!.Value.EcnCeCount);
         Assert.Equal(7UL, handshakeFrame.LargestAcknowledged);
+        Assert.Equal(0UL, handshakeFrame.EcnCounts!.Value.Ect0Count);
+        Assert.Equal(1UL, handshakeFrame.EcnCounts!.Value.Ect1Count);
+        Assert.Equal(0UL, handshakeFrame.EcnCounts!.Value.EcnCeCount);
         Assert.Equal(4UL, applicationFrame.LargestAcknowledged);
+        Assert.Equal(0UL, applicationFrame.EcnCounts!.Value.Ect0Count);
+        Assert.Equal(0UL, applicationFrame.EcnCounts!.Value.Ect1Count);
+        Assert.Equal(2UL, applicationFrame.EcnCounts!.Value.EcnCeCount);
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0014")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P5-0005")]
     [Requirement("REQ-QUIC-RFC9002-S3-0011")]
