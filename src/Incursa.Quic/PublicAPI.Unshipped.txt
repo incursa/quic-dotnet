@@ -444,3 +444,18 @@ static Incursa.Quic.QuicStatelessReset.TryFormatStatelessResetDatagram(System.Re
 static Incursa.Quic.QuicStatelessReset.TryGetTrailingStatelessResetToken(System.ReadOnlySpan<byte> datagram, out System.ReadOnlySpan<byte> statelessResetToken) -> bool
 static Incursa.Quic.QuicStatelessReset.IsPotentialStatelessReset(System.ReadOnlySpan<byte> datagram) -> bool
 static Incursa.Quic.QuicStatelessReset.MatchesAnyStatelessResetToken(System.ReadOnlySpan<byte> datagram, System.ReadOnlySpan<byte> candidateTokens) -> bool
+Incursa.Quic.QuicAeadAlgorithm
+Incursa.Quic.QuicAeadAlgorithm.Aes128Gcm = 0 -> Incursa.Quic.QuicAeadAlgorithm
+Incursa.Quic.QuicAeadAlgorithm.Aes256Gcm = 1 -> Incursa.Quic.QuicAeadAlgorithm
+Incursa.Quic.QuicAeadAlgorithm.Aes128Ccm = 2 -> Incursa.Quic.QuicAeadAlgorithm
+Incursa.Quic.QuicAeadPacketSizeProfile
+Incursa.Quic.QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes = 0 -> Incursa.Quic.QuicAeadPacketSizeProfile
+Incursa.Quic.QuicAeadPacketSizeProfile.AllowsPacketsAsLargeAsTwoPow16Bytes = 1 -> Incursa.Quic.QuicAeadPacketSizeProfile
+Incursa.Quic.QuicAeadPacketSizeProfile.Unrestricted = 2 -> Incursa.Quic.QuicAeadPacketSizeProfile
+Incursa.Quic.QuicAeadUsageLimits
+Incursa.Quic.QuicAeadUsageLimits.QuicAeadUsageLimits() -> void
+Incursa.Quic.QuicAeadUsageLimits.QuicAeadUsageLimits(double confidentialityLimitPackets, double integrityLimitPackets) -> void
+Incursa.Quic.QuicAeadUsageLimits.ConfidentialityLimitPackets.get -> double
+Incursa.Quic.QuicAeadUsageLimits.IntegrityLimitPackets.get -> double
+Incursa.Quic.QuicAeadUsageLimitCalculator
+static Incursa.Quic.QuicAeadUsageLimitCalculator.TryGetUsageLimits(Incursa.Quic.QuicAeadAlgorithm algorithm, Incursa.Quic.QuicAeadPacketSizeProfile confidentialityPacketSizeProfile, Incursa.Quic.QuicAeadPacketSizeProfile integrityPacketSizeProfile, out Incursa.Quic.QuicAeadUsageLimits limits) -> bool
