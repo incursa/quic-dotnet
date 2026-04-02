@@ -1,0 +1,1018 @@
+{
+  "chunk_id": "9002-03-loss-detection",
+  "rfc": "9002",
+  "section_tokens": [
+    "S6",
+    "S6P1",
+    "S6P1P1",
+    "S6P1P2",
+    "S6P2",
+    "S6P2P1",
+    "S6P2P2",
+    "S6P2P2P1",
+    "S6P2P3",
+    "S6P2P4",
+    "S6P3",
+    "S6P4"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
+  "audit_result": "clean_with_explicit_blockers",
+  "reconciliation_artifact_present": false,
+  "implementation_summary_file": "./specs/generated/quic/chunks/9002-03-loss-detection.implementation-summary.json",
+  "implementation_summary_alignment": {
+    "spec_requirement_ids": [
+      "REQ-QUIC-RFC9002-S6-0001",
+      "REQ-QUIC-RFC9002-S6P1-0001",
+      "REQ-QUIC-RFC9002-S6P1-0002",
+      "REQ-QUIC-RFC9002-S6P1P1-0001",
+      "REQ-QUIC-RFC9002-S6P1P1-0002",
+      "REQ-QUIC-RFC9002-S6P1P2-0001",
+      "REQ-QUIC-RFC9002-S6P1P2-0002",
+      "REQ-QUIC-RFC9002-S6P1P2-0003",
+      "REQ-QUIC-RFC9002-S6P1P2-0004",
+      "REQ-QUIC-RFC9002-S6P1P2-0005",
+      "REQ-QUIC-RFC9002-S6P1P2-0006",
+      "REQ-QUIC-RFC9002-S6P1P2-0007",
+      "REQ-QUIC-RFC9002-S6P2-0001",
+      "REQ-QUIC-RFC9002-S6P2-0002",
+      "REQ-QUIC-RFC9002-S6P2-0003",
+      "REQ-QUIC-RFC9002-S6P2P1-0001",
+      "REQ-QUIC-RFC9002-S6P2P1-0002",
+      "REQ-QUIC-RFC9002-S6P2P1-0003",
+      "REQ-QUIC-RFC9002-S6P2P1-0004",
+      "REQ-QUIC-RFC9002-S6P2P1-0005",
+      "REQ-QUIC-RFC9002-S6P2P1-0006",
+      "REQ-QUIC-RFC9002-S6P2P1-0007",
+      "REQ-QUIC-RFC9002-S6P2P1-0008",
+      "REQ-QUIC-RFC9002-S6P2P1-0009",
+      "REQ-QUIC-RFC9002-S6P2P1-0010",
+      "REQ-QUIC-RFC9002-S6P2P2-0001",
+      "REQ-QUIC-RFC9002-S6P2P2-0002",
+      "REQ-QUIC-RFC9002-S6P2P2-0003",
+      "REQ-QUIC-RFC9002-S6P2P2-0004",
+      "REQ-QUIC-RFC9002-S6P2P2-0005",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0002",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0003",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0004",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "REQ-QUIC-RFC9002-S6P2P3-0001",
+      "REQ-QUIC-RFC9002-S6P2P4-0001",
+      "REQ-QUIC-RFC9002-S6P2P4-0002",
+      "REQ-QUIC-RFC9002-S6P2P4-0003",
+      "REQ-QUIC-RFC9002-S6P2P4-0004",
+      "REQ-QUIC-RFC9002-S6P2P4-0005",
+      "REQ-QUIC-RFC9002-S6P2P4-0006",
+      "REQ-QUIC-RFC9002-S6P2P4-0007",
+      "REQ-QUIC-RFC9002-S6P2P4-0008",
+      "REQ-QUIC-RFC9002-S6P2P4-0009",
+      "REQ-QUIC-RFC9002-S6P3-0001",
+      "REQ-QUIC-RFC9002-S6P3-0002",
+      "REQ-QUIC-RFC9002-S6P3-0003",
+      "REQ-QUIC-RFC9002-S6P3-0004",
+      "REQ-QUIC-RFC9002-S6P3-0005",
+      "REQ-QUIC-RFC9002-S6P4-0001",
+      "REQ-QUIC-RFC9002-S6P4-0002",
+      "REQ-QUIC-RFC9002-S6P4-0003",
+      "REQ-QUIC-RFC9002-S6P4-0004"
+    ],
+    "summary_requirement_ids": [
+      "REQ-QUIC-RFC9002-S6-0001",
+      "REQ-QUIC-RFC9002-S6P1-0001",
+      "REQ-QUIC-RFC9002-S6P1-0002",
+      "REQ-QUIC-RFC9002-S6P1P1-0001",
+      "REQ-QUIC-RFC9002-S6P1P1-0002",
+      "REQ-QUIC-RFC9002-S6P1P2-0001",
+      "REQ-QUIC-RFC9002-S6P1P2-0002",
+      "REQ-QUIC-RFC9002-S6P1P2-0003",
+      "REQ-QUIC-RFC9002-S6P1P2-0004",
+      "REQ-QUIC-RFC9002-S6P1P2-0005",
+      "REQ-QUIC-RFC9002-S6P1P2-0006",
+      "REQ-QUIC-RFC9002-S6P1P2-0007",
+      "REQ-QUIC-RFC9002-S6P2-0001",
+      "REQ-QUIC-RFC9002-S6P2-0002",
+      "REQ-QUIC-RFC9002-S6P2-0003",
+      "REQ-QUIC-RFC9002-S6P2P1-0001",
+      "REQ-QUIC-RFC9002-S6P2P1-0002",
+      "REQ-QUIC-RFC9002-S6P2P1-0003",
+      "REQ-QUIC-RFC9002-S6P2P1-0004",
+      "REQ-QUIC-RFC9002-S6P2P1-0005",
+      "REQ-QUIC-RFC9002-S6P2P1-0006",
+      "REQ-QUIC-RFC9002-S6P2P1-0007",
+      "REQ-QUIC-RFC9002-S6P2P1-0008",
+      "REQ-QUIC-RFC9002-S6P2P1-0009",
+      "REQ-QUIC-RFC9002-S6P2P1-0010",
+      "REQ-QUIC-RFC9002-S6P2P2-0001",
+      "REQ-QUIC-RFC9002-S6P2P2-0002",
+      "REQ-QUIC-RFC9002-S6P2P2-0003",
+      "REQ-QUIC-RFC9002-S6P2P2-0004",
+      "REQ-QUIC-RFC9002-S6P2P2-0005",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0002",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0003",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0004",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "REQ-QUIC-RFC9002-S6P2P3-0001",
+      "REQ-QUIC-RFC9002-S6P2P4-0001",
+      "REQ-QUIC-RFC9002-S6P2P4-0002",
+      "REQ-QUIC-RFC9002-S6P2P4-0003",
+      "REQ-QUIC-RFC9002-S6P2P4-0004",
+      "REQ-QUIC-RFC9002-S6P2P4-0005",
+      "REQ-QUIC-RFC9002-S6P2P4-0006",
+      "REQ-QUIC-RFC9002-S6P2P4-0007",
+      "REQ-QUIC-RFC9002-S6P2P4-0008",
+      "REQ-QUIC-RFC9002-S6P2P4-0009",
+      "REQ-QUIC-RFC9002-S6P3-0001",
+      "REQ-QUIC-RFC9002-S6P3-0002",
+      "REQ-QUIC-RFC9002-S6P3-0003",
+      "REQ-QUIC-RFC9002-S6P3-0004",
+      "REQ-QUIC-RFC9002-S6P3-0005",
+      "REQ-QUIC-RFC9002-S6P4-0001",
+      "REQ-QUIC-RFC9002-S6P4-0002",
+      "REQ-QUIC-RFC9002-S6P4-0003",
+      "REQ-QUIC-RFC9002-S6P4-0004"
+    ],
+    "missing_in_summary": [],
+    "extra_in_summary": [],
+    "summary_status": "partial_with_explicit_blockers"
+  },
+  "requirements_in_scope": {
+    "S6": 1,
+    "S6P1": 2,
+    "S6P1P1": 2,
+    "S6P1P2": 7,
+    "S6P2": 3,
+    "S6P2P1": 10,
+    "S6P2P2": 5,
+    "S6P2P2P1": 6,
+    "S6P2P3": 1,
+    "S6P2P4": 9,
+    "S6P3": 5,
+    "S6P4": 4,
+    "total": 55,
+    "covered": 23,
+    "blocked": 32,
+    "deferred": 0,
+    "partial": 0,
+    "needs_review": 0
+  },
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9002-S6P1-0001",
+      "REQ-QUIC-RFC9002-S6P1P1-0001",
+      "REQ-QUIC-RFC9002-S6P1P1-0002",
+      "REQ-QUIC-RFC9002-S6P1P2-0001",
+      "REQ-QUIC-RFC9002-S6P1P2-0002",
+      "REQ-QUIC-RFC9002-S6P1P2-0003",
+      "REQ-QUIC-RFC9002-S6P1P2-0004",
+      "REQ-QUIC-RFC9002-S6P1P2-0005",
+      "REQ-QUIC-RFC9002-S6P1P2-0006",
+      "REQ-QUIC-RFC9002-S6P2-0002",
+      "REQ-QUIC-RFC9002-S6P2P1-0001",
+      "REQ-QUIC-RFC9002-S6P2P1-0002",
+      "REQ-QUIC-RFC9002-S6P2P1-0003",
+      "REQ-QUIC-RFC9002-S6P2P1-0004",
+      "REQ-QUIC-RFC9002-S6P2P1-0005",
+      "REQ-QUIC-RFC9002-S6P2P1-0007",
+      "REQ-QUIC-RFC9002-S6P2P1-0010",
+      "REQ-QUIC-RFC9002-S6P2P2-0001",
+      "REQ-QUIC-RFC9002-S6P2P2-0002",
+      "REQ-QUIC-RFC9002-S6P2P2-0003",
+      "REQ-QUIC-RFC9002-S6P2P2-0004",
+      "REQ-QUIC-RFC9002-S6P3-0004",
+      "REQ-QUIC-RFC9002-S6P3-0005"
+    ],
+    "source_files_checked_for_requirement_ids": [
+      "src/Incursa.Quic/QuicRecoveryTiming.cs",
+      "src/Incursa.Quic/QuicPathValidation.cs",
+      "src/Incursa.Quic/QuicRttEstimator.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+    ],
+    "test_files_with_requirement_traits": [
+      "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+    ],
+    "stale_or_wrong_refs_found": [],
+    "notes": "Tests use only in-scope RFC 9002 IDs. Source helpers carry no requirement IDs, matching the repository convention for this slice."
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6-0001",
+      "title": "Separate loss detection by packet number space",
+      "section_token": "S6",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs packet-number-space-specific loss-state tracking to prove isolation beyond helper-level timing formulas.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1-0001",
+      "title": "Declare loss only for packets that satisfy the basic loss criteria",
+      "section_token": "S6P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::CanDeclarePacketLost_RequiresAnUnacknowledgedInFlightPacketSentBeforeAnAcknowledgedPacket"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Static helper covers the basic preconditions for declaring a packet lost."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1-0002",
+      "title": "Allow smaller initial reordering thresholds with adaptation",
+      "section_token": "S6P1",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs an adaptive reordering-threshold policy; the current slice only exposes static loss timing math.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P1-0001",
+      "title": "Recommend a packet threshold of three",
+      "section_token": "S6P1P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheRecommendedThresholdOfThree"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper exposes the recommended packet-threshold constant of 3."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P1-0002",
+      "title": "Avoid packet thresholds below three",
+      "section_token": "S6P1P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheRecommendedThresholdOfThree",
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper rejects packet thresholds below 3."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0001",
+      "title": "Declare earlier packets lost after sufficient time",
+      "section_token": "S6P1P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeRemainingLossDelayMicros_SchedulesTheRemainingTimeBeforeLoss"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Remaining time is computed from the packet send time and the RFC 9002 time threshold."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0002",
+      "title": "Bound the time threshold by timer granularity",
+      "section_token": "S6P1P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeLossDelayMicros_UsesTheRttAndGranularityThresholds"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The loss delay is bounded by the local timer granularity."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0003",
+      "title": "Compute the time threshold from RTT and granularity",
+      "section_token": "S6P1P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeLossDelayMicros_UsesTheRttAndGranularityThresholds"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The loss delay uses max(latest_rtt, smoothed_rtt) scaled by kTimeThreshold."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0004",
+      "title": "Schedule a timer for the remaining time before declaring loss",
+      "section_token": "S6P1P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeRemainingLossDelayMicros_SchedulesTheRemainingTimeBeforeLoss"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper reports the remaining time before the loss deadline fires."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0005",
+      "title": "Use the recommended packet-threshold multiplier",
+      "section_token": "S6P1P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeLossDelayMicros_UsesTheRttAndGranularityThresholds"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Default time-threshold multiplier is 9/8."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0006",
+      "title": "Use a one-millisecond timer granularity",
+      "section_token": "S6P1P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeLossDelayMicros_UsesTheRttAndGranularityThresholds"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Default timer granularity is 1 millisecond."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0007",
+      "title": "Allow alternative time-threshold experiments",
+      "section_token": "S6P1P2",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs sender/recovery state that is not present in the helper-only slice.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2-0001",
+      "title": "Send probe datagrams on PTO expiration or address-validation uncertainty",
+      "section_token": "S6P2",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs a sender/transmit surface that can emit probe datagrams and apply address-validation gating.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2-0002",
+      "title": "Compute PTO per packet number space",
+      "section_token": "S6P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "PTO is computed per packet number space and the helper takes the space explicitly."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2-0003",
+      "title": "Do not infer loss from PTO expiration",
+      "section_token": "S6P2",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs sender-side loss-recovery orchestration to prove PTO expiration does not itself mark packets lost.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0001",
+      "title": "Schedule PTO after ack-eliciting transmission",
+      "section_token": "S6P2P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper implements PTO = smoothed_rtt + max(4*rttvar, kGranularity) + max_ack_delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0002",
+      "title": "Set max_ack_delay to zero for early handshake spaces",
+      "section_token": "S6P2P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Initial and Handshake spaces force max_ack_delay to zero in the PTO formula."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0003",
+      "title": "Keep PTO above granularity",
+      "section_token": "S6P2P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The PTO helper floors the result at the local timer granularity."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0004",
+      "title": "Use the earlier PTO across Initial and Handshake spaces",
+      "section_token": "S6P2P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheEarlierValue"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "A helper selects the earlier PTO between Initial and Handshake spaces."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0005",
+      "title": "Defer application-data PTO until handshake confirmation",
+      "section_token": "S6P2P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Application Data PTO is withheld until handshake confirmation is present."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
+      "title": "Restart PTO on send, acknowledgment, or key discard",
+      "section_token": "S6P2P1",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs sender/recovery state transitions to restart PTO after sends, acknowledgments, or key discard.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0007",
+      "title": "Increase PTO backoff on timeout",
+      "section_token": "S6P2P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeProbeTimeoutWithBackoffMicros_DoublesTheBasePtoOnTimeout"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The backoff helper doubles the PTO period once per timeout."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0008",
+      "title": "Reset PTO backoff on acknowledgment",
+      "section_token": "S6P2P1",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs sender/recovery state transitions to reset PTO backoff on acknowledgment.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0009",
+      "title": "Suppress PTO-backoff reset on unvalidated Initial acknowledgments",
+      "section_token": "S6P2P1",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs handshake- and validation-aware ack-processing state to suppress Initial backoff resets correctly.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0010",
+      "title": "Avoid conflicting timers",
+      "section_token": "S6P2P1",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TrySelectRecoveryTimerMicros_PrefersLossDetectionTimersOverPtoTimers"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The timer selector prefers the loss-detection deadline over PTO when both are available."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0001",
+      "title": "Reuse prior-smoothed RTT on resumed connections",
+      "section_token": "S6P2P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The RTT estimator already accepts a caller-supplied initial RTT and seeds its state from that value."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0002",
+      "title": "Default initial RTT to 333 milliseconds",
+      "section_token": "S6P2P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The default RTT seed remains 333 milliseconds."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0003",
+      "title": "Use PATH_CHALLENGE and PATH_RESPONSE timing for initial RTT",
+      "section_token": "S6P2P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicPathValidation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "PATH_CHALLENGE/PATH_RESPONSE timing is exposed as a standalone elapsed-time helper."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0004",
+      "title": "Do not treat PATH_CHALLENGE/PATH_RESPONSE delay as an RTT sample",
+      "section_token": "S6P2P2",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicPathValidation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The path-validation timing helper does not mutate RTT state; callers can feed the elapsed time into a seed value separately."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0005",
+      "title": "Reset timers when keys are discarded",
+      "section_token": "S6P2P2",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs key-discard plumbing that resets the PTO and loss-detection timers.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+      "title": "Delay server PTO until address validation traffic arrives",
+      "section_token": "S6P2P2P1",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0002",
+      "title": "Reset the server PTO when the client sends data",
+      "section_token": "S6P2P2P1",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0003",
+      "title": "Fire a past-due PTO immediately",
+      "section_token": "S6P2P2P1",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0004",
+      "title": "Arm the client PTO before handshake confirmation",
+      "section_token": "S6P2P2P1",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+      "title": "Send Handshake probes when keys are available",
+      "section_token": "S6P2P2P1",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "title": "Send Initial probes otherwise",
+      "section_token": "S6P2P2P1",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P3-0001",
+      "title": "Permit early CRYPTO probes for handshake speedup",
+      "section_token": "S6P2P3",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs handshake-speedup probe policy and CRYPTO send-path integration.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0001",
+      "title": "Probe with at least one ack-eliciting packet",
+      "section_token": "S6P2P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0002",
+      "title": "Allow two full-sized PTO datagrams",
+      "section_token": "S6P2P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0003",
+      "title": "Keep PTO probe packets ack-eliciting",
+      "section_token": "S6P2P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0004",
+      "title": "Use other packet number spaces for PTO probes",
+      "section_token": "S6P2P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0005",
+      "title": "Include new data in PTO probes",
+      "section_token": "S6P2P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0006",
+      "title": "Allow previously sent data in PTO probes",
+      "section_token": "S6P2P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0007",
+      "title": "Allow alternative probe-content strategies",
+      "section_token": "S6P2P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0008",
+      "title": "Send a PING when no probe data exists",
+      "section_token": "S6P2P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0009",
+      "title": "Allow declaring in-flight packets lost instead of probing",
+      "section_token": "S6P2P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0001",
+      "title": "Reject Retry as an acknowledgment",
+      "section_token": "S6P3",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs Retry packet classification in the connection-establishment state machine.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0002",
+      "title": "Reset recovery and congestion state on Retry",
+      "section_token": "S6P3",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs client recovery-state reset plumbing for Retry processing.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0003",
+      "title": "Retain cryptographic handshake state across Retry",
+      "section_token": "S6P3",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs Retry-aware connection state that preserves handshake messages while resetting recovery state.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0004",
+      "title": "Permit RTT estimation from Retry timing",
+      "section_token": "S6P3",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryMeasureRetryRoundTripMicros_ComputesTheElapsedTimeAndCanSeedInitialRtt"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Retry timing is exposed as a standalone elapsed-time helper."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0005",
+      "title": "Allow using Retry-derived RTT as the initial RTT",
+      "section_token": "S6P3",
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRecoveryTiming.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryMeasureRetryRoundTripMicros_ComputesTheElapsedTimeAndCanSeedInitialRtt"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The Retry-derived RTT can be used to seed the RTT estimator by the caller."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P4-0001",
+      "title": "Discard recovery state when protection keys go away",
+      "section_token": "S6P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs key-discard recovery cleanup and bytes-in-flight integration.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P4-0002",
+      "title": "Remove discarded packets from bytes in flight",
+      "section_token": "S6P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs key-discard recovery cleanup and bytes-in-flight integration.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P4-0003",
+      "title": "Discard recovery state for rejected 0-RTT packets",
+      "section_token": "S6P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs key-discard recovery cleanup and bytes-in-flight integration.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S6P4-0004",
+      "title": "Discard secrets as soon as the replacement keys exist",
+      "section_token": "S6P4",
+      "status": "blocked",
+      "implementation_evidence": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Needs key-discard recovery cleanup and bytes-in-flight integration.",
+      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+    }
+  ],
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9002-S6-0001",
+    "REQ-QUIC-RFC9002-S6P1-0002",
+    "REQ-QUIC-RFC9002-S6P1P2-0007",
+    "REQ-QUIC-RFC9002-S6P2-0001",
+    "REQ-QUIC-RFC9002-S6P2-0003",
+    "REQ-QUIC-RFC9002-S6P2P1-0006",
+    "REQ-QUIC-RFC9002-S6P2P1-0008",
+    "REQ-QUIC-RFC9002-S6P2P1-0009",
+    "REQ-QUIC-RFC9002-S6P2P2-0005",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0002",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0003",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0004",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+    "REQ-QUIC-RFC9002-S6P2P3-0001",
+    "REQ-QUIC-RFC9002-S6P2P4-0001",
+    "REQ-QUIC-RFC9002-S6P2P4-0002",
+    "REQ-QUIC-RFC9002-S6P2P4-0003",
+    "REQ-QUIC-RFC9002-S6P2P4-0004",
+    "REQ-QUIC-RFC9002-S6P2P4-0005",
+    "REQ-QUIC-RFC9002-S6P2P4-0006",
+    "REQ-QUIC-RFC9002-S6P2P4-0007",
+    "REQ-QUIC-RFC9002-S6P2P4-0008",
+    "REQ-QUIC-RFC9002-S6P2P4-0009",
+    "REQ-QUIC-RFC9002-S6P3-0001",
+    "REQ-QUIC-RFC9002-S6P3-0002",
+    "REQ-QUIC-RFC9002-S6P3-0003",
+    "REQ-QUIC-RFC9002-S6P4-0001",
+    "REQ-QUIC-RFC9002-S6P4-0002",
+    "REQ-QUIC-RFC9002-S6P4-0003",
+    "REQ-QUIC-RFC9002-S6P4-0004"
+  ],
+  "tests_reviewed": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicRecoveryTimingTests|FullyQualifiedName~QuicPathValidationTests|FullyQualifiedName~QuicRttEstimatorTests\"",
+      "result": "36 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "result": "294 passed, 0 failed, 0 skipped"
+    }
+  ],
+  "notes": [
+    "No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.",
+    "The helper-only recovery surface is intentionally narrow and leaves the sender/recovery state-machine work deferred behind explicit blockers."
+  ]
+}
