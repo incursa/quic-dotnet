@@ -71,7 +71,6 @@ public sealed class QuicVersionNegotiationPacketTests
     [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0004")]
     [Requirement("REQ-QUIC-RFC9000-S6P3-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S6P3-0002")]
     [Trait("Category", "Positive")]
     public void TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions()
     {
@@ -95,6 +94,26 @@ public sealed class QuicVersionNegotiationPacketTests
         Assert.True(header.ContainsSupportedVersion(reservedVersion));
         Assert.True(header.ContainsSupportedVersion(selectedVersion));
         Assert.False(header.ContainsSupportedVersion(0xDEADBEEF));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S6P3-0002")]
+    [Trait("Category", "Negative")]
+    public void TryParseVersionNegotiation_RejectsPacketsWithReservedVersions()
+    {
+        uint reservedVersion = QuicVersionNegotiation.CreateReservedVersion(0x11223344);
+
+        byte[] packet = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x4C,
+            version: reservedVersion,
+            destinationConnectionId: [0x01, 0x02],
+            sourceConnectionId: [0x03],
+            versionSpecificData: [0x04, 0x05]);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal(reservedVersion, header.Version);
+        Assert.False(header.IsVersionNegotiation);
+        Assert.False(QuicPacketParser.TryParseVersionNegotiation(packet, out _));
     }
 
     [Fact]

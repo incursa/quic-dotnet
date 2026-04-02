@@ -346,10 +346,16 @@ public static class QuicFrameCodec
     {
         bytesWritten = default;
 
+        ulong cryptoDataLength = (ulong)frame.CryptoData.Length;
+        if (frame.Offset > QuicVariableLengthInteger.MaxValue - cryptoDataLength)
+        {
+            return false;
+        }
+
         int index = 0;
         if (!TryWriteVarint(CryptoFrameType, destination, ref index)
             || !TryWriteVarint(frame.Offset, destination, ref index)
-            || !TryWriteVarint((ulong)frame.CryptoData.Length, destination, ref index))
+            || !TryWriteVarint(cryptoDataLength, destination, ref index))
         {
             return false;
         }
@@ -361,6 +367,64 @@ public static class QuicFrameCodec
 
         frame.CryptoData.CopyTo(destination[index..]);
         bytesWritten = index + frame.CryptoData.Length;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats a STREAM frame.
+    /// </summary>
+    public static bool TryFormatStreamFrame(
+        byte frameType,
+        ulong streamId,
+        ulong offset,
+        ReadOnlySpan<byte> streamData,
+        Span<byte> destination,
+        out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        if (frameType is < 0x08 or > 0x0F)
+        {
+            return false;
+        }
+
+        bool hasOffset = (frameType & 0x04) != 0;
+        bool hasLength = (frameType & 0x02) != 0;
+
+        if (!hasOffset && offset != 0)
+        {
+            return false;
+        }
+
+        if (offset > QuicVariableLengthInteger.MaxValue - (ulong)streamData.Length)
+        {
+            return false;
+        }
+
+        int index = 0;
+        if (!TryWriteVarint(frameType, destination, ref index)
+            || !TryWriteVarint(streamId, destination, ref index))
+        {
+            return false;
+        }
+
+        if (hasOffset && !TryWriteVarint(offset, destination, ref index))
+        {
+            return false;
+        }
+
+        if (hasLength && !TryWriteVarint((ulong)streamData.Length, destination, ref index))
+        {
+            return false;
+        }
+
+        if (destination.Length < index + streamData.Length)
+        {
+            return false;
+        }
+
+        streamData.CopyTo(destination[index..]);
+        bytesWritten = index + streamData.Length;
         return true;
     }
 

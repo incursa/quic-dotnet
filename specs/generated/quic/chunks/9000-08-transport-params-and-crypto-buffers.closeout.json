@@ -1,0 +1,108 @@
+{
+  "chunk_id": "9000-08-transport-params-and-crypto-buffers",
+  "rfc": "9000",
+  "section_tokens": [
+    "S7P4",
+    "S7P4P1",
+    "S7P4P2",
+    "S7P5"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "audit_result": "clean_with_explicit_blockers",
+  "reconciliation_artifact_present": false,
+  "implementation_summary_file": "./specs/generated/quic/chunks/9000-08-transport-params-and-crypto-buffers.implementation-summary.json",
+  "requirements_in_scope": {
+    "total": 22,
+    "implemented_and_tested": 9,
+    "blocked": 13,
+    "silent_gaps": 0
+  },
+  "implemented_and_tested_requirements": [
+    "REQ-QUIC-RFC9000-S7P4-0001",
+    "REQ-QUIC-RFC9000-S7P4-0002",
+    "REQ-QUIC-RFC9000-S7P4-0003",
+    "REQ-QUIC-RFC9000-S7P4P2-0001",
+    "REQ-QUIC-RFC9000-S7P5-0001",
+    "REQ-QUIC-RFC9000-S7P5-0002",
+    "REQ-QUIC-RFC9000-S7P5-0003",
+    "REQ-QUIC-RFC9000-S7P5-0004",
+    "REQ-QUIC-RFC9000-S7P5-0005"
+  ],
+  "blocked_requirements": [
+    "REQ-QUIC-RFC9000-S7P4P1-0001",
+    "REQ-QUIC-RFC9000-S7P4P1-0002",
+    "REQ-QUIC-RFC9000-S7P4P1-0003",
+    "REQ-QUIC-RFC9000-S7P4P1-0004",
+    "REQ-QUIC-RFC9000-S7P4P1-0005",
+    "REQ-QUIC-RFC9000-S7P4P1-0006",
+    "REQ-QUIC-RFC9000-S7P4P1-0007",
+    "REQ-QUIC-RFC9000-S7P4P1-0008",
+    "REQ-QUIC-RFC9000-S7P4P1-0009",
+    "REQ-QUIC-RFC9000-S7P4P1-0010",
+    "REQ-QUIC-RFC9000-S7P4P1-0011",
+    "REQ-QUIC-RFC9000-S7P4P1-0012",
+    "REQ-QUIC-RFC9000-S7P4P1-0013"
+  ],
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9000-S7P4-0001",
+      "REQ-QUIC-RFC9000-S7P4-0002",
+      "REQ-QUIC-RFC9000-S7P4-0003",
+      "REQ-QUIC-RFC9000-S7P4P2-0001",
+      "REQ-QUIC-RFC9000-S7P5-0001",
+      "REQ-QUIC-RFC9000-S7P5-0002",
+      "REQ-QUIC-RFC9000-S7P5-0003",
+      "REQ-QUIC-RFC9000-S7P5-0004",
+      "REQ-QUIC-RFC9000-S7P5-0005"
+    ],
+    "source_files_checked_for_requirement_ids": [
+      "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+      "src/Incursa.Quic/QuicCryptoBuffer.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+    ],
+    "test_files_with_requirement_traits": [
+      "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+      "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs",
+      "tests/Incursa.Quic.Tests/QuicCryptoBufferFuzzTests.cs"
+    ],
+    "stale_or_wrong_refs_found": [],
+    "notes": "No requirement tags were found under src/Incursa.Quic; the in-scope test traits use only imported RFC 9000 IDs."
+  },
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9000-S7P4P1-0001",
+    "REQ-QUIC-RFC9000-S7P4P1-0002",
+    "REQ-QUIC-RFC9000-S7P4P1-0003",
+    "REQ-QUIC-RFC9000-S7P4P1-0004",
+    "REQ-QUIC-RFC9000-S7P4P1-0005",
+    "REQ-QUIC-RFC9000-S7P4P1-0006",
+    "REQ-QUIC-RFC9000-S7P4P1-0007",
+    "REQ-QUIC-RFC9000-S7P4P1-0008",
+    "REQ-QUIC-RFC9000-S7P4P1-0009",
+    "REQ-QUIC-RFC9000-S7P4P1-0010",
+    "REQ-QUIC-RFC9000-S7P4P1-0011",
+    "REQ-QUIC-RFC9000-S7P4P1-0012",
+    "REQ-QUIC-RFC9000-S7P4P1-0013"
+  ],
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+    "result": "Passed",
+    "summary": "223 passed, 0 failed, 0 skipped"
+  },
+  "files_changed": [
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicCryptoBuffer.cs",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+    "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs",
+    "tests/Incursa.Quic.Tests/QuicCryptoBufferFuzzTests.cs",
+    "specs/generated/quic/chunks/9000-08-transport-params-and-crypto-buffers.implementation-summary.md",
+    "specs/generated/quic/chunks/9000-08-transport-params-and-crypto-buffers.implementation-summary.json"
+  ],
+  "notes": [
+    "No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.",
+    "The 0-RTT transport-parameter requirements remain blocked because this repository slice does not yet expose the handshake/session-state surface needed to remember, compare, and apply transport parameters across resumptions.",
+    "QuicCryptoBuffer is implemented as a standalone helper; it still needs to be wired into the connection-level handshake pipeline to turn the buffered/discarded outcomes into packet-level behavior.",
+    "No stale or wrong requirement IDs were found in the scoped source or tests."
+  ]
+}

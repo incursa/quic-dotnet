@@ -1,0 +1,294 @@
+{
+  "chunk_id": "9000-08-transport-params-and-crypto-buffers",
+  "completion_status": "partial_with_explicit_blockers",
+  "files_changed": [
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicCryptoBuffer.cs",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+    "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs",
+    "tests/Incursa.Quic.Tests/QuicCryptoBufferFuzzTests.cs"
+  ],
+  "tests_run": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "result": "223 passed, 0 failed, 0 skipped"
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Invalid transport-parameter values are rejected by the parser."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParseTransportParameters_RejectsDuplicateTransportParameters"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Duplicate transport-parameter IDs are rejected before application, including unsupported IDs."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParseTransportParameters_RejectsDuplicateTransportParameters"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Duplicate transport parameters are treated as a transport error by returning parse failure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P2-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryParseTransportParameters_IgnoresReservedGreaseParameters"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Unsupported GREASE transport parameters are ignored while recognized parameters are still parsed."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P5-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoBuffer.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs",
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryAddFrame_BuffersOutOfOrderFramesAndDequeuesContiguousBytes",
+        "TryAddFrame_ClosesWithBufferExceededWhenCapacityIsNotExpanded",
+        "Fuzz_CryptoBuffer_ReconstructsShuffledFrames"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs",
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper buffers out-of-order CRYPTO frames and holds 4096 bytes by default."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P5-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoBuffer.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs",
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryAddFrame_AllowsConfiguredCapacityDuringHandshake",
+        "Fuzz_CryptoBuffer_ReconstructsShuffledFrames"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs",
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The buffer accepts a larger configured capacity during handshake processing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P5-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoBuffer.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryAddFrame_ClosesWithBufferExceededWhenCapacityIsNotExpanded"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Overflow without expansion reports BufferExceeded, which maps to the required connection close behavior."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P5-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoBuffer.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryAddFrame_CanDiscardOverflowFramesAfterHandshakeCompletion",
+        "TryAddFrame_CanCloseAfterHandshakeCompletionInsteadOfDiscarding"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "After handshake completion, overflow can be discarded or closed depending on configuration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P5-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicCryptoBuffer.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryAddFrame_CanDiscardOverflowFramesAfterHandshakeCompletion"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Discarded CRYPTO frames are reported as acknowledged so the packet can still be acknowledged."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until the connection/resumption layer can classify which transport parameters must be remembered for 0-RTT."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0002",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until the connection/resumption layer can compare remembered values against the transport parameters used for 0-RTT."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0003",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until the connection/resumption layer can apply server-provided transport-parameter values to the handshake."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0004",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until the connection/resumption layer can preserve all server transport parameters that are relevant to 0-RTT."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0005",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until server-side 0-RTT acceptance can compare new transport parameters against remembered limits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0006",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until server-side 0-RTT acceptance can enforce the remembered minimum values for the listed transport parameters."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0007",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until the 0-RTT transport-parameter profile can be represented in the connection layer."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0008",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until the connection/resumption layer can restore previously sent transport-parameter values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0009",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until the connection/resumption layer can reject 0-RTT when the restored values cannot be supported."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0010",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until 0-RTT packet construction can distinguish remembered values from updated handshake values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0011",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until 0-RTT packet construction can be constrained to remembered transport parameters only."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0012",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until the transport-state handoff can limit updated handshake values to 1-RTT packets."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0013",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "No 0-RTT/session-ticket transport-state API exists in this repository slice.",
+      "notes": "Blocked until server-side 0-RTT validation can detect use of updated transport parameters and signal protocol violation."
+    }
+  ]
+}

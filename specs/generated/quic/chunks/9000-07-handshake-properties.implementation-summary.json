@@ -1,0 +1,473 @@
+{
+  "chunk_id": "9000-07-handshake-properties",
+  "rfc": "9000",
+  "section_tokens": [
+    "S7",
+    "S7P2",
+    "S7P3"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "files_changed": [
+    "src/Incursa.Quic/QuicConnectionIdBindingValidationError.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+    "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+    "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+    "specs/generated/quic/chunks/9000-07-handshake-properties.implementation-summary.md",
+    "specs/generated/quic/chunks/9000-07-handshake-properties.implementation-summary.json"
+  ],
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+    "result": "Passed",
+    "summary": "216 passed, 0 failed, 0 skipped"
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0001",
+      "title": "Authenticate connection ID choices through transport parameters",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/QuicConnectionIdBindingValidationError.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress -> REQ-QUIC-RFC9000-S7P3-0001",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation -> REQ-QUIC-RFC9000-S7P3-0001"
+      ],
+      "remaining_gap": null,
+      "notes": "The existing transport-parameter codec already serializes and parses the connection-ID choices; the updated trace tags make that evidence explicit in the selected chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0002",
+      "title": "Echo the client Source Connection ID in initial_source_connection_id",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence -> REQ-QUIC-RFC9000-S7P3-0002",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient -> REQ-QUIC-RFC9000-S7P3-0002",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation -> REQ-QUIC-RFC9000-S7P3-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The formatter emits initial_source_connection_id and the parser preserves it; the fuzz lane now traces the same behavior across representative values."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0003",
+      "title": "Echo the client Initial Destination Connection ID in original_destination_connection_id",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress -> REQ-QUIC-RFC9000-S7P3-0003",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation -> REQ-QUIC-RFC9000-S7P3-0003"
+      ],
+      "remaining_gap": null,
+      "notes": "The server-side transport-parameter round trip already includes original_destination_connection_id and the parser preserves the value unchanged."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0004",
+      "title": "Echo the Retry Source Connection ID when Retry is used",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress -> REQ-QUIC-RFC9000-S7P3-0004",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation -> REQ-QUIC-RFC9000-S7P3-0004"
+      ],
+      "remaining_gap": null,
+      "notes": "The transport-parameter codec now round-trips retry_source_connection_id and the fuzz lane keeps that coverage exercised."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0005",
+      "title": "The values provided by a peer for these transport parameters MUST match the values that an endpoint used in the Destination and Source Connection ID fields of Initial packets that it sent (and received, for servers)",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/QuicConnectionIdBindingValidationError.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindings"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindings -> REQ-QUIC-RFC9000-S7P3-0005"
+      ],
+      "remaining_gap": null,
+      "notes": "The new validation helper checks the peer-supplied connection IDs against the observed Initial packet values for the client and server roles."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0006",
+      "title": "Validate that received transport parameters match received connection ID values",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/QuicConnectionIdBindingValidationError.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindings"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindings -> REQ-QUIC-RFC9000-S7P3-0006"
+      ],
+      "remaining_gap": null,
+      "notes": "The same validation helper provides the positive-match proof for this clause."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0007",
+      "title": "Treat the absence of the initial_source_connection_id transport parameter from either endpoint or the absence of the original_destination_connection_id transport parameter from the server as a connection error of type TRANSPORT_PARAMETER_ERROR",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/QuicConnectionIdBindingValidationError.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryValidateConnectionIdBindings_RejectsMissingConnectionIdBindings"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryValidateConnectionIdBindings_RejectsMissingConnectionIdBindings -> REQ-QUIC-RFC9000-S7P3-0007"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper now reports explicit missing-parameter errors for both roles, which is the repo-native stand-in for TRANSPORT_PARAMETER_ERROR handling here."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0008",
+      "title": "Treat the following as a connection error of type TRANSPORT_PARAMETER_ERROR or PROTOCOL_VIOLATION:",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/QuicConnectionIdBindingValidationError.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryValidateConnectionIdBindings_RejectsMismatchedConnectionIdBindings"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryValidateConnectionIdBindings_RejectsMismatchedConnectionIdBindings -> REQ-QUIC-RFC9000-S7P3-0008"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper rejects mismatched and unexpected connection-ID bindings with explicit enum values that map cleanly to the spec's error bucket."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0009",
+      "title": "Include zero-length connection IDs as zero-length transport parameters",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation -> REQ-QUIC-RFC9000-S7P3-0009"
+      ],
+      "remaining_gap": null,
+      "notes": "The fuzz generator already exercises zero-length original, initial, and retry connection IDs, and the round-trip proves they stay zero-length on the wire."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7-0001",
+      "title": "S7 0001",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and connection-state surface needed to satisfy this clause.",
+      "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7-0002",
+      "title": "S7 0002",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and connection-state surface needed to satisfy this clause.",
+      "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7-0003",
+      "title": "S7 0003",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and connection-state surface needed to satisfy this clause.",
+      "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7-0004",
+      "title": "S7 0004",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and connection-state surface needed to satisfy this clause.",
+      "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7-0005",
+      "title": "S7 0005",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and connection-state surface needed to satisfy this clause.",
+      "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7-0006",
+      "title": "S7 0006",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and connection-state surface needed to satisfy this clause.",
+      "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7-0007",
+      "title": "S7 0007",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and connection-state surface needed to satisfy this clause.",
+      "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7-0008",
+      "title": "S7 0008",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and connection-state surface needed to satisfy this clause.",
+      "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7-0009",
+      "title": "S7 0009",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and connection-state surface needed to satisfy this clause.",
+      "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7-0010",
+      "title": "S7 0010",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and connection-state surface needed to satisfy this clause.",
+      "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7-0011",
+      "title": "S7 0011",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and connection-state surface needed to satisfy this clause.",
+      "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0001",
+      "title": "S7P2 0001",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload -> REQ-QUIC-RFC9000-S7P2-0001",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation -> REQ-QUIC-RFC9000-S7P2-0001"
+      ],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0002",
+      "title": "S7P2 0002",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions -> REQ-QUIC-RFC9000-S7P2-0002",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses -> REQ-QUIC-RFC9000-S7P2-0002"
+      ],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0003",
+      "title": "S7P2 0003",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0004",
+      "title": "S7P2 0004",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0005",
+      "title": "S7P2 0005",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0006",
+      "title": "S7P2 0006",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0007",
+      "title": "S7P2 0007",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0008",
+      "title": "S7P2 0008",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0009",
+      "title": "S7P2 0009",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0010",
+      "title": "S7P2 0010",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0011",
+      "title": "S7P2 0011",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0012",
+      "title": "S7P2 0012",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0013",
+      "title": "S7P2 0013",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0014",
+      "title": "S7P2 0014",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
+      "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."
+    }
+  ]
+}

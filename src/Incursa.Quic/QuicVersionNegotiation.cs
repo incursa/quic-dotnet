@@ -77,6 +77,37 @@ public static class QuicVersionNegotiation
     }
 
     /// <summary>
+    /// Determines whether a server should send a Version Negotiation packet for the client's selected version
+    /// and the observed datagram payload size.
+    /// </summary>
+    public static bool ShouldSendVersionNegotiation(
+        uint clientSelectedVersion,
+        int datagramPayloadSize,
+        ReadOnlySpan<uint> serverSupportedVersions)
+    {
+        if (!ShouldSendVersionNegotiation(clientSelectedVersion, serverSupportedVersions)
+            || !TryGetRequiredInitialDatagramPayloadSize(serverSupportedVersions, out int requiredPayloadSize))
+        {
+            return false;
+        }
+
+        return datagramPayloadSize >= requiredPayloadSize;
+    }
+
+    /// <summary>
+    /// Determines whether a server should send a Version Negotiation packet for the client's selected version
+    /// when the server already sent Version Negotiation packets for this attempt.
+    /// </summary>
+    public static bool ShouldSendVersionNegotiation(
+        uint clientSelectedVersion,
+        ReadOnlySpan<uint> serverSupportedVersions,
+        bool hasAlreadySentVersionNegotiation)
+    {
+        return !hasAlreadySentVersionNegotiation
+            && ShouldSendVersionNegotiation(clientSelectedVersion, serverSupportedVersions);
+    }
+
+    /// <summary>
     /// Formats a Version Negotiation response that echoes the client's connection IDs and advertises the server's accepted versions.
     /// </summary>
     public static bool TryFormatVersionNegotiationResponse(

@@ -1,0 +1,941 @@
+{
+  "chunk_id": "9000-18-ack-generation",
+  "rfc": "9000",
+  "section_tokens": [
+    "S13",
+    "S13P1",
+    "S13P2",
+    "S13P2P1",
+    "S13P2P2",
+    "S13P2P3",
+    "S13P2P4",
+    "S13P2P5",
+    "S13P2P6",
+    "S13P2P7"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "completion_status": "partial_with_explicit_blockers",
+  "reconciliation_artifact_present": false,
+  "files_changed": [
+    "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+    "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+    "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+  ],
+  "tests_run": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicAckGenerationStateTests|FullyQualifiedName~QuicFrameCodecTests|FullyQualifiedName~QuicFrameCodecFuzzTests\"",
+      "result": "18 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "result": "249 passed, 0 failed, 0 skipped"
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no packet-assembly surface that can guarantee one or more frames in every QUIC packet.",
+      "notes": "Packet composition is still outside the available helper slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13-0002",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no send-path batching scheduler that can wait briefly to coalesce frames before emitting an underfilled packet.",
+      "notes": "Needs the outgoing packet scheduler, not just ACK-state helpers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13-0003",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no heuristic-based packet pacing surface that can decide how long to wait before sending.",
+      "notes": "This depends on application-aware send timing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13-0004",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no packet composer that can pack multiple STREAM frames into one QUIC packet.",
+      "notes": "The current work only covers ACK generation, not general packet packing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13-0005",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no packet packing policy that can prefer fewer active streams while preserving transmission efficiency.",
+      "notes": "Requires the same packet-assembly surface as the other S13 opening clauses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P1-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no decryption-complete / frame-processing completion hook that can delay ACKing until all packet contents are processed.",
+      "notes": "ACK tracking starts after the helper is told a packet has been processed."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P1-0002",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no STREAM enqueue / delivery lifecycle surface to distinguish application enqueue from app-consumption.",
+      "notes": "The helper does not model STREAM frame delivery to the application."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P1-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper records processed packets and the generated ACK frame round-trips through the frame codec, including the largest acknowledged packet and ack delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P1-0004",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no incoming-ACK validation surface that can raise PROTOCOL_VIOLATION for acknowledgments of unsent packets.",
+      "notes": "This belongs in inbound ACK processing, which is not present in the chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper records processed packets and the generated ACK frame round-trips through the frame codec, including the largest acknowledged packet and ack delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Ack-eliciting application-data packets are held to max_ack_delay, which also applies to 0-RTT and 1-RTT application-data traffic in the helper-level model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper records processed packets and the generated ACK frame round-trips through the frame codec, including the largest acknowledged packet and ack delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0003",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no recovery timer surface that uses the receiver max_ack_delay in PTO or retransmission timeout calculations.",
+      "notes": "This is a QUIC recovery concern rather than ACK generation state."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Ack-eliciting application-data packets are held to max_ack_delay, which also applies to 0-RTT and 1-RTT application-data traffic in the helper-level model."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldSendAckImmediately_ForInitialAndHandshakePackets"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Initial and Handshake packets are marked for immediate ACK generation as soon as they are recorded."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0006",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "CanSendOnlyOneAckOnlyPacketPerAckElicitingPacket"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper enforces the one-ACK-only-packet-per-ack-eliciting-packet guard."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0007",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no send-path rule engine that can prevent non-ack-eliciting packets from being sent in response to non-ack-eliciting packets.",
+      "notes": "The helper does not control packet type selection."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0008",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper records processed packets and the generated ACK frame round-trips through the frame codec, including the largest acknowledged packet and ack delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0009",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no peer-side ACK reception model to show that ACK-only traffic will not itself be acknowledged.",
+      "notes": "This is a consequence of peer behavior, not local ACK generation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0010",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0011",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0012",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no feedback-loop model for adding ack-eliciting frames to otherwise non-ack-eliciting packets.",
+      "notes": "Needs the general packet composer / send-path decision layer."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0013",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldSendAckImmediately_ForOutOfOrderAndCePackets",
+        "TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Out-of-order/gap-detecting packets and CE-marked packets trigger immediate ACK generation, and CE packets preserve ECN counts."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0014",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldSendAckImmediately_ForOutOfOrderAndCePackets",
+        "TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Out-of-order/gap-detecting packets and CE-marked packets trigger immediate ACK generation, and CE packets preserve ECN counts."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P2-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P2-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P2-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay",
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK frame helper and codec preserve multiple ACK ranges, the largest received packet number, and the ACK Delay field without adding uncontrolled delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay",
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK frame helper and codec preserve multiple ACK ranges, the largest received packet number, and the ACK Delay field without adding uncontrolled delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_TrimsOldestRangesWhenLimitReached"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_TrimsOldestRangesWhenLimitReached"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0005",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no peer-ACK lifecycle surface to retire ACK ranges after acknowledgments for an ACK frame are received.",
+      "notes": "The helper can trim locally retained ranges, but it does not model received ACKs for ACK frames."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0006",
+      "completion_status": "deferred",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Informational prose about expected ACK receipt rates; no executable behavior is attached to the clause.",
+      "notes": "Deferred intentionally because it is descriptive rather than a distinct code path."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0007",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_TrimsOldestRangesWhenLimitReached"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0008",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_TrimsOldestRangesWhenLimitReached"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0009",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_TrimsOldestRangesWhenLimitReached"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0010",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_TrimsOldestRangesWhenLimitReached"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0011",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_TrimsOldestRangesWhenLimitReached"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0012",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay",
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK frame helper and codec preserve multiple ACK ranges, the largest received packet number, and the ACK Delay field without adding uncontrolled delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0013",
+      "completion_status": "deferred",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Section marker / descriptive clause for Section 13.2.4, not a runtime rule.",
+      "notes": "Deferred intentionally because no implementation hook is expected for the section heading."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P4-0001",
+      "completion_status": "deferred",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Informational note about ACK frame loss and reordering; no helper-level behavior can guarantee or violate it directly.",
+      "notes": "Deferred intentionally because the clause describes a limit of the approach rather than a code path."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper records processed packets and the generated ACK frame round-trips through the frame codec, including the largest acknowledged packet and ack delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay",
+        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The ACK frame helper and codec preserve multiple ACK ranges, the largest received packet number, and the ACK Delay field without adding uncontrolled delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay",
+        "TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper reports ACK Delay directly from measured receive-to-send time, so no uncontrolled delay is introduced."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0004",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no decryption-key buffering state to add uncontrolled key-wait latency into ACK Delay.",
+      "notes": "The helper only models locally measured receive-to-send delay."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper reports measured delay greater than max_ack_delay directly in ACK Delay and emits ACK-ECN frames when CE was observed."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P6-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "PacketNumberSpaces_AreTrackedIndependently"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK generation is tracked independently per packet number space, so the helper builds separate ACK state for Initial, Handshake, and ApplicationData traffic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P6-0002",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "PacketNumberSpaces_AreTrackedIndependently"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "ACK generation is tracked independently per packet number space, so the helper builds separate ACK state for Initial, Handshake, and ApplicationData traffic."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P6-0003",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no carrier-selection surface that can force client 0-RTT acknowledgments onto 1-RTT packets.",
+      "notes": "The helper tracks packet number spaces but does not choose packet encryption levels."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P6-0004",
+      "completion_status": "deferred",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Informational consequence of delayed or lost server handshake messages; no separate implementation surface exists for the note itself.",
+      "notes": "Deferred intentionally because the clause is explanatory, not a standalone rule."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P2P7-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no periodic non-PADDING probe / send-ack-eliciting-frames scheduler.",
+      "notes": "The current slice does not own the periodic path-probe policy."
+    }
+  ],
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9000-S13-0001",
+    "REQ-QUIC-RFC9000-S13-0002",
+    "REQ-QUIC-RFC9000-S13-0003",
+    "REQ-QUIC-RFC9000-S13-0004",
+    "REQ-QUIC-RFC9000-S13-0005",
+    "REQ-QUIC-RFC9000-S13P1-0001",
+    "REQ-QUIC-RFC9000-S13P1-0002",
+    "REQ-QUIC-RFC9000-S13P1-0004",
+    "REQ-QUIC-RFC9000-S13P2P1-0003",
+    "REQ-QUIC-RFC9000-S13P2P1-0007",
+    "REQ-QUIC-RFC9000-S13P2P1-0009",
+    "REQ-QUIC-RFC9000-S13P2P1-0012",
+    "REQ-QUIC-RFC9000-S13P2P3-0005",
+    "REQ-QUIC-RFC9000-S13P2P3-0006",
+    "REQ-QUIC-RFC9000-S13P2P3-0013",
+    "REQ-QUIC-RFC9000-S13P2P4-0001",
+    "REQ-QUIC-RFC9000-S13P2P5-0004",
+    "REQ-QUIC-RFC9000-S13P2P6-0003",
+    "REQ-QUIC-RFC9000-S13P2P6-0004",
+    "REQ-QUIC-RFC9000-S13P2P7-0001"
+  ],
+  "notes": "No reconciliation artifact existed for this chunk, so the work was treated as greenfield. The helper now covers ACK generation from processed packets, delayed-ACK thresholds, immediate ACK triggers, ACK range trimming, ACK-ECN frame emission, and per-space tracking. The remaining requirements are split between intentional non-actionable prose/section-marker clauses and blocked send-path, timer, peer-ACK, decryption, and carrier-selection dependencies."
+}

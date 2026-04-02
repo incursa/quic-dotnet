@@ -9,7 +9,7 @@
   ],
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicVersionNegotiationTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests\"",
-    "passed": 67,
+    "passed": 71,
     "failed": 0,
     "skipped": 0
   },
@@ -91,12 +91,20 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S6P1-0003",
-      "completion_status": "deferred",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Limiting Version Negotiation volume requires endpoint state and send-history tracking that this parser-focused library does not expose.",
-      "notes": "This optional MAY requirement was intentionally left for a future connection-state layer rather than forced into the stateless codec surface."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The new overload lets a caller suppress repeated Version Negotiation responses once one has already been sent."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S6P2-0001",
@@ -188,19 +196,18 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S6P3-0002",
-      "completion_status": "deferred",
+      "completion_status": "implemented and tested",
       "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
       ],
-      "remaining_gap": "The library still has no general long-header formatter or outbound packet probe surface for emitting reserved-version packets.",
-      "notes": "Reserved-version creation is now available, but actual reserved-version probe packet emission was intentionally left for a later send-path chunk."
+      "remaining_gap": null,
+      "notes": "The reserved-version packet test uses the existing `CreateReservedVersion` helper plus the generic long-header builder to prove the Version Negotiation parser rejects the packet."
     }
   ]
 }

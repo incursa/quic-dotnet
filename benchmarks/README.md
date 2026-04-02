@@ -5,7 +5,7 @@ This directory contains permanent BenchmarkDotNet suites for the QUIC parser hot
 ## Current Suite
 
 - `Incursa.Quic.Benchmarks`
-- `QuicFrameCodecBenchmarks`: CRYPTO frame parsing and formatting
+- `QuicFrameCodecBenchmarks`: CRYPTO frame parsing and formatting, plus STREAM frame formatting
 
 ## Run
 

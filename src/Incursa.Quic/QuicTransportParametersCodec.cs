@@ -33,6 +33,7 @@ public static class QuicTransportParametersCodec
         out QuicTransportParameters parameters)
     {
         parameters = new QuicTransportParameters();
+        List<ulong> seenParameterIds = [];
 
         ReadOnlySpan<byte> remaining = encoded;
         while (!remaining.IsEmpty)
@@ -58,7 +59,8 @@ public static class QuicTransportParametersCodec
             ReadOnlySpan<byte> value = remaining[..(int)length];
             remaining = remaining[(int)length..];
 
-            if (!TryApplyTransportParameter(parameters, id, value, receiverRole))
+            if (!TryTrackTransportParameterId(seenParameterIds, id)
+                || !TryApplyTransportParameter(parameters, id, value, receiverRole))
             {
                 return false;
             }
@@ -155,6 +157,92 @@ public static class QuicTransportParametersCodec
         }
 
         bytesWritten = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Validates that peer transport parameters match the connection IDs observed during handshake.
+    /// </summary>
+    public static bool TryValidateConnectionIdBindings(
+        QuicTransportParameterRole receiverRole,
+        ReadOnlySpan<byte> initialDestinationConnectionId,
+        ReadOnlySpan<byte> initialSourceConnectionId,
+        bool usedRetry,
+        ReadOnlySpan<byte> retrySourceConnectionId,
+        QuicTransportParameters peerParameters,
+        out QuicConnectionIdBindingValidationError validationError)
+    {
+        validationError = QuicConnectionIdBindingValidationError.None;
+
+        if (peerParameters is null)
+        {
+            return false;
+        }
+
+        if (receiverRole == QuicTransportParameterRole.Client)
+        {
+            if (peerParameters.OriginalDestinationConnectionId is null)
+            {
+                validationError = QuicConnectionIdBindingValidationError.MissingOriginalDestinationConnectionId;
+                return false;
+            }
+
+            if (!peerParameters.OriginalDestinationConnectionId.AsSpan().SequenceEqual(initialDestinationConnectionId))
+            {
+                validationError = QuicConnectionIdBindingValidationError.OriginalDestinationConnectionIdMismatch;
+                return false;
+            }
+
+            if (peerParameters.InitialSourceConnectionId is null)
+            {
+                validationError = QuicConnectionIdBindingValidationError.MissingInitialSourceConnectionId;
+                return false;
+            }
+
+            if (!peerParameters.InitialSourceConnectionId.AsSpan().SequenceEqual(initialSourceConnectionId))
+            {
+                validationError = QuicConnectionIdBindingValidationError.InitialSourceConnectionIdMismatch;
+                return false;
+            }
+
+            if (peerParameters.RetrySourceConnectionId is null)
+            {
+                if (usedRetry)
+                {
+                    validationError = QuicConnectionIdBindingValidationError.MissingRetrySourceConnectionId;
+                    return false;
+                }
+            }
+            else
+            {
+                if (!usedRetry)
+                {
+                    validationError = QuicConnectionIdBindingValidationError.UnexpectedRetrySourceConnectionId;
+                    return false;
+                }
+
+                if (!peerParameters.RetrySourceConnectionId.AsSpan().SequenceEqual(retrySourceConnectionId))
+                {
+                    validationError = QuicConnectionIdBindingValidationError.RetrySourceConnectionIdMismatch;
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        if (peerParameters.InitialSourceConnectionId is null)
+        {
+            validationError = QuicConnectionIdBindingValidationError.MissingInitialSourceConnectionId;
+            return false;
+        }
+
+        if (!peerParameters.InitialSourceConnectionId.AsSpan().SequenceEqual(initialSourceConnectionId))
+        {
+            validationError = QuicConnectionIdBindingValidationError.InitialSourceConnectionIdMismatch;
+            return false;
+        }
+
         return true;
     }
 
@@ -291,6 +379,20 @@ public static class QuicTransportParametersCodec
             default:
                 return true;
         }
+    }
+
+    private static bool TryTrackTransportParameterId(List<ulong> seenParameterIds, ulong id)
+    {
+        foreach (ulong seenParameterId in seenParameterIds)
+        {
+            if (seenParameterId == id)
+            {
+                return false;
+            }
+        }
+
+        seenParameterIds.Add(id);
+        return true;
     }
 
     private static bool TryParseVarintValue(ReadOnlySpan<byte> value, out ulong parsedValue)

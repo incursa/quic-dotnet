@@ -5,6 +5,7 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicStreamFrameTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9001-S3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0005")]
@@ -42,9 +43,21 @@ public sealed class QuicStreamFrameTests
         Assert.True(streamData.AsSpan().SequenceEqual(frame.StreamData));
         Assert.Equal(streamData.Length, frame.StreamDataLength);
         Assert.Equal(packet.Length, frame.ConsumedLength);
+
+        Span<byte> destination = stackalloc byte[64];
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            frame.FrameType,
+            frame.StreamId.Value,
+            frame.Offset,
+            frame.StreamData,
+            destination,
+            out int bytesWritten));
+        Assert.Equal(packet.Length, bytesWritten);
+        Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9001-S3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0008")]
@@ -71,6 +84,29 @@ public sealed class QuicStreamFrameTests
         Assert.True(streamData.AsSpan().SequenceEqual(frame.StreamData));
         Assert.Equal(streamData.Length, frame.StreamDataLength);
         Assert.Equal(packet.Length, frame.ConsumedLength);
+
+        Span<byte> destination = stackalloc byte[64];
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            frame.FrameType,
+            frame.StreamId.Value,
+            frame.Offset,
+            frame.StreamData,
+            destination,
+            out int bytesWritten));
+        Assert.Equal(packet.Length, bytesWritten);
+        Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9001-S3-0012")]
+    [Trait("Category", "Negative")]
+    public void TryFormatStreamFrame_RejectsInvalidTypesAndOffsetMismatches()
+    {
+        Span<byte> destination = stackalloc byte[64];
+
+        Assert.False(QuicFrameCodec.TryFormatStreamFrame(0x07, 0x04, 0, [0xAA], destination, out _));
+        Assert.False(QuicFrameCodec.TryFormatStreamFrame(0x08, 0x04, 1, [0xAA], destination, out _));
+        Assert.False(QuicFrameCodec.TryFormatStreamFrame(0x0F, 0x04, QuicVariableLengthInteger.MaxValue, [0xAA], destination, out _));
     }
 
     [Fact]
@@ -233,6 +269,7 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9001-S3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0005")]
@@ -264,6 +301,17 @@ public sealed class QuicStreamFrameTests
         Assert.Equal(0, frame.StreamDataLength);
         Assert.True(frame.StreamData.IsEmpty);
         Assert.Equal(packet.Length, frame.ConsumedLength);
+
+        Span<byte> destination = stackalloc byte[64];
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            frame.FrameType,
+            frame.StreamId.Value,
+            frame.Offset,
+            frame.StreamData,
+            destination,
+            out int bytesWritten));
+        Assert.Equal(packet.Length, bytesWritten);
+        Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
     }
 
     [Fact]
@@ -318,6 +366,7 @@ public sealed class QuicStreamFrameTests
     }
 
     [Property(Arbitrary = new[] { typeof(QuicStreamFramePropertyGenerators) })]
+    [Requirement("REQ-QUIC-RFC9001-S3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0003")]
@@ -356,5 +405,16 @@ public sealed class QuicStreamFrameTests
         Assert.True(scenario.StreamData.AsSpan().SequenceEqual(frame.StreamData));
         Assert.Equal(scenario.StreamData.Length, frame.StreamDataLength);
         Assert.Equal(packet.Length, frame.ConsumedLength);
+
+        Span<byte> destination = stackalloc byte[64];
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            frame.FrameType,
+            frame.StreamId.Value,
+            frame.Offset,
+            frame.StreamData,
+            destination,
+            out int bytesWritten));
+        Assert.Equal(packet.Length, bytesWritten);
+        Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
     }
 }

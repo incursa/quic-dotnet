@@ -53,11 +53,27 @@ const Incursa.Quic.QuicVersionNegotiation.Version1 = 1 -> uint
 const Incursa.Quic.QuicVersionNegotiation.Version1MinimumDatagramPayloadSize = 1200 -> int
 static Incursa.Quic.QuicVersionNegotiation.TryGetRequiredInitialDatagramPayloadSize(System.ReadOnlySpan<uint> supportedVersions, out int requiredPayloadSize) -> bool
 static Incursa.Quic.QuicVersionNegotiation.ShouldSendVersionNegotiation(uint clientSelectedVersion, System.ReadOnlySpan<uint> serverSupportedVersions) -> bool
+static Incursa.Quic.QuicVersionNegotiation.ShouldSendVersionNegotiation(uint clientSelectedVersion, int datagramPayloadSize, System.ReadOnlySpan<uint> serverSupportedVersions) -> bool
+static Incursa.Quic.QuicVersionNegotiation.ShouldSendVersionNegotiation(uint clientSelectedVersion, System.ReadOnlySpan<uint> serverSupportedVersions, bool hasAlreadySentVersionNegotiation) -> bool
 static Incursa.Quic.QuicVersionNegotiation.TryFormatVersionNegotiationResponse(uint clientSelectedVersion, System.ReadOnlySpan<byte> clientDestinationConnectionId, System.ReadOnlySpan<byte> clientSourceConnectionId, System.ReadOnlySpan<uint> serverSupportedVersions, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicVersionNegotiation.ShouldDiscardVersionNegotiation(Incursa.Quic.QuicVersionNegotiationPacket packet, uint selectedVersion, bool hasSuccessfullyProcessedAnotherPacket) -> bool
 static Incursa.Quic.QuicVersionNegotiation.ShouldAbandonConnectionAttempt(Incursa.Quic.QuicVersionNegotiationPacket packet, uint selectedVersion, System.ReadOnlySpan<uint> clientSupportedVersions, bool hasSuccessfullyProcessedAnotherPacket) -> bool
 static Incursa.Quic.QuicVersionNegotiation.IsReservedVersion(uint version) -> bool
 static Incursa.Quic.QuicVersionNegotiation.CreateReservedVersion(uint template) -> uint
+Incursa.Quic.QuicAddressValidation
+static Incursa.Quic.QuicAddressValidation.CanConsiderPeerAddressValidated(System.ReadOnlySpan<byte> connectionId, bool chosenByEndpoint) -> bool
+static Incursa.Quic.QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(int currentPayloadLength, out int paddingLength) -> bool
+static Incursa.Quic.QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(int currentPayloadLength, System.Span<byte> destination, out int bytesWritten) -> bool
+Incursa.Quic.QuicAntiAmplificationBudget
+Incursa.Quic.QuicAntiAmplificationBudget.QuicAntiAmplificationBudget() -> void
+Incursa.Quic.QuicAntiAmplificationBudget.ReceivedPayloadBytes.get -> ulong
+Incursa.Quic.QuicAntiAmplificationBudget.SentPayloadBytes.get -> ulong
+Incursa.Quic.QuicAntiAmplificationBudget.IsAddressValidated.get -> bool
+Incursa.Quic.QuicAntiAmplificationBudget.RemainingSendBudget.get -> ulong
+Incursa.Quic.QuicAntiAmplificationBudget.MarkAddressValidated() -> void
+Incursa.Quic.QuicAntiAmplificationBudget.TryRegisterReceivedDatagramPayloadBytes(int payloadBytes, bool uniquelyAttributedToSingleConnection) -> bool
+Incursa.Quic.QuicAntiAmplificationBudget.CanSend(int payloadBytes) -> bool
+Incursa.Quic.QuicAntiAmplificationBudget.TryConsumeSendBudget(int payloadBytes) -> bool
 Incursa.Quic.QuicVariableLengthInteger
 const Incursa.Quic.QuicVariableLengthInteger.MaxValue = 4611686018427387903 -> ulong
 static Incursa.Quic.QuicVariableLengthInteger.TryParse(System.ReadOnlySpan<byte> encoded, out ulong value, out int bytesConsumed) -> bool
@@ -90,6 +106,20 @@ Incursa.Quic.QuicEcnCounts.QuicEcnCounts(ulong ect0Count, ulong ect1Count, ulong
 Incursa.Quic.QuicEcnCounts.Ect0Count.get -> ulong
 Incursa.Quic.QuicEcnCounts.Ect1Count.get -> ulong
 Incursa.Quic.QuicEcnCounts.EcnCeCount.get -> ulong
+Incursa.Quic.QuicPacketNumberSpace
+Incursa.Quic.QuicPacketNumberSpace.Initial = 0 -> Incursa.Quic.QuicPacketNumberSpace
+Incursa.Quic.QuicPacketNumberSpace.Handshake = 1 -> Incursa.Quic.QuicPacketNumberSpace
+Incursa.Quic.QuicPacketNumberSpace.ApplicationData = 2 -> Incursa.Quic.QuicPacketNumberSpace
+Incursa.Quic.QuicAckGenerationState
+Incursa.Quic.QuicAckGenerationState.QuicAckGenerationState(int maximumRetainedAckRanges = 32, int minimumAckElicitingPacketsBeforeDelayedAck = 2) -> void
+Incursa.Quic.QuicAckGenerationState.MaximumRetainedAckRanges.get -> int
+Incursa.Quic.QuicAckGenerationState.MinimumAckElicitingPacketsBeforeDelayedAck.get -> int
+Incursa.Quic.QuicAckGenerationState.RecordProcessedPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, bool ackEliciting, ulong receivedAtMicros, bool congestionExperienced = false, Incursa.Quic.QuicEcnCounts? ecnCounts = null) -> void
+Incursa.Quic.QuicAckGenerationState.ShouldSendAckImmediately(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace) -> bool
+Incursa.Quic.QuicAckGenerationState.ShouldIncludeAckFrameWithOutgoingPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros) -> bool
+Incursa.Quic.QuicAckGenerationState.CanSendAckOnlyPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros) -> bool
+Incursa.Quic.QuicAckGenerationState.TryBuildAckFrame(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out Incursa.Quic.QuicAckFrame! frame) -> bool
+Incursa.Quic.QuicAckGenerationState.MarkAckFrameSent(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket) -> void
 Incursa.Quic.QuicResetStreamFrame
 Incursa.Quic.QuicResetStreamFrame.QuicResetStreamFrame() -> void
 Incursa.Quic.QuicResetStreamFrame.QuicResetStreamFrame(ulong streamId, ulong applicationProtocolErrorCode, ulong finalSize) -> void
@@ -106,6 +136,21 @@ Incursa.Quic.QuicCryptoFrame.QuicCryptoFrame() -> void
 Incursa.Quic.QuicCryptoFrame.QuicCryptoFrame(ulong offset, System.ReadOnlySpan<byte> cryptoData) -> void
 Incursa.Quic.QuicCryptoFrame.Offset.get -> ulong
 Incursa.Quic.QuicCryptoFrame.CryptoData.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicCryptoBufferResult
+Incursa.Quic.QuicCryptoBufferResult.Buffered = 0 -> Incursa.Quic.QuicCryptoBufferResult
+Incursa.Quic.QuicCryptoBufferResult.DiscardedAndAcknowledged = 1 -> Incursa.Quic.QuicCryptoBufferResult
+Incursa.Quic.QuicCryptoBufferResult.BufferExceeded = 2 -> Incursa.Quic.QuicCryptoBufferResult
+Incursa.Quic.QuicCryptoBuffer
+Incursa.Quic.QuicCryptoBuffer.QuicCryptoBuffer() -> void
+Incursa.Quic.QuicCryptoBuffer.QuicCryptoBuffer(int capacity) -> void
+Incursa.Quic.QuicCryptoBuffer.Capacity.get -> int
+Incursa.Quic.QuicCryptoBuffer.HandshakeComplete.get -> bool
+Incursa.Quic.QuicCryptoBuffer.HandshakeComplete.set -> void
+Incursa.Quic.QuicCryptoBuffer.DiscardOverflowFramesAfterHandshakeComplete.get -> bool
+Incursa.Quic.QuicCryptoBuffer.DiscardOverflowFramesAfterHandshakeComplete.set -> void
+Incursa.Quic.QuicCryptoBuffer.BufferedBytes.get -> int
+Incursa.Quic.QuicCryptoBuffer.TryAddFrame(Incursa.Quic.QuicCryptoFrame frame, out Incursa.Quic.QuicCryptoBufferResult result) -> bool
+Incursa.Quic.QuicCryptoBuffer.TryDequeueContiguousData(System.Span<byte> destination, out int bytesWritten) -> bool
 Incursa.Quic.QuicNewTokenFrame
 Incursa.Quic.QuicNewTokenFrame.QuicNewTokenFrame() -> void
 Incursa.Quic.QuicNewTokenFrame.QuicNewTokenFrame(System.ReadOnlySpan<byte> token) -> void
@@ -157,6 +202,11 @@ Incursa.Quic.QuicPathResponseFrame
 Incursa.Quic.QuicPathResponseFrame.QuicPathResponseFrame() -> void
 Incursa.Quic.QuicPathResponseFrame.QuicPathResponseFrame(System.ReadOnlySpan<byte> data) -> void
 Incursa.Quic.QuicPathResponseFrame.Data.get -> System.ReadOnlySpan<byte>
+Incursa.Quic.QuicPathValidation
+const Incursa.Quic.QuicPathValidation.PathChallengeDataLength = 8 -> int
+static Incursa.Quic.QuicPathValidation.TryGeneratePathChallengeData(System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicPathValidation.TryGetPathValidationDatagramPaddingLength(int currentPayloadLength, out int paddingLength) -> bool
+static Incursa.Quic.QuicPathValidation.TryFormatPathValidationDatagramPadding(int currentPayloadLength, Incursa.Quic.QuicAntiAmplificationBudget! antiAmplificationBudget, System.Span<byte> destination, out int bytesWritten) -> bool
 Incursa.Quic.QuicFrameCodec
 static Incursa.Quic.QuicFrameCodec.TryParsePaddingFrame(System.ReadOnlySpan<byte> packetPayload, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatPaddingFrame(System.Span<byte> destination, out int bytesWritten) -> bool
@@ -170,6 +220,7 @@ static Incursa.Quic.QuicFrameCodec.TryParseStopSendingFrame(System.ReadOnlySpan<
 static Incursa.Quic.QuicFrameCodec.TryFormatStopSendingFrame(Incursa.Quic.QuicStopSendingFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryParseCryptoFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicCryptoFrame frame, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatCryptoFrame(Incursa.Quic.QuicCryptoFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicFrameCodec.TryFormatStreamFrame(byte frameType, ulong streamId, ulong offset, System.ReadOnlySpan<byte> streamData, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryParseNewTokenFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicNewTokenFrame frame, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatNewTokenFrame(Incursa.Quic.QuicNewTokenFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicFrameCodec.TryParseMaxDataFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicMaxDataFrame frame, out int bytesConsumed) -> bool
@@ -224,6 +275,15 @@ static Incursa.Quic.QuicStreamParser.TryParseStreamFrame(System.ReadOnlySpan<byt
 Incursa.Quic.QuicTransportParameterRole
 Incursa.Quic.QuicTransportParameterRole.Client = 0 -> Incursa.Quic.QuicTransportParameterRole
 Incursa.Quic.QuicTransportParameterRole.Server = 1 -> Incursa.Quic.QuicTransportParameterRole
+Incursa.Quic.QuicConnectionIdBindingValidationError
+Incursa.Quic.QuicConnectionIdBindingValidationError.None = 0 -> Incursa.Quic.QuicConnectionIdBindingValidationError
+Incursa.Quic.QuicConnectionIdBindingValidationError.MissingOriginalDestinationConnectionId = 1 -> Incursa.Quic.QuicConnectionIdBindingValidationError
+Incursa.Quic.QuicConnectionIdBindingValidationError.MissingInitialSourceConnectionId = 2 -> Incursa.Quic.QuicConnectionIdBindingValidationError
+Incursa.Quic.QuicConnectionIdBindingValidationError.MissingRetrySourceConnectionId = 3 -> Incursa.Quic.QuicConnectionIdBindingValidationError
+Incursa.Quic.QuicConnectionIdBindingValidationError.OriginalDestinationConnectionIdMismatch = 4 -> Incursa.Quic.QuicConnectionIdBindingValidationError
+Incursa.Quic.QuicConnectionIdBindingValidationError.InitialSourceConnectionIdMismatch = 5 -> Incursa.Quic.QuicConnectionIdBindingValidationError
+Incursa.Quic.QuicConnectionIdBindingValidationError.RetrySourceConnectionIdMismatch = 6 -> Incursa.Quic.QuicConnectionIdBindingValidationError
+Incursa.Quic.QuicConnectionIdBindingValidationError.UnexpectedRetrySourceConnectionId = 7 -> Incursa.Quic.QuicConnectionIdBindingValidationError
 Incursa.Quic.QuicPreferredAddress
 Incursa.Quic.QuicPreferredAddress.QuicPreferredAddress() -> void
 Incursa.Quic.QuicPreferredAddress.IPv4Address.get -> byte[]!
@@ -269,3 +329,4 @@ Incursa.Quic.QuicTransportParameters.RetrySourceConnectionId.set -> void
 Incursa.Quic.QuicTransportParametersCodec
 static Incursa.Quic.QuicTransportParametersCodec.TryParseTransportParameters(System.ReadOnlySpan<byte> encoded, Incursa.Quic.QuicTransportParameterRole receiverRole, out Incursa.Quic.QuicTransportParameters! parameters) -> bool
 static Incursa.Quic.QuicTransportParametersCodec.TryFormatTransportParameters(Incursa.Quic.QuicTransportParameters! parameters, Incursa.Quic.QuicTransportParameterRole senderRole, System.Span<byte> destination, out int bytesWritten) -> bool
+static Incursa.Quic.QuicTransportParametersCodec.TryValidateConnectionIdBindings(Incursa.Quic.QuicTransportParameterRole receiverRole, System.ReadOnlySpan<byte> initialDestinationConnectionId, System.ReadOnlySpan<byte> initialSourceConnectionId, bool usedRetry, System.ReadOnlySpan<byte> retrySourceConnectionId, Incursa.Quic.QuicTransportParameters! peerParameters, out Incursa.Quic.QuicConnectionIdBindingValidationError validationError) -> bool

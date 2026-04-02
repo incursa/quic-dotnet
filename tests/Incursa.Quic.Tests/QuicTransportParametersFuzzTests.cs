@@ -38,6 +38,11 @@ public sealed class QuicTransportParametersFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S5P2P3-0002")]
     [Requirement("REQ-QUIC-RFC9000-S5P2P3-0004")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0009")]
     [Trait("Category", "Fuzz")]
     public void Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation()
     {

@@ -141,7 +141,7 @@ Section tokens: `S5P1P2, S5P2, S5P2P1, S5P2P2, S5P2P3`
 ## Tests Run and Results
 
 - Command: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests|FullyQualifiedName~QuicFrameCodecPart4Tests|FullyQualifiedName~QuicFrameCodecPart4FuzzTests|FullyQualifiedName~QuicTransportParametersTests|FullyQualifiedName~QuicTransportParametersFuzzTests"`
-- Passed: 62
+- Passed: 64
 - Failed: 0
 - Skipped: 0
-- Duration: 162 ms
+- Duration: 176 ms

@@ -8,275 +8,259 @@
     "S6P3"
   ],
   "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "audit_result": "clean_with_explicit_blockers",
+  "requirements_in_scope": {
+    "S6": 2,
+    "S6P1": 3,
+    "S6P2": 4,
+    "S6P3": 2,
+    "total": 11,
+    "covered": 9,
+    "blocked": 2,
+    "partial": 0,
+    "needs_review": 0
+  },
   "reconciliation_artifact_present": false,
   "implementation_summary_file": "./specs/generated/quic/chunks/9000-06-version-negotiation.implementation-summary.json",
-  "requirements": [
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6-0001",
-      "completion_status": "implemented and tested",
-      "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "remaining_gap": "none",
-      "notes": "The helper computes the required Initial datagram payload size for the known QUIC versions and returns 1200 for Version 1."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6-0002",
-      "completion_status": "implemented and tested",
-      "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "remaining_gap": "none",
-      "notes": "The helper is intentionally limited to the version set the repository can currently describe."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P1-0001",
-      "completion_status": "implemented and tested",
-      "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "remaining_gap": "none",
-      "notes": "The formatter emits a Version Negotiation packet that echoes the client's connection IDs and advertises the server's accepted versions."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P1-0002",
-      "completion_status": "implemented and tested",
-      "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "remaining_gap": "none",
-      "notes": "The send predicate returns false for a Version Negotiation packet because the packet version is 0."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P1-0003",
-      "completion_status": "blocked",
-      "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "No server policy exists to cap how many Version Negotiation packets are sent.",
-      "notes": "This MAY clause needs a server-side rate/volume policy layer that the repository does not yet model."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P2-0001",
-      "completion_status": "implemented and tested",
-      "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "remaining_gap": "none",
-      "notes": "The client-abandon helper checks the selected-version predicate and the discard predicate together."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P2-0002",
-      "completion_status": "implemented and tested",
-      "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "remaining_gap": "none",
-      "notes": "The helper abandons the current attempt only when the client supports exactly the selected version and the packet is not discardable."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P2-0003",
-      "completion_status": "implemented and tested",
-      "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "remaining_gap": "none",
-      "notes": "The discard helper checks whether any other packet has already been processed before considering the Version Negotiation packet."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P2-0004",
-      "completion_status": "implemented and tested",
-      "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "remaining_gap": "none",
-      "notes": "Added `ContainsSupportedVersion(uint)` so callers can detect whether the selected version is listed."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P3-0001",
-      "completion_status": "implemented and tested",
-      "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "remaining_gap": "none",
-      "notes": "Reserved version values are recognized as such and can be used as ignore-test inputs."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P3-0002",
-      "completion_status": "implemented and tested",
-      "files_changed": [
-        "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
-      ],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "remaining_gap": "none",
-      "notes": "The reserved-version helper derives a reserved pattern from a template value and preserves the Version Negotiation reservation pattern."
-    }
-  ],
-  "stale_requirement_ids": [],
-  "wrong_requirement_ids_found": [],
-  "uncovered_requirements": [
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P1-0003",
-      "reason": "blocked",
-      "remaining_gap": "No server policy exists to cap how many Version Negotiation packets are sent."
-    }
-  ],
-  "tests_run": [
-    {
-      "command": "dotnet test .\\tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --logger \"console;verbosity=minimal\"",
-      "result": "197 passed, 0 failed, 0 skipped"
-    }
-  ],
-  "trace_checks": {
-    "tests_with_requirement_traits": [
-      "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
-      "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-      "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-      "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9000-S6-0001",
+      "REQ-QUIC-RFC9000-S6-0002",
+      "REQ-QUIC-RFC9000-S6P1-0001",
+      "REQ-QUIC-RFC9000-S6P1-0002",
+      "REQ-QUIC-RFC9000-S6P1-0003",
+      "REQ-QUIC-RFC9000-S6P2-0001",
+      "REQ-QUIC-RFC9000-S6P2-0002",
+      "REQ-QUIC-RFC9000-S6P2-0003",
+      "REQ-QUIC-RFC9000-S6P2-0004",
+      "REQ-QUIC-RFC9000-S6P3-0001",
+      "REQ-QUIC-RFC9000-S6P3-0002"
     ],
     "source_files_checked_for_requirement_ids": [
       "src/Incursa.Quic/QuicVersionNegotiation.cs",
       "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
       "src/Incursa.Quic/PublicAPI.Unshipped.txt"
     ],
-    "source_requirement_ids_found": [],
-    "xml_comment_refs_expected": false
-  }
+    "test_files_with_requirement_traits": [
+      "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+    ],
+    "stale_or_wrong_refs_found": [],
+    "notes": "Current tests carry only imported RFC 9000 IDs in scope; no stale requirement refs were found under src/Incursa.Quic."
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S6-0001",
+      "completion_status": "blocked",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "remaining_gap": "The repository still has no outbound UDP datagram assembly or PADDING-based client send surface.",
+      "notes": "This pass added a helper that computes the required payload size for known versions, but no caller currently uses it to construct the first datagram."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S6-0002",
+      "completion_status": "blocked",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "remaining_gap": "The repository still has no first-datagram sender that can add PADDING frames or coalesce packets.",
+      "notes": "The duplicate imported sentence is carried forward with the same blocker as S6-0001."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S6P1-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "benchmarks/QuicHeaderParsingBenchmarks.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Added server-side decision and formatting helpers that emit a Version Negotiation response with the server's accepted versions."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S6P1-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The response predicate now rejects Version Negotiation input and the formatter refuses to emit a response for version 0."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S6P1-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The new overload lets a caller suppress repeated Version Negotiation responses once one has already been sent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S6P2-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper now decides when a single-version client must abandon the current attempt versus discard the Version Negotiation packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S6P2-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The duplicated imported lead-in sentence is closed by the same client-abandon decision helper as S6P2-0001."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S6P2-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The client discard predicate explicitly models the 'processed another packet' exception with a boolean state input."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S6P2-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The discard helper now checks whether the advertised list echoes the client's selected version."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S6P3-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Added reserved-version helpers and exercised reserved versions in the Version Negotiation supported-version list so callers can build ignore-test inputs."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S6P3-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The reserved-version packet test uses the existing `CreateReservedVersion` helper plus the generic long-header builder to prove the Version Negotiation parser rejects the packet."
+    }
+  ],
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9000-S6-0001",
+    "REQ-QUIC-RFC9000-S6-0002"
+  ],
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicVersionNegotiationTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests\"",
+    "result": "71 passed, 0 failed, 0 skipped",
+    "duration_ms": 163
+  },
+  "notes": [
+    "No reconciliation artifact exists for this chunk.",
+    "In-scope tests carry only imported RFC 9000 IDs in scope.",
+    "No stale requirement refs were found in the scoped source or tests.",
+    "Open requirements are explicitly blocked by missing first-datagram assembly behavior."
+  ]
 }

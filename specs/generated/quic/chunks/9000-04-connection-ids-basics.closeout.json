@@ -13,31 +13,33 @@
     "test_requirement_refs_found": [
       "REQ-QUIC-RFC9000-S5P1-0008",
       "REQ-QUIC-RFC9000-S5P1-0012",
+      "REQ-QUIC-RFC9000-S5P1-0013",
       "REQ-QUIC-RFC9000-S5P1P1-0005",
       "REQ-QUIC-RFC9000-S5P1P1-0011"
     ],
     "stale_requirement_refs_found": [],
-    "notes": "No requirement tags were found under src/Incursa.Quic; current test traits use the imported IDs for the implemented slice."
+    "notes": "No requirement tags were found under src/Incursa.Quic; current test traits use the imported IDs for the implemented slice and the explicit zero-length CID proof."
   },
   "status_summary": {
-    "implemented_and_tested": 3,
-    "partially_implemented": 1,
-    "tested_but_implementation_mapping_unclear": 4,
-    "not_implemented": 36,
+    "implemented_and_tested": 4,
+    "partially_implemented": 0,
+    "tested_but_implementation_mapping_unclear": 0,
+    "not_implemented": 40,
     "unclear_or_needs_human_review": 0
   },
   "tests_run": {
-    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicFrameCodecPart4Tests|FullyQualifiedName~QuicFrameCodecPart4FuzzTests|FullyQualifiedName~QuicTransportParametersTests|FullyQualifiedName~QuicTransportParametersFuzzTests\"",
-    "passed": 88,
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicVersionNegotiationTests|FullyQualifiedName~QuicFrameCodecPart4Tests|FullyQualifiedName~QuicFrameCodecPart4FuzzTests|FullyQualifiedName~QuicTransportParametersTests|FullyQualifiedName~QuicTransportParametersFuzzTests\"",
+    "passed": 98,
     "failed": 0,
     "skipped": 0,
-    "duration_ms": 181
+    "duration_ms": 177
   },
   "files_changed": [
     "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
     "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
     "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
     "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
+    "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs",
     "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
@@ -111,7 +113,7 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5-0008",
-      "completion_status": "partially implemented",
+      "completion_status": "blocked by technical dependency",
       "files_changed": [],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:19-43",
@@ -206,7 +208,7 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P1-0009",
-      "completion_status": "tested but implementation mapping unclear",
+      "completion_status": "blocked by technical dependency",
       "files_changed": [],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs:20-42",
@@ -237,35 +239,42 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P1-0012",
-      "completion_status": "tested but implementation mapping unclear",
+      "completion_status": "implemented and tested",
       "files_changed": [
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
         "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
       ],
       "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs:TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions",
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs:TryParseVersionNegotiation_ExposesSupportedVersions",
         "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:TryParseVersionNegotiation_RoundTripsSupportedVersions",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation"
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses"
       ],
       "direct_refs_added_or_updated": [
         "REQ-QUIC-RFC9000-S5P1-0012"
       ],
-      "remaining_gap": "The repo has no production-side Version Negotiation generator, so the current evidence only proves helper-built packets and parser round-trips.",
-      "notes": "Version Negotiation echo coverage was already present and remains carried forward from the prior trace pass."
+      "remaining_gap": null,
+      "notes": "Version Negotiation echo coverage is now explicitly tagged under the imported RFC 9000 requirement."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P1-0013",
-      "completion_status": "tested but implementation mapping unclear",
-      "files_changed": [],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:53-67",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:28-45",
-        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:19-43"
+      "completion_status": "blocked by technical dependency",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs"
       ],
-      "direct_refs_added_or_updated": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:TryParseLongHeader_AllowsZeroLengthConnectionIds",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs:TryParseLongHeader_RoundTripsHeaderFields",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs:Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S5P1-0013"
+      ],
       "remaining_gap": "Zero-length CIDs are accepted by generators and parsers, but the routing precondition for using them is not represented.",
-      "notes": "The wire-level acceptance is present, but the requirement depends on routing context that this repo does not model."
+      "notes": "The new explicit zero-length CID test covers parser acceptance, but the repo still does not model the routing context required to close the requirement."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P1-0014",
@@ -296,7 +305,7 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0002",
-      "completion_status": "tested but implementation mapping unclear",
+      "completion_status": "blocked by technical dependency",
       "files_changed": [],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs:93-136",

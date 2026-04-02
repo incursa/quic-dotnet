@@ -19,6 +19,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S18P2-0035")]
     [Requirement("REQ-QUIC-RFC9000-S5P2P3-0004")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0002")]
     [Trait("Category", "Positive")]
     public void TryFormatTransportParameters_WritesExactTupleSequence()
     {
@@ -62,6 +63,7 @@ public sealed class QuicTransportParametersTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0002")]
     [Trait("Category", "Positive")]
     public void TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient()
     {
@@ -108,6 +110,9 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S18P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S18P1-0002")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0004")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0004")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0019")]
@@ -188,6 +193,262 @@ public sealed class QuicTransportParametersTests
         Assert.True(parameters.RetrySourceConnectionId!.AsSpan().SequenceEqual(parsed.RetrySourceConnectionId!));
     }
 
+    public static IEnumerable<object[]> MatchingConnectionIdBindingCases()
+    {
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+            },
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            true,
+            new byte[] { 0x30 },
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+                RetrySourceConnectionId = new byte[] { 0x30 },
+            },
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Server,
+            Array.Empty<byte>(),
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+            },
+        };
+    }
+
+    public static IEnumerable<object[]> MissingConnectionIdBindingCases()
+    {
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+            },
+            QuicConnectionIdBindingValidationError.MissingOriginalDestinationConnectionId,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+            },
+            QuicConnectionIdBindingValidationError.MissingInitialSourceConnectionId,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            true,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+            },
+            QuicConnectionIdBindingValidationError.MissingRetrySourceConnectionId,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Server,
+            Array.Empty<byte>(),
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters(),
+            QuicConnectionIdBindingValidationError.MissingInitialSourceConnectionId,
+        };
+    }
+
+    public static IEnumerable<object[]> MismatchedConnectionIdBindingCases()
+    {
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x99 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+            },
+            QuicConnectionIdBindingValidationError.OriginalDestinationConnectionIdMismatch,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x99 },
+            },
+            QuicConnectionIdBindingValidationError.InitialSourceConnectionIdMismatch,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            true,
+            new byte[] { 0x30 },
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+                RetrySourceConnectionId = new byte[] { 0x99 },
+            },
+            QuicConnectionIdBindingValidationError.RetrySourceConnectionIdMismatch,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+                RetrySourceConnectionId = new byte[] { 0x30 },
+            },
+            QuicConnectionIdBindingValidationError.UnexpectedRetrySourceConnectionId,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Server,
+            Array.Empty<byte>(),
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                InitialSourceConnectionId = new byte[] { 0x99 },
+            },
+            QuicConnectionIdBindingValidationError.InitialSourceConnectionIdMismatch,
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(MatchingConnectionIdBindingCases))]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0006")]
+    [Trait("Category", "Positive")]
+    public void TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindings(
+        QuicTransportParameterRole receiverRole,
+        byte[] initialDestinationConnectionId,
+        byte[] initialSourceConnectionId,
+        bool usedRetry,
+        byte[] retrySourceConnectionId,
+        QuicTransportParameters peerParameters)
+    {
+        Assert.True(QuicTransportParametersCodec.TryValidateConnectionIdBindings(
+            receiverRole,
+            initialDestinationConnectionId,
+            initialSourceConnectionId,
+            usedRetry,
+            retrySourceConnectionId,
+            peerParameters,
+            out QuicConnectionIdBindingValidationError validationError));
+
+        Assert.Equal(QuicConnectionIdBindingValidationError.None, validationError);
+    }
+
+    [Theory]
+    [MemberData(nameof(MissingConnectionIdBindingCases))]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0007")]
+    [Trait("Category", "Negative")]
+    public void TryValidateConnectionIdBindings_RejectsMissingConnectionIdBindings(
+        QuicTransportParameterRole receiverRole,
+        byte[] initialDestinationConnectionId,
+        byte[] initialSourceConnectionId,
+        bool usedRetry,
+        byte[] retrySourceConnectionId,
+        QuicTransportParameters peerParameters,
+        QuicConnectionIdBindingValidationError expectedError)
+    {
+        Assert.False(QuicTransportParametersCodec.TryValidateConnectionIdBindings(
+            receiverRole,
+            initialDestinationConnectionId,
+            initialSourceConnectionId,
+            usedRetry,
+            retrySourceConnectionId,
+            peerParameters,
+            out QuicConnectionIdBindingValidationError validationError));
+
+        Assert.Equal(expectedError, validationError);
+    }
+
+    [Theory]
+    [MemberData(nameof(MismatchedConnectionIdBindingCases))]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0008")]
+    [Trait("Category", "Negative")]
+    public void TryValidateConnectionIdBindings_RejectsMismatchedConnectionIdBindings(
+        QuicTransportParameterRole receiverRole,
+        byte[] initialDestinationConnectionId,
+        byte[] initialSourceConnectionId,
+        bool usedRetry,
+        byte[] retrySourceConnectionId,
+        QuicTransportParameters peerParameters,
+        QuicConnectionIdBindingValidationError expectedError)
+    {
+        Assert.False(QuicTransportParametersCodec.TryValidateConnectionIdBindings(
+            receiverRole,
+            initialDestinationConnectionId,
+            initialSourceConnectionId,
+            usedRetry,
+            retrySourceConnectionId,
+            peerParameters,
+            out QuicConnectionIdBindingValidationError validationError));
+
+        Assert.Equal(expectedError, validationError);
+    }
+
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0020")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0021")]
@@ -258,6 +519,7 @@ public sealed class QuicTransportParametersTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S18P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S18P1-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S7P4P2-0001")]
     [Trait("Category", "Positive")]
     public void TryParseTransportParameters_IgnoresReservedGreaseParameters()
     {
@@ -274,6 +536,31 @@ public sealed class QuicTransportParametersTests
         Assert.Null(parsed.OriginalDestinationConnectionId);
         Assert.Null(parsed.StatelessResetToken);
         Assert.Null(parsed.PreferredAddress);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S7P4-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S7P4-0003")]
+    [Trait("Category", "Negative")]
+    public void TryParseTransportParameters_RejectsDuplicateTransportParameters()
+    {
+        byte[] duplicateKnownParameter = QuicTransportParameterTestData.BuildTransportParameterBlock(
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x01, QuicVarintTestData.EncodeMinimal(25)),
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x01, QuicVarintTestData.EncodeMinimal(33)));
+
+        byte[] duplicateUnknownParameter = QuicTransportParameterTestData.BuildTransportParameterBlock(
+            QuicTransportParameterTestData.BuildTransportParameterTuple(27, [0xAA]),
+            QuicTransportParameterTestData.BuildTransportParameterTuple(27, [0xBB]));
+
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            duplicateKnownParameter,
+            QuicTransportParameterRole.Client,
+            out _));
+
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            duplicateUnknownParameter,
+            QuicTransportParameterRole.Client,
+            out _));
     }
 
     [Fact]
@@ -359,6 +646,7 @@ public sealed class QuicTransportParametersTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0035")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0036")]
+    [Requirement("REQ-QUIC-RFC9000-S7P4-0001")]
     [Trait("Category", "Negative")]
     public void TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo()
     {
