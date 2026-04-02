@@ -1,0 +1,296 @@
+{
+  "chunk_id": "9000-13-idle-and-close",
+  "rfc": "9000",
+  "section_tokens": [
+    "S10",
+    "S10P1",
+    "S10P1P1",
+    "S10P1P2",
+    "S10P2",
+    "S10P2P1",
+    "S10P2P2",
+    "S10P2P3"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "audit_result": "clean_with_explicit_blockers",
+  "reconciliation_artifact_present": false,
+  "implementation_summary_file": "./specs/generated/quic/chunks/9000-13-idle-and-close.implementation-summary.json",
+  "implementation_summary_alignment": {
+    "spec_requirement_count": 52,
+    "summary_requirement_count": 52,
+    "missing_in_summary": [],
+    "extra_in_summary": [],
+    "summary_status": "partial_with_explicit_blockers"
+  },
+  "requirements_in_scope": {
+    "S10": 2,
+    "S10P1": 7,
+    "S10P1P1": 1,
+    "S10P1P2": 2,
+    "S10P2": 12,
+    "S10P2P1": 10,
+    "S10P2P2": 5,
+    "S10P2P3": 13,
+    "total": 52,
+    "implemented_and_tested": 6,
+    "blocked": 46,
+    "partial": 0,
+    "needs_review": 0
+  },
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9000-S10P1-0001",
+      "REQ-QUIC-RFC9000-S10P1-0003",
+      "REQ-QUIC-RFC9000-S10P1-0005",
+      "REQ-QUIC-RFC9000-S10P1-0006",
+      "REQ-QUIC-RFC9000-S10P1-0007",
+      "REQ-QUIC-RFC9000-S10P1P1-0001"
+    ],
+    "stale_requirement_refs_found": [],
+    "notes": "All in-scope references are exact matches for this chunk. The audited test files also contain unrelated RFC tags outside the chunk scope, which were ignored."
+  },
+  "tests_run": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicIdleTimeoutStateTests|FullyQualifiedName~QuicFrameCodecTests|FullyQualifiedName~QuicTransportParametersTests\"",
+      "passed": 51,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "passed": 304,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "requirements": [
+    {
+      "section_token": "S10",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S10-0001",
+        "REQ-QUIC-RFC9000-S10-0002"
+      ],
+      "implemented_requirement_ids": [],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S10-0001",
+        "REQ-QUIC-RFC9000-S10-0002"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This behavior is part of the connection-migration/last-valid-path policy and still needs a connection-state machine to decide when connection state may be discarded.",
+      "notes": "The helper layer can already model anti-amplification and address validation, but not the full discard policy in Section 10."
+    },
+    {
+      "section_token": "S10P1",
+      "status": "partially_implemented",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P1-0001",
+        "REQ-QUIC-RFC9000-S10P1-0002",
+        "REQ-QUIC-RFC9000-S10P1-0003",
+        "REQ-QUIC-RFC9000-S10P1-0004",
+        "REQ-QUIC-RFC9000-S10P1-0005",
+        "REQ-QUIC-RFC9000-S10P1-0006",
+        "REQ-QUIC-RFC9000-S10P1-0007"
+      ],
+      "implemented_requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P1-0001",
+        "REQ-QUIC-RFC9000-S10P1-0003",
+        "REQ-QUIC-RFC9000-S10P1-0005",
+        "REQ-QUIC-RFC9000-S10P1-0006",
+        "REQ-QUIC-RFC9000-S10P1-0007"
+      ],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P1-0002",
+        "REQ-QUIC-RFC9000-S10P1-0004"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicIdleTimeoutStateTests.cs:TryComputeEffectiveIdleTimeoutMicros_UsesTheMinimumAdvertisedValueAndThePtoFloor",
+        "tests/Incursa.Quic.Tests/QuicIdleTimeoutStateTests.cs:TryComputeEffectiveIdleTimeoutMicros_ReturnsFalseWhenNeitherEndpointAdvertisesAnIdleTimeout",
+        "tests/Incursa.Quic.Tests/QuicIdleTimeoutStateTests.cs:RecordPeerPacketProcessedAndRecordAckElicitingPacketSent_RestartTheTimerAtTheRightTimes",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:TryFormatTransportParameters_WritesExactTupleSequence",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs:TryParseTransportParameters_IgnoresReservedGreaseParameters"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicIdleTimeoutStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "remaining_gap": "The helper slice covers idle-timeout arithmetic and restart bookkeeping, but connection-level close/discard orchestration is still missing.",
+      "notes": "The helper layer can already compute the PTO floor and restart deadlines without a connection controller."
+    },
+    {
+      "section_token": "S10P1P1",
+      "status": "implemented_and_tested",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P1P1-0001"
+      ],
+      "implemented_requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P1P1-0001"
+      ],
+      "blocked_requirement_ids": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs:IsAckElicitingFrameType_ClassifiesKnownFrameTypes",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs:TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "PING formatting and ack-eliciting classification already existed; the trace update makes the existing coverage explicit for this chunk."
+    },
+    {
+      "section_token": "S10P1P2",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P1P2-0001",
+        "REQ-QUIC-RFC9000-S10P1P2-0002"
+      ],
+      "implemented_requirement_ids": [],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P1P2-0001",
+        "REQ-QUIC-RFC9000-S10P1P2-0002"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This behavior is application-policy guidance / an application-facing opt-in surface, and the repo does not yet expose an application layer that can defer or document idle timeout semantics.",
+      "notes": "This is intentionally left out of the transport-helper slice."
+    },
+    {
+      "section_token": "S10P2",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P2-0001",
+        "REQ-QUIC-RFC9000-S10P2-0002",
+        "REQ-QUIC-RFC9000-S10P2-0003",
+        "REQ-QUIC-RFC9000-S10P2-0004",
+        "REQ-QUIC-RFC9000-S10P2-0005",
+        "REQ-QUIC-RFC9000-S10P2-0006",
+        "REQ-QUIC-RFC9000-S10P2-0007",
+        "REQ-QUIC-RFC9000-S10P2-0008",
+        "REQ-QUIC-RFC9000-S10P2-0009",
+        "REQ-QUIC-RFC9000-S10P2-0010",
+        "REQ-QUIC-RFC9000-S10P2-0011",
+        "REQ-QUIC-RFC9000-S10P2-0012"
+      ],
+      "implemented_requirement_ids": [],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P2-0001",
+        "REQ-QUIC-RFC9000-S10P2-0002",
+        "REQ-QUIC-RFC9000-S10P2-0003",
+        "REQ-QUIC-RFC9000-S10P2-0004",
+        "REQ-QUIC-RFC9000-S10P2-0005",
+        "REQ-QUIC-RFC9000-S10P2-0006",
+        "REQ-QUIC-RFC9000-S10P2-0007",
+        "REQ-QUIC-RFC9000-S10P2-0008",
+        "REQ-QUIC-RFC9000-S10P2-0009",
+        "REQ-QUIC-RFC9000-S10P2-0010",
+        "REQ-QUIC-RFC9000-S10P2-0011",
+        "REQ-QUIC-RFC9000-S10P2-0012"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This behavior needs a connection-state machine that can model closing/draining transitions and a CONNECTION_CLOSE wire representation.",
+      "notes": "There is no connection-close pipeline yet."
+    },
+    {
+      "section_token": "S10P2P1",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P2P1-0001",
+        "REQ-QUIC-RFC9000-S10P2P1-0002",
+        "REQ-QUIC-RFC9000-S10P2P1-0003",
+        "REQ-QUIC-RFC9000-S10P2P1-0004",
+        "REQ-QUIC-RFC9000-S10P2P1-0005",
+        "REQ-QUIC-RFC9000-S10P2P1-0006",
+        "REQ-QUIC-RFC9000-S10P2P1-0007",
+        "REQ-QUIC-RFC9000-S10P2P1-0008",
+        "REQ-QUIC-RFC9000-S10P2P1-0009",
+        "REQ-QUIC-RFC9000-S10P2P1-0010"
+      ],
+      "implemented_requirement_ids": [],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P2P1-0001",
+        "REQ-QUIC-RFC9000-S10P2P1-0002",
+        "REQ-QUIC-RFC9000-S10P2P1-0003",
+        "REQ-QUIC-RFC9000-S10P2P1-0004",
+        "REQ-QUIC-RFC9000-S10P2P1-0005",
+        "REQ-QUIC-RFC9000-S10P2P1-0006",
+        "REQ-QUIC-RFC9000-S10P2P1-0007",
+        "REQ-QUIC-RFC9000-S10P2P1-0008",
+        "REQ-QUIC-RFC9000-S10P2P1-0009",
+        "REQ-QUIC-RFC9000-S10P2P1-0010"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This behavior depends on the closing-state sender and key-retention policy, neither of which exists in the current helper-only transport slice.",
+      "notes": "The repo has no closing-state packet scheduler or packet-protection key lifecycle."
+    },
+    {
+      "section_token": "S10P2P2",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P2P2-0001",
+        "REQ-QUIC-RFC9000-S10P2P2-0002",
+        "REQ-QUIC-RFC9000-S10P2P2-0003",
+        "REQ-QUIC-RFC9000-S10P2P2-0004",
+        "REQ-QUIC-RFC9000-S10P2P2-0005"
+      ],
+      "implemented_requirement_ids": [],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P2P2-0001",
+        "REQ-QUIC-RFC9000-S10P2P2-0002",
+        "REQ-QUIC-RFC9000-S10P2P2-0003",
+        "REQ-QUIC-RFC9000-S10P2P2-0004",
+        "REQ-QUIC-RFC9000-S10P2P2-0005"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This behavior depends on the closing/draining connection state and packet emission policy, which are not represented yet.",
+      "notes": "The repo has no connection-level closing or draining state machine."
+    },
+    {
+      "section_token": "S10P2P3",
+      "status": "blocked_by_technical_dependency",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P2P3-0001",
+        "REQ-QUIC-RFC9000-S10P2P3-0002",
+        "REQ-QUIC-RFC9000-S10P2P3-0003",
+        "REQ-QUIC-RFC9000-S10P2P3-0004",
+        "REQ-QUIC-RFC9000-S10P2P3-0005",
+        "REQ-QUIC-RFC9000-S10P2P3-0006",
+        "REQ-QUIC-RFC9000-S10P2P3-0007",
+        "REQ-QUIC-RFC9000-S10P2P3-0008",
+        "REQ-QUIC-RFC9000-S10P2P3-0009",
+        "REQ-QUIC-RFC9000-S10P2P3-0010",
+        "REQ-QUIC-RFC9000-S10P2P3-0011",
+        "REQ-QUIC-RFC9000-S10P2P3-0012",
+        "REQ-QUIC-RFC9000-S10P2P3-0013"
+      ],
+      "implemented_requirement_ids": [],
+      "blocked_requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P2P3-0001",
+        "REQ-QUIC-RFC9000-S10P2P3-0002",
+        "REQ-QUIC-RFC9000-S10P2P3-0003",
+        "REQ-QUIC-RFC9000-S10P2P3-0004",
+        "REQ-QUIC-RFC9000-S10P2P3-0005",
+        "REQ-QUIC-RFC9000-S10P2P3-0006",
+        "REQ-QUIC-RFC9000-S10P2P3-0007",
+        "REQ-QUIC-RFC9000-S10P2P3-0008",
+        "REQ-QUIC-RFC9000-S10P2P3-0009",
+        "REQ-QUIC-RFC9000-S10P2P3-0010",
+        "REQ-QUIC-RFC9000-S10P2P3-0011",
+        "REQ-QUIC-RFC9000-S10P2P3-0012",
+        "REQ-QUIC-RFC9000-S10P2P3-0013"
+      ],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This behavior needs a CONNECTION_CLOSE frame model/codec plus packet-number-space and handshake-confirmation policy before it can be wired into the transport layer.",
+      "notes": "The current repo has no CONNECTION_CLOSE wire support or packet sending state machine."
+    }
+  ],
+  "conclusion": "The chunk is clean for trace purposes: there are no stale requirement IDs in scope and no silent gaps in scope. The remaining close/draining behavior is explicitly deferred behind missing connection-state and CONNECTION_CLOSE support, so this chunk is ready for merge or for final repo-wide trace/audit tooling."
+}
