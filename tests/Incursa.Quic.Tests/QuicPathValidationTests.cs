@@ -55,6 +55,25 @@ public sealed class QuicPathValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S6P2P2-0003")]
+    [Requirement("REQ-QUIC-RFC9002-S6P2P2-0004")]
+    [Trait("Category", "Positive")]
+    public void TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState()
+    {
+        Assert.True(QuicPathValidation.TryMeasurePathChallengeRoundTripMicros(
+            pathChallengeSentAtMicros: 1_000,
+            pathResponseReceivedAtMicros: 2_750,
+            out ulong roundTripMicros));
+
+        Assert.Equal(1_750UL, roundTripMicros);
+
+        QuicRttEstimator estimator = new(initialRttMicros: roundTripMicros);
+        Assert.False(estimator.HasRttSample);
+        Assert.Equal(roundTripMicros, estimator.SmoothedRttMicros);
+        Assert.Equal(roundTripMicros / 2, estimator.RttVarMicros);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S8P2P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S8P2P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S8P2P2-0006")]
