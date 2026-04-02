@@ -39,6 +39,7 @@ public sealed class QuicPacketParserTests
 
     [Theory]
     [MemberData(nameof(HeaderControlBitCases))]
+    [Requirement("REQ-QUIC-RFC9001-S6-0002")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0004")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0005")]

@@ -7,6 +7,26 @@ namespace Incursa.Quic;
 /// </summary>
 public static class QuicTransportParametersCodec
 {
+    /// <summary>
+    /// The TLS extension type codepoint for quic_transport_parameters.
+    /// </summary>
+    public const ushort QuicTransportParametersExtensionType = 57;
+
+    /// <summary>
+    /// Gets whether the registry marks quic_transport_parameters as recommended.
+    /// </summary>
+    public const bool QuicTransportParametersRecommended = true;
+
+    /// <summary>
+    /// Gets whether the registry lists quic_transport_parameters for ClientHello.
+    /// </summary>
+    public const bool QuicTransportParametersClientHello = true;
+
+    /// <summary>
+    /// Gets whether the registry lists quic_transport_parameters for EncryptedExtensions.
+    /// </summary>
+    public const bool QuicTransportParametersEncryptedExtensions = true;
+
     private const ulong OriginalDestinationConnectionIdId = 0x00;
     private const ulong MaxIdleTimeoutId = 0x01;
     private const ulong StatelessResetTokenId = 0x02;

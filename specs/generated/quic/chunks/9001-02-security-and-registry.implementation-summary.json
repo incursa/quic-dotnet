@@ -1,0 +1,271 @@
+{
+  "chunk_id": "9001-02-security-and-registry",
+  "rfc": "9001",
+  "section_tokens": [
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.json",
+  "files_changed": [
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+    "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+    "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+    "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+    "specs/generated/quic/chunks/9001-02-security-and-registry.implementation-summary.md",
+    "specs/generated/quic/chunks/9001-02-security-and-registry.implementation-summary.json"
+  ],
+  "tests_run": {
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+    "result": "Passed",
+    "summary": "327 passed, 0 failed, 0 skipped"
+  },
+  "benchmark_run": {
+    "command": "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicTransportParametersBenchmarks*\"",
+    "result": "Passed",
+    "summary": "2 benchmarks executed successfully in Dry mode"
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0001",
+      "title": "Allow key update after handshake confirmation",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repo still lacks handshake-confirmation state and the 1-RTT key-update subsystem needed to initiate a key update safely.",
+      "notes": "Leave this blocked until the key-update state machine exists."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0002",
+      "title": "Identify packet protection keys with Key Phase",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder -> REQ-QUIC-RFC9001-S6-0002",
+        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits -> REQ-QUIC-RFC9001-S6-0002",
+        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder -> REQ-QUIC-RFC9001-S6-0002",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero -> REQ-QUIC-RFC9001-S6-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The existing short-header parser already surfaces the Key Phase bit; the updated RFC 9001 tags now make that evidence traceable."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0003",
+      "title": "Initialize Key Phase to zero",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repo does not yet format 1-RTT packets with a key-update state machine, so the initial Key Phase value is not a live implementation concern yet.",
+      "notes": "Leave this blocked until packet protection and 1-RTT packet formatting exist."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0004",
+      "title": "Toggle Key Phase on each update",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repo does not yet have a key-update state machine that can toggle Key Phase across successive updates.",
+      "notes": "This depends on stateful 1-RTT key management."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0005",
+      "title": "Let Key Phase detect key changes",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repo does not yet have a receiver-side key-update state machine that can detect a change in keying material from Key Phase alone.",
+      "notes": "This requires receiver-side 1-RTT packet protection state."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0006",
+      "title": "Update keys when Key Phase changes",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repo does not yet have key-update logic that can swap packet-protection keys when the Key Phase bit changes.",
+      "notes": "Leave this blocked until the packet-protection subsystem exists."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0007",
+      "title": "Decrypt the packet with the changed Key Phase",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repo does not yet implement packet decryption or the changed-Key-Phase recovery path needed by this clause.",
+      "notes": "This depends on a real packet-protection and recovery implementation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0008",
+      "title": "Update both endpoints on key update",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repo does not yet model bilateral key-update propagation between endpoints.",
+      "notes": "A connection-state machine is required before this can be implemented cleanly."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0009",
+      "title": "Prohibit TLS KeyUpdate messages",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repo does not yet have a TLS message-processing surface where outbound KeyUpdate messages could be prohibited.",
+      "notes": "Leave this blocked until TLS integration exists."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S6-0010",
+      "title": "Treat TLS KeyUpdate as a connection error",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repo does not yet have TLS alert handling or connection-error orchestration for received KeyUpdate messages.",
+      "notes": "This depends on the missing TLS handshake and connection error pipeline."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S7-0001",
+      "title": "Use caution with unauthenticated Initial data",
+      "completion_status": "intentionally deferred",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This is policy guidance about unauthenticated Initial data, not a clean executable invariant in the current helper-only surfaces.",
+      "notes": "Keep it deferred until there is a richer handshake or policy surface to attach it to."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S7-0002",
+      "title": "Fail on Handshake tampering",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repo still lacks a TLS handshake implementation, so handshake tampering cannot be exercised or detected here.",
+      "notes": "Leave this blocked until handshake transport exists."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S8-0001",
+      "title": "Carry QUIC transport parameters",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence -> REQ-QUIC-RFC9001-S8-0001",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient -> REQ-QUIC-RFC9001-S8-0001",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress -> REQ-QUIC-RFC9001-S8-0001",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation -> REQ-QUIC-RFC9001-S8-0001"
+      ],
+      "remaining_gap": null,
+      "notes": "The codec layer already carries transport-parameter values; the updated RFC 9001 tags make that helper-layer proof explicit."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S8-0002",
+      "title": "Authenticate QUIC transport parameters",
+      "completion_status": "blocked by concrete dependency",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The repo still lacks TLS transcript and authentication plumbing, so transport-parameter authentication cannot be proven cryptographically yet.",
+      "notes": "The codec can carry bytes, but it does not authenticate them."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S9-0001",
+      "title": "Apply TLS security considerations to QUIC",
+      "completion_status": "intentionally deferred",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "This is a document-level security-scope rule rather than an executable helper behavior in the current repo.",
+      "notes": "Keep it in the gap ledger until the repo has a broader TLS/security analysis surface."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S10-0001",
+      "title": "Register quic_transport_parameters at codepoint 57",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata -> REQ-QUIC-RFC9001-S10-0001"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper now exposes the registry codepoint as a public constant for traceability."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S10-0002",
+      "title": "Mark Recommended as Yes",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata -> REQ-QUIC-RFC9001-S10-0002"
+      ],
+      "remaining_gap": null,
+      "notes": "The registry recommendation flag is now surfaced as a helper constant for traceability."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S10-0003",
+      "title": "Include CH and EE in TLS 1.3 column",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata -> REQ-QUIC-RFC9001-S10-0003"
+      ],
+      "remaining_gap": null,
+      "notes": "The TLS 1.3 context metadata is surfaced as explicit helper constants rather than being left implicit."
+    }
+  ]
+}

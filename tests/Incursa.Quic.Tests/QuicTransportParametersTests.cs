@@ -3,6 +3,20 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicTransportParametersTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9001-S10-0001")]
+    [Requirement("REQ-QUIC-RFC9001-S10-0002")]
+    [Requirement("REQ-QUIC-RFC9001-S10-0003")]
+    [Trait("Category", "Positive")]
+    public void QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata()
+    {
+        Assert.Equal((ushort)57, QuicTransportParametersCodec.QuicTransportParametersExtensionType);
+        Assert.True(QuicTransportParametersCodec.QuicTransportParametersRecommended);
+        Assert.True(QuicTransportParametersCodec.QuicTransportParametersClientHello);
+        Assert.True(QuicTransportParametersCodec.QuicTransportParametersEncryptedExtensions);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9001-S8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S18-0002")]
     [Requirement("REQ-QUIC-RFC9000-S18-0003")]
@@ -73,6 +87,7 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9001-S8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0011")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0002")]
@@ -112,6 +127,7 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9001-S8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S18-0001")]
     [Requirement("REQ-QUIC-RFC9000-S18-0002")]
