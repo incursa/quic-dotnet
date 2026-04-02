@@ -207,7 +207,23 @@ Incursa.Quic.QuicPathValidation
 const Incursa.Quic.QuicPathValidation.PathChallengeDataLength = 8 -> int
 static Incursa.Quic.QuicPathValidation.TryGeneratePathChallengeData(System.Span<byte> destination, out int bytesWritten) -> bool
 static Incursa.Quic.QuicPathValidation.TryGetPathValidationDatagramPaddingLength(int currentPayloadLength, out int paddingLength) -> bool
+static Incursa.Quic.QuicPathValidation.TryMeasurePathChallengeRoundTripMicros(ulong pathChallengeSentAtMicros, ulong pathResponseReceivedAtMicros, out ulong roundTripMicros) -> bool
 static Incursa.Quic.QuicPathValidation.TryFormatPathValidationDatagramPadding(int currentPayloadLength, Incursa.Quic.QuicAntiAmplificationBudget! antiAmplificationBudget, System.Span<byte> destination, out int bytesWritten) -> bool
+Incursa.Quic.QuicRecoveryTiming
+const Incursa.Quic.QuicRecoveryTiming.RecommendedPacketThreshold = 3 -> int
+const Incursa.Quic.QuicRecoveryTiming.RecommendedTimeThresholdNumerator = 9 -> ulong
+const Incursa.Quic.QuicRecoveryTiming.RecommendedTimeThresholdDenominator = 8 -> ulong
+const Incursa.Quic.QuicRecoveryTiming.RecommendedTimerGranularityMicros = 1000 -> ulong
+static Incursa.Quic.QuicRecoveryTiming.CanDeclarePacketLost(bool packetAcknowledged, bool packetInFlight, ulong packetNumber, ulong largestAcknowledgedPacketNumber) -> bool
+static Incursa.Quic.QuicRecoveryTiming.ShouldDeclarePacketLostByPacketThreshold(ulong packetNumber, ulong largestAcknowledgedPacketNumber, int packetThreshold = 3) -> bool
+static Incursa.Quic.QuicRecoveryTiming.ComputeLossDelayMicros(ulong latestRttMicros, ulong smoothedRttMicros, ulong timeThresholdNumerator = 9, ulong timeThresholdDenominator = 8, ulong timerGranularityMicros = 1000) -> ulong
+static Incursa.Quic.QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(ulong packetSentAtMicros, ulong nowMicros, ulong latestRttMicros, ulong smoothedRttMicros, out ulong remainingLossDelayMicros, ulong timeThresholdNumerator = 9, ulong timeThresholdDenominator = 8, ulong timerGranularityMicros = 1000) -> bool
+static Incursa.Quic.QuicRecoveryTiming.TryComputeProbeTimeoutMicros(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong smoothedRttMicros, ulong rttVarMicros, ulong maxAckDelayMicros, bool handshakeConfirmed, out ulong probeTimeoutMicros, ulong timerGranularityMicros = 1000) -> bool
+static Incursa.Quic.QuicRecoveryTiming.ComputeProbeTimeoutWithBackoffMicros(ulong probeTimeoutMicros, int ptoCount) -> ulong
+static Incursa.Quic.QuicRecoveryTiming.TrySelectInitialOrHandshakeProbeTimeoutMicros(ulong? initialProbeTimeoutMicros, ulong? handshakeProbeTimeoutMicros, out ulong selectedProbeTimeoutMicros) -> bool
+static Incursa.Quic.QuicRecoveryTiming.TrySelectRecoveryTimerMicros(ulong? lossDetectionTimerMicros, ulong? probeTimeoutMicros, out ulong selectedTimerMicros) -> bool
+static Incursa.Quic.QuicRecoveryTiming.TryMeasurePathChallengeRoundTripMicros(ulong pathChallengeSentAtMicros, ulong pathResponseReceivedAtMicros, out ulong roundTripMicros) -> bool
+static Incursa.Quic.QuicRecoveryTiming.TryMeasureRetryRoundTripMicros(ulong firstInitialPacketSentAtMicros, ulong retryReceivedAtMicros, out ulong roundTripMicros) -> bool
 Incursa.Quic.QuicFrameCodec
 static Incursa.Quic.QuicFrameCodec.TryParsePaddingFrame(System.ReadOnlySpan<byte> packetPayload, out int bytesConsumed) -> bool
 static Incursa.Quic.QuicFrameCodec.TryFormatPaddingFrame(System.Span<byte> destination, out int bytesWritten) -> bool
@@ -304,6 +320,7 @@ Incursa.Quic.QuicRttEstimator
 const Incursa.Quic.QuicRttEstimator.DefaultInitialRttMicros = 333000 -> ulong
 Incursa.Quic.QuicRttEstimator.QuicRttEstimator(ulong initialRttMicros = 333000) -> void
 Incursa.Quic.QuicRttEstimator.InitialRttMicros.get -> ulong
+Incursa.Quic.QuicRttEstimator.LatestRttMicros.get -> ulong
 Incursa.Quic.QuicRttEstimator.MinRttMicros.get -> ulong
 Incursa.Quic.QuicRttEstimator.SmoothedRttMicros.get -> ulong
 Incursa.Quic.QuicRttEstimator.RttVarMicros.get -> ulong

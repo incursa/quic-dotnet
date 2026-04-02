@@ -6,6 +6,8 @@ public sealed class QuicRttEstimatorTests
     [Requirement("REQ-QUIC-RFC9002-S5P3-0005")]
     [Requirement("REQ-QUIC-RFC9002-S5P3-0006")]
     [Requirement("REQ-QUIC-RFC9002-S5P3-0007")]
+    [Requirement("REQ-QUIC-RFC9002-S6P2P2-0001")]
+    [Requirement("REQ-QUIC-RFC9002-S6P2P2-0002")]
     [Trait("Category", "Positive")]
     public void ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt()
     {
@@ -17,6 +19,14 @@ public sealed class QuicRttEstimatorTests
         Assert.Equal(0UL, estimator.MinRttMicros);
         Assert.Equal(QuicRttEstimator.DefaultInitialRttMicros, estimator.SmoothedRttMicros);
         Assert.Equal(QuicRttEstimator.DefaultInitialRttMicros / 2, estimator.RttVarMicros);
+
+        QuicRttEstimator resumedEstimator = new(initialRttMicros: 123_000);
+        Assert.False(resumedEstimator.HasRttSample);
+        Assert.Equal(123_000UL, resumedEstimator.InitialRttMicros);
+        Assert.Equal(0UL, resumedEstimator.LatestRttMicros);
+        Assert.Equal(0UL, resumedEstimator.MinRttMicros);
+        Assert.Equal(123_000UL, resumedEstimator.SmoothedRttMicros);
+        Assert.Equal(61_500UL, resumedEstimator.RttVarMicros);
 
         Assert.True(estimator.TryUpdateFromAck(
             largestAcknowledgedPacketSentAtMicros: 1_000,

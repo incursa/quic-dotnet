@@ -45,6 +45,20 @@ public static class QuicPathValidation
     }
 
     /// <summary>
+    /// Measures the elapsed time between sending PATH_CHALLENGE data and receiving PATH_RESPONSE data.
+    /// </summary>
+    public static bool TryMeasurePathChallengeRoundTripMicros(
+        ulong pathChallengeSentAtMicros,
+        ulong pathResponseReceivedAtMicros,
+        out ulong roundTripMicros)
+    {
+        return QuicRecoveryTiming.TryMeasurePathChallengeRoundTripMicros(
+            pathChallengeSentAtMicros,
+            pathResponseReceivedAtMicros,
+            out roundTripMicros);
+    }
+
+    /// <summary>
     /// Formats PADDING frames needed to expand a path-validation datagram to the RFC 9000 minimum payload size.
     /// </summary>
     /// <remarks>
