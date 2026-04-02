@@ -618,6 +618,10 @@
           "RFC 9002 §5.1 RFC9002-S5.1-B3-P0-S1",
           "RFC 9002 §5.1 RFC9002-S5.1-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries"
         ]
       }
     },
@@ -697,6 +701,10 @@
         "upstream_refs": [
           "RFC 9002 §5.1 RFC9002-S5.1-B8-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries"
         ]
       }
     },
@@ -723,6 +731,10 @@
         "upstream_refs": [
           "RFC 9002 §5.1 RFC9002-S5.1-B9-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries"
         ]
       }
     },
@@ -1153,6 +1165,9 @@
         "upstream_refs": [
           "RFC 9002 §5.3 RFC9002-S5.3-B10-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0009.cs::TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmation"
         ]
       }
     },
@@ -1232,6 +1247,9 @@
         "upstream_refs": [
           "RFC 9002 §5.3 RFC9002-S5.3-B11-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0012.cs::TryUpdateFromAck_KeepsAdjustedRttBoundedByTheObservedMinRtt"
         ]
       }
     },
@@ -1389,6 +1407,9 @@
         "upstream_refs": [
           "RFC 9002 §6.1.2 RFC9002-S6.1.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs::TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline"
         ]
       }
     },
@@ -1415,6 +1436,10 @@
         "upstream_refs": [
           "RFC 9002 §6.1.2 RFC9002-S6.1.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_BoundsTheTimeThresholdByTimerGranularity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_RejectsAZeroTimerGranularity"
         ]
       }
     },
@@ -1442,6 +1467,9 @@
           "RFC 9002 §6.1.2 RFC9002-S6.1.2-B3-P0-S1",
           "RFC 9002 §6.1.2 RFC9002-S6.1.2-B4-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs::ComputeLossDelayMicros_ComputesTheTimeThresholdFromRttAndGranularity"
         ]
       }
     },
@@ -1468,6 +1496,9 @@
         "upstream_refs": [
           "RFC 9002 §6.1.2 RFC9002-S6.1.2-B4-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs::TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline"
         ]
       }
     },
@@ -2867,6 +2898,9 @@
         "upstream_refs": [
           "RFC 9002 §7.1 RFC9002-S7.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P1-0001.cs::TryProcessEcn_OnlyStartsRecoveryForIncreasingValidatedCeCounts"
         ]
       }
     },
@@ -3606,6 +3640,9 @@
         "upstream_refs": [
           "RFC 9002 §7.6.2 RFC9002-S7.6.2-B7-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0003.cs::TryDetectPersistentCongestion_DelaysDetectionUntilAnRttSampleExists"
         ]
       }
     },
@@ -5439,6 +5476,9 @@
         "upstream_refs": [
           "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0001.cs::TryRegisterAcknowledgedPacket_IgnoresPacketsThatAreNotInFlight"
         ]
       }
     },
@@ -5465,6 +5505,9 @@
         "upstream_refs": [
           "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0002.cs::TryRegisterAcknowledgedPacket_SubtractsAckedBytesFromBytesInFlight"
         ]
       }
     },
@@ -5491,6 +5534,9 @@
         "upstream_refs": [
           "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0003.cs::TryRegisterAcknowledgedPacket_DoesNotGrowTheWindowWhenApplicationOrFlowControlLimited"
         ]
       }
     },
@@ -5517,6 +5563,9 @@
         "upstream_refs": [
           "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0004.cs::TryRegisterAcknowledgedPacket_DoesNotGrowTheWindowForPacketsAcknowledgedDuringRecovery"
         ]
       }
     },
@@ -5543,6 +5592,9 @@
         "upstream_refs": [
           "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0005.cs::TryRegisterAcknowledgedPacket_GrowsTheWindowByAckedBytesInSlowStart"
         ]
       }
     },
@@ -5569,6 +5621,9 @@
         "upstream_refs": [
           "RFC 9002 §B.5 RFC9002-SB.5-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0006.cs::TryRegisterAcknowledgedPacket_GrowsTheWindowProportionallyInCongestionAvoidance"
         ]
       }
     },
