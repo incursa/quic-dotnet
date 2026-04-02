@@ -1,0 +1,92 @@
+{
+  "chunk_id": "9002-06-appendix-b-constants-and-examples",
+  "rfc": "9002",
+  "section_tokens": [
+    "SBP1",
+    "SBP2",
+    "SBP3",
+    "SBP4",
+    "SBP5",
+    "SBP6",
+    "SBP7",
+    "SBP8",
+    "SBP9"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
+  "review_result": "split_this_appendix_chunk",
+  "recommendation": "split this appendix chunk into a smaller executable subset",
+  "counts": {
+    "total_in_scope": 28,
+    "move_now": 23,
+    "defer": 5,
+    "retained_overlap": 1
+  },
+  "move_now": {
+    "requirement_ids": [
+      "REQ-QUIC-RFC9002-SBP1-0001",
+      "REQ-QUIC-RFC9002-SBP1-0002",
+      "REQ-QUIC-RFC9002-SBP2-0002",
+      "REQ-QUIC-RFC9002-SBP2-0004",
+      "REQ-QUIC-RFC9002-SBP2-0005",
+      "REQ-QUIC-RFC9002-SBP3-0001",
+      "REQ-QUIC-RFC9002-SBP4-0001",
+      "REQ-QUIC-RFC9002-SBP5-0001",
+      "REQ-QUIC-RFC9002-SBP5-0002",
+      "REQ-QUIC-RFC9002-SBP5-0003",
+      "REQ-QUIC-RFC9002-SBP5-0004",
+      "REQ-QUIC-RFC9002-SBP5-0005",
+      "REQ-QUIC-RFC9002-SBP5-0006",
+      "REQ-QUIC-RFC9002-SBP6-0001",
+      "REQ-QUIC-RFC9002-SBP6-0002",
+      "REQ-QUIC-RFC9002-SBP6-0003",
+      "REQ-QUIC-RFC9002-SBP7-0001",
+      "REQ-QUIC-RFC9002-SBP7-0002",
+      "REQ-QUIC-RFC9002-SBP8-0001",
+      "REQ-QUIC-RFC9002-SBP8-0002",
+      "REQ-QUIC-RFC9002-SBP8-0003",
+      "REQ-QUIC-RFC9002-SBP8-0004",
+      "REQ-QUIC-RFC9002-SBP8-0005"
+    ],
+    "notes": [
+      "These clauses already map to the helper-backed surfaces in `QuicCongestionControlState` and `QuicEcnValidationState`.",
+      "The current unit tests already exercise the constructor defaults, bytes-in-flight accounting, ACK handling, recovery entry, ECN handling, pacing helpers, and persistent congestion math."
+    ]
+  },
+  "defer": {
+    "requirement_ids": [
+      "REQ-QUIC-RFC9002-SBP2-0001",
+      "REQ-QUIC-RFC9002-SBP2-0003",
+      "REQ-QUIC-RFC9002-SBP9-0001",
+      "REQ-QUIC-RFC9002-SBP9-0002",
+      "REQ-QUIC-RFC9002-SBP9-0003"
+    ],
+    "notes": [
+      "The PMTU and overhead clauses need sender/runtime state that is not present in the current helper-only surface.",
+      "The key-discard clauses need a connection-owned packet table and timer bookkeeping that is still missing from `src`."
+    ]
+  },
+  "retained_overlap": {
+    "requirement_ids": [
+      "REQ-QUIC-RFC9002-SBP9-0003"
+    ],
+    "overlap_with": [
+      "REQ-QUIC-RFC9002-SAP11-0003"
+    ],
+    "notes": [
+      "Keep this clause split from the Appendix A key-discard cleanup item so the duplicate implementation work stays visible."
+    ]
+  },
+  "existing_code_touchpoints": [
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "src/Incursa.Quic/QuicEcnValidationState.cs",
+    "src/Incursa.Quic/QuicVersionNegotiation.cs"
+  ],
+  "existing_test_touchpoints": [
+    "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+    "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs"
+  ],
+  "rationale": [
+    "The appendix is not a single executable unit. Most of it is already modeled by helper-backed state and unit tests, but the PMTU/overhead clauses and the key-discard cleanup clauses need a broader sender/runtime dependency.",
+    "The smallest safe slice is therefore the helper-backed subset, with the remaining clauses deferred until the relevant runtime work exists."
+  ]
+}
