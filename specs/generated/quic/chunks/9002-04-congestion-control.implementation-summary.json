@@ -1,0 +1,178 @@
+{
+  "chunk_id": "9002-04-congestion-control",
+  "requirement_id": [
+    "REQ-QUIC-RFC9002-S7-0001",
+    "REQ-QUIC-RFC9002-S7-0002",
+    "REQ-QUIC-RFC9002-S7-0003",
+    "REQ-QUIC-RFC9002-S7-0004",
+    "REQ-QUIC-RFC9002-S7-0005",
+    "REQ-QUIC-RFC9002-S7-0006",
+    "REQ-QUIC-RFC9002-S7P1-0001",
+    "REQ-QUIC-RFC9002-S7P2-0001",
+    "REQ-QUIC-RFC9002-S7P2-0002",
+    "REQ-QUIC-RFC9002-S7P2-0003",
+    "REQ-QUIC-RFC9002-S7P2-0004",
+    "REQ-QUIC-RFC9002-S7P2-0005",
+    "REQ-QUIC-RFC9002-S7P3P1-0001",
+    "REQ-QUIC-RFC9002-S7P3P1-0002",
+    "REQ-QUIC-RFC9002-S7P3P1-0003",
+    "REQ-QUIC-RFC9002-S7P3P2-0001",
+    "REQ-QUIC-RFC9002-S7P3P2-0002",
+    "REQ-QUIC-RFC9002-S7P3P2-0003",
+    "REQ-QUIC-RFC9002-S7P3P2-0004",
+    "REQ-QUIC-RFC9002-S7P3P2-0005",
+    "REQ-QUIC-RFC9002-S7P3P2-0006",
+    "REQ-QUIC-RFC9002-S7P3P2-0007",
+    "REQ-QUIC-RFC9002-S7P3P3-0001",
+    "REQ-QUIC-RFC9002-S7P3P3-0002",
+    "REQ-QUIC-RFC9002-S7P4-0001",
+    "REQ-QUIC-RFC9002-S7P4-0002",
+    "REQ-QUIC-RFC9002-S7P5-0001",
+    "REQ-QUIC-RFC9002-S7P5-0002",
+    "REQ-QUIC-RFC9002-S7P6-0001",
+    "REQ-QUIC-RFC9002-S7P6P1-0001",
+    "REQ-QUIC-RFC9002-S7P6P1-0002",
+    "REQ-QUIC-RFC9002-S7P6P1-0003",
+    "REQ-QUIC-RFC9002-S7P6P2-0001",
+    "REQ-QUIC-RFC9002-S7P6P2-0002",
+    "REQ-QUIC-RFC9002-S7P6P2-0003",
+    "REQ-QUIC-RFC9002-S7P6P2-0004",
+    "REQ-QUIC-RFC9002-S7P6P2-0005",
+    "REQ-QUIC-RFC9002-S7P6P2-0006",
+    "REQ-QUIC-RFC9002-S7P7-0001",
+    "REQ-QUIC-RFC9002-S7P7-0002",
+    "REQ-QUIC-RFC9002-S7P7-0003",
+    "REQ-QUIC-RFC9002-S7P7-0004",
+    "REQ-QUIC-RFC9002-S7P7-0005",
+    "REQ-QUIC-RFC9002-S7P8-0001",
+    "REQ-QUIC-RFC9002-S7P8-0002",
+    "REQ-QUIC-RFC9002-S7P8-0003"
+  ],
+  "completion_status": "completed_with_deferred_items",
+  "files_changed": [
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+    "benchmarks/QuicCongestionControlBenchmarks.cs",
+    "benchmarks/README.md",
+    "specs/generated/quic/chunks/9002-04-congestion-control.implementation-summary.md",
+    "specs/generated/quic/chunks/9002-04-congestion-control.implementation-summary.json"
+  ],
+  "tests_covering_requirement": [
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7-0002",
+        "REQ-QUIC-RFC9002-S7-0003",
+        "REQ-QUIC-RFC9002-S7-0004",
+        "REQ-QUIC-RFC9002-S7-0006",
+        "REQ-QUIC-RFC9002-S7P5-0001",
+        "REQ-QUIC-RFC9002-S7P5-0002"
+      ],
+      "test": "CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7-0004",
+        "REQ-QUIC-RFC9002-S7P1-0001",
+        "REQ-QUIC-RFC9002-S7P3P1-0001",
+        "REQ-QUIC-RFC9002-S7P3P2-0001",
+        "REQ-QUIC-RFC9002-S7P3P2-0002",
+        "REQ-QUIC-RFC9002-S7P3P2-0003",
+        "REQ-QUIC-RFC9002-S7P3P2-0004",
+        "REQ-QUIC-RFC9002-S7P3P2-0005",
+        "REQ-QUIC-RFC9002-S7P3P2-0006",
+        "REQ-QUIC-RFC9002-S7P3P2-0007",
+        "REQ-QUIC-RFC9002-S7P3P3-0001",
+        "REQ-QUIC-RFC9002-S7P3P3-0002",
+        "REQ-QUIC-RFC9002-S7P4-0001",
+        "REQ-QUIC-RFC9002-S7P4-0002"
+      ],
+      "test": "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7-0001",
+        "REQ-QUIC-RFC9002-S7P7-0001",
+        "REQ-QUIC-RFC9002-S7P7-0002",
+        "REQ-QUIC-RFC9002-S7P7-0003",
+        "REQ-QUIC-RFC9002-S7P7-0004",
+        "REQ-QUIC-RFC9002-S7P7-0005",
+        "REQ-QUIC-RFC9002-S7P8-0001",
+        "REQ-QUIC-RFC9002-S7P8-0002",
+        "REQ-QUIC-RFC9002-S7P8-0003"
+      ],
+      "test": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P6P1-0001",
+        "REQ-QUIC-RFC9002-S7P6P1-0002",
+        "REQ-QUIC-RFC9002-S7P6P1-0003",
+        "REQ-QUIC-RFC9002-S7P6P2-0001",
+        "REQ-QUIC-RFC9002-S7P6P2-0002",
+        "REQ-QUIC-RFC9002-S7P6P2-0003",
+        "REQ-QUIC-RFC9002-S7P6P2-0004",
+        "REQ-QUIC-RFC9002-S7P6P2-0005",
+        "REQ-QUIC-RFC9002-S7P6P2-0006"
+      ],
+      "test": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P2-0001",
+        "REQ-QUIC-RFC9002-S7P2-0002",
+        "REQ-QUIC-RFC9002-S7P2-0003",
+        "REQ-QUIC-RFC9002-S7P2-0004",
+        "REQ-QUIC-RFC9002-S7P2-0005",
+        "REQ-QUIC-RFC9002-S7-0005"
+      ],
+      "test": "Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P2-0003",
+        "REQ-QUIC-RFC9002-S7P2-0004"
+      ],
+      "test": "ComputeInitialWindowAndResetToInitialWindow_FollowTheDatagramSize"
+    }
+  ],
+  "direct_refs_added_or_updated": [
+    "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+  ],
+  "remaining_gap": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7-0001",
+      "reason": "No alternate-controller or RFC 8085 send-policy surface exists yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0001",
+      "reason": "The repo still lacks a real packet scheduler/send loop that can pace every in-flight packet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0002",
+      "reason": "Burst capping versus pacing is only modeled as helper math; enforcement belongs in sender orchestration."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0003",
+      "reason": "Initial-window burst capping is not yet wired to a concrete transmit queue."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0004",
+      "reason": "Larger-burst allowance needs path-level scheduling decisions that are outside the current helper slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0005",
+      "reason": "The helper can skip pacing pure ACKs, but the sender layer that decides which packets are ACK-only is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9002-S7P8-0002",
+      "reason": "Application-limited classification due to pacing delay is a sender-state concern that is not represented yet."
+    }
+  ],
+  "notes": [
+    "Implemented as a helper-state slice rather than a full connection sender.",
+    "Benchmark project builds cleanly after the public API surface was rewritten to avoid record-generated members.",
+    "Full test project passed after tightening one xUnit assertion type conversion and one persistent-congestion expectation."
+  ]
+}

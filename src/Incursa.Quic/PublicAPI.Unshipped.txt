@@ -111,6 +111,45 @@ Incursa.Quic.QuicAckFrame.AdditionalRanges.set -> void
 Incursa.Quic.QuicAckFrame.EcnCounts.get -> Incursa.Quic.QuicEcnCounts?
 Incursa.Quic.QuicAckFrame.EcnCounts.set -> void
 Incursa.Quic.QuicAckFrame.AckRangeCount.get -> ulong
+Incursa.Quic.QuicCongestionControlState
+const Incursa.Quic.QuicCongestionControlState.RecommendedPersistentCongestionThreshold = 3 -> int
+const Incursa.Quic.QuicCongestionControlState.RecommendedLossReductionNumerator = 1 -> ulong
+const Incursa.Quic.QuicCongestionControlState.RecommendedLossReductionDenominator = 2 -> ulong
+const Incursa.Quic.QuicCongestionControlState.RecommendedPacingGainNumerator = 5 -> ulong
+const Incursa.Quic.QuicCongestionControlState.RecommendedPacingGainDenominator = 4 -> ulong
+Incursa.Quic.QuicCongestionControlState.QuicCongestionControlState(ulong maxDatagramSizeBytes = 1200) -> void
+Incursa.Quic.QuicCongestionControlState.MaxDatagramSizeBytes.get -> ulong
+Incursa.Quic.QuicCongestionControlState.MinimumCongestionWindowBytes.get -> ulong
+Incursa.Quic.QuicCongestionControlState.CongestionWindowBytes.get -> ulong
+Incursa.Quic.QuicCongestionControlState.SlowStartThresholdBytes.get -> ulong
+Incursa.Quic.QuicCongestionControlState.BytesInFlightBytes.get -> ulong
+Incursa.Quic.QuicCongestionControlState.RecoveryStartTimeMicros.get -> ulong?
+Incursa.Quic.QuicCongestionControlState.HasRecoveryStartTime.get -> bool
+Incursa.Quic.QuicCongestionControlState.IsInSlowStart.get -> bool
+Incursa.Quic.QuicCongestionControlState.IsInCongestionAvoidance.get -> bool
+static Incursa.Quic.QuicCongestionControlState.ComputeInitialCongestionWindowBytes(ulong maxDatagramSizeBytes) -> ulong
+static Incursa.Quic.QuicCongestionControlState.ComputeMinimumCongestionWindowBytes(ulong maxDatagramSizeBytes) -> ulong
+static Incursa.Quic.QuicCongestionControlState.TryComputePacingIntervalMicros(ulong congestionWindowBytes, ulong smoothedRttMicros, ulong packetSizeBytes, bool ackOnlyPacket, out ulong pacingIntervalMicros, ulong pacingGainNumerator = 5, ulong pacingGainDenominator = 4) -> bool
+static Incursa.Quic.QuicCongestionControlState.TryGetBurstLimitBytes(ulong initialCongestionWindowBytes, bool pathCanAbsorbLargerBursts, out ulong burstLimitBytes, ulong? largerBurstLimitBytes = null) -> bool
+Incursa.Quic.QuicCongestionControlState.UpdateMaxDatagramSize(ulong maxDatagramSizeBytes, bool resetToInitialWindow) -> void
+Incursa.Quic.QuicCongestionControlState.CanSend(ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false) -> bool
+Incursa.Quic.QuicCongestionControlState.RegisterPacketSent(ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false) -> void
+Incursa.Quic.QuicCongestionControlState.TryRegisterAcknowledgedPacket(ulong sentBytes, ulong sentAtMicros, bool packetInFlight = true, bool applicationLimited = false, bool flowControlLimited = false, bool pacingLimited = false) -> bool
+Incursa.Quic.QuicCongestionControlState.TryRegisterLoss(ulong sentBytes, ulong sentAtMicros, bool packetInFlight, bool packetCanBeDecrypted = true, bool keysAvailable = true, bool sentAfterEarliestAcknowledgedPacket = true, bool allowAckOnlyLossSignal = false) -> bool
+Incursa.Quic.QuicCongestionControlState.TryProcessEcn(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong reportedEcnCeCount, ulong largestAcknowledgedPacketSentAtMicros, bool pathValidated) -> bool
+static Incursa.Quic.QuicCongestionControlState.TryComputePersistentCongestionDurationMicros(ulong smoothedRttMicros, ulong rttVarMicros, ulong maxAckDelayMicros, out ulong persistentCongestionDurationMicros, int persistentCongestionThreshold = 3, ulong timerGranularityMicros = 1000) -> bool
+Incursa.Quic.QuicCongestionControlState.TryDetectPersistentCongestion(System.ReadOnlySpan<Incursa.Quic.QuicPersistentCongestionPacket> packets, ulong firstRttSampleMicros, ulong smoothedRttMicros, ulong rttVarMicros, ulong maxAckDelayMicros, out bool persistentCongestionDetected, bool applyReset = true) -> bool
+static Incursa.Quic.QuicCongestionControlState.ComputeReducedCongestionWindowBytes(ulong congestionWindowBytes, ulong reductionNumerator = 1, ulong reductionDenominator = 2, ulong minimumCongestionWindowBytes = 0) -> ulong
+Incursa.Quic.QuicPersistentCongestionPacket
+Incursa.Quic.QuicPersistentCongestionPacket.QuicPersistentCongestionPacket() -> void
+Incursa.Quic.QuicPersistentCongestionPacket.QuicPersistentCongestionPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, ulong sentBytes, bool ackEliciting, bool inFlight, bool acknowledged, bool lost) -> void
+Incursa.Quic.QuicPersistentCongestionPacket.PacketNumberSpace.get -> Incursa.Quic.QuicPacketNumberSpace
+Incursa.Quic.QuicPersistentCongestionPacket.SentAtMicros.get -> ulong
+Incursa.Quic.QuicPersistentCongestionPacket.SentBytes.get -> ulong
+Incursa.Quic.QuicPersistentCongestionPacket.AckEliciting.get -> bool
+Incursa.Quic.QuicPersistentCongestionPacket.InFlight.get -> bool
+Incursa.Quic.QuicPersistentCongestionPacket.Acknowledged.get -> bool
+Incursa.Quic.QuicPersistentCongestionPacket.Lost.get -> bool
 Incursa.Quic.QuicEcnCounts
 Incursa.Quic.QuicEcnCounts.QuicEcnCounts() -> void
 Incursa.Quic.QuicEcnCounts.QuicEcnCounts(ulong ect0Count, ulong ect1Count, ulong ecnCeCount) -> void
