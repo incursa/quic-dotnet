@@ -131,6 +131,7 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P10-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P10-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P10-0007")]
@@ -157,6 +158,7 @@ public sealed class QuicFrameCodecPart3Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    [Requirement("REQ-QUIC-RFC9000-S2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P11-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P11-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P11-0003")]
@@ -180,6 +182,7 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P11-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P11-0006")]
     [Trait("Category", "Negative")]

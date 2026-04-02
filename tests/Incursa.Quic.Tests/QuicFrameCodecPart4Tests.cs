@@ -3,6 +3,7 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicFrameCodecPart4Tests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0005")]
@@ -24,6 +25,7 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0006")]
@@ -36,6 +38,7 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0005")]
@@ -60,6 +63,7 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0006")]
@@ -76,6 +80,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    [Requirement("REQ-QUIC-RFC9000-S2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0005")]
@@ -101,6 +106,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    [Requirement("REQ-QUIC-RFC9000-S2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0005")]
