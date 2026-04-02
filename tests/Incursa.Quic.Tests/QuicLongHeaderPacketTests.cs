@@ -20,6 +20,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0010")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S7P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S5P1-0008")]
     [Trait("Category", "Positive")]
     public void TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload()
@@ -119,6 +120,29 @@ public sealed class QuicLongHeaderPacketTests
         Assert.Equal((uint)1, header.Version);
         Assert.Equal((byte)0x00, header.LongPacketTypeBits);
         Assert.Equal((byte)0x02, header.PacketNumberLengthBits);
+        Assert.True(versionSpecificData.AsSpan().SequenceEqual(header.VersionSpecificData));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0013")]
+    [Trait("Category", "Positive")]
+    public void TryParseLongHeader_AllowsZeroLengthConnectionIds()
+    {
+        byte[] versionSpecificData = QuicHeaderTestData.BuildInitialVersionSpecificData(
+            token: [],
+            packetNumber: [0x01],
+            protectedPayload: [0xAA]);
+        byte[] packet = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x40,
+            version: 1,
+            destinationConnectionId: [],
+            sourceConnectionId: [],
+            versionSpecificData);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal((uint)1, header.Version);
+        Assert.Equal(0, header.DestinationConnectionIdLength);
+        Assert.Equal(0, header.SourceConnectionIdLength);
         Assert.True(versionSpecificData.AsSpan().SequenceEqual(header.VersionSpecificData));
     }
 

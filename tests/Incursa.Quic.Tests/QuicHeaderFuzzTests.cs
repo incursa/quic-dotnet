@@ -20,6 +20,7 @@ public sealed class QuicHeaderFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0010")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S7P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0002")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0005")]
@@ -187,7 +188,6 @@ public sealed class QuicHeaderFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0009")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0013")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
-    [Requirement("REQ-QUIC-RFC9000-S5P1-0012")]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
     [Trait("Category", "Fuzz")]
     public void Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation()
@@ -239,9 +239,12 @@ public sealed class QuicHeaderFuzzTests
     [Requirement("REQ-QUIC-RFC8999-S5P1-0004")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0012")]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0002")]
     [Requirement("REQ-QUIC-RFC9000-S6P3-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S7P2-0002")]
+    [Requirement("REQ-QUIC-RFC9001-S5-0003")]
     [Trait("Category", "Fuzz")]
     public void Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses()
     {

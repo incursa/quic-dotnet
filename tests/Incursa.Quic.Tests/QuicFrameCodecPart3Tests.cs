@@ -60,6 +60,18 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9001-S4-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
+    [Trait("Category", "Negative")]
+    public void TryFormatCryptoFrame_RejectsFramesThatExceedTheStreamCeiling()
+    {
+        QuicCryptoFrame frame = new(QuicVariableLengthInteger.MaxValue, [0xAA]);
+
+        Assert.False(QuicFrameCodec.TryFormatCryptoFrame(frame, stackalloc byte[16], out _));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P7-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P7-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P7-0003")]

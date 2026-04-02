@@ -6,11 +6,16 @@
 - `REQ-QUIC-RFC9000-S5P1P2-0005`: The no-reuse request is covered at the wire format layer by the RETIRE_CONNECTION_ID frame codec.
 - `REQ-QUIC-RFC9000-S5P1P2-0008`: The wire-format Retire Prior To field is now directly traced.
 - `REQ-QUIC-RFC9000-S5P2-0001`: Trace coverage was already present from the prior pass; the packet-classification hook is still a direct match for the imported ID.
+- `REQ-QUIC-RFC9000-S5P2P2-0001`: The Version Negotiation send helper now gates unsupported versions on the observed datagram size.
+- `REQ-QUIC-RFC9000-S5P2P2-0004`: The same helper now covers the "datagram sufficiently long" decision for server responses.
 - `REQ-QUIC-RFC9000-S5P2P3-0002`: The preferred_address transport parameter is encoded, parsed, and fuzzed; the remaining migration-policy clauses are tracked separately in this chunk.
 - `REQ-QUIC-RFC9000-S5P2P3-0004`: The disable_active_migration transport parameter is directly traced at the wire level.
 
 ## Files Changed
 
+- `src/Incursa.Quic/QuicVersionNegotiation.cs`
+- `src/Incursa.Quic/PublicAPI.Unshipped.txt`
+- `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs`
 - `tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs`
@@ -20,16 +25,18 @@
 
 ## Tests Added or Updated
 
-- Current-pass updates: `QuicFrameCodecPart4Tests.cs`, `QuicFrameCodecPart4FuzzTests.cs`, `QuicTransportParametersTests.cs`, and `QuicTransportParametersFuzzTests.cs`.
+- Current-pass test update: `QuicVersionNegotiationTests.cs` now covers the datagram-size-gated Version Negotiation helper.
+- Supporting source/API updates: `QuicVersionNegotiation.cs` and `PublicAPI.Unshipped.txt`.
+- Carry-forward trace coverage from the previous pass remains in `QuicFrameCodecPart4Tests.cs`, `QuicFrameCodecPart4FuzzTests.cs`, `QuicTransportParametersTests.cs`, and `QuicTransportParametersFuzzTests.cs`.
 - Carry-forward trace coverage for `REQ-QUIC-RFC9000-S5P2-0001` remains in `QuicPacketParserTests.cs` and `QuicHeaderPropertyTests.cs` from the prior pass.
 
 ## Tests Run and Results
 
-- Command: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests|FullyQualifiedName~QuicFrameCodecPart4Tests|FullyQualifiedName~QuicFrameCodecPart4FuzzTests|FullyQualifiedName~QuicTransportParametersTests|FullyQualifiedName~QuicTransportParametersFuzzTests"`
-- Passed: 62
+- Command: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicVersionNegotiationTests|FullyQualifiedName~QuicShortHeaderPacketTests|FullyQualifiedName~QuicFrameCodecPart4Tests|FullyQualifiedName~QuicFrameCodecPart4FuzzTests|FullyQualifiedName~QuicTransportParametersTests|FullyQualifiedName~QuicTransportParametersFuzzTests"`
+- Passed: 72
 - Failed: 0
 - Skipped: 0
-- Duration: 162 ms
+- Duration: 168 ms
 
 ## Remaining Open Requirements in Scope
 
@@ -77,11 +84,9 @@
 
 ### `S5P2P2`
 
-- Open: 10
-- `REQ-QUIC-RFC9000-S5P2P2-0001`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- Open: 8
 - `REQ-QUIC-RFC9000-S5P2P2-0002`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `REQ-QUIC-RFC9000-S5P2P2-0003`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
-- `REQ-QUIC-RFC9000-S5P2P2-0004`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `REQ-QUIC-RFC9000-S5P2P2-0005`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `REQ-QUIC-RFC9000-S5P2P2-0006`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `REQ-QUIC-RFC9000-S5P2P2-0007`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
@@ -100,5 +105,5 @@
 ## Risks or Follow-up Notes
 
 - The remaining work is still concentrated in stateful connection management and packet-processing behavior that this parser/codec slice does not model.
-- The current pass only strengthened traceability for the wire-level pieces that are already implemented in the repo.
-- No additional production-code changes were needed in this pass; the chunk remains ready for a future connection-state implementation slice.
+- The current pass also added a small stateless Version Negotiation decision helper that closes the datagram-size gate for the server response path.
+- The remaining open requirements still require connection-state and packet-processing machinery that this parser/codec slice does not model.

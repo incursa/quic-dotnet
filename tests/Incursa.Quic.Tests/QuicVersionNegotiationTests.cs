@@ -46,11 +46,56 @@ public sealed class QuicVersionNegotiationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S6P1-0003")]
+    [Trait("Category", "Positive")]
+    public void ShouldSendVersionNegotiation_CanLimitRepeatedResponses()
+    {
+        Assert.True(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+            0x11223344,
+            [QuicVersionNegotiation.Version1],
+            hasAlreadySentVersionNegotiation: false));
+
+        Assert.False(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+            0x11223344,
+            [QuicVersionNegotiation.Version1],
+            hasAlreadySentVersionNegotiation: true));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5P2P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S5P2P2-0004")]
+    [Trait("Category", "Positive")]
+    public void ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize()
+    {
+        Assert.True(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+            0x11223344,
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
+            [QuicVersionNegotiation.Version1]));
+
+        Assert.False(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+            0x11223344,
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - 1,
+            [QuicVersionNegotiation.Version1]));
+
+        Assert.False(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+            QuicVersionNegotiation.Version1,
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
+            [QuicVersionNegotiation.Version1]));
+
+        Assert.False(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+            0x11223344,
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
+            []));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0004")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S7P2-0002")]
     [Requirement("REQ-QUIC-RFC9001-S5-0003")]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0002")]

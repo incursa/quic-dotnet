@@ -33,6 +33,7 @@ public sealed class QuicStreamFuzzTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9001-S3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0004")]
@@ -53,6 +54,7 @@ public sealed class QuicStreamFuzzTests
     public void Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation()
     {
         Random random = new(0x5150_2029);
+        Span<byte> destination = stackalloc byte[128];
 
         for (int iteration = 0; iteration < 128; iteration++)
         {
@@ -74,6 +76,17 @@ public sealed class QuicStreamFuzzTests
             Assert.Equal((frameType & 0x02) != 0 ? (ulong)streamData.Length : 0, frame.Length);
             Assert.Equal((frameType & 0x01) != 0, frame.IsFin);
             Assert.True(streamData.AsSpan().SequenceEqual(frame.StreamData));
+
+            destination.Clear();
+            Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+                frame.FrameType,
+                frame.StreamId.Value,
+                frame.Offset,
+                frame.StreamData,
+                destination,
+                out int bytesWritten));
+            Assert.Equal(packet.Length, bytesWritten);
+            Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
 
             int truncatedLength = random.Next(1, 4);
             truncatedLength = Math.Min(packet.Length - 1, truncatedLength);

@@ -33,10 +33,10 @@
   },
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicHeaderPropertyTests|FullyQualifiedName~QuicHeaderFuzzTests|FullyQualifiedName~QuicVersionNegotiationPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests|FullyQualifiedName~QuicFrameCodecPart4Tests|FullyQualifiedName~QuicFrameCodecPart4FuzzTests|FullyQualifiedName~QuicTransportParametersTests|FullyQualifiedName~QuicTransportParametersFuzzTests\"",
-    "passed": 62,
+    "passed": 64,
     "failed": 0,
     "skipped": 0,
-    "duration_ms": 162
+    "duration_ms": 176
   },
   "files_changed": [
     "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",

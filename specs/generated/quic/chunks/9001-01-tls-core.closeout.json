@@ -8,45 +8,45 @@
     "S5"
   ],
   "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9001.json",
-  "audit_result": "trace-consistent-with-open-items",
-  "source_artifacts": {
-    "implementation_summary": {
-      "path": "./specs/generated/quic/chunks/9001-01-tls-core.implementation-summary.json",
-      "status": "authoritative"
-    },
-    "reconciliation_artifact": {
-      "path": "./specs/generated/quic/chunks/9001-01-tls-core.reconciliation.json",
-      "status": "stale-no-evidence-snapshot"
-    }
-  },
-  "counts": {
+  "audit_result": "clean_with_explicit_blockers",
+  "requirements_in_scope": {
+    "S2": 1,
+    "S3": 12,
+    "S4": 11,
+    "S5": 10,
     "total": 34,
-    "implemented_and_tested": 3,
+    "covered": 4,
+    "blocked": 29,
     "deferred": 1,
-    "blocked": 30,
-    "open_total": 31,
-    "stale_ids_found": 0,
-    "silent_gaps_found": 0
+    "partial": 0,
+    "needs_review": 0
   },
-  "live_ref_audit": {
-    "code_and_test_roots_searched": [
-      "C:/src/incursa/quic-dotnet/src/Incursa.Quic",
-      "C:/src/incursa/quic-dotnet/tests",
-      "C:/src/incursa/quic-dotnet/benchmarks"
+  "reconciliation_artifact_present": true,
+  "reconciliation_artifact_file": "./specs/generated/quic/chunks/9001-01-tls-core.reconciliation.json",
+  "implementation_summary_file": "./specs/generated/quic/chunks/9001-01-tls-core.implementation-summary.json",
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9001-S3-0012",
+      "REQ-QUIC-RFC9001-S4-0001",
+      "REQ-QUIC-RFC9001-S4-0002",
+      "REQ-QUIC-RFC9001-S5-0003"
     ],
-    "tests_with_requirement_traits": [
+    "source_files_checked_for_requirement_ids": [
+      "src/Incursa.Quic/QuicFrameCodec.cs",
+      "src/Incursa.Quic/QuicVersionNegotiation.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+    ],
+    "test_files_with_requirement_traits": [
       "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+      "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+      "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
       "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
     ],
-    "source_requirement_refs_found": [],
-    "stale_or_wrong_refs_found_in_scope": [],
-    "xml_comment_refs_expected": false,
-    "notes": [
-      "The implementation summary is authoritative for the current code and test state.",
-      "The reconciliation artifact is a stale historical snapshot and still includes broader scope data outside the selected S2-S5 slice.",
-      "No stale or wrong requirement IDs were found in the selected source or test surface.",
-      "No RFC 9001 requirement refs were found in src or benchmarks."
-    ]
+    "stale_or_wrong_refs_found": [],
+    "notes": "Current tests carry only the imported RFC 9001 IDs in scope; no stale requirement refs were found under src/Incursa.Quic."
   },
   "requirements": [
     {
@@ -56,8 +56,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "Document-level BCP 14 interpretation rule; no live code/test artifact is expected in the current repo.",
-      "notes": "Spec-level rule only; keep it document-only until a canonical artifact is defined."
+      "remaining_gap": "Document-level BCP 14 interpretation rule; no live code or test artifact is expected in the current repository.",
+      "notes": "This is a spec-governance rule rather than an executable behavior. Keep it document-only unless the repository defines a canonical artifact for it."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0001",
@@ -66,8 +66,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and QUIC/TLS delivery surface needed to satisfy this clause.",
+      "notes": "Leave this untouched until the TLS handshake and packet-protection subsystems exist."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0002",
@@ -76,8 +76,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and QUIC/TLS delivery surface needed to satisfy this clause.",
+      "notes": "Leave this untouched until the TLS handshake and packet-protection subsystems exist."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0003",
@@ -86,8 +86,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and QUIC/TLS delivery surface needed to satisfy this clause.",
+      "notes": "Leave this untouched until the TLS handshake and packet-protection subsystems exist."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0004",
@@ -96,8 +96,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and QUIC/TLS delivery surface needed to satisfy this clause.",
+      "notes": "Leave this untouched until the TLS handshake and packet-protection subsystems exist."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0005",
@@ -106,8 +106,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and QUIC/TLS delivery surface needed to satisfy this clause.",
+      "notes": "Leave this untouched until the TLS handshake and packet-protection subsystems exist."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0006",
@@ -116,8 +116,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and QUIC/TLS delivery surface needed to satisfy this clause.",
+      "notes": "Leave this untouched until the TLS handshake and packet-protection subsystems exist."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0007",
@@ -126,8 +126,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and QUIC/TLS delivery surface needed to satisfy this clause.",
+      "notes": "Leave this untouched until the TLS handshake and packet-protection subsystems exist."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0008",
@@ -136,8 +136,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and QUIC/TLS delivery surface needed to satisfy this clause.",
+      "notes": "Leave this untouched until the TLS handshake and packet-protection subsystems exist."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0009",
@@ -146,8 +146,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and QUIC/TLS delivery surface needed to satisfy this clause.",
+      "notes": "Leave this untouched until the TLS handshake and packet-protection subsystems exist."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0010",
@@ -156,8 +156,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and QUIC/TLS delivery surface needed to satisfy this clause.",
+      "notes": "Leave this untouched until the TLS handshake and packet-protection subsystems exist."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0011",
@@ -166,60 +166,84 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the TLS handshake, packet-protection, and QUIC/TLS delivery surface needed to satisfy this clause.",
+      "notes": "Leave this untouched until the TLS handshake and packet-protection subsystems exist."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S3-0012",
       "title": "Send data as QUIC frames",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
+        "benchmarks/QuicFrameCodecBenchmarks.cs",
+        "benchmarks/README.md"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryFormatStreamFrame_RejectsInvalidTypesAndOffsetMismatches",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes -> REQ-QUIC-RFC9001-S3-0012",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent -> REQ-QUIC-RFC9001-S3-0012",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryFormatStreamFrame_RejectsInvalidTypesAndOffsetMismatches -> REQ-QUIC-RFC9001-S3-0012",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets -> REQ-QUIC-RFC9001-S3-0012",
+        "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes -> REQ-QUIC-RFC9001-S3-0012",
+        "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation -> REQ-QUIC-RFC9001-S3-0012"
+      ],
+      "remaining_gap": null,
+      "notes": "Added a public STREAM-frame formatter, updated the public API manifest, extended positive/negative round-trip tests, and added a dry benchmark lane for STREAM formatting."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S4-0001",
       "title": "Carry handshake data in CRYPTO frames",
-      "completion_status": "implemented",
+      "completion_status": "implemented and tested",
       "files_changed": [
         "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
-        "benchmarks/QuicBenchmarkData.cs",
-        "benchmarks/QuicFrameCodecBenchmarks.cs",
-        "benchmarks/README.md"
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields -> REQ-QUIC-RFC9001-S4-0001"
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields -> REQ-QUIC-RFC9001-S4-0001",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation -> REQ-QUIC-RFC9001-S4-0001"
       ],
-      "remaining_gap": "",
-      "notes": "Covered by CRYPTO frame parse/format round-trip coverage; a benchmark lane was added for the hot path."
+      "remaining_gap": null,
+      "notes": "Existing CRYPTO-frame parse/format coverage already satisfies the handshake-data carriage clause; this pass retained the RFC 9001 trace tags on the live tests."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S4-0002",
       "title": "Define CRYPTO frame boundaries",
-      "completion_status": "implemented",
+      "completion_status": "implemented and tested",
       "files_changed": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
         "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
-        "benchmarks/QuicBenchmarkData.cs",
-        "benchmarks/QuicFrameCodecBenchmarks.cs",
-        "benchmarks/README.md"
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
       ],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields",
         "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling"
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryFormatCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields -> REQ-QUIC-RFC9001-S4-0002",
         "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling -> REQ-QUIC-RFC9001-S4-0002",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling -> REQ-QUIC-RFC9001-S4-0002"
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling -> REQ-QUIC-RFC9001-S4-0002",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryFormatCryptoFrame_RejectsFramesThatExceedTheStreamCeiling -> REQ-QUIC-RFC9001-S4-0002",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation -> REQ-QUIC-RFC9001-S4-0002"
       ],
-      "remaining_gap": "",
-      "notes": "Covered by CRYPTO frame boundary and truncation checks; the benchmark lane exercises the same serialize/parse path."
+      "remaining_gap": null,
+      "notes": "The CRYPTO formatter now rejects frames whose offset-plus-length would exceed the QUIC stream ceiling, matching the parser-side boundary check."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S4-0003",
@@ -228,8 +252,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the handshake transport and encryption-level plumbing needed to package CRYPTO frames end-to-end.",
+      "notes": "These clauses depend on a full CRYPTO-frame transport path and encryption-level scheduling."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S4-0004",
@@ -238,8 +262,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the handshake transport and encryption-level plumbing needed to package CRYPTO frames end-to-end.",
+      "notes": "These clauses depend on a full CRYPTO-frame transport path and encryption-level scheduling."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S4-0005",
@@ -248,8 +272,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the handshake transport and encryption-level plumbing needed to package CRYPTO frames end-to-end.",
+      "notes": "These clauses depend on a full CRYPTO-frame transport path and encryption-level scheduling."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S4-0006",
@@ -258,8 +282,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the handshake transport and encryption-level plumbing needed to package CRYPTO frames end-to-end.",
+      "notes": "These clauses depend on a full CRYPTO-frame transport path and encryption-level scheduling."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S4-0007",
@@ -268,8 +292,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the handshake transport and encryption-level plumbing needed to package CRYPTO frames end-to-end.",
+      "notes": "These clauses depend on a full CRYPTO-frame transport path and encryption-level scheduling."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S4-0008",
@@ -278,8 +302,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the handshake transport and encryption-level plumbing needed to package CRYPTO frames end-to-end.",
+      "notes": "These clauses depend on a full CRYPTO-frame transport path and encryption-level scheduling."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S4-0009",
@@ -288,8 +312,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the handshake transport and encryption-level plumbing needed to package CRYPTO frames end-to-end.",
+      "notes": "These clauses depend on a full CRYPTO-frame transport path and encryption-level scheduling."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S4-0010",
@@ -298,8 +322,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the handshake transport and encryption-level plumbing needed to package CRYPTO frames end-to-end.",
+      "notes": "These clauses depend on a full CRYPTO-frame transport path and encryption-level scheduling."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S4-0011",
@@ -308,24 +332,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S5-0003",
-      "title": "Leave Version Negotiation packets unprotected",
-      "completion_status": "implemented",
-      "files_changed": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
-      ],
-      "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions -> REQ-QUIC-RFC9001-S5-0003"
-      ],
-      "remaining_gap": "",
-      "notes": "The existing formatter emits Version Negotiation packets as raw bytes; this repo has no packet-protection layer."
+      "remaining_gap": "The repository still lacks the handshake transport and encryption-level plumbing needed to package CRYPTO frames end-to-end.",
+      "notes": "These clauses depend on a full CRYPTO-frame transport path and encryption-level scheduling."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0001",
@@ -334,8 +342,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the packet-protection and key-derivation layer needed to encrypt or protect these packet types.",
+      "notes": "These clauses depend on packet-protection, key derivation, and encryption-aware packet assembly."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0002",
@@ -344,8 +352,28 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the packet-protection and key-derivation layer needed to encrypt or protect these packet types.",
+      "notes": "These clauses depend on packet-protection, key derivation, and encryption-aware packet assembly."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9001-S5-0003",
+      "title": "Leave Version Negotiation packets unprotected",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions -> REQ-QUIC-RFC9001-S5-0003",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses -> REQ-QUIC-RFC9001-S5-0003"
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets remain unprotected by construction; the response formatter and fuzz coverage now carry the RFC 9001 trace tag."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0004",
@@ -354,8 +382,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the packet-protection and key-derivation layer needed to encrypt or protect these packet types.",
+      "notes": "These clauses depend on packet-protection, key derivation, and encryption-aware packet assembly."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0005",
@@ -364,8 +392,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the packet-protection and key-derivation layer needed to encrypt or protect these packet types.",
+      "notes": "These clauses depend on packet-protection, key derivation, and encryption-aware packet assembly."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0006",
@@ -374,8 +402,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the packet-protection and key-derivation layer needed to encrypt or protect these packet types.",
+      "notes": "These clauses depend on packet-protection, key derivation, and encryption-aware packet assembly."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0007",
@@ -384,8 +412,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the packet-protection and key-derivation layer needed to encrypt or protect these packet types.",
+      "notes": "These clauses depend on packet-protection, key derivation, and encryption-aware packet assembly."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0008",
@@ -394,8 +422,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the packet-protection and key-derivation layer needed to encrypt or protect these packet types.",
+      "notes": "These clauses depend on packet-protection, key derivation, and encryption-aware packet assembly."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0009",
@@ -404,8 +432,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the packet-protection and key-derivation layer needed to encrypt or protect these packet types.",
+      "notes": "These clauses depend on packet-protection, key derivation, and encryption-aware packet assembly."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0010",
@@ -414,8 +442,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository has frame serialization and packet-header parsing, but no packet-assembly, TLS, or packet-protection layer to satisfy this clause.",
-      "notes": "This repository currently exposes only wire-format and header-parsing helpers; the TLS/protection surface required by this clause is still missing."
+      "remaining_gap": "The repository still lacks the packet-protection and key-derivation layer needed to encrypt or protect these packet types.",
+      "notes": "These clauses depend on packet-protection, key derivation, and encryption-aware packet assembly."
     }
   ],
   "remaining_open_requirements": [
@@ -431,7 +459,6 @@
     "REQ-QUIC-RFC9001-S3-0009",
     "REQ-QUIC-RFC9001-S3-0010",
     "REQ-QUIC-RFC9001-S3-0011",
-    "REQ-QUIC-RFC9001-S3-0012",
     "REQ-QUIC-RFC9001-S4-0003",
     "REQ-QUIC-RFC9001-S4-0004",
     "REQ-QUIC-RFC9001-S4-0005",
@@ -454,16 +481,16 @@
   "tests_run": {
     "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
     "result": "Passed",
-    "summary": "198 passed, 0 failed, 0 skipped"
+    "summary": "204 passed, 0 failed, 0 skipped"
   },
   "benchmark_run": {
     "command": "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*\"",
     "result": "Passed",
-    "summary": "2 benchmarks executed successfully in Dry mode"
+    "summary": "3 benchmarks executed successfully in Dry mode"
   },
-  "summary_notes": [
-    "CRYPTO-frame and plaintext Version Negotiation evidence was added in this pass.",
-    "The remaining RFC 9001 clauses still depend on TLS handshake, packet protection, and key-update plumbing that is not present in this repository.",
-    "The benchmark lane for CRYPTO frames was validated in Dry mode only."
+  "notes": [
+    "The audit found no stale or wrong requirement IDs in the selected RFC 9001 scope.",
+    "The only completed items in scope are REQ-QUIC-RFC9001-S3-0012, REQ-QUIC-RFC9001-S4-0001, REQ-QUIC-RFC9001-S4-0002, and REQ-QUIC-RFC9001-S5-0003.",
+    "All remaining requirements in scope are explicitly deferred or blocked with concrete dependency notes."
   ]
 }

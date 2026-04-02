@@ -1,0 +1,621 @@
+{
+  "chunk_id": "9000-09-address-validation-and-tokens",
+  "rfc": "9000",
+  "section_tokens": [
+    "S8",
+    "S8P1",
+    "S8P1P1",
+    "S8P1P2",
+    "S8P1P3",
+    "S8P1P4"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "audit_result": "clean_with_explicit_blockers",
+  "requirements_in_scope": {
+    "S8": 1,
+    "S8P1": 7,
+    "S8P1P1": 1,
+    "S8P1P2": 4,
+    "S8P1P3": 17,
+    "S8P1P4": 12,
+    "total": 42,
+    "covered": 5,
+    "blocked": 37,
+    "partial": 0,
+    "needs_review": 0
+  },
+  "reconciliation_artifact_present": false,
+  "implementation_summary_file": "./specs/generated/quic/chunks/9000-09-address-validation-and-tokens.implementation-summary.json",
+  "implementation_summary_alignment": {
+    "spec_requirement_ids": [
+      "REQ-QUIC-RFC9000-S8-0001",
+      "REQ-QUIC-RFC9000-S8P1-0001",
+      "REQ-QUIC-RFC9000-S8P1-0002",
+      "REQ-QUIC-RFC9000-S8P1-0003",
+      "REQ-QUIC-RFC9000-S8P1-0004",
+      "REQ-QUIC-RFC9000-S8P1-0005",
+      "REQ-QUIC-RFC9000-S8P1-0006",
+      "REQ-QUIC-RFC9000-S8P1-0007",
+      "REQ-QUIC-RFC9000-S8P1P1-0001",
+      "REQ-QUIC-RFC9000-S8P1P2-0001",
+      "REQ-QUIC-RFC9000-S8P1P2-0002",
+      "REQ-QUIC-RFC9000-S8P1P2-0003",
+      "REQ-QUIC-RFC9000-S8P1P2-0004",
+      "REQ-QUIC-RFC9000-S8P1P3-0001",
+      "REQ-QUIC-RFC9000-S8P1P3-0002",
+      "REQ-QUIC-RFC9000-S8P1P3-0003",
+      "REQ-QUIC-RFC9000-S8P1P3-0004",
+      "REQ-QUIC-RFC9000-S8P1P3-0005",
+      "REQ-QUIC-RFC9000-S8P1P3-0006",
+      "REQ-QUIC-RFC9000-S8P1P3-0007",
+      "REQ-QUIC-RFC9000-S8P1P3-0008",
+      "REQ-QUIC-RFC9000-S8P1P3-0009",
+      "REQ-QUIC-RFC9000-S8P1P3-0010",
+      "REQ-QUIC-RFC9000-S8P1P3-0011",
+      "REQ-QUIC-RFC9000-S8P1P3-0012",
+      "REQ-QUIC-RFC9000-S8P1P3-0013",
+      "REQ-QUIC-RFC9000-S8P1P3-0014",
+      "REQ-QUIC-RFC9000-S8P1P3-0015",
+      "REQ-QUIC-RFC9000-S8P1P3-0016",
+      "REQ-QUIC-RFC9000-S8P1P3-0017",
+      "REQ-QUIC-RFC9000-S8P1P4-0001",
+      "REQ-QUIC-RFC9000-S8P1P4-0002",
+      "REQ-QUIC-RFC9000-S8P1P4-0003",
+      "REQ-QUIC-RFC9000-S8P1P4-0004",
+      "REQ-QUIC-RFC9000-S8P1P4-0005",
+      "REQ-QUIC-RFC9000-S8P1P4-0006",
+      "REQ-QUIC-RFC9000-S8P1P4-0007",
+      "REQ-QUIC-RFC9000-S8P1P4-0008",
+      "REQ-QUIC-RFC9000-S8P1P4-0009",
+      "REQ-QUIC-RFC9000-S8P1P4-0010",
+      "REQ-QUIC-RFC9000-S8P1P4-0011",
+      "REQ-QUIC-RFC9000-S8P1P4-0012"
+    ],
+    "summary_requirement_ids": [
+      "REQ-QUIC-RFC9000-S8-0001",
+      "REQ-QUIC-RFC9000-S8P1-0001",
+      "REQ-QUIC-RFC9000-S8P1-0002",
+      "REQ-QUIC-RFC9000-S8P1-0003",
+      "REQ-QUIC-RFC9000-S8P1-0004",
+      "REQ-QUIC-RFC9000-S8P1-0005",
+      "REQ-QUIC-RFC9000-S8P1-0006",
+      "REQ-QUIC-RFC9000-S8P1-0007",
+      "REQ-QUIC-RFC9000-S8P1P1-0001",
+      "REQ-QUIC-RFC9000-S8P1P2-0001",
+      "REQ-QUIC-RFC9000-S8P1P2-0002",
+      "REQ-QUIC-RFC9000-S8P1P2-0003",
+      "REQ-QUIC-RFC9000-S8P1P2-0004",
+      "REQ-QUIC-RFC9000-S8P1P3-0001",
+      "REQ-QUIC-RFC9000-S8P1P3-0002",
+      "REQ-QUIC-RFC9000-S8P1P3-0003",
+      "REQ-QUIC-RFC9000-S8P1P3-0004",
+      "REQ-QUIC-RFC9000-S8P1P3-0005",
+      "REQ-QUIC-RFC9000-S8P1P3-0006",
+      "REQ-QUIC-RFC9000-S8P1P3-0007",
+      "REQ-QUIC-RFC9000-S8P1P3-0008",
+      "REQ-QUIC-RFC9000-S8P1P3-0009",
+      "REQ-QUIC-RFC9000-S8P1P3-0010",
+      "REQ-QUIC-RFC9000-S8P1P3-0011",
+      "REQ-QUIC-RFC9000-S8P1P3-0012",
+      "REQ-QUIC-RFC9000-S8P1P3-0013",
+      "REQ-QUIC-RFC9000-S8P1P3-0014",
+      "REQ-QUIC-RFC9000-S8P1P3-0015",
+      "REQ-QUIC-RFC9000-S8P1P3-0016",
+      "REQ-QUIC-RFC9000-S8P1P3-0017",
+      "REQ-QUIC-RFC9000-S8P1P4-0001",
+      "REQ-QUIC-RFC9000-S8P1P4-0002",
+      "REQ-QUIC-RFC9000-S8P1P4-0003",
+      "REQ-QUIC-RFC9000-S8P1P4-0004",
+      "REQ-QUIC-RFC9000-S8P1P4-0005",
+      "REQ-QUIC-RFC9000-S8P1P4-0006",
+      "REQ-QUIC-RFC9000-S8P1P4-0007",
+      "REQ-QUIC-RFC9000-S8P1P4-0008",
+      "REQ-QUIC-RFC9000-S8P1P4-0009",
+      "REQ-QUIC-RFC9000-S8P1P4-0010",
+      "REQ-QUIC-RFC9000-S8P1P4-0011",
+      "REQ-QUIC-RFC9000-S8P1P4-0012"
+    ],
+    "missing_in_summary": [],
+    "extra_in_summary": [],
+    "summary_status": "partial_with_explicit_blockers"
+  },
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9000-S8-0001",
+      "REQ-QUIC-RFC9000-S8P1-0001",
+      "REQ-QUIC-RFC9000-S8P1-0002",
+      "REQ-QUIC-RFC9000-S8P1-0003",
+      "REQ-QUIC-RFC9000-S8P1-0004"
+    ],
+    "source_files_checked_for_requirement_ids": [
+      "src/Incursa.Quic/QuicAddressValidation.cs",
+      "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
+      "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+    ],
+    "test_files_with_requirement_traits": [
+      "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+      "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+    ],
+    "stale_or_wrong_refs_found": [],
+    "notes": "Tests use only in-scope imported RFC 9000 IDs. No source-side requirement refs were present in the scoped code, which is consistent with the repository convention for this slice."
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "The anti-amplification budget helper now enforces the three-times cap until validation, and the tests cover both the capped and post-validation paths."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0001",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAddressValidation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "The helper implements the endpoint-chosen CID plus 64-bit structural check that this repo can express without a full entropy-analysis surface."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0002",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "Servers are limited to three times the payload bytes counted by the helper before address validation completes."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0003",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "Only datagrams uniquely attributable to a single connection contribute to the received-byte tally."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0004",
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAddressValidation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "Initial datagram padding is formatted as repeated PADDING frames until the 1200-byte minimum is reached."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0005",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "PTO and packet-probe scheduling are not wired into any send-path or timer state, so there is nowhere to emit the required probe packet.",
+      "notes": "This is blocked by the missing recovery/timer surface rather than by the address-validation helpers added in this chunk."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0006",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "The transmit path does not yet know whether Handshake keys are available, so it cannot choose between Initial and Handshake packet emission.",
+      "notes": "This depends on connection-state and key-availability logic that is not present in the current codebase slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0007",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "PTO and packet-probe scheduling are not wired into any send-path or timer state, so the deadlock-avoidance probe packet cannot be emitted.",
+      "notes": "This remains blocked on the same recovery/timer machinery as REQ-QUIC-RFC9000-S8P1-0005."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P1-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token envelope or provenance metadata surface yet to distinguish tokens issued in NEW_TOKEN frames from tokens carried in Retry packets.",
+      "notes": "The current frame and packet helpers do not yet model token construction or token provenance."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P2-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Retry packet parsing/formatting and the client Initial-token replay path are missing, so Retry-token repetition and validation cannot be implemented yet.",
+      "notes": "This chunk still lacks the Retry-specific packet model and the state needed to carry a token across connection attempts."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P2-0002",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Retry packet parsing/formatting and the client Initial-token replay path are missing, so Retry-token repetition and validation cannot be implemented yet.",
+      "notes": "This chunk still lacks the Retry-specific packet model and the state needed to carry a token across connection attempts."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P2-0003",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Retry packet parsing/formatting and the client Initial-token replay path are missing, so Retry-token repetition and validation cannot be implemented yet.",
+      "notes": "This chunk still lacks the Retry-specific packet model and the state needed to carry a token across connection attempts."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P2-0004",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Retry packet parsing/formatting and the client Initial-token replay path are missing, so Retry-token repetition and validation cannot be implemented yet.",
+      "notes": "This chunk still lacks the Retry-specific packet model and the state needed to carry a token across connection attempts."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0002",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0003",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0004",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0005",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0006",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0007",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0008",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0009",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0010",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0011",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0012",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0013",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0014",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0015",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0016",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0017",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no token issuance, storage, expiry, applicability, or replay-management surface yet for NEW_TOKEN or server-selected address-validation tokens.",
+      "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0002",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0003",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0004",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0005",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0006",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0007",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0008",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0009",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0010",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0011",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0012",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "Token cryptography, integrity protection, and replay-limiting mechanisms are not implemented yet.",
+      "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
+    }
+  ],
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9000-S8P1-0005",
+    "REQ-QUIC-RFC9000-S8P1-0006",
+    "REQ-QUIC-RFC9000-S8P1-0007",
+    "REQ-QUIC-RFC9000-S8P1P1-0001",
+    "REQ-QUIC-RFC9000-S8P1P2-0001",
+    "REQ-QUIC-RFC9000-S8P1P2-0002",
+    "REQ-QUIC-RFC9000-S8P1P2-0003",
+    "REQ-QUIC-RFC9000-S8P1P2-0004",
+    "REQ-QUIC-RFC9000-S8P1P3-0001",
+    "REQ-QUIC-RFC9000-S8P1P3-0002",
+    "REQ-QUIC-RFC9000-S8P1P3-0003",
+    "REQ-QUIC-RFC9000-S8P1P3-0004",
+    "REQ-QUIC-RFC9000-S8P1P3-0005",
+    "REQ-QUIC-RFC9000-S8P1P3-0006",
+    "REQ-QUIC-RFC9000-S8P1P3-0007",
+    "REQ-QUIC-RFC9000-S8P1P3-0008",
+    "REQ-QUIC-RFC9000-S8P1P3-0009",
+    "REQ-QUIC-RFC9000-S8P1P3-0010",
+    "REQ-QUIC-RFC9000-S8P1P3-0011",
+    "REQ-QUIC-RFC9000-S8P1P3-0012",
+    "REQ-QUIC-RFC9000-S8P1P3-0013",
+    "REQ-QUIC-RFC9000-S8P1P3-0014",
+    "REQ-QUIC-RFC9000-S8P1P3-0015",
+    "REQ-QUIC-RFC9000-S8P1P3-0016",
+    "REQ-QUIC-RFC9000-S8P1P3-0017",
+    "REQ-QUIC-RFC9000-S8P1P4-0001",
+    "REQ-QUIC-RFC9000-S8P1P4-0002",
+    "REQ-QUIC-RFC9000-S8P1P4-0003",
+    "REQ-QUIC-RFC9000-S8P1P4-0004",
+    "REQ-QUIC-RFC9000-S8P1P4-0005",
+    "REQ-QUIC-RFC9000-S8P1P4-0006",
+    "REQ-QUIC-RFC9000-S8P1P4-0007",
+    "REQ-QUIC-RFC9000-S8P1P4-0008",
+    "REQ-QUIC-RFC9000-S8P1P4-0009",
+    "REQ-QUIC-RFC9000-S8P1P4-0010",
+    "REQ-QUIC-RFC9000-S8P1P4-0011",
+    "REQ-QUIC-RFC9000-S8P1P4-0012"
+  ],
+  "tests_reviewed": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicAddressValidationTests|FullyQualifiedName~QuicAntiAmplificationBudgetTests|FullyQualifiedName~QuicVersionNegotiationTests\"",
+      "result": "22 passed, 0 failed, 0 skipped",
+      "source": "implementation-summary"
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "result": "236 passed, 0 failed, 0 skipped",
+      "source": "implementation-summary"
+    }
+  ],
+  "findings": [],
+  "notes": [
+    "No reconciliation artifact exists for this chunk.",
+    "All 42 in-scope requirements are accounted for in the implementation summary.",
+    "Five requirements are implemented and tested; 37 are intentionally blocked with explicit notes.",
+    "No stale requirement refs were found in the scoped source or tests."
+  ]
+}

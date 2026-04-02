@@ -1,0 +1,289 @@
+{
+  "chunk_id": "9000-10-path-validation",
+  "rfc": "9000",
+  "section_tokens": [
+    "S8P2",
+    "S8P2P1",
+    "S8P2P2",
+    "S8P2P3",
+    "S8P2P4"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "completion_status": "partial_with_explicit_blockers",
+  "reconciliation_artifact_present": false,
+  "files_changed": [
+    "src/Incursa.Quic/QuicPathValidation.cs",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+  ],
+  "tests_run": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicPathValidationTests|FullyQualifiedName~QuicFrameCodecPart4Tests|FullyQualifiedName~QuicFrameCodecPart4FuzzTests\"",
+      "result": "28 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "result": "241 passed, 0 failed, 0 skipped"
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0004",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPathValidation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryGeneratePathChallengeData_WritesEightBytesThatRoundTripThroughTheFrameCodec",
+        "TryGeneratePathChallengeData_RejectsShortDestinations"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Cryptographically unpredictable challenge bytes are generated with RandomNumberGenerator.Fill before the frame is formatted."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPathValidation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+        "TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Datagrams that carry PATH_CHALLENGE are expanded to the 1200-byte minimum when the remaining anti-amplification budget permits."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0008",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPathValidation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryGeneratePathChallengeData_WritesEightBytesThatRoundTripThroughTheFrameCodec"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper provides the unpredictable payload primitive that a caller uses to build a PATH_CHALLENGE for path validation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0001",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPathValidation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryFormatPathResponseFrame_EchoesChallengeData"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "PATH_RESPONSE echo behavior is exercised by the existing frame codec and verified by the new round-trip test."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0005",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPathValidation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+        "TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "PATH_RESPONSE-bearing datagrams are padded to the 1200-byte minimum when the anti-amplification budget allows it."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0006",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPathValidation.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The padding helper refuses to expand a datagram once the remaining send budget would be exceeded."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no packet-composition surface yet to model arbitrary companion frames alongside PATH_CHALLENGE or PATH_RESPONSE.",
+      "notes": "This is a packet-assembly concern, not a frame-codec concern, so it remains outside the available helper slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no send-path or packet-batching surface that can intentionally emit multiple PATH_CHALLENGE frames when loss recovery requires it.",
+      "notes": "The current code can build a single PATH_CHALLENGE frame, but not the packet-level strategy for duplicating it."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0002",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no packet composer yet to enforce or verify the one-PATH_CHALLENGE-per-packet guidance.",
+      "notes": "The packet-level packing policy is not present in this slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0003",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no PTO/cadence scheduler or path-probing policy to compare PATH_CHALLENGE emission frequency against Initial packets.",
+      "notes": "This remains a connection-state and recovery concern."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0006",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no second-validation trigger or MTU-confirmation state machine that can issue a follow-up PATH_CHALLENGE after the first probe succeeds.",
+      "notes": "The helper can pad a datagram, but the orchestration for a second validation pass is missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0007",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no datagram-discard policy yet for path-validation frames that appear to arrive inside a too-small packet.",
+      "notes": "Discard-vs-accept decisions for undersized packets are not implemented in the current path-validation slice."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0002",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no congestion-control integration on the send path, so PATH_RESPONSE timing cannot be constrained relative to congestion signals.",
+      "notes": "This needs connection-level send scheduling rather than frame encoding helpers."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0003",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no per-path routing state to ensure PATH_RESPONSE is sent back on the same network path that carried the PATH_CHALLENGE.",
+      "notes": "The current code has no path-selection or path-binding layer."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0004",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no responder/initiator policy surface to assert or relax the path-binding rule at the initiator side.",
+      "notes": "The repo slice lacks the path-validation orchestration where this SHOULD NOT rule would be represented."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0007",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no challenge/response correlation state to limit PATH_RESPONSE fan-out to a single response per PATH_CHALLENGE.",
+      "notes": "Response tracking is absent, so one-to-one fan-out cannot be enforced yet."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0008",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no challenge/response correlation state to limit PATH_RESPONSE fan-out to a single response per PATH_CHALLENGE.",
+      "notes": "This is the same missing dependency as REQ-QUIC-RFC9000-S8P2P2-0007."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P3-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no MTU-validation state machine that can trigger a second path validation with an expanded datagram.",
+      "notes": "The helper can generate padding, but the MTU probe/retry orchestration is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P4-0001",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no timer-based path-validation abandonment machinery in the current send/recovery surface.",
+      "notes": "Timer control is outside the current helper-level implementation."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P4-0002",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no NO_VIABLE_PATH connection-error surface to signal the absence of a valid network path.",
+      "notes": "The repository slice does not yet expose the connection error that this MAY clause references."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S8P2P4-0003",
+      "completion_status": "blocked",
+      "files_changed": [],
+      "tests_covering_requirement": [],
+      "direct_refs_added_or_updated": [],
+      "remaining_gap": "There is no higher-level path-validation failure path that can decide when to emit NO_VIABLE_PATH.",
+      "notes": "This remains blocked by the missing connection-error and timer orchestration surfaces."
+    }
+  ],
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9000-S8P2-0001",
+    "REQ-QUIC-RFC9000-S8P2P1-0001",
+    "REQ-QUIC-RFC9000-S8P2P1-0002",
+    "REQ-QUIC-RFC9000-S8P2P1-0003",
+    "REQ-QUIC-RFC9000-S8P2P1-0006",
+    "REQ-QUIC-RFC9000-S8P2P1-0007",
+    "REQ-QUIC-RFC9000-S8P2P2-0002",
+    "REQ-QUIC-RFC9000-S8P2P2-0003",
+    "REQ-QUIC-RFC9000-S8P2P2-0004",
+    "REQ-QUIC-RFC9000-S8P2P2-0007",
+    "REQ-QUIC-RFC9000-S8P2P2-0008",
+    "REQ-QUIC-RFC9000-S8P2P3-0001",
+    "REQ-QUIC-RFC9000-S8P2P4-0001",
+    "REQ-QUIC-RFC9000-S8P2P4-0002",
+    "REQ-QUIC-RFC9000-S8P2P4-0003"
+  ],
+  "notes": "No reconciliation artifact existed for this chunk, so the path-validation work was treated as greenfield. The helper-level implementation covers unpredictable PATH_CHALLENGE payload generation, response echoing, and datagram padding; the remaining requirements depend on missing packet-assembly, path-routing, timer, and connection-error surfaces."
+}
