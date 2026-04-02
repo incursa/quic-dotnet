@@ -160,6 +160,8 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3-0017")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0005")]
     [Trait("Category", "Positive")]
@@ -198,6 +200,8 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P15-0011")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3-0017")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0005")]
     [Trait("Category", "Positive")]
     public void TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths(int connectionIdLength)
@@ -226,6 +230,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P15-0011")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3-0003")]
     [Trait("Category", "Negative")]
     public void TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues()
     {

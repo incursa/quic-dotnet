@@ -60,6 +60,7 @@ public sealed class QuicShortHeaderPacketTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S10P3-0012")]
     [Trait("Category", "Negative")]
     public void TryParseShortHeader_RejectsEmptyInput()
     {

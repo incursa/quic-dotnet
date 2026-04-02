@@ -209,6 +209,7 @@ public sealed class QuicLongHeaderPacketTests
     [Theory]
     [MemberData(nameof(TruncatedLongHeaderCases))]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0010")]
