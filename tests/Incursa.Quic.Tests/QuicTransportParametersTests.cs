@@ -3,6 +3,7 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicTransportParametersTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S18-0002")]
     [Requirement("REQ-QUIC-RFC9000-S18-0003")]
     [Requirement("REQ-QUIC-RFC9000-S18-0004")]
@@ -71,6 +72,7 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0011")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0002")]
     [Trait("Category", "Positive")]
@@ -109,6 +111,7 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S18-0001")]
     [Requirement("REQ-QUIC-RFC9000-S18-0002")]
     [Requirement("REQ-QUIC-RFC9000-S18-0003")]
@@ -563,6 +566,7 @@ public sealed class QuicTransportParametersTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S18P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S18P1-0002")]
     [Requirement("REQ-QUIC-RFC9000-S7P4P2-0001")]
