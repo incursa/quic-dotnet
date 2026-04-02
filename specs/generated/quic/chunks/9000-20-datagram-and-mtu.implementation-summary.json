@@ -218,6 +218,28 @@
       "notes": "Reordered ACK processing remains valid once counts reconcile."
     },
     {
+      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0003",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicEcnMarking.cs",
+        "src/Incursa.Quic/QuicEcnValidationState.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+      ],
+      "tests_covering_requirement": [
+        "QuicEcnValidationStateTests",
+        "QuicAckGenerationStateTests",
+        "QuicFrameCodecTests"
+      ],
+      "direct_refs_added_or_updated": [
+        "REQ-QUIC-RFC9000-S13P4P2P1-0003"
+      ],
+      "remaining_gap": null,
+      "notes": "The negative ECN validation path now directly tags the zeroed-or-missing-marking detection behavior."
+    },
+    {
       "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0004",
       "completion_status": "implemented_and_tested",
       "files_changed": [
@@ -581,6 +603,13 @@
   ],
   "remaining_gap": [
     {
+      "section_token": "S13P4",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9000-S13P4-0002"
+      ],
+      "reason": "Requires a path- and peer-validation surface before ECN can be enabled safely."
+    },
+    {
       "section_token": "S13P4P1",
       "requirement_ids": [
         "REQ-QUIC-RFC9000-S13P4P1-0001",
@@ -707,6 +736,7 @@
   ],
   "notes": [
     "Implemented the helper-level ECN and probe-loss behaviors that were reachable without adding packet-assembly or path-management infrastructure.",
+    "Recorded REQ-QUIC-RFC9000-S13P4-0002 as blocked until path and peer ECN support detection can be modeled.",
     "Left unrelated worktree changes in place."
   ]
 }

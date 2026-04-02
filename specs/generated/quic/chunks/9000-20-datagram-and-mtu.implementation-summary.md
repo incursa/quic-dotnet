@@ -10,6 +10,7 @@
   - `REQ-QUIC-RFC9000-S13P4P2-0006`
   - `REQ-QUIC-RFC9000-S13P4P2P1-0001`
   - `REQ-QUIC-RFC9000-S13P4P2P1-0002`
+  - `REQ-QUIC-RFC9000-S13P4P2P1-0003`
   - `REQ-QUIC-RFC9000-S13P4P2P1-0004`
   - `REQ-QUIC-RFC9000-S13P4P2P1-0005`
   - `REQ-QUIC-RFC9000-S13P4P2P1-0006`
@@ -59,6 +60,7 @@
   - Result: `338 passed, 0 failed, 0 skipped`
 
 ## Remaining Open Requirements In Scope
+- `S13P4`: `REQ-QUIC-RFC9000-S13P4-0002`
 - `S13P4P1`: `REQ-QUIC-RFC9000-S13P4P1-0001`, `REQ-QUIC-RFC9000-S13P4P1-0002`, `REQ-QUIC-RFC9000-S13P4P1-0003`, `REQ-QUIC-RFC9000-S13P4P1-0007`, `REQ-QUIC-RFC9000-S13P4P1-0008`, `REQ-QUIC-RFC9000-S13P4P1-0009`
 - `S13P4P2`: `REQ-QUIC-RFC9000-S13P4P2-0002`, `REQ-QUIC-RFC9000-S13P4P2-0003`, `REQ-QUIC-RFC9000-S13P4P2-0004`, `REQ-QUIC-RFC9000-S13P4P2-0005`
 - `S13P4P2P2`: `REQ-QUIC-RFC9000-S13P4P2P2-0002`
@@ -72,5 +74,6 @@
 
 ## Risks Or Follow-up Notes
 - The ECN validation work is helper-level and does not yet wire into a full connection state machine that chooses when to mark outgoing packets ECT or when to switch paths.
+- `REQ-QUIC-RFC9000-S13P4-0002` stays blocked until the sender can determine path support and peer ECN support before enabling ECN.
 - PMTU discovery, ICMP validation, fragmentation control, DPLPMTUD probe scheduling, and datagram coalescing remain blocked by missing packet-assembly and path-management surfaces.
 - `REQ-QUIC-RFC9000-S13P4P2-0005` is permissive guidance and was left as deferred rather than forcing a no-op code path.

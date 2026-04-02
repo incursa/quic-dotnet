@@ -1,0 +1,419 @@
+{
+  "chunk_id": "9000-20-datagram-and-mtu",
+  "rfc": "9000",
+  "section_tokens": [
+    "S13P4",
+    "S13P4P1",
+    "S13P4P2",
+    "S13P4P2P1",
+    "S13P4P2P2",
+    "S14",
+    "S14P1",
+    "S14P2",
+    "S14P2P1",
+    "S14P3",
+    "S14P4"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "reconciliation_artifact_present": false,
+  "reconciliation_artifact_path": "./specs/generated/quic/chunks/9000-20-datagram-and-mtu.reconciliation.json",
+  "implementation_summary_file": "./specs/generated/quic/chunks/9000-20-datagram-and-mtu.implementation-summary.json",
+  "audit_result": "trace-consistent-with-explicit-blockers",
+  "requirements_in_scope": {
+    "total": 70,
+    "implemented_and_tested": 24,
+    "deferred": 1,
+    "blocked": 45,
+    "silent_gaps": 0,
+    "stale_ids": 0,
+    "wrong_ids": 0
+  },
+  "scope_inventory": {
+    "S13P4": [
+      "REQ-QUIC-RFC9000-S13P4-0001",
+      "REQ-QUIC-RFC9000-S13P4-0002"
+    ],
+    "S13P4P1": [
+      "REQ-QUIC-RFC9000-S13P4P1-0001",
+      "REQ-QUIC-RFC9000-S13P4P1-0002",
+      "REQ-QUIC-RFC9000-S13P4P1-0003",
+      "REQ-QUIC-RFC9000-S13P4P1-0004",
+      "REQ-QUIC-RFC9000-S13P4P1-0005",
+      "REQ-QUIC-RFC9000-S13P4P1-0006",
+      "REQ-QUIC-RFC9000-S13P4P1-0007",
+      "REQ-QUIC-RFC9000-S13P4P1-0008",
+      "REQ-QUIC-RFC9000-S13P4P1-0009"
+    ],
+    "S13P4P2": [
+      "REQ-QUIC-RFC9000-S13P4P2-0001",
+      "REQ-QUIC-RFC9000-S13P4P2-0002",
+      "REQ-QUIC-RFC9000-S13P4P2-0003",
+      "REQ-QUIC-RFC9000-S13P4P2-0004",
+      "REQ-QUIC-RFC9000-S13P4P2-0005",
+      "REQ-QUIC-RFC9000-S13P4P2-0006"
+    ],
+    "S13P4P2P1": [
+      "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+      "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+      "REQ-QUIC-RFC9000-S13P4P2P1-0003",
+      "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+      "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+      "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+      "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+      "REQ-QUIC-RFC9000-S13P4P2P1-0008"
+    ],
+    "S13P4P2P2": [
+      "REQ-QUIC-RFC9000-S13P4P2P2-0001",
+      "REQ-QUIC-RFC9000-S13P4P2P2-0002",
+      "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+      "REQ-QUIC-RFC9000-S13P4P2P2-0004",
+      "REQ-QUIC-RFC9000-S13P4P2P2-0005"
+    ],
+    "S14": [
+      "REQ-QUIC-RFC9000-S14-0001",
+      "REQ-QUIC-RFC9000-S14-0002",
+      "REQ-QUIC-RFC9000-S14-0003",
+      "REQ-QUIC-RFC9000-S14-0004",
+      "REQ-QUIC-RFC9000-S14-0005",
+      "REQ-QUIC-RFC9000-S14-0006",
+      "REQ-QUIC-RFC9000-S14-0007",
+      "REQ-QUIC-RFC9000-S14-0008",
+      "REQ-QUIC-RFC9000-S14-0009"
+    ],
+    "S14P1": [
+      "REQ-QUIC-RFC9000-S14P1-0001",
+      "REQ-QUIC-RFC9000-S14P1-0002",
+      "REQ-QUIC-RFC9000-S14P1-0003",
+      "REQ-QUIC-RFC9000-S14P1-0004",
+      "REQ-QUIC-RFC9000-S14P1-0005",
+      "REQ-QUIC-RFC9000-S14P1-0006",
+      "REQ-QUIC-RFC9000-S14P1-0007",
+      "REQ-QUIC-RFC9000-S14P1-0008"
+    ],
+    "S14P2": [
+      "REQ-QUIC-RFC9000-S14P2-0001",
+      "REQ-QUIC-RFC9000-S14P2-0002",
+      "REQ-QUIC-RFC9000-S14P2-0003",
+      "REQ-QUIC-RFC9000-S14P2-0004",
+      "REQ-QUIC-RFC9000-S14P2-0005",
+      "REQ-QUIC-RFC9000-S14P2-0006",
+      "REQ-QUIC-RFC9000-S14P2-0007",
+      "REQ-QUIC-RFC9000-S14P2-0008",
+      "REQ-QUIC-RFC9000-S14P2-0009",
+      "REQ-QUIC-RFC9000-S14P2-0010"
+    ],
+    "S14P2P1": [
+      "REQ-QUIC-RFC9000-S14P2P1-0001",
+      "REQ-QUIC-RFC9000-S14P2P1-0002",
+      "REQ-QUIC-RFC9000-S14P2P1-0003",
+      "REQ-QUIC-RFC9000-S14P2P1-0004",
+      "REQ-QUIC-RFC9000-S14P2P1-0005",
+      "REQ-QUIC-RFC9000-S14P2P1-0006",
+      "REQ-QUIC-RFC9000-S14P2P1-0007"
+    ],
+    "S14P3": [
+      "REQ-QUIC-RFC9000-S14P3-0001",
+      "REQ-QUIC-RFC9000-S14P3-0002",
+      "REQ-QUIC-RFC9000-S14P3-0003",
+      "REQ-QUIC-RFC9000-S14P3-0004"
+    ],
+    "S14P4": [
+      "REQ-QUIC-RFC9000-S14P4-0001",
+      "REQ-QUIC-RFC9000-S14P4-0002"
+    ]
+  },
+  "status_groups": {
+    "implemented_and_tested": [
+      {
+        "section_token": "S13P4",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S13P4-0001"
+        ],
+        "files": [
+          "src/Incursa.Quic/QuicEcnValidationState.cs",
+          "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+          "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+        ]
+      },
+      {
+        "section_token": "S13P4P1",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S13P4P1-0004",
+          "REQ-QUIC-RFC9000-S13P4P1-0005",
+          "REQ-QUIC-RFC9000-S13P4P1-0006"
+        ],
+        "files": [
+          "src/Incursa.Quic/QuicEcnValidationState.cs",
+          "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+          "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+        ]
+      },
+      {
+        "section_token": "S13P4P2",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S13P4P2-0001",
+          "REQ-QUIC-RFC9000-S13P4P2-0006"
+        ],
+        "files": [
+          "src/Incursa.Quic/QuicEcnValidationState.cs",
+          "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+          "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+        ]
+      },
+      {
+        "section_token": "S13P4P2P1",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0003",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0008"
+        ],
+        "files": [
+          "src/Incursa.Quic/QuicEcnValidationState.cs",
+          "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+          "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+        ],
+        "notes": "The negative ECN validation path now directly traces the zeroed-or-missing-marking detection behavior."
+      },
+      {
+        "section_token": "S13P4P2P2",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S13P4P2P2-0001",
+          "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+          "REQ-QUIC-RFC9000-S13P4P2P2-0004",
+          "REQ-QUIC-RFC9000-S13P4P2P2-0005"
+        ],
+        "files": [
+          "src/Incursa.Quic/QuicEcnValidationState.cs",
+          "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+          "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs"
+        ]
+      },
+      {
+        "section_token": "S14",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S14-0003",
+          "REQ-QUIC-RFC9000-S14-0004"
+        ],
+        "files": [
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+          "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+          "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs"
+        ]
+      },
+      {
+        "section_token": "S14P1",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S14P1-0001",
+          "REQ-QUIC-RFC9000-S14P1-0003",
+          "REQ-QUIC-RFC9000-S14P1-0008"
+        ],
+        "files": [
+          "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+          "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
+          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs"
+        ]
+      },
+      {
+        "section_token": "S14P4",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S14P4-0002"
+        ],
+        "files": [
+          "src/Incursa.Quic/QuicCongestionControlState.cs",
+          "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+        ]
+      }
+    ],
+    "deferred": [
+      {
+        "section_token": "S13P4P2",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S13P4P2-0005"
+        ],
+        "reason": "Permissive guidance was left unmodeled because the helper slice does not need a no-op path."
+      }
+    ],
+    "blocked": [
+      {
+        "section_token": "S13P4",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S13P4-0002"
+        ],
+        "reason": "Requires a path- and peer-validation surface before ECN can be enabled safely."
+      },
+      {
+        "section_token": "S13P4P1",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S13P4P1-0001",
+          "REQ-QUIC-RFC9000-S13P4P1-0002",
+          "REQ-QUIC-RFC9000-S13P4P1-0003",
+          "REQ-QUIC-RFC9000-S13P4P1-0007",
+          "REQ-QUIC-RFC9000-S13P4P1-0008",
+          "REQ-QUIC-RFC9000-S13P4P1-0009"
+        ],
+        "reason": "The helper slice does not yet model the fuller packet/path/ECN negotiation surface."
+      },
+      {
+        "section_token": "S13P4P2",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S13P4P2-0002",
+          "REQ-QUIC-RFC9000-S13P4P2-0003",
+          "REQ-QUIC-RFC9000-S13P4P2-0004"
+        ],
+        "reason": "The remaining path-management and validation behaviors are not modeled in the helper slice."
+      },
+      {
+        "section_token": "S13P4P2P2",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S13P4P2P2-0002"
+        ],
+        "reason": "The helper slice does not model the send-side ECN disable path at packet emission time."
+      },
+      {
+        "section_token": "S14",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S14-0001",
+          "REQ-QUIC-RFC9000-S14-0002",
+          "REQ-QUIC-RFC9000-S14-0005",
+          "REQ-QUIC-RFC9000-S14-0006",
+          "REQ-QUIC-RFC9000-S14-0007",
+          "REQ-QUIC-RFC9000-S14-0008",
+          "REQ-QUIC-RFC9000-S14-0009"
+        ],
+        "reason": "Datagram assembly, PMTU discovery, and fragmentation control are not wired into packet management."
+      },
+      {
+        "section_token": "S14P1",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S14P1-0002",
+          "REQ-QUIC-RFC9000-S14P1-0004",
+          "REQ-QUIC-RFC9000-S14P1-0005",
+          "REQ-QUIC-RFC9000-S14P1-0006",
+          "REQ-QUIC-RFC9000-S14P1-0007"
+        ],
+        "reason": "The remaining Initial-path and anti-amplification behaviors are not modeled yet."
+      },
+      {
+        "section_token": "S14P2",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S14P2-0001",
+          "REQ-QUIC-RFC9000-S14P2-0002",
+          "REQ-QUIC-RFC9000-S14P2-0003",
+          "REQ-QUIC-RFC9000-S14P2-0004",
+          "REQ-QUIC-RFC9000-S14P2-0005",
+          "REQ-QUIC-RFC9000-S14P2-0006",
+          "REQ-QUIC-RFC9000-S14P2-0007",
+          "REQ-QUIC-RFC9000-S14P2-0008",
+          "REQ-QUIC-RFC9000-S14P2-0009",
+          "REQ-QUIC-RFC9000-S14P2-0010"
+        ],
+        "reason": "Packetization and coalescing logic are still absent."
+      },
+      {
+        "section_token": "S14P2P1",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S14P2P1-0001",
+          "REQ-QUIC-RFC9000-S14P2P1-0002",
+          "REQ-QUIC-RFC9000-S14P2P1-0003",
+          "REQ-QUIC-RFC9000-S14P2P1-0004",
+          "REQ-QUIC-RFC9000-S14P2P1-0005",
+          "REQ-QUIC-RFC9000-S14P2P1-0006",
+          "REQ-QUIC-RFC9000-S14P2P1-0007"
+        ],
+        "reason": "The coalesced datagram encoder and its boundary checks are not implemented."
+      },
+      {
+        "section_token": "S14P3",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S14P3-0001",
+          "REQ-QUIC-RFC9000-S14P3-0002",
+          "REQ-QUIC-RFC9000-S14P3-0003",
+          "REQ-QUIC-RFC9000-S14P3-0004"
+        ],
+        "reason": "ICMP-based PMTU validation remains blocked by missing probe and path surfaces."
+      },
+      {
+        "section_token": "S14P4",
+        "requirements": [
+          "REQ-QUIC-RFC9000-S14P4-0001"
+        ],
+        "reason": "PMTU probe scheduling is not implemented."
+      }
+    ]
+  },
+  "reference_audit": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      {
+        "file": "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs",
+        "ids": [
+          "REQ-QUIC-RFC9000-S13P4-0001",
+          "REQ-QUIC-RFC9000-S13P4P2-0001",
+          "REQ-QUIC-RFC9000-S13P4P2-0006",
+          "REQ-QUIC-RFC9000-S13P4P1-0006",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0003",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+          "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+          "REQ-QUIC-RFC9000-S13P4P2P2-0001",
+          "REQ-QUIC-RFC9000-S13P4P2P2-0004"
+        ]
+      },
+      {
+        "file": "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+        "ids": [
+          "REQ-QUIC-RFC9000-S13P4P1-0004",
+          "REQ-QUIC-RFC9000-S13P4P1-0005",
+          "REQ-QUIC-RFC9000-S13P4P1-0006"
+        ]
+      },
+      {
+        "file": "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+        "ids": [
+          "REQ-QUIC-RFC9000-S13P4P1-0004",
+          "REQ-QUIC-RFC9000-S13P4P1-0005"
+        ]
+      },
+      {
+        "file": "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+        "ids": [
+          "REQ-QUIC-RFC9000-S13P4-0001",
+          "REQ-QUIC-RFC9000-S13P4P2-0001",
+          "REQ-QUIC-RFC9000-S14P4-0002"
+        ]
+      },
+      {
+        "file": "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+        "ids": [
+          "REQ-QUIC-RFC9000-S14P1-0001",
+          "REQ-QUIC-RFC9000-S14P1-0003"
+        ]
+      },
+      {
+        "file": "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
+        "ids": [
+          "REQ-QUIC-RFC9000-S14P1-0008"
+        ]
+      },
+      {
+        "file": "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+        "ids": [
+          "REQ-QUIC-RFC9000-S14-0003",
+          "REQ-QUIC-RFC9000-S14-0004"
+        ]
+      }
+    ],
+    "wrong_or_stale_requirement_refs_found": []
+  },
+  "conclusion": "Trace is internally consistent. The only remaining open items are explicit blockers and one deferred permissive guidance item, and no silent gaps remain in the scoped requirement set."
+}
