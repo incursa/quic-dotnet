@@ -1483,7 +1483,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs::ComputeLossDelayMicros_ComputesTheTimeThresholdFromRttAndGranularity"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs::ComputeLossDelayMicros_ComputesTheTimeThresholdFromRttAndGranularity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs::ComputeLossDelayMicros_RejectsAZeroTimeThresholdDenominator"
         ]
       }
     },
@@ -1512,7 +1513,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs::TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0004.cs::TryComputeRemainingLossDelayMicros_SchedulesTheRemainingTimeBeforeLoss",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0004.cs::TryComputeRemainingLossDelayMicros_RejectsAZeroTimeThresholdNumerator"
         ]
       }
     },
