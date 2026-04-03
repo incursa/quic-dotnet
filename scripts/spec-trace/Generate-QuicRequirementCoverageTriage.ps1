@@ -84,6 +84,11 @@ function Get-EvidenceStrength {
         [string]$FilePath
     )
 
+    if ($FilePath -match '(^|[\\/])RequirementHomes[\\/]' -and $AssociatedRequirementCount -eq 1)
+    {
+        return 'focused'
+    }
+
     if ($IsClassLevelOnly)
     {
         return 'broad'
@@ -250,9 +255,11 @@ function Get-TestMethodRecords {
                 $classCategories = if ($null -ne $currentClass) { @($currentClass.Categories) } else { @() }
                 $className = if ($null -ne $currentClass) { $currentClass.Name } else { $null }
                 $methodRequirements = @(Get-RequirementsFromAttributes -Attributes $methodAttributes)
-                $combinedRequirements = @($classRequirements + $methodRequirements | Sort-Object -Unique)
+                $combinedRequirementIds = @($classRequirements) + @($methodRequirements)
+                $combinedRequirements = @($combinedRequirementIds | Sort-Object -Unique)
                 $methodCategories = @(Get-CategoriesFromAttributes -Attributes $methodAttributes)
-                $combinedCategories = @($classCategories + $methodCategories | Sort-Object -Unique)
+                $combinedCategoryNames = @($classCategories) + @($methodCategories)
+                $combinedCategories = @($combinedCategoryNames | Sort-Object -Unique)
                 $methodAttributeNames = @($methodAttributes | ForEach-Object { $_.Name })
                 $isTestMethod = ($methodAttributeNames -contains 'Fact') -or ($methodAttributeNames -contains 'Theory')
                 $isClassLevelOnly = (@($methodRequirements).Count -eq 0 -and @($classRequirements).Count -gt 0)
@@ -698,7 +705,7 @@ $report = [ordered]@{
         classification_notes = @(
             'RequirementHomes scaffolds are not counted as proof because they contain no executable test methods.',
             'Trait(\"Category\", ...) is treated as the current evidence tag source because CoverageType is not yet widely adopted in real tests.',
-            'Methods with more than six associated requirements, class-level-only requirement tags, and the broad transport/frame codec aggregation tests are treated as broad proof.'
+            'Requirement-owned homes with executable methods are treated as focused proof when they own exactly one requirement; methods with more than six associated requirements and the broad transport/frame codec aggregation tests are still treated as broad proof.'
         )
     }
     summary      = $summary
