@@ -568,6 +568,9 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0017.cs::RecordProcessedPaddingPacket_DoesNotRequestAnImmediateAck"
         ]
       }
     },
