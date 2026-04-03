@@ -6,7 +6,7 @@ public sealed class QuicHandshakeDoneFrameTests
     [Requirement("REQ-QUIC-RFC9000-S19P20-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P20-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P20-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseHandshakeDoneFrame_ParsesAndFormatsTheTypeOnlyFrame()
     {
         byte[] encoded = QuicFrameTestData.BuildHandshakeDoneFrame();
@@ -27,7 +27,7 @@ public sealed class QuicHandshakeDoneFrameTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P20-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P20-0003")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseHandshakeDoneFrame_RejectsEmptyAndMismatchedTypes()
     {
         Assert.False(QuicFrameCodec.TryParseHandshakeDoneFrame([], out _, out _));

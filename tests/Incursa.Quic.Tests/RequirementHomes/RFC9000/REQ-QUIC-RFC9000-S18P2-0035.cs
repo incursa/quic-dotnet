@@ -5,7 +5,6 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0035
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo()
     {
         byte[] encoded = QuicTransportParameterTestData.BuildTransportParameterTuple(

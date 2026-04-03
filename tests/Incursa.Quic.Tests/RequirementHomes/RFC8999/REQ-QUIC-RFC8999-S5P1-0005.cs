@@ -5,7 +5,6 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0005
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0005")]
     public void TryParseLongHeader_AcceptsMaximumLengthDestinationConnectionId()
     {
@@ -24,7 +23,6 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0005
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0005")]
     public void TryParseLongHeader_RejectsTruncatedDestinationConnectionId()
     {

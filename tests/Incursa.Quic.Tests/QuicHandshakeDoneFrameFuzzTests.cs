@@ -6,7 +6,7 @@ public sealed class QuicHandshakeDoneFrameFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S19P20-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P20-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P20-0003")]
-    [Trait("Category", "Fuzz")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_HandshakeDoneFrame_RoundTripsAndRejectsTruncation()
     {
         Random random = new(0x5160_2080);

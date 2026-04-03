@@ -7,7 +7,6 @@ public sealed class REQ_QUIC_RFC9000_S10P3P2_0002
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void TryGenerateStatelessResetToken_TruncatesTheHashToSixteenBytes()
     {
         byte[] secretKey =
@@ -33,7 +32,6 @@ public sealed class REQ_QUIC_RFC9000_S10P3P2_0002
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void TryGenerateStatelessResetToken_RejectsDestinationsThatCannotHoldSixteenBytes()
     {
         byte[] secretKey =

@@ -8,7 +8,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9001-S10-0001")]
     [Requirement("REQ-QUIC-RFC9001-S10-0002")]
     [Requirement("REQ-QUIC-RFC9001-S10-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata()
     {
         Assert.Equal((ushort)57, QuicTransportParametersCodec.QuicTransportParametersExtensionType);
@@ -41,7 +41,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S4P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0003")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatTransportParameters_WritesExactTupleSequence()
     {
         byte[] statelessResetToken = Enumerable.Range(0, 16).Select(value => (byte)(0xA0 + value)).ToArray();
@@ -93,7 +93,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0011")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient()
     {
         QuicTransportParameters parameters = new()
@@ -169,7 +169,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S4P6-0005")]
     [Requirement("REQ-QUIC-RFC9000-S9P6P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S9P6P1-0007")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress()
     {
         QuicTransportParameters parameters = new()
@@ -240,7 +240,7 @@ public sealed class QuicTransportParametersTests
     [InlineData(0x08UL)]
     [InlineData(0x09UL)]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0006")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseAndFormatTransportParameters_RejectsInitialMaxStreamsAboveTheEncodingLimit(ulong parameterId)
     {
         ulong overLimit = (1UL << 60) + 1;
@@ -447,7 +447,7 @@ public sealed class QuicTransportParametersTests
     [MemberData(nameof(MatchingConnectionIdBindingCases))]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0005")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0006")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindings(
         QuicTransportParameterRole receiverRole,
         byte[] initialDestinationConnectionId,
@@ -471,7 +471,7 @@ public sealed class QuicTransportParametersTests
     [Theory]
     [MemberData(nameof(MissingConnectionIdBindingCases))]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0007")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryValidateConnectionIdBindings_RejectsMissingConnectionIdBindings(
         QuicTransportParameterRole receiverRole,
         byte[] initialDestinationConnectionId,
@@ -496,7 +496,7 @@ public sealed class QuicTransportParametersTests
     [Theory]
     [MemberData(nameof(MismatchedConnectionIdBindingCases))]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0008")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryValidateConnectionIdBindings_RejectsMismatchedConnectionIdBindings(
         QuicTransportParameterRole receiverRole,
         byte[] initialDestinationConnectionId,
@@ -529,7 +529,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S18P2-0031")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0032")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0033")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     [Requirement("REQ-QUIC-RFC9000-S5P2P3-0002")]
     public void TryParseTransportParameters_AcceptsPreferredAddressWithZeroedIpv4Family()
     {
@@ -573,7 +573,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S18-0004")]
     [Requirement("REQ-QUIC-RFC9000-S18-0005")]
     [Requirement("REQ-QUIC-RFC9000-S18-0006")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseTransportParameters_RejectsTruncatedTupleValue()
     {
         byte[] tuple = QuicTransportParameterTestData.BuildTransportParameterTuple(0x01, QuicVarintTestData.EncodeMinimal(25));
@@ -590,7 +590,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S18P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S18P1-0002")]
     [Requirement("REQ-QUIC-RFC9000-S7P4P2-0001")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseTransportParameters_IgnoresReservedGreaseParameters()
     {
         byte[] greaseTuple = QuicTransportParameterTestData.BuildTransportParameterTuple(27, [0xDE, 0xAD, 0xBE, 0xEF]);
@@ -611,7 +611,7 @@ public sealed class QuicTransportParametersTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S7P4-0002")]
     [Requirement("REQ-QUIC-RFC9000-S7P4-0003")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseTransportParameters_RejectsDuplicateTransportParameters()
     {
         byte[] duplicateKnownParameter = QuicTransportParameterTestData.BuildTransportParameterBlock(
@@ -638,7 +638,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S18P2-0004")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0037")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient()
     {
         QuicTransportParameters parameters = new()
@@ -669,7 +669,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S18P2-0004")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0038")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer()
     {
         byte[] tuple = QuicTransportParameterTestData.BuildTransportParameterTuple(0x02, Enumerable.Range(0, 16).Select(value => (byte)(0x50 + value)).ToArray());
@@ -694,7 +694,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S18P2-0031")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0032")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0033")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId()
     {
         byte[] preferredAddressValue = QuicTransportParameterTestData.BuildPreferredAddressValue(
@@ -717,7 +717,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S18P2-0035")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0036")]
     [Requirement("REQ-QUIC-RFC9000-S7P4-0001")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo()
     {
         byte[] tuple = QuicTransportParameterTestData.BuildTransportParameterTuple(0x0E, QuicVarintTestData.EncodeMinimal(1));
@@ -740,7 +740,7 @@ public sealed class QuicTransportParametersTests
     [Requirement("REQ-QUIC-RFC9000-S18P2-0031")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0032")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0033")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseTransportParameters_RejectsTruncatedPreferredAddressValue()
     {
         byte[] preferredAddressValue = QuicTransportParameterTestData.BuildPreferredAddressValue(
@@ -762,7 +762,7 @@ public sealed class QuicTransportParametersTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0006")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit()
     {
         QuicTransportParameters boundaryParameters = new()

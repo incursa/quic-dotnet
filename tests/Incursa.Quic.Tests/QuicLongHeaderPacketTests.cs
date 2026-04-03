@@ -24,7 +24,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0016")]
     [Requirement("REQ-QUIC-RFC9000-S7P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S5P1-0008")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload()
     {
         byte[] destinationConnectionId = [0x10, 0x11, 0x12];
@@ -78,7 +78,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0007")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0008")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0009")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits(
         byte headerControlBits,
         byte expectedLongPacketTypeBits)
@@ -106,7 +106,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0014")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0015")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0017")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields()
     {
         byte[] versionSpecificData = QuicHeaderTestData.BuildInitialVersionSpecificData(
@@ -129,7 +129,7 @@ public sealed class QuicLongHeaderPacketTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S5P1-0013")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_AllowsZeroLengthConnectionIds()
     {
         byte[] versionSpecificData = QuicHeaderTestData.BuildInitialVersionSpecificData(
@@ -157,7 +157,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0015")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0016")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields()
     {
         byte[] versionSpecificData = QuicHeaderTestData.BuildZeroRttVersionSpecificData(
@@ -218,7 +218,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0013")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseLongHeader_RejectsTruncatedInputs(byte[] packet)
     {
         Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
@@ -231,7 +231,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0014")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0015")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0017")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields(
         byte[] versionSpecificData)
     {
@@ -250,7 +250,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0015")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0016")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseLongHeader_RejectsVersion1ZeroRttPacketsWithInvalidStructuralFields(
         byte[] versionSpecificData)
     {
@@ -267,7 +267,7 @@ public sealed class QuicLongHeaderPacketTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0013")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_ExposesZeroVersionAsVersionNegotiationState()
     {
         byte[] packet = QuicHeaderTestData.BuildLongHeader(
@@ -288,7 +288,7 @@ public sealed class QuicLongHeaderPacketTests
     [InlineData(0x3F)]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0002")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0005")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseLongHeader_RejectsShortHeaderForm(byte headerControlBits)
     {
         byte[] shortHeader = QuicHeaderTestData.BuildShortHeader(
@@ -301,7 +301,7 @@ public sealed class QuicLongHeaderPacketTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0006")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseLongHeader_RejectsNonVersionNegotiationPacketsWithZeroFixedBit()
     {
         byte[] packet = QuicHeaderTestData.BuildLongHeader(
@@ -319,7 +319,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0013")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte()
     {
         byte[] packet = QuicHeaderTestData.BuildTruncatedLongHeader(
@@ -336,7 +336,7 @@ public sealed class QuicLongHeaderPacketTests
     [Fact]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0005")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0007")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_AcceptsMaximumLengthConnectionIds()
     {
         byte[] destinationConnectionId = Enumerable.Repeat((byte)0xDA, byte.MaxValue).ToArray();
@@ -364,7 +364,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_AllowsInitialAndZeroRttConnectionIdsUpTo20Bytes(byte headerControlBits)
     {
         byte[] destinationConnectionId = Enumerable.Repeat((byte)0xDA, 20).ToArray();
@@ -392,7 +392,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseLongHeader_RejectsInitialAndZeroRttDestinationConnectionIdsLongerThan20Bytes(
         byte headerControlBits)
     {
@@ -413,7 +413,7 @@ public sealed class QuicLongHeaderPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseLongHeader_RejectsInitialAndZeroRttSourceConnectionIdsLongerThan20Bytes(
         byte headerControlBits)
     {
@@ -429,7 +429,7 @@ public sealed class QuicLongHeaderPacketTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S17P2-0020")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_AllowsVersion1DestinationConnectionIdUpTo20Bytes()
     {
         byte[] destinationConnectionId = Enumerable.Repeat((byte)0xDA, 20).ToArray();
@@ -453,7 +453,7 @@ public sealed class QuicLongHeaderPacketTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S17P2-0021")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseLongHeader_RejectsVersion1DestinationConnectionIdLongerThan20Bytes()
     {
         byte[] packet = QuicHeaderTestData.BuildLongHeader(

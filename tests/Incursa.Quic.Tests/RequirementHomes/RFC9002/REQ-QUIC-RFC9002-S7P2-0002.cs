@@ -10,7 +10,6 @@ public sealed class REQ_QUIC_RFC9002_S7P2_0002
     };
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9002-S7P2-0002")]
     [MemberData(nameof(InitialCongestionWindowCases))]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]
@@ -21,9 +20,7 @@ public sealed class REQ_QUIC_RFC9002_S7P2_0002
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S7P2-0002")]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void ComputeInitialCongestionWindowBytes_RejectsZeroDatagramSizes()
     {
         ArgumentOutOfRangeException initialException = Assert.Throws<ArgumentOutOfRangeException>(() =>

@@ -10,9 +10,7 @@ public sealed class REQ_QUIC_RFC9002_S5P2_0005
     };
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S5P2-0005")]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment()
     {
         QuicRttEstimator estimator = new();
@@ -30,7 +28,6 @@ public sealed class REQ_QUIC_RFC9002_S5P2_0005
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9002-S5P2-0005")]
     [MemberData(nameof(RefreshMinRttCases))]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]
@@ -60,9 +57,7 @@ public sealed class REQ_QUIC_RFC9002_S5P2_0005
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S5P2-0005")]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator()
     {
         QuicRttEstimator estimator = new();

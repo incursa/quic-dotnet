@@ -20,7 +20,7 @@ public sealed class QuicVersionNegotiationPacketTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
     [Requirement("REQ-QUIC-RFC9000-S5P1-0012")]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseVersionNegotiation_ExposesSupportedVersions()
     {
         byte[] destinationConnectionId = [0x01, 0x02];
@@ -72,7 +72,7 @@ public sealed class QuicVersionNegotiationPacketTests
     [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0004")]
     [Requirement("REQ-QUIC-RFC9000-S6P3-0001")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions()
     {
         uint reservedVersion = 0x0A0A0A0A;
@@ -99,7 +99,7 @@ public sealed class QuicVersionNegotiationPacketTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S6P3-0002")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseVersionNegotiation_RejectsPacketsWithReservedVersions()
     {
         uint reservedVersion = QuicVersionNegotiation.CreateReservedVersion(0x11223344);
@@ -118,7 +118,7 @@ public sealed class QuicVersionNegotiationPacketTests
     }
 
     [Fact]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseVersionNegotiation_RejectsNegativeSupportedVersionIndex()
     {
         byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
@@ -143,7 +143,7 @@ public sealed class QuicVersionNegotiationPacketTests
     }
 
     [Fact]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseVersionNegotiation_RejectsEmptyInput()
     {
         Assert.False(QuicPacketParser.TryParseVersionNegotiation([], out _));
@@ -151,7 +151,7 @@ public sealed class QuicVersionNegotiationPacketTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0003")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseVersionNegotiation_RejectsShortHeaderForm()
     {
         byte[] shortHeader = QuicHeaderTestData.BuildShortHeader(
@@ -162,7 +162,7 @@ public sealed class QuicVersionNegotiationPacketTests
     }
 
     [Fact]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseVersionNegotiation_RejectsPacketsWithoutSupportedVersions()
     {
         byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
@@ -178,7 +178,7 @@ public sealed class QuicVersionNegotiationPacketTests
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseVersionNegotiation_RejectsTruncatedSupportedVersions(int truncateBy)
     {
         byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
@@ -194,7 +194,7 @@ public sealed class QuicVersionNegotiationPacketTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0005")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseVersionNegotiation_RejectsOrdinaryLongHeaders()
     {
         byte[] packet = QuicHeaderTestData.BuildLongHeader(

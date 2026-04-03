@@ -5,7 +5,7 @@ public sealed class QuicCryptoBufferTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0001")]
     [Requirement("REQ-QUIC-RFC9000-S4-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryAddFrame_BuffersOutOfOrderFramesAndDequeuesContiguousBytes()
     {
         QuicCryptoBuffer buffer = new();
@@ -31,7 +31,7 @@ public sealed class QuicCryptoBufferTests
     [Requirement("REQ-QUIC-RFC9000-S7P5-0001")]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0002")]
     [Requirement("REQ-QUIC-RFC9000-S4-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryAddFrame_AllowsConfiguredCapacityDuringHandshake()
     {
         QuicCryptoBuffer buffer = new(8192);
@@ -49,7 +49,7 @@ public sealed class QuicCryptoBufferTests
     [Requirement("REQ-QUIC-RFC9000-S7P5-0001")]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0003")]
     [Requirement("REQ-QUIC-RFC9000-S4-0005")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryAddFrame_ClosesWithBufferExceededWhenCapacityIsNotExpanded()
     {
         QuicCryptoBuffer buffer = new();
@@ -65,7 +65,7 @@ public sealed class QuicCryptoBufferTests
     [Requirement("REQ-QUIC-RFC9000-S7P5-0004")]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0005")]
     [Requirement("REQ-QUIC-RFC9000-S4-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryAddFrame_CanDiscardOverflowFramesAfterHandshakeCompletion()
     {
         QuicCryptoBuffer discardBuffer = new()
@@ -86,7 +86,7 @@ public sealed class QuicCryptoBufferTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0004")]
     [Requirement("REQ-QUIC-RFC9000-S4-0005")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryAddFrame_CanCloseAfterHandshakeCompletionInsteadOfDiscarding()
     {
         QuicCryptoBuffer buffer = new()

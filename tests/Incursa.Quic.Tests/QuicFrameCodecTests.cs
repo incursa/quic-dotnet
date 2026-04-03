@@ -11,7 +11,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S19P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P1-0006")]
     [Requirement("REQ-QUIC-RFC9002-S3-0008")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame()
     {
         byte[] frameBytes = QuicFrameTestData.BuildPaddingFrame();
@@ -46,7 +46,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S10P1P1-0001")]
     [Requirement("REQ-QUIC-RFC9002-S2-0002")]
     [Requirement("REQ-QUIC-RFC9002-S3-0017")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void IsAckElicitingFrameType_ClassifiesKnownFrameTypes(ulong frameType, bool expectedAckEliciting)
     {
         Assert.Equal(expectedAckEliciting, QuicFrameCodec.IsAckElicitingFrameType(frameType));
@@ -59,7 +59,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S19P1-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P2-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P2-0003")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes()
     {
         Assert.False(QuicFrameCodec.TryParsePaddingFrame([], out _));
@@ -72,7 +72,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S10P1P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P2-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P2-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame()
     {
         byte[] frameBytes = QuicFrameTestData.BuildPingFrame();
@@ -126,7 +126,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S19P3P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P2-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P2-0007")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseAckFrame_RoundTripsRangesAndEcnCounts()
     {
         ulong largestAcknowledged = 0x1234;
@@ -206,7 +206,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S19P3P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P2-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P2-0007")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts()
     {
         ulong largestAcknowledged = 0x10;
@@ -248,7 +248,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S19P4-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P4-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P4-0011")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseResetStreamFrame_ParsesAndFormatsAllFields()
     {
         QuicResetStreamFrame frame = new(0x1234, 0x55, 0x200);
@@ -276,7 +276,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S19P4-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P4-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P4-0011")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseResetStreamFrame_RejectsTruncatedInputs()
     {
         byte[] encoded = QuicFrameTestData.BuildResetStreamFrame(new QuicResetStreamFrame(0x1234, 0x55, 0x200));
@@ -295,7 +295,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S19P5-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0010")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStopSendingFrame_ParsesAndFormatsAllFields()
     {
         QuicStopSendingFrame frame = new(0x44, 0x66);
@@ -320,7 +320,7 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S19P5-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0010")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStopSendingFrame_RejectsTruncatedInputs()
     {
         byte[] encoded = QuicFrameTestData.BuildStopSendingFrame(new QuicStopSendingFrame(0x44, 0x66));

@@ -9,7 +9,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P12-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0006")]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0014")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField()
     {
         QuicDataBlockedFrame frame = new(0x1234_5678);
@@ -30,7 +30,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P12-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0006")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseDataBlockedFrame_RejectsTruncatedInput()
     {
         byte[] encoded = QuicFrameTestData.BuildDataBlockedFrame(new QuicDataBlockedFrame(0x01));
@@ -47,7 +47,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P13-0007")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0008")]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0014")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields()
     {
         QuicStreamDataBlockedFrame frame = new(0x06, 0x1234_5678);
@@ -71,7 +71,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P13-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0007")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0008")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamDataBlockedFrame_RejectsTruncatedInput()
     {
         byte[] encoded = QuicFrameTestData.BuildStreamDataBlockedFrame(new QuicStreamDataBlockedFrame(0x06, 0x01));
@@ -89,7 +89,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P14-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0007")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0012")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants(bool isBidirectional)
     {
         QuicStreamsBlockedFrame frame = new(isBidirectional, 0x1234);
@@ -116,7 +116,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P14-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0007")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0008")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit(bool isBidirectional)
     {
         ulong limit = 1UL << 60;
@@ -137,7 +137,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0009")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamsBlockedFrame_RejectsValuesAboveTheEncodingLimit()
     {
         QuicStreamsBlockedFrame frame = new(true, (1UL << 60) + 1);
@@ -164,7 +164,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S10P3-0017")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields()
     {
         byte[] connectionId = [0x10, 0x11, 0x12, 0x13];
@@ -203,7 +203,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S10P3-0003")]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0017")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths(int connectionIdLength)
     {
         byte[] connectionId = Enumerable.Repeat((byte)0xDA, connectionIdLength).ToArray();
@@ -231,7 +231,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0003")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues()
     {
         byte[] statelessResetToken = Enumerable.Repeat((byte)0x5C, 16).ToArray();
@@ -254,7 +254,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P15-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseNewConnectionIdFrame_RejectsTruncatedInput(int truncateBy)
     {
         byte[] connectionId = [0x10];
@@ -272,7 +272,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0019")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0020")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber()
     {
         byte[] connectionId = [0x10, 0x11];
@@ -294,7 +294,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P16-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P16-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P16-0006")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber()
     {
         QuicRetireConnectionIdFrame frame = new(0x1234_5678);
@@ -316,7 +316,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S5P1P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P16-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P16-0006")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseRetireConnectionIdFrame_RejectsTruncatedInput(int truncateBy)
     {
         QuicRetireConnectionIdFrame frame = new(0x01);
@@ -334,7 +334,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P17-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P18-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P18-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParsePathFrames_ParsesAndFormatsTheEightBytePayload(bool isChallenge)
     {
         byte[] data = [
@@ -380,7 +380,7 @@ public sealed class QuicFrameCodecPart4Tests
     [Requirement("REQ-QUIC-RFC9000-S19P17-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P18-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P18-0002")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParsePathFrames_RejectsTruncatedInput(bool isChallenge)
     {
         byte[] invalidData = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6];

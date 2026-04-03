@@ -8,7 +8,7 @@ public sealed class QuicRecoveryTimingTests
     [InlineData(false, false, 9, false)]
     [InlineData(false, true, 10, true)]
     [Requirement("REQ-QUIC-RFC9002-S6P1-0001")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void CanDeclarePacketLost_RequiresAnUnacknowledgedInFlightPacketSentBeforeAnAcknowledgedPacket(
         bool packetAcknowledged,
         bool packetInFlight,
@@ -28,7 +28,7 @@ public sealed class QuicRecoveryTimingTests
     [InlineData(6UL, 9UL, true)]
     [Requirement("REQ-QUIC-RFC9002-S6P1P1-0001")]
     [Requirement("REQ-QUIC-RFC9002-S6P1P1-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldDeclarePacketLostByPacketThreshold_UsesTheRecommendedThresholdOfThree(
         ulong packetNumber,
         ulong largestAcknowledgedPacketNumber,
@@ -41,7 +41,7 @@ public sealed class QuicRecoveryTimingTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S6P1P1-0002")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => QuicRecoveryTiming.ShouldDeclarePacketLostByPacketThreshold(
@@ -57,7 +57,7 @@ public sealed class QuicRecoveryTimingTests
     [Requirement("REQ-QUIC-RFC9002-S6P1P2-0003")]
     [Requirement("REQ-QUIC-RFC9002-S6P1P2-0005")]
     [Requirement("REQ-QUIC-RFC9002-S6P1P2-0006")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ComputeLossDelayMicros_UsesTheRttAndGranularityThresholds(
         ulong latestRttMicros,
         ulong smoothedRttMicros,
@@ -69,7 +69,7 @@ public sealed class QuicRecoveryTimingTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S6P1P2-0001")]
     [Requirement("REQ-QUIC-RFC9002-S6P1P2-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryComputeRemainingLossDelayMicros_SchedulesTheRemainingTimeBeforeLoss()
     {
         Assert.True(QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
@@ -100,7 +100,7 @@ public sealed class QuicRecoveryTimingTests
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0002")]
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0003")]
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula(
         QuicPacketNumberSpace packetNumberSpace,
         bool handshakeConfirmed,
@@ -119,7 +119,7 @@ public sealed class QuicRecoveryTimingTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0005")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation()
     {
         Assert.False(QuicRecoveryTiming.TryComputeProbeTimeoutMicros(
@@ -135,7 +135,7 @@ public sealed class QuicRecoveryTimingTests
     [InlineData(1_000UL, 1, 2_000UL)]
     [InlineData(1_000UL, 2, 4_000UL)]
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0007")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ComputeProbeTimeoutWithBackoffMicros_DoublesTheBasePtoOnTimeout(
         ulong probeTimeoutMicros,
         int ptoCount,
@@ -148,7 +148,7 @@ public sealed class QuicRecoveryTimingTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheEarlierValue()
     {
         Assert.True(QuicRecoveryTiming.TrySelectInitialOrHandshakeProbeTimeoutMicros(
@@ -161,7 +161,7 @@ public sealed class QuicRecoveryTimingTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0010")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TrySelectRecoveryTimerMicros_PrefersLossDetectionTimersOverPtoTimers()
     {
         Assert.True(QuicRecoveryTiming.TrySelectRecoveryTimerMicros(
@@ -177,7 +177,7 @@ public sealed class QuicRecoveryTimingTests
     [InlineData(2_000UL, 3_250UL)]
     [Requirement("REQ-QUIC-RFC9002-S6P3-0004")]
     [Requirement("REQ-QUIC-RFC9002-S6P3-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryMeasureRetryRoundTripMicros_ComputesTheElapsedTimeAndCanSeedInitialRtt(
         ulong firstInitialPacketSentAtMicros,
         ulong retryReceivedAtMicros)

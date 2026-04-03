@@ -5,7 +5,6 @@ public sealed class REQ_QUIC_RFC9000_S11_0001
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void TryParseConnectionCloseFrame_ParsesTransportAndApplicationVariants()
     {
         byte[] reasonPhrase = [0x6F, 0x6B];
@@ -45,7 +44,6 @@ public sealed class REQ_QUIC_RFC9000_S11_0001
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes()
     {
         QuicConnectionCloseFrame transportFrame = new(QuicTransportErrorCode.ProtocolViolation, 0x02, [0x6F, 0x6B]);

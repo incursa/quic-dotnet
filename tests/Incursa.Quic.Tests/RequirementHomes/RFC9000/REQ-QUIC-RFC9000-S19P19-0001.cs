@@ -5,7 +5,6 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0001
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void TryParseConnectionCloseFrame_UsesTheTransportCloseFrameType()
     {
         QuicConnectionCloseFrame frame = new(QuicTransportErrorCode.NoError, triggeringFrameType: 0x02, [0x6F, 0x6B]);

@@ -5,7 +5,6 @@ public sealed class REQ_QUIC_RFC9000_S19P8_0001
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void TryParseStreamFrame_SetsTheOffsetBitWhenOffsetIsPresent()
     {
         byte[] streamData = [0xAA, 0xBB, 0xCC, 0xDD];

@@ -6,7 +6,7 @@ public sealed class QuicPathValidationTests
     [Requirement("REQ-QUIC-RFC9000-S8P2P1-0004")]
     [Requirement("REQ-QUIC-RFC9000-S8P2P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0027")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec()
     {
         Span<byte> challengeData = stackalloc byte[QuicPathValidation.PathChallengeDataLength];
@@ -30,7 +30,7 @@ public sealed class QuicPathValidationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S8P2P1-0004")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryGeneratePathChallengeData_RejectsShortDestinations()
     {
         Assert.False(QuicPathValidation.TryGeneratePathChallengeData(stackalloc byte[7], out _));
@@ -38,7 +38,7 @@ public sealed class QuicPathValidationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S8P2P2-0001")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatPathResponseFrame_EchoesChallengeData()
     {
         Span<byte> challengeData = stackalloc byte[QuicPathValidation.PathChallengeDataLength];
@@ -57,7 +57,7 @@ public sealed class QuicPathValidationTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S6P2P2-0003")]
     [Requirement("REQ-QUIC-RFC9002-S6P2P2-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState()
     {
         Assert.True(QuicPathValidation.TryMeasurePathChallengeRoundTripMicros(
@@ -78,7 +78,7 @@ public sealed class QuicPathValidationTests
     [Requirement("REQ-QUIC-RFC9000-S8P2P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S8P2P2-0006")]
     [Requirement("REQ-QUIC-RFC9000-S9P3P1-0001")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows()
     {
         QuicAntiAmplificationBudget budget = new();
@@ -106,7 +106,7 @@ public sealed class QuicPathValidationTests
     [Requirement("REQ-QUIC-RFC9000-S8P2P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S8P2P2-0006")]
     [Requirement("REQ-QUIC-RFC9000-S9P3P1-0001")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded()
     {
         QuicAntiAmplificationBudget budget = new();

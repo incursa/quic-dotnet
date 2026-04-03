@@ -17,7 +17,7 @@ public sealed class QuicPacketParserTests
     [Requirement("REQ-QUIC-RFC9000-S5P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0012")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryClassifyHeaderForm_UsesTheFirstByteHighBit(byte[] packet, QuicHeaderForm expectedForm)
     {
         Assert.True(QuicPacketParser.TryClassifyHeaderForm(packet, out QuicHeaderForm actualForm));
@@ -25,7 +25,7 @@ public sealed class QuicPacketParserTests
     }
 
     [Fact]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryClassifyHeaderForm_RejectsEmptyInput()
     {
         Assert.False(QuicPacketParser.TryClassifyHeaderForm([], out _));
@@ -59,7 +59,7 @@ public sealed class QuicPacketParserTests
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0015")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0019")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0020")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseHeader_PreservesTheSevenControlBits(byte[] packet, byte expectedControlBits, bool isLongHeader)
     {
         if (isLongHeader)
@@ -118,7 +118,7 @@ public sealed class QuicPacketParserTests
     [MemberData(nameof(PacketNumberSpaceCases))]
     [Requirement("REQ-QUIC-RFC9002-S3-0002")]
     [Requirement("REQ-QUIC-RFC9002-S3-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetPacketNumberSpace_MapsSupportedHeaderFormsToSpaces(
         byte[] packet,
         QuicPacketNumberSpace expectedPacketNumberSpace)
@@ -130,7 +130,7 @@ public sealed class QuicPacketParserTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S3-0002")]
     [Requirement("REQ-QUIC-RFC9002-S3-0004")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryGetPacketNumberSpace_RejectsVersionNegotiationAndRetryPackets()
     {
         byte[] versionNegotiationPacket = QuicHeaderTestData.BuildVersionNegotiation(

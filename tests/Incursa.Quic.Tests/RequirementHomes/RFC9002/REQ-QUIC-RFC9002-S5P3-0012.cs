@@ -10,7 +10,6 @@ public sealed class REQ_QUIC_RFC9002_S5P3_0012
     };
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9002-S5P3-0012")]
     [MemberData(nameof(RttBoundCases))]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Property")]

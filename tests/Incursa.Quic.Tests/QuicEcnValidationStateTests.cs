@@ -12,7 +12,7 @@ public sealed class QuicEcnValidationStateTests
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace()
     {
         QuicEcnValidationState state = new();
@@ -48,7 +48,7 @@ public sealed class QuicEcnValidationStateTests
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0007")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0001")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryValidateAcknowledgedEcnCounts_DisablesEcnWhenCountsAreMissingOrExceedSentCounts()
     {
         QuicEcnValidationState state = new();
@@ -83,7 +83,7 @@ public sealed class QuicEcnValidationStateTests
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0006")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation()
     {
         QuicEcnValidationState state = new();

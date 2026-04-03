@@ -11,7 +11,7 @@ public sealed class QuicVersionNegotiationTests
     [Requirement("REQ-QUIC-RFC9000-S14-0004")]
     [Requirement("REQ-QUIC-RFC9000-S6-0001")]
     [Requirement("REQ-QUIC-RFC9000-S6-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1()
     {
         Assert.True(QuicVersionNegotiation.TryGetRequiredInitialDatagramPayloadSize(
@@ -31,7 +31,7 @@ public sealed class QuicVersionNegotiationTests
     [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport()
     {
         Assert.True(QuicVersionNegotiation.ShouldSendVersionNegotiation(
@@ -53,7 +53,7 @@ public sealed class QuicVersionNegotiationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldSendVersionNegotiation_CanLimitRepeatedResponses()
     {
         Assert.True(QuicVersionNegotiation.ShouldSendVersionNegotiation(
@@ -70,7 +70,7 @@ public sealed class QuicVersionNegotiationTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S5P2P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S5P2P2-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize()
     {
         Assert.True(QuicVersionNegotiation.ShouldSendVersionNegotiation(
@@ -106,7 +106,7 @@ public sealed class QuicVersionNegotiationTests
     [Requirement("REQ-QUIC-RFC9001-S5-0003")]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions()
     {
         byte[] destination = new byte[64];
@@ -134,7 +134,7 @@ public sealed class QuicVersionNegotiationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormatVersionNegotiationResponse_RejectsTheReservedVersionNumberInTheAdvertisedList()
     {
         byte[] destination = new byte[64];
@@ -152,7 +152,7 @@ public sealed class QuicVersionNegotiationTests
     [Requirement("REQ-QUIC-RFC9000-S6P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions()
     {
         byte[] packetBytes = QuicHeaderTestData.BuildVersionNegotiation(
@@ -173,7 +173,7 @@ public sealed class QuicVersionNegotiationTests
     [Requirement("REQ-QUIC-RFC9000-S6P2-0002")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldAbandonConnectionAttempt_RequiresOnlyTheSelectedVersionAndANonDiscardablePacket()
     {
         byte[] packetBytes = QuicHeaderTestData.BuildVersionNegotiation(
@@ -207,7 +207,7 @@ public sealed class QuicVersionNegotiationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S6P3-0001")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void IsReservedVersion_UsesTheReservedPattern()
     {
         Assert.True(QuicVersionNegotiation.IsReservedVersion(0x0A0A0A0A));

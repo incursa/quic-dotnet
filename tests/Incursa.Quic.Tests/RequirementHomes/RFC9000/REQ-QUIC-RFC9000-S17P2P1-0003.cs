@@ -5,7 +5,6 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0003
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void TryClassifyHeaderForm_UsesTheFirstByteHighBit()
     {
         Assert.True(QuicPacketParser.TryClassifyHeaderForm(

@@ -5,7 +5,6 @@ public sealed class REQ_QUIC_RFC9000_S7P3_0002
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void TryFormatTransportParameters_EmitsInitialSourceConnectionId()
     {
         QuicTransportParameters parameters = new()

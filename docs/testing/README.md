@@ -26,5 +26,5 @@ For protocol work, testing is only one part of the proof burden. The repository 
 ## Requirement Tagging
 
 - Tag requirement-linked xUnit tests with `[Trait("Requirement", "REQ-...")]` so the test inventory can map evidence back to canonical requirement IDs.
-- Add a category trait such as `[Trait("Category", "Positive")]`, `[Trait("Category", "Negative")]`, `[Trait("Category", "Property")]`, or `[Trait("Category", "Fuzz")]` when it helps downstream filtering or coverage checks.
+- Add a category trait such as `[CoverageType(RequirementCoverageType.Positive)]`, `[CoverageType(RequirementCoverageType.Negative)]`, `[Trait("Category", "Property")]`, or `[Trait("Category", "Fuzz")]` when it helps downstream filtering or coverage checks.
 - Keep benchmark suites in [`../../benchmarks/README.md`](../../benchmarks/README.md) and cross-link their results from the relevant verification artifact.

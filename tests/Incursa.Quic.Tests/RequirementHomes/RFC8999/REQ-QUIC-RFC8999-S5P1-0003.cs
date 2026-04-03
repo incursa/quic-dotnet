@@ -6,7 +6,6 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0003
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
-    [Trait("Category", "Positive")]
     public void TryParseLongHeader_ParsesTheEncodedVersionField()
     {
         uint version = 0x11223344;
@@ -25,7 +24,6 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0003
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
-    [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsPacketsMissingTheVersionField()
     {
         byte[] packet = QuicHeaderTestData.BuildLongHeader(
@@ -40,8 +38,8 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0003
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
-    [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
     [Trait("Category", "Property")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
     public void TryParseLongHeader_PreservesTheMaximumVersionValue()
     {
         uint version = uint.MaxValue;

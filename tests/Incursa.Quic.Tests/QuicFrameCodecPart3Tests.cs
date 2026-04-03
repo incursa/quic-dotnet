@@ -15,7 +15,7 @@ public sealed class QuicFrameCodecPart3Tests
     [Requirement("REQ-QUIC-RFC9000-S19P6-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0013")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseCryptoFrame_ParsesAndFormatsAllFields()
     {
         byte[] cryptoData = [0xAA, 0xBB, 0xCC];
@@ -37,7 +37,7 @@ public sealed class QuicFrameCodecPart3Tests
     [Requirement("REQ-QUIC-RFC9000-S4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling()
     {
         byte[] cryptoData = [0xAB];
@@ -53,7 +53,7 @@ public sealed class QuicFrameCodecPart3Tests
     [Requirement("REQ-QUIC-RFC9000-S4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling()
     {
         byte[] encoded = QuicFrameTestData.BuildCryptoFrame(new QuicCryptoFrame(QuicVariableLengthInteger.MaxValue, [0xAA]));
@@ -64,7 +64,7 @@ public sealed class QuicFrameCodecPart3Tests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormatCryptoFrame_RejectsFramesThatExceedTheStreamCeiling()
     {
         QuicCryptoFrame frame = new(QuicVariableLengthInteger.MaxValue, [0xAA]);
@@ -79,7 +79,7 @@ public sealed class QuicFrameCodecPart3Tests
     [Requirement("REQ-QUIC-RFC9000-S19P7-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P7-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P7-0006")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseNewTokenFrame_ParsesAndFormatsAllFields()
     {
         byte[] token = [0x10, 0x20, 0x30, 0x40];
@@ -99,7 +99,7 @@ public sealed class QuicFrameCodecPart3Tests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P7-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P7-0007")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseNewTokenFrame_RejectsEmptyTokens()
     {
         QuicNewTokenFrame emptyFrame = new(Array.Empty<byte>());
@@ -117,7 +117,7 @@ public sealed class QuicFrameCodecPart3Tests
     [Requirement("REQ-QUIC-RFC9000-S19P9-0005")]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0006")]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0009")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField()
     {
         QuicMaxDataFrame frame = new(0x1234_5678);
@@ -144,7 +144,7 @@ public sealed class QuicFrameCodecPart3Tests
     [Requirement("REQ-QUIC-RFC9000-S4P1-0006")]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0007")]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0008")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields()
     {
         QuicMaxStreamDataFrame frame = new(0x06, 0x1234_5678);
@@ -172,7 +172,7 @@ public sealed class QuicFrameCodecPart3Tests
     [Requirement("REQ-QUIC-RFC9000-S19P11-0005")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0004")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants(bool isBidirectional)
     {
         QuicMaxStreamsFrame frame = new(isBidirectional, 0x1234);
@@ -194,7 +194,7 @@ public sealed class QuicFrameCodecPart3Tests
     [Requirement("REQ-QUIC-RFC9000-S19P11-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P11-0006")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0007")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit()
     {
         QuicMaxStreamsFrame invalidFrame = new(true, (1UL << 60) + 1);

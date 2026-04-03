@@ -6,7 +6,6 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
-    [Trait("Category", "Positive")]
     public void TryParseLongHeader_PreservesTheSevenVersionSpecificBits()
     {
         byte[] packet = QuicHeaderTestData.BuildLongHeader(
@@ -28,7 +27,6 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
-    [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsShortHeadersEvenWhenTheOtherSevenBitsMatch()
     {
         byte[] packet = QuicHeaderTestData.BuildShortHeader(
@@ -40,8 +38,8 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0002
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
-    [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
     [Trait("Category", "Property")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
     public void TryParseLongHeader_PreservesAnAllZeroVersionSpecificBitField()
     {
         byte[] packet = QuicHeaderTestData.BuildLongHeader(

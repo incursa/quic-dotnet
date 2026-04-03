@@ -12,7 +12,6 @@ public sealed class REQ_QUIC_RFC9002_S6P1P2_0001
     };
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9002-S6P1P2-0001")]
     [MemberData(nameof(RemainingLossDelayCases))]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]
@@ -29,9 +28,7 @@ public sealed class REQ_QUIC_RFC9002_S6P1P2_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S6P1P2-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void TryComputeRemainingLossDelayMicros_RejectsAZeroTimerGranularity()
     {
         ArgumentOutOfRangeException exception = Assert.Throws<ArgumentOutOfRangeException>(() =>

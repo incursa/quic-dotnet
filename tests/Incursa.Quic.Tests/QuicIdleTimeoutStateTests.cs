@@ -10,7 +10,7 @@ public sealed class QuicIdleTimeoutStateTests
     [Requirement("REQ-QUIC-RFC9000-S10P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S10P1-0007")]
     [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryComputeEffectiveIdleTimeoutMicros_UsesTheMinimumAdvertisedValueAndThePtoFloor(
         ulong? localMaxIdleTimeoutMicros,
         ulong? peerMaxIdleTimeoutMicros,
@@ -29,7 +29,7 @@ public sealed class QuicIdleTimeoutStateTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryComputeEffectiveIdleTimeoutMicros_ReturnsFalseWhenNeitherEndpointAdvertisesAnIdleTimeout()
     {
         Assert.False(QuicIdleTimeoutState.TryComputeEffectiveIdleTimeoutMicros(
@@ -44,7 +44,7 @@ public sealed class QuicIdleTimeoutStateTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S10P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S10P1-0006")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void RecordPeerPacketProcessedAndRecordAckElicitingPacketSent_RestartTheTimerAtTheRightTimes()
     {
         QuicIdleTimeoutState state = new(100);

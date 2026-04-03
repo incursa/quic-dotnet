@@ -1,5 +1,6 @@
 namespace Incursa.Quic.Tests;
 
+[Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
 public sealed class REQ_QUIC_RFC9000_S10P1_0003
 {
     [Theory]
@@ -8,8 +9,6 @@ public sealed class REQ_QUIC_RFC9000_S10P1_0003
     [InlineData(25UL, 40UL, 5UL, true, 25UL)]
     [InlineData(4UL, 10UL, 2UL, true, 6UL)]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
-    [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
     public void TryComputeEffectiveIdleTimeoutMicros_UsesTheMinimumAdvertisedValueAndThePtoFloor(
         ulong? localMaxIdleTimeoutMicros,
         ulong? peerMaxIdleTimeoutMicros,
@@ -28,8 +27,6 @@ public sealed class REQ_QUIC_RFC9000_S10P1_0003
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
-    [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
     public void TryComputeEffectiveIdleTimeoutMicros_ReturnsFalseWhenNeitherEndpointAdvertisesAnIdleTimeout()
     {
         Assert.False(QuicIdleTimeoutState.TryComputeEffectiveIdleTimeoutMicros(

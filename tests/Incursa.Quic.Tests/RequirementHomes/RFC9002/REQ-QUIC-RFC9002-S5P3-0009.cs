@@ -11,7 +11,6 @@ public sealed class REQ_QUIC_RFC9002_S5P3_0009
     };
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9002-S5P3-0009")]
     [MemberData(nameof(ClampCases))]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]
@@ -41,9 +40,7 @@ public sealed class REQ_QUIC_RFC9002_S5P3_0009
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S5P3-0009")]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void TryUpdateFromAck_LeavesAckDelayUnclampedBeforeHandshakeConfirmation()
     {
         QuicRttEstimator estimator = new();

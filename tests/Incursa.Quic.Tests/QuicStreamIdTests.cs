@@ -21,7 +21,7 @@ public sealed class QuicStreamIdTests
     [Requirement("REQ-QUIC-RFC9000-S2P1-0009")]
     [Requirement("REQ-QUIC-RFC9000-S2P1-0010")]
     [Requirement("REQ-QUIC-RFC9000-S2P1-0011")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamIdentifier_ExposesStreamTypeClassification(
         ulong value,
         QuicStreamType expectedStreamType,
@@ -45,7 +45,7 @@ public sealed class QuicStreamIdTests
     [InlineData(new byte[] { 0x80, 0x00, 0x00 })]
     [Requirement("REQ-QUIC-RFC9000-S2P1-0004")]
     [Requirement("REQ-QUIC-RFC9000-S2P1-0006")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamIdentifier_RejectsTruncatedEncodings(byte[] encoded)
     {
         Assert.False(QuicStreamParser.TryParseStreamIdentifier(encoded, out _, out _));
@@ -58,7 +58,7 @@ public sealed class QuicStreamIdTests
     [Requirement("REQ-QUIC-RFC9000-S2P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S2P1-0010")]
     [Requirement("REQ-QUIC-RFC9000-S2P1-0011")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId()
     {
         byte[] encoded = QuicStreamTestData.BuildStreamIdentifier(QuicVariableLengthInteger.MaxValue);

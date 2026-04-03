@@ -8,7 +8,7 @@ public sealed class QuicAddressValidationTests
     [InlineData(false, 8, false)]
     [Requirement("REQ-QUIC-RFC9000-S21P1P1P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0001")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void CanConsiderPeerAddressValidated_RequiresEndpointChosenAndAtLeast64BitsOfEntropy(
         bool chosenByEndpoint,
         int connectionIdLength,
@@ -26,7 +26,7 @@ public sealed class QuicAddressValidationTests
     [Requirement("REQ-QUIC-RFC9000-S14P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S14P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetVersion1InitialDatagramPaddingLength_ComputesTheRemainingPadding(
         int currentPayloadLength,
         int expectedPaddingLength)
@@ -40,7 +40,7 @@ public sealed class QuicAddressValidationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0004")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryGetVersion1InitialDatagramPaddingLength_RejectsNegativeCurrentPayloadLength()
     {
         Assert.False(QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(-1, out _));
@@ -50,7 +50,7 @@ public sealed class QuicAddressValidationTests
     [Requirement("REQ-QUIC-RFC9000-S14P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S14P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatVersion1InitialDatagramPadding_WritesRepeatedPaddingFrames()
     {
         Span<byte> destination = stackalloc byte[13];
@@ -72,7 +72,7 @@ public sealed class QuicAddressValidationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0004")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormatVersion1InitialDatagramPadding_RejectsNegativeLengthsAndShortDestinations()
     {
         Assert.False(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(-1, stackalloc byte[1], out _));

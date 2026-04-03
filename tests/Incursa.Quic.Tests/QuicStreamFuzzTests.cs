@@ -11,7 +11,7 @@ public sealed class QuicStreamFuzzTests
     [Requirement("REQ-QUIC-VINT-0003")]
     [Requirement("REQ-QUIC-VINT-0004")]
     [Requirement("REQ-QUIC-VINT-0005")]
-    [Trait("Category", "Fuzz")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_VarintParsing_RoundTripsRepresentativeValuesAndRejectsTruncation()
     {
         Random random = new(0x5150_2028);
@@ -57,7 +57,7 @@ public sealed class QuicStreamFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S19P8-0016")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0017")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0018")]
-    [Trait("Category", "Fuzz")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation()
     {
         Random random = new(0x5150_2029);

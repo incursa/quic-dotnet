@@ -9,7 +9,7 @@ public sealed class QuicCongestionControlStateTests
     [Requirement("REQ-QUIC-RFC9002-S7P2-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P2-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7P2-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent()
     {
         QuicCongestionControlState firstPath = new();
@@ -34,7 +34,7 @@ public sealed class QuicCongestionControlStateTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S7P2-0003")]
     [Requirement("REQ-QUIC-RFC9002-S7P2-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ComputeInitialWindowAndResetToInitialWindow_FollowTheDatagramSize()
     {
         Assert.Equal(12_000UL, QuicCongestionControlState.ComputeInitialCongestionWindowBytes(1_200));
@@ -68,7 +68,6 @@ public sealed class QuicCongestionControlStateTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S7P2-0002")]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void ComputeInitialCongestionWindowBytes_RejectsZeroDatagramSizes()
     {
         ArgumentOutOfRangeException initialException = Assert.Throws<ArgumentOutOfRangeException>(() =>
@@ -87,7 +86,7 @@ public sealed class QuicCongestionControlStateTests
     [Requirement("REQ-QUIC-RFC9002-S7-0006")]
     [Requirement("REQ-QUIC-RFC9002-S7P5-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P5-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight()
     {
         QuicCongestionControlState state = new();
@@ -123,8 +122,8 @@ public sealed class QuicCongestionControlStateTests
     [Requirement("REQ-QUIC-RFC9002-S7P3P3-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7P4-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P4-0002")]
-    [Trait("Category", "Positive")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals()
     {
         QuicCongestionControlState ackOnlyLossState = new();
@@ -207,7 +206,7 @@ public sealed class QuicCongestionControlStateTests
     [Requirement("REQ-QUIC-RFC9002-S7P8-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P8-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7P8-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers()
     {
         Assert.True(QuicCongestionControlState.TryComputePacingIntervalMicros(
@@ -260,7 +259,7 @@ public sealed class QuicCongestionControlStateTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S14P4-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryRegisterLoss_IgnoresProbePacketLossForCongestionControl()
     {
         QuicCongestionControlState state = new();
@@ -290,8 +289,8 @@ public sealed class QuicCongestionControlStateTests
     [Requirement("REQ-QUIC-RFC9002-S7P6P2-0004")]
     [Requirement("REQ-QUIC-RFC9002-S7P6P2-0005")]
     [Requirement("REQ-QUIC-RFC9002-S7P6P2-0006")]
-    [Trait("Category", "Positive")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow()
     {
         Assert.True(QuicCongestionControlState.TryComputePersistentCongestionDurationMicros(
@@ -365,7 +364,6 @@ public sealed class QuicCongestionControlStateTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S7P6P2-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void TryDetectPersistentCongestion_StartsOnceAnRttSampleIsAvailable()
     {
         QuicCongestionControlState state = new();
@@ -395,7 +393,6 @@ public sealed class QuicCongestionControlStateTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S7P6P2-0003")]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void TryDetectPersistentCongestion_DoesNotStartBeforeAnyRttSampleExists()
     {
         QuicCongestionControlState state = new();

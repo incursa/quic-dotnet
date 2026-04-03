@@ -11,7 +11,6 @@ public sealed class REQ_QUIC_RFC9002_S7P6P2_0003
     };
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9002-S7P6P2-0003")]
     [MemberData(nameof(PersistentCongestionGateCases))]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]
@@ -41,9 +40,7 @@ public sealed class REQ_QUIC_RFC9002_S7P6P2_0003
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S7P6P2-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void TryDetectPersistentCongestion_StartsOnceAnRttSampleIsAvailable()
     {
         QuicCongestionControlState state = new();
@@ -65,9 +62,7 @@ public sealed class REQ_QUIC_RFC9002_S7P6P2_0003
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S7P6P2-0003")]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void TryDetectPersistentCongestion_DoesNotStartBeforeAnyRttSampleExists()
     {
         QuicCongestionControlState state = new();
