@@ -1,46 +1,42 @@
-
-You are working in a repository that contains imported QUIC Spec Trace requirements.
+You are working in this repository after the latest refreshed QUIC requirement coverage triage.
 
 Goal:
-Audit one completed implementation chunk and confirm that code, tests, and direct requirement references are internally consistent.
+Take one cautious exploratory pass at RFC 9001, but only if you can find a very small non-blocked or broad-only slice that is clearly implemented.
+
+Why:
+RFC 9001 still has a backlog, but much of it is blocked. This prompt should only proceed if there is a very small, safe, implementation-backed slice.
 
 Scope:
-- chunk_id: 9000-03-flow-control
-- rfc: 9000
-- section_tokens:
-  - S4
-  - S4P1
-  - S4P2
-  - S4P4
-  - S4P5
-  - S4P6
-- spec_file: ./specs/requirements/quic/SPEC-QUIC-RFC9000.json
+Read the latest triage and identify at most one very small RFC 9001 cluster that is:
+- covered_but_proof_too_broad
+or
+- partially_covered
+and is clearly implemented without requiring handshake orchestration, key updates, or broader TLS state machinery.
 
-Selection rule:
-- Include only requirements whose IDs match the selected RFC and whose section token is exactly one of the section_tokens listed above.
+Do NOT work on:
+- blocked RFC 9001 requirements
+- any slice that needs TLS orchestration
+- broad RFC 9001 rewrites
+- product code unless a very small low-risk testability seam is absolutely necessary
 
-Read first:
-- the relevant QUIC spec file
-- ./specs/generated/quic/chunks/9000-03-flow-control.reconciliation.json
-- ./specs/generated/quic/chunks/9000-03-flow-control.implementation-summary.json
+Ownership rule:
+- One requirement-home per requirement.
+- Tests inside that home prove only that requirement.
 
-Tasks:
-1. Enumerate all requirements in scope.
-2. Verify each requirement has one of:
-   - implementation evidence
-   - test evidence
-   - explicit deferred/blocker note
-3. Verify tests reference the correct requirement IDs where the repo convention expects that.
-4. Verify code refs or XML-comment refs use the correct requirement IDs where the repo convention expects that.
-5. Flag any requirement that still appears uncovered.
-6. Flag any test or code reference that points to a stale or wrong ID.
-7. Produce a closeout report.
+Required approach:
+1. Read the latest triage and decide whether a safe RFC 9001 slice exists.
+2. If no clearly safe slice exists, stop and report that RFC 9001 should be deferred.
+3. If a safe slice exists:
+   - inspect existing broad tests only as reference
+   - create or refine requirement-owned proof for that slice only
+4. Preserve broad tests as supplemental proof.
 
-Write:
-- ./specs/generated/quic/chunks/9000-03-flow-control.closeout.md
-- ./specs/generated/quic/chunks/9000-03-flow-control.closeout.json
+Output expectations:
+- Either:
+  - implement one very small safe RFC 9001 slice, or
+  - explicitly report that RFC 9001 should be deferred for now
+- At the end, summarize what you decided and why.
 
-Success criteria:
-- No stale requirement IDs remain in scope.
-- No silent gaps remain in scope.
-- The chunk is ready to be merged or queued for final repo-wide trace/audit tooling.
+Before coding:
+- Briefly state whether you found a safe RFC 9001 slice and what it is.
+Then implement.
