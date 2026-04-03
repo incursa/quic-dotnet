@@ -24570,8 +24570,7 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0009.cs::TryParseLongHeader_PreservesDestinationConnectionIdRange",
           "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields",
           "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AllowsInitialAndZeroRttConnectionIdsUpTo20Bytes",
           "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttDestinationConnectionIdsLongerThan20Bytes",
@@ -24642,8 +24641,7 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0011.cs::TryParseLongHeader_PreservesSourceConnectionIdRange",
           "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields",
           "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AllowsInitialAndZeroRttConnectionIdsUpTo20Bytes",
           "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttDestinationConnectionIdsLongerThan20Bytes",
