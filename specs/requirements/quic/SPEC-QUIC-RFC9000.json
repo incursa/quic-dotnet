@@ -16038,6 +16038,10 @@
         "upstream_refs": [
           "RFC 9000 §11 RFC9000-S11-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0001.cs::TryParseConnectionCloseFrame_ParsesTransportAndApplicationVariants",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0001.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes"
         ]
       }
     },
@@ -18862,6 +18866,9 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0001.cs::TryParseAckFrame_RoundsTripAcknowledgedRangesAndAckDelay"
         ]
       }
     },
