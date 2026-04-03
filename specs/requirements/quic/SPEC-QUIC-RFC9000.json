@@ -21553,6 +21553,11 @@
         "upstream_refs": [
           "RFC 9000 §14.1 RFC9000-S14.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0001.cs::TryFormatVersion1InitialDatagramPadding_WritesPaddingFramesUpToTheRFCMinimum",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0001.cs::TryFormatVersion1InitialDatagramPadding_RejectsNegativePayloadLengths",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0001.cs::TryFormatVersion1InitialDatagramPadding_AllowsZeroPaddingAtTheMinimumPayloadSize"
         ]
       }
     },
