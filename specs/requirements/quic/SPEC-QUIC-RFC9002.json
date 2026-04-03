@@ -3519,7 +3519,8 @@
         "upstream_refs": [
           "RFC 9002 §7.5 RFC9002-S7.5-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.5"
-        ]
+        ],
+        "x_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P5-0001.cs::CanSend_StillAllowsProbePacketsWhenTheCongestionWindowIsFull"
       }
     },
     {
