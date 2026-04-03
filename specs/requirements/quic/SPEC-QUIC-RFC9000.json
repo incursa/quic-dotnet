@@ -8921,6 +8921,13 @@
         "upstream_refs": [
           "RFC 9000 §8.1 RFC9000-S8.1-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs::TryFormatVersion1InitialDatagramPadding_RejectsNegativeLengthsAndShortDestinations",
+          "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs::TryFormatVersion1InitialDatagramPadding_WritesRepeatedPaddingFrames",
+          "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs::TryGetVersion1InitialDatagramPaddingLength_ComputesTheRemainingPadding",
+          "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs::TryGetVersion1InitialDatagramPaddingLength_RejectsNegativeCurrentPayloadLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1-0004.cs::TryGetVersion1InitialDatagramPaddingLength_UsesTheExactMinimumPayloadBoundary"
         ]
       }
     },
@@ -21610,6 +21617,12 @@
         "upstream_refs": [
           "RFC 9000 §14.1 RFC9000-S14.1-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs::TryFormatVersion1InitialDatagramPadding_WritesRepeatedPaddingFrames",
+          "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs::TryGetVersion1InitialDatagramPaddingLength_ComputesTheRemainingPadding",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0003.cs::TryFormatVersion1InitialDatagramPadding_AllowsZeroPaddingAtTheMinimumPayloadSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0003.cs::TryFormatVersion1InitialDatagramPadding_RejectsNegativePayloadLengths"
         ]
       }
     },
