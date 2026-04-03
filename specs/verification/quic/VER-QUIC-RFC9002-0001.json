@@ -249,6 +249,8 @@
     "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0003.cs",
     "benchmarks/QuicFrameCodecBenchmarks.cs",
     "benchmarks/QuicVariableLengthIntegerBenchmarks.cs",
     "quality/benchmarks/README.md",
@@ -264,7 +266,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicVariableLengthIntegerBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml"
+      "content": "- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0003.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicVariableLengthIntegerBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml"
     }
   ],
   "domain": "quic"
