@@ -2943,12 +2943,15 @@
         "verified_by": [
           "VER-QUIC-RFC9002-0001"
         ],
-        "upstream_refs": [
-          "RFC 9002 §7 RFC9002-S7-B8-P7-S1",
-          "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
-        ]
-      }
-    },
+      "upstream_refs": [
+        "RFC 9002 §7 RFC9002-S7-B8-P7-S1",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+      ],
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0006.cs::CanSend_RejectsCongestionControlledPacketsThatWouldExceedTheWindow"
+      ]
+    }
+  },
     {
       "id": "REQ-QUIC-RFC9002-S7P1-0001",
       "title": "Treat ECN CE as congestion on validated paths",
