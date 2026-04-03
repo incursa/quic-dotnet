@@ -12,7 +12,7 @@ public sealed class QuicStatelessResetTests
     [Requirement("REQ-QUIC-RFC9000-S10P3P2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P2-0010")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P2-0011")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId()
     {
         byte[] secretKey = [0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97];
@@ -42,7 +42,7 @@ public sealed class QuicStatelessResetTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S10P3P2-0012")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryGenerateStatelessResetToken_RejectsZeroLengthConnectionIds()
     {
         Span<byte> token = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength];
@@ -61,7 +61,7 @@ public sealed class QuicStatelessResetTests
     [Requirement("REQ-QUIC-RFC9000-S10P3-0023")]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0024")]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0026")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatStatelessResetDatagram_WritesShortHeaderLayoutWithTokenAtTheTail()
     {
         byte[] statelessResetToken = [
@@ -91,7 +91,7 @@ public sealed class QuicStatelessResetTests
     [InlineData(43, 42)]
     [InlineData(22, 21)]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0010")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible(int triggeringPacketLength, int expectedLength)
     {
         Assert.True(QuicStatelessReset.TryGetRecommendedDatagramLength(triggeringPacketLength, out int datagramLength));
@@ -100,7 +100,7 @@ public sealed class QuicStatelessResetTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0010")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter()
     {
         Assert.False(QuicStatelessReset.TryGetRecommendedDatagramLength(QuicStatelessReset.MinimumDatagramLength, out _));
@@ -111,7 +111,7 @@ public sealed class QuicStatelessResetTests
     [InlineData(8, 30)]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0009")]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0027")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetMinimumPacketLengthForResetResistance_OffsetsByTwentyTwoBytes(int minimumConnectionIdLength, int expectedLength)
     {
         Assert.True(QuicStatelessReset.TryGetMinimumPacketLengthForResetResistance(minimumConnectionIdLength, out int minimumPacketLength));
@@ -122,7 +122,7 @@ public sealed class QuicStatelessResetTests
     [Requirement("REQ-QUIC-RFC9000-S10P3-0011")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P3-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void CanSendStatelessReset_RejectsAmplificationAndLoopingViolations()
     {
         Assert.False(QuicStatelessReset.CanSendStatelessReset(100, 100, hasLoopPreventionState: false));
@@ -140,7 +140,7 @@ public sealed class QuicStatelessResetTests
     [Requirement("REQ-QUIC-RFC9000-S10P3P1-0009")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P1-0011")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P1-0012")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes()
     {
         byte[] matchingToken = [
@@ -175,7 +175,7 @@ public sealed class QuicStatelessResetTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S10P3P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P1-0009")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void IsPotentialStatelessReset_RejectsTooShortOrWronglyFormedDatagrams()
     {
         Assert.False(QuicStatelessReset.IsPotentialStatelessReset([0x40, 0x00, 0x00, 0x00, 0x00]));

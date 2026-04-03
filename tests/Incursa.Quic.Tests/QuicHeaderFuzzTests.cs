@@ -32,7 +32,7 @@ public sealed class QuicHeaderFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0010")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0011")]
     [Requirement("REQ-QUIC-RFC9000-S5P1-0008")]
-    [Trait("Category", "Fuzz")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation()
     {
         Random random = new(0x5150_2026);
@@ -89,7 +89,7 @@ public sealed class QuicHeaderFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0015")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0016")]
-    [Trait("Category", "Fuzz")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation()
     {
         Random random = new(0x5150_2028);
@@ -142,7 +142,7 @@ public sealed class QuicHeaderFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0017")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0019")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0020")]
-    [Trait("Category", "Fuzz")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero()
     {
         Random random = new(0x5150_2029);
@@ -190,7 +190,7 @@ public sealed class QuicHeaderFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0013")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
     [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
-    [Trait("Category", "Fuzz")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation()
     {
         Random random = new(0x5150_2027);
@@ -246,7 +246,7 @@ public sealed class QuicHeaderFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S6P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S7P2-0002")]
     [Requirement("REQ-QUIC-RFC9001-S5-0003")]
-    [Trait("Category", "Fuzz")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses()
     {
         Random random = new(0x5150_2030);

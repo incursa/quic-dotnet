@@ -24,7 +24,7 @@ public sealed class QuicFrameCodecErrorHandlingFuzzTests
     [Requirement("REQ-QUIC-RFC9000-S11P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S11P1-0002")]
     [Requirement("REQ-QUIC-RFC9000-S11P1-0003")]
-    [Trait("Category", "Fuzz")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes()
     {
         Random random = new(0x5160_2050);

@@ -4,9 +4,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_SBP5_0006
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-SBP5-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void TryRegisterAcknowledgedPacket_GrowsTheWindowProportionallyInCongestionAvoidance()
     {
         QuicCongestionControlState state = new();

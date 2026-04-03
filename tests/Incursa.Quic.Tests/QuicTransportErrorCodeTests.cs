@@ -39,7 +39,7 @@ public sealed class QuicTransportErrorCodeTests
     [Requirement("REQ-QUIC-RFC9000-S20P1-0006")]
     [Requirement("REQ-QUIC-RFC9000-S20P1-0007")]
     [Requirement("REQ-QUIC-RFC9000-S20P1-0008")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TransportErrorCodeRegistry_ExposesTheRFC9000Values(
         QuicTransportErrorCode code,
         ulong expectedWireValue,

@@ -20,7 +20,7 @@ public sealed class QuicAckGenerationStateTests
     [Requirement("REQ-QUIC-RFC9000-S13P3-0010")]
     [Requirement("REQ-QUIC-RFC9000-S9P4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S9P4-0006")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay()
     {
         QuicAckGenerationState tracker = new();
@@ -65,7 +65,7 @@ public sealed class QuicAckGenerationStateTests
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0005")]
     [Requirement("REQ-QUIC-RFC9002-S2-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldSendAckImmediately_ForInitialAndHandshakePackets()
     {
         QuicAckGenerationState tracker = new();
@@ -82,7 +82,7 @@ public sealed class QuicAckGenerationStateTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0013")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0014")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldSendAckImmediately_ForOutOfOrderAndCePackets()
     {
         QuicAckGenerationState outOfOrderTracker = new();
@@ -115,7 +115,7 @@ public sealed class QuicAckGenerationStateTests
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0011")]
     [Requirement("REQ-QUIC-RFC9002-S2-0003")]
     [Requirement("REQ-QUIC-RFC9002-S3-0012")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldDelayAckUntilSecondAckElicitingPacketOrMaxAckDelay()
     {
         QuicAckGenerationState tracker = new();
@@ -136,7 +136,7 @@ public sealed class QuicAckGenerationStateTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0006")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void CanSendOnlyOneAckOnlyPacketPerAckElicitingPacket()
     {
         QuicAckGenerationState tracker = new();
@@ -159,7 +159,7 @@ public sealed class QuicAckGenerationStateTests
     [Requirement("REQ-QUIC-RFC9000-S13P2P3-0009")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P3-0010")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P3-0011")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryBuildAckFrame_TrimsOldestRangesWhenLimitReached()
     {
         QuicAckGenerationState keepTwoRanges = new(maximumRetainedAckRanges: 2);
@@ -188,7 +188,7 @@ public sealed class QuicAckGenerationStateTests
     [Requirement("REQ-QUIC-RFC9000-S13P2P6-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P6-0002")]
     [Requirement("REQ-QUIC-RFC9002-S3-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void PacketNumberSpaces_AreTrackedIndependently()
     {
         QuicAckGenerationState tracker = new();
@@ -247,7 +247,7 @@ public sealed class QuicAckGenerationStateTests
     [Requirement("REQ-QUIC-RFC9000-S13P2P5-0005")]
     [Requirement("REQ-QUIC-RFC9002-S3-0011")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0010")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed()
     {
         QuicAckGenerationState tracker = new();

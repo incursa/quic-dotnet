@@ -12,7 +12,7 @@ public sealed class QuicAeadUsageLimitCalculatorTests
     [Requirement("REQ-QUIC-RFC9001-SBP1P1-0002")]
     [Requirement("REQ-QUIC-RFC9001-SBP1P2-0001")]
     [Requirement("REQ-QUIC-RFC9001-SBP1P2-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds(
         QuicAeadAlgorithm algorithm,
         QuicAeadPacketSizeProfile confidentialityPacketSizeProfile,
@@ -32,7 +32,7 @@ public sealed class QuicAeadUsageLimitCalculatorTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9001-SBP1P2-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm()
     {
         Assert.True(QuicAeadUsageLimitCalculator.TryGetUsageLimits(
@@ -57,7 +57,7 @@ public sealed class QuicAeadUsageLimitCalculatorTests
     [Requirement("REQ-QUIC-RFC9001-SB-0002")]
     [Requirement("REQ-QUIC-RFC9001-SBP2-0001")]
     [Requirement("REQ-QUIC-RFC9001-SBP2-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetUsageLimits_UsesTheCcmPacketSizeThresholds(
         QuicAeadPacketSizeProfile packetSizeProfile,
         double expectedLog2PacketLimit)
@@ -82,7 +82,7 @@ public sealed class QuicAeadUsageLimitCalculatorTests
     [Requirement("REQ-QUIC-RFC9001-SBP1P2-0002")]
     [Requirement("REQ-QUIC-RFC9001-SBP2-0001")]
     [Requirement("REQ-QUIC-RFC9001-SBP2-0002")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryGetUsageLimits_RejectsUnsupportedPolicyCombinations()
     {
         Assert.False(QuicAeadUsageLimitCalculator.TryGetUsageLimits(

@@ -8,7 +8,7 @@ public sealed class QuicRttEstimatorTests
     [Requirement("REQ-QUIC-RFC9002-S5P3-0007")]
     [Requirement("REQ-QUIC-RFC9002-S6P2P2-0001")]
     [Requirement("REQ-QUIC-RFC9002-S6P2P2-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt()
     {
         QuicRttEstimator estimator = new();
@@ -53,7 +53,7 @@ public sealed class QuicRttEstimatorTests
     [Requirement("REQ-QUIC-RFC9002-S5P2-0003")]
     [Requirement("REQ-QUIC-RFC9002-S5P2-0004")]
     [Requirement("REQ-QUIC-RFC9002-S5P3-0008")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryUpdateFromAck_UsesTheLargestNewlyAcknowledgedAckElicitingPacketAsTheFirstSample()
     {
         QuicRttEstimator estimator = new();
@@ -78,7 +78,7 @@ public sealed class QuicRttEstimatorTests
     [Requirement("REQ-QUIC-RFC9002-S5P1-0001")]
     [Requirement("REQ-QUIC-RFC9002-S5P1-0004")]
     [Requirement("REQ-QUIC-RFC9002-S5P1-0005")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryUpdateFromAck_RejectsDuplicateLargestAcknowledgmentsAndAckOnlyProgress()
     {
         QuicRttEstimator estimator = new();
@@ -111,7 +111,7 @@ public sealed class QuicRttEstimatorTests
     [Requirement("REQ-QUIC-RFC9002-S5P2-0002")]
     [Requirement("REQ-QUIC-RFC9002-S5P3-0001")]
     [Requirement("REQ-QUIC-RFC9002-S5P3-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryUpdateFromAck_AdjustsForAckDelayBeforeHandshakeConfirmationWithoutClampingToPeerMax()
     {
         QuicRttEstimator estimator = new();
@@ -140,7 +140,7 @@ public sealed class QuicRttEstimatorTests
     [Requirement("REQ-QUIC-RFC9002-S5P3-0009")]
     [Requirement("REQ-QUIC-RFC9002-S5P3-0010")]
     [Requirement("REQ-QUIC-RFC9002-S5P3-0012")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmationAndDoesNotReduceAdjustedRttBelowMinRtt()
     {
         QuicRttEstimator clampedEstimator = new();
@@ -189,7 +189,6 @@ public sealed class QuicRttEstimatorTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S5P3-0009")]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void TryUpdateFromAck_LeavesAckDelayUnclampedBeforeHandshakeConfirmation()
     {
         QuicRttEstimator estimator = new();
@@ -216,7 +215,7 @@ public sealed class QuicRttEstimatorTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S5P3-0004")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryUpdateFromAck_SubtractsLocalProcessingDelayBeforeHandshakeConfirmationOnSubsequentSamples()
     {
         QuicRttEstimator estimator = new();
@@ -243,7 +242,7 @@ public sealed class QuicRttEstimatorTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S5P3-0011")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryUpdateFromAck_CanIgnoreAckDelayForInitialPackets()
     {
         QuicRttEstimator estimator = new();
@@ -274,7 +273,7 @@ public sealed class QuicRttEstimatorTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S5P2-0005")]
     [Requirement("REQ-QUIC-RFC9002-S5P2-0006")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment()
     {
         QuicRttEstimator estimator = new();
@@ -324,7 +323,6 @@ public sealed class QuicRttEstimatorTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S5P2-0005")]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator()
     {
         QuicRttEstimator estimator = new();
@@ -339,7 +337,7 @@ public sealed class QuicRttEstimatorTests
     }
 
     [Fact]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void Constructor_RejectsZeroInitialRtt()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => new QuicRttEstimator(initialRttMicros: 0));

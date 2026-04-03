@@ -5,7 +5,6 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0020
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void TryParseTransportParameters_AcceptsPreferredAddressWithZeroedIpv4Family()
     {
         byte[] expectedIpv4Address = [0, 0, 0, 0];

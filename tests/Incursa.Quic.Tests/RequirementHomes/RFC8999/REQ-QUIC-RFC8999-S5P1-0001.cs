@@ -6,7 +6,6 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
-    [Trait("Category", "Positive")]
     public void TryClassifyHeaderForm_RecognizesLongHeadersByTheHighBit()
     {
         Assert.True(QuicPacketParser.TryClassifyHeaderForm(
@@ -24,7 +23,6 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
-    [Trait("Category", "Negative")]
     public void TryClassifyHeaderForm_RecognizesShortHeadersByTheHighBit()
     {
         Assert.True(QuicPacketParser.TryClassifyHeaderForm(
@@ -38,8 +36,8 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0001
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
-    [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
     [Trait("Category", "Property")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
     public void TryClassifyHeaderForm_RejectsEmptyInput()
     {
         Assert.False(QuicPacketParser.TryClassifyHeaderForm([], out _));

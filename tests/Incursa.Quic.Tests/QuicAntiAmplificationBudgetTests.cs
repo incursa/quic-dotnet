@@ -8,7 +8,7 @@ public sealed class QuicAntiAmplificationBudgetTests
     [Requirement("REQ-QUIC-RFC9000-S8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0002")]
     [Requirement("REQ-QUIC-RFC9000-S9P3P1-0001")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void CanSend_TracksTheThreeTimesAmplificationCapUntilValidation()
     {
         QuicAntiAmplificationBudget budget = new();
@@ -28,7 +28,7 @@ public sealed class QuicAntiAmplificationBudgetTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S8-0001")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryRegisterReceivedDatagramPayloadBytes_RejectsNegativePayloadLengths()
     {
         QuicAntiAmplificationBudget budget = new();
@@ -41,7 +41,7 @@ public sealed class QuicAntiAmplificationBudgetTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryRegisterReceivedDatagramPayloadBytes_IgnoresDatagramsThatAreNotUniquelyAttributed()
     {
         QuicAntiAmplificationBudget budget = new();
@@ -58,7 +58,7 @@ public sealed class QuicAntiAmplificationBudgetTests
     [Requirement("REQ-QUIC-RFC9000-S14P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S9P3P1-0001")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void CanSend_AllowsUnlimitedSendingAfterAddressValidation()
     {
         QuicAntiAmplificationBudget budget = new();

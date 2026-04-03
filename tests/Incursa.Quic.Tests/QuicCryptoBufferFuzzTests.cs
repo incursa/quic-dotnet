@@ -5,7 +5,7 @@ public sealed class QuicCryptoBufferFuzzTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0001")]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0002")]
-    [Trait("Category", "Fuzz")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_CryptoBuffer_ReconstructsShuffledFrames()
     {
         Random random = new(0x5150_2030);

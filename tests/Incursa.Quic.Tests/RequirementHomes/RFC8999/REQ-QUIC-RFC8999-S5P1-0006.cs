@@ -6,7 +6,6 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0006
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
-    [Trait("Category", "Positive")]
     public void TryParseLongHeader_ParsesTheSourceConnectionIdLengthByte()
     {
         byte[] sourceConnectionId = [0x21, 0x22, 0x23];
@@ -25,7 +24,6 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0006
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
-    [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte()
     {
         byte[] packet = QuicHeaderTestData.BuildLongHeader(
@@ -40,8 +38,8 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0006
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
-    [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
     [Trait("Category", "Property")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
     public void TryParseLongHeader_AllowsZeroLengthSourceConnectionId()
     {
         byte[] packet = QuicHeaderTestData.BuildLongHeader(

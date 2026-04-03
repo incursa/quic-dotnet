@@ -26,7 +26,7 @@ public sealed class QuicStreamFrameTests
     [Requirement("REQ-QUIC-RFC9000-S19P8-0015")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0016")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0017")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes()
     {
         byte frameType = 0x0F;
@@ -77,7 +77,7 @@ public sealed class QuicStreamFrameTests
     [Requirement("REQ-QUIC-RFC9000-S19P8-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0013")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0018")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent()
     {
         byte frameType = 0x08;
@@ -111,7 +111,7 @@ public sealed class QuicStreamFrameTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9001-S3-0012")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormatStreamFrame_RejectsInvalidTypesAndOffsetMismatches()
     {
         Span<byte> destination = stackalloc byte[64];
@@ -124,7 +124,7 @@ public sealed class QuicStreamFrameTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0008")]
     [Requirement("REQ-QUIC-RFC9000-S4-0004")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsFramesWithNonStreamTypes()
     {
         Assert.False(QuicStreamParser.TryParseStreamFrame([0x06, 0x00], out _));
@@ -134,7 +134,7 @@ public sealed class QuicStreamFrameTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0008")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsEmptyInput()
     {
         Assert.False(QuicStreamParser.TryParseStreamFrame(Array.Empty<byte>(), out _));
@@ -142,7 +142,7 @@ public sealed class QuicStreamFrameTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0008")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsNonShortestFrameTypeEncoding()
     {
         byte[] packet = QuicStreamTestData.BuildStreamFrameWithEncodedType(
@@ -161,7 +161,7 @@ public sealed class QuicStreamFrameTests
     [Requirement("REQ-QUIC-RFC9000-S19P8-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0011")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsTruncatedFixedFields(int truncateBy)
     {
         byte[] packet = QuicStreamTestData.BuildStreamFrame(
@@ -177,7 +177,7 @@ public sealed class QuicStreamFrameTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0010")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsTruncatedOffsetField()
     {
         Span<byte> offsetEncoding = stackalloc byte[8];
@@ -197,7 +197,7 @@ public sealed class QuicStreamFrameTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0020")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeiling()
     {
         Span<byte> offsetEncoding = stackalloc byte[8];
@@ -221,7 +221,7 @@ public sealed class QuicStreamFrameTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeiling()
     {
         byte[] streamData = [0xAB];
@@ -245,7 +245,7 @@ public sealed class QuicStreamFrameTests
     [Requirement("REQ-QUIC-RFC9000-S19P8-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0018")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeilingWithoutALengthField()
     {
         byte[] streamData = [0xCD];
@@ -270,7 +270,7 @@ public sealed class QuicStreamFrameTests
     [Requirement("REQ-QUIC-RFC9000-S19P8-0018")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0020")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeilingWithoutALengthField()
     {
         byte[] packet = QuicStreamTestData.BuildStreamFrame(
@@ -298,7 +298,7 @@ public sealed class QuicStreamFrameTests
     [Requirement("REQ-QUIC-RFC9000-S19P8-0015")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0016")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0017")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamFrame_PreservesZeroLengthPayloadOffsets()
     {
         byte[] packet = QuicStreamTestData.BuildStreamFrame(
@@ -331,7 +331,7 @@ public sealed class QuicStreamFrameTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
     [Requirement("REQ-QUIC-RFC9000-S4P5-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsPresent()
     {
         byte[] streamData = [0xAA];
@@ -358,7 +358,7 @@ public sealed class QuicStreamFrameTests
     [Requirement("REQ-QUIC-RFC9000-S19P8-0018")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
     [Requirement("REQ-QUIC-RFC9000-S4P5-0002")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsAbsent()
     {
         byte[] streamData = [0x10];

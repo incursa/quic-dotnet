@@ -47,7 +47,7 @@ public sealed class QuicVariableLengthIntegerTests
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParse_DecodesValuesUsingTheExpectedEncodedLength(ulong value, int expectedLength)
     {
         byte[] encoded = QuicVarintTestData.EncodeMinimal(value);
@@ -63,7 +63,7 @@ public sealed class QuicVariableLengthIntegerTests
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParse_DecodesExactWireEncodings(byte[] encoded, ulong expectedValue, int expectedLength)
     {
         Assert.True(QuicVariableLengthInteger.TryParse(encoded, out ulong parsed, out int bytesConsumed));
@@ -76,7 +76,7 @@ public sealed class QuicVariableLengthIntegerTests
     [InlineData(1UL, 4)]
     [InlineData(63UL, 8)]
     [Requirement("REQ-QUIC-VINT-0005")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryParse_AcceptsNonMinimalEncodings(ulong value, int encodedLength)
     {
         byte[] encoded = QuicVarintTestData.EncodeWithLength(value, encodedLength);
@@ -88,7 +88,7 @@ public sealed class QuicVariableLengthIntegerTests
 
     [Fact]
     [Requirement("REQ-QUIC-VINT-0004")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParse_RejectsEmptyInput()
     {
         Assert.False(QuicVariableLengthInteger.TryParse(Array.Empty<byte>(), out _, out _));
@@ -99,7 +99,7 @@ public sealed class QuicVariableLengthIntegerTests
     [InlineData(new byte[] { 0x80, 0x00, 0x00 })]
     [InlineData(new byte[] { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 })]
     [Requirement("REQ-QUIC-VINT-0004")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryParse_RejectsTruncatedInputs(byte[] encoded)
     {
         Assert.False(QuicVariableLengthInteger.TryParse(encoded, out _, out _));
@@ -109,7 +109,7 @@ public sealed class QuicVariableLengthIntegerTests
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormat_WritesTheShortestRoundTrippableEncoding()
     {
         Span<byte> buffer = stackalloc byte[8];
@@ -126,7 +126,7 @@ public sealed class QuicVariableLengthIntegerTests
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormat_WritesExactWireEncodings(ulong value, byte[] expectedEncoding)
     {
         Span<byte> buffer = stackalloc byte[8];
@@ -143,7 +143,7 @@ public sealed class QuicVariableLengthIntegerTests
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormat_RejectsInsufficientDestinationSpace(ulong value, int destinationLength)
     {
         Span<byte> destination = destinationLength == 0 ? Span<byte>.Empty : new byte[destinationLength];
@@ -155,7 +155,7 @@ public sealed class QuicVariableLengthIntegerTests
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormat_RejectsValuesAboveTheCeiling()
     {
         Span<byte> destination = stackalloc byte[8];

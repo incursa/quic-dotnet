@@ -7,7 +7,6 @@ public sealed class REQ_QUIC_RFC9000_S10P3P1_0003
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes()
     {
         byte[] matchingToken =

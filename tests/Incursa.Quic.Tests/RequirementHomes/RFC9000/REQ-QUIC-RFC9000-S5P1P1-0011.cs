@@ -5,7 +5,6 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0011
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     public void TryFormatTransportParameters_EmitsActiveConnectionIdLimitForClients()
     {
         QuicTransportParameters parameters = new()

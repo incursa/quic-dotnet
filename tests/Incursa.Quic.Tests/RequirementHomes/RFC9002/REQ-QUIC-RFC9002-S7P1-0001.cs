@@ -4,7 +4,6 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S7P1_0001
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S7P1-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Property")]
     public void TryProcessEcn_OnlyStartsRecoveryForIncreasingValidatedCeCounts()

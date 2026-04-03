@@ -13,8 +13,6 @@ public sealed class REQ_QUIC_RFC9002_S5P1_0001
 
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Requirement("REQ-QUIC-RFC9002-S5P1-0001")]
-    [Trait("Category", "Positive")]
     public void TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets()
     {
         QuicRttEstimator estimator = new();
@@ -50,7 +48,6 @@ public sealed class REQ_QUIC_RFC9002_S5P1_0001
     [Theory]
     [MemberData(nameof(TryUpdateFromAckGateCases))]
     [CoverageType(RequirementCoverageType.Edge)]
-    [Requirement("REQ-QUIC-RFC9002-S5P1-0001")]
     [Trait("Category", "Property")]
     public void TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries(RttSampleGateCase scenario)
     {
