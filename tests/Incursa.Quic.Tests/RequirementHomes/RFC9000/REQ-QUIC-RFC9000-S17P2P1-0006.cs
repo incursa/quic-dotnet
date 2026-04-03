@@ -7,6 +7,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0006
     [InlineData(0)]
     [InlineData(255)]
     [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Edge)]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0006")]
     public void TryParseVersionNegotiation_PreservesDestinationConnectionIdLengthByte(int destinationConnectionIdLength)
     {
