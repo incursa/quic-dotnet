@@ -7,9 +7,7 @@ public sealed class REQ_QUIC_RFC9000_S10P3_0003
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0004")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0016")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P2-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3-0003")]
     [Trait("Category", "Positive")]
     public void TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId()
     {

@@ -352,21 +352,22 @@
       "remaining_gap": null,
       "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
     },
-    {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0002",
-      "title": "Recommend the initial congestion window",
-      "section_token": "S7P2",
-      "status": "implemented and tested",
+  {
+    "requirement_id": "REQ-QUIC-RFC9002-S7P2-0002",
+    "title": "Recommend the initial congestion window",
+    "section_token": "S7P2",
+    "status": "implemented and tested",
       "implementation_evidence": [
         "src/Incursa.Quic/QuicCongestionControlState.cs",
         "src/Incursa.Quic/PublicAPI.Unshipped.txt"
-      ],
-      "tests_covering_requirement": [
-        "Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
-      ],
+    ],
+    "tests_covering_requirement": [
+      "ComputeInitialCongestionWindowBytes_HonorsTheTransitionPoints",
+      "ComputeInitialCongestionWindowBytes_RejectsZeroDatagramSizes"
+    ],
+    "direct_refs_added_or_updated": [
+      "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+    ],
       "remaining_gap": null,
       "notes": "Covered by the congestion-control helper slice and direct requirement-tagged tests."
     },

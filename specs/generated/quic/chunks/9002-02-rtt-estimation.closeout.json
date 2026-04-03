@@ -140,7 +140,9 @@
         "src/Incursa.Quic/QuicRttEstimator.cs"
       ],
       "test_evidence": [
-        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0005.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0005.cs::RefreshMinRttFromLatestSample_ReestablishesTheMinimumRtt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0005.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator"
       ]
     },
     {

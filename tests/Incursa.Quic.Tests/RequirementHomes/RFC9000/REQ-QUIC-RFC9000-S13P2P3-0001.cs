@@ -5,7 +5,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P3_0001
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Requirement("REQ-QUIC-RFC9000-S13P2P5-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0001")]
     [Trait("Category", "Positive")]
     public void TryParseAckFrame_RoundsTripAcknowledgedRangesAndAckDelay()
     {

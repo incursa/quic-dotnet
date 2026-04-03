@@ -6,7 +6,6 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0005
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0005")]
-    [Requirement("REQ-QUIC-RFC8999-S5P1-0007")]
     public void TryParseLongHeader_AcceptsMaximumLengthConnectionIds()
     {
         byte[] destinationConnectionId = Enumerable.Repeat((byte)0xDA, byte.MaxValue).ToArray();

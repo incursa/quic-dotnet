@@ -5,7 +5,7 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0025
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Requirement("REQ-QUIC-RFC9000-S18P2-0026")]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0025")]
     [Trait("Category", "Negative")]
     public void TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId()
     {

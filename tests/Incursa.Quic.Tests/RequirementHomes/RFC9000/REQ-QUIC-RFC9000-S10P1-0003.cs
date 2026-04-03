@@ -9,9 +9,7 @@ public sealed class REQ_QUIC_RFC9000_S10P1_0003
     [InlineData(4UL, 10UL, 2UL, true, 6UL)]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    [Requirement("REQ-QUIC-RFC9000-S10P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S10P1-0003")]
-    [Requirement("REQ-QUIC-RFC9000-S10P1-0007")]
     public void TryComputeEffectiveIdleTimeoutMicros_UsesTheMinimumAdvertisedValueAndThePtoFloor(
         ulong? localMaxIdleTimeoutMicros,
         ulong? peerMaxIdleTimeoutMicros,
