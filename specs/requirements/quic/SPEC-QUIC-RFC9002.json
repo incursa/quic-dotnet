@@ -3081,6 +3081,10 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P1-0001.cs::TryRegisterLoss_EntersRecoveryOnPacketLoss",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P1-0001.cs::TryProcessEcn_EntersRecoveryWhenTheEcnCeCountIncreases"
         ]
       }
     },
