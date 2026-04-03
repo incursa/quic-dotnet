@@ -18421,6 +18421,11 @@
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_ReturnsTrueOnceTheMaxAckDelayExpires",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseBeforeTheMaxAckDelayExpires",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_UsesTheExactMaxAckDelayBoundary"
         ]
       }
     },
@@ -23797,11 +23802,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_RejectsShortHeaderForm"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0003.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit"
         ]
       }
     },
