@@ -23879,9 +23879,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0006.cs::TryParseVersionNegotiation_PreservesDestinationConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0006.cs::TryParseVersionNegotiation_RejectsTruncatedDestinationConnectionIdLengthField"
         ]
       }
     },
@@ -23910,10 +23909,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0007.cs::TryParseVersionNegotiation_PreservesDestinationConnectionIdRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0007.cs::TryParseVersionNegotiation_RejectsTruncatedDestinationConnectionId"
         ]
       }
     },
@@ -23942,9 +23939,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0008.cs::TryParseVersionNegotiation_PreservesSourceConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0008.cs::TryParseVersionNegotiation_RejectsTruncatedSourceConnectionIdLengthField"
         ]
       }
     },
@@ -23973,10 +23969,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsMaximumLengthConnectionIds",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0009.cs::TryParseVersionNegotiation_PreservesSourceConnectionIdRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0009.cs::TryParseVersionNegotiation_RejectsTruncatedSourceConnectionId"
         ]
       }
     },
