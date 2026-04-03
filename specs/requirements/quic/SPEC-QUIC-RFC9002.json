@@ -1200,6 +1200,10 @@
           "RFC 9002 §5.3 RFC9002-S5.3-B20-P13-S1",
           "RFC 9002 §5.3 RFC9002-S5.3-B21-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs::TryUpdateFromAck_UsesLatestRttWhenAckDelayWouldDropBelowMinRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs::TryUpdateFromAck_SubtractsAckDelayWhenSampleExactlyMeetsMinRttThreshold"
         ]
       }
     },
@@ -1226,6 +1230,10 @@
         "upstream_refs": [
           "RFC 9002 §5.3 RFC9002-S5.3-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0011.cs::TryUpdateFromAck_StillAppliesAckDelayForInitialPacketsWhenTheIgnoreFlagIsOff",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0011.cs::TryUpdateFromAck_CanIgnoreAckDelayForInitialPacketsWhenTheFlagIsSet"
         ]
       }
     },
@@ -1254,7 +1262,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0012.cs::TryUpdateFromAck_KeepsAdjustedRttBoundedByTheObservedMinRtt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0012.cs::TryUpdateFromAck_KeepsAdjustedRttBoundedByTheObservedMinRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0012.cs::TryUpdateFromAck_KeepsAdjustedRttAtOrAboveObservedMinRttWhenAckDelayWouldOvershoot"
         ]
       }
     },
