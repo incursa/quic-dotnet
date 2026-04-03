@@ -21,6 +21,19 @@ public sealed class REQ_QUIC_RFC9002_S6P1P2_0003
             smoothedRttMicros: scenario.SmoothedRttMicros));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void ComputeLossDelayMicros_RejectsAZeroTimeThresholdDenominator()
+    {
+        ArgumentOutOfRangeException exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            QuicRecoveryTiming.ComputeLossDelayMicros(
+                latestRttMicros: 800,
+                smoothedRttMicros: 1_000,
+                timeThresholdDenominator: 0));
+
+        Assert.Equal("timeThresholdDenominator", exception.ParamName);
+    }
+
     public sealed record LossDelayFormulaCase(
         ulong LatestRttMicros,
         ulong SmoothedRttMicros,
