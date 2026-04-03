@@ -37,4 +37,17 @@ public sealed class REQ_QUIC_RFC9000_S10P1_0003
 
         Assert.Equal(0UL, effectiveIdleTimeoutMicros);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryComputeEffectiveIdleTimeoutMicros_UsesTheOneMicrosecondBoundaryWhenOneEndpointIsDisabled()
+    {
+        Assert.True(QuicIdleTimeoutState.TryComputeEffectiveIdleTimeoutMicros(
+            localMaxIdleTimeoutMicros: 0,
+            peerMaxIdleTimeoutMicros: 1,
+            currentProbeTimeoutMicros: 1,
+            out ulong effectiveIdleTimeoutMicros));
+
+        Assert.Equal(3UL, effectiveIdleTimeoutMicros);
+    }
 }

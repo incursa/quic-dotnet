@@ -219,6 +219,7 @@ Before you finish:
 - Do not leave changes uncommitted if the task was completed or partially completed with useful work.
 - Do not delete/revert logs files, result files, or the working directory, as they may be needed for later analysis.
 - If no files changed, say so explicitly in your final response.
+- Do not commit temp files or the triage files.
 "@
 
     $summary = New-Object System.Collections.Generic.List[object]
