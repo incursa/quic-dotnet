@@ -3,6 +3,12 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9002-S6P1P2-0004")]
 public sealed class REQ_QUIC_RFC9002_S6P1P2_0004
 {
+    public static TheoryData<RemainingTimerCase> RemainingTimerCases => new()
+    {
+        new(1_000, 2_124, 800, 1_000, 1),
+        new(ulong.MaxValue - 100, ulong.MaxValue - 1, 1_000, 1_000, 1),
+    };
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryComputeRemainingLossDelayMicros_SchedulesTheRemainingTimeBeforeLoss()
@@ -32,4 +38,27 @@ public sealed class REQ_QUIC_RFC9002_S6P1P2_0004
 
         Assert.Equal("timeThresholdNumerator", exception.ParamName);
     }
+
+    [Theory]
+    [MemberData(nameof(RemainingTimerCases))]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Property")]
+    public void TryComputeRemainingLossDelayMicros_ReportsTheRemainingTimerAtTheBoundary(RemainingTimerCase scenario)
+    {
+        Assert.True(QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
+            packetSentAtMicros: scenario.PacketSentAtMicros,
+            nowMicros: scenario.NowMicros,
+            latestRttMicros: scenario.LatestRttMicros,
+            smoothedRttMicros: scenario.SmoothedRttMicros,
+            out ulong remainingLossDelayMicros));
+
+        Assert.Equal(scenario.ExpectedRemainingLossDelayMicros, remainingLossDelayMicros);
+    }
+
+    public sealed record RemainingTimerCase(
+        ulong PacketSentAtMicros,
+        ulong NowMicros,
+        ulong LatestRttMicros,
+        ulong SmoothedRttMicros,
+        ulong ExpectedRemainingLossDelayMicros);
 }

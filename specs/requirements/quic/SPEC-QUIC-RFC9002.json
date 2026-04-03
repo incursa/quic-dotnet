@@ -791,6 +791,11 @@
         "upstream_refs": [
           "RFC 9002 §5.2 RFC9002-S5.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0002.cs::TryUpdateFromAck_UpdatesMinRttWhenALaterSampleIsSmaller",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0002.cs::TryUpdateFromAck_DoesNotRaiseMinRttWhenALaterSampleIsLarger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0002.cs::TryUpdateFromAck_LeavesMinRttUnchangedWhenALaterSampleMatchesIt"
         ]
       }
     },
@@ -1373,6 +1378,10 @@
         "upstream_refs": [
           "RFC 9002 §6.1.1 RFC9002-S6.1.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0001.cs::ShouldDeclarePacketLostByPacketThreshold_DoesNotUseAThresholdAboveThreeAtTheBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0001.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheThreePacketBoundary"
         ]
       }
     },
@@ -1399,6 +1408,9 @@
         "upstream_refs": [
           "RFC 9002 §6.1.1 RFC9002-S6.1.1-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheMinimumRecommendedThreshold"
         ]
       }
     },
@@ -1545,6 +1557,10 @@
         "upstream_refs": [
           "RFC 9002 §6.1.2 RFC9002-S6.1.2-B8-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_RejectsAZeroTimeThresholdNumerator",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplier"
         ]
       }
     },
@@ -1706,6 +1722,11 @@
           "RFC 9002 §6.2.1 RFC9002-S6.2.1-B2-P1-S1",
           "RFC 9002 §6.2.1 RFC9002-S6.2.1-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs::TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs::TryComputeProbeTimeoutMicros_ClampsTheVarianceComponentAtTheGranularityBoundary"
         ]
       }
     },
@@ -1732,6 +1753,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.1 RFC9002-S6.2.1-B5-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_PreservesMaxAckDelayForApplicationDataSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_ZeroesMaxAckDelayInTheInitialAndHandshakeSpaces"
         ]
       }
     },
@@ -1758,6 +1784,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.1 RFC9002-S6.2.1-B6-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_ClampsThePtoPeriodToTheGranularityFloor"
         ]
       }
     },
@@ -1784,6 +1815,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.1 RFC9002-S6.2.1-B7-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheEarlierValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothTimersAreMissing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheSharedDeadlineWhenBothTimersMatch"
         ]
       }
     },
@@ -1810,6 +1846,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.1 RFC9002-S6.2.1-B8-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs::TryComputeProbeTimeoutMicros_GatesApplicationDataPtoOnHandshakeConfirmation"
         ]
       }
     },
@@ -1944,6 +1985,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.1 RFC9002-S6.2.1-B13-P11-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TrySelectRecoveryTimerMicros_PrefersLossDetectionTimersOverPtoTimers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0010.cs::TrySelectRecoveryTimerMicros_ReturnsFalseWhenNoTimersAreAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0010.cs::TrySelectRecoveryTimerMicros_PrefersTheLossDetectionTimerWhenTheDeadlinesMatch"
         ]
       }
     },
@@ -2782,6 +2828,10 @@
         "upstream_refs": [
           "RFC 9002 §7 RFC9002-S7-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0002.cs::RegisterPacketSent_CountsNonAckOnlyPacketsTowardBytesInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0002.cs::RegisterPacketSent_DoesNotIncreaseBytesInFlightForAckOnlyPacketsAtTheCongestionWindowLimit"
         ]
       }
     },
@@ -2808,6 +2858,10 @@
         "upstream_refs": [
           "RFC 9002 §7 RFC9002-S7-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0003.cs::CanSend_RejectsCongestionControlledPacketsThatWouldExceedTheWindow",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0003.cs::CanSend_AllowsAckOnlyPacketsEvenWhenBytesInFlightMatchesTheCongestionWindow"
         ]
       }
     },
