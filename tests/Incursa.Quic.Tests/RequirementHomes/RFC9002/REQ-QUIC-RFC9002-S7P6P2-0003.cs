@@ -40,6 +40,53 @@ public sealed class REQ_QUIC_RFC9002_S7P6P2_0003
         Assert.False(state.HasRecoveryStartTime);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S7P6P2-0003")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDetectPersistentCongestion_StartsOnceAnRttSampleIsAvailable()
+    {
+        QuicCongestionControlState state = new();
+        state.RegisterPacketSent(12_000);
+
+        Assert.True(state.TryDetectPersistentCongestion(
+            CreatePersistentCongestionPackets(),
+            firstRttSampleMicros: 1_000,
+            smoothedRttMicros: 1_000,
+            rttVarMicros: 0,
+            maxAckDelayMicros: 0,
+            out bool persistentCongestionDetected));
+
+        Assert.True(persistentCongestionDetected);
+        Assert.Equal(state.MinimumCongestionWindowBytes, state.CongestionWindowBytes);
+        Assert.Equal(ulong.MaxValue, state.SlowStartThresholdBytes);
+        Assert.False(state.HasRecoveryStartTime);
+        Assert.Equal(9_600UL, state.BytesInFlightBytes);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S7P6P2-0003")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryDetectPersistentCongestion_DoesNotStartBeforeAnyRttSampleExists()
+    {
+        QuicCongestionControlState state = new();
+        state.RegisterPacketSent(12_000);
+
+        Assert.False(state.TryDetectPersistentCongestion(
+            CreatePersistentCongestionPackets(),
+            firstRttSampleMicros: 0,
+            smoothedRttMicros: 1_000,
+            rttVarMicros: 0,
+            maxAckDelayMicros: 0,
+            out bool persistentCongestionDetected));
+
+        Assert.False(persistentCongestionDetected);
+        Assert.Equal(12_000UL, state.CongestionWindowBytes);
+        Assert.Equal(12_000UL, state.BytesInFlightBytes);
+        Assert.False(state.HasRecoveryStartTime);
+    }
+
     private static QuicPersistentCongestionPacket[] CreatePersistentCongestionPackets()
     {
         return

@@ -187,6 +187,34 @@ public sealed class QuicRttEstimatorTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S5P3-0009")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryUpdateFromAck_LeavesAckDelayUnclampedBeforeHandshakeConfirmation()
+    {
+        QuicRttEstimator estimator = new();
+        Assert.True(estimator.TryUpdateFromAck(
+            largestAcknowledgedPacketSentAtMicros: 0,
+            ackReceivedAtMicros: 1_000,
+            largestAcknowledgedPacketNewlyAcknowledged: true,
+            newlyAcknowledgedAckElicitingPacket: true));
+
+        Assert.True(estimator.TryUpdateFromAck(
+            largestAcknowledgedPacketSentAtMicros: 500,
+            ackReceivedAtMicros: 2_000,
+            largestAcknowledgedPacketNewlyAcknowledged: true,
+            newlyAcknowledgedAckElicitingPacket: true,
+            ackDelayMicros: 600,
+            handshakeConfirmed: false,
+            peerMaxAckDelayMicros: 300));
+
+        Assert.Equal(1_500UL, estimator.LatestRttMicros);
+        Assert.Equal(1_000UL, estimator.MinRttMicros);
+        Assert.Equal(1_062UL, estimator.SmoothedRttMicros);
+        Assert.Equal(500UL, estimator.RttVarMicros);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9002-S5P3-0004")]
     [Trait("Category", "Positive")]
     public void TryUpdateFromAck_SubtractsLocalProcessingDelayBeforeHandshakeConfirmationOnSubsequentSamples()
@@ -261,6 +289,53 @@ public sealed class QuicRttEstimatorTests
 
         estimator.RefreshMinRttFromLatestSample(900);
         Assert.Equal(900UL, estimator.MinRttMicros);
+    }
+
+    [Theory]
+    [Requirement("REQ-QUIC-RFC9002-S5P2-0005")]
+    [InlineData(1_800UL)]
+    [InlineData(900UL)]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Property")]
+    public void RefreshMinRttFromLatestSample_ReestablishesTheMinimumRtt(ulong latestRttMicros)
+    {
+        QuicRttEstimator estimator = new();
+        Assert.True(estimator.TryUpdateFromAck(
+            largestAcknowledgedPacketSentAtMicros: 0,
+            ackReceivedAtMicros: 1_000,
+            largestAcknowledgedPacketNewlyAcknowledged: true,
+            newlyAcknowledgedAckElicitingPacket: true));
+
+        Assert.Equal(1_000UL, estimator.LatestRttMicros);
+        Assert.Equal(1_000UL, estimator.MinRttMicros);
+        Assert.Equal(1_000UL, estimator.SmoothedRttMicros);
+        Assert.Equal(500UL, estimator.RttVarMicros);
+        Assert.True(estimator.HasRttSample);
+
+        estimator.RefreshMinRttFromLatestSample(latestRttMicros);
+
+        Assert.Equal(latestRttMicros, estimator.MinRttMicros);
+        Assert.Equal(1_000UL, estimator.LatestRttMicros);
+        Assert.Equal(1_000UL, estimator.SmoothedRttMicros);
+        Assert.Equal(500UL, estimator.RttVarMicros);
+        Assert.True(estimator.HasRttSample);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S5P2-0005")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator()
+    {
+        QuicRttEstimator estimator = new();
+
+        estimator.RefreshMinRttFromLatestSample(1_800);
+
+        Assert.False(estimator.HasRttSample);
+        Assert.Equal(1_800UL, estimator.MinRttMicros);
+        Assert.Equal(0UL, estimator.LatestRttMicros);
+        Assert.Equal(333_000UL, estimator.SmoothedRttMicros);
+        Assert.Equal(166_500UL, estimator.RttVarMicros);
     }
 
     [Fact]

@@ -50,6 +50,36 @@ public sealed class QuicCongestionControlStateTests
         Assert.Equal(ulong.MaxValue, state.SlowStartThresholdBytes);
     }
 
+    [Theory]
+    [Requirement("REQ-QUIC-RFC9002-S7P2-0002")]
+    [InlineData(1_472UL, 14_720UL, 2_944UL)]
+    [InlineData(7_361UL, 14_722UL, 14_722UL)]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Property")]
+    public void ComputeInitialCongestionWindowBytes_HonorsTheTransitionPoints(
+        ulong maxDatagramSizeBytes,
+        ulong expectedInitialCongestionWindowBytes,
+        ulong expectedMinimumCongestionWindowBytes)
+    {
+        Assert.Equal(expectedInitialCongestionWindowBytes, QuicCongestionControlState.ComputeInitialCongestionWindowBytes(maxDatagramSizeBytes));
+        Assert.Equal(expectedMinimumCongestionWindowBytes, QuicCongestionControlState.ComputeMinimumCongestionWindowBytes(maxDatagramSizeBytes));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S7P2-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ComputeInitialCongestionWindowBytes_RejectsZeroDatagramSizes()
+    {
+        ArgumentOutOfRangeException initialException = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            QuicCongestionControlState.ComputeInitialCongestionWindowBytes(0));
+        Assert.Equal("maxDatagramSizeBytes", initialException.ParamName);
+
+        ArgumentOutOfRangeException minimumException = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            QuicCongestionControlState.ComputeMinimumCongestionWindowBytes(0));
+        Assert.Equal("maxDatagramSizeBytes", minimumException.ParamName);
+    }
+
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-S7-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7-0003")]
@@ -330,5 +360,64 @@ public sealed class QuicCongestionControlStateTests
         Assert.Equal(ulong.MaxValue, state.SlowStartThresholdBytes);
         Assert.False(state.HasRecoveryStartTime);
         Assert.Equal(9_600UL, state.BytesInFlightBytes);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S7P6P2-0003")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDetectPersistentCongestion_StartsOnceAnRttSampleIsAvailable()
+    {
+        QuicCongestionControlState state = new();
+        state.RegisterPacketSent(12_000);
+
+        QuicPersistentCongestionPacket[] packets =
+        [
+            new(QuicPacketNumberSpace.Initial, 2_000, 1_200, true, true, acknowledged: false, lost: true),
+            new(QuicPacketNumberSpace.ApplicationData, 9_000, 1_200, true, true, acknowledged: false, lost: true),
+        ];
+
+        Assert.True(state.TryDetectPersistentCongestion(
+            packets,
+            firstRttSampleMicros: 1_000,
+            smoothedRttMicros: 1_000,
+            rttVarMicros: 0,
+            maxAckDelayMicros: 0,
+            out bool persistentCongestionDetected));
+
+        Assert.True(persistentCongestionDetected);
+        Assert.Equal(state.MinimumCongestionWindowBytes, state.CongestionWindowBytes);
+        Assert.Equal(ulong.MaxValue, state.SlowStartThresholdBytes);
+        Assert.False(state.HasRecoveryStartTime);
+        Assert.Equal(9_600UL, state.BytesInFlightBytes);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S7P6P2-0003")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryDetectPersistentCongestion_DoesNotStartBeforeAnyRttSampleExists()
+    {
+        QuicCongestionControlState state = new();
+        state.RegisterPacketSent(12_000);
+
+        QuicPersistentCongestionPacket[] packets =
+        [
+            new(QuicPacketNumberSpace.Initial, 2_000, 1_200, true, true, acknowledged: false, lost: true),
+            new(QuicPacketNumberSpace.ApplicationData, 9_000, 1_200, true, true, acknowledged: false, lost: true),
+        ];
+
+        Assert.False(state.TryDetectPersistentCongestion(
+            packets,
+            firstRttSampleMicros: 0,
+            smoothedRttMicros: 1_000,
+            rttVarMicros: 0,
+            maxAckDelayMicros: 0,
+            out bool persistentCongestionDetected));
+
+        Assert.False(persistentCongestionDetected);
+        Assert.Equal(12_000UL, state.CongestionWindowBytes);
+        Assert.Equal(12_000UL, state.BytesInFlightBytes);
+        Assert.False(state.HasRecoveryStartTime);
     }
 }

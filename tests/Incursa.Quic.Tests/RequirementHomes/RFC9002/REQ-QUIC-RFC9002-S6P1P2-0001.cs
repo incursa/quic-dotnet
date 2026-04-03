@@ -1,7 +1,6 @@
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-RFC9002-S6P1P2-0001")]
-[Requirement("REQ-QUIC-RFC9002-S6P1P2-0004")]
 public sealed class REQ_QUIC_RFC9002_S6P1P2_0001
 {
     public static TheoryData<RemainingLossDelayCase> RemainingLossDelayCases => new()
@@ -14,7 +13,6 @@ public sealed class REQ_QUIC_RFC9002_S6P1P2_0001
 
     [Theory]
     [Requirement("REQ-QUIC-RFC9002-S6P1P2-0001")]
-    [Requirement("REQ-QUIC-RFC9002-S6P1P2-0004")]
     [MemberData(nameof(RemainingLossDelayCases))]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]
@@ -28,6 +26,24 @@ public sealed class REQ_QUIC_RFC9002_S6P1P2_0001
             out ulong remainingLossDelayMicros));
 
         Assert.Equal(scenario.ExpectedRemainingLossDelayMicros, remainingLossDelayMicros);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S6P1P2-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryComputeRemainingLossDelayMicros_RejectsAZeroTimerGranularity()
+    {
+        ArgumentOutOfRangeException exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
+                packetSentAtMicros: 1_000,
+                nowMicros: 2_000,
+                latestRttMicros: 800,
+                smoothedRttMicros: 1_000,
+                out _,
+                timerGranularityMicros: 0));
+
+        Assert.Equal("timerGranularityMicros", exception.ParamName);
     }
 
     public sealed record RemainingLossDelayCase(

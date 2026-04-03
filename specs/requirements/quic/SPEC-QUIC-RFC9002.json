@@ -865,6 +865,11 @@
         "upstream_refs": [
           "RFC 9002 §5.2 RFC9002-S5.2-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0005.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0005.cs::RefreshMinRttFromLatestSample_ReestablishesTheMinimumRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0005.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator"
         ]
       }
     },
@@ -2953,6 +2958,10 @@
         "upstream_refs": [
           "RFC 9002 §7.2 RFC9002-S7.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0002.cs::ComputeInitialCongestionWindowBytes_HonorsTheTransitionPoints",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0002.cs::ComputeInitialCongestionWindowBytes_RejectsZeroDatagramSizes"
         ]
       }
     },
