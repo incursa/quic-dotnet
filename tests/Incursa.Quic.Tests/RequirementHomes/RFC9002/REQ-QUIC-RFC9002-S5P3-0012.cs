@@ -39,6 +39,33 @@ public sealed class REQ_QUIC_RFC9002_S5P3_0012
         Assert.True(estimator.SmoothedRttMicros >= estimator.MinRttMicros);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryUpdateFromAck_KeepsAdjustedRttAtOrAboveObservedMinRttWhenAckDelayWouldOvershoot()
+    {
+        QuicRttEstimator estimator = new();
+
+        Assert.True(estimator.TryUpdateFromAck(
+            largestAcknowledgedPacketSentAtMicros: 0,
+            ackReceivedAtMicros: 1_000,
+            largestAcknowledgedPacketNewlyAcknowledged: true,
+            newlyAcknowledgedAckElicitingPacket: true));
+
+        Assert.True(estimator.TryUpdateFromAck(
+            largestAcknowledgedPacketSentAtMicros: 700,
+            ackReceivedAtMicros: 2_000,
+            largestAcknowledgedPacketNewlyAcknowledged: true,
+            newlyAcknowledgedAckElicitingPacket: true,
+            ackDelayMicros: 400,
+            handshakeConfirmed: true,
+            peerMaxAckDelayMicros: 400));
+
+        Assert.Equal(1_300UL, estimator.LatestRttMicros);
+        Assert.Equal(1_000UL, estimator.MinRttMicros);
+        Assert.Equal(1_037UL, estimator.SmoothedRttMicros);
+        Assert.Equal(450UL, estimator.RttVarMicros);
+    }
+
     public sealed record RttBoundCase(
         ulong SecondSampleSentAtMicros,
         ulong SecondSampleAckReceivedAtMicros,
