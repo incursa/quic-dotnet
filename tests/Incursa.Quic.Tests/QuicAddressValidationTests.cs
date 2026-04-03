@@ -23,7 +23,6 @@ public sealed class QuicAddressValidationTests
     [InlineData(1187, 13)]
     [InlineData(1199, 1)]
     [InlineData(1200, 0)]
-    [Requirement("REQ-QUIC-RFC9000-S14P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S14P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -47,7 +46,6 @@ public sealed class QuicAddressValidationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S14P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S14P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
