@@ -5,13 +5,9 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicStatelessResetTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0003")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0004")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0016")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P2-0002")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P2-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3-0016")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P2-0010")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P2-0011")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId()
     {
@@ -51,16 +47,6 @@ public sealed class QuicStatelessResetTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0005")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0006")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0007")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0008")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0013")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0021")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0022")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0023")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0024")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0026")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatStatelessResetDatagram_WritesShortHeaderLayoutWithTokenAtTheTail()
     {
@@ -109,8 +95,6 @@ public sealed class QuicStatelessResetTests
     [Theory]
     [InlineData(0, 22)]
     [InlineData(8, 30)]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0009")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0027")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetMinimumPacketLengthForResetResistance_OffsetsByTwentyTwoBytes(int minimumConnectionIdLength, int expectedLength)
     {
@@ -119,7 +103,6 @@ public sealed class QuicStatelessResetTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0011")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P3-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -132,14 +115,6 @@ public sealed class QuicStatelessResetTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0003")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0005")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0007")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0008")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0009")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0011")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0012")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes()
     {
@@ -173,8 +148,6 @@ public sealed class QuicStatelessResetTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0009")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void IsPotentialStatelessReset_RejectsTooShortOrWronglyFormedDatagrams()
     {

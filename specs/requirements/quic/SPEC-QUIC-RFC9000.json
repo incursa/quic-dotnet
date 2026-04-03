@@ -14529,6 +14529,9 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0003.cs::TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId"
         ]
       }
     },
@@ -14555,6 +14558,9 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0004.cs::TryGenerateStatelessResetToken_BindsEachConnectionIdToItsOwnToken"
         ]
       }
     },
@@ -14585,6 +14591,10 @@
           "RFC 9000 §10.3 RFC9000-S10.3-B8-P0-S4",
           "RFC 9000 §10.3 RFC9000-S10.3-B8-P0-S5",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0005.cs::TryFormatStatelessResetDatagram_WritesTheFigure10Layout",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0005.cs::TryFormatStatelessResetDatagram_RejectsDatagramsWithoutRoomForTheToken"
         ]
       },
       "notes": [
@@ -14614,6 +14624,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B11-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0006.cs::TryFormatStatelessResetDatagram_UsesAnEntireUdpDatagram",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0006.cs::TryFormatStatelessResetDatagram_UsesTheMinimumEntireUdpDatagram",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0006.cs::TryFormatStatelessResetDatagram_RejectsDatagramsShorterThanTheMinimum"
         ]
       }
     },
@@ -14640,6 +14655,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B11-P8-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0007.cs::TryFormatStatelessResetDatagram_FillsTheLeadingBytesWithRandomizedContent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0007.cs::TryFormatStatelessResetDatagram_StillUsesRandomizedContentAtTheMinimumLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0007.cs::TryFormatStatelessResetDatagram_RejectsDatagramsWithoutRoomForRandomizedContent"
         ]
       }
     },
@@ -14666,6 +14686,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B12-P9-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0008.cs::TryFormatStatelessResetDatagram_ExposesAtLeastThirtyEightUnpredictableBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0008.cs::TryFormatStatelessResetDatagram_UsesTheMinimumThirtyEightBitBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0008.cs::TryFormatStatelessResetDatagram_RejectsDatagramsBelowTheThirtyEightBitBoundary"
         ]
       }
     },
@@ -14692,6 +14717,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B13-P10-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0009.cs::TryGetMinimumPacketLengthForResetResistance_OffsetsByTwentyTwoBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0009.cs::TryGetMinimumPacketLengthForResetResistance_HandlesTheLargestSafeInput",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0009.cs::TryGetMinimumPacketLengthForResetResistance_RejectsNegativeOrOverflowingInputs"
         ]
       }
     },
@@ -14748,6 +14778,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B15-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0011.cs::CanSendStatelessReset_AllowsResponsesSmallerThanTheThreeTimesLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0011.cs::CanSendStatelessReset_AllowsResponsesJustBelowTheThreeTimesLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0011.cs::CanSendStatelessReset_RejectsResponsesAtOrAboveTheThreeTimesLimit"
         ]
       }
     },
@@ -14774,6 +14809,10 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B16-P13-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseShortHeader_AcceptsAValidShortHeaderPacket",
+          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsEmptyInput"
         ]
       }
     },
@@ -14800,6 +14839,9 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B17-P14-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0013.cs::TryFormatStatelessResetDatagram_SetsTheShortHeaderBits"
         ]
       }
     },
@@ -14878,6 +14920,9 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId"
         ]
       }
     },
@@ -14904,6 +14949,9 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0017.cs::TryFormatNewConnectionIdFrame_WritesTheStatelessResetTokenField"
         ]
       }
     },
@@ -14930,6 +14978,9 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0018.cs::TryFormatTransportParameters_WritesTheServerStatelessResetTokenTuple"
         ]
       }
     },
@@ -15008,6 +15059,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0021.cs::TryFormatStatelessResetDatagram_UsesTheFigure10LayoutForUnprocessablePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0021.cs::TryFormatStatelessResetDatagram_RejectsPacketsWithoutRoomForTheLayout",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0021.cs::TryFormatStatelessResetDatagram_UsesTheMinimumFigure10Layout"
         ]
       }
     },
@@ -15034,6 +15090,9 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B8-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0022.cs::TryFormatStatelessResetDatagram_SetsFixedBitsToOne"
         ]
       }
     },
@@ -15060,6 +15119,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B11-P8-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0023.cs::TryFormatStatelessResetDatagram_MakesTheLeadingBytesLookRandom",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0023.cs::TryFormatStatelessResetDatagram_StillMakesTheLeadingBytesLookRandomAtTheMinimumLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0023.cs::TryFormatStatelessResetDatagram_RejectsDatagramsWithoutSpaceForRandomizedLeadingBytes"
         ]
       }
     },
@@ -15086,6 +15150,9 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B11-P8-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0024.cs::TryFormatStatelessResetDatagram_PlacesTheTokenInTheLastSixteenBytes"
         ]
       }
     },
@@ -15112,6 +15179,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B12-P9-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs::MinimumUnpredictableBits_ExposesTheThirtyEightBitFloor",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs::MinimumUnpredictableBits_AreSatisfiedAtTheBoundaryDatagramLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs::MinimumUnpredictableBits_RejectsDatagramsShorterThanTheBoundary"
         ]
       }
     },
@@ -15138,6 +15210,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B11-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0026.cs::TryFormatStatelessResetDatagram_UsesAFullUdpDatagram",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0026.cs::TryFormatStatelessResetDatagram_UsesTheSmallestFullUdpDatagram",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0026.cs::TryFormatStatelessResetDatagram_RejectsDatagramsThatAreTooShortToBeFull"
         ]
       }
     },
@@ -15164,6 +15241,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B13-P10-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0027.cs::TryGetMinimumPacketLengthForResetResistance_OffsetsByTwentyTwoBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0027.cs::TryGetMinimumPacketLengthForResetResistance_HandlesTheLargestSafeInput",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0027.cs::TryGetMinimumPacketLengthForResetResistance_RejectsNegativeOrOverflowingInputs"
         ]
       }
     },
@@ -15274,9 +15356,6 @@
         "upstream_refs": [
           "RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1"
-        ],
-        "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0003.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes"
         ]
       }
     },
@@ -15303,6 +15382,9 @@
         "upstream_refs": [
           "RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0003.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes"
         ]
       }
     },
