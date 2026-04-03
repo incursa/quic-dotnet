@@ -2655,6 +2655,10 @@
         "upstream_refs": [
           "RFC 9002 §6.3 RFC9002-S6.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs::TryMeasureRetryRoundTripMicros_RejectsRetryPacketsThatPrecedeTheFirstInitialPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs::TryMeasureRetryRoundTripMicros_AllowsAZeroLengthRoundTripAtTheBoundary"
         ]
       }
     },
