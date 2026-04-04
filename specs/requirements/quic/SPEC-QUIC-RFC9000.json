@@ -23158,6 +23158,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B2-P0-S8",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0007.cs::TryParseLongHeader_PreservesTheDestinationConnectionIdLengthInVersion1Packets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0007.cs::TryParseLongHeader_RejectsVersion1DestinationConnectionIdsLongerThan20Bytes"
         ]
       }
     },
@@ -23184,6 +23188,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B2-P0-S9",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0008.cs::TryParseVersionNegotiation_PreservesARepresentativeSourceConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0008.cs::TryParseVersionNegotiation_PreservesBoundarySourceConnectionIdLengthBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0008.cs::TryParseVersionNegotiation_RejectsPacketsMissingTheSourceConnectionIdLengthField"
         ]
       }
     },
@@ -23210,6 +23219,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B2-P0-S10",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0009.cs::TryParseLongHeader_PreservesTheSourceConnectionIdLengthInVersion1Packets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0009.cs::TryParseLongHeader_RejectsVersion1SourceConnectionIdsLongerThan20Bytes"
         ]
       }
     },
@@ -23434,6 +23447,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B9-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0017.cs::TryParseLongHeader_InterpretsTheVersionField"
         ]
       }
     },
@@ -23460,6 +23476,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B10-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0018.cs::TryParseVersionNegotiation_PreservesARepresentativeDestinationConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0018.cs::TryParseVersionNegotiation_PreservesBoundaryDestinationConnectionIdLengthBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0018.cs::TryParseVersionNegotiation_RejectsPacketsMissingTheDestinationConnectionIdLengthField"
         ]
       }
     },
@@ -23575,6 +23596,9 @@
           "RFC 9000 §17.2 RFC9000-S17.2-B10-P0-S5",
           "RFC 9000 §17.2 RFC9000-S17.2-B12-P0-S5",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0022.cs::TryParseVersionNegotiation_ReadsLongerConnectionIdsFromOtherVersions"
         ]
       }
     },
