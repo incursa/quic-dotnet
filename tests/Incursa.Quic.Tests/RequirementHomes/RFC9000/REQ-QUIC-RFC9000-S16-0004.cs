@@ -3,4 +3,47 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S16-0004")]
 public sealed class REQ_QUIC_RFC9000_S16_0004
 {
+    public static TheoryData<ulong, int> NonMinimalEncodingCases => new()
+    {
+        { 0UL, 2 },
+        { 1UL, 4 },
+        { 63UL, 8 },
+    };
+
+    [Theory]
+    [MemberData(nameof(NonMinimalEncodingCases))]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParse_AcceptsNonMinimalEncodings(ulong value, int encodedLength)
+    {
+        byte[] encoded = QuicVarintTestData.EncodeWithLength(value, encodedLength);
+
+        Assert.True(QuicVarintTestData.EncodeMinimal(value).Length < encodedLength);
+        Assert.True(QuicVariableLengthInteger.TryParse(encoded, out ulong parsed, out int bytesConsumed));
+        Assert.Equal(value, parsed);
+        Assert.Equal(encodedLength, bytesConsumed);
+    }
+
+    [Theory]
+    [MemberData(nameof(NonMinimalEncodingCases))]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParse_RejectsTruncatedNonMinimalEncodings(ulong value, int encodedLength)
+    {
+        byte[] encoded = QuicVarintTestData.EncodeWithLength(value, encodedLength);
+
+        Assert.False(QuicVariableLengthInteger.TryParse(encoded[..^1], out _, out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParse_AcceptsZeroEncodedOnEightBytes()
+    {
+        byte[] encoded = QuicVarintTestData.EncodeWithLength(0UL, 8);
+
+        Assert.True(QuicVariableLengthInteger.TryParse(encoded, out ulong parsed, out int bytesConsumed));
+        Assert.Equal(0UL, parsed);
+        Assert.Equal(8, bytesConsumed);
+    }
 }

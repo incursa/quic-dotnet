@@ -22,11 +22,11 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "trace": {
-        "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
-        ],
-        "implemented_by": [
+        "trace": {
+          "satisfied_by": [
+            "ARC-QUIC-RFC9000-0001"
+          ],
+          "implemented_by": [
           "WI-QUIC-RFC9000-0001"
         ],
         "verified_by": [
@@ -13187,6 +13187,11 @@
         "upstream_refs": [
           "RFC 9000 §10.1 RFC9000-S10.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1-0002.cs::HasTimedOut_ReturnsTrueAfterTheIdleDeadlinePasses",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1-0002.cs::HasTimedOut_ReturnsFalseAtTheIdleDeadline",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1-0002.cs::RecordPeerPacketProcessed_SaturatesTheDeadlineAtUlongMaxValue"
         ]
       }
     },
@@ -13244,6 +13249,11 @@
         "upstream_refs": [
           "RFC 9000 §10.1 RFC9000-S10.1-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1-0004.cs::RecordAckElicitingPacketSent_RestartsTheDeadlineAfterPeerTraffic",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1-0004.cs::RecordAckElicitingPacketSent_DoesNotExtendTheDeadlineForRepeatedLocalActivity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1-0004.cs::RecordPeerPacketProcessed_ResetsTheOutgoingActivityWindowAtTheBoundary"
         ]
       }
     },
@@ -16712,6 +16722,11 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0001.cs::TryParseLongHeader_AcceptsHandshakePacketsWithALengthDelimitedPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0001.cs::TryParseLongHeader_RejectsHandshakePacketsWithoutEnoughBytesForTheLengthDelimitedPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0001.cs::TryParseLongHeader_AcceptsHandshakePacketsAtTheExactLengthBoundary"
         ]
       }
     },
@@ -16738,6 +16753,11 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0002.cs::TryParseLongHeader_AcceptsALengthThatCoversBothPacketNumberAndProtectedPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0002.cs::TryParseLongHeader_RejectsALengthThatOmitsPartOfThePacketNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0002.cs::TryParseLongHeader_AcceptsALengthThatExactlyMatchesThePacketNumberLength"
         ]
       }
     },
@@ -16764,6 +16784,9 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0003.cs::TryParseLongHeader_AllowsAPacketWithALengthFieldToBeFollowedByAnotherPacketInTheSameDatagram"
         ]
       }
     },
@@ -16790,6 +16813,9 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B3-P2-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0004.cs::TryParseLongHeader_AllowsReceiversToProcessTwoLengthDelimitedPacketsInTheSameDatagram"
         ]
       }
     },
@@ -16816,6 +16842,9 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0005.cs::TryParseShortHeader_TreatsEverythingAfterTheFirstByteAsPartOfThePacket"
         ]
       }
     },
@@ -16842,6 +16871,9 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B4-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0012.cs::TryParseLongHeader_IndividuallyExposesEveryPacketInACoalescedDatagram"
         ]
       }
     },
@@ -16868,6 +16900,10 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0013.cs::TryParseLongHeader_TreatsRetryPacketsAsOpaqueTrailingDataSoTheyCannotBeFollowedByAnotherPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0013.cs::TryParseVersionNegotiation_TreatsSubsequentPacketsAsPartOfTheSupportedVersionList"
         ]
       }
     },
@@ -16972,6 +17008,9 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0012.cs::TryParseLongHeader_IndividuallyExposesEveryPacketInACoalescedDatagram"
         ]
       }
     },
@@ -16998,6 +17037,9 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0012.cs::TryParseLongHeader_IndividuallyExposesEveryPacketInACoalescedDatagram"
         ]
       }
     },
@@ -17024,6 +17066,12 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0013.cs::TryParseLongHeader_TreatsRetryPacketsAsOpaqueTrailingDataSoTheyCannotBeFollowedByAnotherPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0013.cs::TryParseVersionNegotiation_TreatsSubsequentPacketsAsPartOfTheSupportedVersionList",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0013.cs::TryParseLongHeader_AcceptsStandaloneRetryAndVersionNegotiationPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0013.cs::TryParseLongHeader_AllowsTheSmallestRetryAndVersionNegotiationDatagrams"
         ]
       }
     },
@@ -22686,12 +22734,15 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-        "upstream_refs": [
-          "RFC 9000 §16 RFC9000-S16-B4-P3-S1",
-          "https://www.rfc-editor.org/rfc/rfc9000.html#section-16"
-        ]
-      }
-    },
+          "upstream_refs": [
+            "RFC 9000 §16 RFC9000-S16-B4-P3-S1",
+            "https://www.rfc-editor.org/rfc/rfc9000.html#section-16"
+          ],
+          "x_test_refs": [
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0003.cs::TryFormat_UsesTheExpectedLengthForEachValueClass"
+          ]
+        }
+      },
     {
       "id": "REQ-QUIC-RFC9000-S16-0004",
       "title": "Values MUST NOT need to be encoded on the minimum number of bytes necessary, with the sole ex...",
@@ -22702,22 +22753,27 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "trace": {
-        "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
-        ],
-        "implemented_by": [
+        "trace": {
+          "satisfied_by": [
+            "ARC-QUIC-RFC9000-0001"
+          ],
+          "implemented_by": [
           "WI-QUIC-RFC9000-0001"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-        "upstream_refs": [
-          "RFC 9000 §16 RFC9000-S16-B11-P5-S1",
-          "https://www.rfc-editor.org/rfc/rfc9000.html#section-16"
-        ]
-      }
-    },
+          "upstream_refs": [
+            "RFC 9000 §16 RFC9000-S16-B11-P5-S1",
+            "https://www.rfc-editor.org/rfc/rfc9000.html#section-16"
+          ],
+          "x_test_refs": [
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0004.cs::TryParse_AcceptsNonMinimalEncodings",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0004.cs::TryParse_RejectsTruncatedNonMinimalEncodings",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0004.cs::TryParse_AcceptsZeroEncodedOnEightBytes"
+          ]
+        }
+      },
     {
       "id": "REQ-QUIC-RFC9000-S16-0005",
       "title": "Versions (Section 15), packet numbers sent in the header (Section 17.1), and the length of co...",
@@ -23688,6 +23744,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B24-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0031.cs::TryParseLongHeader_ExposesThePacketNumberLengthBitsForInteriorPacketNumberLengths",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0031.cs::TryParseLongHeader_RejectsPacketsWhenThePayloadIsShorterThanThePacketNumberField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0031.cs::TryParseLongHeader_AllowsTheShortestAndLongestPacketNumberLengths"
         ]
       }
     },
@@ -23714,6 +23775,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B26-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0032.cs::TryParseLongHeader_AllowsZeroRttPacketNumbersFromOneToFourBytes"
         ]
       }
     },
@@ -23740,6 +23804,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B26-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0033.cs::TryParseLongHeader_EncodesThePacketNumberLengthBitsInZeroRttHeaders",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0033.cs::TryParseLongHeader_RejectsZeroRttPacketsWhenThePayloadIsShorterThanThePacketNumberField"
         ]
       }
     },
