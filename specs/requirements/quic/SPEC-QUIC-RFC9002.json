@@ -2210,6 +2210,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::CanSend_ReturnsFalseBeforeAnyClientDatagramsAreReceived",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::TryRegisterReceivedDatagramPayloadBytes_OpensTheBudgetAfterClientTrafficArrives",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresUnattributedDatagrams"
         ]
       }
     },
@@ -2236,6 +2241,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0002.cs::TryRegisterReceivedDatagramPayloadBytes_RestoresTheSendBudgetAfterTheServerHasExhaustedIt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0002.cs::TryRegisterReceivedDatagramPayloadBytes_DoesNotRestoreTheSendBudgetForUnattributedDatagrams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0002.cs::TryRegisterReceivedDatagramPayloadBytes_LeavesTheSendBudgetExhaustedForZeroLengthDatagrams"
         ]
       }
     },
@@ -2262,6 +2272,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0003.cs::TrySelectRecoveryTimerMicros_ReturnsThePtoDeadlineImmediatelyWhenItIsAlreadyDue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0003.cs::TrySelectRecoveryTimerMicros_ReturnsFalseWhenNoRecoveryTimersAreAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0003.cs::TrySelectRecoveryTimerMicros_PreservesAOneMicrosecondPtoDeadline"
         ]
       }
     },
@@ -2288,6 +2303,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_DoesNotArmApplicationDataBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoAtTheGranularityFloorWhenRttIsZero"
         ]
       }
     },
@@ -2314,6 +2334,10 @@
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsHandshakeWhenHandshakeKeysAreAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesHandshakeWhenInitialDeadlineIsMissing"
         ]
       }
     },
@@ -2340,6 +2364,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsInitialWhenHandshakeKeysAreUnavailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesAnImmediateInitialDeadlineWhenItIsTheOnlyOption"
         ]
       }
     },
