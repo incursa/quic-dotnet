@@ -206,6 +206,76 @@ public static class QuicRecoveryTiming
     }
 
     /// <summary>
+    /// Selects the earliest nonzero loss time across the packet number spaces and returns the corresponding space.
+    /// </summary>
+    public static bool TrySelectLossTimeAndSpaceMicros(
+        ulong? initialLossTimeMicros,
+        ulong? handshakeLossTimeMicros,
+        ulong? applicationDataLossTimeMicros,
+        out ulong selectedLossTimeMicros,
+        out QuicPacketNumberSpace selectedPacketNumberSpace)
+    {
+        ulong selectedLossTimeMicrosValue = default;
+        QuicPacketNumberSpace selectedPacketNumberSpaceValue = default;
+        bool hasSelection = false;
+
+        void Consider(ulong? candidateLossTimeMicros, QuicPacketNumberSpace packetNumberSpace)
+        {
+            if (candidateLossTimeMicros is not > 0)
+            {
+                return;
+            }
+
+            if (hasSelection && candidateLossTimeMicros.Value >= selectedLossTimeMicrosValue)
+            {
+                return;
+            }
+
+            selectedLossTimeMicrosValue = candidateLossTimeMicros.Value;
+            selectedPacketNumberSpaceValue = packetNumberSpace;
+            hasSelection = true;
+        }
+
+        Consider(initialLossTimeMicros, QuicPacketNumberSpace.Initial);
+        Consider(handshakeLossTimeMicros, QuicPacketNumberSpace.Handshake);
+        Consider(applicationDataLossTimeMicros, QuicPacketNumberSpace.ApplicationData);
+        selectedLossTimeMicros = selectedLossTimeMicrosValue;
+        selectedPacketNumberSpace = selectedPacketNumberSpaceValue;
+        return hasSelection;
+    }
+
+    /// <summary>
+    /// Selects the PTO deadline and packet number space when no ack-eliciting packets are in flight.
+    /// </summary>
+    public static bool TrySelectPtoTimeAndSpaceMicros(
+        ulong nowMicros,
+        ulong? initialProbeTimeoutMicros,
+        ulong? handshakeProbeTimeoutMicros,
+        bool handshakeKeysAvailable,
+        out ulong selectedPtoTimeMicros,
+        out QuicPacketNumberSpace selectedPacketNumberSpace)
+    {
+        selectedPtoTimeMicros = default;
+        selectedPacketNumberSpace = default;
+
+        if (handshakeKeysAvailable && handshakeProbeTimeoutMicros is not null)
+        {
+            selectedPtoTimeMicros = SaturatingAdd(nowMicros, handshakeProbeTimeoutMicros.Value);
+            selectedPacketNumberSpace = QuicPacketNumberSpace.Handshake;
+            return true;
+        }
+
+        if (initialProbeTimeoutMicros is not null)
+        {
+            selectedPtoTimeMicros = SaturatingAdd(nowMicros, initialProbeTimeoutMicros.Value);
+            selectedPacketNumberSpace = QuicPacketNumberSpace.Initial;
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Chooses a timer deadline, preferring time-threshold loss detection over PTO when both exist.
     /// </summary>
     public static bool TrySelectRecoveryTimerMicros(
@@ -219,6 +289,40 @@ public static class QuicRecoveryTiming
         {
             selectedTimerMicros = lossDetectionTimerMicros.Value;
             return true;
+        }
+
+        if (probeTimeoutMicros is not null)
+        {
+            selectedTimerMicros = probeTimeoutMicros.Value;
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Selects the loss-detection timer according to the presence of loss and PTO deadlines.
+    /// </summary>
+    public static bool TrySelectLossDetectionTimerMicros(
+        ulong? earliestPendingLossTimeMicros,
+        ulong? probeTimeoutMicros,
+        bool serverAtAntiAmplificationLimit,
+        bool noAckElicitingPacketsInFlight,
+        bool peerAddressValidationComplete,
+        out ulong selectedTimerMicros)
+    {
+        selectedTimerMicros = default;
+
+        if (earliestPendingLossTimeMicros is not null)
+        {
+            selectedTimerMicros = earliestPendingLossTimeMicros.Value;
+            return true;
+        }
+
+        if (serverAtAntiAmplificationLimit
+            || (noAckElicitingPacketsInFlight && peerAddressValidationComplete))
+        {
+            return false;
         }
 
         if (probeTimeoutMicros is not null)

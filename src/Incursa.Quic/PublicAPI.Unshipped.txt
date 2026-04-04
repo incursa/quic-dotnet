@@ -63,6 +63,7 @@ static Incursa.Quic.QuicVersionNegotiation.IsReservedVersion(uint version) -> bo
 static Incursa.Quic.QuicVersionNegotiation.CreateReservedVersion(uint template) -> uint
 Incursa.Quic.QuicAddressValidation
 static Incursa.Quic.QuicAddressValidation.CanConsiderPeerAddressValidated(System.ReadOnlySpan<byte> connectionId, bool chosenByEndpoint) -> bool
+static Incursa.Quic.QuicAddressValidation.PeerCompletedAddressValidation(bool isServer, bool handshakeAckReceived, bool handshakeConfirmed) -> bool
 static Incursa.Quic.QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(int currentPayloadLength, out int paddingLength) -> bool
 static Incursa.Quic.QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(int currentPayloadLength, System.Span<byte> destination, out int bytesWritten) -> bool
 Incursa.Quic.QuicAntiAmplificationBudget
@@ -294,7 +295,10 @@ static Incursa.Quic.QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(ulong 
 static Incursa.Quic.QuicRecoveryTiming.TryComputeProbeTimeoutMicros(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong smoothedRttMicros, ulong rttVarMicros, ulong maxAckDelayMicros, bool handshakeConfirmed, out ulong probeTimeoutMicros, ulong timerGranularityMicros = 1000) -> bool
 static Incursa.Quic.QuicRecoveryTiming.ComputeProbeTimeoutWithBackoffMicros(ulong probeTimeoutMicros, int ptoCount) -> ulong
 static Incursa.Quic.QuicRecoveryTiming.TrySelectInitialOrHandshakeProbeTimeoutMicros(ulong? initialProbeTimeoutMicros, ulong? handshakeProbeTimeoutMicros, out ulong selectedProbeTimeoutMicros) -> bool
+static Incursa.Quic.QuicRecoveryTiming.TrySelectLossTimeAndSpaceMicros(ulong? initialLossTimeMicros, ulong? handshakeLossTimeMicros, ulong? applicationDataLossTimeMicros, out ulong selectedLossTimeMicros, out Incursa.Quic.QuicPacketNumberSpace selectedPacketNumberSpace) -> bool
+static Incursa.Quic.QuicRecoveryTiming.TrySelectPtoTimeAndSpaceMicros(ulong nowMicros, ulong? initialProbeTimeoutMicros, ulong? handshakeProbeTimeoutMicros, bool handshakeKeysAvailable, out ulong selectedPtoTimeMicros, out Incursa.Quic.QuicPacketNumberSpace selectedPacketNumberSpace) -> bool
 static Incursa.Quic.QuicRecoveryTiming.TrySelectRecoveryTimerMicros(ulong? lossDetectionTimerMicros, ulong? probeTimeoutMicros, out ulong selectedTimerMicros) -> bool
+static Incursa.Quic.QuicRecoveryTiming.TrySelectLossDetectionTimerMicros(ulong? earliestPendingLossTimeMicros, ulong? probeTimeoutMicros, bool serverAtAntiAmplificationLimit, bool noAckElicitingPacketsInFlight, bool peerAddressValidationComplete, out ulong selectedTimerMicros) -> bool
 static Incursa.Quic.QuicRecoveryTiming.TryMeasurePathChallengeRoundTripMicros(ulong pathChallengeSentAtMicros, ulong pathResponseReceivedAtMicros, out ulong roundTripMicros) -> bool
 static Incursa.Quic.QuicRecoveryTiming.TryMeasureRetryRoundTripMicros(ulong firstInitialPacketSentAtMicros, ulong retryReceivedAtMicros, out ulong roundTripMicros) -> bool
 Incursa.Quic.QuicFrameCodec
