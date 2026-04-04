@@ -22980,6 +22980,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B2-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0001.cs::TryClassifyHeaderForm_RecognizesLongAndShortHeadersByTheHighBit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0001.cs::TryClassifyHeaderForm_RejectsEmptyInput"
         ]
       }
     },
@@ -23006,6 +23010,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B2-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0002.cs::TryParseLongHeader_RequiresTheFixedBitForVersionedLongHeaders",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0002.cs::TryParseLongHeader_RejectsVersionedLongHeadersWithTheFixedBitClear"
         ]
       }
     },
@@ -23032,6 +23040,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B2-P0-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0003.cs::TryParseLongHeader_ExposesTheTwoBitLongPacketTypeField"
         ]
       }
     },
@@ -23058,6 +23069,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B2-P0-S5",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0004.cs::TryParseLongHeader_ExposesTheFourBitTypeSpecificField"
         ]
       }
     },
@@ -23084,6 +23098,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B2-P0-S6",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0005.cs::TryParseLongHeader_ExposesThe32BitVersionField"
         ]
       }
     },
@@ -23110,6 +23127,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B2-P0-S7",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0006.cs::TryParseLongHeader_PreservesTheDestinationConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0006.cs::TryParseLongHeader_PreservesRepresentativeDestinationConnectionIdLengths",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0006.cs::TryParseLongHeader_RejectsPacketsMissingTheDestinationConnectionIdBytes"
         ]
       }
     },
