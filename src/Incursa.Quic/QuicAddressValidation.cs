@@ -20,6 +20,17 @@ public static class QuicAddressValidation
     }
 
     /// <summary>
+    /// Determines whether the peer address validation is complete for the current endpoint role.
+    /// </summary>
+    public static bool PeerCompletedAddressValidation(
+        bool isServer,
+        bool handshakeAckReceived,
+        bool handshakeConfirmed)
+    {
+        return isServer || handshakeAckReceived || handshakeConfirmed;
+    }
+
+    /// <summary>
     /// Computes the number of bytes needed to pad an Initial datagram payload to the RFC 9000 minimum.
     /// </summary>
     public static bool TryGetVersion1InitialDatagramPaddingLength(int currentPayloadLength, out int paddingLength)
