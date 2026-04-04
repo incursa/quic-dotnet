@@ -960,6 +960,11 @@
         "upstream_refs": [
           "RFC 9002 §5.2 RFC9002-S5.2-B7-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0007.cs::RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutAlteringDerivedState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0007.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0007.cs::RefreshMinRttFromLatestSample_IsIdempotentWhenTheSameSampleIsReapplied"
         ]
       }
     },
