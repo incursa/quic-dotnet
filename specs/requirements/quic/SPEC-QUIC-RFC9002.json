@@ -4790,6 +4790,9 @@
           "RFC 9002 §A.6 RFC9002-SA.6-B2-P1-S1",
           "RFC 9002 §A.6 RFC9002-SA.6-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP6-0001.cs::TrySelectLossDetectionTimerMicros_ArmsTheTimerWhenReceivedDatagramRestoresSendBudget"
         ]
       }
     },
@@ -4817,6 +4820,11 @@
           "RFC 9002 §A.6 RFC9002-SA.6-B2-P1-S2",
           "RFC 9002 §A.6 RFC9002-SA.6-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP6-0002.cs::TrySelectLossDetectionTimerMicros_ExecutesAnAlreadyExpiredTimerAsSoonAsAmplificationBlockingEnds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP6-0002.cs::TrySelectLossDetectionTimerMicros_DoesNotExecuteAnExpiredTimerWhenDatagramReceiptDoesNotRestoreBudget",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP6-0002.cs::TrySelectLossDetectionTimerMicros_LeavesAnExpiredTimerBlockedForZeroLengthDatagrams"
         ]
       }
     },
