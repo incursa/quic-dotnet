@@ -13282,7 +13282,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicIdleTimeoutStateTests.cs::RecordPeerPacketProcessedAndRecordAckElicitingPacketSent_RestartTheTimerAtTheRightTimes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1-0005.cs::RecordPeerPacketProcessed_RestartsTheIdleTimer"
         ]
       }
     },
@@ -13311,7 +13311,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicIdleTimeoutStateTests.cs::RecordPeerPacketProcessedAndRecordAckElicitingPacketSent_RestartTheTimerAtTheRightTimes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1-0006.cs::RecordAckElicitingPacketSent_RestartsOnlyOnTheFirstSendAfterAPeerPacket"
         ]
       }
     },
@@ -13371,7 +13371,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.1.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P1-0001.cs::TryFormatPingFrame_ProducesAnAckElicitingLivenessProbe",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P1-0001.cs::TryFormatPingFrame_RejectsAZeroLengthDestination"
         ]
       }
     },
