@@ -4,6 +4,15 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S6P1P1_0001
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void ShouldDeclarePacketLostByPacketThreshold_DeclaresPacketsOlderThanTheRecommendedThreshold()
+    {
+        Assert.True(QuicRecoveryTiming.ShouldDeclarePacketLostByPacketThreshold(
+            packetNumber: 6,
+            largestAcknowledgedPacketNumber: 10));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void ShouldDeclarePacketLostByPacketThreshold_DoesNotUseAThresholdAboveThreeAtTheBoundary()
     {
