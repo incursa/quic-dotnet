@@ -2822,6 +2822,10 @@
         "upstream_refs": [
           "RFC 9002 §6.4 RFC9002-S6.4-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDetectPersistentCongestion_ResetsRecoveryStateForDiscardedInitialAndHandshakeKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDetectPersistentCongestion_DoesNotResetRecoveryStateForPacketsThatWereNotInFlight"
         ]
       }
     },
@@ -2848,6 +2852,9 @@
         "upstream_refs": [
           "RFC 9002 §6.4 RFC9002-S6.4-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDetectPersistentCongestion_RemovesDiscardedPacketsFromBytesInFlight"
         ]
       }
     },
@@ -5325,11 +5332,6 @@
         "upstream_refs": [
           "RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9"
-        ],
-        "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_DoublesThePtoBackoffAndRefreshesTheTimer",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_LeavesTheBasePtoInPlaceBeforeAnyBackoffIncrement",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_SaturatesTheBackoffBeforeRefreshingTheTimer"
         ]
       }
     },
@@ -5356,6 +5358,11 @@
         "upstream_refs": [
           "RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_DoublesThePtoBackoffAndRefreshesTheTimer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_LeavesTheBasePtoInPlaceBeforeAnyBackoffIncrement",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_SaturatesTheBackoffBeforeRefreshingTheTimer"
         ]
       }
     },
