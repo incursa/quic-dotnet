@@ -13424,6 +13424,10 @@
         "upstream_refs": [
           "RFC 9000 §10.1.2 RFC9000-S10.1.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs::RecordAckElicitingPacketSent_AllowsDeferredIdleTimeoutAfterPeerActivity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs::RecordAckElicitingPacketSent_DoesNotKeepExtendingTheDeadlineForRepeatedLocalTraffic"
         ]
       }
     },
