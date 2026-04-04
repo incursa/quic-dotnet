@@ -17540,6 +17540,9 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B6-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0006.cs::TryFormatSelectedFrames_PrefixesTheFrameTypeBeforeTypeDependentFields"
         ]
       }
     },
@@ -17592,6 +17595,9 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B32-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0008.cs::FrameTypeCarriesTheDefinedFlagsForFlagBearingFrames"
         ]
       }
     },
@@ -17618,6 +17624,9 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B32-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0009.cs::FixedTypeFramesUseTheFrameTypeOnlyToIdentifyTheFrameKind"
         ]
       }
     },
@@ -17904,6 +17913,9 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B48-P13-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0020.cs::TryFormatSelectedFrames_UsesSingleByteFrameTypeEncodings"
         ]
       }
     },
@@ -17930,6 +17942,9 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B48-P13-S6",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0021.cs::TryParseSelectedFrames_RejectsLongerThanNecessaryFrameTypeEncodings"
         ]
       }
     },
@@ -22451,6 +22466,10 @@
         "upstream_refs": [
           "RFC 9000 §15 RFC9000-S15-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0002.cs::VersionNegotiationVersion_UsesTheReservedZeroValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0002.cs::ShouldSendVersionNegotiation_RejectsTheReservedZeroVersion"
         ]
       }
     },
@@ -22555,6 +22574,10 @@
         "upstream_refs": [
           "RFC 9000 §15 RFC9000-S15-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0006.cs::IsReservedVersion_RecognizesTheReservedPattern",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0006.cs::IsReservedVersion_RejectsOrdinaryVersions"
         ]
       }
     },
@@ -22607,6 +22630,10 @@
         "upstream_refs": [
           "RFC 9000 §15 RFC9000-S15-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0008.cs::ShouldSendVersionNegotiation_AllowsReservedClientVersionsToElicitNegotiation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0008.cs::ShouldSendVersionNegotiation_RejectsReservedClientVersionsWithoutServerSupport"
         ]
       }
     },
@@ -23265,6 +23292,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0013.cs::TryParseLongHeader_ClassifiesPacketsWithTheHighBitSetAsLongHeaders",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0013.cs::TryParseLongHeader_RejectsPacketsWhenTheHighBitIsNotSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0013.cs::TryParseLongHeader_AcceptsTheSmallestLongHeaderMarkerByte"
         ]
       }
     },
@@ -23291,6 +23323,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0014.cs::TryParseLongHeader_RequiresTheFixedBitForVersionedLongHeaders"
         ]
       }
     },
@@ -23317,6 +23352,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B6-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0015.cs::TryParseLongHeader_AcceptsVersionedPacketsWhenTheFixedBitIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0015.cs::TryParseLongHeader_DiscardsVersionedPacketsWhenTheFixedBitIsClear",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0015.cs::TryParseLongHeader_AllowsVersionNegotiationPacketsToClearTheFixedBit"
         ]
       }
     },
@@ -23343,6 +23383,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B7-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0016.cs::TryParseLongHeader_ExposesThePacketTypeBitsFromByteZero"
         ]
       }
     },
