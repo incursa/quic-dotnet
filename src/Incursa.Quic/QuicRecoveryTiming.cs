@@ -175,6 +175,40 @@ public static class QuicRecoveryTiming
     }
 
     /// <summary>
+    /// Resets the PTO backoff counter after an event that restarts PTO.
+    /// </summary>
+    /// <remarks>
+    /// A validated acknowledgment, ack-eliciting send, or Initial/Handshake key discard restarts PTO.
+    /// Unvalidated Initial acknowledgments keep the current backoff in place.
+    /// </remarks>
+    public static int ResetProbeTimeoutBackoffCount(
+        int ptoCount,
+        bool ackElicitingPacketSent = false,
+        bool acknowledgmentReceived = false,
+        QuicPacketNumberSpace acknowledgmentPacketNumberSpace = QuicPacketNumberSpace.ApplicationData,
+        bool handshakeConfirmed = false,
+        bool initialOrHandshakeKeysDiscarded = false)
+    {
+        if (ptoCount < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(ptoCount));
+        }
+
+        if (ackElicitingPacketSent || initialOrHandshakeKeysDiscarded)
+        {
+            return 0;
+        }
+
+        if (acknowledgmentReceived
+            && (acknowledgmentPacketNumberSpace != QuicPacketNumberSpace.Initial || handshakeConfirmed))
+        {
+            return 0;
+        }
+
+        return ptoCount;
+    }
+
+    /// <summary>
     /// Chooses the earlier PTO deadline from the Initial and Handshake packet number spaces.
     /// </summary>
     public static bool TrySelectInitialOrHandshakeProbeTimeoutMicros(
