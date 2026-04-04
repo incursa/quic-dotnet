@@ -120,6 +120,11 @@
         "upstream_refs": [
           "RFC 9002 §2 RFC9002-S2-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0004.cs::TryDetectPersistentCongestion_RemovesLostAckElicitingPacketsThatWereInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0004.cs::TryDetectPersistentCongestion_DoesNotRemoveLostPacketsThatWereNotInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0004.cs::TryDetectPersistentCongestion_TreatsNonAckElicitingInFlightPacketsAsInFlight"
         ]
       }
     },
