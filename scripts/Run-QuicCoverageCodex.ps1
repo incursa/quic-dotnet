@@ -10,6 +10,8 @@ param(
     [string]$Model = "gpt-5.4-mini",
     [string]$ReasoningEffort = "high",
 
+    [int]$BatchTargetCount = 4,
+    [int]$BatchMaxCount = 8,
     [int]$MaxIterations = 25,
     [int]$NoProgressLimit = 2,
     [int]$CooldownSeconds = 2
@@ -183,6 +185,158 @@ function Get-LoopPlan {
         }
         LockedFamiliesNote = "RFC9001 and blocked families stay out of the default order unless explicitly unlocked."
     }
+}
+
+function Convert-TierToTriageState {
+    param([Parameter(Mandatory = $true)][string]$Tier)
+
+    switch ($Tier) {
+        "metadata_only"       { return "covered_but_missing_xrefs" }
+        "partials"            { return "partially_covered" }
+        "proof_narrowing"     { return "covered_but_proof_too_broad" }
+        "uncovered_unblocked" { return "uncovered_unblocked" }
+        default               { return "" }
+    }
+}
+
+function Convert-RfcFocusToRequirementRfc {
+    param([Parameter(Mandatory = $true)][string]$CurrentRfc)
+
+    if ([string]::IsNullOrWhiteSpace($CurrentRfc)) {
+        return ""
+    }
+
+    if ($CurrentRfc -match "RFC8999") {
+        return "RFC8999"
+    }
+
+    if ($CurrentRfc -match "RFC9000") {
+        return "RFC9000"
+    }
+
+    if ($CurrentRfc -match "RFC9001") {
+        return "RFC9001"
+    }
+
+    if ($CurrentRfc -match "RFC9002") {
+        return "RFC9002"
+    }
+
+    return ""
+}
+
+function Get-RequirementBatchCandidates {
+    param(
+        [Parameter(Mandatory = $true)][string]$TriagePath,
+        [Parameter(Mandatory = $true)][string]$CurrentRfcFocus,
+        [Parameter(Mandatory = $true)][string]$CurrentTier,
+        [Parameter(Mandatory = $true)][int]$TargetCount,
+        [Parameter(Mandatory = $true)][int]$MaxCount
+    )
+
+    $triageState = Convert-TierToTriageState -Tier $CurrentTier
+    if ([string]::IsNullOrWhiteSpace($triageState)) {
+        return [pscustomobject]@{
+            TriagedState   = ""
+            RequirementRfc = ""
+            SectionPrefix  = ""
+            TargetCount    = $TargetCount
+            MaxCount       = $MaxCount
+            Requirements   = @()
+        }
+    }
+
+    $requirementRfc = Convert-RfcFocusToRequirementRfc -CurrentRfc $CurrentRfcFocus
+    $json = Get-Content -LiteralPath $TriagePath -Raw | ConvertFrom-Json -Depth 100
+    $requirements = @($json.requirements)
+    $groupOrder = New-Object System.Collections.Generic.List[string]
+    $groupIndex = @{}
+
+    for ($i = 0; $i -lt $requirements.Count; $i++) {
+        $requirement = $requirements[$i]
+
+        if ($requirement.state -ne $triageState) {
+            continue
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($requirementRfc) -and $requirement.rfc -ne $requirementRfc) {
+            continue
+        }
+
+        $sectionPrefix = if ([string]::IsNullOrWhiteSpace($requirement.section_prefix)) { "__none__" } else { $requirement.section_prefix }
+
+        if (-not $groupIndex.ContainsKey($sectionPrefix)) {
+            $groupIndex[$sectionPrefix] = [pscustomobject]@{
+                SectionPrefix = if ($sectionPrefix -eq "__none__") { "" } else { $sectionPrefix }
+                FirstIndex    = $i
+                Requirements  = New-Object System.Collections.Generic.List[object]
+            }
+
+            [void]$groupOrder.Add($sectionPrefix)
+        }
+
+        $groupIndex[$sectionPrefix].Requirements.Add([pscustomobject]@{
+            RequirementId = $requirement.requirement_id
+            Title         = $requirement.title
+            Rfc           = $requirement.rfc
+            State         = $requirement.state
+            SectionPrefix = $requirement.section_prefix
+            Index         = $i
+        })
+    }
+
+    if ($groupOrder.Count -eq 0) {
+        return [pscustomobject]@{
+            TriagedState   = $triageState
+            RequirementRfc = $requirementRfc
+            SectionPrefix  = ""
+            TargetCount    = $TargetCount
+            MaxCount       = $MaxCount
+            Requirements   = @()
+        }
+    }
+
+    $bestSectionPrefix = $null
+    $bestCount = -1
+    $bestFirstIndex = [int]::MaxValue
+
+    foreach ($sectionPrefix in $groupOrder) {
+        $group = $groupIndex[$sectionPrefix]
+        $count = $group.Requirements.Count
+
+        if ($count -gt $bestCount -or ($count -eq $bestCount -and $group.FirstIndex -lt $bestFirstIndex)) {
+            $bestSectionPrefix = $sectionPrefix
+            $bestCount = $count
+            $bestFirstIndex = $group.FirstIndex
+        }
+    }
+
+    $selected = @($groupIndex[$bestSectionPrefix].Requirements | Select-Object -First $MaxCount)
+
+    return [pscustomobject]@{
+        TriagedState   = $triageState
+        RequirementRfc = $requirementRfc
+        SectionPrefix  = $groupIndex[$bestSectionPrefix].SectionPrefix
+        TargetCount    = $TargetCount
+        MaxCount       = $MaxCount
+        Requirements   = $selected
+    }
+}
+
+function Format-RequirementBatchCandidates {
+    param([Parameter(Mandatory = $true)]$BatchCandidates)
+
+    if ($null -eq $BatchCandidates -or $BatchCandidates.Requirements.Count -eq 0) {
+        return "none"
+    }
+
+    $lines = New-Object System.Collections.Generic.List[string]
+    foreach ($requirement in $BatchCandidates.Requirements) {
+        $sectionText = if ([string]::IsNullOrWhiteSpace($requirement.SectionPrefix)) { "n/a" } else { $requirement.SectionPrefix }
+        [void]$lines.Add(("- {0} [{1} / {2}] {3}" -f $requirement.RequirementId, $requirement.Rfc, $sectionText, $requirement.Title))
+    }
+
+    return ($lines -join [Environment]::NewLine)
 }
 
 function New-LoopState {
@@ -454,7 +608,10 @@ function New-IterationPrompt {
         [Parameter(Mandatory = $true)][string]$TriageScriptPath,
         [Parameter(Mandatory = $true)]$LoopPlan,
         [Parameter(Mandatory = $true)]$LoopStateDetails,
-        [Parameter(Mandatory = $true)]$BeforeSnapshot
+        [Parameter(Mandatory = $true)]$BeforeSnapshot,
+        [Parameter(Mandatory = $true)]$BatchCandidates,
+        [Parameter(Mandatory = $true)][int]$BatchTargetCount,
+        [Parameter(Mandatory = $true)][int]$BatchMaxCount
     )
 
     $commitTail = @"
@@ -470,6 +627,12 @@ Before you finish:
     $rfcOrderText = ($LoopPlan.RfcOrder -join " -> ")
     $tierOrderText = ($LoopPlan.TierOrder -join " -> ")
     $secondaryCheckedText = if ($LoopStateDetails.SecondaryRfcChecked) { "yes" } else { "no" }
+    $batchCandidatesText = Format-RequirementBatchCandidates -BatchCandidates $BatchCandidates
+    $batchCandidateCount = if ($null -ne $BatchCandidates -and $BatchCandidates.Requirements.Count -gt 0) { $BatchCandidates.Requirements.Count } else { 0 }
+    $batchState = if ($null -ne $BatchCandidates) { $BatchCandidates.TriagedState } else { "" }
+    $batchRfc = if ($null -ne $BatchCandidates) { $BatchCandidates.RequirementRfc } else { "" }
+    $batchSection = if ($null -ne $BatchCandidates) { $BatchCandidates.SectionPrefix } else { "" }
+    $batchSectionText = if ([string]::IsNullOrWhiteSpace($batchSection)) { "n/a" } else { $batchSection }
 
     return @"
 You are helping systematically improve requirement-level test coverage and traceability in the quic-dotnet repository.
@@ -522,7 +685,7 @@ Selection order inside the current RFC focus:
 4. uncovered_unblocked
 
 Global stopping rule:
-- You MUST NOT return LoopStatus: Stop merely because the current preferred tier has no good slice.
+- You MUST NOT return LoopStatus: Stop merely because the current preferred tier has no good batch.
 - If metadata_only is exhausted, fall through to partials.
 - If partials is exhausted, fall through to proof_narrowing.
 - If proof_narrowing is exhausted, fall through to uncovered_unblocked.
@@ -535,9 +698,11 @@ Avoid these families unless the triage clearly shows a real implementation-backe
 - stateful stateless-reset acceptance / lifecycle families
 - blocked RFC9001 TLS / security families
 
-Bounded-slice rules:
-- Do not do repo-wide sweeps when a bounded slice is possible.
-- Prefer a small adjacent cluster, usually 1 to 6 nearby requirements.
+Bounded-batch rules:
+- Do not do repo-wide sweeps when a bounded batch is possible.
+- Prefer a small adjacent cluster, usually 2 to 8 nearby requirements.
+- Use the batch candidates below as the default work queue for this iteration.
+- If the selected cluster has multiple nearby requirements that share the same helper, fixture, or seam, keep working through them in the same run.
 - Use old broad tests only as reference, setup inspiration, or helper extraction source.
 - Do not mechanically move broad tests into requirement homes.
 - Do not invent behavior.
@@ -545,13 +710,23 @@ Bounded-slice rules:
 - Only make very small, low-risk testability seams if absolutely necessary.
 - Preserve compileability.
 
+Batch candidates from the current triage state:
+- Triaged state: $batchState
+- RFC focus: $batchRfc
+- Section prefix: $batchSectionText
+- Batch target count: $BatchTargetCount
+- Batch maximum count: $BatchMaxCount
+- Candidate count: $batchCandidateCount
+- Candidates:
+$batchCandidatesText
+
 What you must do:
 1. Read the current triage JSON first and treat it as the source of truth.
 2. Stay in the current tier/mode for this run unless the current tier is exhausted.
-3. If the current tier has no good slice, do not stop globally. Return the correct SelectionOutcome and advance to the next tier or RFC focus.
-4. If there is a good eligible slice:
-   - execute exactly ONE bounded slice
-   - keep the work tightly scoped
+3. If the current tier has no good batch, do not stop globally. Return the correct SelectionOutcome and advance to the next tier or RFC focus.
+4. If there is a good eligible batch:
+   - execute one bounded batch
+   - keep the work tightly scoped, but cover as many of the batch candidates as the shared proof seam safely allows
    - repair metadata first if applicable
    - otherwise add only missing proof dimensions for partials
    - otherwise narrow broad proof only where implementation clearly exists
@@ -563,8 +738,8 @@ What you must do:
 
 Required final output format:
 ## Decision
-- Selected slice: <requirement ids or cluster name>
-- Why this slice: <short reason>
+- Selected batch: <requirement ids or cluster name>
+- Why this batch: <short reason>
 
 ## Files Changed
 - ...
@@ -581,7 +756,7 @@ SelectionOutcome: Worked|NoSliceInCurrentTier|NoSliceInCurrentRFC|RepoExhausted
 NextTier: metadata_only|partials|proof_narrowing|uncovered_unblocked|next_rfc|n/a
 StopReason: n/a or reason
 
-If there is no good eligible slice in the current tier, use SelectionOutcome to move to the next tier or RFC focus.
+If there is no good eligible batch in the current tier, use SelectionOutcome to move to the next tier or RFC focus.
 Only use LoopStatus: Stop when SelectionOutcome is RepoExhausted.
 
 $commitTail
@@ -744,6 +919,26 @@ try {
         $resultPath = Join-Path $resultsRoot ("iteration-{0:D3}.output.md" -f $iteration)
         $logPath = Join-Path $logsRoot ("iteration-{0:D3}.log.txt" -f $iteration)
         $loopStateDetails = Get-LoopStateDetails -LoopPlan $loopPlan -LoopState $loopState
+        $batchCandidates = Get-RequirementBatchCandidates `
+            -TriagePath $triagePath `
+            -CurrentRfcFocus $loopStateDetails.CurrentRfc `
+            -CurrentTier $loopStateDetails.CurrentTier `
+            -TargetCount $BatchTargetCount `
+            -MaxCount $BatchMaxCount
+
+        $batchRequirementIds = if ($null -ne $batchCandidates -and $batchCandidates.Requirements.Count -gt 0) {
+            ($batchCandidates.Requirements | ForEach-Object { $_.RequirementId }) -join ", "
+        }
+        else {
+            ""
+        }
+
+        if ([string]::IsNullOrWhiteSpace($batchRequirementIds)) {
+            Write-Host "Batch: none preselected" -ForegroundColor DarkCyan
+        }
+        else {
+            Write-Host "Batch: $($batchCandidates.RequirementRfc) / $($batchCandidates.SectionPrefix) / $batchRequirementIds" -ForegroundColor DarkCyan
+        }
 
         $prompt = New-IterationPrompt `
             -Iteration $iteration `
@@ -753,7 +948,10 @@ try {
             -TriageScriptPath $triageScriptPath `
             -LoopPlan $loopPlan `
             -LoopStateDetails $loopStateDetails `
-            -BeforeSnapshot $beforeSnapshot
+            -BeforeSnapshot $beforeSnapshot `
+            -BatchCandidates $batchCandidates `
+            -BatchTargetCount $BatchTargetCount `
+            -BatchMaxCount $BatchMaxCount
 
         $run = $null
         $status = "Success"
@@ -825,6 +1023,12 @@ try {
             LogFile           = $logPath
             CurrentRFC        = $loopStateDetails.CurrentRfc
             CurrentTier       = $loopStateDetails.CurrentTier
+            BatchTriagedState = if ($null -ne $batchCandidates) { $batchCandidates.TriagedState } else { "" }
+            BatchTargetCount  = $BatchTargetCount
+            BatchMaxCount     = $BatchMaxCount
+            BatchCandidateCount = if ($null -ne $batchCandidates -and $batchCandidates.Requirements.Count -gt 0) { $batchCandidates.Requirements.Count } else { 0 }
+            BatchSectionPrefix = if ($null -ne $batchCandidates) { $batchCandidates.SectionPrefix } else { "" }
+            BatchRequirementIds = $batchRequirementIds
             DirectiveLoopStatus = $transition.DirectiveLoopStatus
             DirectiveSelectionOutcome = $transition.DirectiveSelectionOutcome
             DirectiveNextTier = $transition.DirectiveNextTier
