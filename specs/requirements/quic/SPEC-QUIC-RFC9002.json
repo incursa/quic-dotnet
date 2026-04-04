@@ -1700,6 +1700,11 @@
           "RFC 9002 §6.2 RFC9002-S6.2-B3-P2-S1",
           "RFC 9002 §6.2 RFC9002-S6.2-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0002.cs::TryComputeProbeTimeoutMicros_DoesNotReuseTheEarlySpaceTimeoutForApplicationData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0002.cs::TryComputeProbeTimeoutMicros_CanConvergeAtTheSharedZeroAckDelayBoundary"
         ]
       }
     },
