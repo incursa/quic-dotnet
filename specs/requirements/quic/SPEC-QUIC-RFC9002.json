@@ -2392,6 +2392,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.4 RFC9002-S6.2.4-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryFormatPingFrame_ProducesTheMinimumAckElicitingProbe",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryFormatPingFrame_RejectsAZeroLengthDestination",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryParsePingFrame_ConsumesTheSingleByteAtThePacketBoundary"
         ]
       }
     },
@@ -2444,6 +2449,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.4 RFC9002-S6.2.4-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RecognizesPingAsAckEliciting",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RejectsPaddingAndAckFrames",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RejectsConnectionCloseFrames"
         ]
       }
     },
@@ -2470,6 +2480,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.4 RFC9002-S6.2.4-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsTheEarlierDeadline",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheRemainingDeadlineWhenOneSpaceIsMissing"
         ]
       }
     },
@@ -2496,6 +2511,9 @@
         "upstream_refs": [
           "RFC 9002 §6.2.4 RFC9002-S6.2.4-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0005.cs::TryFormatStreamFrame_RoundTripsNewApplicationData"
         ]
       }
     },
@@ -2522,6 +2540,9 @@
         "upstream_refs": [
           "RFC 9002 §6.2.4 RFC9002-S6.2.4-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0006.cs::TryFormatStreamFrame_RoundTripsPreviouslySentApplicationData"
         ]
       }
     },
@@ -2574,6 +2595,10 @@
         "upstream_refs": [
           "RFC 9002 §6.2.4 RFC9002-S6.2.4-B6-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::TryFormatPingFrame_ProvidesTheFallbackProbeWhenNoDataIsAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::TryFormatPingFrame_RejectsInsufficientSpaceForTheFallbackProbe"
         ]
       }
     },
@@ -2600,6 +2625,10 @@
         "upstream_refs": [
           "RFC 9002 §6.2.4 RFC9002-S6.2.4-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs::TryRegisterLoss_AllowsMarkingAnInFlightPacketLostInsteadOfSendingAnotherProbe",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs::TryRegisterLoss_RejectsPacketsThatAreNotInFlightWhenNoAckOnlyLossSignalIsAllowed"
         ]
       }
     },
