@@ -2465,6 +2465,9 @@
         "upstream_refs": [
           "RFC 9002 §6.2.4 RFC9002-S6.2.4-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0002.cs::ProbePackets_CanUseTwoFullSizedDatagramsAfterTheCongestionWindowIsFilled"
         ]
       }
     },
@@ -2611,6 +2614,9 @@
         "upstream_refs": [
           "RFC 9002 §6.2.4 RFC9002-S6.2.4-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs::ProbeContent_CanUseEitherNewOrPreviouslySentStreamData"
         ]
       }
     },
@@ -4728,6 +4734,10 @@
           "RFC 9002 §A.5 RFC9002-SA.5-B2-P1-S1",
           "RFC 9002 §A.5 RFC9002-SA.5-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP5-0001.cs::QuicPersistentCongestionPacket_PreservesTheSendMetadataNeededForPacketTracking",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP5-0001.cs::QuicPersistentCongestionPacket_CanRepresentNonInFlightOrNonAckElicitingPackets"
         ]
       }
     },
@@ -4754,6 +4764,10 @@
         "upstream_refs": [
           "RFC 9002 §A.5 RFC9002-SA.5-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP5-0002.cs::QuicIdleTimeoutState_TracksTheMostRecentAckElicitingSendTime",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP5-0002.cs::QuicIdleTimeoutState_DoesNotExtendTheDeadlineForRepeatedLocalActivity"
         ]
       }
     },
@@ -4780,6 +4794,10 @@
         "upstream_refs": [
           "RFC 9002 §A.5 RFC9002-SA.5-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP5-0003.cs::QuicCongestionControlState_AccountsInFlightBytesAndRestartsPtoOnAckElicitingSend",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP5-0003.cs::QuicCongestionControlState_DoesNotCountAckOnlyPacketsOrRestartPtoWithoutASend"
         ]
       }
     },
