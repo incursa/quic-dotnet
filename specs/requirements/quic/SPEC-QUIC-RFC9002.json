@@ -5263,6 +5263,11 @@
           "RFC 9002 §A.9 RFC9002-SA.9-B2-P1-S1",
           "RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0001.cs::TimeoutHandling_PrefersTheEarliestLossSpaceBeforePtoWork",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0001.cs::TimeoutHandling_FallsBackToPtoWhenNoLossTimeExists",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0001.cs::TimeoutHandling_PrefersAnImmediateLossDeadlineAtTheBoundary"
         ]
       }
     },
@@ -5289,6 +5294,11 @@
         "upstream_refs": [
           "RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0002.cs::TrySelectPtoTimeAndSpaceMicros_SelectsHandshakeWhenHandshakeKeysExist",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0002.cs::TrySelectPtoTimeAndSpaceMicros_FallsBackToInitialWhenHandshakeKeysAreUnavailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0002.cs::TrySelectPtoTimeAndSpaceMicros_UsesTheImmediateInitialBoundaryWhenItIsTheOnlyProbe"
         ]
       }
     },
@@ -5315,6 +5325,11 @@
         "upstream_refs": [
           "RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_DoublesThePtoBackoffAndRefreshesTheTimer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_LeavesTheBasePtoInPlaceBeforeAnyBackoffIncrement",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_SaturatesTheBackoffBeforeRefreshingTheTimer"
         ]
       }
     },
@@ -6307,6 +6322,11 @@
           "RFC 9002 §B.9 RFC9002-SB.9-B2-P1-S1",
           "RFC 9002 §B.9 RFC9002-SB.9-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDetectPersistentCongestion_RemovesInitialPacketsFromBytesInFlightWhenKeysAreDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDetectPersistentCongestion_DoesNotRemoveInitialPacketsThatWereNotInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDetectPersistentCongestion_RemovesHandshakePacketsAtTheFirstRttSampleBoundary"
         ]
       }
     },
@@ -6333,6 +6353,11 @@
         "upstream_refs": [
           "RFC 9002 §B.9 RFC9002-SB.9-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDetectPersistentCongestion_RemovesInitialAndHandshakePacketsFromCongestionAccounting",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDetectPersistentCongestion_DoesNotChangeCongestionAccountingForPacketsThatWereNotInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDetectPersistentCongestion_RemovesPacketsAtThePersistentCongestionDurationBoundary"
         ]
       }
     },
@@ -6359,6 +6384,11 @@
         "upstream_refs": [
           "RFC 9002 §B.9 RFC9002-SB.9-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TrySelectLossDetectionTimerMicros_PrefersTheResetLossDeadlineOverPto",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TrySelectLossDetectionTimerMicros_CancelsPtoWhenRecoveryIsBlocked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TrySelectLossDetectionTimerMicros_UsesAnImmediateDeadlineWhenTheResetTimerIsZero"
         ]
       }
     }
