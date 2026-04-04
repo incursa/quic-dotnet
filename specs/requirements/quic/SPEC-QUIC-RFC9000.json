@@ -26012,6 +26012,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0004.cs::TryParseLongHeader_ReportsTheLongHeaderFormBit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0004.cs::TryParseLongHeader_RejectsShortHeadersForTheLongHeaderForm",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0004.cs::TryParseLongHeader_AcceptsTheSmallestLongHeaderMarkerByte"
         ]
       }
     },
@@ -26038,6 +26043,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0005.cs::TryParseLongHeader_ReportsTheFixedBitWhenItIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0005.cs::TryParseLongHeader_RejectsVersionedLongHeadersWithTheFixedBitClear",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0005.cs::TryParseLongHeader_AllowsVersionNegotiationPacketsToClearTheFixedBit"
         ]
       }
     },
@@ -26064,6 +26074,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0006.cs::TryGetPacketNumberSpace_MapsHandshakePacketsToTheHandshakeSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0006.cs::TryGetPacketNumberSpace_DoesNotMapInitialPacketsToTheHandshakeSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0006.cs::TryParseLongHeader_ExposesTheFullTwoBitLongPacketTypeRange"
         ]
       }
     },
@@ -26090,6 +26105,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S5",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0007.cs::TryParseLongHeader_ReportsTheReservedBitsWhenTheyAreSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0007.cs::TryParseLongHeader_RejectsShortHeadersForTheReservedBitsField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0007.cs::TryParseLongHeader_PreservesTheBoundaryReservedBits"
         ]
       }
     },
@@ -26116,6 +26136,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S6",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0008.cs::TryParseLongHeader_ExposesThePacketNumberLengthBitsForBoundaryPacketNumberLengths",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0008.cs::TryParseLongHeader_RejectsPacketsWhenThePayloadIsShorterThanThePacketNumberField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0008.cs::TryParseLongHeader_AllowsTheShortestAndLongestPacketNumberLengths"
         ]
       }
     },
@@ -26142,6 +26167,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S7",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0009.cs::TryParseLongHeader_ReportsTheVersionField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0009.cs::TryParseLongHeader_RejectsPacketsMissingTheVersionField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0009.cs::TryParseLongHeader_PreservesBoundaryVersionValues"
         ]
       }
     },
