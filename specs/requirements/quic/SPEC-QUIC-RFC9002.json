@@ -3152,6 +3152,11 @@
         "upstream_refs": [
           "RFC 9002 §7.2 RFC9002-S7.2-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0005.cs::ComputeMinimumCongestionWindowBytes_UsesTwoDatagramsAtTheDefaultPathSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0005.cs::ComputeMinimumCongestionWindowBytes_ScalesAcrossBoundaryValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0005.cs::ComputeMinimumCongestionWindowBytes_RejectsZeroDatagramSizes"
         ]
       }
     },
