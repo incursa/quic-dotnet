@@ -3314,8 +3314,8 @@
           "RFC 9002 §7.3.2 RFC9002-S7.3.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
         ]
-      }
-    },
+        }
+      },
     {
       "id": "REQ-QUIC-RFC9002-S7P3P2-0002",
       "title": "Do not reenter recovery while already there",
@@ -3339,6 +3339,10 @@
         "upstream_refs": [
           "RFC 9002 §7.3.2 RFC9002-S7.3.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P2-0002.cs::TryRegisterLoss_DoesNotReenterRecoveryForOlderLossSignals",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P2-0002.cs::TryProcessEcn_DoesNotReenterRecoveryForOlderAckedPackets"
         ]
       }
     },
