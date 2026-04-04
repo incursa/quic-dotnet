@@ -2925,6 +2925,10 @@
         "upstream_refs": [
           "RFC 9002 §6.4 RFC9002-S6.4-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::TryDetectPersistentCongestion_DiscardsInFlightZeroRttPacketsWhenTheyAreRejected",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::TryDetectPersistentCongestion_DoesNotDiscardRejectedZeroRttPacketsWhenTheyWereNotInFlight"
         ]
       }
     },
@@ -2951,6 +2955,11 @@
         "upstream_refs": [
           "RFC 9002 §6.4 RFC9002-S6.4-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_DiscardOverflowFramesAsSoonAsReplacementKeysExist",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_ClosesWithBufferExceededBeforeReplacementKeysExist",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_TransitionsFromBufferingToDiscardingAtTheHandshakeCompleteBoundary"
         ]
       }
     },
