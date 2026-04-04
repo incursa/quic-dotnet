@@ -1,11 +1,27 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S22P4-0003">Permanent registrations in this registry MUST include the Frame Type Name field.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S22P4-0004">The Frame Type Name field MUST be a short mnemonic for the frame type.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S22P4-0006">Specifications for permanent registrations MUST describe the format and assigned semantics of any fields in the frame.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S22P4-0003")]
 [Requirement("REQ-QUIC-RFC9000-S22P4-0004")]
 [Requirement("REQ-QUIC-RFC9000-S22P4-0006")]
 public sealed class QuicFrameCodecPart3Tests
 {
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4-0004">Data sent in CRYPTO frames MUST NOT be flow controlled in the same way as stream data.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0004">The Type field MUST be encoded as a variable-length integer with value 0x06.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0005">The Offset field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0006">The Length field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0007">CRYPTO frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0008">The Offset field MUST be variable-length integer specifying the byte offset in the stream for the data in this CRYPTO frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0009">The Length field MUST be variable-length integer specifying the length of the Crypto Data field in this CRYPTO frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0012">Unlike STREAM frames, which MUST include a stream ID indicating to which stream the data belongs, the CRYPTO frame carries data for a single stream per encryption level.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0013">The stream MUST NOT have an explicit end, so CRYPTO frames do not have a FIN bit.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0005")]
@@ -34,6 +50,11 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4-0004">Data sent in CRYPTO frames MUST NOT be flow controlled in the same way as stream data.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0010">The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT exceed 262-1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0011">Receipt of a frame that exceeds this limit MUST be treated as a connection error of type FRAME_ENCODING_ERROR or CRYPTO_BUFFER_EXCEEDED.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
@@ -50,6 +71,11 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4-0004">Data sent in CRYPTO frames MUST NOT be flow controlled in the same way as stream data.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0010">The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT exceed 262-1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0011">Receipt of a frame that exceeds this limit MUST be treated as a connection error of type FRAME_ENCODING_ERROR or CRYPTO_BUFFER_EXCEEDED.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
@@ -62,6 +88,10 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0010">The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT exceed 262-1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P6-0011">Receipt of a frame that exceeds this limit MUST be treated as a connection error of type FRAME_ENCODING_ERROR or CRYPTO_BUFFER_EXCEEDED.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
     [CoverageType(RequirementCoverageType.Negative)]
@@ -73,6 +103,14 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0001">The Type field MUST be encoded as a variable-length integer with value 0x07.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0002">The Token Length field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0003">NEW_TOKEN frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0004">The Token Length field MUST be variable-length integer specifying the length of the token in bytes.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0005">An opaque blob that the client MAY use with a future Initial packet.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0006">The token MUST NOT be empty.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P7-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P7-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P7-0003")]
@@ -97,6 +135,10 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0006">The token MUST NOT be empty.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0007">A client MUST treat receipt of a NEW_TOKEN frame with an empty Token field as a connection error of type FRAME_ENCODING_ERROR.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P7-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P7-0007")]
     [CoverageType(RequirementCoverageType.Negative)]
@@ -111,6 +153,14 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P9-0002">The Type field MUST be encoded as a variable-length integer with value 0x10.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P9-0003">The Maximum Data field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P9-0004">MAX_DATA frames MUST contain the following field:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P9-0005">A variable-length integer indicating the maximum amount of data that MAY be sent on the entire connection, in units of bytes.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0006">Subsequently, a receiver MUST send MAX_STREAM_DATA or MAX_DATA frames to advertise larger limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0009">A receiver MAY advertise a larger limit for a connection by sending a MAX_DATA frame.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P9-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P9-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P9-0004")]
@@ -134,6 +184,18 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0009">QUIC MAY allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P10-0005">The Type field MUST be encoded as a variable-length integer with value 0x11.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P10-0006">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P10-0007">The Maximum Stream Data field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P10-0008">MAX_STREAM_DATA frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P10-0009">The Stream ID field MUST be stream ID of the affected stream, encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P10-0010">A variable-length integer indicating the maximum amount of data that MAY be sent on the identified stream, in units of bytes.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0006">Subsequently, a receiver MUST send MAX_STREAM_DATA or MAX_DATA frames to advertise larger limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0007">A receiver MAY advertise a larger limit for a stream by sending a MAX_STREAM_DATA frame with the corresponding stream ID.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0008">A MAX_STREAM_DATA frame MUST indicate the maximum absolute byte offset of a stream.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P10-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P10-0006")]
@@ -164,6 +226,16 @@ public sealed class QuicFrameCodecPart3Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0008">QUIC MAY allow an arbitrary number of streams to operate concurrently.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P11-0001">The Type field MUST be encoded as a variable-length integer with value 0x12..0x13.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P11-0002">The Maximum Streams field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P11-0003">MAX_STREAMS frames MUST contain the following field:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P11-0004">A count of the cumulative number of streams of the corresponding type that MAY be opened over the lifetime of the connection.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P11-0005">This value MUST NOT exceed 260, as it is not possible to encode stream IDs larger than 262-1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P6-0004">Subsequent limits MUST be advertised using MAX_STREAMS frames.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P6-0005">Separate limits MUST apply to unidirectional and bidirectional streams.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P11-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P11-0002")]
@@ -190,6 +262,12 @@ public sealed class QuicFrameCodecPart3Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0008">QUIC MAY allow an arbitrary number of streams to operate concurrently.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P11-0005">This value MUST NOT exceed 260, as it is not possible to encode stream IDs larger than 262-1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P11-0006">Receipt of a frame that permits opening of a stream larger than this limit MUST be treated as a connection error of type FRAME_ENCODING_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P6-0007">If an oversized max_streams value is received in a frame, the connection MUST be closed immediately with FRAME_ENCODING_ERROR.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P11-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P11-0006")]

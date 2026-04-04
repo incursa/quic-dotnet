@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P4-0001">When a PTO timer expires, a sender MUST send at least one ack-eliciting packet in the packet number space as a probe.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P2P4-0001")]
 public sealed class REQ_QUIC_RFC9002_S6P2P4_0001
 {

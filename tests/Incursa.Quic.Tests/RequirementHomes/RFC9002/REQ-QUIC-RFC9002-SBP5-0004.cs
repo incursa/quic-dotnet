@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP5-0004">On packet acknowledgment, the sender MUST NOT increase congestion_window for packets acknowledged during a recovery period.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP5-0004")]
 public sealed class REQ_QUIC_RFC9002_SBP5_0004
 {

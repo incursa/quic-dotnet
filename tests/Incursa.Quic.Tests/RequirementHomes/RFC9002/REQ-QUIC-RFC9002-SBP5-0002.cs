@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP5-0002">On packet acknowledgment, the sender MUST subtract the packet&apos;s sent_bytes from bytes_in_flight.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP5-0002")]
 public sealed class REQ_QUIC_RFC9002_SBP5_0002
 {

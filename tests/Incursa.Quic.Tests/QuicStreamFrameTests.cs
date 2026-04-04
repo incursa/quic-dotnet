@@ -5,6 +5,29 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicStreamFrameTests
 {
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P2-0001">STREAM frames MUST encapsulate data sent by an application.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P2-0002">An endpoint MUST use the Stream ID and Offset fields in STREAM frames to place data in order.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P2-0009">Streams MUST be an ordered byte-stream abstraction with no other structure visible to QUIC.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P4-0004">An application protocol MAY end a stream, resulting in a STREAM frame with the FIN bit set.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P4-0006">An application protocol MAY read data from a stream.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P5-0002">The final size of a stream MUST be the sum of the Offset and Length fields of a STREAM frame with a FIN flag, including any implicit values.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S3-0012">QUIC applications that want to send data MUST send it as QUIC STREAM frames or other frame types carried in QUIC packets.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0001">The OFF bit (0x04) in the frame type MUST be set to indicate that there is an Offset field present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0003">The LEN bit (0x02) in the frame type MUST be set to indicate that there is a Length field present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0005">If this bit MUST be set to 1, the Length field is present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0006">The FIN bit (0x01) MUST indicate that the frame marks the end of the stream.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0008">The Type field MUST be encoded as a variable-length integer with value 0x08..0x0f.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0009">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0010">The Offset field MUST be encoded as a variable-length integer when present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0011">The Length field MUST be encoded as a variable-length integer when present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0012">STREAM frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0013">The Stream ID field MUST be variable-length integer indicating the stream ID of the stream; see Section 2.1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0014">The Offset field MUST be variable-length integer specifying the byte offset in the stream for the data in this STREAM frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0015">This field is present when the OFF bit MUST be set to 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0016">The Length field MUST be variable-length integer specifying the length of the Stream Data field in this STREAM frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0017">This field is present when the LEN bit MUST be set to 1.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S2P2-0002")]
     [Requirement("REQ-QUIC-RFC9000-S2P2-0009")]
@@ -63,6 +86,22 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P2-0001">STREAM frames MUST encapsulate data sent by an application.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P2-0002">An endpoint MUST use the Stream ID and Offset fields in STREAM frames to place data in order.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P2-0009">Streams MUST be an ordered byte-stream abstraction with no other structure visible to QUIC.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P4-0004">An application protocol MAY end a stream, resulting in a STREAM frame with the FIN bit set.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P4-0006">An application protocol MAY read data from a stream.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P5-0002">The final size of a stream MUST be the sum of the Offset and Length fields of a STREAM frame with a FIN flag, including any implicit values.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S3-0012">QUIC applications that want to send data MUST send it as QUIC STREAM frames or other frame types carried in QUIC packets.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0002">When set to 0, the Offset field is absent and the Stream Data starts at an offset of 0 (that is, the frame MUST contain the first bytes of the stream, or the end of a stream that includes no data).</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0004">If this bit MUST be set to 0, the Length field is absent and the Stream Data field extends to the end of the packet.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0008">The Type field MUST be encoded as a variable-length integer with value 0x08..0x0f.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0009">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0012">STREAM frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0013">The Stream ID field MUST be variable-length integer indicating the stream ID of the stream; see Section 2.1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0018">When the LEN bit MUST be set to 0, the Stream Data field consumes all the remaining bytes in the packet.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S2P2-0002")]
     [Requirement("REQ-QUIC-RFC9000-S2P2-0009")]
@@ -110,6 +149,9 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S3-0012">QUIC applications that want to send data MUST send it as QUIC STREAM frames or other frame types carried in QUIC packets.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9001-S3-0012")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormatStreamFrame_RejectsInvalidTypesAndOffsetMismatches()
@@ -122,6 +164,10 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0008">The Type field MUST be encoded as a variable-length integer with value 0x08..0x0f.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4-0004">Data sent in CRYPTO frames MUST NOT be flow controlled in the same way as stream data.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P8-0008")]
     [Requirement("REQ-QUIC-RFC9000-S4-0004")]
     [CoverageType(RequirementCoverageType.Negative)]
@@ -133,6 +179,9 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0008">The Type field MUST be encoded as a variable-length integer with value 0x08..0x0f.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P8-0008")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsEmptyInput()
@@ -141,6 +190,9 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0008">The Type field MUST be encoded as a variable-length integer with value 0x08..0x0f.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P8-0008")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsNonShortestFrameTypeEncoding()
@@ -158,6 +210,11 @@ public sealed class QuicStreamFrameTests
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0009">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0010">The Offset field MUST be encoded as a variable-length integer when present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0011">The Length field MUST be encoded as a variable-length integer when present.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P8-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0011")]
@@ -176,6 +233,9 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0010">The Offset field MUST be encoded as a variable-length integer when present.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P8-0010")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsTruncatedOffsetField()
@@ -195,6 +255,10 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0019">The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT exceed 262-1, as it is not possible to provide flow control credit for that data.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0020">Receipt of a frame that exceeds this limit MUST be treated as a connection error of type FRAME_ENCODING_ERROR or FLOW_CONTROL_ERROR.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0020")]
     [CoverageType(RequirementCoverageType.Negative)]
@@ -220,6 +284,9 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0019">The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT exceed 262-1, as it is not possible to provide flow control credit for that data.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeiling()
@@ -242,6 +309,11 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0004">If this bit MUST be set to 0, the Length field is absent and the Stream Data field extends to the end of the packet.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0018">When the LEN bit MUST be set to 0, the Stream Data field consumes all the remaining bytes in the packet.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0019">The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT exceed 262-1, as it is not possible to provide flow control credit for that data.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P8-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0018")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
@@ -266,6 +338,12 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0004">If this bit MUST be set to 0, the Length field is absent and the Stream Data field extends to the end of the packet.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0018">When the LEN bit MUST be set to 0, the Stream Data field consumes all the remaining bytes in the packet.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0019">The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT exceed 262-1, as it is not possible to provide flow control credit for that data.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0020">Receipt of a frame that exceeds this limit MUST be treated as a connection error of type FRAME_ENCODING_ERROR or FLOW_CONTROL_ERROR.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P8-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0018")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
@@ -283,6 +361,23 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S3-0012">QUIC applications that want to send data MUST send it as QUIC STREAM frames or other frame types carried in QUIC packets.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0001">The OFF bit (0x04) in the frame type MUST be set to indicate that there is an Offset field present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0003">The LEN bit (0x02) in the frame type MUST be set to indicate that there is a Length field present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0005">If this bit MUST be set to 1, the Length field is present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0006">The FIN bit (0x01) MUST indicate that the frame marks the end of the stream.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0008">The Type field MUST be encoded as a variable-length integer with value 0x08..0x0f.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0009">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0010">The Offset field MUST be encoded as a variable-length integer when present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0011">The Length field MUST be encoded as a variable-length integer when present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0012">STREAM frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0013">The Stream ID field MUST be variable-length integer indicating the stream ID of the stream; see Section 2.1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0014">The Offset field MUST be variable-length integer specifying the byte offset in the stream for the data in this STREAM frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0015">This field is present when the OFF bit MUST be set to 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0016">The Length field MUST be variable-length integer specifying the length of the Stream Data field in this STREAM frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0017">This field is present when the LEN bit MUST be set to 1.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9001-S3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0003")]
@@ -329,6 +424,10 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0019">The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT exceed 262-1, as it is not possible to provide flow control credit for that data.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P5-0002">The final size of a stream MUST be the sum of the Offset and Length fields of a STREAM frame with a FIN flag, including any implicit values.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
     [Requirement("REQ-QUIC-RFC9000-S4P5-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -354,6 +453,12 @@ public sealed class QuicStreamFrameTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0004">If this bit MUST be set to 0, the Length field is absent and the Stream Data field extends to the end of the packet.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0018">When the LEN bit MUST be set to 0, the Stream Data field consumes all the remaining bytes in the packet.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0019">The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT exceed 262-1, as it is not possible to provide flow control credit for that data.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P5-0002">The final size of a stream MUST be the sum of the Offset and Length fields of a STREAM frame with a FIN flag, including any implicit values.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P8-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0018")]
     [Requirement("REQ-QUIC-RFC9000-S19P8-0019")]
@@ -382,6 +487,32 @@ public sealed class QuicStreamFrameTests
     }
 
     [Property(Arbitrary = new[] { typeof(QuicStreamFramePropertyGenerators) })]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P2-0001">STREAM frames MUST encapsulate data sent by an application.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P2-0002">An endpoint MUST use the Stream ID and Offset fields in STREAM frames to place data in order.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P2-0009">Streams MUST be an ordered byte-stream abstraction with no other structure visible to QUIC.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P4-0004">An application protocol MAY end a stream, resulting in a STREAM frame with the FIN bit set.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P4-0006">An application protocol MAY read data from a stream.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S3-0012">QUIC applications that want to send data MUST send it as QUIC STREAM frames or other frame types carried in QUIC packets.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P5-0002">The final size of a stream MUST be the sum of the Offset and Length fields of a STREAM frame with a FIN flag, including any implicit values.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0001">The OFF bit (0x04) in the frame type MUST be set to indicate that there is an Offset field present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0002">When set to 0, the Offset field is absent and the Stream Data starts at an offset of 0 (that is, the frame MUST contain the first bytes of the stream, or the end of a stream that includes no data).</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0003">The LEN bit (0x02) in the frame type MUST be set to indicate that there is a Length field present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0004">If this bit MUST be set to 0, the Length field is absent and the Stream Data field extends to the end of the packet.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0005">If this bit MUST be set to 1, the Length field is present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0006">The FIN bit (0x01) MUST indicate that the frame marks the end of the stream.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0008">The Type field MUST be encoded as a variable-length integer with value 0x08..0x0f.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0009">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0010">The Offset field MUST be encoded as a variable-length integer when present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0011">The Length field MUST be encoded as a variable-length integer when present.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0012">STREAM frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0013">The Stream ID field MUST be variable-length integer indicating the stream ID of the stream; see Section 2.1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0014">The Offset field MUST be variable-length integer specifying the byte offset in the stream for the data in this STREAM frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0015">This field is present when the OFF bit MUST be set to 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0016">The Length field MUST be variable-length integer specifying the length of the Stream Data field in this STREAM frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0017">This field is present when the LEN bit MUST be set to 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P8-0018">When the LEN bit MUST be set to 0, the Stream Data field consumes all the remaining bytes in the packet.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S2P2-0002")]
     [Requirement("REQ-QUIC-RFC9000-S2P2-0009")]

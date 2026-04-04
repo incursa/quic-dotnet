@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S5P1-0001">An endpoint MUST generate an RTT sample on receiving an ACK frame only if the largest acknowledged packet number is newly acknowledged and at least one newly acknowledged packet was ack-eliciting.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S5P1-0001")]
 public sealed class REQ_QUIC_RFC9002_S5P1_0001
 {

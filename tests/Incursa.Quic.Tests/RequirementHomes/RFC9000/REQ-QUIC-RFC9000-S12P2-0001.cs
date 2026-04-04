@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S12P2-0001">Initial, 0-RTT, and Handshake packets MUST contain a Length field that determines the end of the packet.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S12P2-0001")]
 public sealed class REQ_QUIC_RFC9000_S12P2_0001
 {

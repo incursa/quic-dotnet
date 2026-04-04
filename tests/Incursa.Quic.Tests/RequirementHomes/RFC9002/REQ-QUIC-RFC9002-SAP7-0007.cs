@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP7-0007">On the first RTT sample, the endpoint MUST set min_rtt to latest_rtt, smoothed_rtt to latest_rtt, rttvar to latest_rtt / 2, and first_rtt_sample to now().</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP7-0007")]
 public sealed class REQ_QUIC_RFC9002_SAP7_0007
 {

@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7-0002">Packets containing only ACK frames MUST NOT count toward bytes in flight.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S7-0002")]
 public sealed class REQ_QUIC_RFC9002_S7_0002
 {

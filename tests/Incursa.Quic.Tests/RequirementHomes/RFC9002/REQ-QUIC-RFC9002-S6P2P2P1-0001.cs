@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P2P1-0001">If no additional data can be sent, the server&apos;s PTO timer MUST NOT be armed until datagrams have been received from the client.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P2P2P1-0001")]
 public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0001
 {

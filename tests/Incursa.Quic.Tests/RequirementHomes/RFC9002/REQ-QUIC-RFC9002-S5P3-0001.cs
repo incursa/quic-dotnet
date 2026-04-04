@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S5P3-0001">The calculation of smoothed_rtt MUST use RTT samples after adjusting them for acknowledgment delays.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S5P3-0001")]
 public sealed class REQ_QUIC_RFC9002_S5P3_0001
 {

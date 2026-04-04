@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P2-0005">The RECOMMENDED time threshold multiplier, kTimeThreshold, SHOULD be 9/8.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P1P2-0005")]
 public sealed class REQ_QUIC_RFC9002_S6P1P2_0005
 {

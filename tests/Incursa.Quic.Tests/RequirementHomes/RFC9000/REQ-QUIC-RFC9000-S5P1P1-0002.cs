@@ -1,11 +1,17 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0002">The initial connection ID issued by an endpoint MUST be sent in the Source Connection ID field of the long packet header during the handshake.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S5P1P1-0002")]
 public sealed class REQ_QUIC_RFC9000_S5P1P1_0002
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0002">The initial connection ID issued by an endpoint MUST be sent in the Source Connection ID field of the long packet header during the handshake.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0002")]
     public void TryParseLongHeader_ExposesTheHandshakeSourceConnectionId()
     {
@@ -24,6 +30,9 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0002">The initial connection ID issued by an endpoint MUST be sent in the Source Connection ID field of the long packet header during the handshake.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0002")]
     public void TryParseLongHeader_RejectsHandshakePacketsMissingTheSourceConnectionIdLengthByte()
     {
@@ -37,6 +46,9 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0002">The initial connection ID issued by an endpoint MUST be sent in the Source Connection ID field of the long packet header during the handshake.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0002")]
     public void TryParseLongHeader_AllowsAZeroLengthHandshakeSourceConnectionId()
     {

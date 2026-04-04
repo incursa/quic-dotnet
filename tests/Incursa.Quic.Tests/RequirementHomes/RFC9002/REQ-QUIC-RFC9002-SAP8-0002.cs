@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP8-0002">If no ack-eliciting packets are in flight, GetPtoTimeAndSpace MUST start PTO timing from now() + duration and select Handshake when handshake keys exist, otherwise Initial.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP8-0002")]
 public sealed class REQ_QUIC_RFC9002_SAP8_0002
 {

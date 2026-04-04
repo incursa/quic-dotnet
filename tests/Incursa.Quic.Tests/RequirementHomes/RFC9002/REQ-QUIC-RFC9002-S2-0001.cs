@@ -2,6 +2,9 @@ using System.Text.Json;
 
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S2-0001">The key words in this document MUST be interpreted as described in BCP 14 when, and only when, they appear in all capitals.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S2-0001")]
 public sealed class REQ_QUIC_RFC9002_S2_0001
 {

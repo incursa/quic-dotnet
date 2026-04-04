@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0015">Packets containing a zero value for this bit are not valid packets in this version and MUST be discarded.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2-0015")]
 public sealed class REQ_QUIC_RFC9000_S17P2_0015
 {

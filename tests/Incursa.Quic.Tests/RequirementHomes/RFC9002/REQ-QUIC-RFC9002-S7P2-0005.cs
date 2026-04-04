@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P2-0005">The minimum congestion window SHOULD be 2 * max_datagram_size.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S7P2-0005")]
 public sealed class REQ_QUIC_RFC9002_S7P2_0005
 {

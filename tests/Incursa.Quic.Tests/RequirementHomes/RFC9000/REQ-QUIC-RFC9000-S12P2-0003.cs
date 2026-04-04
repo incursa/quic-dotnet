@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S12P2-0003">Using the Length MUST field, a sender can coalesce multiple QUIC packets into one UDP datagram.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S12P2-0003")]
 public sealed class REQ_QUIC_RFC9000_S12P2_0003
 {

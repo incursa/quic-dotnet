@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP1-0004">An endpoint MAY retain state for a packet after it is declared lost for a limited time to allow for packet reordering.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP1-0004")]
 public sealed class REQ_QUIC_RFC9002_SAP1_0004
 {

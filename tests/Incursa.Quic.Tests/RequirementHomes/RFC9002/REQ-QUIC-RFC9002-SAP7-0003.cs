@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP7-0003">When the largest newly acknowledged packet is ack.largest_acked and at least one newly acknowledged packet is ack-eliciting, the sender MUST update latest_rtt and then update RTT estimates using ack_delay.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP7-0003")]
 public sealed class REQ_QUIC_RFC9002_SAP7_0003
 {

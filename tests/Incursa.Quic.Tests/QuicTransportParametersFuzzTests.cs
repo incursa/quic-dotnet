@@ -3,6 +3,54 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicTransportParametersFuzzTests
 {
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S8-0001">The TLS handshake MUST carry values for QUIC transport parameters.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18-0002">They MUST be encoded as a sequence of transport parameters, as shown in Figure 20:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18-0003">Each transport parameter MUST be encoded as an (identifier, length, value) tuple, as shown in Figure 21:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18-0004">The Transport Parameter ID field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18-0005">The Transport Parameter Length field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18-0006">The Transport Parameter Length field MUST contain the length of the Transport Parameter Value field in bytes.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18-0007">QUIC MUST encode transport parameters into a sequence of bytes, which is then included in the cryptographic handshake.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P1-0001">Transport parameters with an identifier of the form 31 * N + 27 for integer values of N MUST be reserved to exercise the requirement that unknown transport parameters be ignored.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P1-0002">These transport parameters have no semantics and MAY carry arbitrary values.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0001">This transport parameter MUST only be sent by a server.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0002">The maximum idle timeout is a value in milliseconds that MUST be encoded as an integer; see (Section 10.1).</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0004">This transport parameter MAY be sent by a server.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0005">This transport parameter MUST NOT be sent by a client.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0007">UDP datagrams with payloads larger than this limit MUST NOT be likely to be processed by the receiver.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0008">The initial maximum data parameter is an integer value that contains the initial value for the maximum amount of data that MAY be sent on the connection.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0010">The initial maximum bidirectional streams parameter is an integer value that MUST contain the initial maximum number of bidirectional streams the endpoint that receives this transport parameter is permitted to initiate.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0013">The initial maximum unidirectional streams parameter is an integer value that MUST contain the initial maximum number of unidirectional streams the endpoint that receives this transport parameter is permitted to initiate.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0015">This value SHOULD include the receiver&apos;s expected delays in alarms firing.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0016">The disable active migration transport parameter is included if the endpoint MUST NOT support active connection migration (Section 9) on the address being used during the handshake.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0019">The server&apos;s preferred address MUST be used to effect a change in server address at the end of the handshake, as described in Section 9.6.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0020">Servers MAY choose to only send a preferred address of one address family by sending an all-zero address and port (0.0.0.0:0 or [::]:0) for the other family.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0021">IP addresses MUST be encoded in network byte order.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0022">The preferred_address transport parameter MUST contain an address and port for both IPv4 and IPv6.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0023">Finally, a 16-byte Stateless Reset Token field MUST include the stateless reset token associated with the connection ID.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0025">A server that chooses a zero-length connection ID MUST NOT provide a preferred address.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0026">Similarly, a server MUST NOT include a zero-length connection ID in this transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0028">The IPv4 Address field MUST be 32 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0029">The IPv4 Port field MUST be 16 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0030">The IPv6 Address field MUST be 128 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0031">The IPv6 Port field MUST be 16 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0032">The Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0033">The Stateless Reset Token field MUST be 128 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0035">The value of the active_connection_id_limit parameter MUST be at least 2.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P2P3-0002">If servers can use a dedicated server IP address or port other than the one that the client initially connects to, they MAY use the preferred_address transport parameter to request that clients move connections to that dedicated address.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P2P3-0004">A server in a deployment that does not implement a solution to maintain connection continuity when the client address changes SHOULD indicate that migration is not supported by using the disable_active_migration transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0011">Endpoints MUST advertise the number of active connection IDs they are willing to maintain using the active_connection_id_limit transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0001">The choice each endpoint makes about connection IDs during the handshake MUST be authenticated by including all values in transport parameters.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0002">Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0003">A server MUST include the Destination Connection ID field from the first Initial packet it received from the client in the original_destination_connection_id transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0004">If it sends a Retry packet, a server MUST also include the Source Connection ID field from the Retry packet in the retry_source_connection_id transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0009">If a zero-length connection ID is selected, the corresponding transport parameter MUST be included with a zero-length value.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0005">A receiver MUST set initial limits for all streams through transport parameters during the handshake.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P6-0003">Initial limits MUST be set in the transport parameters.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P6-0005">Separate limits MUST apply to unidirectional and bidirectional streams.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S9P6P1-0001">Servers MAY communicate a preferred address of each address family (IPv4 and IPv6) to allow clients to pick the one most suited to their network attachment.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S9P6P1-0007">Servers MAY communicate a preferred address of each address family to allow clients to pick the one most suited to their network attachment.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9001-S8-0001")]
     [Requirement("REQ-QUIC-RFC9000-S18-0002")]
     [Requirement("REQ-QUIC-RFC9000-S18-0003")]

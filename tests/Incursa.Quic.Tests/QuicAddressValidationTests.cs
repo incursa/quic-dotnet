@@ -6,6 +6,10 @@ public sealed class QuicAddressValidationTests
     [InlineData(true, 8, true)]
     [InlineData(true, 7, false)]
     [InlineData(false, 8, false)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P1P1P1-0001">Address validation (Section 8) MUST be used to verify that an entity that claims a given address is able to receive packets at that address.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1-0001">Additionally, an endpoint MAY consider the peer address validated if the peer uses a connection ID chosen by the endpoint and the connection ID contains at least 64 bits of entropy.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S21P1P1P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -23,6 +27,10 @@ public sealed class QuicAddressValidationTests
     [InlineData(1187, 13)]
     [InlineData(1199, 1)]
     [InlineData(1200, 0)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S14P1-0003">A server MUST expand the payload of all UDP datagrams carrying ack-eliciting Initial packets to at least the smallest allowed maximum datagram size of 1200 bytes.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1-0004">Clients MUST ensure that UDP datagrams containing Initial packets have UDP payloads of at least 1200 bytes, adding PADDING frames as necessary.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S14P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -38,6 +46,9 @@ public sealed class QuicAddressValidationTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1-0004">Clients MUST ensure that UDP datagrams containing Initial packets have UDP payloads of at least 1200 bytes, adding PADDING frames as necessary.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S8P1-0004")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryGetVersion1InitialDatagramPaddingLength_RejectsNegativeCurrentPayloadLength()
@@ -46,6 +57,10 @@ public sealed class QuicAddressValidationTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S14P1-0003">A server MUST expand the payload of all UDP datagrams carrying ack-eliciting Initial packets to at least the smallest allowed maximum datagram size of 1200 bytes.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1-0004">Clients MUST ensure that UDP datagrams containing Initial packets have UDP payloads of at least 1200 bytes, adding PADDING frames as necessary.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S14P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -69,6 +84,9 @@ public sealed class QuicAddressValidationTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1-0004">Clients MUST ensure that UDP datagrams containing Initial packets have UDP payloads of at least 1200 bytes, adding PADDING frames as necessary.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S8P1-0004")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormatVersion1InitialDatagramPadding_RejectsNegativeLengthsAndShortDestinations()

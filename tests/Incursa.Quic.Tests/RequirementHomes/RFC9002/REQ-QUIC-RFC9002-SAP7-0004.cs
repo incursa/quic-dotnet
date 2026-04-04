@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP7-0004">When an ACK frame carries ECN information, the sender MUST process it, detect and remove newly lost packets, pass any lost packets to `OnPacketsLost`, and pass newly acknowledged packets to `OnPacketsAcked`.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP7-0004")]
 public sealed class REQ_QUIC_RFC9002_SAP7_0004
 {

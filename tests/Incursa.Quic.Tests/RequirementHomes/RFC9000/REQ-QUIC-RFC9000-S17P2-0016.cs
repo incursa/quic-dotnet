@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0016">The next two bits (those with a mask of 0x30) of byte 0 MUST contain a packet type.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2-0016")]
 public sealed class REQ_QUIC_RFC9000_S17P2_0016
 {

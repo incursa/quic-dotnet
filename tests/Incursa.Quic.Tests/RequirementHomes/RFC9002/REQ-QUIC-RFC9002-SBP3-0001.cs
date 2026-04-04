@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP3-0001">At the beginning of a connection, the congestion control state MUST be initialized by setting congestion_window to kInitialWindow, bytes_in_flight to 0, congestion_recovery_start_time to 0, ssthresh to infinite, and each ECN-CE counter to 0.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP3-0001")]
 public sealed class REQ_QUIC_RFC9002_SBP3_0001
 {

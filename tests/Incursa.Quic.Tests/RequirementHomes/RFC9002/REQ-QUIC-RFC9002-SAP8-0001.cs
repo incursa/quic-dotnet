@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP8-0001">GetLossTimeAndSpace MUST return the earliest nonzero loss_time across the packet number spaces together with the corresponding packet number space.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP8-0001")]
 public sealed class REQ_QUIC_RFC9002_SAP8_0001
 {

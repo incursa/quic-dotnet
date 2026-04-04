@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP9-0002">When Initial or Handshake keys are discarded, the sender MUST remove the discarded packets from `bytes_in_flight` and clear `sent_packets` for that packet number space.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP9-0002")]
 public sealed class REQ_QUIC_RFC9002_SBP9_0002
 {

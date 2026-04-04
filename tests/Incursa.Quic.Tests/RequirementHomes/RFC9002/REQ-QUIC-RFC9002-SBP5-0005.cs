@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP5-0005">While in slow start, the sender MUST increase congestion_window by the number of acknowledged bytes.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP5-0005")]
 public sealed class REQ_QUIC_RFC9002_SBP5_0005
 {

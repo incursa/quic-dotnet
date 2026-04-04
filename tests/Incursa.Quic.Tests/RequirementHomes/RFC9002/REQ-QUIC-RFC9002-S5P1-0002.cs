@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S5P1-0002">latest_rtt MUST equal the time elapsed between when the largest acknowledged packet was sent and when the corresponding ACK was received.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S5P1-0002")]
 public sealed class REQ_QUIC_RFC9002_S5P1_0002
 {

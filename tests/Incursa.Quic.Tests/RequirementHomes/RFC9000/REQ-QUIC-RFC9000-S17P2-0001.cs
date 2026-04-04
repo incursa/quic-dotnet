@@ -1,11 +1,17 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0001">The Header Form field MUST be 1 bits long with value 1.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2-0001")]
 public sealed class REQ_QUIC_RFC9000_S17P2_0001
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0001">The Header Form field MUST be 1 bits long with value 1.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0001")]
     public void TryClassifyHeaderForm_RecognizesLongAndShortHeadersByTheHighBit()
     {
@@ -30,6 +36,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0001">The Header Form field MUST be 1 bits long with value 1.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0001")]
     public void TryClassifyHeaderForm_RejectsEmptyInput()
     {

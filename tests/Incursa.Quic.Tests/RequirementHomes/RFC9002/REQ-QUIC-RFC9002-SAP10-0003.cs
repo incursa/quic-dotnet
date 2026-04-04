@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP10-0003">`DetectAndRemoveLostPackets` MUST remove packets that are sufficiently old or sufficiently behind the largest acknowledged packet from `sent_packets`, report them lost, and schedule `loss_time` for packets that are not yet lost.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP10-0003")]
 public sealed class REQ_QUIC_RFC9002_SAP10_0003
 {

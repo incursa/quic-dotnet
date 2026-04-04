@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP8-0001">When packets are declared lost, the sender MUST remove any in-flight lost packets from bytes_in_flight.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP8-0001")]
 public sealed class REQ_QUIC_RFC9002_SBP8_0001
 {

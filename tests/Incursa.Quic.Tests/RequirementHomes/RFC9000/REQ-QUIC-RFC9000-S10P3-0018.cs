@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0018">Servers MAY issue a stateless_reset_token transport parameter during the handshake that applies to the connection ID that it selected during the handshake.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3-0018")]
 public sealed class REQ_QUIC_RFC9000_S10P3_0018
 {

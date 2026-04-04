@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0009">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2-0009")]
 public sealed class REQ_QUIC_RFC9000_S17P2_0009
 {
@@ -10,6 +13,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0009
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Positive")]
     [Trait("Category", "Edge")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0009">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0009")]
     public void TryParseLongHeader_PreservesTheSourceConnectionIdLengthInVersion1Packets(
         int sourceConnectionIdLength)
@@ -34,6 +40,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0009
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0009">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0009")]
     public void TryParseLongHeader_RejectsVersion1SourceConnectionIdsLongerThan20Bytes()
     {

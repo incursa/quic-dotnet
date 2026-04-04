@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP8-0002">If any in-flight packet was lost, the sender MUST invoke the congestion event logic using the latest loss send time.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP8-0002")]
 public sealed class REQ_QUIC_RFC9002_SBP8_0002
 {

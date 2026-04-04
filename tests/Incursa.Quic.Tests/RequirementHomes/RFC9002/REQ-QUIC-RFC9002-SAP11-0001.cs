@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP11-0001">When Initial or Handshake keys are discarded, the endpoint MUST discard packets in that space and update loss detection state.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP11-0001")]
 public sealed class REQ_QUIC_RFC9002_SAP11_0001
 {

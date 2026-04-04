@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP8-0004">For persistent congestion testing, the sender MUST consider only packets sent after first_rtt_sample.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP8-0004")]
 public sealed class REQ_QUIC_RFC9002_SBP8_0004
 {

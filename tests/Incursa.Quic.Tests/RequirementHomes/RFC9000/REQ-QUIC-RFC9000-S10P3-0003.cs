@@ -2,6 +2,9 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0003">A stateless reset token MUST be 16 bytes long and difficult to guess.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3-0003")]
 public sealed class REQ_QUIC_RFC9000_S10P3_0003
 {

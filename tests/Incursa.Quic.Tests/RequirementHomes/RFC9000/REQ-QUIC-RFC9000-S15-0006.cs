@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S15-0006">Versions that follow the pattern 0x?a?a?a?a MUST be reserved for use in forcing version negotiation to be exercised.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S15-0006")]
 public sealed class REQ_QUIC_RFC9000_S15_0006
 {

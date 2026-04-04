@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP1P1-0005">The sent-packet record MUST include the time the packet was sent.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP1P1-0005")]
 public sealed class REQ_QUIC_RFC9002_SAP1P1_0005
 {

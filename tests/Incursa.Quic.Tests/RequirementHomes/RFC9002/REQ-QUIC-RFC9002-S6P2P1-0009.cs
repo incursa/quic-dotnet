@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P1-0009">A client that is not yet certain that the server has finished validating its address MUST NOT reset the PTO backoff factor on receiving acknowledgments in Initial packets.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P2P1-0009")]
 public sealed class REQ_QUIC_RFC9002_S6P2P1_0009
 {

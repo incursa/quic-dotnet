@@ -2,6 +2,9 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P1-0003">An endpoint MUST identify a received datagram as a Stateless Reset by comparing the last 16 bytes of the datagram with all stateless reset tokens associated with the remote address on which the datagram was received.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3P1-0003")]
 public sealed class REQ_QUIC_RFC9000_S10P3P1_0003
 {

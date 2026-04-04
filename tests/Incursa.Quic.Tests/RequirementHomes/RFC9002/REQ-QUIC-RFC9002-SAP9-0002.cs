@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP9-0002">When no ack-eliciting packets are in flight, the endpoint MUST send a Handshake packet if it has Handshake keys; otherwise send a padded Initial packet.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP9-0002")]
 public sealed class REQ_QUIC_RFC9002_SAP9_0002
 {

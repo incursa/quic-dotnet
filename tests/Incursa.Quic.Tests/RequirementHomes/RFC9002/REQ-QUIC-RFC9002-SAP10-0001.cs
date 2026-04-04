@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP10-0001">DetectAndRemoveLostPackets MUST only run when largest_acked_packet[pn_space] is known.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP10-0001")]
 public sealed class REQ_QUIC_RFC9002_SAP10_0001
 {

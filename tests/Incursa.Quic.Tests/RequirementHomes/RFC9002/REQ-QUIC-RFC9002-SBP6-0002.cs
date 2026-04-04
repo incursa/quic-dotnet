@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP6-0002">When a new congestion event is detected, the sender MUST set `congestion_recovery_start_time` to `now()`, set `ssthresh` to `congestion_window * kLossReductionFactor`, and set `congestion_window` to the larger of `ssthresh` and `kMinimumWindow`.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP6-0002")]
 public sealed class REQ_QUIC_RFC9002_SBP6_0002
 {

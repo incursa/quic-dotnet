@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0003">The Long Packet Type field MUST be 2 bits long.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2-0003")]
 public sealed class REQ_QUIC_RFC9000_S17P2_0003
 {
@@ -10,6 +13,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0003
     [InlineData((byte)0x70, (byte)0x03)]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0003">The Long Packet Type field MUST be 2 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0003")]
     public void TryParseLongHeader_ExposesTheTwoBitLongPacketTypeField(
         byte headerControlBits,

@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP8-0006">`SetLossDetectionTimer` MUST update the timer to the earliest pending loss time when one exists, cancel the timer when the server is at the anti-amplification limit or when no ack-eliciting packets are in flight and peer address validation is complete, and otherwise update the timer to the PTO timeout.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP8-0006")]
 public sealed class REQ_QUIC_RFC9002_SAP8_0006
 {

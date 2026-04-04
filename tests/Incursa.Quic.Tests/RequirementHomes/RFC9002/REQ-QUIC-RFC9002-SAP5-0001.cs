@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP5-0001">When a packet is sent, the sender MUST store its packet number, send time, ack-eliciting flag, in_flight flag, and sent_bytes in sent_packets[pn_space][packet_number].</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP5-0001")]
 public sealed class REQ_QUIC_RFC9002_SAP5_0001
 {

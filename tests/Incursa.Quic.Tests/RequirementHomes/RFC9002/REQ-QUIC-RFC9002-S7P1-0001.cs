@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P1-0001">If a path has been validated to support ECN, QUIC MUST treat a CE codepoint in the IP header as a signal of congestion.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S7P1-0001")]
 public sealed class REQ_QUIC_RFC9002_S7P1_0001
 {

@@ -44,6 +44,11 @@ public sealed class QuicVariableLengthIntegerTests
 
     [Theory]
     [MemberData(nameof(EncodedLengthCases))]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0001" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0002" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0003" missing="true">Requirement text not found.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
@@ -60,6 +65,11 @@ public sealed class QuicVariableLengthIntegerTests
 
     [Theory]
     [MemberData(nameof(ExactParseCases))]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0001" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0002" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0003" missing="true">Requirement text not found.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
@@ -75,6 +85,9 @@ public sealed class QuicVariableLengthIntegerTests
     [InlineData(0UL, 2)]
     [InlineData(1UL, 4)]
     [InlineData(63UL, 8)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0005" missing="true">Requirement text not found.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-VINT-0005")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryParse_AcceptsNonMinimalEncodings(ulong value, int encodedLength)
@@ -87,6 +100,9 @@ public sealed class QuicVariableLengthIntegerTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0004" missing="true">Requirement text not found.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-VINT-0004")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParse_RejectsEmptyInput()
@@ -98,6 +114,9 @@ public sealed class QuicVariableLengthIntegerTests
     [InlineData(new byte[] { 0x40 })]
     [InlineData(new byte[] { 0x80, 0x00, 0x00 })]
     [InlineData(new byte[] { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 })]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0004" missing="true">Requirement text not found.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-VINT-0004")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParse_RejectsTruncatedInputs(byte[] encoded)
@@ -106,6 +125,11 @@ public sealed class QuicVariableLengthIntegerTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0001" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0002" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0003" missing="true">Requirement text not found.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
@@ -123,6 +147,11 @@ public sealed class QuicVariableLengthIntegerTests
 
     [Theory]
     [MemberData(nameof(ExactFormatCases))]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0001" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0002" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0003" missing="true">Requirement text not found.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
@@ -140,6 +169,11 @@ public sealed class QuicVariableLengthIntegerTests
     [InlineData(0UL, 0)]
     [InlineData(64UL, 1)]
     [InlineData(16_384UL, 3)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0001" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0002" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0003" missing="true">Requirement text not found.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]
@@ -152,6 +186,11 @@ public sealed class QuicVariableLengthIntegerTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0001" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0002" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0003" missing="true">Requirement text not found.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-VINT-0001")]
     [Requirement("REQ-QUIC-VINT-0002")]
     [Requirement("REQ-QUIC-VINT-0003")]

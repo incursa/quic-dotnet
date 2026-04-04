@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S16-0004">Values MUST NOT need to be encoded on the minimum number of bytes necessary, with the sole exception of the Frame Type field; see Section 12.4.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S16-0004")]
 public sealed class REQ_QUIC_RFC9000_S16_0004
 {

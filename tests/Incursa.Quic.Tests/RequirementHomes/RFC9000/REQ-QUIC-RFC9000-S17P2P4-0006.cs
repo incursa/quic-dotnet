@@ -1,11 +1,17 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P4-0006">The Long Packet Type field MUST be 2 bits long with value 2.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2P4-0006")]
 public sealed class REQ_QUIC_RFC9000_S17P2P4_0006
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P4-0006">The Long Packet Type field MUST be 2 bits long with value 2.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P4-0006")]
     public void TryGetPacketNumberSpace_MapsHandshakePacketsToTheHandshakeSpace()
     {
@@ -20,6 +26,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2P4_0006
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P4-0006">The Long Packet Type field MUST be 2 bits long with value 2.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P4-0006")]
     public void TryGetPacketNumberSpace_DoesNotMapInitialPacketsToTheHandshakeSpace()
     {
@@ -34,6 +43,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2P4_0006
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P4-0006">The Long Packet Type field MUST be 2 bits long with value 2.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P4-0006")]
     public void TryParseLongHeader_ExposesTheFullTwoBitLongPacketTypeRange()
     {

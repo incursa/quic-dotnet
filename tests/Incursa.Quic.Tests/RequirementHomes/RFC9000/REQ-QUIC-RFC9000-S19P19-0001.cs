@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P19-0001">The CONNECTION_CLOSE frame with a type of 0x1c MUST be used to signal errors at only the QUIC layer, or the absence of errors (with the NO_ERROR code).</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S19P19-0001")]
 public sealed class REQ_QUIC_RFC9000_S19P19_0001
 {

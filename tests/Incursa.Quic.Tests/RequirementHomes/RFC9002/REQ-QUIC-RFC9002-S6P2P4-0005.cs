@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P4-0005">An endpoint SHOULD include new data in packets that are sent on PTO expiration.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P2P4-0005")]
 public sealed class REQ_QUIC_RFC9002_S6P2P4_0005
 {

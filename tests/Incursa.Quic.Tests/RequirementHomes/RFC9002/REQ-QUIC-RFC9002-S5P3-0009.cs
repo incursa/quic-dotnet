@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S5P3-0009">After the handshake is confirmed, an endpoint MUST use the lesser of the acknowledgment delay and the peer&apos;s max_ack_delay.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S5P3-0009")]
 public sealed class REQ_QUIC_RFC9002_S5P3_0009
 {

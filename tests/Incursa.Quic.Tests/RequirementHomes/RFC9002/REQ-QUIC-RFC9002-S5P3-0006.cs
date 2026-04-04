@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S5P3-0006">Before any RTT samples are available for a new path, or when the estimator is reset, the RTT estimator MUST be initialized using the initial RTT.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S5P3-0006")]
 public sealed class REQ_QUIC_RFC9002_S5P3_0006
 {

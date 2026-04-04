@@ -100,6 +100,11 @@ function Write-CodexStreamLine {
         return
     }
 
+    $logDirectory = Split-Path -Path $LogPath -Parent
+    if (-not [string]::IsNullOrWhiteSpace($logDirectory)) {
+        Ensure-Directory -Path $logDirectory | Out-Null
+    }
+
     [System.IO.File]::AppendAllText($LogPath, "[$StreamName] $Line$([Environment]::NewLine)")
 
     $summary = ($Line -replace '\s+', ' ').Trim()
@@ -226,7 +231,7 @@ function Get-RequirementBatchCandidates {
         [Parameter(Mandatory = $true)][string]$CurrentTier,
         [Parameter(Mandatory = $true)][int]$TargetCount,
         [Parameter(Mandatory = $true)][int]$MaxCount,
-        [string[]]$ExcludedBatchKeys = @()
+        [AllowNull()][string[]]$ExcludedBatchKeys = @()
     )
 
     $triageState = Convert-TierToTriageState -Tier $CurrentTier
@@ -239,6 +244,10 @@ function Get-RequirementBatchCandidates {
             MaxCount       = $MaxCount
             Requirements   = @()
         }
+    }
+
+    if ($null -eq $ExcludedBatchKeys) {
+        $ExcludedBatchKeys = @()
     }
 
     $requirementRfc = Convert-RfcFocusToRequirementRfc -CurrentRfc $CurrentRfcFocus
@@ -362,13 +371,17 @@ function Read-LineList {
     }
 
     $lines = Get-Content -LiteralPath $Path | ForEach-Object { $_.Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+    if ($null -eq $lines) {
+        return @()
+    }
+
     return @($lines | Select-Object -Unique)
 }
 
 function Write-LineList {
     param(
         [Parameter(Mandatory = $true)][string]$Path,
-        [Parameter(Mandatory = $true)][string[]]$Lines
+        [AllowNull()][string[]]$Lines
     )
 
     $directory = Split-Path -Path $Path -Parent
@@ -376,7 +389,11 @@ function Write-LineList {
         New-Item -ItemType Directory -Path $directory -Force | Out-Null
     }
 
-    if ($Lines.Count -eq 0) {
+    if ($null -eq $Lines) {
+        $Lines = @()
+    }
+
+    if (@($Lines).Count -eq 0) {
         if (Test-Path -LiteralPath $Path) {
             Remove-Item -LiteralPath $Path -Force
         }
@@ -388,9 +405,13 @@ function Write-LineList {
 
 function Add-LineIfMissing {
     param(
-        [Parameter(Mandatory = $true)][string[]]$Lines,
+        [AllowNull()][string[]]$Lines,
         [Parameter(Mandatory = $true)][string]$Line
     )
+
+    if ($null -eq $Lines) {
+        $Lines = @()
+    }
 
     if ($Lines -contains $Line) {
         return @($Lines)
@@ -1058,6 +1079,10 @@ try {
             catch {
                 $status = "Exception"
                 $detail = Get-ExceptionDetail -Exception $_.Exception
+                $logDirectory = Split-Path -Path $logPath -Parent
+                if (-not [string]::IsNullOrWhiteSpace($logDirectory)) {
+                    Ensure-Directory -Path $logDirectory | Out-Null
+                }
                 [System.IO.File]::AppendAllText($logPath, "[exception] $($_ | Out-String)$([Environment]::NewLine)")
                 $run = [pscustomobject]@{ ExitCode = -1; Seconds = 0 }
                 $stopNow = $true

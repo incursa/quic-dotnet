@@ -1,10 +1,16 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0002">The other seven bits in the first byte of a QUIC long header packet MUST be version-specific.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
 public sealed class REQ_QUIC_RFC8999_S5P1_0002
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0002">The other seven bits in the first byte of a QUIC long header packet MUST be version-specific.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
     public void TryParseLongHeader_PreservesTheSevenVersionSpecificBits()
     {
@@ -26,6 +32,9 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0002
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0002">The other seven bits in the first byte of a QUIC long header packet MUST be version-specific.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
     public void TryParseLongHeader_RejectsShortHeadersEvenWhenTheOtherSevenBitsMatch()
     {
@@ -39,6 +48,9 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0002">The other seven bits in the first byte of a QUIC long header packet MUST be version-specific.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
     public void TryParseLongHeader_PreservesAnAllZeroVersionSpecificBitField()
     {

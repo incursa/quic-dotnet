@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P1-0005">An endpoint MUST NOT set its PTO timer for the Application Data packet number space until the handshake is confirmed.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P2P1-0005")]
 public sealed class REQ_QUIC_RFC9002_S6P2P1_0005
 {
