@@ -4079,6 +4079,9 @@
         "upstream_refs": [
           "RFC 9002 §7.7 RFC9002-S7.7-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs::TryComputePacingIntervalMicros_ComputesThePacingIntervalForInFlightPackets"
         ]
       }
     },
@@ -4105,6 +4108,9 @@
         "upstream_refs": [
           "RFC 9002 §7.7 RFC9002-S7.7-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0002.cs::TryGetBurstLimitBytes_ReturnsABurstCapWhenTheSenderDoesNotPace"
         ]
       }
     },
@@ -4131,6 +4137,11 @@
         "upstream_refs": [
           "RFC 9002 §7.7 RFC9002-S7.7-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0003.cs::TryGetBurstLimitBytes_CapsTheBurstAtTheInitialCongestionWindow",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0003.cs::TryGetBurstLimitBytes_RejectsZeroInitialCongestionWindowBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0003.cs::TryGetBurstLimitBytes_PreservesTheInitialCongestionWindowWhenTheHigherLimitMatchesIt"
         ]
       }
     },
@@ -4157,6 +4168,9 @@
         "upstream_refs": [
           "RFC 9002 §7.7 RFC9002-S7.7-B3-P2-S4",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0004.cs::TryGetBurstLimitBytes_UsesTheHigherLimitWhenThePathCanAbsorbLargerBursts"
         ]
       }
     },
@@ -4183,6 +4197,9 @@
         "upstream_refs": [
           "RFC 9002 §7.7 RFC9002-S7.7-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0005.cs::TryComputePacingIntervalMicros_DoesNotPaceAckOnlyPackets"
         ]
       }
     },
