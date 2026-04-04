@@ -5,6 +5,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0006
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryFormatStreamFrame_RoundTripsPreviouslySentApplicationData()
     {
         byte[] streamData = [0x10, 0x20, 0x30];
