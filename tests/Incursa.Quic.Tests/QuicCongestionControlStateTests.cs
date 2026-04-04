@@ -112,7 +112,6 @@ public sealed class QuicCongestionControlStateTests
     [Requirement("REQ-QUIC-RFC9002-S7P3P1-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7P3P1-0003")]
     [Requirement("REQ-QUIC-RFC9002-S7P3P2-0001")]
-    [Requirement("REQ-QUIC-RFC9002-S7P3P2-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7P3P2-0003")]
     [Requirement("REQ-QUIC-RFC9002-S7P3P2-0004")]
     [Requirement("REQ-QUIC-RFC9002-S7P3P2-0005")]
