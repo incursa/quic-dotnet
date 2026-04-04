@@ -1597,8 +1597,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_RejectsAZeroTimeThresholdNumerator",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplier"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplier",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_RejectsAZeroTimeThresholdNumerator"
         ]
       }
     },
