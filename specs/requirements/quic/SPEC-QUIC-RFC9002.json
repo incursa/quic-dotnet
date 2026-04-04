@@ -5416,6 +5416,11 @@
           "RFC 9002 §A.10 RFC9002-SA.10-B2-P1-S1",
           "RFC 9002 §A.10 RFC9002-SA.10-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0001.cs::CanDeclarePacketLost_AllowsOlderInFlightPacketsWhenTheLargestAcknowledgedPacketIsKnown",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0001.cs::CanDeclarePacketLost_ReturnsFalseWhenTheCandidatePacketIsNotOlderThanTheLargestAcknowledgedPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0001.cs::CanDeclarePacketLost_UsesTheLowestPacketNumberBoundary"
         ]
       }
     },
@@ -5442,6 +5447,11 @@
         "upstream_refs": [
           "RFC 9002 §A.10 RFC9002-SA.10-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0002.cs::ComputeLossDelayMicros_UsesTheLargerRttSampleForTheLossDelay",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0002.cs::ComputeLossDelayMicros_RejectsAZeroTimerGranularity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0002.cs::ComputeLossDelayMicros_BoundsTheLossDelayByTimerGranularity"
         ]
       }
     },
@@ -5468,6 +5478,11 @@
         "upstream_refs": [
           "RFC 9002 §A.10 RFC9002-SA.10-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0003.cs::TryComputeRemainingLossDelayMicros_SchedulesFutureLossMarkingForPacketsThatAreNotYetLost",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0003.cs::CanDeclarePacketLost_ReturnsFalseWhenThePacketIsNotFarEnoughBehindTheLargestAcknowledgedPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0003.cs::TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline"
         ]
       }
     },
@@ -5494,6 +5509,11 @@
         "upstream_refs": [
           "RFC 9002 §A.10 RFC9002-SA.10-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0004.cs::CanDeclarePacketLost_ContinuesEvaluatingPacketsBeforeTheLargestAcknowledgedPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0004.cs::CanDeclarePacketLost_IgnoresPacketsBeyondTheLargestAcknowledgedPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0004.cs::CanDeclarePacketLost_IgnoresTheFirstPacketPastTheLargestAcknowledgedBoundary"
         ]
       }
     },
