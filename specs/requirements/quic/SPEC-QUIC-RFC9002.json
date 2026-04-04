@@ -4943,6 +4943,11 @@
         "upstream_refs": [
           "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0002.cs::TryRegisterAcknowledgedPacket_RemovesNewlyAcknowledgedPacketsBeforeGrowingTheWindow",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0002.cs::TryRegisterAcknowledgedPacket_DoesNotChangeStateWhenNoNewlyAcknowledgedPacketExists",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0002.cs::TryRegisterAcknowledgedPacket_UsesThePostRemovalBytesInFlightBoundaryBeforeLaterChecks"
         ]
       }
     },
