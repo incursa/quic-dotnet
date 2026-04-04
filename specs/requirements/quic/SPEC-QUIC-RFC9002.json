@@ -545,9 +545,6 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.4"
-        ],
-        "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0017.cs::RecordProcessedPaddingPacket_DoesNotRequestAnImmediateAck"
         ]
       }
     },
@@ -966,13 +963,13 @@
         "verified_by": [
           "VER-QUIC-RFC9002-0001"
         ],
+        "upstream_refs": [
+          "RFC 9002 §5.3 RFC9002-S5.3-B3-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0001.cs::TryUpdateFromAck_DoesNotSubtractAckDelayWhenItExceedsTheAvailableSlack",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0001.cs::TryUpdateFromAck_UsesTheAdjustedSampleAtTheAckDelayBoundary"
-        "upstream_refs": [
-          "RFC 9002 §5.3 RFC9002-S5.3-B3-P2-S1",
-          "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ]
       }
     },
@@ -1001,6 +998,11 @@
           "RFC 9002 §5.3 RFC9002-S5.3-B7-P6-S1",
           "RFC 9002 §5.3 RFC9002-S5.3-B9-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0002.cs::TryUpdateFromAck_UsesTheReportedAckDelayBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0002.cs::TryUpdateFromAck_StopsIgnoringPeerMaxAckDelayAfterHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0002.cs::TryUpdateFromAck_IgnoresAZeroPeerMaxAckDelayBeforeHandshakeConfirmation"
         ]
       }
     },
@@ -1054,6 +1056,11 @@
           "RFC 9002 §5.3 RFC9002-S5.3-B12-P7-S1",
           "RFC 9002 §5.3 RFC9002-S5.3-B12-P7-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0004.cs::TryUpdateFromAck_SubtractsLocalProcessingDelayBeforeHandshakeConfirmationOnSubsequentSamples",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0004.cs::TryUpdateFromAck_IgnoresLocalProcessingDelayAfterHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0004.cs::TryUpdateFromAck_TreatsANullLocalProcessingDelayAsANoOpBeforeHandshakeConfirmation"
         ]
       }
     },
@@ -1341,7 +1348,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::CanDeclarePacketLost_RequiresAnUnacknowledgedInFlightPacketSentBeforeAnAcknowledgedPacket"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0001.cs::CanDeclarePacketLost_AllowsAnUnacknowledgedInflightPacketSentBeforeTheLargestAcknowledgedPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0001.cs::CanDeclarePacketLost_RejectsPacketsThatAreAcknowledgedOrNotInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0001.cs::CanDeclarePacketLost_RejectsPacketsAtTheLargestAcknowledgedBoundary"
         ]
       }
     },
