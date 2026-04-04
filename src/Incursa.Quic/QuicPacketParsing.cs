@@ -85,6 +85,11 @@ internal static class QuicPacketParsing
                 destinationConnectionIdLength,
                 sourceConnectionIdLength,
                 versionSpecificData),
+            0x02 => TryValidateZeroRttPacketFields(
+                headerControlBits,
+                destinationConnectionIdLength,
+                sourceConnectionIdLength,
+                versionSpecificData),
             _ => true,
         };
     }
