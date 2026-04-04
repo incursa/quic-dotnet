@@ -2697,6 +2697,10 @@
         "upstream_refs": [
           "RFC 9002 §6.3 RFC9002-S6.3-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs::TryGetPacketNumberSpace_MapsInitialPacketsToTheInitialSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs::TryGetPacketNumberSpace_RejectsRetryPackets"
         ]
       }
     },
