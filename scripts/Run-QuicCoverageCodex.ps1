@@ -163,40 +163,285 @@ function Format-TriageSnapshot {
     return "trace_clean=$($Snapshot.TraceClean), missing_xrefs=$($Snapshot.MissingXrefs), proof_too_broad=$($Snapshot.ProofTooBroad), partially_covered=$($Snapshot.Partial), uncovered_unblocked=$($Snapshot.UncoveredUnblocked), uncovered_blocked=$($Snapshot.UncoveredBlocked)"
 }
 
-function Get-LoopDirective {
-    param([string]$ResultText)
+function Get-LoopPlan {
+    return [pscustomobject]@{
+        RfcOrder = @(
+            "RFC9002",
+            "RFC9000 bounded clusters"
+        )
+        TierOrder = @(
+            "metadata_only",
+            "partials",
+            "proof_narrowing",
+            "uncovered_unblocked"
+        )
+        TierDescriptions = @{
+            metadata_only       = "metadata-only cleanup"
+            partials            = "partial clusters"
+            proof_narrowing     = "broad-proof narrowing"
+            uncovered_unblocked = "implementation-backed uncovered requirements"
+        }
+        LockedFamiliesNote = "RFC9001 and blocked families stay out of the default order unless explicitly unlocked."
+    }
+}
 
-    if ([string]::IsNullOrWhiteSpace($ResultText)) {
-        return [pscustomobject]@{
-            LoopStatus = "Continue"
-            StopReason = ""
+function New-LoopState {
+    return [pscustomobject]@{
+        RfcIndex  = 0
+        TierIndex = 0
+    }
+}
+
+function Get-LoopStateDetails {
+    param(
+        [Parameter(Mandatory = $true)]$LoopPlan,
+        [Parameter(Mandatory = $true)]$LoopState
+    )
+
+    $currentRfc = $null
+    if ($LoopState.RfcIndex -lt $LoopPlan.RfcOrder.Count) {
+        $currentRfc = $LoopPlan.RfcOrder[$LoopState.RfcIndex]
+    }
+
+    $currentTier = $null
+    if ($LoopState.TierIndex -lt $LoopPlan.TierOrder.Count) {
+        $currentTier = $LoopPlan.TierOrder[$LoopState.TierIndex]
+    }
+
+    $nextTier = "n/a"
+    if ($null -ne $currentRfc) {
+        if ($LoopState.TierIndex -lt ($LoopPlan.TierOrder.Count - 1)) {
+            $nextTier = $LoopPlan.TierOrder[$LoopState.TierIndex + 1]
+        }
+        elseif ($LoopState.RfcIndex -lt ($LoopPlan.RfcOrder.Count - 1)) {
+            $nextTier = "next_rfc"
         }
     }
 
-    if ($ResultText -match '(?im)^\s*LoopStatus\s*:\s*(Stop|Continue)\s*$') {
-        $status = $matches[1]
-        $reason = ""
-
-        if ($ResultText -match '(?im)^\s*StopReason\s*:\s*(.+?)\s*$') {
-            $reason = $matches[1].Trim()
-        }
-
-        return [pscustomobject]@{
-            LoopStatus = $status
-            StopReason = $reason
-        }
-    }
-
-    if ($ResultText -match '(?im)LOOP_STOP\s*:\s*(.+)') {
-        return [pscustomobject]@{
-            LoopStatus = "Stop"
-            StopReason = $matches[1].Trim()
-        }
+    $tierDescription = "n/a"
+    if ($null -ne $currentTier -and $LoopPlan.TierDescriptions.ContainsKey($currentTier)) {
+        $tierDescription = $LoopPlan.TierDescriptions[$currentTier]
     }
 
     return [pscustomobject]@{
-        LoopStatus = "Continue"
-        StopReason = ""
+        RfcIndex               = $LoopState.RfcIndex
+        TierIndex              = $LoopState.TierIndex
+        CurrentRfc             = if ($null -ne $currentRfc) { $currentRfc } else { "n/a" }
+        CurrentTier            = if ($null -ne $currentTier) { $currentTier } else { "n/a" }
+        CurrentTierDescription  = $tierDescription
+        NextTier               = $nextTier
+        SecondaryRfcChecked    = $LoopState.RfcIndex -ge 1
+        IsFinalRfc             = $LoopState.RfcIndex -ge ($LoopPlan.RfcOrder.Count - 1)
+        IsFinalTier            = $LoopState.TierIndex -ge ($LoopPlan.TierOrder.Count - 1)
+    }
+}
+
+function Get-LoopControlSectionText {
+    param([AllowEmptyString()][string]$ResultText)
+
+    if ([string]::IsNullOrWhiteSpace($ResultText)) {
+        return ""
+    }
+
+    $sectionMatch = [regex]::Match($ResultText, '(?ims)^##\s*Loop Control\s*(.*?)(?=^##\s|\z)')
+    if ($sectionMatch.Success) {
+        return $sectionMatch.Groups[1].Value
+    }
+
+    return $ResultText
+}
+
+function Get-DirectiveFieldValue {
+    param(
+        [AllowEmptyString()][string]$Text,
+        [Parameter(Mandatory = $true)][string]$FieldName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return ""
+    }
+
+    $match = [regex]::Match($Text, "(?im)^\s*$([regex]::Escape($FieldName))\s*:\s*(.+?)\s*$")
+    if ($match.Success) {
+        return $match.Groups[1].Value.Trim()
+    }
+
+    return ""
+}
+
+function Normalize-NotApplicableValue {
+    param([AllowEmptyString()][string]$Value)
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        return ""
+    }
+
+    if ($Value.Trim().ToLowerInvariant() -eq "n/a") {
+        return ""
+    }
+
+    return $Value.Trim()
+}
+
+function Resolve-LoopTransition {
+    param(
+        [Parameter(Mandatory = $true)]$LoopPlan,
+        [Parameter(Mandatory = $true)]$LoopState,
+        [Parameter(Mandatory = $true)]$Directive
+    )
+
+    $stateDetails = Get-LoopStateDetails -LoopPlan $LoopPlan -LoopState $LoopState
+    $nextState = [pscustomobject]@{
+        RfcIndex  = $LoopState.RfcIndex
+        TierIndex = $LoopState.TierIndex
+    }
+
+    $directiveStatus = if ([string]::IsNullOrWhiteSpace($Directive.LoopStatus)) { "Continue" } else { $Directive.LoopStatus.Trim() }
+    $directiveOutcome = if ([string]::IsNullOrWhiteSpace($Directive.SelectionOutcome)) { "" } else { $Directive.SelectionOutcome.Trim() }
+    $directiveNextTier = Normalize-NotApplicableValue -Value $Directive.NextTier
+    $directiveStopReason = Normalize-NotApplicableValue -Value $Directive.StopReason
+
+    $effectiveStatus = "Continue"
+    $effectiveOutcome = if ($directiveOutcome) { $directiveOutcome } else { "" }
+    $effectiveNextTier = "n/a"
+    $shouldStop = $false
+    $stopReason = ""
+    $progressed = $false
+
+    switch ($directiveOutcome) {
+        "Worked" {
+            $effectiveNextTier = "n/a"
+            $progressed = $true
+        }
+
+        "NoSliceInCurrentTier" {
+            $progressed = $true
+
+            if ($stateDetails.IsFinalTier) {
+                if ($stateDetails.IsFinalRfc) {
+                    $effectiveOutcome = "RepoExhausted"
+                    $effectiveStatus = "Stop"
+                    $shouldStop = $true
+                    $stopReason = if ([string]::IsNullOrWhiteSpace($directiveStopReason)) {
+                        "Repo exhausted: the current RFC focus and the secondary RFC focus are both exhausted."
+                    }
+                    else {
+                        $directiveStopReason
+                    }
+                }
+                else {
+                    $effectiveOutcome = "NoSliceInCurrentRFC"
+                    $nextState.RfcIndex = $LoopState.RfcIndex + 1
+                    $nextState.TierIndex = 0
+                    $effectiveNextTier = "next_rfc"
+                }
+            }
+            else {
+                $nextState.TierIndex = $LoopState.TierIndex + 1
+                $effectiveNextTier = $LoopPlan.TierOrder[$nextState.TierIndex]
+            }
+        }
+
+        "NoSliceInCurrentRFC" {
+            $progressed = $true
+
+            if ($stateDetails.IsFinalRfc) {
+                $effectiveOutcome = "RepoExhausted"
+                $effectiveStatus = "Stop"
+                $shouldStop = $true
+                $stopReason = if ([string]::IsNullOrWhiteSpace($directiveStopReason)) {
+                    "Repo exhausted: no secondary RFC focus remains."
+                }
+                else {
+                    $directiveStopReason
+                }
+            }
+            else {
+                $nextState.RfcIndex = $LoopState.RfcIndex + 1
+                $nextState.TierIndex = 0
+                $effectiveNextTier = "next_rfc"
+            }
+        }
+
+        "RepoExhausted" {
+            $progressed = $true
+            $effectiveStatus = "Stop"
+            $shouldStop = $true
+            $stopReason = if ([string]::IsNullOrWhiteSpace($directiveStopReason)) {
+                if ($stateDetails.IsFinalRfc) {
+                    "Repo exhausted: the current RFC focus and the secondary RFC focus are both exhausted."
+                }
+                else {
+                    "Repo exhausted."
+                }
+            }
+            else {
+                $directiveStopReason
+            }
+        }
+
+        default {
+            if ($directiveStatus -eq "Stop" -and $stateDetails.IsFinalRfc -and $stateDetails.IsFinalTier) {
+                $progressed = $true
+                $effectiveStatus = "Stop"
+                $effectiveOutcome = "RepoExhausted"
+                $shouldStop = $true
+                $stopReason = if ([string]::IsNullOrWhiteSpace($directiveStopReason)) {
+                    "Repo exhausted by the current loop state."
+                }
+                else {
+                    $directiveStopReason
+                }
+            }
+        }
+    }
+
+    if (-not $shouldStop -and $directiveStatus -eq "Stop") {
+        $effectiveStatus = "Continue"
+    }
+
+    $nextStateDetails = Get-LoopStateDetails -LoopPlan $LoopPlan -LoopState $nextState
+
+    return [pscustomobject]@{
+        DirectiveLoopStatus      = $directiveStatus
+        DirectiveSelectionOutcome = $directiveOutcome
+        DirectiveNextTier        = if ([string]::IsNullOrWhiteSpace($Directive.NextTier)) { "" } else { $Directive.NextTier.Trim() }
+        DirectiveStopReason      = $directiveStopReason
+        EffectiveLoopStatus      = $effectiveStatus
+        EffectiveSelectionOutcome = $effectiveOutcome
+        EffectiveNextTier        = $effectiveNextTier
+        NextState                = $nextState
+        NextStateDetails         = $nextStateDetails
+        ShouldStop               = $shouldStop
+        StopReason               = $stopReason
+        Progressed               = $progressed
+    }
+}
+
+function Get-LoopDirective {
+    param([string]$ResultText)
+
+    $sectionText = Get-LoopControlSectionText -ResultText $ResultText
+
+    if ([string]::IsNullOrWhiteSpace($sectionText)) {
+        return [pscustomobject]@{
+            LoopStatus       = "Continue"
+            SelectionOutcome = ""
+            NextTier         = ""
+            StopReason       = ""
+        }
+    }
+
+    $status = Get-DirectiveFieldValue -Text $sectionText -FieldName "LoopStatus"
+    if ([string]::IsNullOrWhiteSpace($status)) {
+        $status = "Continue"
+    }
+
+    return [pscustomobject]@{
+        LoopStatus       = $status
+        SelectionOutcome = Get-DirectiveFieldValue -Text $sectionText -FieldName "SelectionOutcome"
+        NextTier         = Get-DirectiveFieldValue -Text $sectionText -FieldName "NextTier"
+        StopReason       = Get-DirectiveFieldValue -Text $sectionText -FieldName "StopReason"
     }
 }
 
@@ -207,6 +452,8 @@ function New-IterationPrompt {
         [Parameter(Mandatory = $true)][string]$RequirementsRoot,
         [Parameter(Mandatory = $true)][string]$TriagePath,
         [Parameter(Mandatory = $true)][string]$TriageScriptPath,
+        [Parameter(Mandatory = $true)]$LoopPlan,
+        [Parameter(Mandatory = $true)]$LoopStateDetails,
         [Parameter(Mandatory = $true)]$BeforeSnapshot
     )
 
@@ -219,6 +466,10 @@ Before you finish:
 - Do not commit temp files or generated triage files.
 - If no files changed, say so explicitly.
 "@
+
+    $rfcOrderText = ($LoopPlan.RfcOrder -join " -> ")
+    $tierOrderText = ($LoopPlan.TierOrder -join " -> ")
+    $secondaryCheckedText = if ($LoopStateDetails.SecondaryRfcChecked) { "yes" } else { "no" }
 
     return @"
 You are helping systematically improve requirement-level test coverage and traceability in the quic-dotnet repository.
@@ -247,6 +498,15 @@ Operating model:
 - Requirement-home scaffolds without executable tests do not count as proof.
 - Broad transport/frame codec aggregation tests and methods associated with more than six requirements are still broad proof.
 
+Current loop state:
+- Current RFC focus: $($LoopStateDetails.CurrentRfc)
+- Current tier/mode: $($LoopStateDetails.CurrentTier) ($($LoopStateDetails.CurrentTierDescription))
+- Next tier if the current tier is exhausted: $($LoopStateDetails.NextTier)
+- RFC order: $rfcOrderText
+- Tier order: $tierOrderText
+- Secondary RFC already checked: $secondaryCheckedText
+- Locked families: $($LoopPlan.LockedFamiliesNote)
+
 Backlog categories:
 - trace_clean: leave alone unless there is an obvious metadata issue
 - covered_but_missing_xrefs: metadata/x_test_ref repair first
@@ -255,11 +515,20 @@ Backlog categories:
 - uncovered_unblocked: create new focused tests only where implementation exists
 - uncovered_blocked: do not force these; leave blocked unless a real implementation path now exists
 
-Selection priorities for THIS iteration:
-1. metadata-only cleanup if it unlocks easy wins
-2. partial clusters with clear missing dimensions
-3. broad-proof clusters that can be narrowed with existing implementation
-4. only then uncovered_unblocked requirements
+Selection order inside the current RFC focus:
+1. metadata_only
+2. partials
+3. proof_narrowing
+4. uncovered_unblocked
+
+Global stopping rule:
+- You MUST NOT return LoopStatus: Stop merely because the current preferred tier has no good slice.
+- If metadata_only is exhausted, fall through to partials.
+- If partials is exhausted, fall through to proof_narrowing.
+- If proof_narrowing is exhausted, fall through to uncovered_unblocked.
+- If the current RFC focus is exhausted, say so and continue with the next RFC focus.
+- You may return LoopStatus: Stop only if metadata_only, partials, proof_narrowing, and uncovered_unblocked have all been checked for the current RFC focus and at least one secondary RFC focus.
+- When you stop, SelectionOutcome must be RepoExhausted.
 
 Avoid these families unless the triage clearly shows a real implementation-backed path:
 - connection close / draining families
@@ -278,8 +547,8 @@ Bounded-slice rules:
 
 What you must do:
 1. Read the current triage JSON first and treat it as the source of truth.
-2. Identify the best next bounded slice under the rules above.
-3. If there is no good eligible slice, do not force work. Stop cleanly.
+2. Stay in the current tier/mode for this run unless the current tier is exhausted.
+3. If the current tier has no good slice, do not stop globally. Return the correct SelectionOutcome and advance to the next tier or RFC focus.
 4. If there is a good eligible slice:
    - execute exactly ONE bounded slice
    - keep the work tightly scoped
@@ -307,13 +576,13 @@ Required final output format:
 - requirement id | before | after
 
 ## Loop Control
-LoopStatus: Continue
-StopReason: n/a
+LoopStatus: Continue|Stop
+SelectionOutcome: Worked|NoSliceInCurrentTier|NoSliceInCurrentRFC|RepoExhausted
+NextTier: metadata_only|partials|proof_narrowing|uncovered_unblocked|next_rfc|n/a
+StopReason: n/a or reason
 
-If there is no good eligible slice, use:
-## Loop Control
-LoopStatus: Stop
-StopReason: <clear reason>
+If there is no good eligible slice in the current tier, use SelectionOutcome to move to the next tier or RFC focus.
+Only use LoopStatus: Stop when SelectionOutcome is RepoExhausted.
 
 $commitTail
 "@
@@ -454,6 +723,8 @@ try {
     $triagePath = Resolve-ExistingPath -Path $TriagePath
     $triageScriptPath = Resolve-ExistingPath -Path $TriageScriptPath
     $codexExecutable = Resolve-CodexCommand -Command $CodexCommand
+    $loopPlan = Get-LoopPlan
+    $loopState = New-LoopState
 
     $outputRoot = Ensure-Directory -Path $OutputDirectory
     $resultsRoot = Ensure-Directory -Path (Join-Path $outputRoot "results")
@@ -472,6 +743,7 @@ try {
 
         $resultPath = Join-Path $resultsRoot ("iteration-{0:D3}.output.md" -f $iteration)
         $logPath = Join-Path $logsRoot ("iteration-{0:D3}.log.txt" -f $iteration)
+        $loopStateDetails = Get-LoopStateDetails -LoopPlan $loopPlan -LoopState $loopState
 
         $prompt = New-IterationPrompt `
             -Iteration $iteration `
@@ -479,6 +751,8 @@ try {
             -RequirementsRoot $requirementsRoot `
             -TriagePath $triagePath `
             -TriageScriptPath $triageScriptPath `
+            -LoopPlan $loopPlan `
+            -LoopStateDetails $loopStateDetails `
             -BeforeSnapshot $beforeSnapshot
 
         $run = $null
@@ -515,23 +789,22 @@ try {
         $afterSnapshot = Get-TriageSnapshot -Path $triagePath
         $resultText = if (Test-Path -LiteralPath $resultPath) { Get-Content -LiteralPath $resultPath -Raw } else { "" }
         $directive = Get-LoopDirective -ResultText $resultText
+        $transition = Resolve-LoopTransition -LoopPlan $loopPlan -LoopState $loopState -Directive $directive
 
         $triageChanged = $afterSnapshot.Fingerprint -ne $beforeSnapshot.Fingerprint
-        if ($triageChanged) {
+        if ($triageChanged -or $transition.Progressed) {
             $noProgressCount = 0
         }
         else {
             $noProgressCount++
         }
 
-        if (-not $stopNow -and $directive.LoopStatus -eq "Stop") {
+        if (-not $stopNow -and $transition.ShouldStop) {
             $stopNow = $true
-            $stopReason = if ([string]::IsNullOrWhiteSpace($directive.StopReason)) {
-                "Codex requested stop."
-            }
-            else {
-                $directive.StopReason
-            }
+            $stopReason = $transition.StopReason
+        }
+        elseif (-not $stopNow -and $directive.LoopStatus -eq "Stop") {
+            Write-Warning "Ignoring premature LoopStatus: Stop because SelectionOutcome was '$($transition.DirectiveSelectionOutcome)' and the current loop state still has eligible lanes."
         }
 
         if (-not $stopNow -and $noProgressCount -ge $NoProgressLimit) {
@@ -550,7 +823,14 @@ try {
             NoProgressCount   = $noProgressCount
             ResultFile        = $resultPath
             LogFile           = $logPath
-            LoopStatus        = $directive.LoopStatus
+            CurrentRFC        = $loopStateDetails.CurrentRfc
+            CurrentTier       = $loopStateDetails.CurrentTier
+            DirectiveLoopStatus = $transition.DirectiveLoopStatus
+            DirectiveSelectionOutcome = $transition.DirectiveSelectionOutcome
+            DirectiveNextTier = $transition.DirectiveNextTier
+            SelectionOutcome  = $transition.EffectiveSelectionOutcome
+            NextTier          = $transition.EffectiveNextTier
+            LoopStatus        = $transition.EffectiveLoopStatus
             StopReason        = $stopReason
         })
 
@@ -564,6 +844,7 @@ try {
         }
 
         $beforeSnapshot = $afterSnapshot
+        $loopState = $transition.NextState
 
         if ($CooldownSeconds -gt 0 -and $iteration -lt $MaxIterations) {
             Start-Sleep -Seconds $CooldownSeconds

@@ -5839,6 +5839,10 @@
           "RFC 9002 §B.6 RFC9002-SB.6-B2-P1-S1",
           "RFC 9002 §B.6 RFC9002-SB.6-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP6-0001.cs::TryRegisterLoss_DoesNotReenterRecoveryForOlderLossSignals",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP6-0001.cs::TryProcessEcn_DoesNotReenterRecoveryForOlderEcnSignals"
         ]
       }
     },
@@ -5866,6 +5870,10 @@
           "RFC 9002 §B.6 RFC9002-SB.6-B2-P1-S2",
           "RFC 9002 §B.6 RFC9002-SB.6-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP6-0002.cs::TryRegisterLoss_EntersRecoveryAndReducesTheWindowOnEligibleCongestionSignals",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP6-0002.cs::TryRegisterLoss_DoesNotChangeTheWindowForIneligibleSignals"
         ]
       }
     },
@@ -5919,6 +5927,10 @@
           "RFC 9002 §B.7 RFC9002-SB.7-B2-P1-S1",
           "RFC 9002 §B.7 RFC9002-SB.7-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP7-0001.cs::TryProcessEcn_TreatsAnIncreasingCeCountAsCongestion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP7-0001.cs::TryProcessEcn_IgnoresAnUnchangedCeCount"
         ]
       }
     },
@@ -5945,6 +5957,11 @@
         "upstream_refs": [
           "RFC 9002 §B.7 RFC9002-SB.7-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP7-0002.cs::TryProcessEcn_UsesTheLargestAcknowledgedPacketSendTimeWhenItStartsRecovery",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP7-0002.cs::TryProcessEcn_DoesNotStartRecoveryWhenTheCeCountDoesNotIncrease",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP7-0002.cs::TryProcessEcn_CanUseTheZeroSendTimeBoundary"
         ]
       }
     },
@@ -5972,6 +5989,10 @@
           "RFC 9002 §B.8 RFC9002-SB.8-B2-P1-S1",
           "RFC 9002 §B.8 RFC9002-SB.8-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0001.cs::TryDetectPersistentCongestion_RemovesLostInFlightBytesFromBytesInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0001.cs::TryDetectPersistentCongestion_LeavesBytesInFlightAloneForPacketsThatWereNotInFlight"
         ]
       }
     },
@@ -5998,6 +6019,11 @@
         "upstream_refs": [
           "RFC 9002 §B.8 RFC9002-SB.8-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0002.cs::TryDetectPersistentCongestion_UsesTheLatestLostPacketSendTimeWhenItStartsRecovery",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0002.cs::TryDetectPersistentCongestion_DoesNotEnterRecoveryWhenLossesAreNotInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0002.cs::TryDetectPersistentCongestion_UsesTheLatestLossTimeAtTheCollapseBoundary"
         ]
       }
     },
@@ -6024,6 +6050,11 @@
         "upstream_refs": [
           "RFC 9002 §B.8 RFC9002-SB.8-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0003.cs::TryDetectPersistentCongestion_BeginsEvaluatingOnceTheFirstRttSampleExists",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0003.cs::TryDetectPersistentCongestion_ReturnsFalseBeforeAnyRttSampleExists",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0003.cs::TryDetectPersistentCongestion_AllowsTheSmallestNonZeroFirstRttSample"
         ]
       }
     },
@@ -6050,6 +6081,11 @@
         "upstream_refs": [
           "RFC 9002 §B.8 RFC9002-SB.8-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0004.cs::TryDetectPersistentCongestion_IgnoresPacketsSentAtOrBeforeTheFirstRttSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0004.cs::TryDetectPersistentCongestion_DoesNotTreatPacketsBeforeTheSampleAsPartOfThePersistentCongestionWindow",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0004.cs::TryDetectPersistentCongestion_IgnoresPacketsAtTheFirstRttSampleBoundary"
         ]
       }
     },
@@ -6076,6 +6112,11 @@
         "upstream_refs": [
           "RFC 9002 §B.8 RFC9002-SB.8-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0005.cs::TryDetectPersistentCongestion_CollapsesTheWindowWhenPersistentCongestionIsDetected",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0005.cs::TryDetectPersistentCongestion_DoesNotCollapseTheWindowWhenTheDurationIsTooShort",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP8-0005.cs::TryDetectPersistentCongestion_CollapsesTheWindowAtTheDurationBoundary"
         ]
       }
     },
