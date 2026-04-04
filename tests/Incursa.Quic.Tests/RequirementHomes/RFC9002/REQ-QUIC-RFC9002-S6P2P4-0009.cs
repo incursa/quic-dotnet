@@ -5,7 +5,8 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0009
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    public void TryDeclareInFlightPacketsLostInsteadOfProbing_UsesLossRegistration()
+    [Trait("Category", "Positive")]
+    public void TryRegisterLoss_AllowsMarkingAnInFlightPacketLostInsteadOfSendingAnotherProbe()
     {
         QuicCongestionControlState state = new();
         state.RegisterPacketSent(1_200);
@@ -18,5 +19,19 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0009
         Assert.Equal(0UL, state.BytesInFlightBytes);
         Assert.True(state.HasRecoveryStartTime);
         Assert.Equal(2_000UL, state.RecoveryStartTimeMicros);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryRegisterLoss_RejectsPacketsThatAreNotInFlightWhenNoAckOnlyLossSignalIsAllowed()
+    {
+        QuicCongestionControlState state = new();
+
+        Assert.False(state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 2_000,
+            packetInFlight: false,
+            allowAckOnlyLossSignal: false));
     }
 }

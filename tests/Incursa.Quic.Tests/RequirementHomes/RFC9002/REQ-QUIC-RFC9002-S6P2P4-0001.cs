@@ -5,7 +5,8 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0001
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    public void TrySendProbePacket_AllowsAnAckElicitingPingWhenTheWindowIsFull()
+    [Trait("Category", "Positive")]
+    public void TryFormatPingFrame_ProducesTheMinimumAckElicitingProbe()
     {
         QuicCongestionControlState state = new();
         state.RegisterPacketSent(state.CongestionWindowBytes);
@@ -20,23 +21,18 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0001
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
-    public void TrySendProbePacket_RejectsNonProbePacketsWhenTheWindowIsFull()
+    [Trait("Category", "Negative")]
+    public void TryFormatPingFrame_RejectsAZeroLengthDestination()
     {
-        QuicCongestionControlState state = new();
-        state.RegisterPacketSent(state.CongestionWindowBytes);
-
-        Assert.False(state.CanSend(1, isAckOnlyPacket: false, isProbePacket: false));
+        Assert.False(QuicFrameCodec.TryFormatPingFrame(stackalloc byte[0], out _));
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
-    public void TrySendProbePacket_CountsProbeBytesAtTheWindowBoundary()
+    [Trait("Category", "Edge")]
+    public void TryParsePingFrame_ConsumesTheSingleByteAtThePacketBoundary()
     {
-        QuicCongestionControlState state = new();
-        state.RegisterPacketSent(state.CongestionWindowBytes);
-
-        state.RegisterPacketSent(1, isProbePacket: true);
-
-        Assert.Equal(state.CongestionWindowBytes + 1UL, state.BytesInFlightBytes);
+        Assert.True(QuicFrameCodec.TryParsePingFrame([0x01], out int bytesConsumed));
+        Assert.Equal(1, bytesConsumed);
     }
 }
