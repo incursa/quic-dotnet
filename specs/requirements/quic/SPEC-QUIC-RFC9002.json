@@ -4408,6 +4408,9 @@
         "upstream_refs": [
           "RFC 9002 §A.1.1 RFC9002-SA.1.1-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1P1-0002.cs::RecordAckElicitingStatus_PreservesTheBooleanValueInThePacketRecord"
         ]
       }
     },
@@ -4434,6 +4437,9 @@
         "upstream_refs": [
           "RFC 9002 §A.1.1 RFC9002-SA.1.1-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1P1-0003.cs::RecordInFlightStatus_PreservesTheFlightFlagInThePacketRecord"
         ]
       }
     },
@@ -4460,6 +4466,9 @@
         "upstream_refs": [
           "RFC 9002 §A.1.1 RFC9002-SA.1.1-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1P1-0004.cs::RecordSentBytes_PreservesThePacketSizeInThePacketRecord"
         ]
       }
     },
@@ -4486,6 +4495,9 @@
         "upstream_refs": [
           "RFC 9002 §A.1.1 RFC9002-SA.1.1-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1P1-0005.cs::RecordSendTime_PreservesTheTimestampInThePacketRecord"
         ]
       }
     },
