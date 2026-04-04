@@ -662,6 +662,11 @@
           "RFC 9002 §5.1 RFC9002-S5.1-B5-P2-S1",
           "RFC 9002 §5.1 RFC9002-S5.1-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs::TryUpdateFromAck_ComputesLatestRttFromTheLargestAcknowledgedPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs::TryUpdateFromAck_DoesNotCreateALatestRttSampleWhenTheLargestPacketWasNotNewlyAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs::TryUpdateFromAck_ReportsZeroLatestRttWhenTheAckArrivesAtTheSendTime"
         ]
       }
     },
