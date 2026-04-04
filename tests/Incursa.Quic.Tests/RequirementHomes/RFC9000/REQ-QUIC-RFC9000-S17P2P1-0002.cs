@@ -1,11 +1,17 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0002">It MUST only be sent by servers.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2P1-0002")]
 public sealed class REQ_QUIC_RFC9000_S17P2P1_0002
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0002">It MUST only be sent by servers.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0002")]
     public void TryFormatVersionNegotiationResponse_FormatsAResponseFromTheServer()
     {

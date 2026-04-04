@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0020">Servers MAY choose to only send a preferred address of one address family by sending an all-zero address and port (0.0.0.0:0 or [::]:0) for the other family.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S18P2-0020")]
 public sealed class REQ_QUIC_RFC9000_S18P2_0020
 {

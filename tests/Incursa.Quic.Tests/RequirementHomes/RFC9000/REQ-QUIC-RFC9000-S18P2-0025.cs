@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0025">A server that chooses a zero-length connection ID MUST NOT provide a preferred address.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S18P2-0025")]
 public sealed class REQ_QUIC_RFC9000_S18P2_0025
 {

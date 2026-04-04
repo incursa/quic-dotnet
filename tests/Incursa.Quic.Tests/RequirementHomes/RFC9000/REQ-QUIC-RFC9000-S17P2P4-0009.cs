@@ -1,11 +1,17 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P4-0009">The Version field MUST be 32 bits long.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2P4-0009")]
 public sealed class REQ_QUIC_RFC9000_S17P2P4_0009
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P4-0009">The Version field MUST be 32 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P4-0009")]
     public void TryParseLongHeader_ReportsTheVersionField()
     {
@@ -18,6 +24,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2P4_0009
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P4-0009">The Version field MUST be 32 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P4-0009")]
     public void TryParseLongHeader_RejectsPacketsMissingTheVersionField()
     {
@@ -31,6 +40,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2P4_0009
     [InlineData(0xFFFFFFFFu)]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P4-0009">The Version field MUST be 32 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P4-0009")]
     public void TryParseLongHeader_PreservesBoundaryVersionValues(uint version)
     {

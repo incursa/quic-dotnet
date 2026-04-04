@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP1-0002">Implementations MUST be able to access tracked packet information by packet number and crypto context.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP1-0002")]
 public sealed class REQ_QUIC_RFC9002_SAP1_0002
 {

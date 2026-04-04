@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP1P1-0004">The sent-packet record MUST include the number of bytes sent in the packet, excluding UDP and IP overhead but including QUIC framing overhead.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP1P1-0004")]
 public sealed class REQ_QUIC_RFC9002_SAP1P1_0004
 {

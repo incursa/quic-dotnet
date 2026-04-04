@@ -2,6 +2,9 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0002">The output of this function MUST be truncated to 16 bytes to produce the stateless reset token for that connection.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3P2-0002")]
 public sealed class REQ_QUIC_RFC9000_S10P3P2_0002
 {

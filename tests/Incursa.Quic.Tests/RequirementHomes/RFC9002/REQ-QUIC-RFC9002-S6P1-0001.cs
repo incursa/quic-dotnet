@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1-0001">A packet MUST be unacknowledged, in flight, and sent before an acknowledged packet before it can be declared lost.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P1-0001")]
 public sealed class REQ_QUIC_RFC9002_S6P1_0001
 {

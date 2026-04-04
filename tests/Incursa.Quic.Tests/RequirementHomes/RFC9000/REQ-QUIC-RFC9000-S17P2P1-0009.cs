@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0009">The Source Connection ID field MUST be between 0 and 2040 bits long.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2P1-0009")]
 public sealed class REQ_QUIC_RFC9000_S17P2P1_0009
 {
@@ -7,6 +10,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0009
     [InlineData(0)]
     [InlineData(255)]
     [CoverageType(RequirementCoverageType.Edge)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0009">The Source Connection ID field MUST be between 0 and 2040 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0009")]
     public void TryParseVersionNegotiation_PreservesSourceConnectionIdRange(int sourceConnectionIdLength)
     {
@@ -24,6 +30,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0009
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0009">The Source Connection ID field MUST be between 0 and 2040 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0009")]
     public void TryParseVersionNegotiation_RejectsTruncatedSourceConnectionId()
     {

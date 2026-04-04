@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0017">An endpoint MUST issue a stateless reset token by including the value in the Stateless Reset Token field of a NEW_CONNECTION_ID frame.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3-0017")]
 public sealed class REQ_QUIC_RFC9000_S10P3_0017
 {

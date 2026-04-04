@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP2-0005">The packet number space enumeration MUST include Initial, Handshake, and ApplicationData.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP2-0005")]
 public sealed class REQ_QUIC_RFC9002_SAP2_0005
 {

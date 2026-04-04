@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP7-0002">When signaling congestion from ECN information, the sender MUST use the send time of the largest acknowledged packet in the packet number space.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP7-0002")]
 public sealed class REQ_QUIC_RFC9002_SBP7_0002
 {

@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP7-0006">After processing an ACK frame, the sender MUST set the loss detection timer.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP7-0006")]
 public sealed class REQ_QUIC_RFC9002_SAP7_0006
 {

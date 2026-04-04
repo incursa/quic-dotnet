@@ -5,6 +5,11 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicStatelessResetTests
 {
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0002">The output of this function MUST be truncated to 16 bytes to produce the stateless reset token for that connection.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0016">The stateless reset token MUST be difficult to guess.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0010">A single static key MAY be used across all connections to the same endpoint by generating the proof using a pseudorandom function that takes a static key and the connection ID chosen by the endpoint as input.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S10P3P2-0002")]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0016")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P2-0010")]
@@ -37,6 +42,9 @@ public sealed class QuicStatelessResetTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0012">An endpoint that uses this design MUST NOT provide a zero-length connection ID.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S10P3P2-0012")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryGenerateStatelessResetToken_RejectsZeroLengthConnectionIds()
@@ -76,6 +84,9 @@ public sealed class QuicStatelessResetTests
     [Theory]
     [InlineData(43, 42)]
     [InlineData(22, 21)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0010">An endpoint that sends a Stateless Reset in response to a packet that is 43 bytes or shorter SHOULD send a Stateless Reset that is one byte shorter than the packet it responds to.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S10P3-0010")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible(int triggeringPacketLength, int expectedLength)
@@ -85,6 +96,9 @@ public sealed class QuicStatelessResetTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0010">An endpoint that sends a Stateless Reset in response to a packet that is 43 bytes or shorter SHOULD send a Stateless Reset that is one byte shorter than the packet it responds to.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S10P3-0010")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter()
@@ -103,6 +117,10 @@ public sealed class QuicStatelessResetTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P3-0001">An endpoint MUST ensure that every Stateless Reset that it sends is smaller than the packet that triggered it, unless it maintains state sufficient to prevent looping.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P3-0002">An endpoint MAY remember the number of Stateless Resets that it has sent and stop generating new Stateless Resets once a limit is reached.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S10P3P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P3-0002")]
     [CoverageType(RequirementCoverageType.Positive)]

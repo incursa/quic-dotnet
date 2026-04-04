@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P1-0002">If a max_idle_timeout is specified by either endpoint in its transport parameters, the connection MUST be silently closed and its state discarded when it remains idle for longer than the minimum of the max_idle_timeout values advertised by both endpoints.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P1-0002")]
 public sealed class REQ_QUIC_RFC9000_S10P1_0002
 {

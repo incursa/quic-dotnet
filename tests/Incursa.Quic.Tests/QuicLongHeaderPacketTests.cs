@@ -3,6 +3,29 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicLongHeaderPacketTests
 {
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0001">The first bit of a QUIC long header packet MUST be set to 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0002">The other seven bits in the first byte of a QUIC long header packet MUST be version-specific.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0003">The four bytes after the first byte in a QUIC long header packet MUST contain a 32-bit Version field.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0004">The byte after the Version field MUST encode the Destination Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0006">The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0008">The remainder of a QUIC long header packet MUST contain version-specific content.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S3-0001">QUIC transmissions MUST be sent with a packet-level header.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S3-0003">The packet-level header MUST include a packet sequence number.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0002">The Header Form field MUST be 1 bits long with value 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0003">The Fixed Bit field MUST be 1 bits long with value 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0004">The Long Packet Type field MUST be 2 bits long with value 0.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0005">The Reserved Bits field MUST be 2 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0006">The Packet Number Length field MUST be 2 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0007">The Version field MUST be 32 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0008">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0009">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0010">The Source Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0011">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0016">The first byte MUST contain the Reserved and Packet Number Length bits; see also Section 17.2.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P2-0001">During the handshake, packets with the long header MUST be used to establish the connection IDs used by both endpoints.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1-0008">Packets with long headers MUST include Source Connection ID and Destination Connection ID fields.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
@@ -57,6 +80,29 @@ public sealed class QuicLongHeaderPacketTests
     [Theory]
     [InlineData((byte)0x4A, (byte)0x00)]
     [InlineData((byte)0x5A, (byte)0x01)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0001">The first bit of a QUIC long header packet MUST be set to 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0002">The other seven bits in the first byte of a QUIC long header packet MUST be version-specific.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0003">The four bytes after the first byte in a QUIC long header packet MUST contain a 32-bit Version field.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0004">The byte after the Version field MUST encode the Destination Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0006">The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0008">The remainder of a QUIC long header packet MUST contain version-specific content.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S3-0002">The packet-level header MUST indicate the encryption level.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S3-0003">The packet-level header MUST include a packet sequence number.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0001">An Initial packet MUST use long headers with a type value of 0x00.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0003">The Fixed Bit field MUST be 1 bits long with value 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0004">The Long Packet Type field MUST be 2 bits long with value 0.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0005">The Reserved Bits field MUST be 2 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0006">The Packet Number Length field MUST be 2 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0016">The first byte MUST contain the Reserved and Packet Number Length bits; see also Section 17.2.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0001">A 0-RTT packet MUST use long headers with a type value of 0x01, followed by the Length and Packet Number fields; see Section 17.2.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0002">The first byte MUST contain the Reserved and Packet Number Length bits; see Section 17.2.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0005">The Header Form field MUST be 1 bits long with value 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0006">The Fixed Bit field MUST be 1 bits long with value 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0007">The Long Packet Type field MUST be 2 bits long with value 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0008">The Reserved Bits field MUST be 2 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0009">The Packet Number Length field MUST be 2 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
@@ -98,6 +144,16 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0001">An Initial packet MUST use long headers with a type value of 0x00.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0009">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0011">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0012">The Token Length field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0013">The Length field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0014">The Packet Number field MUST be between 8 and 32 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0015">The Initial packet MUST contain a long header as well as the Length and Packet Number fields; see Section 17.2.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0017">The Token Length field MUST be variable-length integer specifying the length of the Token field, in bytes.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
@@ -128,6 +184,9 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1-0013">A zero-length connection ID MAY be used when a connection ID is not needed to route to the correct endpoint.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P1-0013")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_AllowsZeroLengthConnectionIds()
@@ -151,6 +210,14 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0001">A 0-RTT packet MUST use long headers with a type value of 0x01, followed by the Length and Packet Number fields; see Section 17.2.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0011">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0012">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0014">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0015">The Length field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0016">The Packet Number field MUST be between 8 and 32 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
@@ -208,6 +275,18 @@ public sealed class QuicLongHeaderPacketTests
 
     [Theory]
     [MemberData(nameof(TruncatedLongHeaderCases))]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0006">The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0012">Endpoints MUST discard packets that are too small to be valid QUIC packets.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0008">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0009">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0010">The Source Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0011">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0011">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0012">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0013">The Source Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0014">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0008")]
@@ -226,6 +305,13 @@ public sealed class QuicLongHeaderPacketTests
 
     [Theory]
     [MemberData(nameof(InvalidInitialVersionSpecificDataCases))]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0012">The Token Length field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0013">The Length field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0014">The Packet Number field MUST be between 8 and 32 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0015">The Initial packet MUST contain a long header as well as the Length and Packet Number fields; see Section 17.2.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0017">The Token Length field MUST be variable-length integer specifying the length of the Token field, in bytes.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0012")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0013")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0014")]
@@ -247,6 +333,11 @@ public sealed class QuicLongHeaderPacketTests
 
     [Theory]
     [MemberData(nameof(InvalidZeroRttVersionSpecificDataCases))]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0001">A 0-RTT packet MUST use long headers with a type value of 0x01, followed by the Length and Packet Number fields; see Section 17.2.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0015">The Length field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0016">The Packet Number field MUST be between 8 and 32 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0015")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0016")]
@@ -265,6 +356,10 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0005">The Version field MUST be 32 bits long with value 0.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0013">The Version field of a Version Negotiation packet MUST be set to 0x00000000.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0013")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -286,6 +381,10 @@ public sealed class QuicLongHeaderPacketTests
     [Theory]
     [InlineData(0x00)]
     [InlineData(0x3F)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0002">The Header Form field MUST be 1 bits long with value 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0005">The Header Form field MUST be 1 bits long with value 1.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0002")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0005")]
     [CoverageType(RequirementCoverageType.Negative)]
@@ -299,6 +398,10 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0003">The Fixed Bit field MUST be 1 bits long with value 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0006">The Fixed Bit field MUST be 1 bits long with value 1.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0006")]
     [CoverageType(RequirementCoverageType.Negative)]
@@ -315,6 +418,12 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0010">The Source Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0011">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0013">The Source Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0014">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0010")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0013")]
@@ -334,6 +443,10 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0005">The Destination Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0007">The Source Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0005")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0007")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -360,6 +473,12 @@ public sealed class QuicLongHeaderPacketTests
     [Theory]
     [InlineData(0x40)]
     [InlineData(0x50)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0009">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0011">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0012">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0014">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
@@ -388,6 +507,12 @@ public sealed class QuicLongHeaderPacketTests
     [Theory]
     [InlineData(0x40)]
     [InlineData(0x50)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0009">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0011">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0012">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0014">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
@@ -409,6 +534,12 @@ public sealed class QuicLongHeaderPacketTests
     [Theory]
     [InlineData(0x40)]
     [InlineData(0x50)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0009">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0011">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0012">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0014">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0012")]
@@ -428,6 +559,9 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0020">In QUIC version 1, this value MUST NOT exceed 20 bytes.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0020")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_AllowsVersion1DestinationConnectionIdUpTo20Bytes()
@@ -452,6 +586,9 @@ public sealed class QuicLongHeaderPacketTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0021">Endpoints that receive a version 1 long header with a value larger than 20 MUST drop the packet.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0021")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseLongHeader_RejectsVersion1DestinationConnectionIdLongerThan20Bytes()

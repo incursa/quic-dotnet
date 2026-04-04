@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP6-0001">If the sender is already in a recovery period, a new congestion event MUST have no effect.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP6-0001")]
 public sealed class REQ_QUIC_RFC9002_SBP6_0001
 {

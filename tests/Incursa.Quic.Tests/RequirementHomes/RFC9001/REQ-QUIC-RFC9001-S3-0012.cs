@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S3-0012">QUIC applications that want to send data MUST send it as QUIC STREAM frames or other frame types carried in QUIC packets.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9001-S3-0012")]
 public sealed class REQ_QUIC_RFC9001_S3_0012
 {

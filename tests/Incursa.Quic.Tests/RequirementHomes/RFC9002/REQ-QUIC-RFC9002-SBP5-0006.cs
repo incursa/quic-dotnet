@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP5-0006">While in congestion avoidance, the sender MUST increase congestion_window by max_datagram_size multiplied by the acknowledged bytes and divided by congestion_window.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP5-0006")]
 public sealed class REQ_QUIC_RFC9002_SBP5_0006
 {

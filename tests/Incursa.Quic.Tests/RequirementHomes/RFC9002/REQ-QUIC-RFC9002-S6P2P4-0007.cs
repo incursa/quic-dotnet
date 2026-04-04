@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P4-0007">Implementations MAY use alternative strategies for determining the content of probe packets, including sending new or retransmitted data based on the application&apos;s priorities.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P2P4-0007")]
 public sealed class REQ_QUIC_RFC9002_S6P2P4_0007
 {

@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P2-0003">The time threshold MUST be max(kTimeThreshold * max(smoothed_rtt, latest_rtt), kGranularity).</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P1P2-0003")]
 public sealed class REQ_QUIC_RFC9002_S6P1P2_0003
 {

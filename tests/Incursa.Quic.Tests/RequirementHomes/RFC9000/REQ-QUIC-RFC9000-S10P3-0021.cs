@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0021">An endpoint that receives packets it cannot process MUST send a packet using the Stateless Reset layout shown in Figure 10.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3-0021")]
 public sealed class REQ_QUIC_RFC9000_S10P3_0021
 {

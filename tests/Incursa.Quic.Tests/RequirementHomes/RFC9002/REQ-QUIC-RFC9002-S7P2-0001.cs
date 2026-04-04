@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P2-0001">QUIC MUST begin every connection in slow start with the congestion window set to an initial value.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S7P2-0001")]
 public sealed class REQ_QUIC_RFC9002_S7P2_0001
 {

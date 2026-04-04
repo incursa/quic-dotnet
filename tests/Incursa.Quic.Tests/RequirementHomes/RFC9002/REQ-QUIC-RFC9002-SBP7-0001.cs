@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP7-0001">When the peer-reported ECN-CE counter increases, the sender MUST treat the change as a new congestion event and update the stored ECN-CE counter.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP7-0001")]
 public sealed class REQ_QUIC_RFC9002_SBP7_0001
 {

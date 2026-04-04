@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP9-0005">When PTO fires, the sender MUST increment `pto_count` and refresh the loss detection timer.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP9-0005")]
 public sealed class REQ_QUIC_RFC9002_SAP9_0005
 {

@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0002">The Fixed Bit field MUST be 1 bits long with value 1.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2-0002")]
 public sealed class REQ_QUIC_RFC9000_S17P2_0002
 {
@@ -10,6 +13,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0002
     [InlineData((byte)0x70, (byte)0x03)]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0002">The Fixed Bit field MUST be 1 bits long with value 1.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0002")]
     public void TryParseLongHeader_RequiresTheFixedBitForVersionedLongHeaders(
         byte headerControlBits,
@@ -30,6 +36,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0002">The Fixed Bit field MUST be 1 bits long with value 1.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0002")]
     public void TryParseLongHeader_RejectsVersionedLongHeadersWithTheFixedBitClear()
     {

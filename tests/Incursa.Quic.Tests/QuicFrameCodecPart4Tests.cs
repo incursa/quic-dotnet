@@ -3,6 +3,14 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicFrameCodecPart4Tests
 {
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0009">QUIC MAY allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P12-0003">The Type field MUST be encoded as a variable-length integer with value 0x14.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P12-0004">The Maximum Data field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P12-0005">DATA_BLOCKED frames MUST contain the following field:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P12-0006">The Maximum Data field MUST be variable-length integer indicating the connection-level limit at which blocking occurred.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0014">A sender SHOULD send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame to indicate to the receiver that it has data to write but is blocked by flow control limits.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0004")]
@@ -26,6 +34,12 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0009">QUIC MAY allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P12-0004">The Maximum Data field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P12-0005">DATA_BLOCKED frames MUST contain the following field:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P12-0006">The Maximum Data field MUST be variable-length integer indicating the connection-level limit at which blocking occurred.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P12-0005")]
@@ -39,6 +53,16 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0009">QUIC MAY allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0003">The Type field MUST be encoded as a variable-length integer with value 0x15.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0004">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0005">The Maximum Stream Data field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0006">STREAM_DATA_BLOCKED frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0007">The Stream ID field MUST be variable-length integer indicating the stream that is blocked due to flow control.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0008">The Maximum Stream Data field MUST be variable-length integer indicating the offset of the stream at which the blocking occurred.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0014">A sender SHOULD send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame to indicate to the receiver that it has data to write but is blocked by flow control limits.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0004")]
@@ -65,6 +89,14 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0009">QUIC MAY allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0004">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0005">The Maximum Stream Data field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0006">STREAM_DATA_BLOCKED frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0007">The Stream ID field MUST be variable-length integer indicating the stream that is blocked due to flow control.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0008">The Maximum Stream Data field MUST be variable-length integer indicating the offset of the stream at which the blocking occurred.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0005")]
@@ -82,6 +114,15 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0008">QUIC MAY allow an arbitrary number of streams to operate concurrently.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0002">A STREAMS_BLOCKED frame of type 0x16 MUST be used to indicate reaching the bidirectional stream limit, and a STREAMS_BLOCKED frame of type 0x17 is used to indicate reaching the unidirectional stream limit.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0004">The Type field MUST be encoded as a variable-length integer with value 0x16..0x17.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0005">The Maximum Streams field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0006">STREAMS_BLOCKED frames MUST contain the following field:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0007">The Maximum Streams field MUST be variable-length integer indicating the maximum number of streams allowed at the time the frame was sent.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P6-0012">An endpoint that is unable to open a new stream due to the peer&apos;s limits SHOULD send a STREAMS_BLOCKED frame.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0004")]
@@ -109,6 +150,15 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0008">QUIC MAY allow an arbitrary number of streams to operate concurrently.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0002">A STREAMS_BLOCKED frame of type 0x16 MUST be used to indicate reaching the bidirectional stream limit, and a STREAMS_BLOCKED frame of type 0x17 is used to indicate reaching the unidirectional stream limit.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0004">The Type field MUST be encoded as a variable-length integer with value 0x16..0x17.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0005">The Maximum Streams field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0006">STREAMS_BLOCKED frames MUST contain the following field:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0007">The Maximum Streams field MUST be variable-length integer indicating the maximum number of streams allowed at the time the frame was sent.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0008">This value MUST NOT exceed 260, as it is not possible to encode stream IDs larger than 262-1.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0004")]
@@ -135,6 +185,10 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0008">This value MUST NOT exceed 260, as it is not possible to encode stream IDs larger than 262-1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0009">Receipt of a frame that encodes a larger stream ID MUST be treated as a connection error of type STREAM_LIMIT_ERROR or FRAME_ENCODING_ERROR.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P14-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0009")]
     [CoverageType(RequirementCoverageType.Negative)]
@@ -148,6 +202,24 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0002">The Type field MUST be encoded as a variable-length integer with value 0x18.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0003">The Sequence Number field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0004">The Retire Prior To field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0005">The Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0006">The Connection ID field MUST be between 8 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0007">The Stateless Reset Token field MUST be 128 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0008">NEW_CONNECTION_ID frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0009">The Retire Prior To field MUST be a variable-length integer indicating which connection IDs should be retired; see Section 5.1.2.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0010">The Length field MUST be 8-bit unsigned integer containing the length of the connection ID.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0012">The Connection ID field MUST be connection ID of the specified length.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0013">A 128-bit value that will be used for a stateless reset when the associated connection ID MUST be used; see Section 10.3.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0019">The value in the Retire Prior To field MUST be less than or equal to the value in the Sequence Number field.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0003">A stateless reset token MUST be 16 bytes long and difficult to guess.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0017">An endpoint MUST issue a stateless reset token by including the value in the Stateless Reset Token field of a NEW_CONNECTION_ID frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P2-0008">An endpoint MAY cause its peer to retire connection IDs by sending a NEW_CONNECTION_ID frame with an increased Retire Prior To field.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0005">Additional connection IDs MUST be communicated to the peer using NEW_CONNECTION_ID frames.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P15-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0004")]
@@ -193,6 +265,18 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(1)]
     [InlineData(20)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P2-0008">An endpoint MAY cause its peer to retire connection IDs by sending a NEW_CONNECTION_ID frame with an increased Retire Prior To field.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0005">The Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0006">The Connection ID field MUST be between 8 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0010">The Length field MUST be 8-bit unsigned integer containing the length of the connection ID.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0011">Values less than 1 and greater than 20 are invalid and MUST be treated as a connection error of type FRAME_ENCODING_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0012">The Connection ID field MUST be connection ID of the specified length.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0013">A 128-bit value that will be used for a stateless reset when the associated connection ID MUST be used; see Section 10.3.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0003">A stateless reset token MUST be 16 bytes long and difficult to guess.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0017">An endpoint MUST issue a stateless reset token by including the value in the Stateless Reset Token field of a NEW_CONNECTION_ID frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0005">Additional connection IDs MUST be communicated to the peer using NEW_CONNECTION_ID frames.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P1P2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0006")]
@@ -226,6 +310,13 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0010">The Length field MUST be 8-bit unsigned integer containing the length of the connection ID.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0011">Values less than 1 and greater than 20 are invalid and MUST be treated as a connection error of type FRAME_ENCODING_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0012">The Connection ID field MUST be connection ID of the specified length.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0013">A 128-bit value that will be used for a stateless reset when the associated connection ID MUST be used; see Section 10.3.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0003">A stateless reset token MUST be 16 bytes long and difficult to guess.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P15-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0011")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
@@ -251,6 +342,11 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(1)]
     [InlineData(17)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0008">NEW_CONNECTION_ID frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0012">The Connection ID field MUST be connection ID of the specified length.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0013">A 128-bit value that will be used for a stateless reset when the associated connection ID MUST be used; see Section 10.3.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P15-0008")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
@@ -270,6 +366,10 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0019">The value in the Retire Prior To field MUST be less than or equal to the value in the Sequence Number field.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0020">Receiving a value in the Retire Prior To field that is greater than that in the Sequence Number field MUST be treated as a connection error of type FRAME_ENCODING_ERROR.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P15-0019")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0020")]
     [CoverageType(RequirementCoverageType.Negative)]
@@ -289,6 +389,13 @@ public sealed class QuicFrameCodecPart4Tests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P2-0004">When the endpoint wishes to remove a connection ID from use, it MUST send a RETIRE_CONNECTION_ID frame to its peer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P2-0005">Sending a RETIRE_CONNECTION_ID frame MUST indicate that the connection ID will not be used again and request that the peer replace it with a new connection ID using a NEW_CONNECTION_ID frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P16-0004">The Type field MUST be encoded as a variable-length integer with value 0x19.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P16-0005">The Sequence Number field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P16-0006">RETIRE_CONNECTION_ID frames MUST contain the following field:</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P1P2-0004")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P16-0004")]
@@ -312,6 +419,12 @@ public sealed class QuicFrameCodecPart4Tests
 
     [Theory]
     [InlineData(1)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P2-0004">When the endpoint wishes to remove a connection ID from use, it MUST send a RETIRE_CONNECTION_ID frame to its peer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P2-0005">Sending a RETIRE_CONNECTION_ID frame MUST indicate that the connection ID will not be used again and request that the peer replace it with a new connection ID using a NEW_CONNECTION_ID frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P16-0005">The Sequence Number field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P16-0006">RETIRE_CONNECTION_ID frames MUST contain the following field:</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P1P2-0004")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P16-0005")]
@@ -328,6 +441,14 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P17-0002">The Type field MUST be encoded as a variable-length integer with value 0x1a.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P17-0003">The Data field MUST be 64 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P17-0004">PATH_CHALLENGE frames MUST contain the following field:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P17-0005">This 8-byte field MUST contain arbitrary data.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P18-0001">The Type field MUST be encoded as a variable-length integer with value 0x1b.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P18-0002">The Data field MUST be 64 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P17-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P17-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P17-0004")]
@@ -374,6 +495,14 @@ public sealed class QuicFrameCodecPart4Tests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P17-0002">The Type field MUST be encoded as a variable-length integer with value 0x1a.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P17-0003">The Data field MUST be 64 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P17-0004">PATH_CHALLENGE frames MUST contain the following field:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P17-0005">This 8-byte field MUST contain arbitrary data.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P18-0001">The Type field MUST be encoded as a variable-length integer with value 0x1b.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P18-0002">The Data field MUST be 64 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P17-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P17-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P17-0004")]

@@ -1,10 +1,16 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0008">The remainder of a QUIC long header packet MUST contain version-specific content.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
 public sealed class REQ_QUIC_RFC8999_S5P1_0008
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0008">The remainder of a QUIC long header packet MUST contain version-specific content.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
     public void TryParseVersionNegotiation_PreservesTheVersionSpecificRemainder()
     {

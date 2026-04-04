@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP5-0001">On packet acknowledgment, the sender MUST ignore packets that are not in flight.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP5-0001")]
 public sealed class REQ_QUIC_RFC9002_SBP5_0001
 {

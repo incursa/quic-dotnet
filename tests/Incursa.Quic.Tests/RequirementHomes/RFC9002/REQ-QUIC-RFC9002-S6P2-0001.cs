@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2-0001">A Probe Timeout (PTO) MUST trigger the sending of one or two probe datagrams when ack-eliciting packets are not acknowledged within the expected period of time or when the server may not have validated the client&apos;s address.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P2-0001")]
 public sealed class REQ_QUIC_RFC9002_S6P2_0001
 {

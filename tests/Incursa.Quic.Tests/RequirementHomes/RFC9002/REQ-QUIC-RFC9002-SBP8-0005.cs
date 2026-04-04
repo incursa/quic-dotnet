@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SBP8-0005">If persistent congestion is detected, the sender MUST set `congestion_window` to `kMinimumWindow` and reset `congestion_recovery_start_time` to `0`.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SBP8-0005")]
 public sealed class REQ_QUIC_RFC9002_SBP8_0005
 {

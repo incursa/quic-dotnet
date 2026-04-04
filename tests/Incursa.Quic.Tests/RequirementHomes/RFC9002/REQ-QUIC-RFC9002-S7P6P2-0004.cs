@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P6P2-0004">Persistent congestion SHOULD consider packets sent across packet number spaces.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S7P6P2-0004")]
 public sealed class REQ_QUIC_RFC9002_S7P6P2_0004
 {

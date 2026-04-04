@@ -7,6 +7,9 @@ public sealed class QuicRecoveryTimingTests
     [InlineData(true, true, 9, false)]
     [InlineData(false, false, 9, false)]
     [InlineData(false, true, 10, true)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1-0001">A packet MUST be unacknowledged, in flight, and sent before an acknowledged packet before it can be declared lost.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9002-S6P1-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void CanDeclarePacketLost_RequiresAnUnacknowledgedInFlightPacketSentBeforeAnAcknowledgedPacket(
@@ -26,6 +29,10 @@ public sealed class QuicRecoveryTimingTests
     [InlineData(8UL, 11UL, true)]
     [InlineData(9UL, 11UL, false)]
     [InlineData(6UL, 9UL, true)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P1-0001">The packet reordering threshold SHOULD be 3.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P1-0002">Implementations SHOULD NOT use a packet threshold less than 3.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9002-S6P1P1-0001")]
     [Requirement("REQ-QUIC-RFC9002-S6P1P1-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -40,6 +47,9 @@ public sealed class QuicRecoveryTimingTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P1-0002">Implementations SHOULD NOT use a packet threshold less than 3.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9002-S6P1P1-0002")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree()
@@ -53,6 +63,12 @@ public sealed class QuicRecoveryTimingTests
     [Theory]
     [InlineData(800UL, 1_000UL, 1_125UL)]
     [InlineData(1UL, 1UL, 1_000UL)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P2-0002">To avoid declaring packets lost too early, the time threshold MUST be at least the local timer granularity.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P2-0003">The time threshold MUST be max(kTimeThreshold * max(smoothed_rtt, latest_rtt), kGranularity).</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P2-0005">The RECOMMENDED time threshold multiplier, kTimeThreshold, SHOULD be 9/8.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P2-0006">The RECOMMENDED timer granularity, kGranularity, SHOULD be 1 millisecond.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9002-S6P1P2-0002")]
     [Requirement("REQ-QUIC-RFC9002-S6P1P2-0003")]
     [Requirement("REQ-QUIC-RFC9002-S6P1P2-0005")]
@@ -67,6 +83,10 @@ public sealed class QuicRecoveryTimingTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P2-0001">Once a later packet within the same packet number space has been acknowledged, an endpoint SHOULD declare an earlier packet lost if it was sent a threshold amount of time in the past.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P2-0004">If packets sent prior to the largest acknowledged packet cannot yet be declared lost, a timer SHOULD be set for the remaining time.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9002-S6P1P2-0001")]
     [Requirement("REQ-QUIC-RFC9002-S6P1P2-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -95,6 +115,13 @@ public sealed class QuicRecoveryTimingTests
     [InlineData(QuicPacketNumberSpace.Initial, false, 2_000UL)]
     [InlineData(QuicPacketNumberSpace.Handshake, false, 2_000UL)]
     [InlineData(QuicPacketNumberSpace.ApplicationData, true, 2_500UL)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2-0002">The PTO MUST be computed separately for each packet number space.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P1-0001">When an ack-eliciting packet is transmitted, the sender MUST schedule a PTO timer using PTO = smoothed_rtt + max(4*rttvar, kGranularity) + max_ack_delay.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P1-0002">When the PTO is armed for the Initial or Handshake packet number spaces, the max_ack_delay in the PTO computation MUST be set to 0.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P1-0003">The PTO period MUST be at least kGranularity.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P1-0005">An endpoint MUST NOT set its PTO timer for the Application Data packet number space until the handshake is confirmed.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9002-S6P2-0002")]
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0001")]
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0002")]
@@ -118,6 +145,9 @@ public sealed class QuicRecoveryTimingTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P1-0005">An endpoint MUST NOT set its PTO timer for the Application Data packet number space until the handshake is confirmed.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0005")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation()
@@ -134,6 +164,9 @@ public sealed class QuicRecoveryTimingTests
     [Theory]
     [InlineData(1_000UL, 1, 2_000UL)]
     [InlineData(1_000UL, 2, 4_000UL)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P1-0007">When a PTO timer expires, the PTO backoff MUST be increased, which doubles the PTO period.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0007")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void ComputeProbeTimeoutWithBackoffMicros_DoublesTheBasePtoOnTimeout(
@@ -147,6 +180,9 @@ public sealed class QuicRecoveryTimingTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P1-0004">When ack-eliciting packets in multiple packet number spaces are in flight, the PTO timer MUST be set to the earlier value of the Initial and Handshake packet number spaces.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheEarlierValue()
@@ -160,6 +196,9 @@ public sealed class QuicRecoveryTimingTests
     }
 
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P1-0010">The PTO timer MUST NOT be set if a timer is set for time-threshold loss detection.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9002-S6P2P1-0010")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TrySelectRecoveryTimerMicros_PrefersLossDetectionTimersOverPtoTimers()
@@ -175,6 +214,10 @@ public sealed class QuicRecoveryTimingTests
     [Theory]
     [InlineData(1_000UL, 2_250UL)]
     [InlineData(2_000UL, 3_250UL)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P3-0004">The client MAY compute an RTT estimate to the server as the time period from when the first Initial packet was sent to when a Retry or Version Negotiation packet is received.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P3-0005">The client MAY use this value in place of its default for the initial RTT estimate.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9002-S6P3-0004")]
     [Requirement("REQ-QUIC-RFC9002-S6P3-0005")]
     [CoverageType(RequirementCoverageType.Positive)]

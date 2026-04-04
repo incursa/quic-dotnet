@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP8-0003">GetPtoTimeAndSpace MUST skip Application Data until the handshake is confirmed.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP8-0003")]
 public sealed class REQ_QUIC_RFC9002_SAP8_0003
 {

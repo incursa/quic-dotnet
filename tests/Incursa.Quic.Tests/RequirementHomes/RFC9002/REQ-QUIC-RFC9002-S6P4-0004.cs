@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P4-0004">Initial and Handshake secrets MUST be discarded as soon as Handshake and 1-RTT keys are proven to be available to both client and server.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P4-0004")]
 public sealed class REQ_QUIC_RFC9002_S6P4_0004
 {

@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P2-0002">Endpoints SHOULD use an initial congestion window of ten times the maximum datagram size while limiting the window to the larger of 14,720 bytes or twice the maximum datagram size.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S7P2-0002")]
 public sealed class REQ_QUIC_RFC9002_S7P2_0002
 {

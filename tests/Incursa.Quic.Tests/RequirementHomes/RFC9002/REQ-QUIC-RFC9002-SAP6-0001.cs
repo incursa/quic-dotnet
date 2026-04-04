@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP6-0001">If receiving a datagram unblocks the server from anti-amplification limits, the endpoint MUST set the loss detection timer.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP6-0001")]
 public sealed class REQ_QUIC_RFC9002_SAP6_0001
 {

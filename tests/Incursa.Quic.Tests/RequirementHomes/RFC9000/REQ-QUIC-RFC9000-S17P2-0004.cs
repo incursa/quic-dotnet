@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0004">The Type-Specific Bits field MUST be 4 bits long.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2-0004")]
 public sealed class REQ_QUIC_RFC9000_S17P2_0004
 {
@@ -10,6 +13,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0004
     [InlineData((byte)0x4F, (byte)0x0F, (byte)0x03)]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0004">The Type-Specific Bits field MUST be 4 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0004")]
     public void TryParseLongHeader_ExposesTheFourBitTypeSpecificField(
         byte headerControlBits,

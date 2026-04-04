@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP10-0002">`DetectAndRemoveLostPackets` MUST compute `loss_delay` as `kTimeThreshold` times the larger of `latest_rtt` and `smoothed_rtt`, and not let `loss_delay` fall below `kGranularity`.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP10-0002")]
 public sealed class REQ_QUIC_RFC9002_SAP10_0002
 {

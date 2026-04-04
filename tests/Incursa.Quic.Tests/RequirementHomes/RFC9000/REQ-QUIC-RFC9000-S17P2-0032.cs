@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0032">The Packet Number field MUST be field is 1 to 4 bytes long.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2-0032")]
 public sealed class REQ_QUIC_RFC9000_S17P2_0032
 {

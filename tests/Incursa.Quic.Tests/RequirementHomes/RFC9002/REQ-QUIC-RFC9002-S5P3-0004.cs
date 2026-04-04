@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S5P3-0004">When acknowledgment processing is postponed because the corresponding decryption keys are not immediately available, an endpoint SHOULD subtract that local delay from its RTT sample until the handshake is confirmed.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S5P3-0004")]
 public sealed class REQ_QUIC_RFC9002_S5P3_0004
 {

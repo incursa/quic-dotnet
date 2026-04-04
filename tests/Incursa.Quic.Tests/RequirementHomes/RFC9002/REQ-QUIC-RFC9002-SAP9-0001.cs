@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP9-0001">When the loss detection timer expires and an earliest loss time exists, the endpoint MUST detect lost packets in that packet number space, assert that the lost-packet list is nonempty, pass the lost packets to `OnPacketsLost`, refresh the timer, and return.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP9-0001")]
 public sealed class REQ_QUIC_RFC9002_SAP9_0001
 {

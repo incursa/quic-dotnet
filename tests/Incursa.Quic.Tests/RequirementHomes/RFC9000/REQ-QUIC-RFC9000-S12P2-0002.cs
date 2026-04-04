@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S12P2-0002">The length includes both MUST the Packet Number and Payload fields, both of which are confidentiality protected and initially of unknown length.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S12P2-0002")]
 public sealed class REQ_QUIC_RFC9000_S12P2_0002
 {

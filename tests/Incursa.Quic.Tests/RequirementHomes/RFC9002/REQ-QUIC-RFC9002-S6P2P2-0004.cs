@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P2-0004">That delay SHOULD NOT be considered an RTT sample.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P2P2-0004")]
 public sealed class REQ_QUIC_RFC9002_S6P2P2_0004
 {

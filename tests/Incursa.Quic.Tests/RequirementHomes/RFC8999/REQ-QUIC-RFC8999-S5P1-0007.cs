@@ -1,10 +1,16 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0007">The Source Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC8999-S5P1-0007")]
 public sealed class REQ_QUIC_RFC8999_S5P1_0007
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0007">The Source Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0007")]
     public void TryParseLongHeader_AcceptsMaximumLengthSourceConnectionId()
     {
@@ -23,6 +29,9 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0007
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0007">The Source Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0007")]
     public void TryParseLongHeader_RejectsTruncatedSourceConnectionId()
     {
@@ -39,6 +48,9 @@ public sealed class REQ_QUIC_RFC8999_S5P1_0007
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0007">The Source Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0007")]
     public void TryParseLongHeader_AllowsZeroLengthSourceConnectionId()
     {

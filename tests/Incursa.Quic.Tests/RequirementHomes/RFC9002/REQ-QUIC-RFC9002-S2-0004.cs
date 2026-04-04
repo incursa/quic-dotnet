@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S2-0004">Packets MUST be considered in flight when they are ack-eliciting or contain a PADDING frame and have been sent but are not yet acknowledged, declared lost, or discarded along with old keys.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S2-0004")]
 public sealed class REQ_QUIC_RFC9002_S2_0004
 {

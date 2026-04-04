@@ -1,11 +1,17 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0022">In order to properly form a Version Negotiation packet, servers SHOULD be able to read longer connection IDs from other QUIC versions.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2-0022")]
 public sealed class REQ_QUIC_RFC9000_S17P2_0022
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0022">In order to properly form a Version Negotiation packet, servers SHOULD be able to read longer connection IDs from other QUIC versions.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0022")]
     public void TryParseVersionNegotiation_ReadsLongerConnectionIdsFromOtherVersions()
     {

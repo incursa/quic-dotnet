@@ -1,11 +1,17 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0001">Each connection ID MUST have an associated sequence number to assist in detecting when NEW_CONNECTION_ID or RETIRE_CONNECTION_ID frames refer to the same value.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S5P1P1-0001")]
 public sealed class REQ_QUIC_RFC9000_S5P1P1_0001
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0001">Each connection ID MUST have an associated sequence number to assist in detecting when NEW_CONNECTION_ID or RETIRE_CONNECTION_ID frames refer to the same value.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0001")]
     public void TryParseNewConnectionIdFrame_ExposesTheSequenceNumberOnTheWire()
     {
@@ -42,6 +48,9 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0001">Each connection ID MUST have an associated sequence number to assist in detecting when NEW_CONNECTION_ID or RETIRE_CONNECTION_ID frames refer to the same value.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0001")]
     public void TryParseNewConnectionIdFrame_RejectsTruncatedInput()
     {
@@ -61,6 +70,9 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0001">Each connection ID MUST have an associated sequence number to assist in detecting when NEW_CONNECTION_ID or RETIRE_CONNECTION_ID frames refer to the same value.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P1P1-0001")]
     public void TryParseNewConnectionIdFrame_AllowsSequenceNumberZero()
     {

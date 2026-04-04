@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P3P2-0002">A sender that is already in a recovery period MUST NOT reenter it.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S7P3P2-0002")]
 public sealed class REQ_QUIC_RFC9002_S7P3P2_0002
 {

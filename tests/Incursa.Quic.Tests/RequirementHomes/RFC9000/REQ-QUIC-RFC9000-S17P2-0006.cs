@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0006">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2-0006")]
 public sealed class REQ_QUIC_RFC9000_S17P2_0006
 {
@@ -8,6 +11,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0006
     [InlineData(255)]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0006">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0006")]
     public void TryParseLongHeader_PreservesTheDestinationConnectionIdLengthByte(int destinationConnectionIdLength)
     {
@@ -29,6 +35,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0006
     [InlineData(20)]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0006">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0006")]
     public void TryParseLongHeader_PreservesRepresentativeDestinationConnectionIdLengths(
         int destinationConnectionIdLength)
@@ -49,6 +58,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0006
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0006">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0006")]
     public void TryParseLongHeader_RejectsPacketsMissingTheDestinationConnectionIdBytes()
     {

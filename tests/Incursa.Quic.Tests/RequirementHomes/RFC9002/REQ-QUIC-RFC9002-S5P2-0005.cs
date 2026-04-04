@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S5P2-0005">Endpoints SHOULD set min_rtt to the newest RTT sample after persistent congestion is established.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S5P2-0005")]
 public sealed class REQ_QUIC_RFC9002_S5P2_0005
 {

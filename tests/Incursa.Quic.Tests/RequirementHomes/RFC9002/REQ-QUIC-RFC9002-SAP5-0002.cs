@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP5-0002">When a sent packet is in flight and ack-eliciting, the sender MUST update time_of_last_ack_eliciting_packet[pn_space] to now().</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP5-0002")]
 public sealed class REQ_QUIC_RFC9002_SAP5_0002
 {

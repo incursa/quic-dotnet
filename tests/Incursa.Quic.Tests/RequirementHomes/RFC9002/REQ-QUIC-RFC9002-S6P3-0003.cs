@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P3-0003">Clients MUST retain other connection state, in particular cryptographic handshake messages.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P3-0003")]
 public sealed class REQ_QUIC_RFC9002_S6P3_0003
 {

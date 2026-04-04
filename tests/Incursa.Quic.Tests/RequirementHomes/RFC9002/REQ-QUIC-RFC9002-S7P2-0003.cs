@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P2-0003">If the maximum datagram size changes during the connection, the initial congestion window SHOULD be recalculated with the new size.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S7P2-0003")]
 public sealed class REQ_QUIC_RFC9002_S7P2_0003
 {

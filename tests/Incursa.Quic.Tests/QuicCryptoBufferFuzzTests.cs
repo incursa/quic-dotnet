@@ -3,6 +3,10 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicCryptoBufferFuzzTests
 {
     [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P5-0001">Implementations MUST support buffering at least 4096 bytes of data received in out-of-order CRYPTO frames.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P5-0002">Endpoints MAY choose to allow more data to be buffered during the handshake.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S7P5-0001")]
     [Requirement("REQ-QUIC-RFC9000-S7P5-0002")]
     [CoverageType(RequirementCoverageType.Fuzz)]

@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0006">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2P1-0006")]
 public sealed class REQ_QUIC_RFC9000_S17P2P1_0006
 {
@@ -8,6 +11,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0006
     [InlineData(255)]
     [CoverageType(RequirementCoverageType.Positive)]
     [CoverageType(RequirementCoverageType.Edge)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0006">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0006")]
     public void TryParseVersionNegotiation_PreservesDestinationConnectionIdLengthByte(int destinationConnectionIdLength)
     {
@@ -24,6 +30,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0006
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0006">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0006")]
     public void TryParseVersionNegotiation_RejectsTruncatedDestinationConnectionIdLengthField()
     {

@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P2P1-0003">If the PTO timer is then set to a time in the past, it MUST be executed immediately.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-S6P2P2P1-0003")]
 public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0003
 {

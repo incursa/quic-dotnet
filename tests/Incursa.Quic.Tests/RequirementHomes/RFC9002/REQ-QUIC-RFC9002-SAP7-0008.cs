@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-SAP7-0008">On later RTT samples, the endpoint MUST update `min_rtt` to the lesser of `min_rtt` and `latest_rtt`, and after handshake confirmation cap `ack_delay` at `max_ack_delay`.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9002-SAP7-0008")]
 public sealed class REQ_QUIC_RFC9002_SAP7_0008
 {

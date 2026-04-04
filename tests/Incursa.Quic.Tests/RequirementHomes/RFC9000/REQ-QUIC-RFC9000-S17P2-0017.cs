@@ -1,5 +1,8 @@
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0017">This field MUST indicate the version of QUIC that is in use and determines how the rest of the protocol fields are interpreted.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S17P2-0017")]
 public sealed class REQ_QUIC_RFC9000_S17P2_0017
 {
@@ -8,6 +11,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0017
     [InlineData(1u, false)]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0017">This field MUST indicate the version of QUIC that is in use and determines how the rest of the protocol fields are interpreted.</workbench-requirement>
+    /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2-0017")]
     public void TryParseLongHeader_InterpretsTheVersionField(uint version, bool expectedVersionNegotiation)
     {
