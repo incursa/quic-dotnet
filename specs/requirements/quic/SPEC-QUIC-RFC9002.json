@@ -4524,6 +4524,11 @@
         "upstream_refs": [
           "RFC 9002 §A.2 RFC9002-SA.2-B3-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP2-0001.cs::RecommendedPacketThreshold_UsesThreePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP2-0001.cs::ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP2-0001.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheThreePacketBoundary"
         ]
       }
     },
@@ -4550,6 +4555,9 @@
         "upstream_refs": [
           "RFC 9002 §A.2 RFC9002-SA.2-B4-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP2-0002.cs::RecommendedTimeThreshold_UsesNineOverEight"
         ]
       }
     },
@@ -4576,6 +4584,9 @@
         "upstream_refs": [
           "RFC 9002 §A.2 RFC9002-SA.2-B5-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP2-0003.cs::RecommendedTimerGranularity_UsesOneMillisecond"
         ]
       }
     },
@@ -4602,6 +4613,11 @@
         "upstream_refs": [
           "RFC 9002 §A.2 RFC9002-SA.2-B6-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP2-0004.cs::Constructor_SeedsTheEstimatorWithTheRecommendedInitialRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP2-0004.cs::Constructor_KeepsACustomInitialRttInsteadOfFallingBackToTheDefault",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP2-0004.cs::Constructor_HandlesTheSmallestValidInitialRtt"
         ]
       }
     },
@@ -4629,6 +4645,11 @@
           "RFC 9002 §A.2 RFC9002-SA.2-B7-P0-S1",
           "RFC 9002 §A.2 RFC9002-SA.2-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP2-0005.cs::Enum_DeclaresTheThreePacketNumberSpaces",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP2-0005.cs::Enum_DoesNotDefineANumberSpaceOutsideTheRecommendedSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP2-0005.cs::Enum_ContainsExactlyTheThreeDeclaredPacketNumberSpaces"
         ]
       }
     },
