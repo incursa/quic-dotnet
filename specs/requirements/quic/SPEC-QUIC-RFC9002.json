@@ -4201,6 +4201,11 @@
         "upstream_refs": [
           "RFC 9002 §A.1 RFC9002-SA.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0001.cs::RecordProcessedPacket_KeepsAckElicitingPacketsTrackedUntilTheAckOnlyFrameIsSent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0001.cs::RecordProcessedPacket_DoesNotTreatNonAckElicitingPacketsAsAckTriggers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0001.cs::RecordProcessedPacket_RequestsImmediateAckForInitialAndHandshakePackets"
         ]
       }
     },
@@ -4227,6 +4232,9 @@
         "upstream_refs": [
           "RFC 9002 §A.1 RFC9002-SA.1-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0002.cs::RecordProcessedPacket_TracksTheSamePacketNumberPerSpaceAndPerPacketNumber"
         ]
       }
     },
@@ -4253,6 +4261,9 @@
         "upstream_refs": [
           "RFC 9002 §A.1 RFC9002-SA.1-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0003.cs::RecordProcessedPacket_PreservesPerPacketRecoveryFieldsInAckFrames"
         ]
       }
     },
@@ -4279,6 +4290,10 @@
         "upstream_refs": [
           "RFC 9002 §A.1 RFC9002-SA.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0004.cs::TryDetectPersistentCongestion_DoesNotCollapseWhenAReorderedAckFallsInsideTheLossWindow",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0004.cs::TryDetectPersistentCongestion_StillRetainsReorderedStateAtTheDurationBoundary"
         ]
       }
     },
@@ -4305,6 +4320,11 @@
         "upstream_refs": [
           "RFC 9002 §A.1 RFC9002-SA.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0005.cs::RecordPacketSent_TracksSentPacketsSeparatelyForEachPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0005.cs::RecordPacketSent_DoesNotLetCountsFromOnePacketNumberSpaceValidateAnotherSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0005.cs::RecordPacketSent_AllowsBoundaryValidationForEachPacketNumberSpaceIndependently"
         ]
       }
     },
@@ -4331,6 +4351,11 @@
         "upstream_refs": [
           "RFC 9002 §A.1 RFC9002-SA.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0006.cs::TryValidateAcknowledgedEcnCounts_ProcessesEachPacketNumberSpaceIndependently",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0006.cs::TryValidateAcknowledgedEcnCounts_DoesNotCrossValidateAgainstAnotherPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0006.cs::TryValidateAcknowledgedEcnCounts_LeavesOtherSpacesUntouchedWhenTheLargestAckDoesNotIncrease"
         ]
       }
     },
