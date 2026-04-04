@@ -2717,6 +2717,10 @@
         "upstream_refs": [
           "RFC 9002 §6.3 RFC9002-S6.3-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs::RetryDerivedInitialRtt_RejectsAZeroLengthRetryMeasurement",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs::RetryDerivedInitialRtt_SeedsTheEstimatorWithTheSmallestNonZeroMeasurement"
         ]
       }
     },
@@ -3110,6 +3114,11 @@
         "upstream_refs": [
           "RFC 9002 §7.2 RFC9002-S7.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0003.cs::UpdateMaxDatagramSize_RecomputesTheInitialWindowWhenTheDatagramSizeChanges",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0003.cs::UpdateMaxDatagramSize_DoesNotRecomputeTheWindowWhenResetIsFalse",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0003.cs::UpdateMaxDatagramSize_UsesTheTransitionPointForTheInitialWindow"
         ]
       }
     },
@@ -3136,6 +3145,11 @@
         "upstream_refs": [
           "RFC 9002 §7.2 RFC9002-S7.2-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0004.cs::UpdateMaxDatagramSize_ResetsTheWindowAfterReducingTheDatagramSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0004.cs::UpdateMaxDatagramSize_DoesNotResetTheWindowWhenResetToInitialWindowIsFalse",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0004.cs::UpdateMaxDatagramSize_ResetsToTheTransitionPointInitialWindow"
         ]
       }
     },
