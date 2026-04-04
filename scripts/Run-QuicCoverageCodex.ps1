@@ -172,18 +172,12 @@ function Get-LoopPlan {
             "RFC9000 bounded clusters"
         )
         TierOrder = @(
-            "metadata_only",
-            "partials",
-            "proof_narrowing",
             "uncovered_unblocked"
         )
         TierDescriptions = @{
-            metadata_only       = "metadata-only cleanup"
-            partials            = "partial clusters"
-            proof_narrowing     = "broad-proof narrowing"
             uncovered_unblocked = "implementation-backed uncovered requirements"
         }
-        LockedFamiliesNote = "RFC9001 and blocked families stay out of the default order unless explicitly unlocked."
+        LockedFamiliesNote = "This runner is focused on uncovered_unblocked only; RFC9001 and blocked families stay out of the default order unless explicitly unlocked."
     }
 }
 
@@ -231,7 +225,8 @@ function Get-RequirementBatchCandidates {
         [Parameter(Mandatory = $true)][string]$CurrentRfcFocus,
         [Parameter(Mandatory = $true)][string]$CurrentTier,
         [Parameter(Mandatory = $true)][int]$TargetCount,
-        [Parameter(Mandatory = $true)][int]$MaxCount
+        [Parameter(Mandatory = $true)][int]$MaxCount,
+        [string[]]$ExcludedBatchKeys = @()
     )
 
     $triageState = Convert-TierToTriageState -Tier $CurrentTier
@@ -264,6 +259,11 @@ function Get-RequirementBatchCandidates {
         }
 
         $sectionPrefix = if ([string]::IsNullOrWhiteSpace($requirement.section_prefix)) { "__none__" } else { $requirement.section_prefix }
+        $batchKey = Get-RequirementBatchKey -TriagedState $triageState -RequirementRfc $requirement.rfc -SectionPrefix $requirement.section_prefix
+
+        if ($ExcludedBatchKeys -contains $batchKey) {
+            continue
+        }
 
         if (-not $groupIndex.ContainsKey($sectionPrefix)) {
             $groupIndex[$sectionPrefix] = [pscustomobject]@{
@@ -290,6 +290,7 @@ function Get-RequirementBatchCandidates {
             TriagedState   = $triageState
             RequirementRfc = $requirementRfc
             SectionPrefix  = ""
+            BatchKey       = ""
             TargetCount    = $TargetCount
             MaxCount       = $MaxCount
             Requirements   = @()
@@ -317,6 +318,7 @@ function Get-RequirementBatchCandidates {
         TriagedState   = $triageState
         RequirementRfc = $requirementRfc
         SectionPrefix  = $groupIndex[$bestSectionPrefix].SectionPrefix
+        BatchKey       = Get-RequirementBatchKey -TriagedState $triageState -RequirementRfc $requirementRfc -SectionPrefix $groupIndex[$bestSectionPrefix].SectionPrefix
         TargetCount    = $TargetCount
         MaxCount       = $MaxCount
         Requirements   = $selected
@@ -337,6 +339,74 @@ function Format-RequirementBatchCandidates {
     }
 
     return ($lines -join [Environment]::NewLine)
+}
+
+function Get-RequirementBatchKey {
+    param(
+        [Parameter(Mandatory = $true)][string]$TriagedState,
+        [Parameter(Mandatory = $true)][string]$RequirementRfc,
+        [Parameter(Mandatory = $true)][string]$SectionPrefix
+    )
+
+    $stateText = if ([string]::IsNullOrWhiteSpace($TriagedState)) { "n/a" } else { $TriagedState.Trim() }
+    $rfcText = if ([string]::IsNullOrWhiteSpace($RequirementRfc)) { "n/a" } else { $RequirementRfc.Trim() }
+    $sectionText = if ([string]::IsNullOrWhiteSpace($SectionPrefix)) { "n/a" } else { $SectionPrefix.Trim() }
+    return "$stateText|$rfcText|$sectionText"
+}
+
+function Read-LineList {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        return @()
+    }
+
+    $lines = Get-Content -LiteralPath $Path | ForEach-Object { $_.Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+    return @($lines | Select-Object -Unique)
+}
+
+function Write-LineList {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string[]]$Lines
+    )
+
+    $directory = Split-Path -Path $Path -Parent
+    if (-not [string]::IsNullOrWhiteSpace($directory) -and -not (Test-Path -LiteralPath $directory)) {
+        New-Item -ItemType Directory -Path $directory -Force | Out-Null
+    }
+
+    if ($Lines.Count -eq 0) {
+        if (Test-Path -LiteralPath $Path) {
+            Remove-Item -LiteralPath $Path -Force
+        }
+        return
+    }
+
+    Set-Content -LiteralPath $Path -Value $Lines -Encoding utf8
+}
+
+function Add-LineIfMissing {
+    param(
+        [Parameter(Mandatory = $true)][string[]]$Lines,
+        [Parameter(Mandatory = $true)][string]$Line
+    )
+
+    if ($Lines -contains $Line) {
+        return @($Lines)
+    }
+
+    return @($Lines) + @($Line)
+}
+
+function Test-IsDeadEndStopReason {
+    param([AllowEmptyString()][string]$StopReason)
+
+    if ([string]::IsNullOrWhiteSpace($StopReason)) {
+        return $false
+    }
+
+    return $StopReason -match '(?i)no implementation-backed proof seam|no focused proof seam|dead end|beyond wire/transport-parameter codecs'
 }
 
 function New-LoopState {
@@ -671,26 +741,16 @@ Current loop state:
 - Locked families: $($LoopPlan.LockedFamiliesNote)
 
 Backlog categories:
-- trace_clean: leave alone unless there is an obvious metadata issue
-- covered_but_missing_xrefs: metadata/x_test_ref repair first
-- covered_but_proof_too_broad: narrow or split proof into requirement-owned homes
-- partially_covered: add only the missing proof dimensions
 - uncovered_unblocked: create new focused tests only where implementation exists
-- uncovered_blocked: do not force these; leave blocked unless a real implementation path now exists
+- All other states are out of scope for this runner.
 
 Selection order inside the current RFC focus:
-1. metadata_only
-2. partials
-3. proof_narrowing
-4. uncovered_unblocked
+1. uncovered_unblocked
 
 Global stopping rule:
 - You MUST NOT return LoopStatus: Stop merely because the current preferred tier has no good batch.
-- If metadata_only is exhausted, fall through to partials.
-- If partials is exhausted, fall through to proof_narrowing.
-- If proof_narrowing is exhausted, fall through to uncovered_unblocked.
 - If the current RFC focus is exhausted, say so and continue with the next RFC focus.
-- You may return LoopStatus: Stop only if metadata_only, partials, proof_narrowing, and uncovered_unblocked have all been checked for the current RFC focus and at least one secondary RFC focus.
+- You may return LoopStatus: Stop only if uncovered_unblocked has been checked for the current RFC focus and at least one secondary RFC focus.
 - When you stop, SelectionOutcome must be RepoExhausted.
 
 Avoid these families unless the triage clearly shows a real implementation-backed path:
@@ -703,6 +763,7 @@ Bounded-batch rules:
 - Prefer a small adjacent cluster, usually 2 to 8 nearby requirements.
 - Use the batch candidates below as the default work queue for this iteration.
 - If the selected cluster has multiple nearby requirements that share the same helper, fixture, or seam, keep working through them in the same run.
+- If a batch turns out to be a dead end, treat that as a local skip, not a terminal stop for the whole runner.
 - Use old broad tests only as reference, setup inspiration, or helper extraction source.
 - Do not mechanically move broad tests into requirement homes.
 - Do not invent behavior.
@@ -723,7 +784,7 @@ $batchCandidatesText
 What you must do:
 1. Read the current triage JSON first and treat it as the source of truth.
 2. Stay in the current tier/mode for this run unless the current tier is exhausted.
-3. If the current tier has no good batch, do not stop globally. Return the correct SelectionOutcome and advance to the next tier or RFC focus.
+3. If the current tier has no good batch, do not stop globally. Return the correct SelectionOutcome and advance to the next RFC focus.
 4. If there is a good eligible batch:
    - execute one bounded batch
    - keep the work tightly scoped, but cover as many of the batch candidates as the shared proof seam safely allows
@@ -753,10 +814,10 @@ Required final output format:
 ## Loop Control
 LoopStatus: Continue|Stop
 SelectionOutcome: Worked|NoSliceInCurrentTier|NoSliceInCurrentRFC|RepoExhausted
-NextTier: metadata_only|partials|proof_narrowing|uncovered_unblocked|next_rfc|n/a
+NextTier: uncovered_unblocked|next_rfc|n/a
 StopReason: n/a or reason
 
-If there is no good eligible batch in the current tier, use SelectionOutcome to move to the next tier or RFC focus.
+If there is no good eligible batch in the current tier, use SelectionOutcome to move to the next RFC focus.
 Only use LoopStatus: Stop when SelectionOutcome is RepoExhausted.
 
 $commitTail
@@ -904,6 +965,8 @@ try {
     $outputRoot = Ensure-Directory -Path $OutputDirectory
     $resultsRoot = Ensure-Directory -Path (Join-Path $outputRoot "results")
     $logsRoot = Ensure-Directory -Path (Join-Path $outputRoot "logs")
+    $deadEndSkipPath = Join-Path $outputRoot "dead-end-batches.txt"
+    $deadEndBatchKeys = Read-LineList -Path $deadEndSkipPath
 
     $summaryRows = New-Object System.Collections.Generic.List[object]
     $beforeSnapshot = Get-TriageSnapshot -Path $triagePath
@@ -924,7 +987,8 @@ try {
             -CurrentRfcFocus $loopStateDetails.CurrentRfc `
             -CurrentTier $loopStateDetails.CurrentTier `
             -TargetCount $BatchTargetCount `
-            -MaxCount $BatchMaxCount
+            -MaxCount $BatchMaxCount `
+            -ExcludedBatchKeys $deadEndBatchKeys
 
         $batchRequirementIds = if ($null -ne $batchCandidates -and $batchCandidates.Requirements.Count -gt 0) {
             ($batchCandidates.Requirements | ForEach-Object { $_.RequirementId }) -join ", "
@@ -933,61 +997,117 @@ try {
             ""
         }
 
-        if ([string]::IsNullOrWhiteSpace($batchRequirementIds)) {
+        $batchDisposition = "Selected"
+        $skipRun = $false
+        $syntheticDirective = $null
+
+        if ($null -eq $batchCandidates -or $batchCandidates.Requirements.Count -eq 0) {
+            $batchDisposition = "NoCandidates"
+            $skipRun = $true
+            $syntheticDirective = [pscustomobject]@{
+                LoopStatus       = "Continue"
+                SelectionOutcome = "NoSliceInCurrentRFC"
+                NextTier         = "next_rfc"
+                StopReason       = ""
+            }
+            Write-Warning "No unskipped uncovered_unblocked batch candidates remain for $($loopStateDetails.CurrentRfc); advancing to the next RFC focus."
+        }
+        elseif ([string]::IsNullOrWhiteSpace($batchRequirementIds)) {
             Write-Host "Batch: none preselected" -ForegroundColor DarkCyan
         }
         else {
             Write-Host "Batch: $($batchCandidates.RequirementRfc) / $($batchCandidates.SectionPrefix) / $batchRequirementIds" -ForegroundColor DarkCyan
         }
 
-        $prompt = New-IterationPrompt `
-            -Iteration $iteration `
-            -RepoRoot $repoRoot `
-            -RequirementsRoot $requirementsRoot `
-            -TriagePath $triagePath `
-            -TriageScriptPath $triageScriptPath `
-            -LoopPlan $loopPlan `
-            -LoopStateDetails $loopStateDetails `
-            -BeforeSnapshot $beforeSnapshot `
-            -BatchCandidates $batchCandidates `
-            -BatchTargetCount $BatchTargetCount `
-            -BatchMaxCount $BatchMaxCount
-
         $run = $null
         $status = "Success"
         $stopNow = $false
         $stopReason = ""
 
-        try {
-            $run = Invoke-CodexIteration `
-                -CodexExecutable $codexExecutable `
+        if (-not $skipRun) {
+            $prompt = New-IterationPrompt `
+                -Iteration $iteration `
                 -RepoRoot $repoRoot `
-                -Prompt $prompt `
-                -ResultPath $resultPath `
-                -LogPath $logPath `
-                -Sandbox $Sandbox `
-                -Model $Model `
-                -ReasoningEffort $ReasoningEffort
+                -RequirementsRoot $requirementsRoot `
+                -TriagePath $triagePath `
+                -TriageScriptPath $triageScriptPath `
+                -LoopPlan $loopPlan `
+                -LoopStateDetails $loopStateDetails `
+                -BeforeSnapshot $beforeSnapshot `
+                -BatchCandidates $batchCandidates `
+                -BatchTargetCount $BatchTargetCount `
+                -BatchMaxCount $BatchMaxCount
 
-            if ($run.ExitCode -ne 0) {
-                $status = "Failed"
-                $stopNow = $true
-                $stopReason = "Codex exited with code $($run.ExitCode)."
+            try {
+                $run = Invoke-CodexIteration `
+                    -CodexExecutable $codexExecutable `
+                    -RepoRoot $repoRoot `
+                    -Prompt $prompt `
+                    -ResultPath $resultPath `
+                    -LogPath $logPath `
+                    -Sandbox $Sandbox `
+                    -Model $Model `
+                    -ReasoningEffort $ReasoningEffort
+
+                if ($run.ExitCode -ne 0) {
+                    $status = "Failed"
+                    $stopNow = $true
+                    $stopReason = "Codex exited with code $($run.ExitCode)."
+                }
             }
-        }
-        catch {
-            $status = "Exception"
-            $detail = Get-ExceptionDetail -Exception $_.Exception
-            [System.IO.File]::AppendAllText($logPath, "[exception] $($_ | Out-String)$([Environment]::NewLine)")
-            $run = [pscustomobject]@{ ExitCode = -1; Seconds = 0 }
-            $stopNow = $true
-            $stopReason = "Exception while running Codex: $detail"
+            catch {
+                $status = "Exception"
+                $detail = Get-ExceptionDetail -Exception $_.Exception
+                [System.IO.File]::AppendAllText($logPath, "[exception] $($_ | Out-String)$([Environment]::NewLine)")
+                $run = [pscustomobject]@{ ExitCode = -1; Seconds = 0 }
+                $stopNow = $true
+                $stopReason = "Exception while running Codex: $detail"
+            }
         }
 
         $afterSnapshot = Get-TriageSnapshot -Path $triagePath
-        $resultText = if (Test-Path -LiteralPath $resultPath) { Get-Content -LiteralPath $resultPath -Raw } else { "" }
-        $directive = Get-LoopDirective -ResultText $resultText
-        $transition = Resolve-LoopTransition -LoopPlan $loopPlan -LoopState $loopState -Directive $directive
+
+        if ($skipRun) {
+            $directive = $syntheticDirective
+            $transition = Resolve-LoopTransition -LoopPlan $loopPlan -LoopState $loopState -Directive $directive
+            $run = [pscustomobject]@{ ExitCode = 0; Seconds = 0 }
+            $status = "Skipped"
+            $stopNow = $transition.ShouldStop
+            $stopReason = if ($stopNow) { $transition.StopReason } else { "No unskipped uncovered_unblocked batches remain in $($loopStateDetails.CurrentRfc)." }
+            $batchDisposition = "NoCandidates"
+        }
+        else {
+            $resultText = if (Test-Path -LiteralPath $resultPath) { Get-Content -LiteralPath $resultPath -Raw } else { "" }
+            $directive = Get-LoopDirective -ResultText $resultText
+            $transition = Resolve-LoopTransition -LoopPlan $loopPlan -LoopState $loopState -Directive $directive
+
+            if ($transition.EffectiveSelectionOutcome -eq "RepoExhausted" -and $batchCandidates.Requirements.Count -gt 0 -and (Test-IsDeadEndStopReason -StopReason $transition.StopReason)) {
+                $deadEndKey = $batchCandidates.BatchKey
+                if (-not ($deadEndBatchKeys -contains $deadEndKey)) {
+                    $deadEndBatchKeys = Add-LineIfMissing -Lines $deadEndBatchKeys -Line $deadEndKey
+                    Write-LineList -Path $deadEndSkipPath -Lines $deadEndBatchKeys
+                }
+
+                $batchDisposition = "DeadEndSkipped"
+                $status = "Skipped"
+                $stopNow = $false
+                $stopReason = "Skipping dead-end batch $deadEndKey and continuing with uncovered_unblocked."
+                $transition = [pscustomobject]@{
+                    DirectiveLoopStatus       = $directive.LoopStatus
+                    DirectiveSelectionOutcome = $directive.SelectionOutcome
+                    DirectiveNextTier         = if ([string]::IsNullOrWhiteSpace($directive.NextTier)) { "" } else { $directive.NextTier.Trim() }
+                    DirectiveStopReason       = $directive.StopReason
+                    EffectiveLoopStatus       = "Continue"
+                    EffectiveSelectionOutcome = "BatchDeadEndSkipped"
+                    EffectiveNextTier         = "uncovered_unblocked"
+                    NextState                 = $loopState
+                    NextStateDetails          = $loopStateDetails
+                    ShouldStop                = $false
+                    StopReason                = $stopReason
+                    Progressed                = $true
+                }
+            }
+        }
 
         $triageChanged = $afterSnapshot.Fingerprint -ne $beforeSnapshot.Fingerprint
         if ($triageChanged -or $transition.Progressed) {
@@ -1001,7 +1121,7 @@ try {
             $stopNow = $true
             $stopReason = $transition.StopReason
         }
-        elseif (-not $stopNow -and $directive.LoopStatus -eq "Stop") {
+        elseif (-not $stopNow -and $directive.LoopStatus -eq "Stop" -and $batchDisposition -ne "DeadEndSkipped") {
             Write-Warning "Ignoring premature LoopStatus: Stop because SelectionOutcome was '$($transition.DirectiveSelectionOutcome)' and the current loop state still has eligible lanes."
         }
 
@@ -1023,6 +1143,7 @@ try {
             LogFile           = $logPath
             CurrentRFC        = $loopStateDetails.CurrentRfc
             CurrentTier       = $loopStateDetails.CurrentTier
+            BatchDisposition  = $batchDisposition
             BatchTriagedState = if ($null -ne $batchCandidates) { $batchCandidates.TriagedState } else { "" }
             BatchTargetCount  = $BatchTargetCount
             BatchMaxCount     = $BatchMaxCount
