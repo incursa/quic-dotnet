@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S12P4_0021
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void TryParseSelectedFrames_RejectsLongerThanNecessaryFrameTypeEncodings()
     {
         byte[] nonMinimalPadding = [.. QuicVarintTestData.EncodeWithLength(0x00, 2)];

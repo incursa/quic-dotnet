@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S12P4_0006
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryFormatSelectedFrames_PrefixesTheFrameTypeBeforeTypeDependentFields()
     {
         Span<byte> pingDestination = stackalloc byte[8];
