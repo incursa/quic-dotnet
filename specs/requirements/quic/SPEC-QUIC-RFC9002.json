@@ -4920,6 +4920,11 @@
         "upstream_refs": [
           "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0004.cs::TryRegisterLossTryRegisterAcknowledgedPacketAndTryProcessEcn_ApplyAckProcessingStateChanges",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0004.cs::TryProcessEcn_DoesNotChangeRecoveryWhenThePathIsNotValidated",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0004.cs::TryProcessEcn_UsesTheZeroSendTimeBoundary"
         ]
       }
     },
@@ -4946,6 +4951,11 @@
         "upstream_refs": [
           "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0005.cs::ComputeProbeTimeoutWithBackoffMicros_UsesTheBasePtoAfterTheBackoffIsReset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0005.cs::ComputeProbeTimeoutWithBackoffMicros_DoublesThePtoWhenTheBackoffHasNotBeenReset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0005.cs::ComputeProbeTimeoutWithBackoffMicros_SaturatesWhenTheBackoffWouldOverflow"
         ]
       }
     },
@@ -4972,6 +4982,11 @@
         "upstream_refs": [
           "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0006.cs::TrySelectLossDetectionTimerMicros_UsesTheEarliestLossTimeAfterAcknowledgmentProcessing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0006.cs::TrySelectLossDetectionTimerMicros_CancelsTheTimerWhenRecoveryIsBlocked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0006.cs::TrySelectLossDetectionTimerMicros_UsesThePtoTimeoutWhenNoLossTimeIsPending"
         ]
       }
     },
@@ -5562,6 +5577,9 @@
         "upstream_refs": [
           "RFC 9002 §B.1 RFC9002-SB.1-B5-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP1-0001.cs::ComputeReducedCongestionWindowBytes_UsesTheRecommendedLossReductionFactor"
         ]
       }
     },
@@ -5588,6 +5606,9 @@
         "upstream_refs": [
           "RFC 9002 §B.1 RFC9002-SB.1-B6-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP1-0002.cs::TryComputePersistentCongestionDurationMicros_UsesTheRecommendedPersistentCongestionThreshold"
         ]
       }
     },
@@ -5747,6 +5768,9 @@
           "RFC 9002 §B.3 RFC9002-SB.3-B2-P1-S1",
           "RFC 9002 §B.3 RFC9002-SB.3-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP3-0001.cs::Constructor_InitializesTheCongestionControlStateAtConnectionStart"
         ]
       }
     },
@@ -5774,6 +5798,9 @@
           "RFC 9002 §B.4 RFC9002-SB.4-B2-P1-S1",
           "RFC 9002 §B.4 RFC9002-SB.4-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP4-0001.cs::RegisterPacketSent_IncreasesBytesInFlightForNonAckPackets"
         ]
       }
     },
