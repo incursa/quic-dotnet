@@ -2047,6 +2047,10 @@
         "upstream_refs": [
           "RFC 9002 §6.2.2 RFC9002-S6.2.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs::Constructor_RequiresExplicitReuseOfThePriorFinalSmoothedRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs::Constructor_CanReuseTheSmallestObservedPriorFinalSmoothedRtt"
         ]
       }
     },
@@ -2073,6 +2077,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.2 RFC9002-S6.2.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::Reset_DoesNotFallBackTo333MillisecondsWhenANonDefaultInitialRttWasConfigured",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::ConstructorAndReset_UseTheExact333MillisecondDefaultAtTheBoundary",
+          "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
         ]
       }
     },
