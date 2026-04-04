@@ -3038,15 +3038,15 @@
         "verified_by": [
           "VER-QUIC-RFC9002-0001"
         ],
-      "upstream_refs": [
-        "RFC 9002 §7 RFC9002-S7-B8-P7-S1",
-        "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
-      ],
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0006.cs::CanSend_RejectsCongestionControlledPacketsThatWouldExceedTheWindow"
-      ]
-    }
-  },
+        "upstream_refs": [
+          "RFC 9002 §7 RFC9002-S7-B8-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0006.cs::CanSend_RejectsCongestionControlledPacketsThatWouldExceedTheWindow"
+        ]
+      }
+    },
     {
       "id": "REQ-QUIC-RFC9002-S7P1-0001",
       "title": "Treat ECN CE as congestion on validated paths",
@@ -3343,8 +3343,8 @@
           "RFC 9002 §7.3.2 RFC9002-S7.3.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
         ]
-        }
-      },
+      }
+    },
     {
       "id": "REQ-QUIC-RFC9002-S7P3P2-0002",
       "title": "Do not reenter recovery while already there",
@@ -4802,6 +4802,11 @@
         "upstream_refs": [
           "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0003.cs::TryUpdateFromAck_UpdatesLatestRttAndRttEstimatesWhenANewAckElicitingPacketIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0003.cs::TryUpdateFromAck_RejectsAcksThatDoNotAdvanceTheLargestAckedPacketOrAcknowledgeAckElicitingPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0003.cs::TryUpdateFromAck_AllowsAZeroLatestRttWhenTheAckArrivesAtTheSendTime"
         ]
       }
     },
@@ -4906,6 +4911,11 @@
         "upstream_refs": [
           "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0007.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstAcceptedSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0007.cs::TryUpdateFromAck_DoesNotSeedTheEstimatorFromARejectedSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0007.cs::TryUpdateFromAck_SeedsAZeroDurationFirstSample"
         ]
       }
     },
@@ -4932,6 +4942,11 @@
         "upstream_refs": [
           "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0008.cs::TryUpdateFromAck_CapsPeerAckDelayAfterHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0008.cs::TryUpdateFromAck_DoesNotCapPeerAckDelayBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0008.cs::TryUpdateFromAck_LeavesAckDelayAtThePeerMaxBoundary"
         ]
       }
     },
@@ -4958,6 +4973,11 @@
         "upstream_refs": [
           "RFC 9002 §A.7 RFC9002-SA.7-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0009.cs::TryUpdateFromAck_UsesTheAdjustedRttWhenTheSampleExceedsTheAckDelayFloor",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0009.cs::TryUpdateFromAck_DoesNotSubtractAckDelayWhenTheSampleDoesNotClearTheFloor",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0009.cs::TryUpdateFromAck_SubtractsAckDelayAtTheBoundary"
         ]
       }
     },
