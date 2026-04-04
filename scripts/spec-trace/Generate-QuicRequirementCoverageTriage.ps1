@@ -314,42 +314,59 @@ function Get-RequirementGapMappings {
             Slug               = '9000-19-retransmission-and-frame-reliability'
             Summary            = 'Remaining RFC 9000 Section 13.3 retransmission and loss-signaling requirements depend on a sender/recovery architecture.'
             RequirementPrefixes = @('S13P3', 'S13P4', 'S13P4P1', 'S13P4P2', 'S13P4P2P1', 'S13P4P2P2')
+            RequirementIds     = @()
         },
         [pscustomobject]@{
             Slug               = '9000-02-stream-state'
             Summary            = 'Stream-state requirements remain blocked without connection-scoped stream abstractions and receive/send state machines.'
             RequirementPrefixes = @('S3', 'S3P1', 'S3P2', 'S3P3', 'S3P4', 'S3P5')
+            RequirementIds     = @()
         },
         [pscustomobject]@{
             Slug               = '9000-03-flow-control'
             Summary            = 'Flow-control behavior remains blocked without stream-state and connection credit accounting.'
             RequirementPrefixes = @('S4', 'S4P1', 'S4P2', 'S4P4', 'S4P5', 'S4P6')
+            RequirementIds     = @()
         },
         [pscustomobject]@{
             Slug               = '9000-11-migration-core'
             Summary            = 'Connection-migration orchestration and path-selection requirements remain blocked without a connection-state machine.'
             RequirementPrefixes = @('S9', 'S9P1', 'S9P2', 'S9P3', 'S9P3P1', 'S9P3P2', 'S9P3P3')
+            RequirementIds     = @()
         },
         [pscustomobject]@{
             Slug               = '9000-13-idle-and-close'
             Summary            = 'Close and draining lifecycle requirements remain blocked without connection close orchestration.'
             RequirementPrefixes = @('S10', 'S10P2', 'S10P2P1', 'S10P2P2', 'S10P2P3')
+            RequirementIds     = @()
         },
         [pscustomobject]@{
             Slug               = '9000-14-stateless-reset'
             Summary            = 'Stateful stateless-reset acceptance and lifecycle requirements remain blocked without connection orchestration.'
             RequirementPrefixes = @('S10P3', 'S10P3P1', 'S10P3P2', 'S10P3P3')
+            RequirementIds     = @()
         },
         [pscustomobject]@{
             Slug               = '9001-02-security-and-registry'
             Summary            = 'RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration.'
             RequirementPrefixes = @('S6', 'S7', 'S8', 'S9', 'S10', 'SB', 'SBP1P1', 'SBP1P2', 'SBP2')
+            RequirementIds     = @()
+        },
+        [pscustomobject]@{
+            Slug               = '9002-06-key-discard-lifecycle'
+            Summary            = 'RFC 9002 0-RTT rejection and secret-discard timing clauses remain blocked without TLS handshake orchestration and key-lifecycle state.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9002-S6P4-0003',
+                'REQ-QUIC-RFC9002-S6P4-0004'
+            )
         }
     ) | Where-Object { $gapContent.Contains($_.Slug) }
 }
 
 function Get-MatchingGapEntries {
     param(
+        [string]$RequirementId,
         [string]$SectionPrefix,
         $GapMappings
     )
@@ -357,7 +374,9 @@ function Get-MatchingGapEntries {
     return @(
         foreach ($gap in $GapMappings)
         {
-            if ($gap.RequirementPrefixes -contains $SectionPrefix)
+            $hasPrefixMatch = @($gap.RequirementPrefixes).Count -gt 0 -and $gap.RequirementPrefixes -contains $SectionPrefix
+            $hasRequirementMatch = @($gap.RequirementIds).Count -gt 0 -and $gap.RequirementIds -contains $RequirementId
+            if ($hasPrefixMatch -or $hasRequirementMatch)
             {
                 $gap
             }
@@ -593,7 +612,7 @@ foreach ($specFile in $specFiles)
         }
 
         $evidence = @($evidenceList | Sort-Object file, member, source -Unique)
-        $gapEntries = @(Get-MatchingGapEntries -SectionPrefix $sectionPrefix -GapMappings $gapMappings)
+        $gapEntries = @(Get-MatchingGapEntries -RequirementId $requirement.id -SectionPrefix $sectionPrefix -GapMappings $gapMappings)
         $classification = Get-RequirementState -Requirement $requirement -Evidence $evidence -HasSpecXrefs (@($specXrefs).Count -gt 0) -HasUnresolvedXrefs (@($unresolvedXrefs).Count -gt 0) -GapEntries $gapEntries
 
         $kindCounts = [ordered]@{
