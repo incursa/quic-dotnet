@@ -24308,6 +24308,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.1 RFC9000-S17.2.1-B9-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0014.cs::TryFormatVersionNegotiationResponse_EchoesTheClientSourceConnectionIdIntoTheDestinationField"
         ]
       }
     },
@@ -24334,6 +24337,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.1 RFC9000-S17.2.1-B9-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0015.cs::TryFormatVersionNegotiationResponse_EchoesTheClientDestinationConnectionIdIntoTheSourceField"
         ]
       }
     },
@@ -24360,6 +24366,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2.1 RFC9000-S17.2.1-B10-P7-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0016.cs::ShouldSendVersionNegotiation_ReturnsTrueForAnUnsupportedClientVersionWithEnoughDatagramSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0016.cs::ShouldSendVersionNegotiation_ReturnsFalseForASupportedClientVersion"
         ]
       }
     },
@@ -24412,6 +24422,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.1 RFC9000-S17.2.1-B12-P9-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::ShouldSendVersionNegotiation_ReturnsTrueForAnUnsupportedClientVersion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::ShouldSendVersionNegotiation_ReturnsFalseForASupportedClientVersion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::ShouldSendVersionNegotiation_ReturnsFalseForTheReservedVersionNegotiationVersion"
         ]
       }
     },
@@ -24469,6 +24484,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.1 RFC9000-S17.2.1-B14-P11-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0020.cs::ShouldSendVersionNegotiation_ReturnsTrueBeforeTheServerHasAlreadySentOne",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0020.cs::ShouldSendVersionNegotiation_ReturnsFalseForASupportedClientVersion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0020.cs::ShouldSendVersionNegotiation_ReturnsFalseAfterTheServerHasAlreadySentOne"
         ]
       }
     },
