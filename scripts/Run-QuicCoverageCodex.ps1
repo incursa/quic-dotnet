@@ -10,6 +10,8 @@ param(
     [string]$Model = "gpt-5.4-mini",
     [string]$ReasoningEffort = "high",
 
+    [string[]]$RfcOrder = @(),
+    [string[]]$SectionPrefixAllowList = @(),
     [int]$BatchTargetCount = 4,
     [int]$BatchMaxCount = 8,
     [int]$MaxIterations = 25,
@@ -171,18 +173,41 @@ function Format-TriageSnapshot {
 }
 
 function Get-LoopPlan {
+    param([AllowNull()][string[]]$RfcOrder = @())
+
+    $defaultRfcOrder = @(
+        "RFC9002",
+        "RFC9000 bounded clusters",
+        "RFC9001"
+    )
+
+    if ($null -eq $RfcOrder -or $RfcOrder.Count -eq 0) {
+        $resolvedRfcOrder = @($defaultRfcOrder)
+    }
+    else {
+        $resolvedRfcOrder = @($RfcOrder | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+        if ($resolvedRfcOrder.Count -eq 0) {
+            $resolvedRfcOrder = @($defaultRfcOrder)
+        }
+    }
+
+    $orderText = $resolvedRfcOrder -join " -> "
+    $lockedFamiliesNote = if ($resolvedRfcOrder.Count -gt 1) {
+        "This runner stays in uncovered_unblocked only and walks $orderText; blocked families stay out of the default order."
+    }
+    else {
+        "This runner stays in uncovered_unblocked only and focuses on $orderText; blocked families stay out of the default order."
+    }
+
     return [pscustomobject]@{
-        RfcOrder = @(
-            "RFC9002",
-            "RFC9000 bounded clusters"
-        )
+        RfcOrder = $resolvedRfcOrder
         TierOrder = @(
             "uncovered_unblocked"
         )
         TierDescriptions = @{
             uncovered_unblocked = "implementation-backed uncovered requirements"
         }
-        LockedFamiliesNote = "This runner is focused on uncovered_unblocked only; RFC9001 and blocked families stay out of the default order unless explicitly unlocked."
+        LockedFamiliesNote = $lockedFamiliesNote
     }
 }
 
@@ -231,6 +256,7 @@ function Get-RequirementBatchCandidates {
         [Parameter(Mandatory = $true)][string]$CurrentTier,
         [Parameter(Mandatory = $true)][int]$TargetCount,
         [Parameter(Mandatory = $true)][int]$MaxCount,
+        [AllowNull()][string[]]$SectionPrefixAllowList = @(),
         [AllowNull()][string[]]$ExcludedBatchKeys = @()
     )
 
@@ -250,6 +276,10 @@ function Get-RequirementBatchCandidates {
         $ExcludedBatchKeys = @()
     }
 
+    if ($null -eq $SectionPrefixAllowList) {
+        $SectionPrefixAllowList = @()
+    }
+
     $requirementRfc = Convert-RfcFocusToRequirementRfc -CurrentRfc $CurrentRfcFocus
     $json = Get-Content -LiteralPath $TriagePath -Raw | ConvertFrom-Json -Depth 100
     $requirements = @($json.requirements)
@@ -264,6 +294,10 @@ function Get-RequirementBatchCandidates {
         }
 
         if (-not [string]::IsNullOrWhiteSpace($requirementRfc) -and $requirement.rfc -ne $requirementRfc) {
+            continue
+        }
+
+        if (-not (Test-IsSectionPrefixAllowed -RequirementSectionPrefix $requirement.section_prefix -AllowedSectionPrefixes $SectionPrefixAllowList)) {
             continue
         }
 
@@ -363,6 +397,31 @@ function Get-RequirementBatchKey {
     return "$stateText|$rfcText|$sectionText"
 }
 
+function Test-IsSectionPrefixAllowed {
+    param(
+        [AllowEmptyString()][string]$RequirementSectionPrefix,
+        [AllowNull()][string[]]$AllowedSectionPrefixes = @()
+    )
+
+    if ($null -eq $AllowedSectionPrefixes -or $AllowedSectionPrefixes.Count -eq 0) {
+        return $true
+    }
+
+    $normalizedRequirementPrefix = if ([string]::IsNullOrWhiteSpace($RequirementSectionPrefix)) { "" } else { $RequirementSectionPrefix.Trim() }
+
+    foreach ($allowedPrefix in $AllowedSectionPrefixes) {
+        if ([string]::IsNullOrWhiteSpace($allowedPrefix)) {
+            continue
+        }
+
+        if ($normalizedRequirementPrefix -eq $allowedPrefix.Trim()) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
 function Read-LineList {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -427,7 +486,75 @@ function Test-IsDeadEndStopReason {
         return $false
     }
 
-    return $StopReason -match '(?i)no implementation-backed proof seam|no focused proof seam|dead end|beyond wire/transport-parameter codecs'
+    return $StopReason -match '(?i)no implementation-backed (?:proof seam|slice|batch)|no focused proof seam|dead end|beyond wire/transport-parameter codecs|repo does not expose|does not expose|cid issuance|lifecycle state|focused proof'
+}
+
+function Test-HasRemainingEligibleUncoveredBatch {
+    param(
+        [Parameter(Mandatory = $true)][string]$TriagePath,
+        [AllowNull()][string[]]$SectionPrefixAllowList = @(),
+        [AllowNull()][string[]]$ExcludedBatchKeys = @()
+    )
+
+    if ($null -eq $SectionPrefixAllowList) {
+        $SectionPrefixAllowList = @()
+    }
+
+    if ($null -eq $ExcludedBatchKeys) {
+        $ExcludedBatchKeys = @()
+    }
+
+    $json = Get-Content -LiteralPath $TriagePath -Raw | ConvertFrom-Json -Depth 100
+    foreach ($requirement in @($json.requirements)) {
+        if ($requirement.state -ne "uncovered_unblocked") {
+            continue
+        }
+
+        if (-not (Test-IsSectionPrefixAllowed -RequirementSectionPrefix $requirement.section_prefix -AllowedSectionPrefixes $SectionPrefixAllowList)) {
+            continue
+        }
+
+        $batchKey = Get-RequirementBatchKey -TriagedState $requirement.state -RequirementRfc $requirement.rfc -SectionPrefix $requirement.section_prefix
+        if ($ExcludedBatchKeys -contains $batchKey) {
+            continue
+        }
+
+        return $true
+    }
+
+    return $false
+}
+
+function Get-IterationOutcomeKind {
+    param(
+        [Parameter(Mandatory = $true)][string]$Status,
+        [Parameter(Mandatory = $true)][string]$BatchDisposition,
+        [Parameter(Mandatory = $true)][bool]$StopNow,
+        [Parameter(Mandatory = $true)][string]$SelectionOutcome,
+        [Parameter(Mandatory = $true)][bool]$TriageChanged,
+        [Parameter(Mandatory = $true)][bool]$Progressed
+    )
+
+    switch ($Status) {
+        "Exception" { return "Exception" }
+        "Failed"    { return "Failed" }
+    }
+
+    switch ($BatchDisposition) {
+        "DeadEndSkipped"   { return "DeadEndSkipped" }
+        "NoProgressSkipped" { return "NoProgressSkipped" }
+        "NoCandidates"     { return "NoCandidates" }
+    }
+
+    if ($StopNow -and $SelectionOutcome -eq "RepoExhausted") {
+        return "RepoExhausted"
+    }
+
+    if ($TriageChanged -or $Progressed) {
+        return "Worked"
+    }
+
+    return "NoChange"
 }
 
 function New-LoopState {
@@ -702,7 +829,8 @@ function New-IterationPrompt {
         [Parameter(Mandatory = $true)]$BeforeSnapshot,
         [Parameter(Mandatory = $true)]$BatchCandidates,
         [Parameter(Mandatory = $true)][int]$BatchTargetCount,
-        [Parameter(Mandatory = $true)][int]$BatchMaxCount
+        [Parameter(Mandatory = $true)][int]$BatchMaxCount,
+        [AllowNull()][string[]]$SectionPrefixAllowList = @()
     )
 
     $commitTail = @"
@@ -718,12 +846,14 @@ Before you finish:
     $rfcOrderText = ($LoopPlan.RfcOrder -join " -> ")
     $tierOrderText = ($LoopPlan.TierOrder -join " -> ")
     $secondaryCheckedText = if ($LoopStateDetails.SecondaryRfcChecked) { "yes" } else { "no" }
+    $hasMultipleRfcFoci = $LoopPlan.RfcOrder.Count -gt 1
     $batchCandidatesText = Format-RequirementBatchCandidates -BatchCandidates $BatchCandidates
     $batchCandidateCount = if ($null -ne $BatchCandidates -and $BatchCandidates.Requirements.Count -gt 0) { $BatchCandidates.Requirements.Count } else { 0 }
     $batchState = if ($null -ne $BatchCandidates) { $BatchCandidates.TriagedState } else { "" }
     $batchRfc = if ($null -ne $BatchCandidates) { $BatchCandidates.RequirementRfc } else { "" }
     $batchSection = if ($null -ne $BatchCandidates) { $BatchCandidates.SectionPrefix } else { "" }
     $batchSectionText = if ([string]::IsNullOrWhiteSpace($batchSection)) { "n/a" } else { $batchSection }
+    $sectionPrefixFilterText = if ($null -ne $SectionPrefixAllowList -and $SectionPrefixAllowList.Count -gt 0) { ($SectionPrefixAllowList -join ", ") } else { "n/a" }
 
     return @"
 You are helping systematically improve requirement-level test coverage and traceability in the quic-dotnet repository.
@@ -759,6 +889,7 @@ Current loop state:
 - RFC order: $rfcOrderText
 - Tier order: $tierOrderText
 - Secondary RFC already checked: $secondaryCheckedText
+- Allowed section prefixes: $sectionPrefixFilterText
 - Locked families: $($LoopPlan.LockedFamiliesNote)
 
 Backlog categories:
@@ -771,7 +902,8 @@ Selection order inside the current RFC focus:
 Global stopping rule:
 - You MUST NOT return LoopStatus: Stop merely because the current preferred tier has no good batch.
 - If the current RFC focus is exhausted, say so and continue with the next RFC focus.
-- You may return LoopStatus: Stop only if uncovered_unblocked has been checked for the current RFC focus and at least one secondary RFC focus.
+- $(if ($hasMultipleRfcFoci) { "You may return LoopStatus: Stop only if uncovered_unblocked has been checked for the current RFC focus and at least one secondary RFC focus, and there is no remaining uncovered_unblocked batch anywhere outside the dead-end skip list." } else { "You may return LoopStatus: Stop only if the current RFC focus is exhausted and there is no remaining uncovered_unblocked batch in this lane outside the dead-end skip list." })
+- If a batch has no implementation-backed proof seam but other uncovered_unblocked batches remain, return LoopStatus: Continue and a non-terminal SelectionOutcome.
 - When you stop, SelectionOutcome must be RepoExhausted.
 
 Avoid these families unless the triage clearly shows a real implementation-backed path:
@@ -980,7 +1112,7 @@ try {
     $triagePath = Resolve-ExistingPath -Path $TriagePath
     $triageScriptPath = Resolve-ExistingPath -Path $TriageScriptPath
     $codexExecutable = Resolve-CodexCommand -Command $CodexCommand
-    $loopPlan = Get-LoopPlan
+    $loopPlan = Get-LoopPlan -RfcOrder $RfcOrder
     $loopState = New-LoopState
 
     $outputRoot = Ensure-Directory -Path $OutputDirectory
@@ -1009,6 +1141,7 @@ try {
             -CurrentTier $loopStateDetails.CurrentTier `
             -TargetCount $BatchTargetCount `
             -MaxCount $BatchMaxCount `
+            -SectionPrefixAllowList $SectionPrefixAllowList `
             -ExcludedBatchKeys $deadEndBatchKeys
 
         $batchRequirementIds = if ($null -ne $batchCandidates -and $batchCandidates.Requirements.Count -gt 0) {
@@ -1057,7 +1190,8 @@ try {
                 -BeforeSnapshot $beforeSnapshot `
                 -BatchCandidates $batchCandidates `
                 -BatchTargetCount $BatchTargetCount `
-                -BatchMaxCount $BatchMaxCount
+                -BatchMaxCount $BatchMaxCount `
+                -SectionPrefixAllowList $SectionPrefixAllowList
 
             try {
                 $run = Invoke-CodexIteration `
@@ -1106,7 +1240,12 @@ try {
             $directive = Get-LoopDirective -ResultText $resultText
             $transition = Resolve-LoopTransition -LoopPlan $loopPlan -LoopState $loopState -Directive $directive
 
-            if ($transition.EffectiveSelectionOutcome -eq "RepoExhausted" -and $batchCandidates.Requirements.Count -gt 0 -and (Test-IsDeadEndStopReason -StopReason $transition.StopReason)) {
+            $remainingEligibleUncovered = $false
+            if ($transition.EffectiveSelectionOutcome -eq "RepoExhausted" -and $batchCandidates.Requirements.Count -gt 0) {
+                $remainingEligibleUncovered = Test-HasRemainingEligibleUncoveredBatch -TriagePath $triagePath -SectionPrefixAllowList $SectionPrefixAllowList -ExcludedBatchKeys $deadEndBatchKeys
+            }
+
+            if ($transition.EffectiveSelectionOutcome -eq "RepoExhausted" -and $batchCandidates.Requirements.Count -gt 0 -and ((Test-IsDeadEndStopReason -StopReason $transition.StopReason) -or $remainingEligibleUncovered)) {
                 $deadEndKey = $batchCandidates.BatchKey
                 if (-not ($deadEndBatchKeys -contains $deadEndKey)) {
                     $deadEndBatchKeys = Add-LineIfMissing -Lines $deadEndBatchKeys -Line $deadEndKey
@@ -1116,7 +1255,12 @@ try {
                 $batchDisposition = "DeadEndSkipped"
                 $status = "Skipped"
                 $stopNow = $false
-                $stopReason = "Skipping dead-end batch $deadEndKey and continuing with uncovered_unblocked."
+                $stopReason = if (Test-IsDeadEndStopReason -StopReason $transition.StopReason) {
+                    "Skipping dead-end batch $deadEndKey and continuing with uncovered_unblocked."
+                }
+                else {
+                    "Skipping RepoExhausted batch $deadEndKey because uncovered_unblocked work remains elsewhere."
+                }
                 $transition = [pscustomobject]@{
                     DirectiveLoopStatus       = $directive.LoopStatus
                     DirectiveSelectionOutcome = $directive.SelectionOutcome
@@ -1142,6 +1286,7 @@ try {
             $noProgressCount++
         }
 
+        $stalledBatchSkipped = $false
         if (-not $stopNow -and $transition.ShouldStop) {
             $stopNow = $true
             $stopReason = $transition.StopReason
@@ -1151,13 +1296,50 @@ try {
         }
 
         if (-not $stopNow -and $noProgressCount -ge $NoProgressLimit) {
-            $stopNow = $true
-            $stopReason = "Triage fingerprint did not change for $noProgressCount consecutive iteration(s)."
+            if ($null -ne $batchCandidates -and $batchCandidates.Requirements.Count -gt 0 -and -not [string]::IsNullOrWhiteSpace($batchCandidates.BatchKey)) {
+                $stalledBatchKey = $batchCandidates.BatchKey
+                if (-not ($deadEndBatchKeys -contains $stalledBatchKey)) {
+                    $deadEndBatchKeys = Add-LineIfMissing -Lines $deadEndBatchKeys -Line $stalledBatchKey
+                    Write-LineList -Path $deadEndSkipPath -Lines $deadEndBatchKeys
+                }
+
+                $batchDisposition = "NoProgressSkipped"
+                $status = "Skipped"
+                $stopReason = "Skipping stalled batch $stalledBatchKey after $noProgressCount consecutive no-progress iteration(s) and continuing with uncovered_unblocked."
+                $transition = [pscustomobject]@{
+                    DirectiveLoopStatus       = $directive.LoopStatus
+                    DirectiveSelectionOutcome = $directive.SelectionOutcome
+                    DirectiveNextTier         = if ([string]::IsNullOrWhiteSpace($directive.NextTier)) { "" } else { $directive.NextTier.Trim() }
+                    DirectiveStopReason       = $directive.StopReason
+                    EffectiveLoopStatus       = "Continue"
+                    EffectiveSelectionOutcome = "BatchNoProgressSkipped"
+                    EffectiveNextTier         = "uncovered_unblocked"
+                    NextState                 = $loopState
+                    NextStateDetails          = $loopStateDetails
+                    ShouldStop                = $false
+                    StopReason                = $stopReason
+                    Progressed                = $true
+                }
+                $stalledBatchSkipped = $true
+            }
+            else {
+                $stopNow = $true
+                $stopReason = "Triage fingerprint did not change for $noProgressCount consecutive iteration(s), and no batch candidate could be skipped."
+            }
         }
+
+        $iterationOutcomeKind = Get-IterationOutcomeKind `
+            -Status $status `
+            -BatchDisposition $batchDisposition `
+            -StopNow $stopNow `
+            -SelectionOutcome $transition.EffectiveSelectionOutcome `
+            -TriageChanged $triageChanged `
+            -Progressed $transition.Progressed
 
         $summaryRows.Add([pscustomobject]@{
             Iteration         = $iteration
             Status            = $status
+            OutcomeKind       = $iterationOutcomeKind
             ExitCode          = $run.ExitCode
             Seconds           = $run.Seconds
             Before            = (Format-TriageSnapshot -Snapshot $beforeSnapshot)
@@ -1193,6 +1375,10 @@ try {
             break
         }
 
+        if ($stalledBatchSkipped) {
+            $noProgressCount = 0
+        }
+
         $beforeSnapshot = $afterSnapshot
         $loopState = $transition.NextState
 
@@ -1205,6 +1391,18 @@ try {
     $summaryRows | Export-Csv -LiteralPath $summaryPath -NoTypeInformation
 
     Write-Host ""
+    if ($summaryRows.Count -gt 0) {
+        Write-Host "Iteration outcome breakdown:" -ForegroundColor Green
+        foreach ($group in ($summaryRows | Group-Object -Property OutcomeKind | Sort-Object Name)) {
+            Write-Host "  $($group.Name): $($group.Count)"
+        }
+        $finalOutcome = $summaryRows[$summaryRows.Count - 1]
+        Write-Host "Final outcome: $($finalOutcome.OutcomeKind)" -ForegroundColor Green
+        if (-not [string]::IsNullOrWhiteSpace($finalOutcome.StopReason)) {
+            Write-Host "Final stop reason: $($finalOutcome.StopReason)" -ForegroundColor Green
+        }
+    }
+
     Write-Host "Done." -ForegroundColor Green
     Write-Host "Repo root:  $repoRoot"
     Write-Host "Triage:     $triagePath"
