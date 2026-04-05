@@ -4789,6 +4789,9 @@
           "RFC 9002 §A.4 RFC9002-SA.4-B2-P1-S1",
           "RFC 9002 §A.4 RFC9002-SA.4-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP4-0001.cs::ConnectionStart_SeedsTheLossDetectionHelpersWithTheirInitialState"
         ]
       }
     },
@@ -6235,6 +6238,9 @@
         "upstream_refs": [
           "RFC 9002 §B.6 RFC9002-SB.6-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP6-0003.cs::TryRegisterLoss_AllowsOneProbePacketAfterEnteringRecovery"
         ]
       }
     },
