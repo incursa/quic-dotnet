@@ -2224,6 +2224,11 @@
         "upstream_refs": [
           "RFC 9002 §6.2.2 RFC9002-S6.2.2-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::ResetProbeTimeoutBackoffCount_ResetsTheBackoffWhenInitialOrHandshakeKeysAreDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoDiscardOccurs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenKeysAreDiscarded"
         ]
       }
     },
