@@ -9,6 +9,10 @@ public sealed class REQ_QUIC_RFC9000_S12P4_0006
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S12P4-0006">Each frame MUST begin with a Frame Type, followed by additional type-dependent fields.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S12P4-0006")]
     public void TryFormatSelectedFrames_PrefixesTheFrameTypeBeforeTypeDependentFields()
     {
         Span<byte> pingDestination = stackalloc byte[8];
