@@ -9162,6 +9162,9 @@
         "upstream_refs": [
           "RFC 9000 §8.1.3 RFC9000-S8.1.3-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0001.cs::TryParseNewTokenFrame_ParsesAndFormatsAProvidedToken"
         ]
       }
     },
