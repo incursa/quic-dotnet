@@ -4,6 +4,11 @@ namespace Incursa.Quic.Tests;
 
 internal static class QuicHeaderTestData
 {
+    public const int LongHeaderFormLength = 1;
+    public const int LongHeaderVersionLength = sizeof(uint);
+    public const int ConnectionIdLengthFieldLength = 1;
+    public const int LongHeaderFixedPrefixLength = LongHeaderFormLength + LongHeaderVersionLength;
+
     public static byte[] BuildShortHeader(byte headerControlBits, ReadOnlySpan<byte> remainder)
     {
         byte[] packet = new byte[1 + remainder.Length];
@@ -50,6 +55,20 @@ internal static class QuicHeaderTestData
         }
 
         return BuildLongHeader(headerControlBits, 0, destinationConnectionId, sourceConnectionId, supportedVersionBytes);
+    }
+
+    public static int GetLongHeaderPayloadOffset(ReadOnlySpan<byte> packet)
+    {
+        int destinationConnectionIdLengthOffset = LongHeaderFixedPrefixLength;
+        int destinationConnectionIdLength = packet[destinationConnectionIdLengthOffset];
+        int sourceConnectionIdLengthOffset = destinationConnectionIdLengthOffset
+            + ConnectionIdLengthFieldLength
+            + destinationConnectionIdLength;
+        int sourceConnectionIdLength = packet[sourceConnectionIdLengthOffset];
+
+        return sourceConnectionIdLengthOffset
+            + ConnectionIdLengthFieldLength
+            + sourceConnectionIdLength;
     }
 
     public static byte[] BuildInitialVersionSpecificData(

@@ -26,7 +26,8 @@ public sealed class REQ_QUIC_RFC9001_S5_0003
         Assert.Equal(2, packet.SupportedVersionCount);
         Assert.Equal((uint)0x11223344, packet.GetSupportedVersion(0));
         Assert.Equal((uint)0xAABBCCDD, packet.GetSupportedVersion(1));
-        Assert.True(packetBytes.AsSpan(9).SequenceEqual(packet.SupportedVersionBytes));
+        int offset = QuicHeaderTestData.GetLongHeaderPayloadOffset(packetBytes);
+        Assert.True(packetBytes.AsSpan(offset).SequenceEqual(packet.SupportedVersionBytes));
     }
 
     [Fact]
