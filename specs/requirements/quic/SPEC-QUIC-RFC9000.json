@@ -17441,12 +17441,15 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-        "upstream_refs": [
-          "RFC 9000 §12.4 RFC9000-S12.4-B5-P2-S1",
-          "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
-        ]
-      }
-    },
+      "upstream_refs": [
+        "RFC 9000 §12.4 RFC9000-S12.4-B5-P2-S1",
+        "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+      ],
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0002.cs::TryParsePaddingFrame_AllowsMultipleFramesAndFrameTypesInTheSamePacketPayload"
+      ]
+    }
+  },
     {
       "id": "REQ-QUIC-RFC9000-S12P4-0003",
       "title": "Require at least one frame in packet payloads",
@@ -17736,12 +17739,17 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-        "upstream_refs": [
-          "RFC 9000 §12.4 RFC9000-S12.4-B41-P0-S1",
-          "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
-        ]
-      }
-    },
+      "upstream_refs": [
+        "RFC 9000 §12.4 RFC9000-S12.4-B41-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+      ],
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0013.cs::IsAckElicitingFrameType_RecognizesAckElicitingFrameTypes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0013.cs::IsAckElicitingFrameType_RejectsNonAckElicitingFrameTypes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0013.cs::IsAckElicitingFrameType_HandlesTheBoundaryBetweenAckElicitingAndNonAckElicitingTypes"
+      ]
+    }
+  },
     {
       "id": "REQ-QUIC-RFC9000-S12P4-0014",
       "title": "Exclude C-marked packets from bytes in flight",
@@ -17788,12 +17796,16 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-        "upstream_refs": [
-          "RFC 9000 §12.4 RFC9000-S12.4-B43-P0-S1",
-          "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
-        ]
-      }
-    },
+      "upstream_refs": [
+        "RFC 9000 §12.4 RFC9000-S12.4-B43-P0-S1",
+        "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+      ],
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0015.cs::TryRegisterLoss_DoesNotEnterRecoveryForProbePackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0015.cs::CanSend_AllowsProbePacketsWhenTheCongestionWindowIsFull"
+      ]
+    }
+  },
     {
       "id": "REQ-QUIC-RFC9000-S12P4-0016",
       "title": "Treat F-marked frame contents as flow controlled",
