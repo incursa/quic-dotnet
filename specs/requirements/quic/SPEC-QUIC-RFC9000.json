@@ -24290,6 +24290,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.1 RFC9000-S17.2.1-B7-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0010.cs::TryFormatVersionNegotiationResponse_UsesTheUnusedFieldValueOnTheWire"
         ]
       }
     },
@@ -24316,6 +24319,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.1 RFC9000-S17.2.1-B7-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0011.cs::TryParseVersionNegotiation_IgnoresTheUnusedFieldWhenDecidingWhetherToDiscard"
         ]
       }
     },
@@ -24342,6 +24348,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.1 RFC9000-S17.2.1-B7-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0012.cs::TryFormatVersionNegotiationResponse_SetsTheMostSignificantUnusedBit"
         ]
       }
     },
