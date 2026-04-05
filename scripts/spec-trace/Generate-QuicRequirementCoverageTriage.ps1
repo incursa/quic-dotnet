@@ -232,6 +232,15 @@ function Get-TestMethodRecords {
                 continue
             }
 
+            if ($trimmed.StartsWith('///') -or
+                $trimmed.StartsWith('//') -or
+                $trimmed.StartsWith('/*') -or
+                $trimmed.StartsWith('*') -or
+                $trimmed.StartsWith('*/'))
+            {
+                continue
+            }
+
             if ($trimmed -match '^(?:public|internal|private|protected)?\s*(?:sealed\s+|static\s+|abstract\s+|partial\s+)*class\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)')
             {
                 $classAttributes = Parse-AttributeBlock -Lines @($pendingAttributeLines)
