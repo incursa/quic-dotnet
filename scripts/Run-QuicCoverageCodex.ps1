@@ -659,7 +659,8 @@ function Resolve-LoopTransition {
     param(
         [Parameter(Mandatory = $true)]$LoopPlan,
         [Parameter(Mandatory = $true)]$LoopState,
-        [Parameter(Mandatory = $true)]$Directive
+        [Parameter(Mandatory = $true)]$Directive,
+        [Parameter(Mandatory = $true)][bool]$HasCurrentBatchCandidates
     )
 
     $stateDetails = Get-LoopStateDetails -LoopPlan $LoopPlan -LoopState $LoopState
@@ -689,7 +690,12 @@ function Resolve-LoopTransition {
         "NoSliceInCurrentTier" {
             $progressed = $true
 
-            if ($stateDetails.IsFinalTier) {
+            if ($HasCurrentBatchCandidates) {
+                $effectiveOutcome = "Worked"
+                $effectiveStatus = "Continue"
+                $effectiveNextTier = $LoopPlan.TierOrder[$LoopState.TierIndex]
+            }
+            elseif ($stateDetails.IsFinalTier) {
                 if ($stateDetails.IsFinalRfc) {
                     $effectiveOutcome = "RepoExhausted"
                     $effectiveStatus = "Stop"
@@ -717,7 +723,12 @@ function Resolve-LoopTransition {
         "NoSliceInCurrentRFC" {
             $progressed = $true
 
-            if ($stateDetails.IsFinalRfc) {
+            if ($HasCurrentBatchCandidates) {
+                $effectiveOutcome = "Worked"
+                $effectiveStatus = "Continue"
+                $effectiveNextTier = $LoopPlan.TierOrder[$LoopState.TierIndex]
+            }
+            elseif ($stateDetails.IsFinalRfc) {
                 $effectiveOutcome = "RepoExhausted"
                 $effectiveStatus = "Stop"
                 $shouldStop = $true
@@ -1228,7 +1239,7 @@ try {
 
         if ($skipRun) {
             $directive = $syntheticDirective
-            $transition = Resolve-LoopTransition -LoopPlan $loopPlan -LoopState $loopState -Directive $directive
+            $transition = Resolve-LoopTransition -LoopPlan $loopPlan -LoopState $loopState -Directive $directive -HasCurrentBatchCandidates $false
             $run = [pscustomobject]@{ ExitCode = 0; Seconds = 0 }
             $status = "Skipped"
             $stopNow = $transition.ShouldStop
@@ -1238,7 +1249,7 @@ try {
         else {
             $resultText = if (Test-Path -LiteralPath $resultPath) { Get-Content -LiteralPath $resultPath -Raw } else { "" }
             $directive = Get-LoopDirective -ResultText $resultText
-            $transition = Resolve-LoopTransition -LoopPlan $loopPlan -LoopState $loopState -Directive $directive
+            $transition = Resolve-LoopTransition -LoopPlan $loopPlan -LoopState $loopState -Directive $directive -HasCurrentBatchCandidates ($batchCandidates.Requirements.Count -gt 0)
 
             $remainingEligibleUncovered = $false
             if ($transition.EffectiveSelectionOutcome -eq "RepoExhausted" -and $batchCandidates.Requirements.Count -gt 0) {
