@@ -1676,6 +1676,11 @@
         "upstream_refs": [
           "RFC 9002 §6.1.2 RFC9002-S6.1.2-B9-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0007.cs::ComputeLossDelayMicros_AcceptsAlternativeThresholdParameters",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0007.cs::ComputeLossDelayMicros_RejectsAZeroTimeThresholdDenominator",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0007.cs::ComputeLossDelayMicros_UsesTheGranularityFloorForAnAlternativeThreshold"
         ]
       }
     },
