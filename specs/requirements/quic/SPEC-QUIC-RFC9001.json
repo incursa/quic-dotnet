@@ -35,6 +35,9 @@
         "upstream_refs": [
           "RFC 9001 §2 RFC9001-S2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S2-0001.cs::RequirementStatement_UsesAllCapsBCP14Keywords"
         ]
       },
       "notes": [
