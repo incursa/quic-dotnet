@@ -9,6 +9,10 @@ public sealed class REQ_QUIC_RFC9000_S12P4_0005
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S12P4-0005">Frames MUST fit within a single QUIC packet rather than span multiple packets.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S12P4-0005")]
     public void TryParseConnectionCloseFrame_ConsumesTheCompleteFramePayload()
     {
         byte[] packetPayload = QuicFrameTestData.BuildConnectionCloseFrame(
@@ -22,6 +26,10 @@ public sealed class REQ_QUIC_RFC9000_S12P4_0005
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S12P4-0005">Frames MUST fit within a single QUIC packet rather than span multiple packets.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S12P4-0005")]
     public void TryParseMaxDataFrame_RejectsFramesThatAreTruncatedAtThePacketBoundary()
     {
         byte[] packetPayload = QuicFrameTestData.BuildMaxDataFrame(new QuicMaxDataFrame(0x1234));
@@ -32,6 +40,10 @@ public sealed class REQ_QUIC_RFC9000_S12P4_0005
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S12P4-0005">Frames MUST fit within a single QUIC packet rather than span multiple packets.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S12P4-0005")]
     public void TryParsePingFrame_ConsumesTheEntireShortestFrameWithoutSpanningPastThePacket()
     {
         byte[] packetPayload = QuicFrameTestData.BuildPingFrame();
