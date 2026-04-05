@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0006
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsInitialWhenHandshakeKeysAreUnavailable()
     {
         Assert.True(QuicRecoveryTiming.TrySelectInitialOrHandshakeProbeTimeoutMicros(
@@ -20,6 +21,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0006
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing()
     {
         Assert.False(QuicRecoveryTiming.TrySelectInitialOrHandshakeProbeTimeoutMicros(
@@ -30,6 +32,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0006
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesAnImmediateInitialDeadlineWhenItIsTheOnlyOption()
     {
         Assert.True(QuicRecoveryTiming.TrySelectInitialOrHandshakeProbeTimeoutMicros(

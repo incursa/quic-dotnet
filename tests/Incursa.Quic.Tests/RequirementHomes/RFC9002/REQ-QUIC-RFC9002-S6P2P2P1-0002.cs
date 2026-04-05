@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0002
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryRegisterReceivedDatagramPayloadBytes_RestoresTheSendBudgetAfterTheServerHasExhaustedIt()
     {
         QuicAntiAmplificationBudget budget = new();
@@ -25,6 +26,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0002
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void TryRegisterReceivedDatagramPayloadBytes_DoesNotRestoreTheSendBudgetForUnattributedDatagrams()
     {
         QuicAntiAmplificationBudget budget = new();
@@ -42,6 +44,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0002
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void TryRegisterReceivedDatagramPayloadBytes_LeavesTheSendBudgetExhaustedForZeroLengthDatagrams()
     {
         QuicAntiAmplificationBudget budget = new();
