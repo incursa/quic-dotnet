@@ -1054,6 +1054,10 @@
         "upstream_refs": [
           "RFC 9002 §5.3 RFC9002-S5.3-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0003.cs::TryUpdateFromAck_DoesNotDropASampleWhenAckDelayWouldMakeTheAdjustedSampleSmallerThanMinRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0003.cs::TryUpdateFromAck_AllowsAnAdjustedSampleThatExactlyMatchesMinRtt"
         ]
       }
     },
