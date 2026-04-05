@@ -7693,6 +7693,11 @@
         "upstream_refs": [
           "RFC 9000 §7.2 RFC9000-S7.2-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0003.cs::TryFormatVersionNegotiationResponse_EchoesTheClientConnectionIds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0003.cs::TryFormatVersionNegotiationResponse_RejectsInsufficientDestinationSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0003.cs::TryFormatVersionNegotiationResponse_AllowsBoundaryConnectionIdLengths"
         ]
       }
     },
