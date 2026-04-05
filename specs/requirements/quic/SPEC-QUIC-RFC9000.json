@@ -17480,6 +17480,11 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B5-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0003.cs::TryParseMaxDataFrame_ConsumesASingleFramePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0003.cs::TryParseMaxDataFrame_RejectsEmptyPacketPayloads",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0003.cs::TryParsePingFrame_ConsumesTheSmallestPacketPayloadThatContainsAFrame"
         ]
       }
     },
@@ -17506,6 +17511,11 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B5-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0004.cs::TryParsePaddingFrame_AcceptsTheSmallestPacketPayloadThatContainsAFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0004.cs::TryParsePaddingFrame_RejectsEmptyPacketPayloads",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0004.cs::TryParsePaddingFrame_ConsumesOnlyTheSingleByteAtThePacketBoundary"
         ]
       }
     },
@@ -17532,6 +17542,11 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B5-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0005.cs::TryParseConnectionCloseFrame_ConsumesTheCompleteFramePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0005.cs::TryParseMaxDataFrame_RejectsFramesThatAreTruncatedAtThePacketBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0005.cs::TryParsePingFrame_ConsumesTheEntireShortestFrameWithoutSpanningPastThePacket"
         ]
       }
     },
