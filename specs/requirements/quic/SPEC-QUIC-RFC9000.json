@@ -23306,6 +23306,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B4-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0012.cs::TryParseLongHeader_ExposesTheRequiredFieldsOnVersion1InitialPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0012.cs::TryParseLongHeader_ExposesTheRequiredFieldsOnVersionNegotiationPackets"
         ]
       }
     },

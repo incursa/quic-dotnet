@@ -63,6 +63,7 @@ public sealed class QuicHeaderPropertyTests
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0009">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0010">The Source Connection ID Length field MUST be 8 bits long.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0011">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0012">Packets that use the long header MUST contain the following fields:</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0016">The first byte MUST contain the Reserved and Packet Number Length bits; see also Section 17.2.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0001">A 0-RTT packet MUST use long headers with a type value of 0x01, followed by the Length and Packet Number fields; see Section 17.2.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0002">The first byte MUST contain the Reserved and Packet Number Length bits; see Section 17.2.</workbench-requirement>
@@ -91,6 +92,7 @@ public sealed class QuicHeaderPropertyTests
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0010")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2-0012")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0016")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P3-0002")]
