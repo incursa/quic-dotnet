@@ -530,7 +530,7 @@ function Get-IterationOutcomeKind {
         [Parameter(Mandatory = $true)][string]$Status,
         [Parameter(Mandatory = $true)][string]$BatchDisposition,
         [Parameter(Mandatory = $true)][bool]$StopNow,
-        [Parameter(Mandatory = $true)][string]$SelectionOutcome,
+        [AllowEmptyString()][string]$SelectionOutcome = "",
         [Parameter(Mandatory = $true)][bool]$TriageChanged,
         [Parameter(Mandatory = $true)][bool]$Progressed
     )
@@ -546,7 +546,7 @@ function Get-IterationOutcomeKind {
         "NoCandidates"     { return "NoCandidates" }
     }
 
-    if ($StopNow -and $SelectionOutcome -eq "RepoExhausted") {
+    if ($StopNow -and -not [string]::IsNullOrWhiteSpace($SelectionOutcome) -and $SelectionOutcome -eq "RepoExhausted") {
         return "RepoExhausted"
     }
 
