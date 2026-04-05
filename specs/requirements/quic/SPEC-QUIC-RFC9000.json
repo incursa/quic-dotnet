@@ -26238,6 +26238,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S8",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0010.cs::TryParseLongHeader_ExposesTheDestinationConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0010.cs::TryParseLongHeader_RejectsPacketsWithoutTheDestinationConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0010.cs::TryParseLongHeader_HandlesBoundaryDestinationConnectionIdLengths"
         ]
       }
     },
@@ -26264,6 +26269,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S9",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0011.cs::TryParseLongHeader_ExposesAFullySizedDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0011.cs::TryParseLongHeader_RejectsDestinationConnectionIdsLongerThanTwentyBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0011.cs::TryParseLongHeader_AcceptsDestinationConnectionIdLengthBoundaries"
         ]
       }
     },
@@ -26290,6 +26300,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S10",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0012.cs::TryParseLongHeader_ExposesTheSourceConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0012.cs::TryParseLongHeader_RejectsPacketsWithoutTheSourceConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0012.cs::TryParseLongHeader_HandlesBoundarySourceConnectionIdLengths"
         ]
       }
     },
@@ -26316,6 +26331,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S11",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0013.cs::TryParseLongHeader_ExposesAFullySizedSourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0013.cs::TryParseLongHeader_RejectsSourceConnectionIdsLongerThanTwentyBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0013.cs::TryParseLongHeader_AcceptsSourceConnectionIdLengthBoundaries"
         ]
       }
     },
@@ -26342,6 +26362,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S12",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0014.cs::TryParseLongHeader_AcceptsInitialPacketsWhoseLengthFieldFitsInOneVarintByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0014.cs::TryParseLongHeader_RejectsPacketsWhoseLengthFieldIsTruncatedMidVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0014.cs::TryParseLongHeader_AcceptsInitialPacketsWhoseLengthFieldRequiresTwoVarintBytes"
         ]
       }
     },
@@ -26368,6 +26393,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B3-P0-S13",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0015.cs::TryParseLongHeader_AcceptsANormalOneBytePacketNumberField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0015.cs::TryParseLongHeader_RejectsPacketsWhosePayloadIsShorterThanThePacketNumberField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0015.cs::TryParseLongHeader_AcceptsTheMinimumAndMaximumPacketNumberFieldLengths"
         ]
       }
     },
