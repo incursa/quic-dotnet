@@ -23276,6 +23276,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B4-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0010.cs::TryParseLongHeader_MapsPre1RttPacketsToLongHeaderSpaces"
         ]
       }
     },
@@ -23302,6 +23305,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B4-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0011.cs::TryParseShortHeader_AcceptsTheShortestValidShortHeader",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0011.cs::TryParseShortHeader_RecognizesApplicationDataPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0011.cs::TryParseShortHeader_RejectsVersion1LongHeaders"
         ]
       }
     },
