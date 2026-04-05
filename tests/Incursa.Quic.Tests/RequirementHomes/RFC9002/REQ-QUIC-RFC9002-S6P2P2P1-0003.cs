@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0003
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TrySelectRecoveryTimerMicros_ReturnsThePtoDeadlineImmediatelyWhenItIsAlreadyDue()
     {
         Assert.True(QuicRecoveryTiming.TrySelectRecoveryTimerMicros(
@@ -20,6 +21,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0003
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void TrySelectRecoveryTimerMicros_ReturnsFalseWhenNoRecoveryTimersAreAvailable()
     {
         Assert.False(QuicRecoveryTiming.TrySelectRecoveryTimerMicros(
@@ -30,6 +32,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0003
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void TrySelectRecoveryTimerMicros_PreservesAOneMicrosecondPtoDeadline()
     {
         Assert.True(QuicRecoveryTiming.TrySelectRecoveryTimerMicros(

@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0004
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryComputeProbeTimeoutMicros_ArmsHandshakePtoBeforeHandshakeConfirmation()
     {
         Assert.True(QuicRecoveryTiming.TryComputeProbeTimeoutMicros(
@@ -24,6 +25,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0004
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void TryComputeProbeTimeoutMicros_DoesNotArmApplicationDataBeforeHandshakeConfirmation()
     {
         Assert.False(QuicRecoveryTiming.TryComputeProbeTimeoutMicros(
@@ -37,6 +39,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0004
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void TryComputeProbeTimeoutMicros_ArmsHandshakePtoAtTheGranularityFloorWhenRttIsZero()
     {
         Assert.True(QuicRecoveryTiming.TryComputeProbeTimeoutMicros(
