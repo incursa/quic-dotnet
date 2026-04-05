@@ -22,11 +22,11 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-        "trace": {
-          "satisfied_by": [
-            "ARC-QUIC-RFC9000-0001"
-          ],
-          "implemented_by": [
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9000-0001"
+        ],
+        "implemented_by": [
           "WI-QUIC-RFC9000-0001"
         ],
         "verified_by": [
@@ -22766,15 +22766,15 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-          "upstream_refs": [
-            "RFC 9000 §16 RFC9000-S16-B4-P3-S1",
-            "https://www.rfc-editor.org/rfc/rfc9000.html#section-16"
-          ],
-          "x_test_refs": [
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0003.cs::TryFormat_UsesTheExpectedLengthForEachValueClass"
-          ]
-        }
-      },
+        "upstream_refs": [
+          "RFC 9000 §16 RFC9000-S16-B4-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9000.html#section-16"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0003.cs::TryFormat_UsesTheExpectedLengthForEachValueClass"
+        ]
+      }
+    },
     {
       "id": "REQ-QUIC-RFC9000-S16-0004",
       "title": "Values MUST NOT need to be encoded on the minimum number of bytes necessary, with the sole ex...",
@@ -22785,27 +22785,27 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-        "trace": {
-          "satisfied_by": [
-            "ARC-QUIC-RFC9000-0001"
-          ],
-          "implemented_by": [
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9000-0001"
+        ],
+        "implemented_by": [
           "WI-QUIC-RFC9000-0001"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-          "upstream_refs": [
-            "RFC 9000 §16 RFC9000-S16-B11-P5-S1",
-            "https://www.rfc-editor.org/rfc/rfc9000.html#section-16"
-          ],
-          "x_test_refs": [
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0004.cs::TryParse_AcceptsNonMinimalEncodings",
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0004.cs::TryParse_RejectsTruncatedNonMinimalEncodings",
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0004.cs::TryParse_AcceptsZeroEncodedOnEightBytes"
-          ]
-        }
-      },
+        "upstream_refs": [
+          "RFC 9000 §16 RFC9000-S16-B11-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9000.html#section-16"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0004.cs::TryParse_AcceptsNonMinimalEncodings",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0004.cs::TryParse_RejectsTruncatedNonMinimalEncodings",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0004.cs::TryParse_AcceptsZeroEncodedOnEightBytes"
+        ]
+      }
+    },
     {
       "id": "REQ-QUIC-RFC9000-S16-0005",
       "title": "Versions (Section 15), packet numbers sent in the header (Section 17.1), and the length of co...",
@@ -27960,12 +27960,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsLongHeaderForm"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0012.cs::TryClassifyHeaderForm_RecognizesLongHeadersByTheHighBit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0012.cs::TryClassifyHeaderForm_RecognizesShortHeadersByTheHighBit"
         ]
       }
     },
@@ -27994,11 +27990,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsFixedBitZero"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_ExposesTheFixedBit"
         ]
       }
     },
@@ -28027,8 +28019,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsFixedBitZero"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0014.cs::TryParseShortHeader_RecognizesPacketsWithTheFixedBitSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0014.cs::TryParseShortHeader_RejectsPacketsWithAZeroFixedBit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0014.cs::TryParseShortHeader_RejectsTheShortestPacketWithAZeroFixedBit"
         ]
       }
     },
@@ -28057,10 +28050,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0015.cs::TryParseShortHeader_PreservesReservedBitsAsZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0015.cs::TryParseShortHeader_RejectsPacketsWithReservedBitsSet"
         ]
       }
     },
@@ -28089,11 +28080,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsReservedBitsNonZero"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0016.cs::TryParseShortHeader_PreservesTheZeroValueBeforeProtection"
         ]
       }
     },
@@ -28181,10 +28168,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0019.cs::TryParseShortHeader_ExposesTheKeyPhaseBit"
         ]
       }
     },
