@@ -603,9 +603,11 @@ public readonly struct QuicPersistentCongestionPacket
         bool ackEliciting,
         bool inFlight,
         bool acknowledged,
-        bool lost)
+        bool lost,
+        ulong packetNumber = 0)
     {
         PacketNumberSpace = packetNumberSpace;
+        PacketNumber = packetNumber;
         SentAtMicros = sentAtMicros;
         SentBytes = sentBytes;
         AckEliciting = ackEliciting;
@@ -618,6 +620,11 @@ public readonly struct QuicPersistentCongestionPacket
     /// Gets the packet number space.
     /// </summary>
     public QuicPacketNumberSpace PacketNumberSpace { get; }
+
+    /// <summary>
+    /// Gets the packet number.
+    /// </summary>
+    public ulong PacketNumber { get; }
 
     /// <summary>
     /// Gets the send time in microseconds.

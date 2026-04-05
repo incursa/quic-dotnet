@@ -143,8 +143,9 @@ Incursa.Quic.QuicCongestionControlState.TryDetectPersistentCongestion(System.Rea
 static Incursa.Quic.QuicCongestionControlState.ComputeReducedCongestionWindowBytes(ulong congestionWindowBytes, ulong reductionNumerator = 1, ulong reductionDenominator = 2, ulong minimumCongestionWindowBytes = 0) -> ulong
 Incursa.Quic.QuicPersistentCongestionPacket
 Incursa.Quic.QuicPersistentCongestionPacket.QuicPersistentCongestionPacket() -> void
-Incursa.Quic.QuicPersistentCongestionPacket.QuicPersistentCongestionPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, ulong sentBytes, bool ackEliciting, bool inFlight, bool acknowledged, bool lost) -> void
+Incursa.Quic.QuicPersistentCongestionPacket.QuicPersistentCongestionPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, ulong sentBytes, bool ackEliciting, bool inFlight, bool acknowledged, bool lost, ulong packetNumber = 0) -> void
 Incursa.Quic.QuicPersistentCongestionPacket.PacketNumberSpace.get -> Incursa.Quic.QuicPacketNumberSpace
+Incursa.Quic.QuicPersistentCongestionPacket.PacketNumber.get -> ulong
 Incursa.Quic.QuicPersistentCongestionPacket.SentAtMicros.get -> ulong
 Incursa.Quic.QuicPersistentCongestionPacket.SentBytes.get -> ulong
 Incursa.Quic.QuicPersistentCongestionPacket.AckEliciting.get -> bool
