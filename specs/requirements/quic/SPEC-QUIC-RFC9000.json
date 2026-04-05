@@ -23547,6 +23547,10 @@
           "RFC 9000 §17.2 RFC9000-S17.2-B10-P0-S2",
           "RFC 9000 §17.2 RFC9000-S17.2-B12-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0019.cs::TryParseLongHeader_EncodesConnectionIdLengthsAsSingleBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0019.cs::TryParseLongHeader_RejectsPacketsMissingTheConnectionIdLengthBytes"
         ]
       }
     },
@@ -23664,6 +23668,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B11-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0023.cs::TryParseLongHeader_ExposesTheDestinationConnectionIdImmediatelyAfterItsLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0023.cs::TryParseLongHeader_RejectsPacketsMissingDestinationConnectionIdBytes"
         ]
       }
     },
@@ -23690,6 +23698,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B12-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0024.cs::TryParseLongHeader_ExposesTheSourceConnectionIdLengthByteAfterTheDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0024.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte"
         ]
       }
     },
@@ -23716,6 +23728,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B13-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0025.cs::TryParseLongHeader_ExposesTheSourceConnectionIdImmediatelyAfterItsLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0025.cs::TryParseLongHeader_RejectsPacketsMissingSourceConnectionIdBytes"
         ]
       }
     },
@@ -23742,6 +23758,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B22-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0026.cs::TryParseLongHeader_PreservesVersion1LongHeaderVersionSpecificData"
         ]
       }
     },
@@ -23768,6 +23787,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2 RFC9000-S17.2-B23-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0027.cs::TryParseHeaders_ExposeReservedBitsAsZeroBeforeProtection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0027.cs::TryParseShortHeader_RejectsReservedBitsWhenTheyAreNonZero"
         ]
       }
     },
