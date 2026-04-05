@@ -4805,6 +4805,11 @@
         "upstream_refs": [
           "RFC 9000 §5.1 RFC9000-S5.1-B10-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0015.cs::TryFormatTransportParameters_AdvertisesActiveConnectionIdLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0015.cs::TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0015.cs::TryParseTransportParameters_AcceptsMinimumActiveConnectionIdLimit"
         ]
       }
     },
