@@ -17939,6 +17939,9 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B47-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0018.cs::TryParseAndTryFormatSelectedFrames_AreDeterministicAcrossRepeatedCalls"
         ]
       }
     },
@@ -17965,6 +17968,11 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B47-P12-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0019.cs::TryParseSelectedFrames_ReturnsTheSameResultsWhenReceivedMoreThanOnce",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0019.cs::TryParseSelectedFrames_RejectsMalformedFramesConsistently",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0019.cs::TryParseSelectedFrames_HandlesRepeatedReceiptOfTheShortestValidFrame"
         ]
       }
     },
@@ -37103,6 +37111,10 @@
         "upstream_refs": [
           "RFC 9000 §19.21 RFC9000-S19.21-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0001.cs::TryFormatTypeOnlyFrames_UseSingleByteFrameTypeEncodings",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0001.cs::TryParseTypeOnlyFrames_RejectsSelfDescribingEnvelopeForms"
         ]
       }
     },

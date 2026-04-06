@@ -16,8 +16,7 @@ public sealed class REQ_QUIC_RFC9000_S12P4_0001
             headerControlBits: 0x4A,
             destinationConnectionId: [0x11, 0x12],
             sourceConnectionId: [0x21],
-            supportedVersions: 0x11223344,
-            0x55667788);
+            supportedVersions: [0x11223344u, 0x55667788u]);
 
         Assert.True(QuicPacketParser.TryParseVersionNegotiation(versionNegotiationPacket, out QuicVersionNegotiationPacket versionNegotiationHeader));
         Assert.Equal(2, versionNegotiationHeader.SupportedVersionCount);
@@ -48,8 +47,7 @@ public sealed class REQ_QUIC_RFC9000_S12P4_0001
             headerControlBits: 0x4A,
             destinationConnectionId: [0x11, 0x12],
             sourceConnectionId: [0x21],
-            supportedVersions: 0x11223344,
-            0x55667788);
+            supportedVersions: [0x11223344u, 0x55667788u]);
         byte[] retryPacket = QuicRetryPacketRequirementTestData.BuildRetryPacket();
         byte[] statelessResetPacket = QuicStatelessResetRequirementTestData.FormatDatagram(QuicStatelessResetRequirementTestData.CreateToken());
 
