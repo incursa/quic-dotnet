@@ -13,6 +13,7 @@ public static class QuicPathValidation
 
     /// <summary>
     /// The number of payload bytes used by PATH_CHALLENGE and PATH_RESPONSE frames.
+    /// RFC 9000 fixes both payloads at 8 bytes.
     /// </summary>
     public const int PathChallengeDataLength = 8;
 

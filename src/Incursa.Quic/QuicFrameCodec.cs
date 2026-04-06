@@ -5,6 +5,13 @@ namespace Incursa.Quic;
 /// </summary>
 public static class QuicFrameCodec
 {
+    // RFC 9000 frame types handled by this codec.
+    // 0x00 PADDING, 0x01 PING, 0x02 ACK, 0x03 ACK_ECN,
+    // 0x04 RESET_STREAM, 0x05 STOP_SENDING, 0x06 CRYPTO, 0x07 NEW_TOKEN,
+    // 0x10 MAX_DATA, 0x11 MAX_STREAM_DATA, 0x12 MAX_STREAMS_BIDI, 0x13 MAX_STREAMS_UNI,
+    // 0x14 DATA_BLOCKED, 0x15 STREAM_DATA_BLOCKED, 0x16 STREAMS_BLOCKED_BIDI, 0x17 STREAMS_BLOCKED_UNI,
+    // 0x18 NEW_CONNECTION_ID, 0x19 RETIRE_CONNECTION_ID, 0x1A PATH_CHALLENGE, 0x1B PATH_RESPONSE,
+    // 0x1C CONNECTION_CLOSE, 0x1D APPLICATION_CLOSE, 0x1E HANDSHAKE_DONE.
     private const ulong PaddingFrameType = 0x00;
     private const ulong PingFrameType = 0x01;
     private const ulong AckFrameType = 0x02;
@@ -28,11 +35,35 @@ public static class QuicFrameCodec
     private const ulong RetireConnectionIdFrameType = 0x19;
     private const ulong PathChallengeFrameType = 0x1A;
     private const ulong PathResponseFrameType = 0x1B;
+
+    /// <summary>
+    /// Varint values reserve the top two bits, leaving 60 payload bits for stream limits.
+    /// </summary>
     private const int MaximumStreamLimitBitCount = 60;
+
+    /// <summary>
+    /// The largest stream-count value that fits in the RFC 9000 varint encoding used here.
+    /// </summary>
     private const ulong MaximumStreamLimit = 1UL << MaximumStreamLimitBitCount;
+
+    /// <summary>
+    /// RFC 9000 caps connection IDs at 20 bytes.
+    /// </summary>
     private const int MaximumConnectionIdLength = 20;
+
+    /// <summary>
+    /// RFC 9000 stateless reset tokens are 16 bytes.
+    /// </summary>
     private const int StatelessResetTokenLength = 16;
+
+    /// <summary>
+    /// PATH_CHALLENGE and PATH_RESPONSE payloads are fixed at 8 bytes.
+    /// </summary>
     private const int PathFrameDataLength = 8;
+
+    /// <summary>
+    /// ACK range encoding subtracts one gap and one acknowledged packet from the range math.
+    /// </summary>
     private const ulong AckRangeGapAdjustment = 2;
 
     /// <summary>

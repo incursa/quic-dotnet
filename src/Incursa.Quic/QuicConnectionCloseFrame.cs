@@ -5,7 +5,14 @@ namespace Incursa.Quic;
 /// </summary>
 public readonly ref struct QuicConnectionCloseFrame
 {
+    /// <summary>
+    /// RFC 9000 CONNECTION_CLOSE frame type for transport errors.
+    /// </summary>
     private const byte TransportConnectionCloseFrameType = 0x1C;
+
+    /// <summary>
+    /// RFC 9000 CONNECTION_CLOSE frame type for application errors.
+    /// </summary>
     private const byte ApplicationConnectionCloseFrameType = 0x1D;
 
     private readonly bool isApplicationError;

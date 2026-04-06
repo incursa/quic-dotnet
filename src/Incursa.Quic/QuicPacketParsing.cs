@@ -4,9 +4,24 @@ namespace Incursa.Quic;
 
 internal static class QuicPacketParsing
 {
+    /// <summary>
+    /// RFC 9000's long-header minimum is the fixed 7-byte prefix before the connection IDs.
+    /// </summary>
     private const int LongHeaderMinimumLength = 7;
+
+    /// <summary>
+    /// The version + type + CID-length fields place the destination CID at byte offset 6.
+    /// </summary>
     private const int LongHeaderConnectionIdOffset = 6;
+
+    /// <summary>
+    /// RFC 9000 caps connection IDs at 20 bytes in the version 1 long-header parser.
+    /// </summary>
     private const int MaximumRfc9000ConnectionIdLength = 20;
+
+    /// <summary>
+    /// RFC 9000 version 1 keeps the same 20-byte connection-ID cap.
+    /// </summary>
     private const int Version1MaximumConnectionIdLength = 20;
 
     internal static bool TryParseLongHeaderFields(

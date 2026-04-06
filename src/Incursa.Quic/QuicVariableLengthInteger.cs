@@ -7,22 +7,71 @@ namespace Incursa.Quic;
 /// </summary>
 public static class QuicVariableLengthInteger
 {
+    /// <summary>
+    /// QUIC varints use the top two bits of the first byte to encode the length.
+    /// </summary>
     private const int LengthPrefixBitCount = 6;
+
+    /// <summary>
+    /// The first byte carries six payload bits after the length prefix.
+    /// </summary>
     private const byte LengthValueMask = 0x3F;
+
+    /// <summary>
+    /// The two-byte varint prefix value.
+    /// </summary>
     private const byte TwoByteLengthPrefix = 0x40;
+
+    /// <summary>
+    /// The four-byte varint prefix value.
+    /// </summary>
     private const byte FourByteLengthPrefix = 0x80;
+
+    /// <summary>
+    /// The eight-byte varint prefix value.
+    /// </summary>
     private const byte EightByteLengthPrefix = 0xC0;
+
+    /// <summary>
+    /// The encoded length of a one-byte varint.
+    /// </summary>
     private const int OneByteEncodedLength = sizeof(byte);
+
+    /// <summary>
+    /// The encoded length of a two-byte varint.
+    /// </summary>
     private const int TwoByteEncodedLength = sizeof(ushort);
+
+    /// <summary>
+    /// The encoded length of a four-byte varint.
+    /// </summary>
     private const int FourByteEncodedLength = sizeof(uint);
+
+    /// <summary>
+    /// The encoded length of an eight-byte varint.
+    /// </summary>
     private const int EightByteEncodedLength = sizeof(ulong);
+
     private static readonly int[] EncodedLengths = [OneByteEncodedLength, TwoByteEncodedLength, FourByteEncodedLength, EightByteEncodedLength];
+
+    /// <summary>
+    /// The largest value that fits in the one-byte encoding.
+    /// </summary>
     private const ulong MaxOneByteValue = 0x3F;
+
+    /// <summary>
+    /// The largest value that fits in the two-byte encoding.
+    /// </summary>
     private const ulong MaxTwoByteValue = 0x3FFF;
+
+    /// <summary>
+    /// The largest value that fits in the four-byte encoding.
+    /// </summary>
     private const ulong MaxFourByteValue = 0x3FFF_FFFF;
 
     /// <summary>
     /// The largest value representable by the QUIC variable-length integer encoding.
+    /// RFC 9000 uses 62 payload bits after the length prefix.
     /// </summary>
     public const ulong MaxValue = 0x3FFF_FFFF_FFFF_FFFFUL;
 

@@ -9,6 +9,7 @@ public static class QuicStatelessReset
 {
     /// <summary>
     /// Stateless Reset tokens are 16 bytes long.
+    /// RFC 9000 fixes the token length at 16 bytes.
     /// </summary>
     public const int StatelessResetTokenLength = 16;
 
@@ -22,7 +23,14 @@ public static class QuicStatelessReset
     /// </summary>
     public const int MinimumUnpredictableBytes = 5;
 
+    /// <summary>
+    /// Additional packet-length headroom used by the reset-resistance guidance.
+    /// </summary>
     private const int ResetResistancePacketLengthPadding = 22;
+
+    /// <summary>
+    /// Stateless-reset loop prevention compares the datagram length against three times the triggering packet.
+    /// </summary>
     private const long LoopPreventionDatagramLengthMultiplier = 3L;
 
     /// <summary>

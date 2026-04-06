@@ -5,12 +5,39 @@ namespace Incursa.Quic;
 /// </summary>
 public static class QuicAeadUsageLimitCalculator
 {
+    /// <summary>
+    /// The Appendix B AEAD limits are expressed as powers of two, so the formulas use a base of 2.
+    /// </summary>
     private const double AeadUsageLimitBase = 2d;
+
+    /// <summary>
+    /// RFC 9001 Appendix B GCM confidentiality limit for packets up to 2^11 bytes.
+    /// </summary>
     private const double GcmConfidentialityLimitExponentStrictlyLimitedToTwoPow11Bytes = 28d;
+
+    /// <summary>
+    /// RFC 9001 Appendix B GCM confidentiality limit for packets up to 2^16 bytes.
+    /// </summary>
     private const double GcmConfidentialityLimitExponentAllowsPacketsAsLargeAsTwoPow16Bytes = 23d;
+
+    /// <summary>
+    /// RFC 9001 Appendix B GCM integrity limit for packets up to 2^11 bytes.
+    /// </summary>
     private const double GcmIntegrityLimitExponentStrictlyLimitedToTwoPow11Bytes = 57d;
+
+    /// <summary>
+    /// RFC 9001 Appendix B GCM integrity limit for unrestricted packets.
+    /// </summary>
     private const double GcmIntegrityLimitExponentUnrestricted = 52d;
+
+    /// <summary>
+    /// RFC 9001 Appendix B CCM limit for packet sizes up to 2^11 bytes.
+    /// </summary>
     private const double CcmUsageLimitExponentStrictlyLimitedToTwoPow11Bytes = 26.5d;
+
+    /// <summary>
+    /// RFC 9001 Appendix B CCM limit for unrestricted packet sizes.
+    /// </summary>
     private const double CcmUsageLimitExponentUnrestricted = 21.5d;
 
     /// <summary>

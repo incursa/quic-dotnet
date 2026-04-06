@@ -7,7 +7,14 @@ namespace Incursa.Quic;
 /// </summary>
 public readonly ref struct QuicVersionNegotiationPacket
 {
+    /// <summary>
+    /// The version field value carried by Version Negotiation packets.
+    /// </summary>
     internal const uint VersionNegotiationVersion = default;
+
+    /// <summary>
+    /// Version numbers are 32-bit values, so each supported-version entry is four bytes.
+    /// </summary>
     internal const int SupportedVersionLength = sizeof(uint);
 
     private readonly byte headerControlBits;

@@ -5,6 +5,9 @@ namespace Incursa.Quic;
 /// </summary>
 public sealed class QuicAntiAmplificationBudget
 {
+    /// <summary>
+    /// RFC 9000 allows a server to send at most three times the bytes it has received before validation.
+    /// </summary>
     private const ulong AmplificationFactor = 3;
     private ulong receivedPayloadBytes;
     private ulong sentPayloadBytes;
