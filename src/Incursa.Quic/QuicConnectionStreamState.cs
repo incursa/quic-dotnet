@@ -186,6 +186,11 @@ internal sealed class QuicConnectionStreamState
                 return false;
             }
         }
+        else if (fin && endExclusive < state.HighestSentOffset)
+        {
+            errorCode = QuicTransportErrorCode.FinalSizeError;
+            return false;
+        }
 
         if (state.SendState == QuicStreamSendState.Ready)
         {
@@ -221,6 +226,8 @@ internal sealed class QuicConnectionStreamState
             state.SendState = QuicStreamSendState.DataSent;
         }
 
+        state.HighestSentOffset = Math.Max(state.HighestSentOffset, endExclusive);
+
         return true;
     }
 
@@ -251,6 +258,12 @@ internal sealed class QuicConnectionStreamState
         }
 
         ulong? proposedFinalSize = frame.IsFin ? endExclusive : state.FinalSize;
+        if (frame.IsFin && !state.FinalSize.HasValue && endExclusive < state.HighestReceivedOffset)
+        {
+            errorCode = QuicTransportErrorCode.FinalSizeError;
+            return false;
+        }
+
         if (proposedFinalSize.HasValue && proposedFinalSize.Value > state.ReceiveLimit)
         {
             errorCode = QuicTransportErrorCode.FlowControlError;
@@ -275,6 +288,7 @@ internal sealed class QuicConnectionStreamState
         }
 
         state.ReceivedRanges.Add(frame.Offset, endExclusive);
+        state.HighestReceivedOffset = Math.Max(state.HighestReceivedOffset, endExclusive);
         state.AccountedBytes = newAccountedBytes;
         connectionAccountedBytesReceived += additionalAccountedBytes;
 
@@ -312,6 +326,12 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
+        if (frame.FinalSize < state.HighestReceivedOffset)
+        {
+            errorCode = QuicTransportErrorCode.FinalSizeError;
+            return false;
+        }
+
         if (frame.FinalSize > state.ReceiveLimit)
         {
             errorCode = QuicTransportErrorCode.FlowControlError;
@@ -339,6 +359,7 @@ internal sealed class QuicConnectionStreamState
         state.BufferedSegments.Clear();
         state.BufferedReadableBytes = 0;
         state.FinalSize = frame.FinalSize;
+        state.HighestReceivedOffset = Math.Max(state.HighestReceivedOffset, frame.FinalSize);
         state.AccountedBytes = newAccountedBytes;
         connectionAccountedBytesReceived += additionalAccountedBytes;
         state.ReceiveState = QuicStreamReceiveState.ResetRecvd;
@@ -762,6 +783,8 @@ internal sealed class QuicConnectionStreamState
         public ulong AccountedBytes { get; set; }
         public ulong ReadOffset { get; set; }
         public int BufferedReadableBytes { get; set; }
+        public ulong HighestSentOffset { get; set; }
+        public ulong HighestReceivedOffset { get; set; }
         public QuicByteRangeSet SentRanges { get; } = new();
         public QuicByteRangeSet ReceivedRanges { get; } = new();
         public List<BufferedSegment> BufferedSegments { get; } = [];
