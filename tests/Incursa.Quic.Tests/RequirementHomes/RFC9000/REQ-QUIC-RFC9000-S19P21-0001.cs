@@ -39,6 +39,6 @@ public sealed class REQ_QUIC_RFC9000_S19P21_0001
         Assert.True(QuicVariableLengthInteger.TryParse(encodedFrame, out ulong frameType, out int bytesConsumed));
         Assert.Equal(expectedFrameType, frameType);
         Assert.Equal(1, bytesConsumed);
-        Assert.Equal(1, encodedFrame.Length);
+        Assert.Single(encodedFrame);
     }
 }
