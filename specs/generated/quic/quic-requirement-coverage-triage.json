@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-06T11:13:23.3046064-06:00",
+  "generated_at": "2026-04-06T11:22:39.5632062-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet",
   "sources": {
     "spec_files": [
@@ -17,20 +17,20 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-04-06T11:13:23.3017960-06:00",
+    "generated_at": "2026-04-06T11:22:39.5591922-06:00",
     "total_requirements": 1736,
     "by_state": {
-      "covered_but_missing_xrefs": 31,
+      "covered_but_missing_xrefs": 23,
       "covered_but_proof_too_broad": 353,
       "partially_covered": 104,
-      "trace_clean": 408,
+      "trace_clean": 411,
       "uncovered_blocked": 266,
       "uncovered_unblocked": 574
     },
     "by_work_queue_tag": {
       "blocked": 266,
-      "clean": 408,
-      "metadata_only": 31,
+      "clean": 416,
+      "metadata_only": 23,
       "new_tests_needed": 1277,
       "restructure_needed": 419
     },
@@ -46,10 +46,10 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "covered_but_missing_xrefs": 21,
+          "covered_but_missing_xrefs": 13,
           "covered_but_proof_too_broad": 322,
           "partially_covered": 97,
-          "trace_clean": 220,
+          "trace_clean": 228,
           "uncovered_blocked": 218,
           "uncovered_unblocked": 565
         }
@@ -30655,7 +30655,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryRegisterLoss_IgnoresProbePacketLossForCongestionControl",
           "method": "TryRegisterLoss_IgnoresProbePacketLossForCongestionControl",
-          "line": 382,
+          "line": 381,
           "kinds": [
             "positive"
           ],
@@ -52724,14 +52724,18 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryGetPacketNumberSpace_DoesNotTreatRetryPacketsAsHandshakePackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryParseLongHeader_AcceptsHandshakePacketsThatUseLongHeaderTypeTwo",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryParseLongHeader_AcceptsTheShortestValidHandshakePacket"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 3,
@@ -52757,7 +52761,29 @@
           "class": "REQ_QUIC_RFC9000_S17P2P4_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P4_0001.TryGetPacketNumberSpace_DoesNotTreatRetryPacketsAsHandshakePackets",
           "method": "TryGetPacketNumberSpace_DoesNotTreatRetryPacketsAsHandshakePackets",
-          "line": 25,
+          "line": 31,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryGetPacketNumberSpace_DoesNotTreatRetryPacketsAsHandshakePackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0001",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0001.TryGetPacketNumberSpace_DoesNotTreatRetryPacketsAsHandshakePackets",
+          "method": "TryGetPacketNumberSpace_DoesNotTreatRetryPacketsAsHandshakePackets",
+          "line": 31,
           "kinds": [
             "negative"
           ],
@@ -52779,7 +52805,29 @@
           "class": "REQ_QUIC_RFC9000_S17P2P4_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P4_0001.TryParseLongHeader_AcceptsHandshakePacketsThatUseLongHeaderTypeTwo",
           "method": "TryParseLongHeader_AcceptsHandshakePacketsThatUseLongHeaderTypeTwo",
-          "line": 12,
+          "line": 15,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryParseLongHeader_AcceptsHandshakePacketsThatUseLongHeaderTypeTwo",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0001",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0001.TryParseLongHeader_AcceptsHandshakePacketsThatUseLongHeaderTypeTwo",
+          "method": "TryParseLongHeader_AcceptsHandshakePacketsThatUseLongHeaderTypeTwo",
+          "line": 15,
           "kinds": [
             "positive"
           ],
@@ -52801,7 +52849,29 @@
           "class": "REQ_QUIC_RFC9000_S17P2P4_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P4_0001.TryParseLongHeader_AcceptsTheShortestValidHandshakePacket",
           "method": "TryParseLongHeader_AcceptsTheShortestValidHandshakePacket",
-          "line": 42,
+          "line": 51,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryParseLongHeader_AcceptsTheShortestValidHandshakePacket",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0001",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0001.TryParseLongHeader_AcceptsTheShortestValidHandshakePacket",
+          "method": "TryParseLongHeader_AcceptsTheShortestValidHandshakePacket",
+          "line": 51,
           "kinds": [
             "edge"
           ],
@@ -52830,14 +52900,18 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_AcceptsHandshakePacketsWhenBothBitFieldsUseTheirLargestEncodings",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_ExposesHandshakeReservedAndPacketNumberLengthBitsFromByteZero",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_RejectsHandshakePacketsWhoseLengthFieldIsShorterThanTheEncodedPacketNumber"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 3,
@@ -52863,7 +52937,29 @@
           "class": "REQ_QUIC_RFC9000_S17P2P4_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P4_0002.TryParseLongHeader_AcceptsHandshakePacketsWhenBothBitFieldsUseTheirLargestEncodings",
           "method": "TryParseLongHeader_AcceptsHandshakePacketsWhenBothBitFieldsUseTheirLargestEncodings",
-          "line": 43,
+          "line": 52,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_AcceptsHandshakePacketsWhenBothBitFieldsUseTheirLargestEncodings",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0002",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0002.TryParseLongHeader_AcceptsHandshakePacketsWhenBothBitFieldsUseTheirLargestEncodings",
+          "method": "TryParseLongHeader_AcceptsHandshakePacketsWhenBothBitFieldsUseTheirLargestEncodings",
+          "line": 52,
           "kinds": [
             "edge"
           ],
@@ -52885,7 +52981,29 @@
           "class": "REQ_QUIC_RFC9000_S17P2P4_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P4_0002.TryParseLongHeader_ExposesHandshakeReservedAndPacketNumberLengthBitsFromByteZero",
           "method": "TryParseLongHeader_ExposesHandshakeReservedAndPacketNumberLengthBitsFromByteZero",
-          "line": 12,
+          "line": 15,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_ExposesHandshakeReservedAndPacketNumberLengthBitsFromByteZero",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0002",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0002.TryParseLongHeader_ExposesHandshakeReservedAndPacketNumberLengthBitsFromByteZero",
+          "method": "TryParseLongHeader_ExposesHandshakeReservedAndPacketNumberLengthBitsFromByteZero",
+          "line": 15,
           "kinds": [
             "positive"
           ],
@@ -52907,7 +53025,29 @@
           "class": "REQ_QUIC_RFC9000_S17P2P4_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P4_0002.TryParseLongHeader_RejectsHandshakePacketsWhoseLengthFieldIsShorterThanTheEncodedPacketNumber",
           "method": "TryParseLongHeader_RejectsHandshakePacketsWhoseLengthFieldIsShorterThanTheEncodedPacketNumber",
-          "line": 26,
+          "line": 32,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_RejectsHandshakePacketsWhoseLengthFieldIsShorterThanTheEncodedPacketNumber",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0002",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0002.TryParseLongHeader_RejectsHandshakePacketsWhoseLengthFieldIsShorterThanTheEncodedPacketNumber",
+          "method": "TryParseLongHeader_RejectsHandshakePacketsWhoseLengthFieldIsShorterThanTheEncodedPacketNumber",
+          "line": 32,
           "kinds": [
             "negative"
           ],
@@ -99719,14 +99859,17 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs::TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs::TryReserveSendCapacity_BuffersDataInReadyState"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 2,
@@ -152160,21 +152303,23 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs::TryReserveSendCapacity_BuffersDataInReadyState"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 1,
+        "total": 3,
+        "focused": 2,
         "broad": 1,
         "by_kind": {
-          "positive": 1,
+          "positive": 2,
           "negative": 1,
           "edge": 0,
           "fuzz": 0,
@@ -152194,6 +152339,30 @@
           "requirement_id": "REQ-QUIC-RFC9000-S3P1-0002",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+          "class": "QuicConnectionStreamStateTests",
+          "member": "QuicConnectionStreamStateTests.TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream",
+          "method": "TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream",
+          "line": 121,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P1-0002",
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P1-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs::TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream",
           "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream",
@@ -152239,6 +152408,50 @@
             "REQ-QUIC-RFC9000-S3P2-0006",
             "REQ-QUIC-RFC9000-S3P2-0007",
             "REQ-QUIC-RFC9000-S3P2-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S3P1_0002",
+          "member": "REQ_QUIC_RFC9000_S3P1_0002.TryReserveSendCapacity_BuffersDataInReadyState",
+          "method": "TryReserveSendCapacity_BuffersDataInReadyState",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P1-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs::TryReserveSendCapacity_BuffersDataInReadyState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S3P1_0002",
+          "member": "REQ_QUIC_RFC9000_S3P1_0002.TryReserveSendCapacity_BuffersDataInReadyState",
+          "method": "TryReserveSendCapacity_BuffersDataInReadyState",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P1-0002"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -153532,21 +153745,23 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0005.cs::TryReceiveStreamFrame_InitializesTheReceivingPartInRecv"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 11,
-        "focused": 7,
+        "total": 12,
+        "focused": 8,
         "broad": 4,
         "by_kind": {
-          "positive": 4,
+          "positive": 5,
           "negative": 3,
           "edge": 2,
           "fuzz": 2,
@@ -153859,6 +154074,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S3P2_0005",
+          "member": "REQ_QUIC_RFC9000_S3P2_0005.TryReceiveStreamFrame_InitializesTheReceivingPartInRecv",
+          "method": "TryReceiveStreamFrame_InitializesTheReceivingPartInRecv",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0005.cs::TryReceiveStreamFrame_InitializesTheReceivingPartInRecv",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S3P2_0005",
+          "member": "TryReceiveStreamFrame_InitializesTheReceivingPartInRecv",
+          "method": "TryReceiveStreamFrame_InitializesTheReceivingPartInRecv",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -159816,21 +160075,23 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0010.cs::TryReceiveStreamFrame_TracksConnectionReceivedBytesAcrossStreams"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 5,
+        "focused": 3,
         "broad": 2,
         "by_kind": {
-          "positive": 3,
+          "positive": 4,
           "negative": 0,
           "edge": 0,
           "fuzz": 1,
@@ -159960,6 +160221,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P1-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S4P1_0010",
+          "member": "REQ_QUIC_RFC9000_S4P1_0010.TryReceiveStreamFrame_TracksConnectionReceivedBytesAcrossStreams",
+          "method": "TryReceiveStreamFrame_TracksConnectionReceivedBytesAcrossStreams",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P1-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P1-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0010.cs::TryReceiveStreamFrame_TracksConnectionReceivedBytesAcrossStreams",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S4P1_0010",
+          "member": "TryReceiveStreamFrame_TracksConnectionReceivedBytesAcrossStreams",
+          "method": "TryReceiveStreamFrame_TracksConnectionReceivedBytesAcrossStreams",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P1-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -205019,7 +205324,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 326,
+          "line": 325,
           "kinds": [
             "positive"
           ],
@@ -208180,7 +208485,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.SenderFlowController_ExitsRecoveryWhenAnInRecoveryPacketIsAcknowledged",
           "method": "SenderFlowController_ExitsRecoveryWhenAnInRecoveryPacketIsAcknowledged",
-          "line": 633,
+          "line": 632,
           "kinds": [
             "positive"
           ],
@@ -208202,7 +208507,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryRegisterAcknowledgedPacket_ClearsRecoveryOnlyForPacketsSentDuringRecovery",
           "method": "TryRegisterAcknowledgedPacket_ClearsRecoveryOnlyForPacketsSentDuringRecovery",
-          "line": 281,
+          "line": 280,
           "kinds": [
             "edge",
             "negative"
@@ -208913,7 +209218,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 425,
+          "line": 424,
           "kinds": [
             "negative",
             "positive"
@@ -208989,7 +209294,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 425,
+          "line": 424,
           "kinds": [
             "negative",
             "positive"
@@ -209065,7 +209370,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 425,
+          "line": 424,
           "kinds": [
             "negative",
             "positive"
@@ -209141,7 +209446,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 425,
+          "line": 424,
           "kinds": [
             "negative",
             "positive"
@@ -209219,7 +209524,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 425,
+          "line": 424,
           "kinds": [
             "negative",
             "positive"
@@ -209292,7 +209597,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 425,
+          "line": 424,
           "kinds": [
             "negative",
             "positive"
@@ -209409,7 +209714,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_DoesNotStartBeforeAnyRttSampleExists",
           "method": "TryDetectPersistentCongestion_DoesNotStartBeforeAnyRttSampleExists",
-          "line": 533,
+          "line": 532,
           "kinds": [
             "negative"
           ],
@@ -209431,7 +209736,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 425,
+          "line": 424,
           "kinds": [
             "negative",
             "positive"
@@ -209464,7 +209769,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_StartsOnceAnRttSampleIsAvailable",
           "method": "TryDetectPersistentCongestion_StartsOnceAnRttSampleIsAvailable",
-          "line": 501,
+          "line": 500,
           "kinds": [
             "positive"
           ],
@@ -209616,7 +209921,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 425,
+          "line": 424,
           "kinds": [
             "negative",
             "positive"
@@ -209741,7 +210046,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 425,
+          "line": 424,
           "kinds": [
             "negative",
             "positive"
@@ -209819,7 +210124,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 425,
+          "line": 424,
           "kinds": [
             "negative",
             "positive"
@@ -209892,7 +210197,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 326,
+          "line": 325,
           "kinds": [
             "positive"
           ],
@@ -210006,7 +210311,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 326,
+          "line": 325,
           "kinds": [
             "positive"
           ],
@@ -210124,7 +210429,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 326,
+          "line": 325,
           "kinds": [
             "positive"
           ],
@@ -210326,7 +210631,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 326,
+          "line": 325,
           "kinds": [
             "positive"
           ],
@@ -210440,7 +210745,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 326,
+          "line": 325,
           "kinds": [
             "positive"
           ],
@@ -210558,7 +210863,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 326,
+          "line": 325,
           "kinds": [
             "positive"
           ],
@@ -210632,7 +210937,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 326,
+          "line": 325,
           "kinds": [
             "positive"
           ],
@@ -210706,7 +211011,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 326,
+          "line": 325,
           "kinds": [
             "positive"
           ],
