@@ -270,7 +270,10 @@ function Get-TestMethodRecords {
                 $combinedCategoryNames = @($classCategories) + @($methodCategories)
                 $combinedCategories = @($combinedCategoryNames | Sort-Object -Unique)
                 $methodAttributeNames = @($methodAttributes | ForEach-Object { $_.Name })
-                $isTestMethod = ($methodAttributeNames -contains 'Fact') -or ($methodAttributeNames -contains 'Theory')
+                $isTestMethod =
+                    ($methodAttributeNames -contains 'Fact') -or
+                    ($methodAttributeNames -contains 'Theory') -or
+                    ($methodAttributeNames -contains 'Requirement')
                 $isClassLevelOnly = (@($methodRequirements).Count -eq 0 -and @($classRequirements).Count -gt 0)
 
                 if ($isTestMethod)

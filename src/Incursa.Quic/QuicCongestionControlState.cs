@@ -760,7 +760,7 @@ public sealed class QuicSenderFlowController
         }
 
         SortedDictionary<ulong, SentPacketState> sentPackets = GetOrCreateSentPackets(packetNumberSpace);
-        sentPackets[packetNumber] = new SentPacketState(sentBytes, sentAtMicros, ackEliciting, inFlight: true, isProbePacket);
+        sentPackets[packetNumber] = new SentPacketState(sentBytes, sentAtMicros, ackEliciting, InFlight: true, isProbePacket);
     }
 
     /// <summary>
@@ -900,7 +900,7 @@ public sealed class QuicSenderFlowController
 
     /// <summary>
     /// Builds an ACK frame for the given packet number space.
-    </summary>
+    /// </summary>
     public bool TryBuildAckFrame(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out QuicAckFrame frame)
     {
         return AckGenerationState.TryBuildAckFrame(packetNumberSpace, nowMicros, out frame);
