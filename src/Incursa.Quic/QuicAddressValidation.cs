@@ -5,7 +5,14 @@ namespace Incursa.Quic;
 /// </summary>
 public static class QuicAddressValidation
 {
+    /// <summary>
+    /// RFC 9000's address-validation helper requires at least 64 bits of connection-ID entropy.
+    /// </summary>
     private const int MinimumEntropyBits = 64;
+
+    /// <summary>
+    /// The 64-bit entropy floor corresponds to 8 full bytes.
+    /// </summary>
     private const int MinimumEntropyBytes = MinimumEntropyBits / 8;
 
     /// <summary>

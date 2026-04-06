@@ -27,6 +27,13 @@ public static class QuicTransportParametersCodec
     /// </summary>
     public const bool QuicTransportParametersEncryptedExtensions = true;
 
+    // RFC 9000 transport-parameter IDs handled by this codec.
+    // 0x00 original_destination_connection_id, 0x01 max_idle_timeout, 0x02 stateless_reset_token,
+    // 0x03 max_udp_payload_size, 0x04 initial_max_data, 0x05 initial_max_stream_data_bidi_local,
+    // 0x06 initial_max_stream_data_bidi_remote, 0x07 initial_max_stream_data_uni,
+    // 0x08 initial_max_streams_bidi, 0x09 initial_max_streams_uni, 0x0B max_ack_delay,
+    // 0x0C disable_active_migration, 0x0D preferred_address, 0x0E active_connection_id_limit,
+    // 0x0F initial_source_connection_id, 0x10 retry_source_connection_id.
     private const ulong OriginalDestinationConnectionIdId = 0x00;
     private const ulong MaxIdleTimeoutId = 0x01;
     private const ulong StatelessResetTokenId = 0x02;
@@ -43,15 +50,55 @@ public static class QuicTransportParametersCodec
     private const ulong ActiveConnectionIdLimitId = 0x0E;
     private const ulong InitialSourceConnectionIdId = 0x0F;
     private const ulong RetrySourceConnectionIdId = 0x10;
+
+    /// <summary>
+    /// Varint stream-count parameters can only use the low 60 bits.
+    /// </summary>
     private const int MaximumStreamLimitBitCount = 60;
+
+    /// <summary>
+    /// The maximum stream-count parameter value accepted by this codec.
+    /// </summary>
     private const ulong MaximumStreamLimit = 1UL << MaximumStreamLimitBitCount;
+
+    /// <summary>
+    /// RFC 9000 sets the minimum active_connection_id_limit to 2.
+    /// </summary>
     private const ulong MinimumActiveConnectionIdLimit = 2;
+
+    /// <summary>
+    /// Preferred-address IPv4 addresses are 4 bytes.
+    /// </summary>
     private const int IPv4AddressLength = 4;
+
+    /// <summary>
+    /// Preferred-address ports are 2 bytes.
+    /// </summary>
     private const int PortLength = 2;
+
+    /// <summary>
+    /// Preferred-address IPv6 addresses are 16 bytes.
+    /// </summary>
     private const int IPv6AddressLength = 16;
+
+    /// <summary>
+    /// Preferred-address connection-ID lengths are encoded in a single byte.
+    /// </summary>
     private const int ConnectionIdLengthLength = 1;
+
+    /// <summary>
+    /// The fixed preferred-address prefix before the variable-length connection ID.
+    /// </summary>
     private const int PreferredAddressMinimumLength = IPv4AddressLength + PortLength + IPv6AddressLength + PortLength + ConnectionIdLengthLength + StatelessResetTokenLength;
+
+    /// <summary>
+    /// RFC 9000 caps the preferred-address connection ID at 20 bytes.
+    /// </summary>
     private const int PreferredAddressMaximumConnectionIdLength = 20;
+
+    /// <summary>
+    /// RFC 9000 stateless reset tokens are 16 bytes.
+    /// </summary>
     private const int StatelessResetTokenLength = 16;
 
     /// <summary>

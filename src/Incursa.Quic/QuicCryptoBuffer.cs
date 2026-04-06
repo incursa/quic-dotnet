@@ -26,6 +26,9 @@ public enum QuicCryptoBufferResult
 /// </summary>
 public sealed class QuicCryptoBuffer
 {
+    /// <summary>
+    /// Local implementation floor chosen to keep the CRYPTO buffer comfortably above small handshake bursts.
+    /// </summary>
     private const int MinimumCapacity = 4096;
     private readonly List<Entry> entries = [];
     private int bufferedBytes;

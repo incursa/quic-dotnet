@@ -7,7 +7,14 @@ namespace Incursa.Quic;
 /// </summary>
 public sealed class QuicAckGenerationState
 {
+    /// <summary>
+    /// RFC 9000 ACK frame type.
+    /// </summary>
     private const byte AckFrameType = 0x02;
+
+    /// <summary>
+    /// RFC 9000 ACK_ECN frame type.
+    /// </summary>
     private const byte AckEcnFrameType = 0x03;
 
     private readonly int maximumRetainedAckRanges;

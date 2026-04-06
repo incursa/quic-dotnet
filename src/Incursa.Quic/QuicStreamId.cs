@@ -5,8 +5,19 @@ namespace Incursa.Quic;
 /// </summary>
 public readonly struct QuicStreamId
 {
+    /// <summary>
+    /// The low two bits that identify the QUIC stream type.
+    /// </summary>
     private const ulong StreamTypeMask = 0x03;
+
+    /// <summary>
+    /// The bit that distinguishes client-initiated and server-initiated streams.
+    /// </summary>
     private const ulong ClientInitiatedBitMask = 0x01;
+
+    /// <summary>
+    /// The bit that distinguishes bidirectional and unidirectional streams.
+    /// </summary>
     private const ulong BidirectionalBitMask = 0x02;
 
     private readonly ulong value;

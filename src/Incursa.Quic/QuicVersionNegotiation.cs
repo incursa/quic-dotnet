@@ -9,6 +9,7 @@ public static class QuicVersionNegotiation
 {
     /// <summary>
     /// The reserved version number that identifies a Version Negotiation packet.
+    /// RFC 9000 uses version 0 as the version-negotiation sentinel.
     /// </summary>
     public const uint VersionNegotiationVersion = 0x00000000;
 
@@ -19,12 +20,28 @@ public static class QuicVersionNegotiation
 
     /// <summary>
     /// The minimum UDP payload size required for QUIC version 1 Initial datagrams.
+    /// RFC 9000 requires a 1200-byte Initial payload to avoid fragmentation assumptions.
     /// </summary>
     public const int Version1MinimumDatagramPayloadSize = 1200;
 
+    /// <summary>
+    /// The first byte used when formatting a Version Negotiation packet.
+    /// </summary>
     private const byte VersionNegotiationFirstByte = QuicPacketHeaderBits.HeaderFormBitMask | QuicPacketHeaderBits.FixedBitMask;
+
+    /// <summary>
+    /// The reserved-version pattern mask used by RFC 9000, 0x0F0F0F0F.
+    /// </summary>
     private const uint ReservedVersionMask = 0x0F0F0F0F;
+
+    /// <summary>
+    /// The reserved-version pattern value used by RFC 9000, 0x0A0A0A0A.
+    /// </summary>
     private const uint ReservedVersionPattern = 0x0A0A0A0A;
+
+    /// <summary>
+    /// The mask that preserves the template's high nibbles when synthesizing reserved versions.
+    /// </summary>
     private const uint ReservedVersionTemplateMask = 0xF0F0F0F0;
 
     /// <summary>

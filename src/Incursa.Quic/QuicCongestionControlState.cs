@@ -6,36 +6,63 @@ namespace Incursa.Quic;
 public sealed class QuicCongestionControlState
 {
     /// <summary>
-    /// The recommended persistent congestion threshold.
+    /// The recommended persistent congestion threshold from RFC 9002.
     /// </summary>
     public const int RecommendedPersistentCongestionThreshold = 3;
 
     /// <summary>
-    /// The recommended loss reduction numerator.
+    /// RFC 9002 reduces the congestion window by one-half on loss.
     /// </summary>
     public const ulong RecommendedLossReductionNumerator = 1;
 
     /// <summary>
-    /// The recommended loss reduction denominator.
+    /// RFC 9002 reduces the congestion window by one-half on loss.
     /// </summary>
     public const ulong RecommendedLossReductionDenominator = 2;
 
     /// <summary>
-    /// The recommended pacing gain numerator.
+    /// RFC 9002's pacing gain is 5/4.
     /// </summary>
     public const ulong RecommendedPacingGainNumerator = 5;
 
     /// <summary>
-    /// The recommended pacing gain denominator.
+    /// RFC 9002's pacing gain is 5/4.
     /// </summary>
     public const ulong RecommendedPacingGainDenominator = 4;
 
+    /// <summary>
+    /// QUIC tracks three packet number spaces: Initial, Handshake, and Application Data.
+    /// </summary>
     private const int PacketNumberSpaceCount = 3;
+
+    /// <summary>
+    /// RFC 9002 recommends an initial congestion window of ten maximum-sized datagrams.
+    /// </summary>
     private const ulong InitialCongestionWindowDatagramCount = 10;
+
+    /// <summary>
+    /// RFC 9002's minimum initial congestion window floor is 14,720 bytes.
+    /// </summary>
     private const ulong MinimumInitialCongestionWindowBytes = 14_720UL;
+
+    /// <summary>
+    /// RFC 9002's minimum congestion window is two maximum-sized datagrams.
+    /// </summary>
     private const ulong MinimumCongestionWindowMultiplier = 2;
+
+    /// <summary>
+    /// Stable array slot for the Initial packet number space.
+    /// </summary>
     private const int InitialPacketNumberSpaceIndex = 0;
+
+    /// <summary>
+    /// Stable array slot for the Handshake packet number space.
+    /// </summary>
     private const int HandshakePacketNumberSpaceIndex = 1;
+
+    /// <summary>
+    /// Stable array slot for the Application Data packet number space.
+    /// </summary>
     private const int ApplicationDataPacketNumberSpaceIndex = 2;
 
     private readonly ulong[] ecnCeCounters = new ulong[PacketNumberSpaceCount];

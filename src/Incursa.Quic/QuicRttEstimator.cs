@@ -10,10 +10,29 @@ public sealed class QuicRttEstimator
     /// </summary>
     public const ulong DefaultInitialRttMicros = 333_000;
 
+    /// <summary>
+    /// RFC 9002 initializes RTTVAR to half of the initial RTT.
+    /// </summary>
     private const ulong InitialRttVarianceDivisor = 2;
+
+    /// <summary>
+    /// RFC 9002 smooths RTT with a 7/8 weight on the previous sample.
+    /// </summary>
     private const ulong SmoothedRttWeightNumerator = 7;
+
+    /// <summary>
+    /// RFC 9002 smooths RTT with a denominator of 8.
+    /// </summary>
     private const ulong SmoothedRttWeightDenominator = 8;
+
+    /// <summary>
+    /// RFC 9002 updates RTTVAR with a 3/4 weight on the previous variance.
+    /// </summary>
     private const ulong RttVarianceWeightNumerator = 3;
+
+    /// <summary>
+    /// RFC 9002 updates RTTVAR with a denominator of 4.
+    /// </summary>
     private const ulong RttVarianceWeightDenominator = 4;
 
     private readonly ulong initialRttMicros;

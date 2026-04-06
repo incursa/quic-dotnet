@@ -7,17 +7,17 @@ namespace Incursa.Quic;
 public static class QuicRecoveryTiming
 {
     /// <summary>
-    /// The recommended packet reordering threshold.
+    /// The recommended packet reordering threshold from RFC 9002.
     /// </summary>
     public const int RecommendedPacketThreshold = 3;
 
     /// <summary>
-    /// The recommended time-threshold numerator.
+    /// The recommended time-threshold numerator from RFC 9002's loss-delay formula.
     /// </summary>
     public const ulong RecommendedTimeThresholdNumerator = 9;
 
     /// <summary>
-    /// The recommended time-threshold denominator.
+    /// The recommended time-threshold denominator from RFC 9002's loss-delay formula.
     /// </summary>
     public const ulong RecommendedTimeThresholdDenominator = 8;
 
@@ -26,7 +26,14 @@ public static class QuicRecoveryTiming
     /// </summary>
     public const ulong RecommendedTimerGranularityMicros = 1_000;
 
+    /// <summary>
+    /// RFC 9002 computes PTO variance with a multiplier of 4.
+    /// </summary>
     private const ulong RttVarianceMultiplier = 4;
+
+    /// <summary>
+    /// RFC 9002 backs off PTO by doubling it on each timeout.
+    /// </summary>
     private const ulong ProbeTimeoutBackoffMultiplier = 2;
 
     /// <summary>
