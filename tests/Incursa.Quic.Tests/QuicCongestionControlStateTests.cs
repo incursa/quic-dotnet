@@ -272,7 +272,6 @@ public sealed class QuicCongestionControlStateTests
 
     [Theory]
     [Requirement("REQ-QUIC-RFC9002-S7P3P2-0007")]
-    [CoverageType(RequirementCoverageType.Property)]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Property")]
     [InlineData(1_500UL, true)]
