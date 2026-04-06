@@ -10097,6 +10097,11 @@
         "upstream_refs": [
           "RFC 9000 §8.2.1 RFC9000-S8.2.1-B7-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-8.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0006.cs::TryFormatPathValidationDatagramPadding_ExpandsAPathChallengeDatagramToTheRfcMinimum",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0006.cs::TryFormatPathValidationDatagramPadding_RejectsExpansionWhenAmplificationBudgetIsTooSmall",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0006.cs::TryFormatPathValidationDatagramPadding_AllowsAnAlreadyExpandedDatagram"
         ]
       }
     },
@@ -10389,6 +10394,9 @@
         "upstream_refs": [
           "RFC 9000 §8.2.3 RFC9000-S8.2.3-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-8.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P3-0001.cs::TryFormatPathValidationDatagramPadding_ProducesTheExpandedFollowUpDatagramNeededForMtuValidation"
         ]
       }
     },
