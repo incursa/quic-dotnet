@@ -21,10 +21,10 @@ public enum QuicCryptoBufferResult
     BufferExceeded = 2,
 }
 
-/// <summary>
-/// Buffers CRYPTO frames in offset order for handshake processing.
-/// </summary>
-public sealed class QuicCryptoBuffer
+    /// <summary>
+    /// Buffers CRYPTO frames in offset order for handshake processing.
+    /// </summary>
+    public sealed class QuicCryptoBuffer
 {
     /// <summary>
     /// Local implementation floor chosen to keep the CRYPTO buffer comfortably above small handshake bursts.
@@ -69,6 +69,11 @@ public sealed class QuicCryptoBuffer
     public bool HandshakeComplete { get; set; }
 
     /// <summary>
+    /// Gets whether future CRYPTO frames are being discarded after overflow or explicit key-transition.
+    /// </summary>
+    public bool DiscardingFutureFrames => discardFutureFrames;
+
+    /// <summary>
     /// Gets or sets whether overflow after handshake completion should discard future CRYPTO frames.
     /// </summary>
     public bool DiscardOverflowFramesAfterHandshakeComplete { get; set; } = true;
@@ -77,6 +82,24 @@ public sealed class QuicCryptoBuffer
     /// Gets the number of buffered bytes that have not yet been dequeued.
     /// </summary>
     public int BufferedBytes => bufferedBytes;
+
+    /// <summary>
+    /// Discards all currently buffered CRYPTO data and marks future frames as acknowledged.
+    /// </summary>
+    public void DiscardFutureFrames()
+    {
+        discardFutureFrames = true;
+        entries.Clear();
+        bufferedBytes = 0;
+    }
+
+    /// <summary>
+    /// Discards buffered CRYPTO frames when 0-RTT is rejected.
+    /// </summary>
+    public void RejectZeroRtt()
+    {
+        DiscardFutureFrames();
+    }
 
     /// <summary>
     /// Attempts to buffer a CRYPTO frame.

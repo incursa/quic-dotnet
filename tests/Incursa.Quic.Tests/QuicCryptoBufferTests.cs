@@ -124,4 +124,54 @@ public sealed class QuicCryptoBufferTests
         Assert.True(buffer.TryAddFrame(new QuicCryptoFrame(4096, [0xCC]), out QuicCryptoBufferResult overflowResult));
         Assert.Equal(QuicCryptoBufferResult.BufferExceeded, overflowResult);
     }
+
+    [Fact]
+    public void RejectZeroRtt_DiscardingFutureFramesAndClearsBufferedCrypto()
+    {
+        QuicCryptoBuffer buffer = new();
+        Assert.True(buffer.TryAddFrame(new QuicCryptoFrame(0, [0x01, 0x02, 0x03]), out QuicCryptoBufferResult bufferedResult));
+        Assert.Equal(QuicCryptoBufferResult.Buffered, bufferedResult);
+        Assert.Equal(3, buffer.BufferedBytes);
+
+        buffer.RejectZeroRtt();
+
+        Assert.True(buffer.DiscardingFutureFrames);
+        Assert.Equal(0, buffer.BufferedBytes);
+
+        Assert.True(buffer.TryAddFrame(new QuicCryptoFrame(3, [0x04]), out QuicCryptoBufferResult rejectedResult));
+        Assert.Equal(QuicCryptoBufferResult.DiscardedAndAcknowledged, rejectedResult);
+    }
+
+    [Fact]
+    public void TryUseForProtectionAndOpening_AcceptsUsageUntilLimitThenDiscards()
+    {
+        QuicAeadUsageLimits limits = new(2, 1);
+        QuicAeadKeyLifecycle keyLifecycle = new(limits);
+
+        Assert.True(keyLifecycle.TryActivate());
+        Assert.True(keyLifecycle.CanProtect);
+        Assert.True(keyLifecycle.CanOpen);
+
+        Assert.True(keyLifecycle.TryUseForProtection());
+        Assert.True(keyLifecycle.TryUseForProtection());
+        Assert.False(keyLifecycle.TryUseForOpening());
+
+        Assert.True(keyLifecycle.IsDiscarded);
+        Assert.False(keyLifecycle.TryUseForProtection());
+    }
+
+    [Fact]
+    public void RejectZeroRttMarksKeysUnavailableAndPreventsPrematureActivation()
+    {
+        QuicAeadUsageLimits limits = new(10, 10);
+        QuicAeadKeyLifecycle keyLifecycle = new(limits);
+
+        Assert.True(keyLifecycle.TryActivate());
+        Assert.True(keyLifecycle.RejectZeroRtt());
+        Assert.True(keyLifecycle.IsZeroRttRejected);
+        Assert.False(keyLifecycle.IsAvailable);
+        Assert.True(keyLifecycle.IsDiscarded);
+
+        Assert.False(keyLifecycle.TryActivate());
+    }
 }
