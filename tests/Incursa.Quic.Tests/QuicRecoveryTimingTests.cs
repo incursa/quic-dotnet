@@ -235,4 +235,111 @@ public sealed class QuicRecoveryTimingTests
         QuicRttEstimator estimator = new(initialRttMicros: retryRoundTripMicros);
         Assert.Equal(retryRoundTripMicros, estimator.SmoothedRttMicros);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void QuicRecoveryController_DetectsPerSpaceLossAndSelectsTheEarliestPto()
+    {
+        QuicRecoveryController recoveryController = new();
+
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Initial, packetNumber: 100, sentAtMicros: 100, isAckElicitingPacket: true);
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Initial, packetNumber: 101, sentAtMicros: 200, isAckElicitingPacket: true);
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Initial, packetNumber: 102, sentAtMicros: 250, isAckElicitingPacket: true);
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Initial, packetNumber: 110, sentAtMicros: 800, isAckElicitingPacket: true);
+
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Handshake, packetNumber: 200, sentAtMicros: 100, isAckElicitingPacket: true);
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Handshake, packetNumber: 201, sentAtMicros: 200, isAckElicitingPacket: true);
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Handshake, packetNumber: 202, sentAtMicros: 400, isAckElicitingPacket: true);
+
+        Assert.True(recoveryController.RecordAcknowledgment(
+            QuicPacketNumberSpace.Initial,
+            largestAcknowledgedPacketNumber: 105,
+            ackReceivedAtMicros: 700,
+            newlyAcknowledgedAckElicitingPacketNumbers: new[] { 102UL }));
+
+        Assert.True(recoveryController.RecordAcknowledgment(
+            QuicPacketNumberSpace.Handshake,
+            largestAcknowledgedPacketNumber: 201,
+            ackReceivedAtMicros: 300,
+            newlyAcknowledgedAckElicitingPacketNumbers: new[] { 201UL }));
+
+        IReadOnlyList<QuicLostPacket> lostPackets = recoveryController.DetectLostPackets(
+            nowMicros: 900,
+            out ulong? earliestLossDetectionTimeMicros,
+            out QuicPacketNumberSpace earliestLossPacketNumberSpace);
+
+        Assert.Equal(2, lostPackets.Count);
+        Assert.Equal(QuicPacketNumberSpace.Handshake, earliestLossPacketNumberSpace);
+        Assert.Equal(100UL, lostPackets[0].PacketNumber);
+        Assert.Equal(QuicPacketNumberSpace.Initial, lostPackets[0].PacketNumberSpace);
+        Assert.Equal(101UL, lostPackets[1].PacketNumber);
+        Assert.Equal(QuicPacketNumberSpace.Initial, lostPackets[1].PacketNumberSpace);
+        Assert.NotNull(earliestLossDetectionTimeMicros);
+
+        Assert.True(recoveryController.TrySelectLossDetectionTimer(
+            nowMicros: 900,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: false,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: false,
+            handshakeKeysAvailable: true,
+            out ulong selectedRecoveryTimerMicros,
+            out QuicPacketNumberSpace selectedPacketNumberSpace));
+
+        Assert.Equal(QuicPacketNumberSpace.Handshake, selectedPacketNumberSpace);
+
+        QuicRttEstimator handshakeEstimator = recoveryController.GetRttEstimator(QuicPacketNumberSpace.Handshake);
+        Assert.True(QuicRecoveryTiming.TryComputeProbeTimeoutMicros(
+            QuicPacketNumberSpace.Handshake,
+            handshakeEstimator.SmoothedRttMicros,
+            handshakeEstimator.RttVarMicros,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: false,
+            out ulong expectedBasePtoMicros));
+
+        ulong expectedPtoMicros = QuicRecoveryTiming.ComputeProbeTimeoutWithBackoffMicros(
+            expectedBasePtoMicros,
+            recoveryController.ProbeTimeoutBackoffCount);
+        Assert.Equal(expectedPtoMicros, selectedRecoveryTimerMicros);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void QuicRecoveryController_DoesNotResetPtoBackoffOnUnvalidatedInitialAck()
+    {
+        QuicRecoveryController recoveryController = new();
+
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Initial, packetNumber: 1, sentAtMicros: 100, isAckElicitingPacket: true);
+        recoveryController.RecordProbeTimeoutExpired();
+        Assert.Equal(1, recoveryController.ProbeTimeoutBackoffCount);
+
+        Assert.True(recoveryController.RecordAcknowledgment(
+            QuicPacketNumberSpace.Initial,
+            largestAcknowledgedPacketNumber: 1,
+            ackReceivedAtMicros: 150,
+            newlyAcknowledgedAckElicitingPacketNumbers: new[] { 1UL },
+            handshakeConfirmed: false));
+
+        Assert.Equal(1, recoveryController.ProbeTimeoutBackoffCount);
+
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Initial, packetNumber: 2, sentAtMicros: 200, isAckElicitingPacket: true);
+        Assert.True(recoveryController.RecordAcknowledgment(
+            QuicPacketNumberSpace.Initial,
+            largestAcknowledgedPacketNumber: 2,
+            ackReceivedAtMicros: 250,
+            newlyAcknowledgedAckElicitingPacketNumbers: new[] { 2UL },
+            handshakeConfirmed: true));
+
+        Assert.Equal(0, recoveryController.ProbeTimeoutBackoffCount);
+
+        Assert.False(recoveryController.TrySelectLossDetectionTimer(
+            nowMicros: 500,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: true,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: true,
+            handshakeKeysAvailable: true,
+            out _,
+            out _));
+    }
 }

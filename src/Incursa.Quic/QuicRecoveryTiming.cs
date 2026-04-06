@@ -450,3 +450,497 @@ public static class QuicRecoveryTiming
         return left + right;
     }
 }
+
+/// <summary>
+/// Describes a packet considered lost by runtime loss detection.
+/// </summary>
+internal readonly struct QuicLostPacket
+{
+    /// <summary>
+    /// Initializes a lost packet marker.
+    /// </summary>
+    public QuicLostPacket(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber)
+    {
+        PacketNumberSpace = packetNumberSpace;
+        PacketNumber = packetNumber;
+    }
+
+    /// <summary>
+    /// Gets the packet number space for the lost packet.
+    /// </summary>
+    public QuicPacketNumberSpace PacketNumberSpace { get; }
+
+    /// <summary>
+    /// Gets the lost packet number.
+    /// </summary>
+    public ulong PacketNumber { get; }
+}
+
+/// <summary>
+/// Minimal RFC 9002 runtime for loss and PTO timing decisions on a per-space basis.
+/// </summary>
+internal sealed class QuicRecoveryController
+{
+    private readonly Dictionary<QuicPacketNumberSpace, QuicRecoveryPacketNumberSpaceState> states;
+
+    /// <summary>
+    /// Initializes a new RFC 9002 recovery controller with a single estimator seed for each packet number space.
+    /// </summary>
+    /// <param name="initialRttMicros">Initial RTT seed used by each packet number space.</param>
+    public QuicRecoveryController(ulong initialRttMicros = QuicRttEstimator.DefaultInitialRttMicros)
+    {
+        states = new Dictionary<QuicPacketNumberSpace, QuicRecoveryPacketNumberSpaceState>(3);
+        states[QuicPacketNumberSpace.Initial] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.Initial, initialRttMicros);
+        states[QuicPacketNumberSpace.Handshake] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.Handshake, initialRttMicros);
+        states[QuicPacketNumberSpace.ApplicationData] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.ApplicationData, initialRttMicros);
+    }
+
+    /// <summary>
+    /// Gets the PTO backoff counter used by all packet number spaces.
+    /// </summary>
+    public int ProbeTimeoutBackoffCount { get; private set; }
+
+    /// <summary>
+    /// Gets the loss estimator for a packet number space.
+    /// </summary>
+    public QuicRttEstimator GetRttEstimator(QuicPacketNumberSpace packetNumberSpace) => StateFor(packetNumberSpace).RttEstimator;
+
+    /// <summary>
+    /// Gets whether a packet number space currently has ack-eliciting packets in flight.
+    /// </summary>
+    public bool HasAckElicitingPacketsInFlight(QuicPacketNumberSpace packetNumberSpace) =>
+        StateFor(packetNumberSpace).HasAckElicitingPacketsInFlight;
+
+    /// <summary>
+    /// Gets whether any packet number space has ack-eliciting packets in flight.
+    /// </summary>
+    public bool HasAnyAckElicitingPacketsInFlight
+    {
+        get
+        {
+            foreach (QuicRecoveryPacketNumberSpaceState state in states.Values)
+            {
+                if (state.HasAckElicitingPacketsInFlight)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Records a sent packet for loss and PTO decisions.
+    /// </summary>
+    public void RecordPacketSent(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        ulong sentAtMicros,
+        bool isAckElicitingPacket = true)
+    {
+        StateFor(packetNumberSpace).RecordPacketSent(packetNumber, sentAtMicros, isAckElicitingPacket);
+
+        if (isAckElicitingPacket)
+        {
+            ProbeTimeoutBackoffCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
+                ProbeTimeoutBackoffCount,
+                ackElicitingPacketSent: true);
+        }
+    }
+
+    /// <summary>
+    /// Records an ACK event and refreshes RTT state when applicable.
+    /// </summary>
+    public bool RecordAcknowledgment(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong largestAcknowledgedPacketNumber,
+        ulong ackReceivedAtMicros,
+        ReadOnlySpan<ulong> newlyAcknowledgedAckElicitingPacketNumbers,
+        ulong ackDelayMicros = 0,
+        bool handshakeConfirmed = false,
+        ulong peerMaxAckDelayMicros = 0,
+        ulong localProcessingDelayMicros = 0,
+        bool isInitialPacket = false,
+        bool ignoreAckDelayForInitialPacket = false)
+    {
+        QuicRecoveryPacketNumberSpaceState state = StateFor(packetNumberSpace);
+        bool acknowledgedNewPacket = state.RecordAcknowledgment(
+            largestAcknowledgedPacketNumber,
+            ackReceivedAtMicros,
+            newlyAcknowledgedAckElicitingPacketNumbers,
+            ackDelayMicros,
+            handshakeConfirmed,
+            peerMaxAckDelayMicros,
+            localProcessingDelayMicros,
+            isInitialPacket,
+            ignoreAckDelayForInitialPacket);
+
+        if (acknowledgedNewPacket)
+        {
+            ProbeTimeoutBackoffCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
+                ProbeTimeoutBackoffCount,
+                ackElicitingPacketSent: false,
+                acknowledgmentReceived: true,
+                acknowledgmentPacketNumberSpace: packetNumberSpace,
+                handshakeConfirmed: handshakeConfirmed);
+        }
+
+        return acknowledgedNewPacket;
+    }
+
+    /// <summary>
+    /// Detects lost packets at <paramref name="nowMicros" /> using packet threshold and time threshold
+    /// logic for each packet number space.
+    /// </summary>
+    public IReadOnlyList<QuicLostPacket> DetectLostPackets(
+        ulong nowMicros,
+        out ulong? earliestLossDetectionTimeMicros,
+        out QuicPacketNumberSpace earliestLossPacketNumberSpace)
+    {
+        List<QuicLostPacket> lostPackets = new();
+        earliestLossDetectionTimeMicros = null;
+        earliestLossPacketNumberSpace = default;
+
+        foreach (QuicRecoveryPacketNumberSpaceState state in states.Values)
+        {
+            IReadOnlyList<ulong> spaceLostPacketNumbers = state.DetectLostPackets(nowMicros, out ulong? spaceLossTimeMicros);
+            foreach (ulong lostPacketNumber in spaceLostPacketNumbers)
+            {
+                lostPackets.Add(new QuicLostPacket(state.PacketNumberSpace, lostPacketNumber));
+            }
+
+            if (spaceLossTimeMicros is null)
+            {
+                continue;
+            }
+
+            if (earliestLossDetectionTimeMicros is null || spaceLossTimeMicros < earliestLossDetectionTimeMicros)
+            {
+                earliestLossDetectionTimeMicros = spaceLossTimeMicros;
+                earliestLossPacketNumberSpace = state.PacketNumberSpace;
+            }
+        }
+
+        return lostPackets;
+    }
+
+    /// <summary>
+    /// Computes the next PTO timer and packet number space across all packet number spaces.
+    /// </summary>
+    public bool TrySelectPtoTimeAndSpace(
+        ulong nowMicros,
+        ulong maxAckDelayMicros,
+        bool handshakeConfirmed,
+        bool handshakeKeysAvailable,
+        out ulong selectedProbeTimeoutMicros,
+        out QuicPacketNumberSpace selectedPacketNumberSpace)
+    {
+        selectedProbeTimeoutMicros = default;
+        selectedPacketNumberSpace = default;
+        bool hasSelection = false;
+
+        foreach (QuicRecoveryPacketNumberSpaceState state in states.Values)
+        {
+            if (!state.TryComputeProbeTimeout(
+                nowMicros,
+                maxAckDelayMicros,
+                handshakeConfirmed,
+                ProbeTimeoutBackoffCount,
+                handshakeKeysAvailable,
+                out ulong probeTimeoutMicros))
+            {
+                continue;
+            }
+
+            if (!hasSelection || probeTimeoutMicros < selectedProbeTimeoutMicros)
+            {
+                selectedProbeTimeoutMicros = probeTimeoutMicros;
+                selectedPacketNumberSpace = state.PacketNumberSpace;
+                hasSelection = true;
+            }
+        }
+
+        return hasSelection;
+    }
+
+    /// <summary>
+    /// Computes the next recovery timer considering loss and PTO timers for all packet number spaces.
+    /// </summary>
+    public bool TrySelectLossDetectionTimer(
+        ulong nowMicros,
+        ulong maxAckDelayMicros,
+        bool handshakeConfirmed,
+        bool serverAtAntiAmplificationLimit,
+        bool peerAddressValidationComplete,
+        bool handshakeKeysAvailable,
+        out ulong selectedRecoveryTimerMicros,
+        out QuicPacketNumberSpace selectedPacketNumberSpace)
+    {
+        DetectLostPackets(nowMicros, out ulong? lossDetectionTimeMicros, out QuicPacketNumberSpace lossPacketNumberSpace);
+        bool hasPtoTimeout = TrySelectPtoTimeAndSpace(
+            nowMicros,
+            maxAckDelayMicros,
+            handshakeConfirmed,
+            handshakeKeysAvailable,
+            out ulong selectedPtoTimeMicros,
+            out QuicPacketNumberSpace ptoPacketNumberSpace);
+
+        if (!QuicRecoveryTiming.TrySelectLossDetectionTimerMicros(
+            lossDetectionTimeMicros,
+            hasPtoTimeout ? selectedPtoTimeMicros : null,
+            serverAtAntiAmplificationLimit,
+            !HasAnyAckElicitingPacketsInFlight,
+            peerAddressValidationComplete,
+            out selectedRecoveryTimerMicros))
+        {
+            selectedPacketNumberSpace = default;
+            return false;
+        }
+
+        if (lossDetectionTimeMicros is not null)
+        {
+            selectedPacketNumberSpace = lossPacketNumberSpace;
+            return true;
+        }
+
+        selectedPacketNumberSpace = ptoPacketNumberSpace;
+        return true;
+    }
+
+    /// <summary>
+    /// Increases the PTO backoff counter after a PTO event.
+    /// </summary>
+    public void RecordProbeTimeoutExpired()
+    {
+        if (ProbeTimeoutBackoffCount < int.MaxValue)
+        {
+            ProbeTimeoutBackoffCount++;
+        }
+    }
+
+    private QuicRecoveryPacketNumberSpaceState StateFor(QuicPacketNumberSpace packetNumberSpace) =>
+        states[packetNumberSpace];
+}
+
+/// <summary>
+/// Tracks per-space state used by <see cref="QuicRecoveryController" />.
+/// </summary>
+internal sealed class QuicRecoveryPacketNumberSpaceState
+{
+    private readonly SortedList<ulong, ulong> ackElicitingPacketsInFlight;
+
+    /// <summary>
+    /// Initializes a new per-space recovery state.
+    /// </summary>
+    public QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace packetNumberSpace, ulong initialRttMicros)
+    {
+        PacketNumberSpace = packetNumberSpace;
+        RttEstimator = new QuicRttEstimator(initialRttMicros);
+        ackElicitingPacketsInFlight = new SortedList<ulong, ulong>();
+        LargestAcknowledgedPacketNumber = 0;
+    }
+
+    /// <summary>
+    /// Gets the packet number space for this state.
+    /// </summary>
+    public QuicPacketNumberSpace PacketNumberSpace { get; }
+
+    /// <summary>
+    /// Gets the RTT estimator for this packet number space.
+    /// </summary>
+    public QuicRttEstimator RttEstimator { get; }
+
+    /// <summary>
+    /// Gets the largest packet number known acknowledged in this space.
+    /// </summary>
+    public ulong LargestAcknowledgedPacketNumber { get; private set; }
+
+    /// <summary>
+    /// Gets whether this space has ack-eliciting packets still in flight.
+    /// </summary>
+    public bool HasAckElicitingPacketsInFlight => ackElicitingPacketsInFlight.Count > 0;
+
+    /// <summary>
+    /// Records a sent packet for loss accounting.
+    /// </summary>
+    public void RecordPacketSent(ulong packetNumber, ulong sentAtMicros, bool isAckElicitingPacket)
+    {
+        if (!isAckElicitingPacket)
+        {
+            return;
+        }
+
+        ackElicitingPacketsInFlight[packetNumber] = sentAtMicros;
+    }
+
+    /// <summary>
+    /// Records newly acknowledged packets, updates RTT state, and removes acknowledged packets from flight.
+    /// </summary>
+    public bool RecordAcknowledgment(
+        ulong largestAcknowledgedPacketNumber,
+        ulong ackReceivedAtMicros,
+        ReadOnlySpan<ulong> newlyAcknowledgedAckElicitingPacketNumbers,
+        ulong ackDelayMicros,
+        bool handshakeConfirmed,
+        ulong peerMaxAckDelayMicros,
+        ulong localProcessingDelayMicros,
+        bool isInitialPacket,
+        bool ignoreAckDelayForInitialPacket)
+    {
+        bool largestAcknowledgedPacketNewlyAcknowledged = largestAcknowledgedPacketNumber > LargestAcknowledgedPacketNumber;
+        bool hasNewlyAcknowledgedAckElicitingPacket = false;
+        ulong? largestAcknowledgedPacketSentAtMicros = null;
+
+        for (int index = 0; index < newlyAcknowledgedAckElicitingPacketNumbers.Length; index++)
+        {
+            ulong packetNumber = newlyAcknowledgedAckElicitingPacketNumbers[index];
+            if (ackElicitingPacketsInFlight.Remove(packetNumber, out ulong sentAtMicros))
+            {
+                hasNewlyAcknowledgedAckElicitingPacket = true;
+                if (packetNumber == largestAcknowledgedPacketNumber && largestAcknowledgedPacketSentAtMicros is null)
+                {
+                    largestAcknowledgedPacketSentAtMicros = sentAtMicros;
+                }
+            }
+        }
+
+        bool rttSampleUpdated = false;
+        if (largestAcknowledgedPacketNewlyAcknowledged && hasNewlyAcknowledgedAckElicitingPacket)
+        {
+            bool hasLargestTimestamp = largestAcknowledgedPacketSentAtMicros is not null;
+            rttSampleUpdated = RttEstimator.TryUpdateFromAck(
+                hasLargestTimestamp ? largestAcknowledgedPacketSentAtMicros!.Value : 0,
+                ackReceivedAtMicros,
+                largestAcknowledgedPacketNewlyAcknowledged,
+                hasNewlyAcknowledgedAckElicitingPacket,
+                ackDelayMicros,
+                handshakeConfirmed,
+                peerMaxAckDelayMicros,
+                localProcessingDelayMicros,
+                isInitialPacket: isInitialPacket,
+                ignoreAckDelayForInitialPacket: ignoreAckDelayForInitialPacket);
+        }
+
+        if (largestAcknowledgedPacketNewlyAcknowledged)
+        {
+            LargestAcknowledgedPacketNumber = largestAcknowledgedPacketNumber;
+        }
+
+        return rttSampleUpdated;
+    }
+
+    /// <summary>
+    /// Detects lost packets from this packet number space and returns packet numbers that should be removed from flight.
+    /// </summary>
+    public IReadOnlyList<ulong> DetectLostPackets(
+        ulong nowMicros,
+        out ulong? nextLossDetectionTimeMicros)
+    {
+        List<ulong> lostPacketNumbers = new();
+        ulong? nextLossDelayMicros = null;
+
+        foreach (KeyValuePair<ulong, ulong> packet in ackElicitingPacketsInFlight)
+        {
+            if (!QuicRecoveryTiming.CanDeclarePacketLost(
+                packetAcknowledged: false,
+                packetInFlight: true,
+                packetNumber: packet.Key,
+                largestAcknowledgedPacketNumber: LargestAcknowledgedPacketNumber))
+            {
+                continue;
+            }
+
+            bool byPacketThreshold = QuicRecoveryTiming.ShouldDeclarePacketLostByPacketThreshold(
+                packet.Key,
+                LargestAcknowledgedPacketNumber);
+
+            QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
+                packet.Value,
+                nowMicros,
+                RttEstimator.LatestRttMicros,
+                RttEstimator.SmoothedRttMicros,
+                out ulong remainingLossDelayMicros);
+
+            if (byPacketThreshold || remainingLossDelayMicros == 0)
+            {
+                lostPacketNumbers.Add(packet.Key);
+                continue;
+            }
+
+            if (nextLossDelayMicros is null || remainingLossDelayMicros < nextLossDelayMicros.Value)
+            {
+                nextLossDelayMicros = remainingLossDelayMicros;
+            }
+        }
+
+        foreach (ulong lostPacketNumber in lostPacketNumbers)
+        {
+            ackElicitingPacketsInFlight.Remove(lostPacketNumber);
+        }
+
+        if (nextLossDelayMicros is null)
+        {
+            nextLossDetectionTimeMicros = null;
+        }
+        else
+        {
+            nextLossDetectionTimeMicros = SaturatingAdd(nowMicros, nextLossDelayMicros.Value);
+        }
+
+        return lostPacketNumbers;
+    }
+
+    /// <summary>
+    /// Computes the PTO deadline for this space.
+    /// </summary>
+    public bool TryComputeProbeTimeout(
+        ulong nowMicros,
+        ulong maxAckDelayMicros,
+        bool handshakeConfirmed,
+        int probeTimeoutBackoffCount,
+        bool handshakeKeysAvailable,
+        out ulong probeTimeoutMicros)
+    {
+        probeTimeoutMicros = default;
+
+        if (!HasAckElicitingPacketsInFlight)
+        {
+            return false;
+        }
+
+        if (PacketNumberSpace == QuicPacketNumberSpace.Handshake && !handshakeKeysAvailable)
+        {
+            return false;
+        }
+
+        if (!QuicRecoveryTiming.TryComputeProbeTimeoutMicros(
+            PacketNumberSpace,
+            RttEstimator.SmoothedRttMicros,
+            RttEstimator.RttVarMicros,
+            maxAckDelayMicros,
+            handshakeConfirmed,
+            out ulong probeTimeoutMicrosValue))
+        {
+            return false;
+        }
+
+        ulong backedOffProbeTimeoutMicros = QuicRecoveryTiming.ComputeProbeTimeoutWithBackoffMicros(
+            probeTimeoutMicrosValue,
+            probeTimeoutBackoffCount);
+        probeTimeoutMicros = SaturatingAdd(nowMicros, backedOffProbeTimeoutMicros);
+        return true;
+    }
+
+    private static ulong SaturatingAdd(ulong left, ulong right)
+    {
+        if (ulong.MaxValue - left < right)
+        {
+            return ulong.MaxValue;
+        }
+
+        return left + right;
+    }
+}
