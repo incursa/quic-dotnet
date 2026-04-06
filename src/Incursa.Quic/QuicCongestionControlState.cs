@@ -283,6 +283,11 @@ public sealed class QuicCongestionControlState
         }
 
         BytesInFlightBytes = SubtractSaturating(BytesInFlightBytes, sentBytes);
+        if (IsInRecovery(sentAtMicros))
+        {
+            RecoveryStartTimeMicros = null;
+            return true;
+        }
 
         if (applicationLimited || flowControlLimited)
         {

@@ -239,6 +239,69 @@ public sealed class QuicCongestionControlStateTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S7P3P2-0007")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryRegisterAcknowledgedPacket_EndsRecoveryWhenTheAcknowledgedPacketWasSentDuringRecovery()
+    {
+        QuicCongestionControlState state = new();
+        state.RegisterPacketSent(1_200);
+        state.RegisterPacketSent(1_200);
+
+        Assert.True(state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 2_000,
+            packetInFlight: true,
+            packetCanBeDecrypted: true,
+            keysAvailable: true,
+            sentAfterEarliestAcknowledgedPacket: true));
+
+        Assert.True(state.HasRecoveryStartTime);
+        Assert.Equal(2_000UL, state.RecoveryStartTimeMicros);
+        Assert.Equal(6_000UL, state.CongestionWindowBytes);
+        Assert.Equal(1_200UL, state.BytesInFlightBytes);
+
+        Assert.True(state.TryRegisterAcknowledgedPacket(
+            sentBytes: 1_200,
+            sentAtMicros: 2_000,
+            packetInFlight: true));
+
+        Assert.False(state.HasRecoveryStartTime);
+        Assert.Equal(6_000UL, state.CongestionWindowBytes);
+        Assert.Equal(0UL, state.BytesInFlightBytes);
+    }
+
+    [Theory]
+    [Requirement("REQ-QUIC-RFC9002-S7P3P2-0007")]
+    [CoverageType(RequirementCoverageType.Property)]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Property")]
+    [InlineData(1_500UL, true)]
+    [InlineData(2_000UL, false)]
+    [InlineData(2_500UL, true)]
+    public void TryRegisterAcknowledgedPacket_ClearsRecoveryOnlyForPacketsSentDuringRecovery(ulong packetSentAtMicros, bool expectedRecoveryAfterAck)
+    {
+        QuicCongestionControlState state = new();
+        state.RegisterPacketSent(1_200);
+        state.RegisterPacketSent(1_200);
+
+        Assert.True(state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 2_000,
+            packetInFlight: true,
+            packetCanBeDecrypted: true,
+            keysAvailable: true,
+            sentAfterEarliestAcknowledgedPacket: true));
+
+        Assert.True(state.TryRegisterAcknowledgedPacket(
+            sentBytes: 1_200,
+            sentAtMicros: packetSentAtMicros,
+            packetInFlight: true));
+
+        Assert.Equal(expectedRecoveryAfterAck, state.HasRecoveryStartTime);
+        Assert.Equal(0UL, state.BytesInFlightBytes);
+    }
+
+    [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7-0001">If a sender uses a different controller than the one specified in this document, the chosen controller MUST conform to the congestion-control guidelines in Section 3.1 of RFC 8085.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P7-0001">A sender SHOULD pace sending of all in-flight packets based on input from the congestion controller.</workbench-requirement>
@@ -562,6 +625,83 @@ public sealed class QuicCongestionControlStateTests
         Assert.Equal(7_800UL, sender.CongestionControlState.SlowStartThresholdBytes);
         Assert.Equal(7_800UL, sender.CongestionControlState.CongestionWindowBytes);
         Assert.Equal(1_200UL, sender.CongestionControlState.BytesInFlightBytes);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S7P3P2-0007")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void SenderFlowController_ExitsRecoveryWhenAnInRecoveryPacketIsAcknowledged()
+    {
+        QuicSenderFlowController sender = new();
+        QuicPacketNumberSpace packetSpace = QuicPacketNumberSpace.ApplicationData;
+
+        sender.RecordPacketSent(
+            packetSpace,
+            packetNumber: 1,
+            sentBytes: 1_200,
+            sentAtMicros: 1_000,
+            ackEliciting: true);
+
+        sender.RecordPacketSent(
+            packetSpace,
+            packetNumber: 2,
+            sentBytes: 1_200,
+            sentAtMicros: 2_000,
+            ackEliciting: true);
+
+        Assert.True(sender.TryRegisterLoss(
+            packetSpace,
+            packetNumber: 1,
+            sentAtMicros: 2_000,
+            packetCanBeDecrypted: true,
+            keysAvailable: true,
+            sentAfterEarliestAcknowledgedPacket: true));
+
+        Assert.True(sender.CongestionControlState.HasRecoveryStartTime);
+        Assert.Equal(2_000UL, sender.CongestionControlState.RecoveryStartTimeMicros);
+        Assert.Equal(6_000UL, sender.CongestionControlState.CongestionWindowBytes);
+        Assert.Equal(1_200UL, sender.CongestionControlState.BytesInFlightBytes);
+
+        QuicAckFrame recoveryAckFrame = new()
+        {
+            LargestAcknowledged = 2,
+            AckDelay = 0,
+            FirstAckRange = 1,
+            AdditionalRanges = Array.Empty<QuicAckRange>(),
+        };
+
+        Assert.True(sender.TryProcessAckFrame(
+            packetSpace,
+            recoveryAckFrame,
+            ackReceivedAtMicros: 2_500,
+            pacingLimited: true));
+
+        Assert.False(sender.CongestionControlState.HasRecoveryStartTime);
+        Assert.Equal(0UL, sender.CongestionControlState.BytesInFlightBytes);
+        Assert.Equal(6_000UL, sender.CongestionControlState.CongestionWindowBytes);
+
+        sender.RecordPacketSent(
+            packetSpace,
+            packetNumber: 3,
+            sentBytes: 1_200,
+            sentAtMicros: 3_000,
+            ackEliciting: true);
+
+        QuicAckFrame delayedAckFrame = new()
+        {
+            LargestAcknowledged = 3,
+            AckDelay = 0,
+            FirstAckRange = 0,
+            AdditionalRanges = Array.Empty<QuicAckRange>(),
+        };
+
+        Assert.True(sender.TryProcessAckFrame(
+            packetSpace,
+            delayedAckFrame,
+            ackReceivedAtMicros: 4_000,
+            pacingLimited: true));
+
+        Assert.Equal(7_200UL, sender.CongestionControlState.CongestionWindowBytes);
     }
 
     [Fact]
