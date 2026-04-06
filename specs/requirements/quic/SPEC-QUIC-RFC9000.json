@@ -4644,6 +4644,11 @@
         "upstream_refs": [
           "RFC 9000 §5.1 RFC9000-S5.1-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0009.cs::TryParseShortHeader_PreservesTrailingBytesWithoutAnExplicitLengthField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0009.cs::TryParseShortHeader_RejectsLongHeaderPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0009.cs::TryParseShortHeader_AcceptsTheShortestValidShortHeader"
         ]
       }
     },
