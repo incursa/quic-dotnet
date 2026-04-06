@@ -16,7 +16,7 @@ public static class QuicPacketParser
             return false;
         }
 
-        headerForm = (packet[0] & 0x80) == 0 ? QuicHeaderForm.Short : QuicHeaderForm.Long;
+        headerForm = (packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) == 0 ? QuicHeaderForm.Short : QuicHeaderForm.Long;
         return true;
     }
 
@@ -37,7 +37,7 @@ public static class QuicPacketParser
             return false;
         }
 
-        if (version != 0 && (headerControlBits & 0x40) == 0)
+        if (version != 0 && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
         {
             header = default;
             return false;
@@ -68,13 +68,16 @@ public static class QuicPacketParser
     /// </summary>
     public static bool TryParseShortHeader(ReadOnlySpan<byte> packet, out QuicShortHeaderPacket header)
     {
-        if (packet.IsEmpty || (packet[0] & 0x80) != 0 || (packet[0] & 0x40) == 0 || (packet[0] & 0x18) != 0)
+        if (packet.IsEmpty
+            || (packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) != 0
+            || (packet[0] & QuicPacketHeaderBits.FixedBitMask) == 0
+            || (packet[0] & QuicPacketHeaderBits.ShortReservedBitsMask) != 0)
         {
             header = default;
             return false;
         }
 
-        header = new QuicShortHeaderPacket((byte)(packet[0] & 0x7F), packet.Slice(1));
+        header = new QuicShortHeaderPacket((byte)(packet[0] & QuicPacketHeaderBits.HeaderControlBitsMask), packet.Slice(1));
         return true;
     }
 
@@ -95,7 +98,9 @@ public static class QuicPacketParser
             return false;
         }
 
-        if (version != 0 || supportedVersionBytes.IsEmpty || (supportedVersionBytes.Length & 3) != 0)
+        if (version != QuicVersionNegotiationPacket.VersionNegotiationVersion
+            || supportedVersionBytes.IsEmpty
+            || (supportedVersionBytes.Length % QuicVersionNegotiationPacket.SupportedVersionLength) != 0)
         {
             header = default;
             return false;
@@ -146,13 +151,13 @@ public static class QuicPacketParser
     {
         switch (longPacketTypeBits)
         {
-            case 0x00:
+            case QuicLongPacketTypeBits.Initial:
                 packetNumberSpace = QuicPacketNumberSpace.Initial;
                 return true;
-            case 0x01:
+            case QuicLongPacketTypeBits.ZeroRtt:
                 packetNumberSpace = QuicPacketNumberSpace.ApplicationData;
                 return true;
-            case 0x02:
+            case QuicLongPacketTypeBits.Handshake:
                 packetNumberSpace = QuicPacketNumberSpace.Handshake;
                 return true;
             default:

@@ -5,6 +5,14 @@ namespace Incursa.Quic;
 /// </summary>
 public static class QuicAeadUsageLimitCalculator
 {
+    private const double AeadUsageLimitBase = 2d;
+    private const double GcmConfidentialityLimitExponentStrictlyLimitedToTwoPow11Bytes = 28d;
+    private const double GcmConfidentialityLimitExponentAllowsPacketsAsLargeAsTwoPow16Bytes = 23d;
+    private const double GcmIntegrityLimitExponentStrictlyLimitedToTwoPow11Bytes = 57d;
+    private const double GcmIntegrityLimitExponentUnrestricted = 52d;
+    private const double CcmUsageLimitExponentStrictlyLimitedToTwoPow11Bytes = 26.5d;
+    private const double CcmUsageLimitExponentUnrestricted = 21.5d;
+
     /// <summary>
     /// Computes the Appendix B confidentiality and integrity limits for the supplied AEAD and packet-size profiles.
     /// </summary>
@@ -70,12 +78,12 @@ public static class QuicAeadUsageLimitCalculator
         return confidentialityPacketSizeProfile switch
         {
             QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes => CreateUsageLimits(
-                Math.Pow(2d, 26.5d),
-                Math.Pow(2d, 26.5d),
+                Math.Pow(AeadUsageLimitBase, CcmUsageLimitExponentStrictlyLimitedToTwoPow11Bytes),
+                Math.Pow(AeadUsageLimitBase, CcmUsageLimitExponentStrictlyLimitedToTwoPow11Bytes),
                 out limits),
             QuicAeadPacketSizeProfile.Unrestricted => CreateUsageLimits(
-                Math.Pow(2d, 21.5d),
-                Math.Pow(2d, 21.5d),
+                Math.Pow(AeadUsageLimitBase, CcmUsageLimitExponentUnrestricted),
+                Math.Pow(AeadUsageLimitBase, CcmUsageLimitExponentUnrestricted),
                 out limits),
             _ => false,
         };
@@ -89,8 +97,8 @@ public static class QuicAeadUsageLimitCalculator
 
         return packetSizeProfile switch
         {
-            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes => CreateLimitPackets(Math.Pow(2d, 28d), out limitPackets),
-            QuicAeadPacketSizeProfile.AllowsPacketsAsLargeAsTwoPow16Bytes => CreateLimitPackets(Math.Pow(2d, 23d), out limitPackets),
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes => CreateLimitPackets(Math.Pow(AeadUsageLimitBase, GcmConfidentialityLimitExponentStrictlyLimitedToTwoPow11Bytes), out limitPackets),
+            QuicAeadPacketSizeProfile.AllowsPacketsAsLargeAsTwoPow16Bytes => CreateLimitPackets(Math.Pow(AeadUsageLimitBase, GcmConfidentialityLimitExponentAllowsPacketsAsLargeAsTwoPow16Bytes), out limitPackets),
             _ => false,
         };
     }
@@ -103,8 +111,8 @@ public static class QuicAeadUsageLimitCalculator
 
         return packetSizeProfile switch
         {
-            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes => CreateLimitPackets(Math.Pow(2d, 57d), out limitPackets),
-            QuicAeadPacketSizeProfile.Unrestricted => CreateLimitPackets(Math.Pow(2d, 52d), out limitPackets),
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes => CreateLimitPackets(Math.Pow(AeadUsageLimitBase, GcmIntegrityLimitExponentStrictlyLimitedToTwoPow11Bytes), out limitPackets),
+            QuicAeadPacketSizeProfile.Unrestricted => CreateLimitPackets(Math.Pow(AeadUsageLimitBase, GcmIntegrityLimitExponentUnrestricted), out limitPackets),
             _ => false,
         };
     }

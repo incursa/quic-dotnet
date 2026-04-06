@@ -30,7 +30,15 @@ public sealed class QuicCongestionControlState
     /// </summary>
     public const ulong RecommendedPacingGainDenominator = 4;
 
-    private readonly ulong[] ecnCeCounters = new ulong[3];
+    private const int PacketNumberSpaceCount = 3;
+    private const ulong InitialCongestionWindowDatagramCount = 10;
+    private const ulong MinimumInitialCongestionWindowBytes = 14_720UL;
+    private const ulong MinimumCongestionWindowMultiplier = 2;
+    private const int InitialPacketNumberSpaceIndex = 0;
+    private const int HandshakePacketNumberSpaceIndex = 1;
+    private const int ApplicationDataPacketNumberSpaceIndex = 2;
+
+    private readonly ulong[] ecnCeCounters = new ulong[PacketNumberSpaceCount];
 
     /// <summary>
     /// Initializes a new congestion-control state using the RFC 9002 default maximum datagram size.
@@ -103,9 +111,9 @@ public sealed class QuicCongestionControlState
             throw new ArgumentOutOfRangeException(nameof(maxDatagramSizeBytes));
         }
 
-        ulong tenDatagrams = MultiplySaturating(maxDatagramSizeBytes, 10);
-        ulong twoDatagrams = MultiplySaturating(maxDatagramSizeBytes, 2);
-        ulong floor = Math.Max(twoDatagrams, 14_720UL);
+        ulong tenDatagrams = MultiplySaturating(maxDatagramSizeBytes, InitialCongestionWindowDatagramCount);
+        ulong twoDatagrams = MultiplySaturating(maxDatagramSizeBytes, MinimumCongestionWindowMultiplier);
+        ulong floor = Math.Max(twoDatagrams, MinimumInitialCongestionWindowBytes);
         return Math.Min(tenDatagrams, floor);
     }
 
@@ -119,7 +127,7 @@ public sealed class QuicCongestionControlState
             throw new ArgumentOutOfRangeException(nameof(maxDatagramSizeBytes));
         }
 
-        return MultiplySaturating(maxDatagramSizeBytes, 2);
+        return MultiplySaturating(maxDatagramSizeBytes, MinimumCongestionWindowMultiplier);
     }
 
     /// <summary>
@@ -531,9 +539,9 @@ public sealed class QuicCongestionControlState
     {
         return packetNumberSpace switch
         {
-            QuicPacketNumberSpace.Initial => 0,
-            QuicPacketNumberSpace.Handshake => 1,
-            QuicPacketNumberSpace.ApplicationData => 2,
+            QuicPacketNumberSpace.Initial => InitialPacketNumberSpaceIndex,
+            QuicPacketNumberSpace.Handshake => HandshakePacketNumberSpaceIndex,
+            QuicPacketNumberSpace.ApplicationData => ApplicationDataPacketNumberSpaceIndex,
             _ => throw new ArgumentOutOfRangeException(nameof(packetNumberSpace)),
         };
     }

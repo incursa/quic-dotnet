@@ -22,9 +22,10 @@ public static class QuicVersionNegotiation
     /// </summary>
     public const int Version1MinimumDatagramPayloadSize = 1200;
 
-    private const byte VersionNegotiationFirstByte = 0xC0;
+    private const byte VersionNegotiationFirstByte = QuicPacketHeaderBits.HeaderFormBitMask | QuicPacketHeaderBits.FixedBitMask;
     private const uint ReservedVersionMask = 0x0F0F0F0F;
     private const uint ReservedVersionPattern = 0x0A0A0A0A;
+    private const uint ReservedVersionTemplateMask = 0xF0F0F0F0;
 
     /// <summary>
     /// Computes the largest known minimum datagram size across the supplied supported versions.
@@ -224,7 +225,7 @@ public static class QuicVersionNegotiation
     /// </summary>
     public static uint CreateReservedVersion(uint template)
     {
-        return (template & 0xF0F0F0F0) | ReservedVersionPattern;
+        return (template & ReservedVersionTemplateMask) | ReservedVersionPattern;
     }
 
     private static bool SupportsOnlySelectedVersion(ReadOnlySpan<uint> clientSupportedVersions, uint selectedVersion)

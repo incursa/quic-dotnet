@@ -28,10 +28,12 @@ public static class QuicFrameCodec
     private const ulong RetireConnectionIdFrameType = 0x19;
     private const ulong PathChallengeFrameType = 0x1A;
     private const ulong PathResponseFrameType = 0x1B;
-    private const ulong MaximumStreamLimit = 1UL << 60;
+    private const int MaximumStreamLimitBitCount = 60;
+    private const ulong MaximumStreamLimit = 1UL << MaximumStreamLimitBitCount;
     private const int MaximumConnectionIdLength = 20;
     private const int StatelessResetTokenLength = 16;
     private const int PathFrameDataLength = 8;
+    private const ulong AckRangeGapAdjustment = 2;
 
     /// <summary>
     /// Parses a PADDING frame from the start of a packet payload slice.
@@ -519,13 +521,13 @@ public static class QuicFrameCodec
     {
         bytesWritten = default;
 
-        if (frameType is < 0x08 or > 0x0F)
+        if (frameType is < QuicStreamFrameBits.StreamFrameTypeMinimum or > QuicStreamFrameBits.StreamFrameTypeMaximum)
         {
             return false;
         }
 
-        bool hasOffset = (frameType & 0x04) != 0;
-        bool hasLength = (frameType & 0x02) != 0;
+        bool hasOffset = (frameType & QuicStreamFrameBits.OffsetBitMask) != 0;
+        bool hasLength = (frameType & QuicStreamFrameBits.LengthBitMask) != 0;
 
         if (!hasOffset && offset != 0)
         {
@@ -1180,12 +1182,12 @@ public static class QuicFrameCodec
         smallestAcknowledged = default;
         largestAcknowledged = default;
 
-        if (previousSmallestAcknowledged < gap + 2)
+        if (previousSmallestAcknowledged < gap + AckRangeGapAdjustment)
         {
             return false;
         }
 
-        largestAcknowledged = previousSmallestAcknowledged - gap - 2;
+        largestAcknowledged = previousSmallestAcknowledged - gap - AckRangeGapAdjustment;
         if (largestAcknowledged < ackRangeLength)
         {
             return false;

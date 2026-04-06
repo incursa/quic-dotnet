@@ -38,27 +38,27 @@ public readonly ref struct QuicLongHeaderPacket
     /// <summary>
     /// Gets whether the fixed bit is set in byte 0.
     /// </summary>
-    public bool FixedBit => (headerControlBits & 0x40) != 0;
+    public bool FixedBit => (headerControlBits & QuicPacketHeaderBits.FixedBitMask) != 0;
 
     /// <summary>
     /// Gets the two-bit long packet type field from byte 0.
     /// </summary>
-    public byte LongPacketTypeBits => (byte)((headerControlBits & 0x30) >> 4);
+    public byte LongPacketTypeBits => (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift);
 
     /// <summary>
     /// Gets the two-bit packet number length field from byte 0.
     /// </summary>
-    public byte PacketNumberLengthBits => (byte)(headerControlBits & 0x03);
+    public byte PacketNumberLengthBits => (byte)(headerControlBits & QuicPacketHeaderBits.PacketNumberLengthBitsMask);
 
     /// <summary>
     /// Gets the four type-specific bits from byte 0.
     /// </summary>
-    public byte TypeSpecificBits => (byte)(headerControlBits & 0x0F);
+    public byte TypeSpecificBits => (byte)(headerControlBits & QuicPacketHeaderBits.TypeSpecificBitsMask);
 
     /// <summary>
     /// Gets the reserved bits from the type-specific bit field.
     /// </summary>
-    public byte ReservedBits => (byte)((headerControlBits & 0x0C) >> 2);
+    public byte ReservedBits => (byte)((headerControlBits & QuicPacketHeaderBits.LongReservedBitsMask) >> QuicPacketHeaderBits.LongReservedBitsShift);
 
     /// <summary>
     /// Gets the encoded QUIC version.

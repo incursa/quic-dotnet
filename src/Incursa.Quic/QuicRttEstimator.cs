@@ -10,6 +10,12 @@ public sealed class QuicRttEstimator
     /// </summary>
     public const ulong DefaultInitialRttMicros = 333_000;
 
+    private const ulong InitialRttVarianceDivisor = 2;
+    private const ulong SmoothedRttWeightNumerator = 7;
+    private const ulong SmoothedRttWeightDenominator = 8;
+    private const ulong RttVarianceWeightNumerator = 3;
+    private const ulong RttVarianceWeightDenominator = 4;
+
     private readonly ulong initialRttMicros;
 
     /// <summary>
@@ -65,7 +71,7 @@ public sealed class QuicRttEstimator
         LatestRttMicros = 0;
         MinRttMicros = 0;
         SmoothedRttMicros = initialRttMicros;
-        RttVarMicros = initialRttMicros / 2;
+        RttVarMicros = initialRttMicros / InitialRttVarianceDivisor;
         HasRttSample = false;
     }
 
@@ -115,7 +121,7 @@ public sealed class QuicRttEstimator
         {
             MinRttMicros = rawLatestRttMicros;
             SmoothedRttMicros = rawLatestRttMicros;
-            RttVarMicros = rawLatestRttMicros / 2;
+            RttVarMicros = rawLatestRttMicros / InitialRttVarianceDivisor;
             HasRttSample = true;
             return true;
         }
@@ -140,8 +146,8 @@ public sealed class QuicRttEstimator
             ? previousSmoothedRttMicros - adjustedRttMicros
             : adjustedRttMicros - previousSmoothedRttMicros;
 
-        SmoothedRttMicros = (7 * previousSmoothedRttMicros + adjustedRttMicros) / 8;
-        RttVarMicros = (3 * previousRttVarMicros + rttDeviationMicros) / 4;
+        SmoothedRttMicros = (SmoothedRttWeightNumerator * previousSmoothedRttMicros + adjustedRttMicros) / SmoothedRttWeightDenominator;
+        RttVarMicros = (RttVarianceWeightNumerator * previousRttVarMicros + rttDeviationMicros) / RttVarianceWeightDenominator;
         MinRttMicros = Math.Min(MinRttMicros, sampleRttMicros);
         return true;
     }

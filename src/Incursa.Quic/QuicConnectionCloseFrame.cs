@@ -5,6 +5,9 @@ namespace Incursa.Quic;
 /// </summary>
 public readonly ref struct QuicConnectionCloseFrame
 {
+    private const byte TransportConnectionCloseFrameType = 0x1C;
+    private const byte ApplicationConnectionCloseFrameType = 0x1D;
+
     private readonly bool isApplicationError;
     private readonly ulong errorCode;
     private readonly ulong triggeringFrameType;
@@ -57,7 +60,7 @@ public readonly ref struct QuicConnectionCloseFrame
     /// <summary>
     /// Gets the frame type carried on the wire.
     /// </summary>
-    public byte FrameType => isApplicationError ? (byte)0x1D : (byte)0x1C;
+    public byte FrameType => isApplicationError ? ApplicationConnectionCloseFrameType : TransportConnectionCloseFrameType;
 
     /// <summary>
     /// Gets the error code.
