@@ -175,4 +175,48 @@ public sealed class QuicConnectionStreamStateFuzzTests
             Assert.Equal(QuicTransportErrorCode.FinalSizeError, finalErrorCode);
         }
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0016")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void Fuzz_TryApplyMaxStreamDataFrame_OpensMissingPeerBidirectionalStreams()
+    {
+        Random random = new(0x5150_2032);
+
+        QuicConnectionStreamState state = new(
+            new QuicConnectionStreamStateOptions(
+                IsServer: false,
+                InitialConnectionReceiveLimit: 256,
+                InitialConnectionSendLimit: 256,
+                InitialIncomingBidirectionalStreamLimit: 64,
+                InitialIncomingUnidirectionalStreamLimit: 64,
+                InitialPeerBidirectionalStreamLimit: 64,
+                InitialPeerUnidirectionalStreamLimit: 64,
+                InitialLocalBidirectionalReceiveLimit: 64,
+                InitialPeerBidirectionalReceiveLimit: 64,
+                InitialPeerUnidirectionalReceiveLimit: 64,
+                InitialLocalBidirectionalSendLimit: 64,
+                InitialLocalUnidirectionalSendLimit: 64,
+                InitialPeerBidirectionalSendLimit: 8));
+
+        for (int iteration = 0; iteration < 128; iteration++)
+        {
+            byte streamIndex = (byte)random.Next(0, 32);
+            ulong streamId = ((ulong)streamIndex << 2) | 1UL;
+            ulong maxData = (ulong)random.Next(9, 64);
+
+            Assert.True(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(streamId, maxData), out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+
+            Assert.True(state.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot));
+            Assert.Equal(QuicStreamSendState.Ready, snapshot.SendState);
+            Assert.Equal(maxData, snapshot.SendLimit);
+
+            Assert.False(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(streamId, maxData), out QuicTransportErrorCode repeatedErrorCode));
+            Assert.Equal(default, repeatedErrorCode);
+        }
+    }
 }

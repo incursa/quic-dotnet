@@ -142,4 +142,44 @@ public sealed class QuicConnectionStreamStatePropertyTests
         Assert.Equal(default, streamDataBlockedFrame);
         Assert.Equal(QuicTransportErrorCode.FinalSizeError, errorCode);
     }
+
+    [Property]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0019")]
+    [Trait("Category", "Property")]
+    public void TryApplyMaxStreamDataFrame_ImplicitlyOpensPeerBidiStreams(byte streamIndex)
+    {
+        QuicConnectionStreamState state = new(
+            new QuicConnectionStreamStateOptions(
+                IsServer: false,
+                InitialConnectionReceiveLimit: 128,
+                InitialConnectionSendLimit: 128,
+                InitialIncomingBidirectionalStreamLimit: 1024,
+                InitialIncomingUnidirectionalStreamLimit: 1024,
+                InitialPeerBidirectionalStreamLimit: 1024,
+                InitialPeerUnidirectionalStreamLimit: 1024,
+                InitialLocalBidirectionalReceiveLimit: 32,
+                InitialPeerBidirectionalReceiveLimit: 32,
+                InitialPeerUnidirectionalReceiveLimit: 32,
+                InitialLocalBidirectionalSendLimit: 32,
+                InitialLocalUnidirectionalSendLimit: 32,
+                InitialPeerBidirectionalSendLimit: 8));
+
+        ulong streamId = ((ulong)streamIndex << 2) | 1UL;
+        Assert.True(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(streamId, 16), out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamSendState.Ready, snapshot.SendState);
+        Assert.Equal(16UL, snapshot.SendLimit);
+
+        for (byte index = 0; index <= streamIndex; index++)
+        {
+            ulong knownStreamId = ((ulong)index << 2) | 1UL;
+            Assert.True(state.TryGetStreamSnapshot(knownStreamId, out QuicConnectionStreamSnapshot _));
+        }
+    }
 }

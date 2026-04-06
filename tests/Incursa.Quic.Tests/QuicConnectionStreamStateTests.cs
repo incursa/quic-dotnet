@@ -88,6 +88,47 @@ public sealed class QuicConnectionStreamStateTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0018")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryApplyMaxStreamDataFrame_OpensMissingPeerBidiStreamWhenImplicitOpenIsSafe()
+    {
+        QuicConnectionStreamState state = CreateState();
+
+        // Stream ID 5 is a peer-initiated bidirectional stream for a client-side endpoint.
+        Assert.True(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(5, 16), out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(5, out QuicConnectionStreamSnapshot peerStreamSnapshot));
+        Assert.Equal(QuicStreamSendState.Ready, peerStreamSnapshot.SendState);
+        Assert.Equal(16UL, peerStreamSnapshot.SendLimit);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot lowerStreamSnapshot));
+        Assert.Equal(QuicStreamSendState.Ready, lowerStreamSnapshot.SendState);
+        Assert.Equal(8UL, lowerStreamSnapshot.SendLimit);
+
+        Assert.False(state.TryGetStreamSnapshot(9, out _));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S3P1-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream()
+    {
+        QuicConnectionStreamState state = CreateState();
+
+        // Stream ID 3 is peer-initiated unidirectional for a client-side endpoint.
+        Assert.False(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(3, 16), out QuicTransportErrorCode errorCode));
+        Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+        Assert.False(state.TryGetStreamSnapshot(3, out _));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S3-0002")]
     [Requirement("REQ-QUIC-RFC9000-S3P2-0003")]
