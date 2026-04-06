@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/incursa/quic-dotnet/actions/workflows/ci.yml/badge.svg)](https://github.com/incursa/quic-dotnet/actions/workflows/ci.yml)
 
-`Incursa.Quic` is the starter repository for the Incursa QUIC library. It currently contains the build, test, packaging, and documentation scaffold only. The runtime implementation will be added later.
+`Incursa.Quic` is the trace-first repository for the Incursa QUIC library. It already contains live helper-layer implementation, tests, packaging, and documentation for the packet/header, frame, transport-parameter, recovery, and validation surfaces that are present in the tree.
 
 The repository is also prepared for a SpecTrace-first workflow so RFC-derived protocol slices can be translated into canonical requirements, gaps, work items, verification artifacts, and generated outputs before implementation.
 Canonical SpecTrace artifacts are authored as `.json` files under [`specs/`](specs/README.md), and the repository no longer depends on sibling Markdown companions for those canonical families.
@@ -13,8 +13,8 @@ The repo-local JSON validator fetches the upstream SpecTrace model schema from [
 - [`specs/`](specs/README.md): canonical requirements, gaps, architecture, work items, verification artifacts, and generated traceability outputs
 - [`benchmarks/`](benchmarks/README.md): permanent microbenchmark suites and performance evidence
 - [`fuzz/`](fuzz/README.md): SharpFuzz harnesses for wire-facing parser slices
-- [`Incursa.Quic`](src/Incursa.Quic/README.md): the packable library project and NuGet package root
-- [`Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md): the test project with requirement-tagged positive, negative, property, fuzz, and smoke checks
+- [`Incursa.Quic`](src/Incursa.Quic/README.md): the packable helper-layer library project and NuGet package root
+- [`Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md): the test project with requirement-tagged positive, negative, property, fuzz, smoke, and blocking checks
 - [`docs/`](docs/README.md): repository documentation
 - [`docs/requirements-workflow.md`](docs/requirements-workflow.md): local order of operations for requirements, testing, fuzzing, and benchmarking
 - [`quality/testing-intent.yaml`](quality/testing-intent.yaml): repo-level testing intent for quality tooling

@@ -94,4 +94,52 @@ public sealed class QuicAddressValidationTests
         Assert.False(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(-1, stackalloc byte[1], out _));
         Assert.False(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(1199, stackalloc byte[0], out _));
     }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0001">The Type field MUST be encoded as a variable-length integer with value 0x07.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0002">The Token Length field MUST be encoded as a variable-length integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0003">NEW_TOKEN frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0004">The Token Length field MUST be variable-length integer specifying the length of the token in bytes.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0005">An opaque blob that the client MAY use with a future Initial packet.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0005")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryParseNewTokenFrame_ParsesAndFormatsAProvidedToken()
+    {
+        byte[] token = [0x10, 0x20, 0x30, 0x40];
+        QuicNewTokenFrame frame = new(token);
+        byte[] encoded = QuicFrameTestData.BuildNewTokenFrame(frame);
+
+        Assert.True(QuicFrameCodec.TryParseNewTokenFrame(encoded, out QuicNewTokenFrame parsed, out int bytesConsumed));
+        Assert.True(token.AsSpan().SequenceEqual(parsed.Token));
+        Assert.Equal(encoded.Length, bytesConsumed);
+
+        Span<byte> destination = stackalloc byte[64];
+        Assert.True(QuicFrameCodec.TryFormatNewTokenFrame(parsed, destination, out int bytesWritten));
+        Assert.Equal(encoded.Length, bytesWritten);
+        Assert.True(encoded.AsSpan().SequenceEqual(destination[..bytesWritten]));
+    }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0006">The token MUST NOT be empty.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P7-0007">A client MUST treat receipt of a NEW_TOKEN frame with an empty Token field as a connection error of type FRAME_ENCODING_ERROR.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P7-0007")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryParseNewTokenFrame_RejectsEmptyTokens()
+    {
+        QuicNewTokenFrame emptyFrame = new(Array.Empty<byte>());
+        byte[] encoded = QuicFrameTestData.BuildNewTokenFrame(emptyFrame);
+        Span<byte> destination = stackalloc byte[16];
+
+        Assert.False(QuicFrameCodec.TryParseNewTokenFrame(encoded, out _, out _));
+        Assert.False(QuicFrameCodec.TryFormatNewTokenFrame(emptyFrame, destination, out _));
+    }
 }

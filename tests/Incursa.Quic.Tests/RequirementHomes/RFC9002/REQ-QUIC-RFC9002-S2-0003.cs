@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9002_S2_0003
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    // Verifies the receiver waits for the maximum ACK delay before scheduling an ACK.
     public void ShouldNotIncludeAckFrameBeforeTheMaximumAckDelay()
     {
         QuicAckGenerationState tracker = new();
@@ -26,6 +27,7 @@ public sealed class REQ_QUIC_RFC9002_S2_0003
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
+    // Verifies the ACK deadline is honored exactly at the delay boundary.
     public void ShouldIncludeAckFrameWhenTheMaximumAckDelayElapses()
     {
         QuicAckGenerationState tracker = new();

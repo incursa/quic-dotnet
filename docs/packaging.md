@@ -5,7 +5,7 @@ The repository is already wired for NuGet packaging.
 ## Version source
 
 - Update [`Directory.Build.props`](../Directory.Build.props) to change the package version.
-- The current scaffold version is `1.0.0`.
+- The current package version is `1.0.0`.
 
 ## Pack command
 

@@ -8,4 +8,4 @@
 ## Version source
 
 - The repo version is stored in [`Directory.Build.props`](../../Directory.Build.props).
-- The initial scaffold version is `1.0.0`.
+- The initial package version is `1.0.0`.

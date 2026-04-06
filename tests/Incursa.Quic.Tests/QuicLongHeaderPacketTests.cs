@@ -603,6 +603,24 @@ public sealed class QuicLongHeaderPacketTests
         Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
     }
 
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0021">Endpoints that receive a version 1 long header with a value larger than 20 MUST drop the packet.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S17P2-0021")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryParseLongHeader_RejectsVersion1SourceConnectionIdLongerThan20Bytes()
+    {
+        byte[] packet = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x41,
+            version: 1,
+            destinationConnectionId: [0xDA],
+            sourceConnectionId: Enumerable.Repeat((byte)0x5C, 21).ToArray(),
+            versionSpecificData: BuildValidVersion1VersionSpecificData(0x41));
+
+        Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
+    }
+
     private static byte[] BuildValidVersion1VersionSpecificData(byte headerControlBits)
     {
         int packetNumberLength = (headerControlBits & 0x03) + 1;

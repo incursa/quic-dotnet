@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S10P3_0005
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    // Verifies the formatter emits the Figure 10 layout and keeps the reset token at the tail.
     public void TryFormatStatelessResetDatagram_WritesTheFigure10Layout()
     {
         byte[] token = QuicStatelessResetRequirementTestData.CreateToken();
@@ -19,6 +20,7 @@ public sealed class REQ_QUIC_RFC9000_S10P3_0005
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    // Verifies the formatter refuses to write when the destination cannot fit the token.
     public void TryFormatStatelessResetDatagram_RejectsDatagramsWithoutRoomForTheToken()
     {
         byte[] token = QuicStatelessResetRequirementTestData.CreateToken();

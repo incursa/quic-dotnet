@@ -573,6 +573,7 @@
   ],
   "notes": [
     "The pass only tightened direct requirement refs on existing stream parser and frame codec tests.",
-    "The repo still lacks a stateful stream abstraction, stream allocator, and connection-scoped stream registry for the non-wire-level clauses."
+    "The repo still lacks a stateful stream abstraction, stream allocator, and connection-scoped stream registry for the non-wire-level clauses.",
+    "The bounded follow-up slice is connection-scoped stream opening, ordered receive buffering, final-size accounting, and MAX_* flow-control application; retransmission-driven send states and STOP_SENDING/RESET orchestration remain deferred."
   ]
 }
