@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Incursa.Quic;
 
 /// <summary>
@@ -690,4 +692,283 @@ public readonly struct QuicPersistentCongestionPacket
     /// Gets whether the packet was lost.
     /// </summary>
     public bool Lost { get; }
+}
+
+/// <summary>
+/// Minimal sender-facing facade that ties ACK generation to congestion-control state.
+/// </summary>
+public sealed class QuicSenderFlowController
+{
+    private readonly Dictionary<QuicPacketNumberSpace, SortedDictionary<ulong, SentPacketState>> sentPacketsBySpace = [];
+
+    /// <summary>
+    /// Initializes a new sender-flow controller.
+    /// </summary>
+    public QuicSenderFlowController(
+        ulong maxDatagramSizeBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
+        int maximumRetainedAckRanges = 32,
+        int minimumAckElicitingPacketsBeforeDelayedAck = 2)
+    {
+        if (maxDatagramSizeBytes == 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maxDatagramSizeBytes));
+        }
+
+        CongestionControlState = new QuicCongestionControlState(maxDatagramSizeBytes);
+        AckGenerationState = new QuicAckGenerationState(maximumRetainedAckRanges, minimumAckElicitingPacketsBeforeDelayedAck);
+    }
+
+    /// <summary>
+    /// Gets the per-path congestion controller used by this facade.
+    /// </summary>
+    public QuicCongestionControlState CongestionControlState { get; }
+
+    /// <summary>
+    /// Gets the ACK-generation state used by this facade.
+    /// </summary>
+    public QuicAckGenerationState AckGenerationState { get; }
+
+    /// <summary>
+    /// Checks congestion-window limits before sending.
+    /// </summary>
+    public bool CanSend(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong sentBytes,
+        bool isAckOnlyPacket = false,
+        bool isProbePacket = false)
+    {
+        _ = packetNumberSpace;
+        return CongestionControlState.CanSend(sentBytes, isAckOnlyPacket, isProbePacket);
+    }
+
+    /// <summary>
+    /// Records a sent packet and tracks it for ACK and loss processing.
+    /// </summary>
+    public void RecordPacketSent(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        ulong sentBytes,
+        ulong sentAtMicros,
+        bool ackEliciting,
+        bool isAckOnlyPacket = false,
+        bool isProbePacket = false)
+    {
+        CongestionControlState.RegisterPacketSent(sentBytes, isAckOnlyPacket, isProbePacket);
+        if (isAckOnlyPacket)
+        {
+            return;
+        }
+
+        SortedDictionary<ulong, SentPacketState> sentPackets = GetOrCreateSentPackets(packetNumberSpace);
+        sentPackets[packetNumber] = new SentPacketState(sentBytes, sentAtMicros, ackEliciting, inFlight: true, isProbePacket);
+    }
+
+    /// <summary>
+    /// Processes an incoming ACK frame and advances congestion state.
+    /// </summary>
+    public bool TryProcessAckFrame(
+        QuicPacketNumberSpace packetNumberSpace,
+        QuicAckFrame ackFrame,
+        ulong ackReceivedAtMicros,
+        bool applicationLimited = false,
+        bool flowControlLimited = false,
+        bool pacingLimited = false,
+        bool pathValidated = false)
+    {
+        bool updated = false;
+        ulong largestAcknowledgedPacketSentAtMicros = 0;
+
+        List<ulong> acknowledgedPacketNumbers = EnumerateAcknowledgedPacketNumbers(ackFrame);
+        if (TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
+        {
+            HashSet<ulong> deduplicatedPacketNumbers = [];
+
+            foreach (ulong packetNumber in acknowledgedPacketNumbers)
+            {
+                if (!deduplicatedPacketNumbers.Add(packetNumber))
+                {
+                    continue;
+                }
+
+                if (!sentPackets.TryGetValue(packetNumber, out SentPacketState sentPacket))
+                {
+                    continue;
+                }
+
+                updated = CongestionControlState.TryRegisterAcknowledgedPacket(
+                    sentPacket.SentBytes,
+                    sentPacket.SentAtMicros,
+                    packetInFlight: sentPacket.InFlight,
+                    applicationLimited: applicationLimited,
+                    flowControlLimited: flowControlLimited,
+                    pacingLimited: pacingLimited) || updated;
+
+                sentPackets.Remove(packetNumber);
+                largestAcknowledgedPacketSentAtMicros = Math.Max(largestAcknowledgedPacketSentAtMicros, sentPacket.SentAtMicros);
+            }
+        }
+
+        if (ackFrame.EcnCounts.HasValue)
+        {
+            ulong largestSentAtMicros = largestAcknowledgedPacketSentAtMicros == 0
+                ? ackReceivedAtMicros
+                : largestAcknowledgedPacketSentAtMicros;
+
+            updated = CongestionControlState.TryProcessEcn(
+                packetNumberSpace,
+                ackFrame.EcnCounts.Value.EcnCeCount,
+                largestSentAtMicros,
+                pathValidated: pathValidated) || updated;
+        }
+
+        return updated;
+    }
+
+    /// <summary>
+    /// Processes a loss signal for a specific sent packet number.
+    /// </summary>
+    public bool TryRegisterLoss(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        ulong sentAtMicros,
+        bool packetCanBeDecrypted = true,
+        bool keysAvailable = true,
+        bool sentAfterEarliestAcknowledgedPacket = true,
+        bool allowAckOnlyLossSignal = false)
+    {
+        if (!TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets)
+            || !sentPackets.TryGetValue(packetNumber, out SentPacketState sentPacket))
+        {
+            return false;
+        }
+
+        sentPackets.Remove(packetNumber);
+        return CongestionControlState.TryRegisterLoss(
+            sentPacket.SentBytes,
+            sentAtMicros,
+            packetInFlight: sentPacket.InFlight,
+            packetCanBeDecrypted: packetCanBeDecrypted,
+            keysAvailable: keysAvailable,
+            sentAfterEarliestAcknowledgedPacket: sentAfterEarliestAcknowledgedPacket,
+            isProbePacket: sentPacket.IsProbePacket,
+            allowAckOnlyLossSignal: allowAckOnlyLossSignal);
+    }
+
+    /// <summary>
+    /// Records a received packet and drives ACK scheduling logic.
+    /// </summary>
+    public void RecordIncomingPacket(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        bool ackEliciting,
+        ulong receivedAtMicros,
+        bool congestionExperienced = false,
+        QuicEcnCounts? ecnCounts = null)
+    {
+        AckGenerationState.RecordProcessedPacket(
+            packetNumberSpace,
+            packetNumber,
+            ackEliciting,
+            receivedAtMicros,
+            congestionExperienced,
+            ecnCounts);
+    }
+
+    /// <summary>
+    /// Determines whether this state should send an immediate ACK for a packet number space.
+    /// </summary>
+    public bool ShouldSendAckImmediately(QuicPacketNumberSpace packetNumberSpace)
+    {
+        return AckGenerationState.ShouldSendAckImmediately(packetNumberSpace);
+    }
+
+    /// <summary>
+    /// Determines whether an ACK frame should be included with an outgoing packet.
+    /// </summary>
+    public bool ShouldIncludeAckFrameWithOutgoingPacket(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros)
+    {
+        return AckGenerationState.ShouldIncludeAckFrameWithOutgoingPacket(packetNumberSpace, nowMicros, maxAckDelayMicros);
+    }
+
+    /// <summary>
+    /// Determines whether an ACK-only packet should be sent for received packets.
+    /// </summary>
+    public bool CanSendAckOnlyPacket(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros)
+    {
+        return AckGenerationState.CanSendAckOnlyPacket(packetNumberSpace, nowMicros, maxAckDelayMicros);
+    }
+
+    /// <summary>
+    /// Builds an ACK frame for the given packet number space.
+    </summary>
+    public bool TryBuildAckFrame(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out QuicAckFrame frame)
+    {
+        return AckGenerationState.TryBuildAckFrame(packetNumberSpace, nowMicros, out frame);
+    }
+
+    /// <summary>
+    /// Marks an ACK frame as sent after processing.
+    /// </summary>
+    public void MarkAckFrameSent(QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket)
+    {
+        AckGenerationState.MarkAckFrameSent(packetNumberSpace, sentAtMicros, ackOnlyPacket);
+    }
+
+    private static List<ulong> EnumerateAcknowledgedPacketNumbers(QuicAckFrame ackFrame)
+    {
+        List<ulong> acknowledgedPackets = [];
+
+        if (ackFrame.LargestAcknowledged < ackFrame.FirstAckRange)
+        {
+            return acknowledgedPackets;
+        }
+
+        ulong largestAcknowledged = ackFrame.LargestAcknowledged;
+        ulong smallestAcknowledged = largestAcknowledged - ackFrame.FirstAckRange;
+        for (ulong packetNumber = smallestAcknowledged; ; packetNumber++)
+        {
+            acknowledgedPackets.Add(packetNumber);
+            if (packetNumber == largestAcknowledged)
+            {
+                break;
+            }
+        }
+
+        foreach (QuicAckRange range in ackFrame.AdditionalRanges)
+        {
+            for (ulong packetNumber = range.SmallestAcknowledged; ; packetNumber++)
+            {
+                acknowledgedPackets.Add(packetNumber);
+                if (packetNumber == range.LargestAcknowledged)
+                {
+                    break;
+                }
+            }
+        }
+
+        return acknowledgedPackets;
+    }
+
+    private SortedDictionary<ulong, SentPacketState> GetOrCreateSentPackets(QuicPacketNumberSpace packetNumberSpace)
+    {
+        if (!sentPacketsBySpace.TryGetValue(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
+        {
+            sentPackets = [];
+            sentPacketsBySpace[packetNumberSpace] = sentPackets;
+        }
+
+        return sentPackets;
+    }
+
+    private bool TryGetSentPackets(QuicPacketNumberSpace packetNumberSpace, [NotNullWhen(true)] out SortedDictionary<ulong, SentPacketState>? sentPackets)
+    {
+        return sentPacketsBySpace.TryGetValue(packetNumberSpace, out sentPackets);
+    }
+
+    private readonly record struct SentPacketState(
+        ulong SentBytes,
+        ulong SentAtMicros,
+        bool AckEliciting,
+        bool InFlight,
+        bool IsProbePacket);
 }

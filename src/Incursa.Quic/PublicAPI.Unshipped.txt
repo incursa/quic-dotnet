@@ -183,6 +183,20 @@ Incursa.Quic.QuicAckGenerationState.ShouldIncludeAckFrameWithOutgoingPacket(Incu
 Incursa.Quic.QuicAckGenerationState.CanSendAckOnlyPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros) -> bool
 Incursa.Quic.QuicAckGenerationState.TryBuildAckFrame(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out Incursa.Quic.QuicAckFrame! frame) -> bool
 Incursa.Quic.QuicAckGenerationState.MarkAckFrameSent(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket) -> void
+Incursa.Quic.QuicSenderFlowController
+Incursa.Quic.QuicSenderFlowController.QuicSenderFlowController(ulong maxDatagramSizeBytes = 1200, int maximumRetainedAckRanges = 32, int minimumAckElicitingPacketsBeforeDelayedAck = 2) -> void
+Incursa.Quic.QuicSenderFlowController.CongestionControlState.get -> Incursa.Quic.QuicCongestionControlState
+Incursa.Quic.QuicSenderFlowController.AckGenerationState.get -> Incursa.Quic.QuicAckGenerationState
+Incursa.Quic.QuicSenderFlowController.CanSend(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false) -> bool
+Incursa.Quic.QuicSenderFlowController.RecordPacketSent(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, ulong sentBytes, ulong sentAtMicros, bool ackEliciting, bool isAckOnlyPacket = false, bool isProbePacket = false) -> void
+Incursa.Quic.QuicSenderFlowController.TryProcessAckFrame(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, Incursa.Quic.QuicAckFrame ackFrame, ulong ackReceivedAtMicros, bool applicationLimited = false, bool flowControlLimited = false, bool pacingLimited = false, bool pathValidated = false) -> bool
+Incursa.Quic.QuicSenderFlowController.TryRegisterLoss(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, ulong sentAtMicros, bool packetCanBeDecrypted = true, bool keysAvailable = true, bool sentAfterEarliestAcknowledgedPacket = true, bool allowAckOnlyLossSignal = false) -> bool
+Incursa.Quic.QuicSenderFlowController.RecordIncomingPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, bool ackEliciting, ulong receivedAtMicros, bool congestionExperienced = false, Incursa.Quic.QuicEcnCounts? ecnCounts = null) -> void
+Incursa.Quic.QuicSenderFlowController.ShouldSendAckImmediately(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace) -> bool
+Incursa.Quic.QuicSenderFlowController.ShouldIncludeAckFrameWithOutgoingPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros) -> bool
+Incursa.Quic.QuicSenderFlowController.CanSendAckOnlyPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros) -> bool
+Incursa.Quic.QuicSenderFlowController.TryBuildAckFrame(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out Incursa.Quic.QuicAckFrame! frame) -> bool
+Incursa.Quic.QuicSenderFlowController.MarkAckFrameSent(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket) -> void
 Incursa.Quic.QuicResetStreamFrame
 Incursa.Quic.QuicResetStreamFrame.QuicResetStreamFrame() -> void
 Incursa.Quic.QuicResetStreamFrame.QuicResetStreamFrame(ulong streamId, ulong applicationProtocolErrorCode, ulong finalSize) -> void

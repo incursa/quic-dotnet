@@ -491,4 +491,117 @@ public sealed class QuicCongestionControlStateTests
         Assert.Equal(12_000UL, state.BytesInFlightBytes);
         Assert.False(state.HasRecoveryStartTime);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void SenderFlowController_UsesAckFramesToAcknowledgeAndReduceFlight()
+    {
+        QuicSenderFlowController sender = new();
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            sentBytes: 1_200,
+            sentAtMicros: 1_000,
+            ackEliciting: true);
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 2,
+            sentBytes: 1_200,
+            sentAtMicros: 1_100,
+            ackEliciting: true);
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 3,
+            sentBytes: 1_200,
+            sentAtMicros: 1_200,
+            ackEliciting: true);
+
+        Assert.Equal(3_600UL, sender.CongestionControlState.BytesInFlightBytes);
+
+        QuicAckFrame ackFrame = new()
+        {
+            LargestAcknowledged = 3,
+            AckDelay = 100,
+            FirstAckRange = 2,
+            AdditionalRanges = Array.Empty<QuicAckRange>(),
+        };
+
+        Assert.True(sender.TryProcessAckFrame(
+            QuicPacketNumberSpace.ApplicationData,
+            ackFrame,
+            ackReceivedAtMicros: 2_000,
+            pacingLimited: true));
+
+        Assert.Equal(0UL, sender.CongestionControlState.BytesInFlightBytes);
+        Assert.Equal(15_600UL, sender.CongestionControlState.CongestionWindowBytes);
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 4,
+            sentBytes: 1_200,
+            sentAtMicros: 2_100,
+            ackEliciting: true);
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 5,
+            sentBytes: 1_200,
+            sentAtMicros: 2_200,
+            ackEliciting: true);
+
+        Assert.Equal(2_400UL, sender.CongestionControlState.BytesInFlightBytes);
+        Assert.False(sender.CongestionControlState.HasRecoveryStartTime);
+        Assert.True(sender.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 4,
+            sentAtMicros: 2_500));
+        Assert.True(sender.CongestionControlState.HasRecoveryStartTime);
+        Assert.Equal(7_800UL, sender.CongestionControlState.SlowStartThresholdBytes);
+        Assert.Equal(7_800UL, sender.CongestionControlState.CongestionWindowBytes);
+        Assert.Equal(1_200UL, sender.CongestionControlState.BytesInFlightBytes);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void SenderFlowController_ProcessesEcnInAckFrames()
+    {
+        QuicSenderFlowController sender = new();
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            sentBytes: 1_200,
+            sentAtMicros: 1_000,
+            ackEliciting: true);
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 2,
+            sentBytes: 1_200,
+            sentAtMicros: 1_100,
+            ackEliciting: true);
+
+        QuicAckFrame ackFrame = new()
+        {
+            LargestAcknowledged = 2,
+            AckDelay = 0,
+            FirstAckRange = 1,
+            AdditionalRanges = Array.Empty<QuicAckRange>(),
+            EcnCounts = new QuicEcnCounts(0, 0, 1),
+        };
+
+        Assert.True(sender.TryProcessAckFrame(
+            QuicPacketNumberSpace.ApplicationData,
+            ackFrame,
+            ackReceivedAtMicros: 2_000,
+            pathValidated: true,
+            pacingLimited: true));
+
+        Assert.True(sender.CongestionControlState.HasRecoveryStartTime);
+        Assert.Equal(7_200UL, sender.CongestionControlState.CongestionWindowBytes);
+        Assert.Equal(7_200UL, sender.CongestionControlState.SlowStartThresholdBytes);
+    }
 }
