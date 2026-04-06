@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-06T10:25:10.1414294-06:00",
+  "generated_at": "2026-04-06T11:13:23.3046064-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet",
   "sources": {
     "spec_files": [
@@ -17,11 +17,11 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-04-06T10:25:10.1381157-06:00",
+    "generated_at": "2026-04-06T11:13:23.3017960-06:00",
     "total_requirements": 1736,
     "by_state": {
-      "covered_but_missing_xrefs": 28,
-      "covered_but_proof_too_broad": 356,
+      "covered_but_missing_xrefs": 31,
+      "covered_but_proof_too_broad": 353,
       "partially_covered": 104,
       "trace_clean": 408,
       "uncovered_blocked": 266,
@@ -30,9 +30,9 @@
     "by_work_queue_tag": {
       "blocked": 266,
       "clean": 408,
-      "metadata_only": 28,
-      "new_tests_needed": 1279,
-      "restructure_needed": 422
+      "metadata_only": 31,
+      "new_tests_needed": 1277,
+      "restructure_needed": 419
     },
     "by_rfc": [
       {
@@ -46,8 +46,8 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "covered_but_missing_xrefs": 18,
-          "covered_but_proof_too_broad": 325,
+          "covered_but_missing_xrefs": 21,
+          "covered_but_proof_too_broad": 322,
           "partially_covered": 97,
           "trace_clean": 220,
           "uncovered_blocked": 218,
@@ -30655,7 +30655,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryRegisterLoss_IgnoresProbePacketLossForCongestionControl",
           "method": "TryRegisterLoss_IgnoresProbePacketLossForCongestionControl",
-          "line": 319,
+          "line": 382,
           "kinds": [
             "positive"
           ],
@@ -151810,7 +151810,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -151931,7 +151931,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -152097,7 +152097,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
           "method": "TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
-          "line": 547,
+          "line": 588,
           "kinds": [
             "negative"
           ],
@@ -152124,7 +152124,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
           "method": "TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
-          "line": 436,
+          "line": 477,
           "kinds": [
             "positive"
           ],
@@ -152160,22 +152160,22 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "covered_but_missing_xrefs",
+      "primary_issue": "spec_metadata",
       "work_queue_tags": [
-        "restructure_needed"
+        "metadata_only"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
       "spec_test_ref_count": 0,
       "spec_test_refs": null,
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
+        "total": 2,
+        "focused": 1,
         "broad": 1,
         "by_kind": {
           "positive": 1,
-          "negative": 0,
+          "negative": 1,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
@@ -152196,9 +152196,33 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
           "class": "QuicConnectionStreamStateTests",
+          "member": "QuicConnectionStreamStateTests.TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream",
+          "method": "TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream",
+          "line": 121,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P1-0002",
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+          "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
           "method": "TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
-          "line": 436,
+          "line": 477,
           "kinds": [
             "positive"
           ],
@@ -152311,7 +152335,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
           "method": "TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
-          "line": 436,
+          "line": 477,
           "kinds": [
             "positive"
           ],
@@ -152730,7 +152754,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
           "method": "TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
-          "line": 436,
+          "line": 477,
           "kinds": [
             "positive"
           ],
@@ -153184,7 +153208,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
           "method": "TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
-          "line": 547,
+          "line": 588,
           "kinds": [
             "negative"
           ],
@@ -153256,7 +153280,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
           "method": "TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
-          "line": 493,
+          "line": 534,
           "kinds": [
             "positive"
           ],
@@ -153283,7 +153307,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
           "method": "TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
-          "line": 547,
+          "line": 588,
           "kinds": [
             "negative"
           ],
@@ -153359,7 +153383,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
           "method": "TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
-          "line": 252,
+          "line": 293,
           "kinds": [
             "positive"
           ],
@@ -153388,7 +153412,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -153427,7 +153451,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
           "method": "TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
-          "line": 547,
+          "line": 588,
           "kinds": [
             "negative"
           ],
@@ -153518,14 +153542,14 @@
       "spec_test_refs": null,
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 3,
+        "total": 11,
+        "focused": 7,
         "broad": 4,
         "by_kind": {
-          "positive": 3,
-          "negative": 2,
-          "edge": 1,
-          "fuzz": 1,
+          "positive": 4,
+          "negative": 3,
+          "edge": 2,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -153571,6 +153595,57 @@
           "requirement_id": "REQ-QUIC-RFC9000-S3P2-0005",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs",
+          "class": "QuicConnectionStreamStateFuzzTests",
+          "member": "QuicConnectionStreamStateFuzzTests.Fuzz_TryApplyMaxStreamDataFrame_OpensMissingPeerBidirectionalStreams",
+          "method": "Fuzz_TryApplyMaxStreamDataFrame_OpensMissingPeerBidirectionalStreams",
+          "line": 185,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
+          "class": "QuicConnectionStreamStatePropertyTests",
+          "member": "QuicConnectionStreamStatePropertyTests.TryApplyMaxStreamDataFrame_ImplicitlyOpensPeerBidiStreams",
+          "method": "TryApplyMaxStreamDataFrame_ImplicitlyOpensPeerBidiStreams",
+          "line": 153,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Property"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016",
+            "REQ-QUIC-RFC9000-S3P2-0019"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
           "class": "QuicConnectionStreamStatePropertyTests",
           "member": "QuicConnectionStreamStatePropertyTests.TryReserveSendCapacity_TracksOutOfOrderSendReservations",
@@ -153600,9 +153675,59 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
           "class": "QuicConnectionStreamStateTests",
+          "member": "QuicConnectionStreamStateTests.TryApplyMaxStreamDataFrame_OpensMissingPeerBidiStreamWhenImplicitOpenIsSafe",
+          "method": "TryApplyMaxStreamDataFrame_OpensMissingPeerBidiStreamWhenImplicitOpenIsSafe",
+          "line": 97,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016",
+            "REQ-QUIC-RFC9000-S3P2-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+          "class": "QuicConnectionStreamStateTests",
+          "member": "QuicConnectionStreamStateTests.TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream",
+          "method": "TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream",
+          "line": 121,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P1-0002",
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+          "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveAndSendCapacity_RejectsWrongStreamParts",
           "method": "TryReceiveAndSendCapacity_RejectsWrongStreamParts",
-          "line": 393,
+          "line": 434,
           "kinds": [
             "negative"
           ],
@@ -153631,7 +153756,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
           "method": "TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
-          "line": 493,
+          "line": 534,
           "kinds": [
             "positive"
           ],
@@ -153658,7 +153783,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
           "method": "TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
-          "line": 547,
+          "line": 588,
           "kinds": [
             "negative"
           ],
@@ -153685,7 +153810,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
           "method": "TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
-          "line": 436,
+          "line": 477,
           "kinds": [
             "positive"
           ],
@@ -153714,7 +153839,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
           "method": "TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
-          "line": 321,
+          "line": 362,
           "kinds": [
             "positive"
           ],
@@ -153760,14 +153885,14 @@
       "spec_test_refs": null,
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 2,
+        "total": 10,
+        "focused": 6,
         "broad": 4,
         "by_kind": {
-          "positive": 3,
-          "negative": 1,
-          "edge": 1,
-          "fuzz": 1,
+          "positive": 4,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -153813,6 +153938,57 @@
           "requirement_id": "REQ-QUIC-RFC9000-S3P2-0006",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs",
+          "class": "QuicConnectionStreamStateFuzzTests",
+          "member": "QuicConnectionStreamStateFuzzTests.Fuzz_TryApplyMaxStreamDataFrame_OpensMissingPeerBidirectionalStreams",
+          "method": "Fuzz_TryApplyMaxStreamDataFrame_OpensMissingPeerBidirectionalStreams",
+          "line": 185,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
+          "class": "QuicConnectionStreamStatePropertyTests",
+          "member": "QuicConnectionStreamStatePropertyTests.TryApplyMaxStreamDataFrame_ImplicitlyOpensPeerBidiStreams",
+          "method": "TryApplyMaxStreamDataFrame_ImplicitlyOpensPeerBidiStreams",
+          "line": 153,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Property"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016",
+            "REQ-QUIC-RFC9000-S3P2-0019"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
           "class": "QuicConnectionStreamStatePropertyTests",
           "member": "QuicConnectionStreamStatePropertyTests.TryReserveSendCapacity_TracksOutOfOrderSendReservations",
@@ -153842,9 +154018,59 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
           "class": "QuicConnectionStreamStateTests",
+          "member": "QuicConnectionStreamStateTests.TryApplyMaxStreamDataFrame_OpensMissingPeerBidiStreamWhenImplicitOpenIsSafe",
+          "method": "TryApplyMaxStreamDataFrame_OpensMissingPeerBidiStreamWhenImplicitOpenIsSafe",
+          "line": 97,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016",
+            "REQ-QUIC-RFC9000-S3P2-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+          "class": "QuicConnectionStreamStateTests",
+          "member": "QuicConnectionStreamStateTests.TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream",
+          "method": "TryApplyMaxStreamDataFrame_RejectsMissingPeerUnidirectionalStream",
+          "line": 121,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P1-0002",
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+          "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveAndSendCapacity_RejectsWrongStreamParts",
           "method": "TryReceiveAndSendCapacity_RejectsWrongStreamParts",
-          "line": 393,
+          "line": 434,
           "kinds": [
             "negative"
           ],
@@ -153873,7 +154099,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
           "method": "TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
-          "line": 493,
+          "line": 534,
           "kinds": [
             "positive"
           ],
@@ -153900,7 +154126,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
           "method": "TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
-          "line": 436,
+          "line": 477,
           "kinds": [
             "positive"
           ],
@@ -153929,7 +154155,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
           "method": "TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
-          "line": 321,
+          "line": 362,
           "kinds": [
             "positive"
           ],
@@ -154003,7 +154229,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
           "method": "TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
-          "line": 493,
+          "line": 534,
           "kinds": [
             "positive"
           ],
@@ -154030,7 +154256,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
           "method": "TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
-          "line": 436,
+          "line": 477,
           "kinds": [
             "positive"
           ],
@@ -154104,7 +154330,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
           "method": "TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
-          "line": 493,
+          "line": 534,
           "kinds": [
             "positive"
           ],
@@ -154131,7 +154357,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
           "method": "TryReserveSendCapacity_DefersFinalSizeUntilABlockedFinCanBeRetried",
-          "line": 436,
+          "line": 477,
           "kinds": [
             "positive"
           ],
@@ -154207,7 +154433,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
           "method": "TryReceiveStreamFrame_RejectsDataOnLocalUnidirectionalSendOnlyStreams",
-          "line": 547,
+          "line": 588,
           "kinds": [
             "negative"
           ],
@@ -154282,7 +154508,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
           "method": "TryReceiveStreamFrame_AdvancesReceiveStateThroughOrderedFragmentArrival",
-          "line": 493,
+          "line": 534,
           "kinds": [
             "positive"
           ],
@@ -154357,7 +154583,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -154403,31 +154629,28 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "covered_but_missing_xrefs",
+      "primary_issue": "spec_metadata",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "metadata_only"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
       "spec_test_ref_count": 0,
       "spec_test_refs": null,
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 1,
+        "total": 7,
+        "focused": 4,
         "broad": 3,
         "by_kind": {
-          "positive": 2,
+          "positive": 3,
           "negative": 1,
-          "edge": 1,
-          "fuzz": 0,
+          "edge": 2,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -154436,6 +154659,57 @@
         }
       ],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs",
+          "class": "QuicConnectionStreamStateFuzzTests",
+          "member": "QuicConnectionStreamStateFuzzTests.Fuzz_TryApplyMaxStreamDataFrame_OpensMissingPeerBidirectionalStreams",
+          "method": "Fuzz_TryApplyMaxStreamDataFrame_OpensMissingPeerBidirectionalStreams",
+          "line": 185,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
+          "class": "QuicConnectionStreamStatePropertyTests",
+          "member": "QuicConnectionStreamStatePropertyTests.TryApplyMaxStreamDataFrame_ImplicitlyOpensPeerBidiStreams",
+          "method": "TryApplyMaxStreamDataFrame_ImplicitlyOpensPeerBidiStreams",
+          "line": 153,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Property"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016",
+            "REQ-QUIC-RFC9000-S3P2-0019"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S3P2-0012",
           "source": "requirement_attribute",
@@ -154469,9 +154743,35 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
           "class": "QuicConnectionStreamStateTests",
+          "member": "QuicConnectionStreamStateTests.TryApplyMaxStreamDataFrame_OpensMissingPeerBidiStreamWhenImplicitOpenIsSafe",
+          "method": "TryApplyMaxStreamDataFrame_OpensMissingPeerBidiStreamWhenImplicitOpenIsSafe",
+          "line": 97,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016",
+            "REQ-QUIC-RFC9000-S3P2-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+          "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveAndSendCapacity_RejectsWrongStreamParts",
           "method": "TryReceiveAndSendCapacity_RejectsWrongStreamParts",
-          "line": 393,
+          "line": 434,
           "kinds": [
             "negative"
           ],
@@ -154500,7 +154800,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -154539,7 +154839,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
           "method": "TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
-          "line": 321,
+          "line": 362,
           "kinds": [
             "positive"
           ],
@@ -154671,7 +154971,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -154810,7 +155110,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -154982,7 +155282,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -155028,31 +155328,28 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "covered_but_missing_xrefs",
+      "primary_issue": "spec_metadata",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "metadata_only"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
       "spec_test_ref_count": 0,
       "spec_test_refs": null,
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 1,
+        "total": 8,
+        "focused": 4,
         "broad": 4,
         "by_kind": {
-          "positive": 2,
+          "positive": 3,
           "negative": 1,
-          "edge": 1,
-          "fuzz": 1,
+          "edge": 2,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -155094,6 +155391,57 @@
           "requirement_id": "REQ-QUIC-RFC9000-S3P2-0016",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs",
+          "class": "QuicConnectionStreamStateFuzzTests",
+          "member": "QuicConnectionStreamStateFuzzTests.Fuzz_TryApplyMaxStreamDataFrame_OpensMissingPeerBidirectionalStreams",
+          "method": "Fuzz_TryApplyMaxStreamDataFrame_OpensMissingPeerBidirectionalStreams",
+          "line": 185,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0016",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
+          "class": "QuicConnectionStreamStatePropertyTests",
+          "member": "QuicConnectionStreamStatePropertyTests.TryApplyMaxStreamDataFrame_ImplicitlyOpensPeerBidiStreams",
+          "method": "TryApplyMaxStreamDataFrame_ImplicitlyOpensPeerBidiStreams",
+          "line": 153,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Property"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016",
+            "REQ-QUIC-RFC9000-S3P2-0019"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0016",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
           "class": "QuicConnectionStreamStatePropertyTests",
           "member": "QuicConnectionStreamStatePropertyTests.TryReserveSendCapacity_TracksOutOfOrderSendReservations",
@@ -155123,9 +155471,35 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
           "class": "QuicConnectionStreamStateTests",
+          "member": "QuicConnectionStreamStateTests.TryApplyMaxStreamDataFrame_OpensMissingPeerBidiStreamWhenImplicitOpenIsSafe",
+          "method": "TryApplyMaxStreamDataFrame_OpensMissingPeerBidiStreamWhenImplicitOpenIsSafe",
+          "line": 97,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016",
+            "REQ-QUIC-RFC9000-S3P2-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0016",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+          "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveAndSendCapacity_RejectsWrongStreamParts",
           "method": "TryReceiveAndSendCapacity_RejectsWrongStreamParts",
-          "line": 393,
+          "line": 434,
           "kinds": [
             "negative"
           ],
@@ -155154,7 +155528,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -155193,7 +155567,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
           "method": "TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
-          "line": 321,
+          "line": 362,
           "kinds": [
             "positive"
           ],
@@ -155381,7 +155755,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveAndSendCapacity_RejectsWrongStreamParts",
           "method": "TryReceiveAndSendCapacity_RejectsWrongStreamParts",
-          "line": 393,
+          "line": 434,
           "kinds": [
             "negative"
           ],
@@ -155410,7 +155784,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -155449,7 +155823,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
           "method": "TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
-          "line": 321,
+          "line": 362,
           "kinds": [
             "positive"
           ],
@@ -155485,22 +155859,22 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
       "work_queue_tags": [
         "new_tests_needed",
         "restructure_needed"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
       "spec_test_ref_count": 0,
       "spec_test_refs": null,
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 0,
+        "total": 4,
+        "focused": 1,
         "broad": 3,
         "by_kind": {
-          "positive": 1,
+          "positive": 2,
           "negative": 1,
           "edge": 0,
           "fuzz": 1,
@@ -155553,9 +155927,35 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
           "class": "QuicConnectionStreamStateTests",
+          "member": "QuicConnectionStreamStateTests.TryApplyMaxStreamDataFrame_OpensMissingPeerBidiStreamWhenImplicitOpenIsSafe",
+          "method": "TryApplyMaxStreamDataFrame_OpensMissingPeerBidiStreamWhenImplicitOpenIsSafe",
+          "line": 97,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016",
+            "REQ-QUIC-RFC9000-S3P2-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0018",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+          "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveAndSendCapacity_RejectsWrongStreamParts",
           "method": "TryReceiveAndSendCapacity_RejectsWrongStreamParts",
-          "line": 393,
+          "line": 434,
           "kinds": [
             "negative"
           ],
@@ -155584,7 +155984,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
           "method": "TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
-          "line": 321,
+          "line": 362,
           "kinds": [
             "positive"
           ],
@@ -155620,24 +156020,24 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
       "work_queue_tags": [
         "new_tests_needed",
         "restructure_needed"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
       "spec_test_ref_count": 0,
       "spec_test_refs": null,
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 0,
+        "total": 5,
+        "focused": 1,
         "broad": 4,
         "by_kind": {
           "positive": 2,
           "negative": 1,
-          "edge": 0,
+          "edge": 1,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
@@ -155686,11 +156086,37 @@
           "requirement_id": "REQ-QUIC-RFC9000-S3P2-0019",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
+          "class": "QuicConnectionStreamStatePropertyTests",
+          "member": "QuicConnectionStreamStatePropertyTests.TryApplyMaxStreamDataFrame_ImplicitlyOpensPeerBidiStreams",
+          "method": "TryApplyMaxStreamDataFrame_ImplicitlyOpensPeerBidiStreams",
+          "line": 153,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Property"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S3P2-0005",
+            "REQ-QUIC-RFC9000-S3P2-0006",
+            "REQ-QUIC-RFC9000-S3P2-0012",
+            "REQ-QUIC-RFC9000-S3P2-0016",
+            "REQ-QUIC-RFC9000-S3P2-0019"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S3P2-0019",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveAndSendCapacity_RejectsWrongStreamParts",
           "method": "TryReceiveAndSendCapacity_RejectsWrongStreamParts",
-          "line": 393,
+          "line": 434,
           "kinds": [
             "negative"
           ],
@@ -155719,7 +156145,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -155758,7 +156184,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
           "method": "TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
-          "line": 321,
+          "line": 362,
           "kinds": [
             "positive"
           ],
@@ -155946,7 +156372,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveAndSendCapacity_RejectsWrongStreamParts",
           "method": "TryReceiveAndSendCapacity_RejectsWrongStreamParts",
-          "line": 393,
+          "line": 434,
           "kinds": [
             "negative"
           ],
@@ -155975,7 +156401,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -156014,7 +156440,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
           "method": "TryReserveSendCapacity_TransitionsThroughReadySendAndDataSent",
-          "line": 321,
+          "line": 362,
           "kinds": [
             "positive"
           ],
@@ -156093,7 +156519,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
           "method": "TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
-          "line": 252,
+          "line": 293,
           "kinds": [
             "positive"
           ],
@@ -156264,7 +156690,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
           "method": "TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
-          "line": 252,
+          "line": 293,
           "kinds": [
             "positive"
           ],
@@ -157383,7 +157809,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -157519,7 +157945,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
           "method": "TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
-          "line": 178,
+          "line": 219,
           "kinds": [
             "negative"
           ],
@@ -158093,7 +158519,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -159456,7 +159882,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReadStreamData_DoesNotAdvertiseCreditWhenTheReceiveLimitsAreAlreadyAtTheMaximum",
           "method": "TryReadStreamData_DoesNotAdvertiseCreditWhenTheReceiveLimitsAreAlreadyAtTheMaximum",
-          "line": 214,
+          "line": 255,
           "kinds": [
             "positive"
           ],
@@ -159480,7 +159906,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveResetStreamFrame_DoesNotAdvertiseConnectionCreditWhenTheLimitCannotIncrease",
           "method": "TryReceiveResetStreamFrame_DoesNotAdvertiseConnectionCreditWhenTheLimitCannotIncrease",
-          "line": 290,
+          "line": 331,
           "kinds": [
             "positive"
           ],
@@ -159504,7 +159930,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -159590,7 +160016,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReadStreamData_DoesNotAdvertiseCreditWhenTheReceiveLimitsAreAlreadyAtTheMaximum",
           "method": "TryReadStreamData_DoesNotAdvertiseCreditWhenTheReceiveLimitsAreAlreadyAtTheMaximum",
-          "line": 214,
+          "line": 255,
           "kinds": [
             "positive"
           ],
@@ -159614,7 +160040,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveResetStreamFrame_DoesNotAdvertiseConnectionCreditWhenTheLimitCannotIncrease",
           "method": "TryReceiveResetStreamFrame_DoesNotAdvertiseConnectionCreditWhenTheLimitCannotIncrease",
-          "line": 290,
+          "line": 331,
           "kinds": [
             "positive"
           ],
@@ -159686,7 +160112,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReadStreamData_DoesNotAdvertiseCreditWhenTheReceiveLimitsAreAlreadyAtTheMaximum",
           "method": "TryReadStreamData_DoesNotAdvertiseCreditWhenTheReceiveLimitsAreAlreadyAtTheMaximum",
-          "line": 214,
+          "line": 255,
           "kinds": [
             "positive"
           ],
@@ -159710,7 +160136,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveResetStreamFrame_DoesNotAdvertiseConnectionCreditWhenTheLimitCannotIncrease",
           "method": "TryReceiveResetStreamFrame_DoesNotAdvertiseConnectionCreditWhenTheLimitCannotIncrease",
-          "line": 290,
+          "line": 331,
           "kinds": [
             "positive"
           ],
@@ -159734,7 +160160,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
           "method": "TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
-          "line": 178,
+          "line": 219,
           "kinds": [
             "negative"
           ],
@@ -160383,7 +160809,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
           "method": "TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
-          "line": 252,
+          "line": 293,
           "kinds": [
             "positive"
           ],
@@ -160603,7 +161029,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -160745,7 +161171,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -161048,7 +161474,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
           "method": "TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
-          "line": 252,
+          "line": 293,
           "kinds": [
             "positive"
           ],
@@ -161162,7 +161588,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
           "method": "TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
-          "line": 252,
+          "line": 293,
           "kinds": [
             "positive"
           ],
@@ -161191,7 +161617,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
           "method": "TryReceiveStreamFrame_BuffersPeerDataAndReadsInOrder",
-          "line": 110,
+          "line": 151,
           "kinds": [
             "positive"
           ],
@@ -161327,7 +161753,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
           "method": "TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
-          "line": 252,
+          "line": 293,
           "kinds": [
             "positive"
           ],
@@ -161356,7 +161782,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
           "method": "TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
-          "line": 178,
+          "line": 219,
           "kinds": [
             "negative"
           ],
@@ -161435,7 +161861,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
           "method": "TryReceiveResetStreamFrame_AccountsFinalSizeAndTransitionsToResetStates",
-          "line": 252,
+          "line": 293,
           "kinds": [
             "positive"
           ],
@@ -161464,7 +161890,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
           "method": "TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
-          "line": 178,
+          "line": 219,
           "kinds": [
             "negative"
           ],
@@ -161542,7 +161968,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
           "method": "TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
-          "line": 178,
+          "line": 219,
           "kinds": [
             "negative"
           ],
@@ -161619,7 +162045,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
           "method": "TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
-          "line": 178,
+          "line": 219,
           "kinds": [
             "negative"
           ],
@@ -161693,7 +162119,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
           "method": "TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
-          "line": 178,
+          "line": 219,
           "kinds": [
             "negative"
           ],
@@ -162831,7 +163257,7 @@
           "class": "QuicConnectionStreamStateTests",
           "member": "QuicConnectionStreamStateTests.TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
           "method": "TryReceiveStreamFrame_RejectsStreamLimitFlowControlAndFinalSizeViolations",
-          "line": 178,
+          "line": 219,
           "kinds": [
             "negative"
           ],
@@ -204138,12 +204564,12 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
-          "positive": 2,
-          "negative": 2,
+          "positive": 4,
+          "negative": 5,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
@@ -204158,6 +204584,116 @@
         }
       ],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P4-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003-KeyLifecycle.cs",
+          "class": "REQ_QUIC_RFC9002_S6P4_0003_KeyLifecycle",
+          "member": "REQ_QUIC_RFC9002_S6P4_0003_KeyLifecycle.RejectZeroRtt_IsIdempotent",
+          "method": "RejectZeroRtt_IsIdempotent",
+          "line": 80,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P4-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P4-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003-KeyLifecycle.cs",
+          "class": "REQ_QUIC_RFC9002_S6P4_0003_KeyLifecycle",
+          "member": "REQ_QUIC_RFC9002_S6P4_0003_KeyLifecycle.RejectZeroRtt_MarksKeysUnavailableAndPreventsFurtherUse",
+          "method": "RejectZeroRtt_MarksKeysUnavailableAndPreventsFurtherUse",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P4-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P4-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003-KeyLifecycle.cs",
+          "class": "REQ_QUIC_RFC9002_S6P4_0003_KeyLifecycle",
+          "member": "REQ_QUIC_RFC9002_S6P4_0003_KeyLifecycle.TryActivate_OnlySucceedsFromPendingState",
+          "method": "TryActivate_OnlySucceedsFromPendingState",
+          "line": 48,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P4-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P4-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003-KeyLifecycle.cs",
+          "class": "REQ_QUIC_RFC9002_S6P4_0003_KeyLifecycle",
+          "member": "REQ_QUIC_RFC9002_S6P4_0003_KeyLifecycle.TryUseForOpening_DiscardsKeysWhenIntegrityLimitReachesBeforeProtectionLimit",
+          "method": "TryUseForOpening_DiscardsKeysWhenIntegrityLimitReachesBeforeProtectionLimit",
+          "line": 62,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P4-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P4-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003-KeyLifecycle.cs",
+          "class": "REQ_QUIC_RFC9002_S6P4_0003_KeyLifecycle",
+          "member": "REQ_QUIC_RFC9002_S6P4_0003_KeyLifecycle.TryUseForProtection_FailsWhenKeysAreUnavailable",
+          "method": "TryUseForProtection_FailsWhenKeysAreUnavailable",
+          "line": 33,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P4-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9002-S6P4-0003",
           "source": "requirement_attribute",
@@ -204483,7 +205019,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 263,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -207621,13 +208157,13 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P2-0007.cs::TryRegisterAcknowledgedPacket_EntersCongestionAvoidanceWhenARecoveryPeriodPacketIsAcknowledged",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 2,
+        "total": 6,
+        "focused": 5,
         "broad": 1,
         "by_kind": {
-          "positive": 3,
-          "negative": 1,
-          "edge": 0,
+          "positive": 5,
+          "negative": 2,
+          "edge": 1,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
@@ -207636,6 +208172,74 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+          "class": "QuicCongestionControlStateTests",
+          "member": "QuicCongestionControlStateTests.SenderFlowController_ExitsRecoveryWhenAnInRecoveryPacketIsAcknowledged",
+          "method": "SenderFlowController_ExitsRecoveryWhenAnInRecoveryPacketIsAcknowledged",
+          "line": 633,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S7P3P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+          "class": "QuicCongestionControlStateTests",
+          "member": "QuicCongestionControlStateTests.TryRegisterAcknowledgedPacket_ClearsRecoveryOnlyForPacketsSentDuringRecovery",
+          "method": "TryRegisterAcknowledgedPacket_ClearsRecoveryOnlyForPacketsSentDuringRecovery",
+          "line": 281,
+          "kinds": [
+            "edge",
+            "negative"
+          ],
+          "categories": [
+            "Negative",
+            "Property"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S7P3P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+          "class": "QuicCongestionControlStateTests",
+          "member": "QuicCongestionControlStateTests.TryRegisterAcknowledgedPacket_EndsRecoveryWhenTheAcknowledgedPacketWasSentDuringRecovery",
+          "method": "TryRegisterAcknowledgedPacket_EndsRecoveryWhenTheAcknowledgedPacketWasSentDuringRecovery",
+          "line": 244,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S7P3P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0007",
           "source": "requirement_attribute",
@@ -208309,7 +208913,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 362,
+          "line": 425,
           "kinds": [
             "negative",
             "positive"
@@ -208385,7 +208989,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 362,
+          "line": 425,
           "kinds": [
             "negative",
             "positive"
@@ -208461,7 +209065,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 362,
+          "line": 425,
           "kinds": [
             "negative",
             "positive"
@@ -208537,7 +209141,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 362,
+          "line": 425,
           "kinds": [
             "negative",
             "positive"
@@ -208615,7 +209219,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 362,
+          "line": 425,
           "kinds": [
             "negative",
             "positive"
@@ -208688,7 +209292,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 362,
+          "line": 425,
           "kinds": [
             "negative",
             "positive"
@@ -208805,7 +209409,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_DoesNotStartBeforeAnyRttSampleExists",
           "method": "TryDetectPersistentCongestion_DoesNotStartBeforeAnyRttSampleExists",
-          "line": 470,
+          "line": 533,
           "kinds": [
             "negative"
           ],
@@ -208827,7 +209431,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 362,
+          "line": 425,
           "kinds": [
             "negative",
             "positive"
@@ -208860,7 +209464,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_StartsOnceAnRttSampleIsAvailable",
           "method": "TryDetectPersistentCongestion_StartsOnceAnRttSampleIsAvailable",
-          "line": 438,
+          "line": 501,
           "kinds": [
             "positive"
           ],
@@ -209012,7 +209616,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 362,
+          "line": 425,
           "kinds": [
             "negative",
             "positive"
@@ -209137,7 +209741,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 362,
+          "line": 425,
           "kinds": [
             "negative",
             "positive"
@@ -209215,7 +209819,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
           "method": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
-          "line": 362,
+          "line": 425,
           "kinds": [
             "negative",
             "positive"
@@ -209288,7 +209892,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 263,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -209402,7 +210006,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 263,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -209520,7 +210124,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 263,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -209722,7 +210326,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 263,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -209836,7 +210440,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 263,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -209954,7 +210558,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 263,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -210028,7 +210632,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 263,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -210102,7 +210706,7 @@
           "class": "QuicCongestionControlStateTests",
           "member": "QuicCongestionControlStateTests.TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
           "method": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers",
-          "line": 263,
+          "line": 326,
           "kinds": [
             "positive"
           ],

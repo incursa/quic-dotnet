@@ -342,4 +342,78 @@ public sealed class QuicRecoveryTimingTests
             out _,
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void QuicRecoveryController_TransitionsToIdleStateWhenAllAckElicitingPacketsAreAcknowledged()
+    {
+        QuicRecoveryController recoveryController = new();
+
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Initial, packetNumber: 1, sentAtMicros: 100, isAckElicitingPacket: true);
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Handshake, packetNumber: 2, sentAtMicros: 120, isAckElicitingPacket: true);
+
+        Assert.True(recoveryController.HasAckElicitingPacketsInFlight(QuicPacketNumberSpace.Initial));
+        Assert.True(recoveryController.HasAckElicitingPacketsInFlight(QuicPacketNumberSpace.Handshake));
+
+        Assert.True(recoveryController.RecordAcknowledgment(
+            QuicPacketNumberSpace.Initial,
+            largestAcknowledgedPacketNumber: 1,
+            ackReceivedAtMicros: 300,
+            newlyAcknowledgedAckElicitingPacketNumbers: new[] { 1UL },
+            handshakeConfirmed: true));
+
+        Assert.False(recoveryController.HasAckElicitingPacketsInFlight(QuicPacketNumberSpace.Initial));
+        Assert.True(recoveryController.HasAckElicitingPacketsInFlight(QuicPacketNumberSpace.Handshake));
+
+        Assert.True(recoveryController.RecordAcknowledgment(
+            QuicPacketNumberSpace.Handshake,
+            largestAcknowledgedPacketNumber: 2,
+            ackReceivedAtMicros: 350,
+            newlyAcknowledgedAckElicitingPacketNumbers: new[] { 2UL },
+            handshakeConfirmed: true));
+
+        Assert.False(recoveryController.HasAckElicitingPacketsInFlight(QuicPacketNumberSpace.Initial));
+        Assert.False(recoveryController.HasAckElicitingPacketsInFlight(QuicPacketNumberSpace.Handshake));
+        Assert.False(recoveryController.HasAnyAckElicitingPacketsInFlight);
+
+        Assert.False(recoveryController.TrySelectLossDetectionTimer(
+            nowMicros: 400,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: true,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: true,
+            handshakeKeysAvailable: true,
+            out _,
+            out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void QuicRecoveryController_CancelsRecoveryTimerWhenServerIsAtAntiAmplificationLimit()
+    {
+        QuicRecoveryController recoveryController = new();
+
+        recoveryController.RecordPacketSent(QuicPacketNumberSpace.Initial, packetNumber: 1, sentAtMicros: 100, isAckElicitingPacket: true);
+
+        Assert.True(recoveryController.TrySelectLossDetectionTimer(
+            nowMicros: 200,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: false,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: false,
+            handshakeKeysAvailable: true,
+            out _,
+            out _));
+
+        Assert.False(recoveryController.TrySelectLossDetectionTimer(
+            nowMicros: 200,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: false,
+            serverAtAntiAmplificationLimit: true,
+            peerAddressValidationComplete: false,
+            handshakeKeysAvailable: true,
+            out _,
+            out _));
+    }
 }
+
