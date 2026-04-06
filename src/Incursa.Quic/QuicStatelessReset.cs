@@ -22,6 +22,9 @@ public static class QuicStatelessReset
     /// </summary>
     public const int MinimumUnpredictableBytes = 5;
 
+    private const int ResetResistancePacketLengthPadding = 22;
+    private const long LoopPreventionDatagramLengthMultiplier = 3L;
+
     /// <summary>
     /// The minimum datagram length this helper can format while still satisfying the visible-bit requirement.
     /// </summary>
@@ -79,12 +82,12 @@ public static class QuicStatelessReset
     {
         minimumPacketLength = default;
 
-        if (minimumConnectionIdLength < 0 || minimumConnectionIdLength > int.MaxValue - 22)
+        if (minimumConnectionIdLength < 0 || minimumConnectionIdLength > int.MaxValue - ResetResistancePacketLengthPadding)
         {
             return false;
         }
 
-        minimumPacketLength = minimumConnectionIdLength + 22;
+        minimumPacketLength = minimumConnectionIdLength + ResetResistancePacketLengthPadding;
         return true;
     }
 
@@ -106,7 +109,7 @@ public static class QuicStatelessReset
             return false;
         }
 
-        return (long)datagramLength < (long)triggeringPacketLength * 3L;
+        return (long)datagramLength < (long)triggeringPacketLength * LoopPreventionDatagramLengthMultiplier;
     }
 
     /// <summary>
@@ -131,7 +134,7 @@ public static class QuicStatelessReset
         Span<byte> unpredictableBytes = destination[..unpredictableBytesLength];
         RandomNumberGenerator.Fill(unpredictableBytes);
 
-        unpredictableBytes[0] = (byte)((unpredictableBytes[0] & 0x7F) | 0x40);
+        unpredictableBytes[0] = (byte)((unpredictableBytes[0] & QuicPacketHeaderBits.HeaderControlBitsMask) | QuicPacketHeaderBits.FixedBitMask);
         statelessResetToken.CopyTo(destination.Slice(unpredictableBytesLength, StatelessResetTokenLength));
 
         bytesWritten = datagramLength;
@@ -160,8 +163,8 @@ public static class QuicStatelessReset
     public static bool IsPotentialStatelessReset(ReadOnlySpan<byte> datagram)
     {
         return datagram.Length >= MinimumDatagramLength
-            && (datagram[0] & 0x80) == 0
-            && (datagram[0] & 0x40) != 0;
+            && (datagram[0] & QuicPacketHeaderBits.HeaderFormBitMask) == 0
+            && (datagram[0] & QuicPacketHeaderBits.FixedBitMask) != 0;
     }
 
     /// <summary>

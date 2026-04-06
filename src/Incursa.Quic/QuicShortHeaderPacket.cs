@@ -27,27 +27,27 @@ public readonly ref struct QuicShortHeaderPacket
     /// <summary>
     /// Gets whether the fixed bit is set in byte 0.
     /// </summary>
-    public bool FixedBit => (headerControlBits & 0x40) != 0;
+    public bool FixedBit => (headerControlBits & QuicPacketHeaderBits.FixedBitMask) != 0;
 
     /// <summary>
     /// Gets whether the spin bit is set in byte 0.
     /// </summary>
-    public bool SpinBit => (headerControlBits & 0x20) != 0;
+    public bool SpinBit => (headerControlBits & QuicPacketHeaderBits.SpinBitMask) != 0;
 
     /// <summary>
     /// Gets the reserved bits from byte 0.
     /// </summary>
-    public byte ReservedBits => (byte)((headerControlBits & 0x18) >> 3);
+    public byte ReservedBits => (byte)((headerControlBits & QuicPacketHeaderBits.ShortReservedBitsMask) >> QuicPacketHeaderBits.ShortReservedBitsShift);
 
     /// <summary>
     /// Gets whether the key phase bit is set in byte 0.
     /// </summary>
-    public bool KeyPhase => (headerControlBits & 0x04) != 0;
+    public bool KeyPhase => (headerControlBits & QuicPacketHeaderBits.KeyPhaseBitMask) != 0;
 
     /// <summary>
     /// Gets the packet number length bits from byte 0.
     /// </summary>
-    public byte PacketNumberLengthBits => (byte)(headerControlBits & 0x03);
+    public byte PacketNumberLengthBits => (byte)(headerControlBits & QuicPacketHeaderBits.PacketNumberLengthBitsMask);
 
     /// <summary>
     /// Gets the bytes after the first byte as an opaque remainder.

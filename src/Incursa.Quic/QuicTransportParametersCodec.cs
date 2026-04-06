@@ -43,8 +43,14 @@ public static class QuicTransportParametersCodec
     private const ulong ActiveConnectionIdLimitId = 0x0E;
     private const ulong InitialSourceConnectionIdId = 0x0F;
     private const ulong RetrySourceConnectionIdId = 0x10;
-    private const ulong MaximumStreamLimit = 1UL << 60;
-    private const int PreferredAddressMinimumLength = 4 + 2 + 16 + 2 + 1 + 16;
+    private const int MaximumStreamLimitBitCount = 60;
+    private const ulong MaximumStreamLimit = 1UL << MaximumStreamLimitBitCount;
+    private const ulong MinimumActiveConnectionIdLimit = 2;
+    private const int IPv4AddressLength = 4;
+    private const int PortLength = 2;
+    private const int IPv6AddressLength = 16;
+    private const int ConnectionIdLengthLength = 1;
+    private const int PreferredAddressMinimumLength = IPv4AddressLength + PortLength + IPv6AddressLength + PortLength + ConnectionIdLengthLength + StatelessResetTokenLength;
     private const int PreferredAddressMaximumConnectionIdLength = 20;
     private const int StatelessResetTokenLength = 16;
 
@@ -440,10 +446,10 @@ public static class QuicTransportParametersCodec
                     return false;
                 }
 
-                if (activeConnectionIdLimit < 2)
-                {
-                    return false;
-                }
+        if (activeConnectionIdLimit < MinimumActiveConnectionIdLimit)
+        {
+            return false;
+        }
 
                 parameters.ActiveConnectionIdLimit = activeConnectionIdLimit;
                 return true;
@@ -500,17 +506,17 @@ public static class QuicTransportParametersCodec
         }
 
         int index = 0;
-        byte[] ipv4Address = value.Slice(index, 4).ToArray();
-        index += 4;
+        byte[] ipv4Address = value.Slice(index, IPv4AddressLength).ToArray();
+        index += IPv4AddressLength;
 
-        ushort ipv4Port = BinaryPrimitives.ReadUInt16BigEndian(value.Slice(index, 2));
-        index += 2;
+        ushort ipv4Port = BinaryPrimitives.ReadUInt16BigEndian(value.Slice(index, PortLength));
+        index += PortLength;
 
-        byte[] ipv6Address = value.Slice(index, 16).ToArray();
-        index += 16;
+        byte[] ipv6Address = value.Slice(index, IPv6AddressLength).ToArray();
+        index += IPv6AddressLength;
 
-        ushort ipv6Port = BinaryPrimitives.ReadUInt16BigEndian(value.Slice(index, 2));
-        index += 2;
+        ushort ipv6Port = BinaryPrimitives.ReadUInt16BigEndian(value.Slice(index, PortLength));
+        index += PortLength;
 
         int connectionIdLength = value[index++];
         if (connectionIdLength is 0 or > PreferredAddressMaximumConnectionIdLength)
@@ -567,7 +573,7 @@ public static class QuicTransportParametersCodec
         Span<byte> destination,
         ref int index)
     {
-        Span<byte> valueBuffer = stackalloc byte[8];
+        Span<byte> valueBuffer = stackalloc byte[QuicVariableLengthInteger.MaxEncodedLength];
         if (!QuicVariableLengthInteger.TryFormat(value, valueBuffer, out int valueBytes))
         {
             return false;
@@ -608,8 +614,8 @@ public static class QuicTransportParametersCodec
             || preferredAddress.IPv6Address is null
             || preferredAddress.ConnectionId is null
             || preferredAddress.StatelessResetToken is null
-            || preferredAddress.IPv4Address.Length != 4
-            || preferredAddress.IPv6Address.Length != 16
+            || preferredAddress.IPv4Address.Length != IPv4AddressLength
+            || preferredAddress.IPv6Address.Length != IPv6AddressLength
             || preferredAddress.ConnectionId.Length is 0 or > PreferredAddressMaximumConnectionIdLength
             || preferredAddress.StatelessResetToken.Length != StatelessResetTokenLength)
         {
@@ -620,16 +626,16 @@ public static class QuicTransportParametersCodec
         int valueIndex = 0;
 
         preferredAddress.IPv4Address.CopyTo(valueBuffer);
-        valueIndex += 4;
+        valueIndex += IPv4AddressLength;
 
-        BinaryPrimitives.WriteUInt16BigEndian(valueBuffer.Slice(valueIndex, 2), preferredAddress.IPv4Port);
-        valueIndex += 2;
+        BinaryPrimitives.WriteUInt16BigEndian(valueBuffer.Slice(valueIndex, PortLength), preferredAddress.IPv4Port);
+        valueIndex += PortLength;
 
-        preferredAddress.IPv6Address.CopyTo(valueBuffer.Slice(valueIndex, 16));
-        valueIndex += 16;
+        preferredAddress.IPv6Address.CopyTo(valueBuffer.Slice(valueIndex, IPv6AddressLength));
+        valueIndex += IPv6AddressLength;
 
-        BinaryPrimitives.WriteUInt16BigEndian(valueBuffer.Slice(valueIndex, 2), preferredAddress.IPv6Port);
-        valueIndex += 2;
+        BinaryPrimitives.WriteUInt16BigEndian(valueBuffer.Slice(valueIndex, PortLength), preferredAddress.IPv6Port);
+        valueIndex += PortLength;
 
         valueBuffer[valueIndex++] = (byte)preferredAddress.ConnectionId.Length;
         preferredAddress.ConnectionId.CopyTo(valueBuffer.Slice(valueIndex));
@@ -647,13 +653,13 @@ public static class QuicTransportParametersCodec
         Span<byte> destination,
         ref int index)
     {
-        Span<byte> idBuffer = stackalloc byte[8];
+        Span<byte> idBuffer = stackalloc byte[QuicVariableLengthInteger.MaxEncodedLength];
         if (!QuicVariableLengthInteger.TryFormat(id, idBuffer, out int idBytes))
         {
             return false;
         }
 
-        Span<byte> lengthBuffer = stackalloc byte[8];
+        Span<byte> lengthBuffer = stackalloc byte[QuicVariableLengthInteger.MaxEncodedLength];
         if (!QuicVariableLengthInteger.TryFormat((ulong)value.Length, lengthBuffer, out int lengthBytes))
         {
             return false;

@@ -20,6 +20,34 @@ indent_size = 2
 end_of_line = crlf
 
 [*.cs]
+# Turn off all Sonar rules by default
+dotnet_analyzer_diagnostic.category-sonar.severity = none
+# Re-enable only magic numbers
+dotnet_diagnostic.S109.severity = warning
+
+
+dotnet_diagnostic.S101.severity = none
+dotnet_diagnostic.S1066.severity = none
+dotnet_diagnostic.S3267.severity = none
+dotnet_diagnostic.S1994.severity = none
+dotnet_diagnostic.S2325.severity = none
+
+# Disable S109 in common test project patterns
+[*.Tests/**/*.cs]
+dotnet_diagnostic.S109.severity = none
+
+[*.Test/**/*.cs]
+dotnet_diagnostic.S109.severity = none
+
+[tests/**/*.cs]
+dotnet_diagnostic.S109.severity = none
+
+[test/**/*.cs]
+dotnet_diagnostic.S109.severity = none
+
+[benchmarks/**/*.cs]
+dotnet_diagnostic.S109.severity = none
+
 dotnet_diagnostic.IDE0055.severity = warning
 dotnet_diagnostic.IDE0065.severity = suggestion
 dotnet_diagnostic.IDE0161.severity = error

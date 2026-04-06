@@ -7,6 +7,9 @@ namespace Incursa.Quic;
 /// </summary>
 public readonly ref struct QuicVersionNegotiationPacket
 {
+    internal const uint VersionNegotiationVersion = default;
+    internal const int SupportedVersionLength = sizeof(uint);
+
     private readonly byte headerControlBits;
     private readonly ReadOnlySpan<byte> destinationConnectionId;
     private readonly ReadOnlySpan<byte> sourceConnectionId;
@@ -37,7 +40,7 @@ public readonly ref struct QuicVersionNegotiationPacket
     /// <summary>
     /// Gets the reserved Version value for version negotiation.
     /// </summary>
-    public uint Version => 0;
+    public uint Version => VersionNegotiationVersion;
 
     /// <summary>
     /// Gets whether this packet is a Version Negotiation packet.
@@ -72,16 +75,16 @@ public readonly ref struct QuicVersionNegotiationPacket
     /// <summary>
     /// Gets the number of complete 4-byte supported-version entries.
     /// </summary>
-    public int SupportedVersionCount => supportedVersionBytes.Length / 4;
+    public int SupportedVersionCount => supportedVersionBytes.Length / SupportedVersionLength;
 
     /// <summary>
     /// Gets whether the supported-version list contains the specified version.
     /// </summary>
     public bool ContainsSupportedVersion(uint version)
     {
-        for (int offset = 0; offset < supportedVersionBytes.Length; offset += 4)
+        for (int offset = 0; offset < supportedVersionBytes.Length; offset += SupportedVersionLength)
         {
-            if (BinaryPrimitives.ReadUInt32BigEndian(supportedVersionBytes.Slice(offset, 4)) == version)
+            if (BinaryPrimitives.ReadUInt32BigEndian(supportedVersionBytes.Slice(offset, SupportedVersionLength)) == version)
             {
                 return true;
             }
@@ -100,6 +103,6 @@ public readonly ref struct QuicVersionNegotiationPacket
             throw new ArgumentOutOfRangeException(nameof(index));
         }
 
-        return BinaryPrimitives.ReadUInt32BigEndian(supportedVersionBytes.Slice(index * 4, 4));
+        return BinaryPrimitives.ReadUInt32BigEndian(supportedVersionBytes.Slice(index * SupportedVersionLength, SupportedVersionLength));
     }
 }

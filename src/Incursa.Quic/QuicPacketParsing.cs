@@ -5,6 +5,7 @@ namespace Incursa.Quic;
 internal static class QuicPacketParsing
 {
     private const int LongHeaderMinimumLength = 7;
+    private const int LongHeaderConnectionIdOffset = 6;
     private const int MaximumRfc9000ConnectionIdLength = 20;
     private const int Version1MaximumConnectionIdLength = 20;
 
@@ -22,12 +23,12 @@ internal static class QuicPacketParsing
         sourceConnectionId = default;
         trailingData = default;
 
-        if (packet.Length < LongHeaderMinimumLength || (packet[0] & 0x80) == 0)
+        if (packet.Length < LongHeaderMinimumLength || (packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) == 0)
         {
             return false;
         }
 
-        headerControlBits = (byte)(packet[0] & 0x7F);
+        headerControlBits = (byte)(packet[0] & QuicPacketHeaderBits.HeaderControlBitsMask);
         version = BinaryPrimitives.ReadUInt32BigEndian(packet.Slice(1, sizeof(uint)));
 
         int destinationConnectionIdLength = packet[5];
@@ -36,7 +37,7 @@ internal static class QuicPacketParsing
             return false;
         }
 
-        int sourceConnectionIdLengthOffset = 6 + destinationConnectionIdLength;
+        int sourceConnectionIdLengthOffset = LongHeaderConnectionIdOffset + destinationConnectionIdLength;
         if (packet.Length < sourceConnectionIdLengthOffset + 1)
         {
             return false;
@@ -54,7 +55,7 @@ internal static class QuicPacketParsing
             return false;
         }
 
-        destinationConnectionId = packet.Slice(6, destinationConnectionIdLength);
+        destinationConnectionId = packet.Slice(LongHeaderConnectionIdOffset, destinationConnectionIdLength);
         sourceConnectionId = packet.Slice(sourceConnectionIdOffset, sourceConnectionIdLength);
         trailingData = packet.Slice(sourceConnectionIdOffset + sourceConnectionIdLength);
         return true;
@@ -72,20 +73,20 @@ internal static class QuicPacketParsing
             return true;
         }
 
-        byte longPacketTypeBits = (byte)((headerControlBits & 0x30) >> 4);
+        byte longPacketTypeBits = (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift);
         return longPacketTypeBits switch
         {
-            0x00 => TryValidateInitialPacketFields(
+            QuicLongPacketTypeBits.Initial => TryValidateInitialPacketFields(
                 headerControlBits,
                 destinationConnectionIdLength,
                 sourceConnectionIdLength,
                 versionSpecificData),
-            0x01 => TryValidateZeroRttPacketFields(
+            QuicLongPacketTypeBits.ZeroRtt => TryValidateZeroRttPacketFields(
                 headerControlBits,
                 destinationConnectionIdLength,
                 sourceConnectionIdLength,
                 versionSpecificData),
-            0x02 => TryValidateZeroRttPacketFields(
+            QuicLongPacketTypeBits.Handshake => TryValidateZeroRttPacketFields(
                 headerControlBits,
                 destinationConnectionIdLength,
                 sourceConnectionIdLength,
@@ -148,7 +149,7 @@ internal static class QuicPacketParsing
             return false;
         }
 
-        int packetNumberLength = (headerControlBits & 0x03) + 1;
+        int packetNumberLength = (headerControlBits & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1;
         if (packetPayloadLength < (ulong)packetNumberLength)
         {
             return false;

@@ -1,3 +1,5 @@
+using System.Buffers.Binary;
+
 namespace Incursa.Quic;
 
 /// <summary>
@@ -5,10 +7,29 @@ namespace Incursa.Quic;
 /// </summary>
 public static class QuicVariableLengthInteger
 {
+    private const int LengthPrefixBitCount = 6;
+    private const byte LengthValueMask = 0x3F;
+    private const byte TwoByteLengthPrefix = 0x40;
+    private const byte FourByteLengthPrefix = 0x80;
+    private const byte EightByteLengthPrefix = 0xC0;
+    private const int OneByteEncodedLength = sizeof(byte);
+    private const int TwoByteEncodedLength = sizeof(ushort);
+    private const int FourByteEncodedLength = sizeof(uint);
+    private const int EightByteEncodedLength = sizeof(ulong);
+    private static readonly int[] EncodedLengths = [OneByteEncodedLength, TwoByteEncodedLength, FourByteEncodedLength, EightByteEncodedLength];
+    private const ulong MaxOneByteValue = 0x3F;
+    private const ulong MaxTwoByteValue = 0x3FFF;
+    private const ulong MaxFourByteValue = 0x3FFF_FFFF;
+
     /// <summary>
     /// The largest value representable by the QUIC variable-length integer encoding.
     /// </summary>
     public const ulong MaxValue = 0x3FFF_FFFF_FFFF_FFFFUL;
+
+    /// <summary>
+    /// The maximum encoded length of a QUIC variable-length integer.
+    /// </summary>
+    internal const int MaxEncodedLength = EightByteEncodedLength;
 
     /// <summary>
     /// Parses a QUIC variable-length integer from the start of a byte span.
@@ -23,7 +44,13 @@ public static class QuicVariableLengthInteger
             return false;
         }
 
-        int length = 1 << (encoded[0] >> 6);
+        int encodedLengthPrefix = encoded[0] >> LengthPrefixBitCount;
+        if ((uint)encodedLengthPrefix >= (uint)EncodedLengths.Length)
+        {
+            return false;
+        }
+
+        int length = EncodedLengths[encodedLengthPrefix];
         if (encoded.Length < length)
         {
             return false;
@@ -31,21 +58,10 @@ public static class QuicVariableLengthInteger
 
         value = length switch
         {
-            1 => (ulong)(encoded[0] & 0x3F),
-            2 => ((ulong)(encoded[0] & 0x3F) << 8)
-                | encoded[1],
-            4 => ((ulong)(encoded[0] & 0x3F) << 24)
-                | ((ulong)encoded[1] << 16)
-                | ((ulong)encoded[2] << 8)
-                | encoded[3],
-            8 => ((ulong)(encoded[0] & 0x3F) << 56)
-                | ((ulong)encoded[1] << 48)
-                | ((ulong)encoded[2] << 40)
-                | ((ulong)encoded[3] << 32)
-                | ((ulong)encoded[4] << 24)
-                | ((ulong)encoded[5] << 16)
-                | ((ulong)encoded[6] << 8)
-                | encoded[7],
+            OneByteEncodedLength => (ulong)(encoded[0] & LengthValueMask),
+            TwoByteEncodedLength => (ulong)(BinaryPrimitives.ReadUInt16BigEndian(encoded) & (ushort)MaxTwoByteValue),
+            FourByteEncodedLength => (ulong)(BinaryPrimitives.ReadUInt32BigEndian(encoded) & (uint)MaxFourByteValue),
+            EightByteEncodedLength => BinaryPrimitives.ReadUInt64BigEndian(encoded) & MaxValue,
             _ => default
         };
 
@@ -67,28 +83,20 @@ public static class QuicVariableLengthInteger
 
         switch (length)
         {
-            case 1:
+            case OneByteEncodedLength:
                 destination[0] = (byte)value;
                 break;
-            case 2:
-                destination[0] = (byte)(0x40 | ((value >> 8) & 0x3F));
-                destination[1] = (byte)value;
+            case TwoByteEncodedLength:
+                BinaryPrimitives.WriteUInt16BigEndian(destination, (ushort)value);
+                destination[0] |= TwoByteLengthPrefix;
                 break;
-            case 4:
-                destination[0] = (byte)(0x80 | ((value >> 24) & 0x3F));
-                destination[1] = (byte)(value >> 16);
-                destination[2] = (byte)(value >> 8);
-                destination[3] = (byte)value;
+            case FourByteEncodedLength:
+                BinaryPrimitives.WriteUInt32BigEndian(destination, (uint)value);
+                destination[0] |= FourByteLengthPrefix;
                 break;
-            case 8:
-                destination[0] = (byte)(0xC0 | ((value >> 56) & 0x3F));
-                destination[1] = (byte)(value >> 48);
-                destination[2] = (byte)(value >> 40);
-                destination[3] = (byte)(value >> 32);
-                destination[4] = (byte)(value >> 24);
-                destination[5] = (byte)(value >> 16);
-                destination[6] = (byte)(value >> 8);
-                destination[7] = (byte)value;
+            case EightByteEncodedLength:
+                BinaryPrimitives.WriteUInt64BigEndian(destination, value);
+                destination[0] |= EightByteLengthPrefix;
                 break;
             default:
                 return false;
@@ -100,27 +108,27 @@ public static class QuicVariableLengthInteger
 
     private static bool TryGetEncodedLength(ulong value, out int length)
     {
-        if (value <= 0x3F)
+        if (value <= MaxOneByteValue)
         {
-            length = 1;
+            length = OneByteEncodedLength;
             return true;
         }
 
-        if (value <= 0x3FFF)
+        if (value <= MaxTwoByteValue)
         {
-            length = 2;
+            length = TwoByteEncodedLength;
             return true;
         }
 
-        if (value <= 0x3FFF_FFFF)
+        if (value <= MaxFourByteValue)
         {
-            length = 4;
+            length = FourByteEncodedLength;
             return true;
         }
 
         if (value <= MaxValue)
         {
-            length = 8;
+            length = EightByteEncodedLength;
             return true;
         }
 

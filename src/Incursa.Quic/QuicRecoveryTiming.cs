@@ -26,6 +26,9 @@ public static class QuicRecoveryTiming
     /// </summary>
     public const ulong RecommendedTimerGranularityMicros = 1_000;
 
+    private const ulong RttVarianceMultiplier = 4;
+    private const ulong ProbeTimeoutBackoffMultiplier = 2;
+
     /// <summary>
     /// Determines whether a packet satisfies the basic RFC 9002 loss-declaration preconditions.
     /// </summary>
@@ -138,10 +141,10 @@ public static class QuicRecoveryTiming
         }
 
         ulong effectiveMaxAckDelayMicros = packetNumberSpace is QuicPacketNumberSpace.Initial or QuicPacketNumberSpace.Handshake
-            ? 0
+            ? default
             : maxAckDelayMicros;
 
-        ulong rttVarianceComponentMicros = MultiplySaturating(rttVarMicros, 4);
+        ulong rttVarianceComponentMicros = MultiplySaturating(rttVarMicros, RttVarianceMultiplier);
         ulong baseTimeoutMicros = SaturatingAdd(
             smoothedRttMicros,
             Math.Max(rttVarianceComponentMicros, timerGranularityMicros));
@@ -164,7 +167,7 @@ public static class QuicRecoveryTiming
         ulong backedOffProbeTimeoutMicros = probeTimeoutMicros;
         for (int index = 0; index < ptoCount; index++)
         {
-            backedOffProbeTimeoutMicros = MultiplySaturating(backedOffProbeTimeoutMicros, 2);
+            backedOffProbeTimeoutMicros = MultiplySaturating(backedOffProbeTimeoutMicros, ProbeTimeoutBackoffMultiplier);
             if (backedOffProbeTimeoutMicros == ulong.MaxValue)
             {
                 return backedOffProbeTimeoutMicros;

@@ -32,7 +32,9 @@ public static class QuicStreamParser
             return false;
         }
 
-        if (index != 1 || frameTypeValue < 0x08 || frameTypeValue > 0x0F)
+        if (index != 1
+            || frameTypeValue < QuicStreamFrameBits.StreamFrameTypeMinimum
+            || frameTypeValue > QuicStreamFrameBits.StreamFrameTypeMaximum)
         {
             return false;
         }
@@ -46,7 +48,7 @@ public static class QuicStreamParser
 
         index += streamIdBytes;
 
-        bool hasOffset = (frameType & 0x04) != 0;
+        bool hasOffset = (frameType & QuicStreamFrameBits.OffsetBitMask) != 0;
         ulong offset = 0;
         if (hasOffset)
         {
@@ -58,8 +60,8 @@ public static class QuicStreamParser
             index += offsetBytes;
         }
 
-        bool hasLength = (frameType & 0x02) != 0;
-        bool fin = (frameType & 0x01) != 0;
+        bool hasLength = (frameType & QuicStreamFrameBits.LengthBitMask) != 0;
+        bool fin = (frameType & QuicStreamFrameBits.FinBitMask) != 0;
         ulong length = 0;
         ReadOnlySpan<byte> streamData;
         int consumedLength;
