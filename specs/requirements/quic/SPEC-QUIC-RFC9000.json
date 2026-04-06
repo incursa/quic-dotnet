@@ -29113,6 +29113,9 @@
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B7-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0003.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes"
         ]
       }
     },
@@ -29203,6 +29206,10 @@
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B7-P0-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0006.cs::MatchesAnyStatelessResetToken_AllowsMatchingDatagramsWhenTheTokenIsAdvertised",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0006.cs::MatchesAnyStatelessResetToken_RejectsDatagramsWhenNoTokenWasAdvertised"
         ]
       }
     },
@@ -29289,6 +29296,9 @@
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B11-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0009.cs::TryFormatTransportParameters_EmitsInitialMaxDataTuple"
         ]
       }
     },
@@ -29372,6 +29382,9 @@
           "RFC 9000 §18.2 RFC9000-S18.2-B15-P0-S3",
           "RFC 9000 §18.2 RFC9000-S18.2-B16-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0012.cs::TryFormatTransportParameters_EmitsInitialMaxStreamsTuples"
         ]
       }
     },
