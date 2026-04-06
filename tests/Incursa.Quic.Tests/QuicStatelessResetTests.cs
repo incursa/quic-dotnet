@@ -55,6 +55,18 @@ public sealed class QuicStatelessResetTests
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryGenerateStatelessResetToken_RejectsTooSmallDestinationBuffers()
+    {
+        byte[] secretKey = [0x90, 0x91, 0x92, 0x93, 0x94];
+        byte[] connectionId = [0x10, 0x11, 0x12, 0x13];
+        Span<byte> token = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength - 1];
+
+        Assert.False(QuicStatelessReset.TryGenerateStatelessResetToken(connectionId, secretKey, token, out int bytesWritten));
+        Assert.Equal(0, bytesWritten);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatStatelessResetDatagram_WritesShortHeaderLayoutWithTokenAtTheTail()
     {
