@@ -6891,6 +6891,9 @@
         "upstream_refs": [
           "RFC 9000 §5.3 RFC9000-S5.3-B12-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P3-0007.cs::TryFormatTransportParameters_AllowsConfiguringInitialStreamCountsForEitherRole"
         ]
       }
     },
@@ -6917,6 +6920,9 @@
         "upstream_refs": [
           "RFC 9000 §5.3 RFC9000-S5.3-B13-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P3-0008.cs::TryFormatTransportParameters_AllowsConfiguringFlowControlLimitsForEitherRole"
         ]
       }
     },
