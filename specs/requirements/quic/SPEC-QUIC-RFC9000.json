@@ -7813,6 +7813,11 @@
         "upstream_refs": [
           "RFC 9000 §7.2 RFC9000-S7.2-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0007.cs::TryParseLongHeader_ExposesTheChosenHandshakeSourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0007.cs::TryParseLongHeader_RejectsHandshakePacketsMissingTheSourceConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0007.cs::TryParseLongHeader_AllowsAZeroLengthHandshakeSourceConnectionId"
         ]
       }
     },
