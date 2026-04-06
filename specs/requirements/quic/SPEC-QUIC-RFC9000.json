@@ -21971,6 +21971,11 @@
         "upstream_refs": [
           "RFC 9000 §14.2 RFC9000-S14.2-B2-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0002.cs::ConstructorAndUpdate_TrackTheCurrentMaximumDatagramSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0002.cs::Constructor_RejectsZeroMaximumDatagramSizes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0002.cs::Constructor_AllowsTheRFCMinimumMaximumDatagramSize"
         ]
       }
     },
@@ -22023,6 +22028,11 @@
         "upstream_refs": [
           "RFC 9000 §14.2 RFC9000-S14.2-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0004.cs::TryGetVersion1InitialDatagramPaddingLength_ComputesPaddingToTheMinimum",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0004.cs::TryGetVersion1InitialDatagramPaddingLength_RejectsNegativePayloadLengths",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0004.cs::TryGetVersion1InitialDatagramPaddingLength_AllowsPayloadsAtTheRFCMinimum"
         ]
       }
     },
@@ -22075,6 +22085,11 @@
         "upstream_refs": [
           "RFC 9000 §14.2 RFC9000-S14.2-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0006.cs::TryFormatPathValidationDatagramPadding_ExpandsAPathChallengeDatagramToTheRfcMinimum",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsNegativePayloadLengths",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0006.cs::TryFormatPathValidationDatagramPadding_AllowsAnAlreadyExpandedDatagram"
         ]
       }
     },
