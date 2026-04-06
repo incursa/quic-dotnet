@@ -1,6 +1,6 @@
 # Testing Docs
 
-This folder is the home for future test documentation and generated test inventory output.
+This folder holds test documentation and generated test inventory output for the live QUIC helper-layer test suite.
 
 For protocol work, testing is only one part of the proof burden. The repository expects positive coverage, negative coverage, property-based coverage, fuzzing scope, mutation evidence, and benchmarks for processing or serialization hot paths to be defined and traced.
 
@@ -14,7 +14,7 @@ For protocol work, testing is only one part of the proof burden. The repository 
 
 ## Current state
 
-- The repository includes scaffold smoke and blocking tests that verify the package and API-baseline files are wired correctly, plus a broader requirement-tagged xUnit suite that the quality attestation wrapper now runs.
+- The repository includes smoke and blocking tests that verify the package and API-baseline files are wired correctly, plus a broader requirement-tagged xUnit suite that the quality attestation wrapper now runs.
 - Extend this folder and the test project as the real QUIC implementation lands.
 
 ## Quality expectations

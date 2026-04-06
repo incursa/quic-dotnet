@@ -4,7 +4,7 @@
 - `partial_with_explicit_defer`
 - In-scope requirements: 44 total, 8 implemented and tested, 1 partially implemented, 10 tested but implementation mapping unclear, 25 not implemented.
 - Reconciliation artifact was present and used as the starting point.
-- This pass did not change transport behavior; it tightened direct requirement refs on the existing stream parser and frame codec tests.
+- This pass did not change transport behavior; it tightened direct requirement refs on the existing stream parser and frame codec tests and now records the bounded stream-state and flow-control helper slice as the next step.
 
 ## Requirements Completed
 - `S2P1`: `REQ-QUIC-RFC9000-S2P1-0003`, `REQ-QUIC-RFC9000-S2P1-0004`, `REQ-QUIC-RFC9000-S2P1-0006`, `REQ-QUIC-RFC9000-S2P1-0008`, `REQ-QUIC-RFC9000-S2P1-0009`, `REQ-QUIC-RFC9000-S2P1-0010`, `REQ-QUIC-RFC9000-S2P1-0011`
@@ -41,5 +41,6 @@
 - `S2P4`: `REQ-QUIC-RFC9000-S2P4-0001` through `REQ-QUIC-RFC9000-S2P4-0003` and `REQ-QUIC-RFC9000-S2P4-0008` remain not implemented; `REQ-QUIC-RFC9000-S2P4-0004` through `REQ-QUIC-RFC9000-S2P4-0007` remain wire-level only and still depend on a stateful stream surface.
 
 ## Risks or Follow-up Notes
-- The stream chunk is still blocked on missing connection-scoped stream state, allocation, and reassembly machinery.
-- The current pass improves auditability but does not close any of the stateful transport gaps.
+- Ordered receive buffering, final-size accounting, and MAX_* application now exist at the helper layer.
+- The chunk is still blocked on an application-facing stream API, sender/recovery integration, and end-to-end STOP_SENDING/RESET orchestration.
+- Retransmission-driven send states remain deferred.

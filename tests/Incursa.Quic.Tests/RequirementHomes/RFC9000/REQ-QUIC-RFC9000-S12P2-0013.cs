@@ -9,6 +9,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0013
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    // Verifies Retry packets consume the rest of the datagram so later bytes stay opaque.
     public void TryParseLongHeader_TreatsRetryPacketsAsOpaqueTrailingDataSoTheyCannotBeFollowedByAnotherPacket()
     {
         byte[] retryVersionSpecificData = [0x30, 0x31, 0x32, 0x33];
@@ -19,6 +20,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0013
             sourceConnectionId: [0x20],
             retryVersionSpecificData);
         byte[] trailingPacket = QuicHeaderTestData.BuildShortHeader(0x24, [0x40, 0x41, 0x42]);
+        // Append a second packet to prove the parser keeps the Retry tail intact.
         byte[] datagram = [.. retryPacket, .. trailingPacket];
 
         Assert.True(QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket header));
@@ -30,6 +32,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0013
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    // Verifies version-negotiation packets treat trailing bytes as supported-version data.
     public void TryParseVersionNegotiation_TreatsSubsequentPacketsAsPartOfTheSupportedVersionList()
     {
         byte[] versionNegotiationPacket = QuicHeaderTestData.BuildVersionNegotiation(
@@ -38,6 +41,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0013
             sourceConnectionId: [0x20],
             supportedVersions: [0x11223344, 0x55667788]);
         byte[] trailingPacket = QuicHeaderTestData.BuildShortHeader(0x24, [0x60, 0x61, 0x62]);
+        // Append a second packet so the parser has to absorb the bytes into the version list.
         byte[] datagram = [.. versionNegotiationPacket, .. trailingPacket];
 
         Assert.True(QuicPacketParser.TryParseVersionNegotiation(datagram, out QuicVersionNegotiationPacket header));
@@ -49,6 +53,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0013
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    // Verifies standalone Retry and version-negotiation packets still parse correctly.
     public void TryParseLongHeader_AcceptsStandaloneRetryAndVersionNegotiationPackets()
     {
         byte[] retryVersionSpecificData = [0x30, 0x31, 0x32, 0x33];
@@ -76,6 +81,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0013
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    // Verifies the smallest legal Retry and version-negotiation datagrams are accepted.
     public void TryParseLongHeader_AllowsTheSmallestRetryAndVersionNegotiationDatagrams()
     {
         byte[] retryPacket = QuicHeaderTestData.BuildLongHeader(

@@ -40,6 +40,13 @@ public sealed class QuicPacketParserTests
         Assert.False(QuicPacketParser.TryClassifyHeaderForm([], out _));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryGetPacketNumberSpace_RejectsEmptyInput()
+    {
+        Assert.False(QuicPacketParser.TryGetPacketNumberSpace([], out _));
+    }
+
     public static TheoryData<byte[], byte, bool> HeaderControlBitCases => new()
     {
         { QuicHeaderTestData.BuildLongHeader(0x55, 0x01020304, [0x11, 0x12], [0x21], [0x31, 0x32]), 0x55, true },

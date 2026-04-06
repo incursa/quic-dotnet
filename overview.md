@@ -1,7 +1,7 @@
 # Repository Overview
 
-This repository is a trace-first scaffold for the Incursa QUIC library.
-The QUIC-specific requirement slice lives under [`specs/requirements/quic/`](specs/requirements/quic/), and the repository follows the published SpecTrace model schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) instead of keeping a checked-in local spec-trace requirement suite.
+This repository is the trace-first home for the Incursa QUIC library.
+The tree already includes live helper-layer code, requirement-tagged tests, and the QUIC-specific requirement slice under [`specs/requirements/quic/`](specs/requirements/quic/). The repository follows the published SpecTrace model schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) instead of keeping a checked-in local spec-trace requirement suite.
 
 ## Canonical Surfaces
 

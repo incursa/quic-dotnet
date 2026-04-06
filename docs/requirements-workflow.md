@@ -39,4 +39,4 @@ The repository does not keep sibling canonical `.md` companions for those famili
 
 - For version-independent packet handling, version negotiation, connection ID handling, and related wire-format work, keep the requirement slices small and stable.
 - Prefer traceable gaps over guesswork when RFC text leaves more than one plausible interpretation.
-- The repository is still scaffold-only; do not treat this note as a substitute for requirements.
+- The repository now has live helper code and generated trace artifacts; do not treat this note as a substitute for canonical requirements.

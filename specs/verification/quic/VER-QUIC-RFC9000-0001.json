@@ -6,7 +6,7 @@
     "ARC-QUIC-RFC9000-0001",
     "WI-QUIC-RFC9000-0001"
   ],
-  "expected_result": "- The spec requirements carry downstream trace links.\n- The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.",
+  "expected_result": "- The spec requirements carry downstream trace links.\n- The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.\n- The bounded stream-helper slice is visible in the trace plan without implying full sender/recovery or STOP_SENDING/RESET coverage.",
   "artifact_id": "VER-QUIC-RFC9000-0001",
   "verifies": [
     "REQ-QUIC-RFC9000-S2-0001",
@@ -1456,12 +1456,13 @@
   "artifact_type": "verification",
   "status": "planned",
   "procedure": [
-    "Run the relevant unit and property tests.",
-    "Run the fuzz suites and any available benchmark evidence for the slice.",
+    "Run the relevant unit and property tests for the bounded stream-helper and flow-control foundation.",
+    "Run the fuzz suites against the stream parser and any new helper-path boundary cases.",
+    "Run any available benchmark evidence for the stream helper or existing hot parsing paths.",
     "Run the repo-local quality evidence scripts.",
-    "Re-run the JSON render and validation checks so the downstream trace surface reflects the updated requirement links."
+    "Re-run the JSON render and validation checks so the downstream trace surface reflects the updated requirement links and bounded exclusions."
   ],
-  "scope": "This design covers the canonical RFC 9000 transport slice, including packet forms, stream semantics, frame codecs, transport-parameter handling, version negotiation, and the transport-side recovery contracts surfaced in the requirement file.\nIt does not define RFC 8999 version-independent invariants or RFC 9001 TLS-protection details as separate concerns.",
+  "scope": "This design covers the canonical RFC 9000 transport slice, including packet forms, stream semantics, frame codecs, transport-parameter handling, version negotiation, and the transport-side recovery contracts surfaced in the requirement file.\nThe current helper slice is bounded to connection-scoped stream opening, ordered receive buffering, final-size accounting, and MAX_* flow-control application.\nIt does not define RFC 8999 version-independent invariants or RFC 9001 TLS-protection details as separate concerns, and it does not claim full retransmission-driven send states or STOP_SENDING/RESET orchestration.",
   "evidence": [
     "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
     "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
@@ -1473,6 +1474,9 @@
     "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
     "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
     "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs",
+    "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+    "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
+    "tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs",
     "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
     "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
     "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
@@ -1494,7 +1498,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/QuicPacketParserTests.cs\n- tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs\n- tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs\n- tests/Incursa.Quic.Tests/QuicStreamIdTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs\n- benchmarks/QuicHeaderParsingBenchmarks.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicStreamParsingBenchmarks.cs\n- benchmarks/QuicVariableLengthIntegerBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml"
+      "content": "- tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs\n- tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs\n- tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs\n- tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicPacketParserTests.cs\n- tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs\n- tests/Incursa.Quic.Tests/QuicStreamIdTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs\n- benchmarks/QuicHeaderParsingBenchmarks.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicStreamParsingBenchmarks.cs\n- benchmarks/QuicVariableLengthIntegerBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml"
     }
   ],
   "domain": "quic"

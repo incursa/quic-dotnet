@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9002_S2_0004
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    // Verifies a lost packet that was already in flight is removed from bytes-in-flight.
     public void TryDetectPersistentCongestion_RemovesLostAckElicitingPacketsThatWereInFlight()
     {
         QuicCongestionControlState state = new();
@@ -36,6 +37,7 @@ public sealed class REQ_QUIC_RFC9002_S2_0004
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    // Verifies a lost packet that was never in flight does not change bytes-in-flight.
     public void TryDetectPersistentCongestion_DoesNotRemoveLostPacketsThatWereNotInFlight()
     {
         QuicCongestionControlState state = new();
@@ -64,6 +66,7 @@ public sealed class REQ_QUIC_RFC9002_S2_0004
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
+    // Verifies explicit in-flight state still counts even when the packet is not ack-eliciting.
     public void TryDetectPersistentCongestion_TreatsNonAckElicitingInFlightPacketsAsInFlight()
     {
         QuicCongestionControlState state = new();

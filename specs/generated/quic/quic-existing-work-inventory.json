@@ -61,24 +61,52 @@
         },
         {
           "section_token": "S3/S3P1/S3P2/S3P3/S3P4/S3P5",
-          "status": "no_evidence",
-          "implementation_refs": [],
-          "test_refs": [],
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicConnectionStreamState.cs",
+            "src/Incursa.Quic/QuicConnectionStreamStateOptions.cs",
+            "src/Incursa.Quic/QuicConnectionStreamSnapshot.cs",
+            "src/Incursa.Quic/QuicStreamSendState.cs",
+            "src/Incursa.Quic/QuicStreamReceiveState.cs",
+            "src/Incursa.Quic/QuicByteRangeSet.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+            "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
+            "tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyGenerators.cs",
+            "benchmarks/QuicConnectionStreamStateBenchmarks.cs"
+          ],
           "stale_requirement_refs": [],
           "confidence": "high",
           "notes": [
-            "Greenfield stream-state-machine work."
+            "Helper-layer stream-state work now covers stream opening, ordered receive buffering, final-size bookkeeping, and reset-notification state transitions.",
+            "Application-facing stream APIs plus end-to-end STOP_SENDING/RESET orchestration remain deferred."
           ]
         },
         {
           "section_token": "S4/S4P1/S4P2/S4P4/S4P5/S4P6",
-          "status": "no_evidence",
-          "implementation_refs": [],
-          "test_refs": [],
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicConnectionStreamState.cs",
+            "src/Incursa.Quic/QuicConnectionStreamStateOptions.cs",
+            "src/Incursa.Quic/QuicConnectionStreamSnapshot.cs",
+            "src/Incursa.Quic/QuicStreamSendState.cs",
+            "src/Incursa.Quic/QuicStreamReceiveState.cs",
+            "src/Incursa.Quic/QuicByteRangeSet.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
+            "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
+            "tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyGenerators.cs",
+            "benchmarks/QuicConnectionStreamStateBenchmarks.cs"
+          ],
           "stale_requirement_refs": [],
           "confidence": "high",
           "notes": [
-            "Greenfield stream-operations and flow-control work."
+            "Helper-layer flow-control work now covers stream-open counting, monotonic MAX_* application, blocked-send snapshots, and connection-level final-size accounting.",
+            "Sender/recovery integration and the remaining transport-side orchestration remain deferred."
           ]
         },
         {
@@ -109,13 +137,36 @@
         },
         {
           "section_token": "S5P3/S6/S6P1/S6P2/S6P3/S7/S7P2/S7P3/S7P4/S7P4P1/S7P4P2/S7P5/S8/S8P1/S8P1P1/S8P1P2/S8P1P3/S8P1P4/S8P2/S8P2P1/S8P2P2/S8P2P3/S8P2P4/S9/S9P1/S9P2/S9P3/S9P3P1/S9P3P2/S9P3P3/S9P4/S9P5/S9P6/S9P6P1/S9P6P2/S9P6P3/S9P7/S10/S10P1/S10P1P1/S10P1P2/S10P2/S10P2P1/S10P2P2/S10P2P3/S10P3/S10P3P1/S10P3P2/S10P3P3/S11/S11P1/S11P2/S12P1/S12P2/S12P3/S12P4/S12P5/S13/S13P1/S13P2/S13P2P1/S13P2P2/S13P2P3/S13P2P4/S13P2P5/S13P2P6/S13P2P7/S13P3/S13P4/S13P4P1/S13P4P2/S13P4P2P1/S13P4P2P2/S14/S14P1/S14P2/S14P2P1/S14P3/S14P4",
-          "status": "no_evidence",
-          "implementation_refs": [],
-          "test_refs": [],
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicAddressValidation.cs",
+            "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
+            "src/Incursa.Quic/QuicIdleTimeoutState.cs",
+            "src/Incursa.Quic/QuicPathValidation.cs",
+            "src/Incursa.Quic/QuicStatelessReset.cs",
+            "src/Incursa.Quic/QuicAckGenerationState.cs",
+            "src/Incursa.Quic/QuicRecoveryTiming.cs",
+            "src/Incursa.Quic/QuicRttEstimator.cs",
+            "src/Incursa.Quic/QuicCongestionControlState.cs",
+            "src/Incursa.Quic/QuicTransportParametersCodec.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
+            "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
+            "tests/Incursa.Quic.Tests/QuicIdleTimeoutStateTests.cs",
+            "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs",
+            "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs",
+            "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
+            "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+            "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+            "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+            "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+            "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs"
+          ],
           "stale_requirement_refs": [],
           "confidence": "high",
           "notes": [
-            "Connection establishment, migration, lifecycle, packet protection, ACK, ECN, datagram, and PMTU work are still greenfield in live code/tests."
+            "Helper-layer code exists for address validation, anti-amplification, transport parameters, path validation, idle timeout, stateless reset, ACK generation, RTT estimation, and congestion control, but the connection-state machine is still missing."
           ]
         },
         {
@@ -216,23 +267,38 @@
         },
         {
           "section_token": "S18/S18P1/S18P2/S19P1/S19P2/S19P3/S19P3P1/S19P3P2",
-          "status": "no_evidence",
-          "implementation_refs": [],
-          "test_refs": [],
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+            "src/Incursa.Quic/QuicFrameCodec.cs",
+            "src/Incursa.Quic/QuicAckGenerationState.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+            "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
+            "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs"
+          ],
           "stale_requirement_refs": [],
           "confidence": "high",
           "notes": [
-            "Transport-parameter encoding, PADDING, PING, and ACK frame formats are greenfield in live code/tests."
+            "Transport-parameter codec and frame helpers now exist, but the broader packet and sender orchestration is still incomplete."
           ]
         },
         {
           "section_token": "S19P4/S19P5/S19P6/S19P7/S19P8",
           "status": "partial",
           "implementation_refs": [
+            "src/Incursa.Quic/QuicResetStreamFrame.cs",
+            "src/Incursa.Quic/QuicStopSendingFrame.cs",
+            "src/Incursa.Quic/QuicCryptoFrame.cs",
             "src/Incursa.Quic/QuicStreamFrame.cs",
             "src/Incursa.Quic/QuicStreamParser.cs"
           ],
           "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
+            "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
             "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
             "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
             "tests/Incursa.Quic.Tests/QuicStreamFramePropertyGenerators.cs",
@@ -249,18 +315,39 @@
           ],
           "confidence": "high",
           "notes": [
-            "STREAM frame parsing is live; RESET_STREAM, STOP_SENDING, and CRYPTO frame formats are still greenfield."
+            "STREAM frame parsing is live; RESET_STREAM, STOP_SENDING, and CRYPTO frame helper/codecs are also present, but the end-to-end transport orchestration is still missing."
           ]
         },
         {
           "section_token": "S19P9/S19P10/S19P11/S19P12/S19P13/S19P14/S19P15/S19P16/S19P17/S19P18/S19P19/S19P20/S19P21/S20P1/S20P2/S21P1P1P1/S21P2/S21P3/S21P4/S21P5/S21P5P3/S21P5P6/S21P6/S21P7/S21P9/S21P10/S21P11/S21P12/S22P1P1/S22P1P2/S22P1P3/S22P1P4/S22P2/S22P3/S22P4/S22P5",
-          "status": "no_evidence",
-          "implementation_refs": [],
-          "test_refs": [],
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+            "src/Incursa.Quic/QuicMaxDataFrame.cs",
+            "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+            "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+            "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+            "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+            "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+            "src/Incursa.Quic/QuicRetireConnectionIdFrame.cs",
+            "src/Incursa.Quic/QuicPathChallengeFrame.cs",
+            "src/Incursa.Quic/QuicPathResponseFrame.cs",
+            "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+            "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
+            "src/Incursa.Quic/QuicTransportErrorCode.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+            "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
+            "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
+            "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs",
+            "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+          ],
           "stale_requirement_refs": [],
           "confidence": "high",
           "notes": [
-            "Flow-control frames, CID/path-probe frames, connection-close frames, transport-error policy, security considerations, and IANA registry rules are greenfield."
+            "Flow-control, connection-ID, path-probe, connection-close, transport-error, and registry helpers are present, but the higher-level connection policy and IANA prose are still incomplete."
           ]
         }
       ]
@@ -280,13 +367,23 @@
         },
         {
           "section_token": "S6/S7/S8/S9/S10/SB/SBP1P1/SBP1P2/SBP2",
-          "status": "no_evidence",
-          "implementation_refs": [],
-          "test_refs": [],
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicAeadAlgorithm.cs",
+            "src/Incursa.Quic/QuicAeadPacketSizeProfile.cs",
+            "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs",
+            "src/Incursa.Quic/QuicAeadUsageLimits.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0001.cs",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0001.cs",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0001.cs"
+          ],
           "stale_requirement_refs": [],
           "confidence": "high",
           "notes": [
-            "Key update, security considerations, and AEAD limit material are greenfield in live code/tests."
+            "AEAD usage-limit helpers and tests exist, but packet-protection, key-derivation, and key-update work are still end-to-end gaps."
           ]
         }
       ]
@@ -295,57 +392,91 @@
       "section_families": [
         {
           "section_token": "S2/S3/S5/S5P1/S5P2/S5P3",
-          "status": "no_evidence",
-          "implementation_refs": [],
-          "test_refs": [],
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicRttEstimator.cs",
+            "src/Incursa.Quic/QuicRecoveryTiming.cs",
+            "src/Incursa.Quic/QuicCongestionControlState.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+            "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+            "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+          ],
           "stale_requirement_refs": [],
           "confidence": "high",
           "notes": [
-            "Ack-eliciting packets, packets in flight, RTT estimation, and related recovery metrics are greenfield in live code/tests."
+            "RTT estimation and recovery helper surfaces exist, but sender orchestration and packets-in-flight tracking are still incomplete."
           ]
         },
         {
           "section_token": "S6/S6P1/S6P1P1/S6P1P2/S6P2/S6P2P1/S6P2P2/S6P2P2P1/S6P2P3/S6P2P4/S6P3/S6P4",
-          "status": "no_evidence",
-          "implementation_refs": [],
-          "test_refs": [],
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicRecoveryTiming.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+          ],
           "stale_requirement_refs": [],
           "confidence": "high",
           "notes": [
-            "Loss detection and PTO scheduling are greenfield in live code/tests."
+            "Loss-detection timing and PTO helper calculations exist, but the full sender-side loss state machine is still missing."
           ]
         },
         {
           "section_token": "S7/S7P1/S7P2/S7P3P1/S7P3P2/S7P3P3/S7P4/S7P5/S7P6/S7P6P1/S7P6P2/S7P7/S7P8",
-          "status": "no_evidence",
-          "implementation_refs": [],
-          "test_refs": [],
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicCongestionControlState.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
+          ],
           "stale_requirement_refs": [],
           "confidence": "high",
           "notes": [
-            "Congestion control, ECN, and persistent congestion are greenfield in live code/tests."
+            "Congestion-control helper surfaces exist, but the broader recovery loop and sender integration are still incomplete."
           ]
         },
         {
           "section_token": "SAP1/SAP1P1/SAP2/SAP4/SAP5/SAP6/SAP7/SAP8/SAP9/SAP10/SAP11",
-          "status": "unclear",
-          "implementation_refs": [],
-          "test_refs": [],
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicRecoveryTiming.cs",
+            "src/Incursa.Quic/QuicCongestionControlState.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+            "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0001.cs",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0002.cs",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs"
+          ],
           "stale_requirement_refs": [],
           "confidence": "medium",
           "notes": [
-            "Appendix A is greenfield except for the retained overlap pair that keeps SAP11 under review."
+            "Appendix A helper surfaces now exist, but the retained SAP11/BP9 overlap pair still needs manual review."
           ]
         },
         {
           "section_token": "SBP1/SBP2/SBP3/SBP4/SBP5/SBP6/SBP7/SBP8/SBP9",
-          "status": "unclear",
-          "implementation_refs": [],
-          "test_refs": [],
+          "status": "partial",
+          "implementation_refs": [
+            "src/Incursa.Quic/QuicCongestionControlState.cs",
+            "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs"
+          ],
+          "test_refs": [
+            "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
+            "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs"
+          ],
           "stale_requirement_refs": [],
           "confidence": "medium",
           "notes": [
-            "Appendix B is greenfield except for the counterpart to the retained SAP11/BP9 overlap pair."
+            "Appendix B helper surfaces exist, but the counterpart to the retained SAP11/BP9 overlap pair still needs manual review."
           ]
         }
       ]
@@ -379,8 +510,8 @@
         "S3/S3P1/S3P2/S3P3/S3P4/S3P5",
         "S4/S4P1/S4P2/S4P4/S4P5/S4P6"
       ],
-      "status": "prompt3_then_prompt4",
-      "reason": "Greenfield stream-state-machine and stream-operations/flow-control work.",
+      "status": "prompt2_then_prompt3_then_prompt4",
+      "reason": "Helper-layer stream-state and flow-control accounting now exists, but the remaining transport orchestration is still incomplete.",
       "confidence": "high"
     },
     {

@@ -1,6 +1,6 @@
 # Incursa.Quic
 
-[`Incursa.Quic`](../../README.md) is the packable, performance-oriented library root for the Incursa QUIC work. It is where the span-backed QUIC header parser and view types for the version-independent packet-header slice live.
+[`Incursa.Quic`](../../README.md) is the packable, performance-oriented library root for the Incursa QUIC helper layer. It contains the span-backed packet/header parser, varint helpers, frame codecs, and the transport helpers that already exist in the tree.
 
 ## Install
 
@@ -10,6 +10,6 @@ dotnet add package Incursa.Quic
 
 ## Status
 
-- Header parser and view types are present for the first packet-header slice.
+- Header parser and view types are present for the first packet-header slice, and the repository now carries helper surfaces for transport parameters, address validation, anti-amplification, path validation, idle timeout, stateless reset, ACK generation, recovery timing, RTT estimation, congestion control, and AEAD usage limits.
 - Package metadata, versioning, and packaging are already configured in the repository root.
 - Future QUIC implementation code can be added here without changing the surrounding repo structure.

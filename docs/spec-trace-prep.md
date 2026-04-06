@@ -1,6 +1,6 @@
 # SpecTrace Prep
 
-This note defines how `Incursa.Quic` will move from RFC text to traceable implementation work. It is repository guidance, not protocol design. The current repository is still scaffold-only, so this document establishes the working model before the first real QUIC requirements are authored.
+This note defines how `Incursa.Quic` will move from RFC text to traceable implementation work. It is repository guidance, not protocol design. The repository now has live QUIC helper code and generated trace artifacts, so this document describes the working model that still applies as the remaining slices are traced and implemented.
 
 ## Canonical Homes
 
@@ -60,5 +60,7 @@ Use the templates under [`../specs/templates/README.md`](../specs/templates/READ
 ## Current Scope
 
 The first QUIC requirement slice now exists under [`../specs/requirements/quic/SPEC-QUIC-RFC8999.json`](../specs/requirements/quic/SPEC-QUIC-RFC8999.json) with a verification artifact under [`../specs/verification/quic/VER-QUIC-RFC8999-0001.json`](../specs/verification/quic/VER-QUIC-RFC8999-0001.json).
+
+For the current project position, blocked areas, and next implementation order, see [`quic-triage.md`](quic-triage.md).
 
 Future RFC slices should follow the same order of operations: translate the RFC into canonical requirements and gap records first, then add design, work-item, verification, and implementation details after the requirement text is stable.
