@@ -28591,6 +28591,11 @@
         "upstream_refs": [
           "RFC 9000 §17.4 RFC9000-S17.4-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0002.cs::TryParseShortHeader_AcceptsTheShortestValid1RttPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0002.cs::TryParseShortHeader_ExposesSpinBitOn1RttPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0002.cs::TryParseShortHeader_RejectsVersion1LongHeaders"
         ]
       }
     },
