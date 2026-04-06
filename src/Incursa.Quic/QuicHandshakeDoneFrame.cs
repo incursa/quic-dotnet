@@ -5,4 +5,13 @@ namespace Incursa.Quic;
 /// </summary>
 public readonly struct QuicHandshakeDoneFrame
 {
+    /// <summary>
+    /// RFC 9000 HANDSHAKE_DONE frame type.
+    /// </summary>
+    private const byte FrameTypeValue = 0x1E;
+
+    /// <summary>
+    /// Gets the frame type carried on the wire.
+    /// </summary>
+    public byte FrameType => FrameTypeValue;
 }

@@ -270,6 +270,7 @@ Incursa.Quic.QuicRetireConnectionIdFrame.QuicRetireConnectionIdFrame(ulong seque
 Incursa.Quic.QuicRetireConnectionIdFrame.SequenceNumber.get -> ulong
 Incursa.Quic.QuicHandshakeDoneFrame
 Incursa.Quic.QuicHandshakeDoneFrame.QuicHandshakeDoneFrame() -> void
+Incursa.Quic.QuicHandshakeDoneFrame.FrameType.get -> byte
 Incursa.Quic.QuicPathChallengeFrame
 Incursa.Quic.QuicPathChallengeFrame.QuicPathChallengeFrame() -> void
 Incursa.Quic.QuicPathChallengeFrame.QuicPathChallengeFrame(System.ReadOnlySpan<byte> data) -> void
@@ -385,6 +386,14 @@ Incursa.Quic.QuicConnectionIdBindingValidationError.OriginalDestinationConnectio
 Incursa.Quic.QuicConnectionIdBindingValidationError.InitialSourceConnectionIdMismatch = 5 -> Incursa.Quic.QuicConnectionIdBindingValidationError
 Incursa.Quic.QuicConnectionIdBindingValidationError.RetrySourceConnectionIdMismatch = 6 -> Incursa.Quic.QuicConnectionIdBindingValidationError
 Incursa.Quic.QuicConnectionIdBindingValidationError.UnexpectedRetrySourceConnectionId = 7 -> Incursa.Quic.QuicConnectionIdBindingValidationError
+Incursa.Quic.QuicConnectionLifecycleState
+Incursa.Quic.QuicConnectionLifecycleState.QuicConnectionLifecycleState() -> void
+Incursa.Quic.QuicConnectionLifecycleState.IsClosing.get -> bool
+Incursa.Quic.QuicConnectionLifecycleState.IsDraining.get -> bool
+Incursa.Quic.QuicConnectionLifecycleState.CanSendPackets.get -> bool
+Incursa.Quic.QuicConnectionLifecycleState.TryEnterClosingState() -> bool
+Incursa.Quic.QuicConnectionLifecycleState.TryEnterDrainingState() -> bool
+Incursa.Quic.QuicConnectionLifecycleState.TryHandlePotentialStatelessReset(System.ReadOnlySpan<byte> datagram, System.ReadOnlySpan<byte> candidateTokens) -> bool
 Incursa.Quic.QuicTransportErrorCode
 Incursa.Quic.QuicTransportErrorCode.NoError = 0 -> Incursa.Quic.QuicTransportErrorCode
 Incursa.Quic.QuicTransportErrorCode.InternalError = 1 -> Incursa.Quic.QuicTransportErrorCode
