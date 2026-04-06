@@ -4431,6 +4431,9 @@
         "upstream_refs": [
           "RFC 9000 §5.1 RFC9000-S5.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0001.cs::TryParseNewConnectionIdFrame_ExposesMultipleConnectionIdsForTheSameConnection"
         ]
       }
     },
@@ -4457,6 +4460,9 @@
         "upstream_refs": [
           "RFC 9000 §5.1 RFC9000-S5.1-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0002.cs::TryParseLongHeader_ExposesTheHandshakeConnectionIds"
         ]
       }
     },
@@ -4483,6 +4489,9 @@
         "upstream_refs": [
           "RFC 9000 §5.1 RFC9000-S5.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0003.cs::TryParseShortHeader_PreservesTheOpaqueConnectionIdRemainder"
         ]
       }
     },
@@ -4509,6 +4518,9 @@
         "upstream_refs": [
           "RFC 9000 §5.1 RFC9000-S5.1-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0004.cs::TryFormatVersionNegotiationResponse_EchoesTheClientConnectionIds"
         ]
       }
     },
