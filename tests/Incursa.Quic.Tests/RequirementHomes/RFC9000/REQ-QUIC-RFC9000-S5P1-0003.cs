@@ -20,7 +20,7 @@ public sealed class REQ_QUIC_RFC9000_S5P1_0003
 
         Assert.True(QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket header));
         Assert.Equal(QuicHeaderForm.Short, header.HeaderForm);
-        Assert.Equal((byte)0x24, header.HeaderControlBits);
+        Assert.Equal((byte)0x64, header.HeaderControlBits);
         Assert.Equal(3, header.Remainder.Length);
         Assert.True(expectedRemainder.AsSpan().SequenceEqual(header.Remainder));
     }
