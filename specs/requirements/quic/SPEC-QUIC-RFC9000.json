@@ -17453,6 +17453,10 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0001.cs::TryParsePacketForms_RecognizesVersionNegotiationRetryAndStatelessResetPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0001.cs::TryParseFramePayloads_RejectsVersionNegotiationRetryAndStatelessResetPackets"
         ]
       }
     },
