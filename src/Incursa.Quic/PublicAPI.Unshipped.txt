@@ -66,6 +66,25 @@ static Incursa.Quic.QuicAddressValidation.CanConsiderPeerAddressValidated(System
 static Incursa.Quic.QuicAddressValidation.PeerCompletedAddressValidation(bool isServer, bool handshakeAckReceived, bool handshakeConfirmed) -> bool
 static Incursa.Quic.QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(int currentPayloadLength, out int paddingLength) -> bool
 static Incursa.Quic.QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(int currentPayloadLength, System.Span<byte> destination, out int bytesWritten) -> bool
+Incursa.Quic.QuicAeadKeyUsageState
+Incursa.Quic.QuicAeadKeyUsageState.Pending = 0 -> Incursa.Quic.QuicAeadKeyUsageState
+Incursa.Quic.QuicAeadKeyUsageState.Available = 1 -> Incursa.Quic.QuicAeadKeyUsageState
+Incursa.Quic.QuicAeadKeyUsageState.Discarded = 2 -> Incursa.Quic.QuicAeadKeyUsageState
+Incursa.Quic.QuicAeadKeyLifecycle
+Incursa.Quic.QuicAeadKeyLifecycle.QuicAeadKeyLifecycle(Incursa.Quic.QuicAeadUsageLimits limits) -> void
+Incursa.Quic.QuicAeadKeyLifecycle.State.get -> Incursa.Quic.QuicAeadKeyUsageState
+Incursa.Quic.QuicAeadKeyLifecycle.IsAvailable.get -> bool
+Incursa.Quic.QuicAeadKeyLifecycle.CanProtect.get -> bool
+Incursa.Quic.QuicAeadKeyLifecycle.CanOpen.get -> bool
+Incursa.Quic.QuicAeadKeyLifecycle.IsDiscarded.get -> bool
+Incursa.Quic.QuicAeadKeyLifecycle.IsZeroRttRejected.get -> bool
+Incursa.Quic.QuicAeadKeyLifecycle.ProtectedPacketCount.get -> double
+Incursa.Quic.QuicAeadKeyLifecycle.OpenedPacketCount.get -> double
+Incursa.Quic.QuicAeadKeyLifecycle.TryActivate() -> bool
+Incursa.Quic.QuicAeadKeyLifecycle.Discard() -> void
+Incursa.Quic.QuicAeadKeyLifecycle.RejectZeroRtt() -> bool
+Incursa.Quic.QuicAeadKeyLifecycle.TryUseForProtection() -> bool
+Incursa.Quic.QuicAeadKeyLifecycle.TryUseForOpening() -> bool
 Incursa.Quic.QuicAntiAmplificationBudget
 Incursa.Quic.QuicAntiAmplificationBudget.QuicAntiAmplificationBudget() -> void
 Incursa.Quic.QuicAntiAmplificationBudget.ReceivedPayloadBytes.get -> ulong
@@ -185,11 +204,11 @@ Incursa.Quic.QuicAckGenerationState.TryBuildAckFrame(Incursa.Quic.QuicPacketNumb
 Incursa.Quic.QuicAckGenerationState.MarkAckFrameSent(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket) -> void
 Incursa.Quic.QuicSenderFlowController
 Incursa.Quic.QuicSenderFlowController.QuicSenderFlowController(ulong maxDatagramSizeBytes = 1200, int maximumRetainedAckRanges = 32, int minimumAckElicitingPacketsBeforeDelayedAck = 2) -> void
-Incursa.Quic.QuicSenderFlowController.CongestionControlState.get -> Incursa.Quic.QuicCongestionControlState
-Incursa.Quic.QuicSenderFlowController.AckGenerationState.get -> Incursa.Quic.QuicAckGenerationState
+Incursa.Quic.QuicSenderFlowController.CongestionControlState.get -> Incursa.Quic.QuicCongestionControlState!
+Incursa.Quic.QuicSenderFlowController.AckGenerationState.get -> Incursa.Quic.QuicAckGenerationState!
 Incursa.Quic.QuicSenderFlowController.CanSend(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false) -> bool
 Incursa.Quic.QuicSenderFlowController.RecordPacketSent(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, ulong sentBytes, ulong sentAtMicros, bool ackEliciting, bool isAckOnlyPacket = false, bool isProbePacket = false) -> void
-Incursa.Quic.QuicSenderFlowController.TryProcessAckFrame(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, Incursa.Quic.QuicAckFrame ackFrame, ulong ackReceivedAtMicros, bool applicationLimited = false, bool flowControlLimited = false, bool pacingLimited = false, bool pathValidated = false) -> bool
+Incursa.Quic.QuicSenderFlowController.TryProcessAckFrame(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, Incursa.Quic.QuicAckFrame! ackFrame, ulong ackReceivedAtMicros, bool applicationLimited = false, bool flowControlLimited = false, bool pacingLimited = false, bool pathValidated = false) -> bool
 Incursa.Quic.QuicSenderFlowController.TryRegisterLoss(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, ulong sentAtMicros, bool packetCanBeDecrypted = true, bool keysAvailable = true, bool sentAfterEarliestAcknowledgedPacket = true, bool allowAckOnlyLossSignal = false) -> bool
 Incursa.Quic.QuicSenderFlowController.RecordIncomingPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, bool ackEliciting, ulong receivedAtMicros, bool congestionExperienced = false, Incursa.Quic.QuicEcnCounts? ecnCounts = null) -> void
 Incursa.Quic.QuicSenderFlowController.ShouldSendAckImmediately(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace) -> bool
@@ -236,6 +255,9 @@ Incursa.Quic.QuicCryptoBuffer.HandshakeComplete.get -> bool
 Incursa.Quic.QuicCryptoBuffer.HandshakeComplete.set -> void
 Incursa.Quic.QuicCryptoBuffer.DiscardOverflowFramesAfterHandshakeComplete.get -> bool
 Incursa.Quic.QuicCryptoBuffer.DiscardOverflowFramesAfterHandshakeComplete.set -> void
+Incursa.Quic.QuicCryptoBuffer.DiscardingFutureFrames.get -> bool
+Incursa.Quic.QuicCryptoBuffer.DiscardFutureFrames() -> void
+Incursa.Quic.QuicCryptoBuffer.RejectZeroRtt() -> void
 Incursa.Quic.QuicCryptoBuffer.BufferedBytes.get -> int
 Incursa.Quic.QuicCryptoBuffer.TryAddFrame(Incursa.Quic.QuicCryptoFrame frame, out Incursa.Quic.QuicCryptoBufferResult result) -> bool
 Incursa.Quic.QuicCryptoBuffer.TryDequeueContiguousData(System.Span<byte> destination, out int bytesWritten) -> bool

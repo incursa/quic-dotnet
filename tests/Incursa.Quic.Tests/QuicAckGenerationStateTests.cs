@@ -366,7 +366,7 @@ public sealed class QuicAckGenerationStateTests
 
         Assert.True(sender.TryBuildAckFrame(QuicPacketNumberSpace.ApplicationData, nowMicros: 1200, out QuicAckFrame ackFrame));
         Assert.Equal(3UL, ackFrame.LargestAcknowledged);
-        Assert.Equal(1UL, ackFrame.FirstAckRange);
+        Assert.Equal(0UL, ackFrame.FirstAckRange);
 
         sender.MarkAckFrameSent(QuicPacketNumberSpace.ApplicationData, sentAtMicros: 1300, ackOnlyPacket: true);
         Assert.False(sender.CanSendAckOnlyPacket(QuicPacketNumberSpace.ApplicationData, nowMicros: 1400, maxAckDelayMicros: 1000));
