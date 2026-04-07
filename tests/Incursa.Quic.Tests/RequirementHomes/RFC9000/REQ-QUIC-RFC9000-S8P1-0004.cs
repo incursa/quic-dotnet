@@ -14,4 +14,36 @@ public sealed class REQ_QUIC_RFC9000_S8P1_0004
 
         Assert.Equal(0, paddingLength);
     }
+
+    [Theory]
+    [InlineData(1187, 13)]
+    [InlineData(1199, 1)]
+    [InlineData(1200, 0)]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryGetVersion1InitialDatagramPaddingLength_ComputesTheRemainingPadding(
+        int currentPayloadLength,
+        int expectedPaddingLength)
+    {
+        Assert.True(QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(
+            currentPayloadLength,
+            out int paddingLength));
+
+        Assert.Equal(expectedPaddingLength, paddingLength);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryGetVersion1InitialDatagramPaddingLength_RejectsNegativeCurrentPayloadLength()
+    {
+        Assert.False(QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(-1, out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryFormatVersion1InitialDatagramPadding_RejectsNegativeLengthsAndShortDestinations()
+    {
+        Assert.False(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(-1, stackalloc byte[1], out _));
+        Assert.False(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(1199, stackalloc byte[0], out _));
+    }
 }
