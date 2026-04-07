@@ -30,4 +30,26 @@ public sealed class REQ_QUIC_RFC9000_S3P2_0024
         Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
         Assert.Equal(QuicStreamReceiveState.ResetRead, snapshot.ReceiveState);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryAcknowledgeReset_RejectsRedundantAcknowledgementsAfterResetIsRead()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 16,
+            peerBidirectionalReceiveLimit: 8);
+
+        byte[] packet = QuicStreamTestData.BuildStreamFrame(0x08, streamId: 1, streamData: [0x11, 0x22], offset: 0);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(packet, out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out _));
+
+        Assert.True(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(streamId: 1, applicationProtocolErrorCode: 0x0B, finalSize: 2),
+            out _,
+            out _));
+
+        Assert.True(state.TryAcknowledgeReset(1));
+        Assert.False(state.TryAcknowledgeReset(1));
+    }
 }

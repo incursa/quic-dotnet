@@ -20,4 +20,11 @@ public sealed class REQ_QUIC_RFC9000_S10P3_0012
         Assert.Equal((byte)0x64, parsed.HeaderControlBits);
         Assert.True(parsed.Remainder.SequenceEqual(remainder));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryParseShortHeader_RejectsEmptyInput()
+    {
+        Assert.False(QuicPacketParser.TryParseShortHeader([], out _));
+    }
 }

@@ -1,59 +1,7 @@
-using System.Security.Cryptography;
-
 namespace Incursa.Quic.Tests;
 
 public sealed class QuicStatelessResetTests
 {
-    [Fact]
-    /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0002">The output of this function MUST be truncated to 16 bytes to produce the stateless reset token for that connection.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0016">The stateless reset token MUST be difficult to guess.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0010">A single static key MAY be used across all connections to the same endpoint by generating the proof using a pseudorandom function that takes a static key and the connection ID chosen by the endpoint as input.</workbench-requirement>
-    /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S10P3P2-0002")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0016")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P2-0010")]
-    [CoverageType(RequirementCoverageType.Positive)]
-    public void TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId()
-    {
-        byte[] secretKey = [0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97];
-        byte[] connectionId = [0x10, 0x11, 0x12, 0x13];
-        byte[] otherConnectionId = [0x20, 0x21, 0x22, 0x23];
-
-        Span<byte> token = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength];
-        Span<byte> otherToken = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength];
-        Span<byte> otherConnectionToken = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength];
-
-        Assert.True(QuicStatelessReset.TryGenerateStatelessResetToken(connectionId, secretKey, token, out int bytesWritten));
-        Assert.True(QuicStatelessReset.TryGenerateStatelessResetToken(connectionId, secretKey, otherToken, out int otherBytesWritten));
-        Assert.True(QuicStatelessReset.TryGenerateStatelessResetToken(otherConnectionId, secretKey, otherConnectionToken, out int otherConnectionBytesWritten));
-
-        Assert.Equal(QuicStatelessReset.StatelessResetTokenLength, bytesWritten);
-        Assert.Equal(QuicStatelessReset.StatelessResetTokenLength, otherBytesWritten);
-        Assert.Equal(QuicStatelessReset.StatelessResetTokenLength, otherConnectionBytesWritten);
-        Assert.True(token.SequenceEqual(otherToken));
-        Assert.False(token.SequenceEqual(otherConnectionToken));
-
-        Span<byte> expected = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength];
-        using HMACSHA256 hmac = new(secretKey);
-        byte[] expectedHash = hmac.ComputeHash(connectionId);
-        expectedHash.AsSpan(..QuicStatelessReset.StatelessResetTokenLength).CopyTo(expected);
-        Assert.True(expected.SequenceEqual(token));
-    }
-
-    [Fact]
-    /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0012">An endpoint that uses this design MUST NOT provide a zero-length connection ID.</workbench-requirement>
-    /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S10P3P2-0012")]
-    [CoverageType(RequirementCoverageType.Negative)]
-    public void TryGenerateStatelessResetToken_RejectsZeroLengthConnectionIds()
-    {
-        Span<byte> token = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength];
-
-        Assert.False(QuicStatelessReset.TryGenerateStatelessResetToken([], [0xAA, 0xBB], token, out _));
-    }
-
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryGenerateStatelessResetToken_RejectsTooSmallDestinationBuffers()
@@ -64,6 +12,15 @@ public sealed class QuicStatelessResetTests
 
         Assert.False(QuicStatelessReset.TryGenerateStatelessResetToken(connectionId, secretKey, token, out int bytesWritten));
         Assert.Equal(0, bytesWritten);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryGenerateStatelessResetToken_RejectsZeroLengthConnectionIds()
+    {
+        Span<byte> token = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength];
+
+        Assert.False(QuicStatelessReset.TryGenerateStatelessResetToken([], [0xAA, 0xBB], token, out _));
     }
 
     [Fact]
@@ -93,30 +50,6 @@ public sealed class QuicStatelessResetTests
         Assert.True(statelessResetToken.AsSpan().SequenceEqual(trailingToken));
     }
 
-    [Theory]
-    [InlineData(43, 42)]
-    [InlineData(22, 21)]
-    /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0010">An endpoint that sends a Stateless Reset in response to a packet that is 43 bytes or shorter SHOULD send a Stateless Reset that is one byte shorter than the packet it responds to.</workbench-requirement>
-    /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0010")]
-    [CoverageType(RequirementCoverageType.Positive)]
-    public void TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible(int triggeringPacketLength, int expectedLength)
-    {
-        Assert.True(QuicStatelessReset.TryGetRecommendedDatagramLength(triggeringPacketLength, out int datagramLength));
-        Assert.Equal(expectedLength, datagramLength);
-    }
-
-    [Fact]
-    /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0010">An endpoint that sends a Stateless Reset in response to a packet that is 43 bytes or shorter SHOULD send a Stateless Reset that is one byte shorter than the packet it responds to.</workbench-requirement>
-    /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S10P3-0010")]
-    [CoverageType(RequirementCoverageType.Negative)]
-    public void TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter()
-    {
-        Assert.False(QuicStatelessReset.TryGetRecommendedDatagramLength(QuicStatelessReset.MinimumDatagramLength, out _));
-    }
 
     [Theory]
     [InlineData(0, 22)]

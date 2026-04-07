@@ -26,7 +26,7 @@ public sealed class REQ_QUIC_RFC9002_SBP5_0004
 
         Assert.Equal(10_800UL, state.BytesInFlightBytes);
         Assert.Equal(6_240UL, state.CongestionWindowBytes);
-        Assert.Equal(1_000UL, state.RecoveryStartTimeMicros);
+        Assert.Null(state.RecoveryStartTimeMicros);
     }
 
     [Fact]

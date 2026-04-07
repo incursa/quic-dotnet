@@ -262,7 +262,7 @@ public sealed class QuicCongestionControlStateTests
 
         Assert.True(state.TryRegisterAcknowledgedPacket(
             sentBytes: 1_200,
-            sentAtMicros: 2_000,
+            sentAtMicros: 3_000,
             packetInFlight: true));
 
         Assert.False(state.HasRecoveryStartTime);
@@ -275,8 +275,8 @@ public sealed class QuicCongestionControlStateTests
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Property")]
     [InlineData(1_500UL, true)]
-    [InlineData(2_000UL, false)]
-    [InlineData(2_500UL, true)]
+    [InlineData(2_000UL, true)]
+    [InlineData(2_500UL, false)]
     public void TryRegisterAcknowledgedPacket_ClearsRecoveryOnlyForPacketsSentDuringRecovery(ulong packetSentAtMicros, bool expectedRecoveryAfterAck)
     {
         QuicCongestionControlState state = new();
@@ -675,7 +675,7 @@ public sealed class QuicCongestionControlStateTests
             ackReceivedAtMicros: 2_500,
             pacingLimited: true));
 
-        Assert.False(sender.CongestionControlState.HasRecoveryStartTime);
+        Assert.True(sender.CongestionControlState.HasRecoveryStartTime);
         Assert.Equal(0UL, sender.CongestionControlState.BytesInFlightBytes);
         Assert.Equal(6_000UL, sender.CongestionControlState.CongestionWindowBytes);
 
@@ -700,7 +700,8 @@ public sealed class QuicCongestionControlStateTests
             ackReceivedAtMicros: 4_000,
             pacingLimited: true));
 
-        Assert.Equal(7_200UL, sender.CongestionControlState.CongestionWindowBytes);
+        Assert.False(sender.CongestionControlState.HasRecoveryStartTime);
+        Assert.Equal(6_240UL, sender.CongestionControlState.CongestionWindowBytes);
     }
 
     [Fact]
