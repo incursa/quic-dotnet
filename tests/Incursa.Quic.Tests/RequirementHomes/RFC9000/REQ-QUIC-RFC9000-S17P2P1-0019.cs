@@ -3,4 +3,182 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
 public sealed class REQ_QUIC_RFC9000_S17P2P1_0019
 {
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0001">The first bit of a QUIC long header packet MUST be set to 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0003">The four bytes after the first byte in a QUIC long header packet MUST contain a 32-bit Version field.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0004">The byte after the Version field MUST encode the Destination Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0006">The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0008">The remainder of a QUIC long header packet MUST contain version-specific content.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0003">The Header Form field MUST be 1 bits long with value 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0004">The Unused field MUST be 7 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0005">The Version field MUST be 32 bits long with value 0.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0006">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0007">The Destination Connection ID field MUST be between 0 and 2040 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0008">The Source Connection ID Length field MUST be 8 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0009">The Source Connection ID field MUST be between 0 and 2040 bits long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0013">The Version field of a Version Negotiation packet MUST be set to 0x00000000.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0019">The Version Negotiation packet MUST NOT include the Packet Number and Length fields present in other packets that use the long header form.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1-0012">A Version Negotiation packet MUST echo the connection IDs selected by the client.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P1-0001">If the version selected by the client is not acceptable to the server, the server MUST respond with a Version Negotiation packet that includes a list of versions the server will accept.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0004")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryParseVersionNegotiation_ExposesSupportedVersions()
+    {
+        byte[] destinationConnectionId = [0x01, 0x02];
+        byte[] sourceConnectionId = [0x03, 0x04, 0x05];
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x6E,
+            destinationConnectionId,
+            sourceConnectionId,
+            0x00000001,
+            0x11223344,
+            0xAABBCCDD);
+
+        Assert.True(QuicPacketParser.TryParseVersionNegotiation(packet, out QuicVersionNegotiationPacket header));
+        Assert.Equal(QuicHeaderForm.Long, header.HeaderForm);
+        Assert.Equal((byte)0x6E, header.HeaderControlBits);
+        Assert.Equal((uint)0, header.Version);
+        Assert.True(header.IsVersionNegotiation);
+        Assert.Equal(destinationConnectionId.Length, header.DestinationConnectionIdLength);
+        Assert.True(destinationConnectionId.AsSpan().SequenceEqual(header.DestinationConnectionId));
+        Assert.Equal(sourceConnectionId.Length, header.SourceConnectionIdLength);
+        Assert.True(sourceConnectionId.AsSpan().SequenceEqual(header.SourceConnectionId));
+        Assert.Equal(3, header.SupportedVersionCount);
+        Assert.Equal((uint)0x00000001, header.GetSupportedVersion(0));
+        Assert.Equal((uint)0x11223344, header.GetSupportedVersion(1));
+        Assert.Equal((uint)0xAABBCCDD, header.GetSupportedVersion(2));
+        int supportedVersionOffset = 1 + sizeof(uint) + 1 + destinationConnectionId.Length + 1 + sourceConnectionId.Length;
+        Assert.True(packet.AsSpan(supportedVersionOffset).SequenceEqual(header.SupportedVersionBytes));
+        Assert.True(header.ContainsSupportedVersion(0x11223344));
+        Assert.False(header.ContainsSupportedVersion(0x01020305));
+
+        bool threw = false;
+        try
+        {
+            _ = header.GetSupportedVersion(3);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            threw = true;
+        }
+
+        Assert.True(threw);
+    }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0001">The first bit of a QUIC long header packet MUST be set to 1.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0003">The four bytes after the first byte in a QUIC long header packet MUST contain a 32-bit Version field.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0004">The byte after the Version field MUST encode the Destination Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0006">The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0008">The remainder of a QUIC long header packet MUST contain version-specific content.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P12-0001">Version Negotiation packets MUST NOT contain any mechanism to prevent version downgrade attacks.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1-0012">A Version Negotiation packet MUST echo the connection IDs selected by the client.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P2-0002">Each endpoint MUST use the Source Connection ID field to specify the connection ID that is used in the Destination Connection ID field of packets being sent to it.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S5-0003">Version Negotiation packets MUST NOT have cryptographic protection.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P1-0001">If the version selected by the client is not acceptable to the server, the server MUST respond with a Version Negotiation packet that includes a list of versions the server will accept.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P1-0002">An endpoint MUST NOT send a Version Negotiation packet in response to receiving a Version Negotiation packet.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0003")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0004")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
+    [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S21P12-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S7P2-0002")]
+    [Requirement("REQ-QUIC-RFC9001-S5-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S6P1-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions()
+    {
+        uint reservedVersion = 0x0A0A0A0A;
+        uint selectedVersion = 0x11223344;
+        uint otherVersion = 0xAABBCCDD;
+
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x4C,
+            destinationConnectionId: [0x01, 0x02],
+            sourceConnectionId: [0x03],
+            reservedVersion,
+            otherVersion,
+            selectedVersion);
+
+        Assert.True(QuicPacketParser.TryParseVersionNegotiation(packet, out QuicVersionNegotiationPacket header));
+        Assert.Equal(3, header.SupportedVersionCount);
+        Assert.Equal(reservedVersion, header.GetSupportedVersion(0));
+        Assert.Equal(otherVersion, header.GetSupportedVersion(1));
+        Assert.Equal(selectedVersion, header.GetSupportedVersion(2));
+        Assert.True(header.ContainsSupportedVersion(reservedVersion));
+        Assert.True(header.ContainsSupportedVersion(selectedVersion));
+        Assert.False(header.ContainsSupportedVersion(0xDEADBEEF));
+    }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0019">The Version Negotiation packet MUST NOT include the Packet Number and Length fields present in other packets that use the long header form.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryParseVersionNegotiation_RejectsEmptyInput()
+    {
+        Assert.False(QuicPacketParser.TryParseVersionNegotiation([], out _));
+    }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0019">The Version Negotiation packet MUST NOT include the Packet Number and Length fields present in other packets that use the long header form.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryParseVersionNegotiation_RejectsPacketsWithoutSupportedVersions()
+    {
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x01,
+            destinationConnectionId: [0x11],
+            sourceConnectionId: [0x22],
+            supportedVersions: []);
+
+        Assert.False(QuicPacketParser.TryParseVersionNegotiation(packet, out _));
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0019">The Version Negotiation packet MUST NOT include the Packet Number and Length fields present in other packets that use the long header form.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryParseVersionNegotiation_RejectsTruncatedSupportedVersions(int truncateBy)
+    {
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x7F,
+            destinationConnectionId: [0x11, 0x12],
+            sourceConnectionId: [0x21],
+            supportedVersions: 0x01020304);
+
+        byte[] truncatedPacket = packet[..^truncateBy];
+
+        Assert.False(QuicPacketParser.TryParseVersionNegotiation(truncatedPacket, out _));
+    }
 }
