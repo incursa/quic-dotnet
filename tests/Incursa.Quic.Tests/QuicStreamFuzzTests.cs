@@ -7,18 +7,12 @@ public sealed class QuicStreamFuzzTests
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P2-0001">STREAM frames MUST encapsulate data sent by an application.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0001" missing="true">Requirement text not found.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0002" missing="true">Requirement text not found.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0003" missing="true">Requirement text not found.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0004" missing="true">Requirement text not found.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-VINT-0005" missing="true">Requirement text not found.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S16-0003">This means that integers are encoded on 1, 2, 4, or 8 bytes and MAY encode 6-, 14-, 30-, or 62-bit values, respectively.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S16-0004">Values MUST NOT need to be encoded on the minimum number of bytes necessary, with the sole exception of the Frame Type field; see Section 12.4.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S2P2-0001")]
-    [Requirement("REQ-QUIC-VINT-0001")]
-    [Requirement("REQ-QUIC-VINT-0002")]
-    [Requirement("REQ-QUIC-VINT-0003")]
-    [Requirement("REQ-QUIC-VINT-0004")]
-    [Requirement("REQ-QUIC-VINT-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S16-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S16-0004")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_VarintParsing_RoundTripsRepresentativeValuesAndRejectsTruncation()
     {
