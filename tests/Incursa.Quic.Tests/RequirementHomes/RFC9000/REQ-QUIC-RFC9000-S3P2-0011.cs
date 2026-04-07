@@ -1,6 +1,39 @@
+using FsCheck.Xunit;
+
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S3P2-0011">An endpoint MUST open lower-numbered peer streams first.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S3P2-0011")]
 public sealed class REQ_QUIC_RFC9000_S3P2_0011
 {
+    [Property]
+    [Trait("Category", "Property")]
+    public void TryApplyMaxStreamDataFrame_OpensLowerNumberedPeerStreamsFirst(byte streamIndex)
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 128,
+            connectionSendLimit: 128,
+            incomingBidirectionalStreamLimit: 1024,
+            incomingUnidirectionalStreamLimit: 1024,
+            peerBidirectionalStreamLimit: 1024,
+            peerUnidirectionalStreamLimit: 1024,
+            peerBidirectionalReceiveLimit: 32,
+            peerUnidirectionalReceiveLimit: 32,
+            localBidirectionalReceiveLimit: 32,
+            localUnidirectionalSendLimit: 32,
+            peerBidirectionalSendLimit: 8);
+
+        ulong streamId = ((ulong)streamIndex << 2) | 1UL;
+
+        Assert.True(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(streamId, 16), out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        for (int index = 0; index <= streamIndex; index++)
+        {
+            ulong knownStreamId = ((ulong)index << 2) | 1UL;
+            Assert.True(state.TryGetStreamSnapshot(knownStreamId, out QuicConnectionStreamSnapshot _));
+        }
+    }
 }
