@@ -27,4 +27,19 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0003
             out QuicHeaderForm shortHeaderForm));
         Assert.Equal(QuicHeaderForm.Short, shortHeaderForm);
     }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0003">The Header Form field MUST be 1 bits long with value 1.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0003")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryParseVersionNegotiation_RejectsShortHeaderForm()
+    {
+        byte[] shortHeader = QuicHeaderTestData.BuildShortHeader(
+            headerControlBits: 0x00,
+            remainder: [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04]);
+
+        Assert.False(QuicPacketParser.TryParseVersionNegotiation(shortHeader, out _));
+    }
 }

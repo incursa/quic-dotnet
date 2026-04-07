@@ -83,4 +83,37 @@ public sealed class REQ_QUIC_RFC9002_SAP1_0001
         Assert.True(tracker.ShouldSendAckImmediately(QuicPacketNumberSpace.Handshake));
         Assert.False(tracker.ShouldSendAckImmediately(QuicPacketNumberSpace.ApplicationData));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void SenderFlowController_UsesAckGenerationStateForImmediateAndScheduledAckFrames()
+    {
+        QuicSenderFlowController sender = new();
+
+        sender.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            ackEliciting: true,
+            receivedAtMicros: 1000);
+
+        Assert.False(sender.ShouldSendAckImmediately(QuicPacketNumberSpace.ApplicationData));
+
+        sender.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 3,
+            ackEliciting: true,
+            receivedAtMicros: 1100);
+
+        Assert.True(sender.ShouldSendAckImmediately(QuicPacketNumberSpace.ApplicationData));
+        Assert.True(sender.CanSendAckOnlyPacket(QuicPacketNumberSpace.ApplicationData, nowMicros: 1200, maxAckDelayMicros: 1000));
+
+        Assert.True(sender.TryBuildAckFrame(QuicPacketNumberSpace.ApplicationData, nowMicros: 1200, out QuicAckFrame ackFrame));
+        Assert.Equal(3UL, ackFrame.LargestAcknowledged);
+        Assert.Equal(0UL, ackFrame.FirstAckRange);
+
+        sender.MarkAckFrameSent(QuicPacketNumberSpace.ApplicationData, sentAtMicros: 1300, ackOnlyPacket: true);
+        Assert.False(sender.CanSendAckOnlyPacket(QuicPacketNumberSpace.ApplicationData, nowMicros: 1400, maxAckDelayMicros: 1000));
+        Assert.True(sender.ShouldIncludeAckFrameWithOutgoingPacket(QuicPacketNumberSpace.ApplicationData, nowMicros: 3400, maxAckDelayMicros: 1000));
+    }
 }
