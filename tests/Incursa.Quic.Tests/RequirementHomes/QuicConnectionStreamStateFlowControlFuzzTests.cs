@@ -3,13 +3,9 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicConnectionStreamStateFlowControlFuzzTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P2-0015")]
     [Requirement("REQ-QUIC-RFC9000-S4P5-0001")]
     [Requirement("REQ-QUIC-RFC9000-S4P5-0002")]
     [Requirement("REQ-QUIC-RFC9000-S4P5-0003")]
-    [Requirement("REQ-QUIC-RFC9000-S4P5-0006")]
-    [Requirement("REQ-QUIC-RFC9000-S4P5-0007")]
-    [Requirement("REQ-QUIC-RFC9000-S4P5-0008")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_FinalSizeRegressionIsRejectedForSendAndReceive()
     {
