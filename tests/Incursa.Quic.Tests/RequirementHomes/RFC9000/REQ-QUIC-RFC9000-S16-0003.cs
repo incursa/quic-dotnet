@@ -1,3 +1,5 @@
+using FsCheck.Xunit;
+
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
@@ -31,5 +33,41 @@ public sealed class REQ_QUIC_RFC9000_S16_0003
         Assert.True(QuicVariableLengthInteger.TryParse(buffer[..bytesWritten], out ulong parsed, out int bytesConsumed));
         Assert.Equal(value, parsed);
         Assert.Equal(expectedLength, bytesConsumed);
+    }
+
+    [Theory]
+    [InlineData(0UL, 0)]
+    [InlineData(64UL, 1)]
+    [InlineData(16_384UL, 3)]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryFormat_RejectsInsufficientDestinationSpace(ulong value, int destinationLength)
+    {
+        Span<byte> destination = destinationLength == 0 ? Span<byte>.Empty : new byte[destinationLength];
+
+        Assert.False(QuicVariableLengthInteger.TryFormat(value, destination, out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryFormat_RejectsValuesAboveTheCeiling()
+    {
+        Span<byte> destination = stackalloc byte[8];
+
+        Assert.False(QuicVariableLengthInteger.TryFormat(QuicVariableLengthInteger.MaxValue + 1, destination, out _));
+    }
+
+    [Property(Arbitrary = new[] { typeof(QuicVariableLengthIntegerPropertyGenerators) })]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Property")]
+    public void TryFormatAndParse_RoundTripsRepresentableValues(ulong value)
+    {
+        Span<byte> buffer = stackalloc byte[8];
+
+        Assert.True(QuicVariableLengthInteger.TryFormat(value, buffer, out int bytesWritten));
+        Assert.True(QuicVariableLengthInteger.TryParse(buffer[..bytesWritten], out ulong parsed, out int bytesConsumed));
+        Assert.Equal(value, parsed);
+        Assert.Equal(bytesWritten, bytesConsumed);
     }
 }
