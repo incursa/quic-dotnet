@@ -4,6 +4,187 @@ namespace Incursa.Quic.Tests;
 
 internal static class QuicTransportParameterTestData
 {
+    public static IEnumerable<object[]> MatchingConnectionIdBindingCases()
+    {
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+            },
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            true,
+            new byte[] { 0x30 },
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+                RetrySourceConnectionId = new byte[] { 0x30 },
+            },
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Server,
+            Array.Empty<byte>(),
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+            },
+        };
+    }
+
+    public static IEnumerable<object[]> MissingConnectionIdBindingCases()
+    {
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+            },
+            QuicConnectionIdBindingValidationError.MissingOriginalDestinationConnectionId,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+            },
+            QuicConnectionIdBindingValidationError.MissingInitialSourceConnectionId,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            true,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+            },
+            QuicConnectionIdBindingValidationError.MissingRetrySourceConnectionId,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Server,
+            Array.Empty<byte>(),
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters(),
+            QuicConnectionIdBindingValidationError.MissingInitialSourceConnectionId,
+        };
+    }
+
+    public static IEnumerable<object[]> MismatchedConnectionIdBindingCases()
+    {
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x99 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+            },
+            QuicConnectionIdBindingValidationError.OriginalDestinationConnectionIdMismatch,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x99 },
+            },
+            QuicConnectionIdBindingValidationError.InitialSourceConnectionIdMismatch,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            true,
+            new byte[] { 0x30 },
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+                RetrySourceConnectionId = new byte[] { 0x99 },
+            },
+            QuicConnectionIdBindingValidationError.RetrySourceConnectionIdMismatch,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Client,
+            new byte[] { 0x10, 0x11 },
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = new byte[] { 0x10, 0x11 },
+                InitialSourceConnectionId = new byte[] { 0x20, 0x21 },
+                RetrySourceConnectionId = new byte[] { 0x30 },
+            },
+            QuicConnectionIdBindingValidationError.UnexpectedRetrySourceConnectionId,
+        };
+
+        yield return new object[]
+        {
+            QuicTransportParameterRole.Server,
+            Array.Empty<byte>(),
+            new byte[] { 0x20, 0x21 },
+            false,
+            Array.Empty<byte>(),
+            new QuicTransportParameters
+            {
+                InitialSourceConnectionId = new byte[] { 0x99 },
+            },
+            QuicConnectionIdBindingValidationError.InitialSourceConnectionIdMismatch,
+        };
+    }
+
     public static byte[] BuildTransportParameterTuple(ulong id, ReadOnlySpan<byte> value)
     {
         byte[] idBytes = QuicVarintTestData.EncodeMinimal(id);

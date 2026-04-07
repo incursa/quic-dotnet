@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0001
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryParseConnectionCloseFrame_UsesTheTransportCloseFrameType()
     {
         QuicConnectionCloseFrame frame = new(QuicTransportErrorCode.NoError, triggeringFrameType: 0x02, [0x6F, 0x6B]);
@@ -25,6 +26,43 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0001
         Assert.True(QuicFrameCodec.TryFormatConnectionCloseFrame(parsed, destination, out int bytesWritten));
         Assert.Equal(encoded.Length, bytesWritten);
         Assert.True(encoded.AsSpan().SequenceEqual(destination[..bytesWritten]));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void QuicConnectionCloseFrame_TransportClosePreservesTransportMetadata()
+    {
+        byte[] reasonPhrase = [0x62, 0x79, 0x65];
+
+        QuicConnectionCloseFrame frame = new(
+            QuicTransportErrorCode.ProtocolViolation,
+            triggeringFrameType: 0x04,
+            reasonPhrase);
+
+        Assert.False(frame.IsApplicationError);
+        Assert.Equal((byte)0x1C, frame.FrameType);
+        Assert.Equal((ulong)QuicTransportErrorCode.ProtocolViolation, frame.ErrorCode);
+        Assert.True(frame.HasTriggeringFrameType);
+        Assert.Equal(0x04UL, frame.TriggeringFrameType);
+        Assert.True(reasonPhrase.AsSpan().SequenceEqual(frame.ReasonPhrase));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void QuicConnectionCloseFrame_ApplicationCloseDoesNotExposeTriggeringFrameType()
+    {
+        byte[] reasonPhrase = [0x61, 0x70, 0x70];
+
+        QuicConnectionCloseFrame frame = new(0x1234, reasonPhrase);
+
+        Assert.True(frame.IsApplicationError);
+        Assert.Equal((byte)0x1D, frame.FrameType);
+        Assert.Equal(0x1234UL, frame.ErrorCode);
+        Assert.False(frame.HasTriggeringFrameType);
+        Assert.Equal(0UL, frame.TriggeringFrameType);
+        Assert.True(reasonPhrase.AsSpan().SequenceEqual(frame.ReasonPhrase));
     }
 
     [Theory]
