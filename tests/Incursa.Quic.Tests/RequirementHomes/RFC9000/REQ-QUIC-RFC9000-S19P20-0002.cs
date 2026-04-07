@@ -17,4 +17,14 @@ public sealed class REQ_QUIC_RFC9000_S19P20_0002
         Assert.Equal(1, bytesWritten);
         Assert.Equal(0x1E, destination[0]);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void QuicHandshakeDoneFrame_ExposesTheWireFrameType()
+    {
+        QuicHandshakeDoneFrame frame = default;
+
+        Assert.Equal((byte)0x1E, frame.FrameType);
+    }
 }

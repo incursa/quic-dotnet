@@ -42,4 +42,21 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2_0003
         ulong PathChallengeSentAtMicros,
         ulong PathResponseReceivedAtMicros,
         ulong ExpectedRoundTripMicros);
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState()
+    {
+        Assert.True(QuicPathValidation.TryMeasurePathChallengeRoundTripMicros(
+            pathChallengeSentAtMicros: 1_000,
+            pathResponseReceivedAtMicros: 2_750,
+            out ulong roundTripMicros));
+
+        Assert.Equal(1_750UL, roundTripMicros);
+
+        QuicRttEstimator estimator = new(initialRttMicros: roundTripMicros);
+        Assert.False(estimator.HasRttSample);
+        Assert.Equal(roundTripMicros, estimator.SmoothedRttMicros);
+        Assert.Equal(roundTripMicros / 2, estimator.RttVarMicros);
+    }
 }
