@@ -23,4 +23,53 @@ public sealed class REQ_QUIC_RFC9002_S7P3P1_0003
         Assert.Equal(10_800UL, state.BytesInFlightBytes);
         Assert.True(state.IsInSlowStart);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void SenderFlowController_UsesAckFramesToAcknowledgeAndGrowTheCongestionWindowInSlowStart()
+    {
+        QuicSenderFlowController sender = new();
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            sentBytes: 1_200,
+            sentAtMicros: 1_000,
+            ackEliciting: true);
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 2,
+            sentBytes: 1_200,
+            sentAtMicros: 1_100,
+            ackEliciting: true);
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 3,
+            sentBytes: 1_200,
+            sentAtMicros: 1_200,
+            ackEliciting: true);
+
+        Assert.Equal(3_600UL, sender.CongestionControlState.BytesInFlightBytes);
+
+        QuicAckFrame ackFrame = new()
+        {
+            LargestAcknowledged = 3,
+            AckDelay = 100,
+            FirstAckRange = 2,
+            AdditionalRanges = Array.Empty<QuicAckRange>(),
+        };
+
+        Assert.True(sender.TryProcessAckFrame(
+            QuicPacketNumberSpace.ApplicationData,
+            ackFrame,
+            ackReceivedAtMicros: 2_000,
+            pacingLimited: true));
+
+        Assert.Equal(0UL, sender.CongestionControlState.BytesInFlightBytes);
+        Assert.Equal(15_600UL, sender.CongestionControlState.CongestionWindowBytes);
+        Assert.True(sender.CongestionControlState.IsInSlowStart);
+    }
 }

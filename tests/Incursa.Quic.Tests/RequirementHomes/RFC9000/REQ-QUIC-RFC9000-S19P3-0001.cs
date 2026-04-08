@@ -133,4 +133,45 @@ public sealed class REQ_QUIC_RFC9000_S19P3_0001
         Assert.Equal(encoded.Length, bytesWritten);
         Assert.True(encoded.AsSpan().SequenceEqual(destination[..bytesWritten]));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0014")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0017")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0018")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0020")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P2-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P2-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P2-0007")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation()
+    {
+        QuicFrameCodecFuzzSupport.FuzzAckFrame();
+    }
 }

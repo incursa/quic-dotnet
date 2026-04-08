@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using FsCheck.Xunit;
 
 namespace Incursa.Quic.Tests;
@@ -69,5 +70,30 @@ public sealed class REQ_QUIC_RFC9000_S16_0003
         Assert.True(QuicVariableLengthInteger.TryParse(buffer[..bytesWritten], out ulong parsed, out int bytesConsumed));
         Assert.Equal(value, parsed);
         Assert.Equal(bytesWritten, bytesConsumed);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void Fuzz_VarintParsing_RoundTripsRepresentativeValuesAndRejectsTruncation()
+    {
+        Random random = new(0x5150_2028);
+
+        Span<byte> buffer = stackalloc byte[sizeof(ulong)];
+        for (int iteration = 0; iteration < 128; iteration++)
+        {
+            random.NextBytes(buffer);
+            ulong value = BinaryPrimitives.ReadUInt64BigEndian(buffer) & QuicVariableLengthInteger.MaxValue;
+            byte[] encoded = QuicVarintTestData.EncodeMinimal(value);
+
+            Assert.True(QuicVariableLengthInteger.TryParse(encoded, out ulong parsed, out int bytesConsumed));
+            Assert.Equal(value, parsed);
+            Assert.Equal(encoded.Length, bytesConsumed);
+
+            if (encoded.Length > 1)
+            {
+                byte[] truncated = encoded[..(encoded.Length - 1)];
+                Assert.False(QuicVariableLengthInteger.TryParse(truncated, out _, out _));
+            }
+        }
     }
 }

@@ -48,4 +48,12 @@ public sealed class REQ_QUIC_RFC9000_S5P2_0008
         Assert.False(QuicPacketParser.TryGetPacketNumberSpace(versionNegotiationPacket, out _));
         Assert.False(QuicPacketParser.TryGetPacketNumberSpace(retryPacket, out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryGetPacketNumberSpace_RejectsEmptyInput()
+    {
+        Assert.False(QuicPacketParser.TryGetPacketNumberSpace([], out _));
+    }
 }

@@ -181,4 +181,29 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0019
 
         Assert.False(QuicPacketParser.TryParseVersionNegotiation(truncatedPacket, out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void Packet_GetSupportedVersion_RejectsNegativeIndex()
+    {
+        byte[] packetBytes = QuicHeaderTestData.BuildVersionNegotiation(
+            0x4C,
+            [0x01, 0x02],
+            [0x03],
+            0x11223344);
+
+        Assert.True(QuicPacketParser.TryParseVersionNegotiation(packetBytes, out QuicVersionNegotiationPacket packet));
+
+        bool threw = false;
+        try
+        {
+            _ = packet.GetSupportedVersion(-1);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            threw = true;
+        }
+
+        Assert.True(threw);
+    }
 }
