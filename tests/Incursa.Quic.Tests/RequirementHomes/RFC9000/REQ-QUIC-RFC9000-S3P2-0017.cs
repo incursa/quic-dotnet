@@ -27,6 +27,10 @@ public sealed class REQ_QUIC_RFC9000_S3P2_0017
 
         Assert.True(state.TryReceiveStreamFrame(tailFrame, out QuicTransportErrorCode errorCode));
         Assert.Equal(default, errorCode);
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot preCompletionSnapshot));
+        Assert.Equal(QuicStreamReceiveState.SizeKnown, preCompletionSnapshot.ReceiveState);
+        Assert.True(preCompletionSnapshot.HasFinalSize);
+
         Assert.True(state.TryReceiveStreamFrame(headFrame, out errorCode));
         Assert.Equal(default, errorCode);
 

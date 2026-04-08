@@ -1,31 +1,66 @@
 # RFC 9000 Chunk Implementation Summary: `9000-02-stream-state`
 
 ## Audit Result
-- `deferred_greenfield`
-- In-scope requirements: 66 total, 0 implemented and tested, 66 blocked by missing stream-state and flow-control dependencies.
-- No reconciliation artifact was present for this chunk, so the pass was treated as greenfield.
-- No code or test behavior changed in this pass.
+- `partial_with_explicit_blockers`
+- In-scope requirements: 66 total, 16 implemented and tested, 10 partial, 40 blocked.
+- Reconciliation artifact was present and used as the starting point.
+- The helper layer now closes the low-risk stream-state subset without inventing transport orchestration.
 
 ## Requirements Completed
-- None in this pass.
+- S3: `REQ-QUIC-RFC9000-S3-0001`, `REQ-QUIC-RFC9000-S3-0002`
+- S3P1: `REQ-QUIC-RFC9000-S3P1-0001`, `REQ-QUIC-RFC9000-S3P1-0002`, `REQ-QUIC-RFC9000-S3P1-0007`, `REQ-QUIC-RFC9000-S3P1-0008`
+- S3P2: `REQ-QUIC-RFC9000-S3P2-0005`, `REQ-QUIC-RFC9000-S3P2-0006`, `REQ-QUIC-RFC9000-S3P2-0008`, `REQ-QUIC-RFC9000-S3P2-0011`, `REQ-QUIC-RFC9000-S3P2-0014`, `REQ-QUIC-RFC9000-S3P2-0016`, `REQ-QUIC-RFC9000-S3P2-0017`, `REQ-QUIC-RFC9000-S3P2-0019`, `REQ-QUIC-RFC9000-S3P2-0020`, `REQ-QUIC-RFC9000-S3P2-0024`
+- S3P3: none
+- S3P4: none
+- S3P5: none
+
+## Requirements Partially Implemented
+- S3: `REQ-QUIC-RFC9000-S3-0003`
+- S3P1: `REQ-QUIC-RFC9000-S3P1-0003`, `REQ-QUIC-RFC9000-S3P1-0009`
+- S3P2: `REQ-QUIC-RFC9000-S3P2-0001`, `REQ-QUIC-RFC9000-S3P2-0002`, `REQ-QUIC-RFC9000-S3P2-0003`, `REQ-QUIC-RFC9000-S3P2-0007`, `REQ-QUIC-RFC9000-S3P2-0013`, `REQ-QUIC-RFC9000-S3P2-0015`, `REQ-QUIC-RFC9000-S3P2-0021`
+- S3P3: none
+- S3P4: none
+- S3P5: none
 
 ## Files Changed
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0007.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs`
 - `specs/requirements/quic/REQUIREMENT-GAPS.md`
+- `specs/generated/quic/chunks/9000-02-stream-state.reconciliation.md`
+- `specs/generated/quic/chunks/9000-02-stream-state.reconciliation.json`
 - `specs/generated/quic/chunks/9000-02-stream-state.implementation-summary.md`
 - `specs/generated/quic/chunks/9000-02-stream-state.implementation-summary.json`
+- `specs/generated/quic/chunks/9000-02-stream-state.closeout.md`
+- `specs/generated/quic/chunks/9000-02-stream-state.closeout.json`
 
 ## Tests Added or Updated
-- None. The chunk remains dependency-blocked before any stream-state implementation can be proven.
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0007.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs`
 
 ## Tests Run and Results
-- Not run. This pass only updated trace artifacts and the gap ledger.
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`
+- Passed: 1325
+- Failed: 0
+- Skipped: 0
+- Duration: 874 ms
 
 ## Remaining Open Requirements in Scope
-- All 66 in-scope requirements remain open.
-- The selected chunk still depends on a stream abstraction, receive buffering, flow-control state, and recovery coordination that are not present in the repo yet.
-- The phase inventory already marks this chunk as greenfield and dependent on the stream abstraction and Section 4 flow-control work.
+- All 50 non-implemented requirements remain open.
+- The partially implemented clauses still need stronger edge or negative proof, and the blocked clauses still need the missing application-facing stream abstraction and STOP_SENDING/RESET coordination.
 
 ## Risks or Follow-up Notes
-- Do not add a detached stream-state helper before the transport owns stream objects and flow-control bookkeeping.
-- The current repository shape stops at parser/codec helpers plus a few isolated state utilities, so any premature state-machine surface would be hard to integrate cleanly.
-- When the owning stream abstraction exists, this chunk should be revisited as the place to implement the actual send/receive state machines.
+- The helper-layer state machine is now the correct place for this chunk, but the transport still needs higher-level stream ownership before the remaining blocked clauses can be closed.
+- The low-risk receive/send state transitions are now proven; the remaining work is orchestration, not wire parsing.
+- Keep the remaining open requirements explicit until the transport stack can own them.

@@ -1,0 +1,1407 @@
+{
+  "chunk_id": "9000-02-stream-state",
+  "rfc": "9000",
+  "section_tokens": [
+    "S3",
+    "S3P1",
+    "S3P2",
+    "S3P3",
+    "S3P4",
+    "S3P5"
+  ],
+  "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+  "audit_result": "trace-consistent-with-helper-evidence-and-explicit-blockers",
+  "source_artifacts": {
+    "implementation_summary": {
+      "path": "specs/generated/quic/chunks/9000-02-stream-state.implementation-summary.json",
+      "status": "authoritative"
+    },
+    "reconciliation_artifact": {
+      "path": "specs/generated/quic/chunks/9000-02-stream-state.reconciliation.json",
+      "status": "not-present-in-repo"
+    }
+  },
+  "counts": {
+    "total": 66,
+    "covered": 16,
+    "partial": 10,
+    "blocked": 40,
+    "needs_review": 0,
+    "stale_ids_found": 0,
+    "silent_gaps_found": 0
+  },
+  "counts_by_section": {
+    "S3": {
+      "total": 3,
+      "implemented_and_tested": 2,
+      "partial": 1,
+      "blocked": 0
+    },
+    "S3P1": {
+      "total": 17,
+      "implemented_and_tested": 4,
+      "partial": 2,
+      "blocked": 11
+    },
+    "S3P2": {
+      "total": 24,
+      "implemented_and_tested": 10,
+      "partial": 7,
+      "blocked": 7
+    },
+    "S3P3": {
+      "total": 6,
+      "implemented_and_tested": 0,
+      "partial": 0,
+      "blocked": 6
+    },
+    "S3P4": {
+      "total": 3,
+      "implemented_and_tested": 0,
+      "partial": 0,
+      "blocked": 3
+    },
+    "S3P5": {
+      "total": 13,
+      "implemented_and_tested": 0,
+      "partial": 0,
+      "blocked": 13
+    }
+  },
+  "reference_check": {
+    "source_requirement_refs_found": [],
+    "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9000-S3-0001",
+      "REQ-QUIC-RFC9000-S3-0002",
+      "REQ-QUIC-RFC9000-S3-0003",
+      "REQ-QUIC-RFC9000-S3P1-0001",
+      "REQ-QUIC-RFC9000-S3P1-0002",
+      "REQ-QUIC-RFC9000-S3P1-0003",
+      "REQ-QUIC-RFC9000-S3P1-0004",
+      "REQ-QUIC-RFC9000-S3P1-0005",
+      "REQ-QUIC-RFC9000-S3P1-0006",
+      "REQ-QUIC-RFC9000-S3P1-0007",
+      "REQ-QUIC-RFC9000-S3P1-0008",
+      "REQ-QUIC-RFC9000-S3P1-0009",
+      "REQ-QUIC-RFC9000-S3P1-0010",
+      "REQ-QUIC-RFC9000-S3P1-0011",
+      "REQ-QUIC-RFC9000-S3P1-0012",
+      "REQ-QUIC-RFC9000-S3P1-0013",
+      "REQ-QUIC-RFC9000-S3P1-0014",
+      "REQ-QUIC-RFC9000-S3P1-0015",
+      "REQ-QUIC-RFC9000-S3P1-0016",
+      "REQ-QUIC-RFC9000-S3P1-0017",
+      "REQ-QUIC-RFC9000-S3P2-0001",
+      "REQ-QUIC-RFC9000-S3P2-0002",
+      "REQ-QUIC-RFC9000-S3P2-0003",
+      "REQ-QUIC-RFC9000-S3P2-0004",
+      "REQ-QUIC-RFC9000-S3P2-0005",
+      "REQ-QUIC-RFC9000-S3P2-0006",
+      "REQ-QUIC-RFC9000-S3P2-0007",
+      "REQ-QUIC-RFC9000-S3P2-0008",
+      "REQ-QUIC-RFC9000-S3P2-0009",
+      "REQ-QUIC-RFC9000-S3P2-0010",
+      "REQ-QUIC-RFC9000-S3P2-0011",
+      "REQ-QUIC-RFC9000-S3P2-0012",
+      "REQ-QUIC-RFC9000-S3P2-0013",
+      "REQ-QUIC-RFC9000-S3P2-0014",
+      "REQ-QUIC-RFC9000-S3P2-0015",
+      "REQ-QUIC-RFC9000-S3P2-0016",
+      "REQ-QUIC-RFC9000-S3P2-0017",
+      "REQ-QUIC-RFC9000-S3P2-0018",
+      "REQ-QUIC-RFC9000-S3P2-0019",
+      "REQ-QUIC-RFC9000-S3P2-0020",
+      "REQ-QUIC-RFC9000-S3P2-0021",
+      "REQ-QUIC-RFC9000-S3P2-0022",
+      "REQ-QUIC-RFC9000-S3P2-0023",
+      "REQ-QUIC-RFC9000-S3P2-0024",
+      "REQ-QUIC-RFC9000-S3P3-0001",
+      "REQ-QUIC-RFC9000-S3P3-0002",
+      "REQ-QUIC-RFC9000-S3P3-0003",
+      "REQ-QUIC-RFC9000-S3P3-0004",
+      "REQ-QUIC-RFC9000-S3P3-0005",
+      "REQ-QUIC-RFC9000-S3P3-0006",
+      "REQ-QUIC-RFC9000-S3P4-0001",
+      "REQ-QUIC-RFC9000-S3P4-0002",
+      "REQ-QUIC-RFC9000-S3P4-0003",
+      "REQ-QUIC-RFC9000-S3P5-0001",
+      "REQ-QUIC-RFC9000-S3P5-0002",
+      "REQ-QUIC-RFC9000-S3P5-0003",
+      "REQ-QUIC-RFC9000-S3P5-0004",
+      "REQ-QUIC-RFC9000-S3P5-0005",
+      "REQ-QUIC-RFC9000-S3P5-0006",
+      "REQ-QUIC-RFC9000-S3P5-0007",
+      "REQ-QUIC-RFC9000-S3P5-0008",
+      "REQ-QUIC-RFC9000-S3P5-0009",
+      "REQ-QUIC-RFC9000-S3P5-0010",
+      "REQ-QUIC-RFC9000-S3P5-0011",
+      "REQ-QUIC-RFC9000-S3P5-0012",
+      "REQ-QUIC-RFC9000-S3P5-0013"
+    ],
+    "stale_requirement_refs_found": [],
+    "wrong_requirement_refs_found": [],
+    "notes": [
+      "No live src/ requirement tags are present for this slice.",
+      "The helper-layer tests and requirement-home files now show the 16 implemented clauses and the 9 partial clauses with existing test files; S3-0003 remains partial without a populated test file."
+    ]
+  },
+  "live_ref_audit": {
+    "code_and_test_roots_searched": [
+      "src/Incursa.Quic",
+      "tests/Incursa.Quic.Tests"
+    ],
+    "canonical_in_scope_test_files": [
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0007.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0008.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0009.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0010.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0011.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0012.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0013.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0014.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0015.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0016.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0017.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0007.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0008.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0009.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0010.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0011.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0013.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0018.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0021.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0022.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0023.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0024.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0007.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0008.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0009.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0010.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0011.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0012.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0013.cs"
+    ],
+    "canonical_in_scope_src_files": [
+      "src/Incursa.Quic/QuicConnectionStreamState.cs",
+      "src/Incursa.Quic/QuicConnectionStreamSnapshot.cs",
+      "src/Incursa.Quic/QuicStreamSendState.cs",
+      "src/Incursa.Quic/QuicStreamReceiveState.cs",
+      "src/Incursa.Quic/QuicStreamId.cs"
+    ],
+    "stale_or_wrong_refs_found_in_scope": [],
+    "notes": [
+      "The helper-layer stream state lives in QuicConnectionStreamState and supporting snapshot/state enum types.",
+      "Requirement-home tests cover the implemented subset; the remaining partial and blocked clauses stay explicit."
+    ]
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3-0001",
+      "section": "S3",
+      "title": "Choose the correct state machine for unidirectional streams",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs"
+      ],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Local unidirectional streams are created send-only and do not expose a receive part."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3-0002",
+      "section": "S3",
+      "title": "Use both state machines for bidirectional streams",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0002.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Local bidirectional streams are created with both send and receive parts."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3-0003",
+      "section": "S3",
+      "title": "Allow alternate stream state machines with consistent behavior",
+      "status": "partially implemented",
+      "completion_status": "partially implemented",
+      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0003.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Design-level MAY clause; the current repo shape does not cleanly prove alternate stream-state representations.",
+      "notes": "Design-level MAY clause; the current repo shape does not cleanly prove alternate stream-state representations."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0001",
+      "section": "S3P1",
+      "title": "Treat Ready as a newly created sendable stream",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0001.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Ready is the initial sendable state for newly created local streams."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0002",
+      "section": "S3P1",
+      "title": "Permit buffering in Ready",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "The helper layer buffers outbound data in Ready and preserves ordered fragments through Send and DataSent transitions."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0003",
+      "section": "S3P1",
+      "title": "Enter Send state on first outbound stream frame",
+      "status": "partially implemented",
+      "completion_status": "partially implemented",
+      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0003.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Needs a direct edge proof for entering Send on the first outbound frame.",
+      "notes": "Needs a direct edge proof for entering Send on the first outbound frame."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0004",
+      "section": "S3P1",
+      "title": "Allow deferred stream ID allocation",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0004.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.",
+      "notes": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0005",
+      "section": "S3P1",
+      "title": "Start peer-initiated bidirectional senders in Ready",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0005.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.",
+      "notes": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0006",
+      "section": "S3P1",
+      "title": "Transmit and retransmit in Send",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0006.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.",
+      "notes": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0007",
+      "section": "S3P1",
+      "title": "Respect peer flow control while sending",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0007.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0007.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0007.cs"
+      ],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "MAX_STREAM_DATA increases the send limit after Send is entered."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0008",
+      "section": "S3P1",
+      "title": "Signal Send blocking with STREAM_DATA_BLOCKED",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0008.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Blocked send attempts surface STREAM_DATA_BLOCKED until credit arrives."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0009",
+      "section": "S3P1",
+      "title": "Enter Data Sent after sending FIN",
+      "status": "partially implemented",
+      "completion_status": "partially implemented",
+      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0009.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Needs a direct edge proof for entering Data Sent when FIN is sent.",
+      "notes": "Needs a direct edge proof for entering Data Sent when FIN is sent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0010",
+      "section": "S3P1",
+      "title": "Restrict Data Sent retransmissions",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0010.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.",
+      "notes": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0011",
+      "section": "S3P1",
+      "title": "Stop flow control checks in Data Sent",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0011.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.",
+      "notes": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0012",
+      "section": "S3P1",
+      "title": "Allow ignoring MAX_STREAM_DATA in Data Sent",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0012.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.",
+      "notes": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0013",
+      "section": "S3P1",
+      "title": "Enter Data Recvd after all data is acknowledged",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0013.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.",
+      "notes": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0014",
+      "section": "S3P1",
+      "title": "Allow application abandonment of stream transmission",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0014.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.",
+      "notes": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0015",
+      "section": "S3P1",
+      "title": "Send RESET_STREAM when abandoning transmission",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0015.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.",
+      "notes": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0016",
+      "section": "S3P1",
+      "title": "Permit RESET_STREAM as the first frame",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0016.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.",
+      "notes": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0017",
+      "section": "S3P1",
+      "title": "Enter Reset Recvd after RESET_STREAM is acknowledged",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0017.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.",
+      "notes": "The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0001",
+      "section": "S3P2",
+      "title": "Do not track unobservable sending-part states",
+      "status": "partially implemented",
+      "completion_status": "partially implemented",
+      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0001.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Needs complementary proof that unobservable sending-part states are not over-tracked.",
+      "notes": "Needs complementary proof that unobservable sending-part states are not over-tracked."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0002",
+      "section": "S3P2",
+      "title": "Track data delivery to the application",
+      "status": "partially implemented",
+      "completion_status": "partially implemented",
+      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0002.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Needs complementary application-delivery proof around the read path and its state transition.",
+      "notes": "Needs complementary application-delivery proof around the read path and its state transition."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0003",
+      "section": "S3P2",
+      "title": "Create peer-initiated receiving parts on first frame",
+      "status": "partially implemented",
+      "completion_status": "partially implemented",
+      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0003.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Needs an explicit edge proof for peer-initiated receiving-part creation on first frame.",
+      "notes": "Needs an explicit edge proof for peer-initiated receiving-part creation on first frame."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0004",
+      "section": "S3P2",
+      "title": "Create bidirectional receiving parts on peer flow-control or stop-sending frames",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0004.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination.",
+      "notes": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0005",
+      "section": "S3P2",
+      "title": "Start receiving parts in Recv",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0005.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Peer-initiated receiving parts open in Recv."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0006",
+      "section": "S3P2",
+      "title": "Enter Recv when the peer-side sending part opens",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs"
+      ],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Peer-side send-part openings keep the receive part in Recv."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0007",
+      "section": "S3P2",
+      "title": "Open bidirectional streams on peer flow-control or stop-sending frames",
+      "status": "partially implemented",
+      "completion_status": "partially implemented",
+      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0007.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Only the MAX_STREAM_DATA half is represented today; STOP_SENDING remains blocked.",
+      "notes": "Only the MAX_STREAM_DATA half is represented today; STOP_SENDING remains blocked."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0008",
+      "section": "S3P2",
+      "title": "Interpret MAX_STREAM_DATA on an unopened stream as peer opening",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0008.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "MAX_STREAM_DATA on an unopened bidirectional peer stream opens the stream."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0009",
+      "section": "S3P2",
+      "title": "Interpret STOP_SENDING on an unopened stream as a peer desire to stop reception",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0009.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination.",
+      "notes": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0010",
+      "section": "S3P2",
+      "title": "Allow reordered peer flow-control or stop-sending frames",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0010.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination.",
+      "notes": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0011",
+      "section": "S3P2",
+      "title": "Open lower-numbered peer streams first",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0011.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Lower-numbered peer streams are opened first."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0012",
+      "section": "S3P2",
+      "title": "Receive STREAM and STREAM_DATA_BLOCKED in Recv",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination.",
+      "notes": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0013",
+      "section": "S3P2",
+      "title": "Buffer received stream data for ordered delivery",
+      "status": "partially implemented",
+      "completion_status": "partially implemented",
+      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0013.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Property/fuzz proof exists, but a direct negative or edge case for out-of-order fragments is still missing.",
+      "notes": "Property/fuzz proof exists, but a direct negative or edge case for out-of-order fragments is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0014",
+      "section": "S3P2",
+      "title": "Advertise more receive credit as data is consumed",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs"
+      ],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Reading buffered data advertises more receive credit."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0015",
+      "section": "S3P2",
+      "title": "Recognize final size when FIN arrives",
+      "status": "partially implemented",
+      "completion_status": "partially implemented",
+      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Fuzz proof exists, but a direct edge case for final-size transitions on FIN arrival is still missing.",
+      "notes": "Fuzz proof exists, but a direct edge case for final-size transitions on FIN arrival is still missing."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0016",
+      "section": "S3P2",
+      "title": "Enter Size Known after FIN",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs"
+      ],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "FIN transitions the receive part into SizeKnown."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0017",
+      "section": "S3P2",
+      "title": "Enter Data Recvd after all data arrives",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs"
+      ],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Complete data arrival transitions the receive part into DataRecvd."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0018",
+      "section": "S3P2",
+      "title": "Discard further stream frames after all data is received",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0018.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination.",
+      "notes": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0019",
+      "section": "S3P2",
+      "title": "Keep Data Recvd until the application receives the data",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs"
+      ],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Data remains in DataRecvd until the application consumes it."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0020",
+      "section": "S3P2",
+      "title": "Enter Data Read after delivery to the application",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs"
+      ],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Application delivery transitions the receive part into DataRead."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0021",
+      "section": "S3P2",
+      "title": "Enter Reset Recvd on RESET_STREAM in Recv or Size Known",
+      "status": "partially implemented",
+      "completion_status": "partially implemented",
+      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0021.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Needs complementary state-transition coverage for RESET_STREAM in Recv or Size Known.",
+      "notes": "Needs complementary state-transition coverage for RESET_STREAM in Recv or Size Known."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0022",
+      "section": "S3P2",
+      "title": "Allow interruption of delivery and signal RESET_STREAM",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0022.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination.",
+      "notes": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0023",
+      "section": "S3P2",
+      "title": "Remain in Data Recvd when RESET_STREAM is suppressed",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0023.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination.",
+      "notes": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0024",
+      "section": "S3P2",
+      "title": "Enter Reset Read after the application receives reset notification",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0024.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": null,
+      "notes": "Acknowledging a reset transitions the receive part into ResetRead."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P3-0001",
+      "section": "S3P3",
+      "title": "Forbid terminal-state transmit frames",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0001.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Live stream objects that gate outbound and inbound frames by state are still absent.",
+      "notes": "Live stream objects that gate outbound and inbound frames by state are still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P3-0002",
+      "section": "S3P3",
+      "title": "Forbid post-reset transmission of STREAM frames",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0002.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Live stream objects that gate outbound and inbound frames by state are still absent.",
+      "notes": "Live stream objects that gate outbound and inbound frames by state are still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P3-0003",
+      "section": "S3P3",
+      "title": "Allow delayed receipt of state-changing frames",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0003.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Live stream objects that gate outbound and inbound frames by state are still absent.",
+      "notes": "Live stream objects that gate outbound and inbound frames by state are still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P3-0004",
+      "section": "S3P3",
+      "title": "Limit MAX_STREAM_DATA to Recv",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0004.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Live stream objects that gate outbound and inbound frames by state are still absent.",
+      "notes": "Live stream objects that gate outbound and inbound frames by state are still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P3-0005",
+      "section": "S3P3",
+      "title": "Allow STOP_SENDING except after reset reception",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0005.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Live stream objects that gate outbound and inbound frames by state are still absent.",
+      "notes": "Live stream objects that gate outbound and inbound frames by state are still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P3-0006",
+      "section": "S3P3",
+      "title": "Allow delayed receipt of receiver-side frames",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0006.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "Live stream objects that gate outbound and inbound frames by state are still absent.",
+      "notes": "Live stream objects that gate outbound and inbound frames by state are still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P4-0001",
+      "section": "S3P4",
+      "title": "Compose bidirectional streams from send and receive parts",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0001.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "A composed bidirectional stream abstraction built from send and receive parts is still absent.",
+      "notes": "A composed bidirectional stream abstraction built from send and receive parts is still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P4-0002",
+      "section": "S3P4",
+      "title": "Allow composite stream-state representations",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0002.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "A composed bidirectional stream abstraction built from send and receive parts is still absent.",
+      "notes": "A composed bidirectional stream abstraction built from send and receive parts is still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P4-0003",
+      "section": "S3P4",
+      "title": "Require acknowledgment before closed-state transitions in the example mapping",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0003.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "A composed bidirectional stream abstraction built from send and receive parts is still absent.",
+      "notes": "A composed bidirectional stream abstraction built from send and receive parts is still absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0001",
+      "section": "S3P5",
+      "title": "Allow aborting stream reads with an application error code",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0001.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0002",
+      "section": "S3P5",
+      "title": "Signal aborting reads with STOP_SENDING",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0002.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0003",
+      "section": "S3P5",
+      "title": "Count data after STOP_SENDING toward flow control",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0003.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0004",
+      "section": "S3P5",
+      "title": "Treat STOP_SENDING as a request for RESET_STREAM",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0004.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0005",
+      "section": "S3P5",
+      "title": "Send RESET_STREAM after receiving STOP_SENDING in Ready or Send",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0005.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0006",
+      "section": "S3P5",
+      "title": "Permit deferred RESET_STREAM in Data Sent",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0006.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0007",
+      "section": "S3P5",
+      "title": "Prefer RESET_STREAM over retransmission after loss",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0007.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0008",
+      "section": "S3P5",
+      "title": "Copy STOP_SENDING error codes when sending RESET_STREAM",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0008.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0009",
+      "section": "S3P5",
+      "title": "Allow ignoring later RESET_STREAM error codes",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0009.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0010",
+      "section": "S3P5",
+      "title": "Prefer STOP_SENDING only for streams that have not been reset",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0010.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0011",
+      "section": "S3P5",
+      "title": "Repeat STOP_SENDING after loss",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0011.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0012",
+      "section": "S3P5",
+      "title": "Allow RESET_STREAM to terminate one direction of a bidirectional stream",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0012.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0013",
+      "section": "S3P5",
+      "title": "Allow STOP_SENDING to encourage prompt opposite-direction termination",
+      "status": "blocked",
+      "completion_status": "not implemented",
+      "evidence_type": "explicit blocker note",
+      "files_changed": [],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0013.cs"
+      ],
+      "direct_refs_added_or_updated": [],
+      "direct_refs_state": "present",
+      "remaining_gap": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent.",
+      "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
+    }
+  ],
+  "remaining_open_requirements": [
+    "REQ-QUIC-RFC9000-S3-0003",
+    "REQ-QUIC-RFC9000-S3P1-0003",
+    "REQ-QUIC-RFC9000-S3P1-0004",
+    "REQ-QUIC-RFC9000-S3P1-0005",
+    "REQ-QUIC-RFC9000-S3P1-0006",
+    "REQ-QUIC-RFC9000-S3P1-0009",
+    "REQ-QUIC-RFC9000-S3P1-0010",
+    "REQ-QUIC-RFC9000-S3P1-0011",
+    "REQ-QUIC-RFC9000-S3P1-0012",
+    "REQ-QUIC-RFC9000-S3P1-0013",
+    "REQ-QUIC-RFC9000-S3P1-0014",
+    "REQ-QUIC-RFC9000-S3P1-0015",
+    "REQ-QUIC-RFC9000-S3P1-0016",
+    "REQ-QUIC-RFC9000-S3P1-0017",
+    "REQ-QUIC-RFC9000-S3P2-0001",
+    "REQ-QUIC-RFC9000-S3P2-0002",
+    "REQ-QUIC-RFC9000-S3P2-0003",
+    "REQ-QUIC-RFC9000-S3P2-0004",
+    "REQ-QUIC-RFC9000-S3P2-0007",
+    "REQ-QUIC-RFC9000-S3P2-0009",
+    "REQ-QUIC-RFC9000-S3P2-0010",
+    "REQ-QUIC-RFC9000-S3P2-0012",
+    "REQ-QUIC-RFC9000-S3P2-0013",
+    "REQ-QUIC-RFC9000-S3P2-0015",
+    "REQ-QUIC-RFC9000-S3P2-0018",
+    "REQ-QUIC-RFC9000-S3P2-0021",
+    "REQ-QUIC-RFC9000-S3P2-0022",
+    "REQ-QUIC-RFC9000-S3P2-0023",
+    "REQ-QUIC-RFC9000-S3P3-0001",
+    "REQ-QUIC-RFC9000-S3P3-0002",
+    "REQ-QUIC-RFC9000-S3P3-0003",
+    "REQ-QUIC-RFC9000-S3P3-0004",
+    "REQ-QUIC-RFC9000-S3P3-0005",
+    "REQ-QUIC-RFC9000-S3P3-0006",
+    "REQ-QUIC-RFC9000-S3P4-0001",
+    "REQ-QUIC-RFC9000-S3P4-0002",
+    "REQ-QUIC-RFC9000-S3P4-0003",
+    "REQ-QUIC-RFC9000-S3P5-0001",
+    "REQ-QUIC-RFC9000-S3P5-0002",
+    "REQ-QUIC-RFC9000-S3P5-0003",
+    "REQ-QUIC-RFC9000-S3P5-0004",
+    "REQ-QUIC-RFC9000-S3P5-0005",
+    "REQ-QUIC-RFC9000-S3P5-0006",
+    "REQ-QUIC-RFC9000-S3P5-0007",
+    "REQ-QUIC-RFC9000-S3P5-0008",
+    "REQ-QUIC-RFC9000-S3P5-0009",
+    "REQ-QUIC-RFC9000-S3P5-0010",
+    "REQ-QUIC-RFC9000-S3P5-0011",
+    "REQ-QUIC-RFC9000-S3P5-0012",
+    "REQ-QUIC-RFC9000-S3P5-0013"
+  ],
+  "uncovered_requirements": [],
+  "stale_requirement_ids": [],
+  "wrong_requirement_ids": [],
+  "tests_run": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore",
+      "result": "1325 passed, 0 failed, 0 skipped"
+    }
+  ],
+  "summary_notes": [
+    "The helper-layer slice now closes 16 requirements, keeps 10 partially implemented, and leaves 40 blocked.",
+    "The remaining open requirements are explicit and grouped by section in the closeout artifact.",
+    "The repository still does not have the application-facing stream abstraction or STOP_SENDING/RESET orchestration needed to finish the chunk cleanly."
+  ],
+  "files_changed": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/generated/quic/chunks/9000-02-stream-state.reconciliation.md",
+    "specs/generated/quic/chunks/9000-02-stream-state.reconciliation.json",
+    "specs/generated/quic/chunks/9000-02-stream-state.implementation-summary.md",
+    "specs/generated/quic/chunks/9000-02-stream-state.implementation-summary.json",
+    "specs/generated/quic/chunks/9000-02-stream-state.closeout.md",
+    "specs/generated/quic/chunks/9000-02-stream-state.closeout.json"
+  ]
+}

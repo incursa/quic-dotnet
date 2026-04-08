@@ -30,6 +30,10 @@ public sealed class REQ_QUIC_RFC9000_S3P2_0014
         Assert.True(state.TryReceiveStreamFrame(secondFrame, out errorCode));
         Assert.Equal(default, errorCode);
 
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot preReadSnapshot));
+        Assert.Equal(8UL, preReadSnapshot.ReceiveLimit);
+        Assert.Equal(0UL, preReadSnapshot.ReadOffset);
+
         Span<byte> firstDestination = stackalloc byte[2];
         Assert.True(state.TryReadStreamData(
             1,
