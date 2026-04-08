@@ -14,7 +14,7 @@
 - Defer: 5
 - Retained overlap: 1
 
-This appendix is mostly helper-backed restatement work already represented by `QuicCongestionControlState` and `QuicEcnValidationState`. The only clauses that still want a broader runtime surface are the PMTU/overhead items and the key-discard cleanup cluster.
+The smallest executable subset of this appendix is the 23 helper-backed restatements already represented by `QuicCongestionControlState` and `QuicEcnValidationState`. The remaining 5 clauses stay deferred until the repo has sender/runtime PMTU accounting and connection-owned key-discard cleanup.
 
 ## In Scope
 - `SBP1`: `REQ-QUIC-RFC9002-SBP1-0001`, `REQ-QUIC-RFC9002-SBP1-0002`
@@ -52,7 +52,7 @@ These are already surfaced by `QuicCongestionControlState` and `QuicEcnValidatio
 - `REQ-QUIC-RFC9002-SBP2-0003`
 - `REQ-QUIC-RFC9002-SBP9-0001` through `REQ-QUIC-RFC9002-SBP9-0003`
 
-`SBP2-0001` and `SBP2-0003` need sender-side PMTU and wire-overhead accounting that is not present in the current helper layer. `SBP9` needs connection-owned packet bookkeeping and key-discard cleanup that this repository does not currently expose.
+`SBP2-0001` and `SBP2-0003` need sender-side PMTU and wire-overhead accounting that is not present in the current helper layer. `SBP9` needs connection-owned packet bookkeeping and key-discard cleanup that this repository does not currently expose, so this remainder stays deferred.
 
 ## Existing Evidence
 - `src/Incursa.Quic/QuicCongestionControlState.cs`
