@@ -37,6 +37,9 @@ public sealed class REQ_QUIC_RFC9000_S3P1_0007
         Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot updatedSnapshot));
         Assert.Equal(3UL, updatedSnapshot.SendLimit);
 
+        Assert.False(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(streamId.Value, 2), out errorCode));
+        Assert.Equal(default, errorCode);
+
         Assert.True(state.TryReserveSendCapacity(
             streamId.Value,
             offset: 1,

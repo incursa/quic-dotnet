@@ -26,6 +26,7 @@ public sealed class REQ_QUIC_RFC9000_S3P2_0019
 
         Assert.True(state.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot));
         Assert.Equal(QuicStreamReceiveState.DataRecvd, snapshot.ReceiveState);
+        Assert.NotEqual(QuicStreamReceiveState.DataRead, snapshot.ReceiveState);
         Assert.True(snapshot.HasFinalSize);
         Assert.Equal(4UL, snapshot.FinalSize);
         Assert.Equal(4UL, snapshot.UniqueBytesReceived);

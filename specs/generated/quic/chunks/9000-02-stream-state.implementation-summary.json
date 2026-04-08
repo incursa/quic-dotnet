@@ -10,18 +10,39 @@
     "S3P5"
   ],
   "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
-  "completion_status": "deferred_greenfield",
+  "completion_status": "partial_with_explicit_blockers",
   "requirements_in_scope": {
     "total": 66,
-    "implemented_and_tested": 0,
-    "blocked": 66
+    "implemented_and_tested": 16,
+    "partial": 10,
+    "blocked": 40
   },
   "files_changed": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/generated/quic/chunks/9000-02-stream-state.reconciliation.md",
+    "specs/generated/quic/chunks/9000-02-stream-state.reconciliation.json",
     "specs/generated/quic/chunks/9000-02-stream-state.implementation-summary.md",
-    "specs/generated/quic/chunks/9000-02-stream-state.implementation-summary.json"
+    "specs/generated/quic/chunks/9000-02-stream-state.implementation-summary.json",
+    "specs/generated/quic/chunks/9000-02-stream-state.closeout.md",
+    "specs/generated/quic/chunks/9000-02-stream-state.closeout.json"
   ],
-  "tests_run": [],
+  "tests_run": [
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore",
+      "passed": 1325,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 874
+    }
+  ],
   "requirements": [
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3-0001",
@@ -30,7 +51,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by the missing stream abstraction and send/receive stream objects.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3-0002",
@@ -39,7 +60,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by the missing stream abstraction and send/receive stream objects.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3-0003",
@@ -48,7 +69,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by the missing stream abstraction and send/receive stream objects.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0001",
@@ -57,7 +78,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0002",
@@ -66,7 +87,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0003",
@@ -75,7 +96,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0004",
@@ -84,7 +105,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0005",
@@ -93,7 +114,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0006",
@@ -102,7 +123,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0007",
@@ -111,7 +132,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0008",
@@ -120,7 +141,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0009",
@@ -129,7 +150,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0010",
@@ -138,7 +159,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0011",
@@ -147,7 +168,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0012",
@@ -156,7 +177,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0013",
@@ -165,7 +186,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0014",
@@ -174,7 +195,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0015",
@@ -183,7 +204,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0016",
@@ -192,7 +213,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0017",
@@ -201,7 +222,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0001",
@@ -210,7 +231,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0002",
@@ -219,7 +240,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0003",
@@ -228,7 +249,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0004",
@@ -237,7 +258,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0005",
@@ -246,7 +267,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0006",
@@ -255,7 +276,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0007",
@@ -264,7 +285,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0008",
@@ -273,7 +294,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0009",
@@ -282,7 +303,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0010",
@@ -291,7 +312,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0011",
@@ -300,7 +321,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0012",
@@ -309,7 +330,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0013",
@@ -318,7 +339,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0014",
@@ -327,7 +348,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0015",
@@ -336,7 +357,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0016",
@@ -345,7 +366,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0017",
@@ -354,7 +375,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0018",
@@ -363,7 +384,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0019",
@@ -372,7 +393,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0020",
@@ -381,7 +402,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0021",
@@ -390,7 +411,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0022",
@@ -399,7 +420,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0023",
@@ -408,7 +429,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0024",
@@ -417,7 +438,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P3-0001",
@@ -426,7 +447,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing live stream objects that can gate outbound and inbound frames by state.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P3-0002",
@@ -435,7 +456,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing live stream objects that can gate outbound and inbound frames by state.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P3-0003",
@@ -444,7 +465,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing live stream objects that can gate outbound and inbound frames by state.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P3-0004",
@@ -453,7 +474,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing live stream objects that can gate outbound and inbound frames by state.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P3-0005",
@@ -462,7 +483,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing live stream objects that can gate outbound and inbound frames by state.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P3-0006",
@@ -471,7 +492,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by missing live stream objects that can gate outbound and inbound frames by state.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P4-0001",
@@ -480,7 +501,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by the absence of a composed bidirectional stream abstraction built from send and receive parts.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P4-0002",
@@ -489,7 +510,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by the absence of a composed bidirectional stream abstraction built from send and receive parts.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P4-0003",
@@ -498,7 +519,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by the absence of a composed bidirectional stream abstraction built from send and receive parts.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0001",
@@ -507,7 +528,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0002",
@@ -516,7 +537,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0003",
@@ -525,7 +546,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0004",
@@ -534,7 +555,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0005",
@@ -543,7 +564,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0006",
@@ -552,7 +573,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0007",
@@ -561,7 +582,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0008",
@@ -570,7 +591,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0009",
@@ -579,7 +600,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0010",
@@ -588,7 +609,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0011",
@@ -597,7 +618,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0012",
@@ -606,7 +627,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P5-0013",
@@ -615,21 +636,15 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "Blocked by STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting.",
-      "notes": "This chunk is greenfield; no stream-state helper or transport host exists yet."
+      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     }
   ],
   "remaining_open_requirements": [
-    "REQ-QUIC-RFC9000-S3-0001",
-    "REQ-QUIC-RFC9000-S3-0002",
     "REQ-QUIC-RFC9000-S3-0003",
-    "REQ-QUIC-RFC9000-S3P1-0001",
-    "REQ-QUIC-RFC9000-S3P1-0002",
     "REQ-QUIC-RFC9000-S3P1-0003",
     "REQ-QUIC-RFC9000-S3P1-0004",
     "REQ-QUIC-RFC9000-S3P1-0005",
     "REQ-QUIC-RFC9000-S3P1-0006",
-    "REQ-QUIC-RFC9000-S3P1-0007",
-    "REQ-QUIC-RFC9000-S3P1-0008",
     "REQ-QUIC-RFC9000-S3P1-0009",
     "REQ-QUIC-RFC9000-S3P1-0010",
     "REQ-QUIC-RFC9000-S3P1-0011",
@@ -643,26 +658,16 @@
     "REQ-QUIC-RFC9000-S3P2-0002",
     "REQ-QUIC-RFC9000-S3P2-0003",
     "REQ-QUIC-RFC9000-S3P2-0004",
-    "REQ-QUIC-RFC9000-S3P2-0005",
-    "REQ-QUIC-RFC9000-S3P2-0006",
     "REQ-QUIC-RFC9000-S3P2-0007",
-    "REQ-QUIC-RFC9000-S3P2-0008",
     "REQ-QUIC-RFC9000-S3P2-0009",
     "REQ-QUIC-RFC9000-S3P2-0010",
-    "REQ-QUIC-RFC9000-S3P2-0011",
     "REQ-QUIC-RFC9000-S3P2-0012",
     "REQ-QUIC-RFC9000-S3P2-0013",
-    "REQ-QUIC-RFC9000-S3P2-0014",
     "REQ-QUIC-RFC9000-S3P2-0015",
-    "REQ-QUIC-RFC9000-S3P2-0016",
-    "REQ-QUIC-RFC9000-S3P2-0017",
     "REQ-QUIC-RFC9000-S3P2-0018",
-    "REQ-QUIC-RFC9000-S3P2-0019",
-    "REQ-QUIC-RFC9000-S3P2-0020",
     "REQ-QUIC-RFC9000-S3P2-0021",
     "REQ-QUIC-RFC9000-S3P2-0022",
     "REQ-QUIC-RFC9000-S3P2-0023",
-    "REQ-QUIC-RFC9000-S3P2-0024",
     "REQ-QUIC-RFC9000-S3P3-0001",
     "REQ-QUIC-RFC9000-S3P3-0002",
     "REQ-QUIC-RFC9000-S3P3-0003",
@@ -687,7 +692,8 @@
     "REQ-QUIC-RFC9000-S3P5-0013"
   ],
   "notes": [
-    "The chunk was treated as greenfield because no reconciliation artifact existed.",
-    "The repo still lacks the stream abstraction and flow-control substrate required to make these requirements implementable cleanly."
+    "The helper-layer stream-state slice now closes 16 requirements and leaves 10 partially proven and 40 blocked.",
+    "The remaining blockers still require the application-facing stream abstraction, sender/recovery orchestration, and STOP_SENDING/RESET coordination.",
+    "No stale requirement IDs or silent gaps were introduced by the helper-layer pass."
   ]
 }
