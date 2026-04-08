@@ -25,16 +25,12 @@ foreach ($jsonPath in $jsonPaths) {
     $rendered = Render-ArtifactMarkdown -Artifact $artifact -GeneratorComment $generatorComment
 
     if ($Check) {
-        $current = if (Test-Path -LiteralPath $markdownPath) {
-            ((Get-Content -LiteralPath $markdownPath -Raw) -replace "`r`n", "`n" -replace "`r", "`n").TrimEnd()
-        }
-        else {
-            $null
-        }
-
-        $expected = (($rendered -replace "`r`n", "`n" -replace "`r", "`n")).TrimEnd()
-        if ($current -ne $expected) {
-            $mismatches.Add((Get-RepoRelativePath -RepoRoot $repoRoot -Path $markdownPath))
+        if (Test-Path -LiteralPath $markdownPath) {
+            $current = ((Get-Content -LiteralPath $markdownPath -Raw) -replace "`r`n", "`n" -replace "`r", "`n").TrimEnd()
+            $expected = (($rendered -replace "`r`n", "`n" -replace "`r", "`n")).TrimEnd()
+            if ($current -ne $expected) {
+                $mismatches.Add((Get-RepoRelativePath -RepoRoot $repoRoot -Path $markdownPath))
+            }
         }
         continue
     }
@@ -47,7 +43,7 @@ if ($Check) {
         throw "Rendered Markdown is out of date for: $($mismatches -join ', ')"
     }
 
-    Write-Output "Rendered Markdown is up to date for $($jsonPaths.Count) artifacts."
+    Write-Output "Checked $($jsonPaths.Count) artifact(s) for stale Markdown views."
     exit 0
 }
 

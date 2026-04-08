@@ -17,10 +17,15 @@ jobs:
     concurrency:
       group: ci-${{ github.ref }}
       cancel-in-progress: true
+    env:
+      SPEC_TRACE_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+      SPEC_TRACE_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -30,12 +35,46 @@ jobs:
       - name: Restore local tools
         run: dotnet tool restore
 
-      - name: Validate SpecTrace surfaces
+      - name: Determine SpecTrace scope
+        id: spectrace
         shell: pwsh
         run: |
-          ./scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1 -Check
-          ./scripts/Validate-SpecTraceJson.ps1 -Profiles core
-          ./scripts/Assert-No-SpecTraceCue.ps1
+          $baseSha = '${{ env.SPEC_TRACE_BASE_SHA }}'
+          $headSha = '${{ env.SPEC_TRACE_HEAD_SHA }}'
+          if ([string]::IsNullOrWhiteSpace($baseSha) -or $baseSha -eq '0000000000000000000000000000000000000000') {
+            $baseSha = (git rev-list --max-parents=0 $headSha | Select-Object -First 1)
+          }
+
+          $scopes = @(git diff --name-only $baseSha $headSha -- 'specs/**/*.json' | Where-Object { $_ })
+          if ($scopes.Count -eq 0) {
+            "scope=" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+            exit 0
+          }
+
+          "scope=$($scopes -join ',')" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Validate SpecTrace render views
+        if: steps.spectrace.outputs.scope != ''
+        shell: pwsh
+        run: |
+          $scopes = "${{ steps.spectrace.outputs.scope }}".Split(',') | Where-Object { $_ }
+          ./scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1 -Check -Scope $scopes
+
+      - name: Validate SpecTrace surfaces
+        if: steps.spectrace.outputs.scope != ''
+        shell: pwsh
+        run: |
+          $scopes = "${{ steps.spectrace.outputs.scope }}".Split(',') | Where-Object { $_ }
+          $args = @('validate', '--profile', 'core')
+          foreach ($scope in $scopes) {
+            $args += @('--scope', $scope)
+          }
+
+          dotnet tool run workbench -- @args
+
+      - name: Assert no SpecTrace CUE artifacts
+        shell: pwsh
+        run: ./scripts/Assert-No-SpecTraceCue.ps1
 
       - name: Restore
         run: dotnet restore Incursa.Quic.slnx

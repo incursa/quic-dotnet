@@ -51,4 +51,52 @@ public sealed class REQ_QUIC_CRT_0105
         runtime.RecordProbeTimeoutExpired();
         Assert.Equal(1, runtime.ProbeTimeoutBackoffCount);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void DiscardingInitialAndHandshakePacketNumberSpacesCleansUpSenderRecoveryState()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.Initial,
+            PacketNumber: 1,
+            PayloadBytes: 1200,
+            SentAtMicros: 100,
+            AckEliciting: true));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.Handshake,
+            PacketNumber: 2,
+            PayloadBytes: 1200,
+            SentAtMicros: 200,
+            AckEliciting: true));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 3,
+            PayloadBytes: 1200,
+            SentAtMicros: 300,
+            AckEliciting: true));
+
+        Assert.True(runtime.TryArmProbeTimeout(
+            QuicPacketNumberSpace.Initial,
+            nowMicros: 400,
+            smoothedRttMicros: 1_000,
+            rttVarMicros: 250,
+            maxAckDelayMicros: 25_000,
+            handshakeConfirmed: false));
+        Assert.True(runtime.TryRegisterLoss(QuicPacketNumberSpace.Initial, 1, handshakeConfirmed: false));
+        Assert.Equal(1, runtime.PendingRetransmissionCount);
+        Assert.True(runtime.ProbeTimeoutCount > 0);
+
+        Assert.True(runtime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial));
+        Assert.DoesNotContain(runtime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.Initial);
+        Assert.Equal(0, runtime.ProbeTimeoutCount);
+        Assert.Null(runtime.LossDetectionDeadlineMicros);
+        Assert.Equal(0, runtime.PendingRetransmissionCount);
+
+        Assert.True(runtime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake));
+        Assert.DoesNotContain(runtime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.Handshake);
+        Assert.Single(runtime.SentPackets);
+        Assert.Contains(runtime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+    }
 }

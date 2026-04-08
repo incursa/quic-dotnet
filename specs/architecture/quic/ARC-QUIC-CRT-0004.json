@@ -17,6 +17,7 @@
     "REQ-QUIC-CRT-0024",
     "REQ-QUIC-CRT-0025",
     "REQ-QUIC-CRT-0026",
+    "REQ-QUIC-CRT-0027",
     "REQ-QUIC-CRT-0030",
     "REQ-QUIC-CRT-0031",
     "REQ-QUIC-CRT-0032",
@@ -28,6 +29,7 @@
     "REQ-QUIC-CRT-0076",
     "REQ-QUIC-CRT-0077",
     "REQ-QUIC-CRT-0078",
+    "REQ-QUIC-CRT-0084",
     "REQ-QUIC-CRT-0087"
   ],
   "key_components": [

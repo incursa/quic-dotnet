@@ -7,7 +7,7 @@ internal enum QuicConnectionEventKind
     HandshakeConfirmed = 2,
     LocalCloseRequested = 3,
     ConnectionCloseFrameReceived = 4,
-    StatelessResetMatched = 5,
+    AcceptedStatelessReset = 5,
     PathValidationSucceeded = 6,
     PathValidationFailed = 7,
     StreamAction = 8,
@@ -69,10 +69,11 @@ internal sealed record QuicConnectionConnectionCloseFrameReceivedEvent(
     QuicConnectionCloseMetadata Close)
     : QuicConnectionEvent(QuicConnectionEventKind.ConnectionCloseFrameReceived, ObservedAtTicks);
 
-internal sealed record QuicConnectionStatelessResetMatchedEvent(
+internal sealed record QuicConnectionAcceptedStatelessResetEvent(
     long ObservedAtTicks,
-    QuicConnectionPathIdentity PathIdentity)
-    : QuicConnectionEvent(QuicConnectionEventKind.StatelessResetMatched, ObservedAtTicks);
+    QuicConnectionPathIdentity PathIdentity,
+    ulong ConnectionId)
+    : QuicConnectionEvent(QuicConnectionEventKind.AcceptedStatelessReset, ObservedAtTicks);
 
 internal sealed record QuicConnectionPathValidationSucceededEvent(
     long ObservedAtTicks,
@@ -101,7 +102,8 @@ internal sealed record QuicConnectionTransportParametersCommittedEvent(
 
 internal sealed record QuicConnectionConnectionIdIssuedEvent(
     long ObservedAtTicks,
-    ulong ConnectionId)
+    ulong ConnectionId,
+    ReadOnlyMemory<byte> StatelessResetToken)
     : QuicConnectionEvent(QuicConnectionEventKind.ConnectionIdIssued, ObservedAtTicks);
 
 internal sealed record QuicConnectionConnectionIdRetiredEvent(

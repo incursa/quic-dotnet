@@ -21,7 +21,9 @@
     "REQ-QUIC-CRT-0016",
     "REQ-QUIC-CRT-0080",
     "REQ-QUIC-CRT-0082",
-    "REQ-QUIC-CRT-0083"
+    "REQ-QUIC-CRT-0083",
+    "REQ-QUIC-CRT-0085",
+    "REQ-QUIC-CRT-0086"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
@@ -32,11 +34,12 @@
     "src/Incursa.Quic/QuicPacketParser.cs",
     "src/Incursa.Quic/QuicStatelessReset.cs"
   ],
-  "design_summary": "The endpoint owns a fixed ingress classifier that parses the packet form, resolves long-header routes by exact destination CID, resolves short-header routes by registered CID-prefix length, and only then screens for stateless reset. A stable connection handle stays on the host side, while route and reset-token registries remain endpoint-owned and concurrent. Explicit effects update endpoint bindings and retire route or token ownership so the connection runtime never mutates shared ingress state inline.",
+  "design_summary": "The endpoint owns a fixed ingress classifier that parses the packet form, resolves long-header routes by exact destination CID, resolves short-header routes by registered CID-prefix length, and only then screens for stateless reset. A stable connection handle stays on the host side, while route and reset-token registries remain endpoint-owned and concurrent. Explicit effects update endpoint bindings, retire route or token ownership, and bound reset emission per remote address so the connection runtime never mutates shared ingress state inline.",
   "risks": [
     "Short-header prefix matching must stay deterministic when multiple CID lengths are registered.",
     "Reset-token bindings must follow the current remote address for a handle or matching can drift after path changes.",
-    "Discard effects must remove both route and token ownership to avoid stale reuse."
+    "Discard effects must remove both route and token ownership to avoid stale reuse.",
+    "Emission counters must stay bounded per remote address to avoid oracle behavior."
   ],
   "supplemental_sections": [
     {

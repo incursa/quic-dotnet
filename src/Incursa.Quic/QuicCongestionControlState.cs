@@ -355,6 +355,20 @@ public sealed class QuicCongestionControlState
     }
 
     /// <summary>
+    /// Removes a packet from bytes-in-flight accounting without treating it as loss or acknowledgment.
+    /// </summary>
+    internal bool TryDiscardPacket(ulong sentBytes, bool packetInFlight)
+    {
+        if (!packetInFlight)
+        {
+            return false;
+        }
+
+        BytesInFlightBytes = SubtractSaturating(BytesInFlightBytes, sentBytes);
+        return true;
+    }
+
+    /// <summary>
     /// Processes an ECN-CE counter report for the supplied packet number space.
     /// </summary>
     public bool TryProcessEcn(
@@ -859,6 +873,26 @@ public sealed class QuicSenderFlowController
             sentAfterEarliestAcknowledgedPacket: sentAfterEarliestAcknowledgedPacket,
             isProbePacket: sentPacket.IsProbePacket,
             allowAckOnlyLossSignal: allowAckOnlyLossSignal);
+    }
+
+    /// <summary>
+    /// Discards all retained packets in the specified packet number space.
+    /// </summary>
+    internal bool TryDiscardPacketNumberSpace(QuicPacketNumberSpace packetNumberSpace)
+    {
+        if (!TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
+        {
+            return false;
+        }
+
+        bool updated = false;
+        foreach (SentPacketState sentPacket in sentPackets.Values)
+        {
+            updated = CongestionControlState.TryDiscardPacket(sentPacket.SentBytes, sentPacket.InFlight) || updated;
+        }
+
+        sentPacketsBySpace.Remove(packetNumberSpace);
+        return updated || sentPackets.Count > 0;
     }
 
     /// <summary>

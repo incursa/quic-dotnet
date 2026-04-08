@@ -12,7 +12,7 @@
     "ARC-QUIC-CRT-0003",
     "WI-QUIC-CRT-0003"
   ],
-  "expected_result": "Version negotiation and retry stay endpoint-handled, long and short packets route to the correct runtime, malformed or unknown datagrams stay unroutable, stateless resets match only the current remote address and live binding, and explicit effects retire route and token ownership cleanly.",
+  "expected_result": "Version negotiation and retry stay endpoint-handled, long and short packets route to the correct runtime, malformed or unknown datagrams stay unroutable, stateless resets match only the current remote address and live binding, stateless-reset emission remains bounded to avoid loops or oracle behavior, and explicit effects retire route and token ownership cleanly.",
   "verifies": [
     "REQ-QUIC-CRT-0002",
     "REQ-QUIC-CRT-0012",
@@ -22,14 +22,17 @@
     "REQ-QUIC-CRT-0016",
     "REQ-QUIC-CRT-0080",
     "REQ-QUIC-CRT-0082",
-    "REQ-QUIC-CRT-0083"
+    "REQ-QUIC-CRT-0083",
+    "REQ-QUIC-CRT-0085",
+    "REQ-QUIC-CRT-0086"
   ],
   "procedure": [
-    "Run the endpoint ingress requirement-home tests for REQ-QUIC-CRT-0012, REQ-QUIC-CRT-0013, REQ-QUIC-CRT-0015, REQ-QUIC-CRT-0016, REQ-QUIC-CRT-0080, REQ-QUIC-CRT-0082, and REQ-QUIC-CRT-0083.",
+    "Run the endpoint ingress requirement-home tests for REQ-QUIC-CRT-0012, REQ-QUIC-CRT-0013, REQ-QUIC-CRT-0015, REQ-QUIC-CRT-0016, REQ-QUIC-CRT-0080, REQ-QUIC-CRT-0082, REQ-QUIC-CRT-0083, REQ-QUIC-CRT-0085, and REQ-QUIC-CRT-0086.",
     "Confirm the routed cases deliver `QuicConnectionPacketReceivedEvent` to the correct runtime and the reset cases only match when the endpoint binding and token ownership are current.",
-    "Confirm discard and retire effects remove the endpoint-owned route and token entries before later datagrams are retried."
+    "Confirm discard and retire effects remove the endpoint-owned route and token entries before later datagrams are retried.",
+    "Confirm the endpoint emission policy rejects reset responses that would violate loop-prevention or per-remote-address send limits."
   ],
-  "scope": "This slice covers ingress classification, routing, and endpoint-owned stateless-reset bookkeeping. It does not prove the broader connection lifecycle, migration policy, or stateless-reset emission policy.",
+  "scope": "This slice covers ingress classification, routing, endpoint-owned stateless-reset bookkeeping, and the endpoint emission policy that bounds reset send frequency. It does not prove the broader connection lifecycle or migration policy.",
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0012.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0013.cs",
@@ -38,6 +41,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0080.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0082.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0083.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0085.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0086.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs"
   ],

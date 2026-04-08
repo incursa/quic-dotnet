@@ -25,18 +25,20 @@
     "REQ-QUIC-CRT-0016",
     "REQ-QUIC-CRT-0080",
     "REQ-QUIC-CRT-0082",
-    "REQ-QUIC-CRT-0083"
+    "REQ-QUIC-CRT-0083",
+    "REQ-QUIC-CRT-0085",
+    "REQ-QUIC-CRT-0086"
   ],
-  "planned_changes": "- Add the fixed ingress pipeline that classifies version negotiation, retry, route hits, and stateless-reset eligibility in a stable order.\n- Keep the destination-CID and reset-token registries endpoint-owned and concurrent.\n- Apply binding updates and retirement through explicit effects so the connection runtime never mutates shared ingress state directly.\n- Add requirement-home tests for routed delivery, unroutable datagrams, reset scoping, and cleanup after discard.",
+  "planned_changes": "- Add the fixed ingress pipeline that classifies version negotiation, retry, route hits, and stateless-reset eligibility in a stable order.\n- Keep the destination-CID and reset-token registries endpoint-owned and concurrent.\n- Apply binding updates and retirement through explicit effects so the connection runtime never mutates shared ingress state directly.\n- Bound stateless-reset emission per remote address to prevent loops and oracle behavior.\n- Add requirement-home tests for routed delivery, unroutable datagrams, reset scoping, emission limiting, and cleanup after discard.",
   "verification_plan": "Run the endpoint ingress requirement-home tests and the narrow `dotnet build`/`dotnet test` subset covering the new CRT ingress files.",
   "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
   "out_of_scope": [
-    "Full stateless-reset emission policy, migration policy, and any future connection-lifecycle work that is not needed to classify or route inbound datagrams."
+    "Migration policy and any future connection-lifecycle work that is not needed to classify or route inbound datagrams."
   ],
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
-      "content": "- src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs\n- src/Incursa.Quic/QuicConnectionRuntimeHost.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs\n- src/Incursa.Quic/QuicPacketParser.cs\n- src/Incursa.Quic/QuicStatelessReset.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0012.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0013.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0015.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0016.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0080.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0082.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0083.cs"
+      "content": "- src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs\n- src/Incursa.Quic/QuicConnectionRuntimeHost.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs\n- src/Incursa.Quic/QuicPacketParser.cs\n- src/Incursa.Quic/QuicStatelessReset.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0012.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0013.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0015.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0016.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0080.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0082.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0083.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0085.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0086.cs"
     }
   ]
 }

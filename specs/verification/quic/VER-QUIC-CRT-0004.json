@@ -12,12 +12,13 @@
     "ARC-QUIC-CRT-0004",
     "WI-QUIC-CRT-0004"
   ],
-  "expected_result": "The runtime derives an effective idle timeout from transport parameters and PTO, restarts the idle timer only on allowed peer activity, transitions to Closing on local immediate close, transitions to Draining on received CONNECTION_CLOSE or matched stateless reset, discards the connection when the close or drain lifetime expires, and exposes ordinary-send legality from the phase model.",
+  "expected_result": "The runtime derives an effective idle timeout from transport parameters and PTO, restarts the idle timer only on allowed peer activity, transitions to Closing on local immediate close, transitions to Draining on received CONNECTION_CLOSE or accepted stateless reset, suppresses the ordinary close handshake on accepted stateless reset, discards the connection when the close or drain lifetime expires, and exposes ordinary-send legality from the phase model.",
   "verifies": [
     "REQ-QUIC-CRT-0023",
     "REQ-QUIC-CRT-0024",
     "REQ-QUIC-CRT-0025",
     "REQ-QUIC-CRT-0026",
+    "REQ-QUIC-CRT-0027",
     "REQ-QUIC-CRT-0030",
     "REQ-QUIC-CRT-0031",
     "REQ-QUIC-CRT-0032",
@@ -29,23 +30,27 @@
     "REQ-QUIC-CRT-0076",
     "REQ-QUIC-CRT-0077",
     "REQ-QUIC-CRT-0078",
+    "REQ-QUIC-CRT-0084",
     "REQ-QUIC-CRT-0087"
   ],
   "procedure": [
-    "Run the lifecycle requirement-home tests for REQ-QUIC-CRT-0023, REQ-QUIC-CRT-0025, REQ-QUIC-CRT-0026, REQ-QUIC-CRT-0030, REQ-QUIC-CRT-0032, REQ-QUIC-CRT-0035, REQ-QUIC-CRT-0055, and REQ-QUIC-CRT-0056.",
+    "Run the lifecycle requirement-home tests for REQ-QUIC-CRT-0023, REQ-QUIC-CRT-0025, REQ-QUIC-CRT-0026, REQ-QUIC-CRT-0027, REQ-QUIC-CRT-0030, REQ-QUIC-CRT-0032, REQ-QUIC-CRT-0035, REQ-QUIC-CRT-0055, REQ-QUIC-CRT-0056, and REQ-QUIC-CRT-0084.",
     "Confirm the close and drain transitions arm the expected terminal-lifetime timer and emit the explicit send, notify-streams, and discard effects required by the lifecycle reducer.",
-    "Confirm the runtime keeps the idle timer unchanged for disallowed events and re-arms it only when peer activity is permitted by the helper state."
+    "Confirm the runtime keeps the idle timer unchanged for disallowed events and re-arms it only when peer activity is permitted by the helper state.",
+    "Confirm accepted stateless reset transitions the runtime to Draining without emitting a close-handshake datagram."
   ],
   "scope": "This slice covers connection lifecycle behavior, idle timeout derivation, close/drain lifetimes, and explicit lifecycle effects. It does not prove endpoint routing, stateless-reset token ownership, or the deadline scheduler itself.",
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0023.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0025.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0027.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0030.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0032.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0035.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0055.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0056.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0084.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",

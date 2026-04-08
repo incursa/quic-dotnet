@@ -18,7 +18,7 @@ public sealed class REQ_QUIC_INT_0003
             DisableActiveMigration = true,
         };
 
-        QuicTlsTransportState state = new();
+        QuicTransportTlsBridgeState state = new();
 
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.LocalTransportParametersReady,
@@ -40,12 +40,14 @@ public sealed class REQ_QUIC_INT_0003
             QuicTlsEncryptionLevel.Initial)));
         Assert.True(state.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.HandshakeConfirmed)));
 
-        Assert.Same(localParameters, state.LocalTransportParameters);
-        Assert.Same(peerParameters, state.PeerTransportParameters);
-        Assert.True(state.InitialKeysAvailable);
+        Assert.NotSame(localParameters, state.LocalTransportParameters);
+        Assert.NotSame(peerParameters, state.PeerTransportParameters);
+        Assert.Equal(localParameters.MaxIdleTimeout, state.LocalTransportParameters!.MaxIdleTimeout);
+        Assert.Equal(peerParameters.DisableActiveMigration, state.PeerTransportParameters!.DisableActiveMigration);
+        Assert.False(state.InitialKeysAvailable);
         Assert.True(state.HandshakeKeysAvailable);
         Assert.True(state.OneRttKeysAvailable);
-        Assert.True(state.InitialKeysDiscarded);
+        Assert.True(state.OldKeysDiscarded);
         Assert.True(state.HandshakeConfirmed);
         Assert.Equal(2U, state.CurrentOneRttKeyPhase);
     }

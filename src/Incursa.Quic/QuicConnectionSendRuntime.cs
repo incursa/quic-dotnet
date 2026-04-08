@@ -83,6 +83,64 @@ internal sealed class QuicConnectionSendRuntime
         return true;
     }
 
+    public bool TryDiscardPacketNumberSpace(QuicPacketNumberSpace packetNumberSpace)
+    {
+        bool updated = flowController.TryDiscardPacketNumberSpace(packetNumberSpace);
+
+        List<QuicConnectionSentPacketKey>? removedKeys = null;
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
+        {
+            if (entry.Key.PacketNumberSpace == packetNumberSpace)
+            {
+                (removedKeys ??= []).Add(entry.Key);
+            }
+        }
+
+        if (removedKeys is not null)
+        {
+            foreach (QuicConnectionSentPacketKey key in removedKeys)
+            {
+                updated |= sentPackets.Remove(key);
+            }
+        }
+
+        if (pendingRetransmissions.Count > 0)
+        {
+            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
+            while (pendingRetransmissions.Count > 0)
+            {
+                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
+                if (retransmission.PacketNumberSpace == packetNumberSpace)
+                {
+                    updated = true;
+                    continue;
+                }
+
+                retainedRetransmissions.Enqueue(retransmission);
+            }
+
+            while (retainedRetransmissions.Count > 0)
+            {
+                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+            }
+        }
+
+        if (packetNumberSpace is QuicPacketNumberSpace.Initial or QuicPacketNumberSpace.Handshake)
+        {
+            ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
+                ProbeTimeoutCount,
+                initialOrHandshakeKeysDiscarded: true);
+            LossDetectionDeadlineMicros = null;
+            updated = true;
+        }
+        else if (sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        {
+            LossDetectionDeadlineMicros = null;
+        }
+
+        return updated;
+    }
+
     public bool TryRegisterLoss(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,

@@ -20,8 +20,9 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly Channel<QuicConnectionEvent> inbox;
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
+    private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
     private readonly long timeOriginTicks;
-    private readonly QuicTlsTransportState tlsState = new();
+    private readonly QuicTransportTlsBridgeState tlsState = new();
 
     private int consumerStarted;
     private int disposed;
@@ -161,7 +162,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     internal QuicConnectionSendRuntime SendRuntime => sendRuntime;
 
-    internal QuicTlsTransportState TlsState => tlsState;
+    internal QuicTransportTlsBridgeState TlsState => tlsState;
 
     /// <summary>
     /// Posts a network-originated event to the connection inbox.
@@ -242,8 +243,14 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 => HandleLocalCloseRequested(localCloseRequestedEvent, nowTicks, ref effects),
             QuicConnectionConnectionCloseFrameReceivedEvent connectionCloseFrameReceivedEvent
                 => HandleConnectionCloseFrameReceived(connectionCloseFrameReceivedEvent, nowTicks, ref effects),
-            QuicConnectionStatelessResetMatchedEvent statelessResetMatchedEvent
-                => HandleStatelessResetMatched(statelessResetMatchedEvent, nowTicks, ref effects),
+            QuicConnectionAcceptedStatelessResetEvent acceptedStatelessResetEvent
+                => HandleAcceptedStatelessReset(acceptedStatelessResetEvent, nowTicks, ref effects),
+            QuicConnectionConnectionIdIssuedEvent connectionIdIssuedEvent
+                => HandleConnectionIdIssued(connectionIdIssuedEvent, ref effects),
+            QuicConnectionConnectionIdRetiredEvent connectionIdRetiredEvent
+                => HandleConnectionIdRetired(connectionIdRetiredEvent, ref effects),
+            QuicConnectionConnectionIdAcknowledgedEvent connectionIdAcknowledgedEvent
+                => HandleConnectionIdAcknowledged(connectionIdAcknowledgedEvent),
             _ => false,
         };
 
@@ -337,22 +344,22 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     {
         _ = handshakeConfirmedEvent;
 
-        if (handshakeConfirmed)
-        {
-            return false;
-        }
+        bool stateChanged = tlsState.TryConfirmHandshake();
 
-        handshakeConfirmed = true;
-        if (phase == QuicConnectionPhase.Establishing)
+        if (!handshakeConfirmed)
         {
-            phase = QuicConnectionPhase.Active;
-        }
-
-        bool stateChanged = true;
-
-        if (TryPromoteValidatedCandidatePath(nowTicks, ref effects))
-        {
+            handshakeConfirmed = true;
             stateChanged = true;
+
+            if (phase == QuicConnectionPhase.Establishing)
+            {
+                phase = QuicConnectionPhase.Active;
+            }
+
+            if (TryPromoteValidatedCandidatePath(nowTicks, ref effects))
+            {
+                stateChanged = true;
+            }
         }
 
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
@@ -369,30 +376,120 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
-        if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.PeerTransportParametersAuthenticated)
+        switch (tlsStateUpdatedEvent.Update.Kind)
         {
-            transportFlags |= QuicConnectionTransportState.PeerTransportParametersCommitted;
-        }
+            case QuicTlsUpdateKind.LocalTransportParametersReady:
+                _ = TryCommitLocalTransportParametersFromTlsBridgeState(nowTicks, ref effects);
+                break;
 
-        if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.HandshakeConfirmed)
-        {
-            return HandleHandshakeConfirmed(
-                new QuicConnectionHandshakeConfirmedEvent(tlsStateUpdatedEvent.ObservedAtTicks),
-                nowTicks,
-                ref effects);
-        }
+            case QuicTlsUpdateKind.PeerTransportParametersAuthenticated:
+                _ = TryCommitPeerTransportParametersFromTlsBridgeState(nowTicks, ref effects);
+                break;
 
-        if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.FatalAlert
-            && tlsStateUpdatedEvent.Update.AlertDescription.HasValue)
-        {
-            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-                "connection.runtime.tls",
-                "fatal-alert",
-                $"TLS reported fatal alert {tlsStateUpdatedEvent.Update.AlertDescription.Value}.",
-                QuicDiagnosticSeverity.Error)));
+            case QuicTlsUpdateKind.HandshakeConfirmed:
+                _ = HandleHandshakeConfirmed(
+                    new QuicConnectionHandshakeConfirmedEvent(tlsStateUpdatedEvent.ObservedAtTicks),
+                    nowTicks,
+                    ref effects);
+                break;
+
+            case QuicTlsUpdateKind.KeysDiscarded:
+                _ = HandleTlsKeyDiscard(tlsStateUpdatedEvent.Update.EncryptionLevel!.Value, ref effects);
+                break;
+
+            case QuicTlsUpdateKind.FatalAlert:
+                _ = HandleFatalTlsSignal(
+                    tlsStateUpdatedEvent.ObservedAtTicks,
+                    tlsState.FatalAlertCode ?? QuicTransportErrorCode.ProtocolViolation,
+                    tlsState.FatalAlertDescription,
+                    ref effects);
+                break;
+
+            case QuicTlsUpdateKind.ProhibitedKeyUpdateViolation:
+                _ = HandleFatalTlsSignal(
+                    tlsStateUpdatedEvent.ObservedAtTicks,
+                    QuicTransportErrorCode.KeyUpdateError,
+                    "TLS KeyUpdate was prohibited.",
+                    ref effects);
+                break;
         }
 
         return true;
+    }
+
+    private bool TryCommitLocalTransportParametersFromTlsBridgeState(
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        QuicTransportParameters? localTransportParameters = tlsState.LocalTransportParameters;
+        if (localTransportParameters is null)
+        {
+            return false;
+        }
+
+        return ApplyTransportParameters(
+            new QuicConnectionTransportParametersCommittedEvent(
+                ObservedAtTicks: nowTicks,
+                TransportFlags: QuicConnectionTransportState.None,
+                LocalMaxIdleTimeoutMicros: localTransportParameters.MaxIdleTimeout),
+            nowTicks,
+            ref effects);
+    }
+
+    private bool TryCommitPeerTransportParametersFromTlsBridgeState(
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        QuicTransportParameters? peerTransportParameters = tlsState.PeerTransportParameters;
+        if (peerTransportParameters is null)
+        {
+            return false;
+        }
+
+        QuicConnectionTransportState committedTransportFlags = QuicConnectionTransportState.PeerTransportParametersCommitted;
+        if (peerTransportParameters.DisableActiveMigration)
+        {
+            committedTransportFlags |= QuicConnectionTransportState.DisableActiveMigration;
+        }
+
+        return ApplyTransportParameters(
+            new QuicConnectionTransportParametersCommittedEvent(
+                ObservedAtTicks: nowTicks,
+                TransportFlags: committedTransportFlags,
+                PeerMaxIdleTimeoutMicros: peerTransportParameters.MaxIdleTimeout),
+            nowTicks,
+            ref effects);
+    }
+
+    private bool HandleTlsKeyDiscard(QuicTlsEncryptionLevel encryptionLevel, ref List<QuicConnectionEffect>? effects)
+    {
+        _ = effects;
+
+        return encryptionLevel switch
+        {
+            QuicTlsEncryptionLevel.Initial => sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial),
+            QuicTlsEncryptionLevel.Handshake => sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake),
+            QuicTlsEncryptionLevel.OneRtt => false,
+            _ => false,
+        };
+    }
+
+    private bool HandleFatalTlsSignal(
+        long observedAtTicks,
+        QuicTransportErrorCode errorCode,
+        string? description,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionCloseMetadata closeMetadata = new(
+            TransportErrorCode: errorCode,
+            ApplicationErrorCode: null,
+            TriggeringFrameType: null,
+            ReasonPhrase: description);
+
+        return HandleLocalCloseRequested(
+            new QuicConnectionLocalCloseRequestedEvent(observedAtTicks, closeMetadata),
+            observedAtTicks,
+            ref effects);
     }
 
     private bool ApplyTransportParameters(
@@ -709,17 +806,22 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return true;
     }
 
-    private bool HandleStatelessResetMatched(
-        QuicConnectionStatelessResetMatchedEvent statelessResetMatchedEvent,
+    private bool HandleAcceptedStatelessReset(
+        QuicConnectionAcceptedStatelessResetEvent acceptedStatelessResetEvent,
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        _ = statelessResetMatchedEvent;
-
         if (phase is QuicConnectionPhase.Draining or QuicConnectionPhase.Discarded)
         {
             return false;
         }
+
+        RetireAllStatelessResetTokens(ref effects);
+        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+            "connection.runtime.lifecycle",
+            "accepted-stateless-reset",
+            $"Accepted a stateless reset on {acceptedStatelessResetEvent.PathIdentity.RemoteAddress} for connection ID {acceptedStatelessResetEvent.ConnectionId}.",
+            QuicDiagnosticSeverity.Info)));
 
         EnterTerminalPhase(
             QuicConnectionPhase.Draining,
@@ -731,6 +833,41 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         AppendTerminalEffects(ref effects, emitClosePacket: false);
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return true;
+    }
+
+    private bool HandleConnectionIdIssued(
+        QuicConnectionConnectionIdIssuedEvent connectionIdIssuedEvent,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (connectionIdIssuedEvent.StatelessResetToken.Length != QuicStatelessReset.StatelessResetTokenLength
+            || statelessResetTokensByConnectionId.ContainsKey(connectionIdIssuedEvent.ConnectionId))
+        {
+            return false;
+        }
+
+        byte[] token = connectionIdIssuedEvent.StatelessResetToken.ToArray();
+        statelessResetTokensByConnectionId.Add(connectionIdIssuedEvent.ConnectionId, token);
+        AppendEffect(ref effects, new QuicConnectionRegisterStatelessResetTokenEffect(connectionIdIssuedEvent.ConnectionId, token));
+        return true;
+    }
+
+    private bool HandleConnectionIdRetired(
+        QuicConnectionConnectionIdRetiredEvent connectionIdRetiredEvent,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!statelessResetTokensByConnectionId.Remove(connectionIdRetiredEvent.ConnectionId))
+        {
+            return false;
+        }
+
+        AppendEffect(ref effects, new QuicConnectionRetireStatelessResetTokenEffect(connectionIdRetiredEvent.ConnectionId));
+        return true;
+    }
+
+    private bool HandleConnectionIdAcknowledged(QuicConnectionConnectionIdAcknowledgedEvent connectionIdAcknowledgedEvent)
+    {
+        _ = connectionIdAcknowledgedEvent;
+        return false;
     }
 
     internal QuicConnectionEffect[] SetTimerDeadline(QuicConnectionTimerKind timerKind, long? dueTicks)
@@ -827,6 +964,23 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         AppendEffect(ref effects, new QuicConnectionDiscardConnectionStateEffect(terminalState));
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return true;
+    }
+
+    private void RetireAllStatelessResetTokens(ref List<QuicConnectionEffect>? effects)
+    {
+        if (statelessResetTokensByConnectionId.Count == 0)
+        {
+            return;
+        }
+
+        ulong[] connectionIds = statelessResetTokensByConnectionId.Keys.ToArray();
+        foreach (ulong connectionId in connectionIds)
+        {
+            if (statelessResetTokensByConnectionId.Remove(connectionId))
+            {
+                AppendEffect(ref effects, new QuicConnectionRetireStatelessResetTokenEffect(connectionId));
+            }
+        }
     }
 
     private bool RecomputeIdleTimeoutState(long nowTicks)

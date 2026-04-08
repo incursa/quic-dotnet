@@ -24,7 +24,7 @@ public sealed class REQ_QUIC_CRT_0015
         Task consumer = endpoint.RunAsync(
             (postedHandle, _, transition) =>
             {
-                if (transition.EventKind == QuicConnectionEventKind.StatelessResetMatched)
+                if (transition.EventKind == QuicConnectionEventKind.AcceptedStatelessReset)
                 {
                     observedHandle.TrySetResult(postedHandle);
                 }

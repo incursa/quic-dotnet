@@ -29,8 +29,26 @@ internal readonly record struct QuicConnectionIngressResult(
 
 internal sealed record QuicConnectionStatelessResetBinding(
     QuicConnectionHandle Handle,
+    ulong ConnectionId,
     string RemoteAddress,
     byte[] Token);
+
+internal enum QuicConnectionStatelessResetEmissionDisposition
+{
+    Emitted = 0,
+    TokenUnavailable = 1,
+    RateLimited = 2,
+    LoopOrAmplificationPrevented = 3,
+    FormatFailed = 4,
+}
+
+internal readonly record struct QuicConnectionStatelessResetEmissionResult(
+    QuicConnectionStatelessResetEmissionDisposition Disposition,
+    QuicConnectionPathIdentity? PathIdentity,
+    ReadOnlyMemory<byte> Datagram)
+{
+    public bool Emitted => Disposition == QuicConnectionStatelessResetEmissionDisposition.Emitted;
+}
 
 internal readonly record struct QuicConnectionIdKey(
     ulong Part0,
@@ -78,3 +96,27 @@ internal readonly record struct QuicConnectionIdKey(
         return BinaryPrimitives.ReadUInt32LittleEndian(buffer);
     }
 }
+
+internal readonly record struct QuicConnectionStatelessResetTokenKey(
+    ulong Part0,
+    ulong Part1)
+{
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool TryCreate(ReadOnlySpan<byte> token, out QuicConnectionStatelessResetTokenKey key)
+    {
+        if (token.Length != QuicStatelessReset.StatelessResetTokenLength)
+        {
+            key = default;
+            return false;
+        }
+
+        key = new QuicConnectionStatelessResetTokenKey(
+            BinaryPrimitives.ReadUInt64LittleEndian(token[..sizeof(ulong)]),
+            BinaryPrimitives.ReadUInt64LittleEndian(token[sizeof(ulong)..]));
+        return true;
+    }
+}
+
+internal readonly record struct QuicConnectionStatelessResetMatchKey(
+    string RemoteAddress,
+    QuicConnectionStatelessResetTokenKey TokenKey);

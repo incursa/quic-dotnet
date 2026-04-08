@@ -7,7 +7,7 @@
   "owner": "quic-maintainers",
   "domain": "quic",
   "purpose": "Describe the main-library seams that keep TLS-facing transport facts, diagnostics emission, and sender/recovery ownership inside Incursa.Quic instead of the interop harness.",
-  "design_summary": "The library adds three adjacent seam types. A TLS bridge state captures transport-visible facts such as local and peer transport parameters, key availability, handshake confirmation, key updates, and fatal alerts. A diagnostics sink abstraction keeps emitters format-agnostic and cheap or no-op when disabled. A sender/recovery runtime owner wraps the existing sender-flow controller and recovery controller so packet-sent state, PTO ownership, and retransmission planning stay in the transport layer where future hosts can reuse them.",
+  "design_summary": "The library adds three adjacent seam types. A TLS bridge state captures transport-visible facts such as local and peer transport parameters, key availability, handshake confirmation, key updates, key discard, and fatal alerts. The connection reducer threads those bridge outputs into transport-parameter commits, handshake latching, and explicit close handling while the connection send runtime absorbs Initial and Handshake discard cleanup. A diagnostics sink abstraction keeps emitters format-agnostic and cheap or no-op when disabled. A sender/recovery runtime owner remains available as the broader transport-layer helper surface for packet-sent state, PTO ownership, and retransmission planning.",
   "satisfies": [
     "REQ-QUIC-CRT-0103",
     "REQ-QUIC-CRT-0104",
@@ -20,6 +20,7 @@
   ],
   "key_components": [
     "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
     "src/Incursa.Quic/QuicDiagnostics.cs",
     "src/Incursa.Quic/QuicSenderRecoveryRuntime.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",

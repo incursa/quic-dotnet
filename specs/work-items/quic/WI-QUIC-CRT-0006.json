@@ -21,8 +21,8 @@
     "REQ-QUIC-CRT-0104",
     "REQ-QUIC-CRT-0105"
   ],
-  "planned_changes": "- Add an internal TLS bridge state that can represent transport parameters, key availability, handshake confirmation, key updates, old-key discard, and fatal alerts.\n- Add an internal diagnostics sink abstraction with a no-op default.\n- Add an internal sender/recovery runtime owner that wraps the existing sender-flow and recovery helpers.\n- Add focused requirement-home tests for the new seam classes.",
-  "verification_plan": "Run the new CRT requirement-home tests and the solution build/test pass that includes the new seam classes.",
+  "planned_changes": "- Add an internal TLS bridge state that can represent transport parameters, key availability, handshake confirmation, key updates, old-key discard, and fatal alerts.\n- Thread the bridge outputs into the connection reducer so transport-parameter commits, handshake confirmation, fatal TLS closure, and Initial/Handshake key-discard cleanup are explicit state transitions.\n- Extend the connection send runtime so Initial/Handshake discard cleanup clears retained packet state and PTO backoff.\n- Add focused requirement-home tests for the bridge, runtime integration, and sender cleanup.\n- Keep the diagnostics sink abstraction and broader sender/recovery owner surface available for the existing runtime helpers.",
+  "verification_plan": "Run the new CRT and RFC9001 requirement-home tests plus the solution build/test pass that includes the bridge, runtime integration, and sender-cleanup changes.",
   "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
   "out_of_scope": [
     "Any actual TLS stack integration, qlog format implementation, or full retransmission algorithm expansion."
