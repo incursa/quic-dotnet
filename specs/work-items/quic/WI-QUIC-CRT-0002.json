@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0002",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC Connection Runtime Deadline Scheduling Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Keep the connection runtime deadline path traceable while the shard-owned scheduler, generation counters, and timer effect plumbing land.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0002"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0045",
+    "REQ-QUIC-CRT-0047",
+    "REQ-QUIC-CRT-0048",
+    "REQ-QUIC-CRT-0049",
+    "REQ-QUIC-CRT-0050",
+    "REQ-QUIC-CRT-0051",
+    "REQ-QUIC-CRT-0052",
+    "REQ-QUIC-CRT-0053",
+    "REQ-QUIC-CRT-0054",
+    "REQ-QUIC-CRT-0057"
+  ],
+  "planned_changes": "- Keep the shard-owned deadline scheduler keyed by monotonic due ticks and stable sequence tie-breakers.\n- Keep timer arm and cancel effects generation-aware so stale expirations can be ignored safely.\n- Keep the requirement-home tests focused on ordering, stale suppression, and runtime timer expiry handling.",
+  "verification_plan": "Run the CRT timer tests and the slice-specific dotnet test subset. Keep the proof in the verification artifact and avoid broadening the slice into the RFC 9000 idle-timeout policy math.",
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "out_of_scope": [
+    "RFC 9000 idle-timeout value derivation and PTO floor math beyond the scheduler seam.",
+    "Future close/drain policy decisions that are not yet represented in the runtime transition surface."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionRuntimeDeadlineScheduler.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs\n- src/Incursa.Quic/QuicConnectionRuntimeShard.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0048.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0049.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0052.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0053.cs"
+    }
+  ]
+}

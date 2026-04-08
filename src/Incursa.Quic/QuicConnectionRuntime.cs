@@ -84,6 +84,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     public ulong TransitionSequence => transitionSequence;
 
+    internal bool IsInboxConsumerRunning => Volatile.Read(ref consumerStarted) != 0;
+
+    internal bool IsDisposed => Volatile.Read(ref disposed) != 0;
+
+    internal IMonotonicClock Clock => clock;
+
     /// <summary>
     /// Posts a network-originated event to the connection inbox.
     /// </summary>
@@ -146,6 +152,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             QuicConnectionHandshakeConfirmedEvent => ConfirmHandshake(),
             QuicConnectionTransportParametersCommittedEvent transportParametersCommittedEvent
                 => ApplyTransportParameters(transportParametersCommittedEvent.TransportFlags),
+            QuicConnectionTimerExpiredEvent timerExpiredEvent => TryHandleTimerExpired(timerExpiredEvent),
             _ => false,
         };
 
@@ -252,6 +259,53 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         transportFlags = updatedFlags;
+        return true;
+    }
+
+    internal QuicConnectionEffect[] SetTimerDeadline(QuicConnectionTimerKind timerKind, long? dueTicks)
+    {
+        QuicConnectionTimerSchedule currentSchedule = GetTimerSchedule(timerKind);
+        if (currentSchedule.DueTicks == dueTicks)
+        {
+            return Array.Empty<QuicConnectionEffect>();
+        }
+
+        ulong nextGeneration = QuicConnectionTimerDeadlineState.IncrementCounter(currentSchedule.Generation);
+        timerState = timerState.WithSchedule(timerKind, dueTicks, nextGeneration);
+
+        if (!dueTicks.HasValue)
+        {
+            return [new QuicConnectionCancelTimerEffect(timerKind, nextGeneration)];
+        }
+
+        QuicConnectionTimerPriority priority = timerState.CreatePriority(dueTicks.Value);
+        timerState = timerState.AdvancePrioritySequence();
+        return [new QuicConnectionArmTimerEffect(timerKind, nextGeneration, priority)];
+    }
+
+    private QuicConnectionTimerSchedule GetTimerSchedule(QuicConnectionTimerKind timerKind)
+    {
+        return timerKind switch
+        {
+            QuicConnectionTimerKind.IdleTimeout => timerState.IdleTimeout,
+            QuicConnectionTimerKind.CloseLifetime => timerState.CloseLifetime,
+            QuicConnectionTimerKind.DrainLifetime => timerState.DrainLifetime,
+            QuicConnectionTimerKind.PathValidation => timerState.PathValidation,
+            _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
+        };
+    }
+
+    private bool TryHandleTimerExpired(QuicConnectionTimerExpiredEvent timerExpiredEvent)
+    {
+        if (!timerState.IsCurrent(timerExpiredEvent.TimerKind, timerExpiredEvent.Generation))
+        {
+            return false;
+        }
+
+        ulong nextGeneration = QuicConnectionTimerDeadlineState.IncrementCounter(
+            timerState.GetGeneration(timerExpiredEvent.TimerKind));
+
+        timerState = timerState.WithSchedule(timerExpiredEvent.TimerKind, null, nextGeneration);
         return true;
     }
 }
