@@ -237,7 +237,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryFormatStreamFrame_RejectsInvalidTypesAndOffsetMismatches
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0012.cs::TryFormatStreamFrame_RoundTripsAValidStreamFrame
 
 Notes:
 - The source sentence allows STREAM frames or other frame types; the open set is preserved.
@@ -445,11 +444,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0003.cs::TryFormatVersionNegotiationResponse_WritesAStatelessParseablePacket
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0003.cs::TryParseVersionNegotiation_ExposesVersionListWithoutProtectionState
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0003.cs::TryParseVersionNegotiation_RejectsOrdinaryProtectedLongHeaders
 
 ## REQ-QUIC-RFC9001-S5-0004 Protect Retry packets with AEAD_AES_128_GCM
 Retry packets MUST use AEAD_AES_128_GCM to provide protection against accidental modification and limit the entities that can produce a valid Retry.
@@ -576,10 +570,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0002.cs::TryParseShortHeader_ReportsTheKeyPhaseBit
 
 ## REQ-QUIC-RFC9001-S6-0003 Initialize Key Phase to zero
 The Key Phase bit MUST initially be set to 0 for the first set of 1-RTT packets.
@@ -737,10 +727,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §8 RFC9001-S8-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-8
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9001-S8-0002 Authenticate QUIC transport parameters
 The TLS handshake MUST authenticate values for QUIC transport parameters.
@@ -786,8 +772,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §10 RFC9001-S10-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-10
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S10-0001.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata
 
 Notes:
 - The source sentence reports the completed registration in past tense; this clause restates the registry action normatively.
@@ -833,8 +817,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B RFC9001-SB-B10-P2-S4
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcm
 
 ## REQ-QUIC-RFC9001-SB-0002 Require AEAD usage limits
 Any AEAD that is used with QUIC MUST have limits on use that ensure that both confidentiality and integrity are preserved.
@@ -852,7 +834,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds
   - tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0002.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations
 
 ## REQ-QUIC-RFC9001-SBP1P1-0001 Limit GCM confidentiality at 2^11 bytes
 Endpoints that do not send packets larger than 2^11 bytes MUST NOT protect more than 2^28 packets in a single connection.
@@ -867,8 +848,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.1 RFC9001-SB.1.1-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcmConfidentiality
 
 ## REQ-QUIC-RFC9001-SBP1P1-0002 Limit GCM confidentiality at 2^16 bytes
 Endpoints that allow packets as large as 2^16 bytes MUST NOT protect more than 2^23 packets in a single connection.
@@ -883,8 +862,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.1 RFC9001-SB.1.1-B6-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0002.cs::TryGetUsageLimits_UsesTheLargePacketSizeProfileForGcmConfidentiality
 
 ## REQ-QUIC-RFC9001-SBP1P2-0001 Limit GCM integrity at 2^11 bytes
 Endpoints that do not attempt to remove protection from packets larger than 2^11 bytes MUST NOT attempt to remove protection from more than 2^57 packets.
@@ -899,8 +876,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.2 RFC9001-SB.1.2-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcmIntegrity
 
 ## REQ-QUIC-RFC9001-SBP1P2-0002 Limit GCM integrity at unrestricted size
 Endpoints that do not restrict the size of processed packets MUST NOT attempt to remove protection from more than 2^52 packets.
@@ -915,8 +890,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.2 RFC9001-SB.1.2-B6-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0002.cs::TryGetUsageLimits_UsesTheLargePacketSizeProfileForGcmIntegrity
 
 ## REQ-QUIC-RFC9001-SBP1P2-0003 Apply one GCM integrity limit to both functions
 The same integrity limit SHOULD be applied to AEAD_AES_128_GCM and AEAD_AES_256_GCM.
@@ -933,7 +906,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0003.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm
 
 ## REQ-QUIC-RFC9001-SBP2-0001 Limit CCM at 2^11 bytes
 Endpoints that limit packets to 2^11 bytes MUST have both confidentiality and integrity limits of 2^26.5 packets.
@@ -948,8 +920,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.2 RFC9001-SB.2-B12-P8-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForCcm
 
 ## REQ-QUIC-RFC9001-SBP2-0002 Limit CCM at unrestricted packet size
 Endpoints that do not restrict packet size MUST have a limit of 2^21.5 packets.
@@ -964,5 +934,3 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.2 RFC9001-SB.2-B12-P8-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0002.cs::TryGetUsageLimits_UsesTheUnrestrictedPacketSizeProfileForCcm

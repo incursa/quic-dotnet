@@ -16,6 +16,7 @@ internal enum QuicConnectionEventKind
     ConnectionIdRetired = 11,
     ConnectionIdAcknowledged = 12,
     TlsStateUpdated = 13,
+    CryptoFrameReceived = 14,
 }
 
 internal enum QuicConnectionEffectKind
@@ -120,6 +121,13 @@ internal sealed record QuicConnectionTlsStateUpdatedEvent(
     long ObservedAtTicks,
     QuicTlsStateUpdate Update)
     : QuicConnectionEvent(QuicConnectionEventKind.TlsStateUpdated, ObservedAtTicks);
+
+internal sealed record QuicConnectionCryptoFrameReceivedEvent(
+    long ObservedAtTicks,
+    QuicTlsEncryptionLevel EncryptionLevel,
+    ulong Offset,
+    ReadOnlyMemory<byte> CryptoData)
+    : QuicConnectionEvent(QuicConnectionEventKind.CryptoFrameReceived, ObservedAtTicks);
 
 internal abstract record QuicConnectionEffect(QuicConnectionEffectKind Kind);
 

@@ -4,6 +4,12 @@ internal readonly record struct QuicConnectionSentPacketKey(
     QuicPacketNumberSpace PacketNumberSpace,
     ulong PacketNumber);
 
+/// <summary>
+/// Captures the TLS encryption level associated with a CRYPTO send effect.
+/// </summary>
+internal readonly record struct QuicConnectionCryptoSendMetadata(
+    QuicTlsEncryptionLevel EncryptionLevel);
+
 internal readonly record struct QuicConnectionSentPacket(
     QuicPacketNumberSpace PacketNumberSpace,
     ulong PacketNumber,
@@ -12,13 +18,15 @@ internal readonly record struct QuicConnectionSentPacket(
     bool AckEliciting = true,
     bool AckOnlyPacket = false,
     bool ProbePacket = false,
-    bool Retransmittable = true);
+    bool Retransmittable = true,
+    QuicConnectionCryptoSendMetadata? CryptoMetadata = null);
 
 internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicPacketNumberSpace PacketNumberSpace,
     ulong PacketNumber,
     ulong PayloadBytes,
-    ulong SentAtMicros);
+    ulong SentAtMicros,
+    QuicConnectionCryptoSendMetadata? CryptoMetadata = null);
 
 /// <summary>
 /// Owns connection-scoped send state, PTO bookkeeping, and retransmission planning.
@@ -46,6 +54,7 @@ internal sealed class QuicConnectionSendRuntime
 
     public void TrackSentPacket(QuicConnectionSentPacket packet)
     {
+        ValidateCryptoMetadata(packet);
         QuicConnectionSentPacketKey key = new(packet.PacketNumberSpace, packet.PacketNumber);
         sentPackets[key] = packet;
         flowController.RecordPacketSent(
@@ -165,7 +174,8 @@ internal sealed class QuicConnectionSendRuntime
                 packet.PacketNumberSpace,
                 packet.PacketNumber,
                 packet.PayloadBytes,
-                packet.SentAtMicros));
+                packet.SentAtMicros,
+                packet.CryptoMetadata));
         }
 
         ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
@@ -229,6 +239,42 @@ internal sealed class QuicConnectionSendRuntime
     public void ClearLossDetectionDeadline()
     {
         LossDetectionDeadlineMicros = null;
+    }
+
+    private static void ValidateCryptoMetadata(QuicConnectionSentPacket packet)
+    {
+        if (!packet.CryptoMetadata.HasValue)
+        {
+            return;
+        }
+
+        if (!TryMapCryptoEncryptionLevelToPacketNumberSpace(
+            packet.CryptoMetadata.Value.EncryptionLevel,
+            out QuicPacketNumberSpace expectedPacketNumberSpace)
+            || expectedPacketNumberSpace != packet.PacketNumberSpace)
+        {
+            throw new ArgumentException(
+                "Crypto metadata must match the packet number space.",
+                nameof(packet));
+        }
+    }
+
+    private static bool TryMapCryptoEncryptionLevelToPacketNumberSpace(
+        QuicTlsEncryptionLevel encryptionLevel,
+        out QuicPacketNumberSpace packetNumberSpace)
+    {
+        switch (encryptionLevel)
+        {
+            case QuicTlsEncryptionLevel.Initial:
+                packetNumberSpace = QuicPacketNumberSpace.Initial;
+                return true;
+            case QuicTlsEncryptionLevel.Handshake:
+                packetNumberSpace = QuicPacketNumberSpace.Handshake;
+                return true;
+            default:
+                packetNumberSpace = default;
+                return false;
+        }
     }
 
     private static ulong SaturatingAdd(ulong left, ulong right)

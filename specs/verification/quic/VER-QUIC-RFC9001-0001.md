@@ -102,6 +102,9 @@ Execution, inspection, fuzzing, and benchmark evidence.
 - tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs
 - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs
 - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0008.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs
 - benchmarks/QuicFrameCodecBenchmarks.cs
 - benchmarks/QuicHeaderParsingBenchmarks.cs
 - quality/benchmarks/README.md

@@ -5,6 +5,11 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicTransportTlsBridgeState
 {
+    private readonly QuicCryptoBuffer initialIngressCryptoBuffer = new();
+    private readonly QuicCryptoBuffer handshakeIngressCryptoBuffer = new();
+    private readonly QuicCryptoBuffer initialEgressCryptoBuffer = new();
+    private readonly QuicCryptoBuffer handshakeEgressCryptoBuffer = new();
+
     public QuicTransportParameters? LocalTransportParameters { get; private set; }
 
     public QuicTransportParameters? PeerTransportParameters { get; private set; }
@@ -32,6 +37,14 @@ internal sealed class QuicTransportTlsBridgeState
     public bool HasAnyAvailableKeys => InitialKeysAvailable || HandshakeKeysAvailable || OneRttKeysAvailable;
 
     public bool IsTerminal => FatalAlertCode.HasValue;
+
+    internal QuicCryptoBuffer InitialIngressCryptoBuffer => initialIngressCryptoBuffer;
+
+    internal QuicCryptoBuffer HandshakeIngressCryptoBuffer => handshakeIngressCryptoBuffer;
+
+    internal QuicCryptoBuffer InitialEgressCryptoBuffer => initialEgressCryptoBuffer;
+
+    internal QuicCryptoBuffer HandshakeEgressCryptoBuffer => handshakeEgressCryptoBuffer;
 
     public bool TryApply(QuicTlsStateUpdate update)
     {
@@ -89,9 +102,69 @@ internal sealed class QuicTransportTlsBridgeState
             case QuicTlsUpdateKind.ProhibitedKeyUpdateViolation:
                 return TryRecordFatalAlert(QuicTransportErrorCode.KeyUpdateError, "TLS KeyUpdate was prohibited.");
 
+            case QuicTlsUpdateKind.CryptoDataAvailable:
+                if (!update.EncryptionLevel.HasValue || !update.CryptoDataOffset.HasValue)
+                {
+                    return false;
+                }
+
+                return TryBufferOutgoingCryptoData(
+                    update.EncryptionLevel.Value,
+                    update.CryptoDataOffset.Value,
+                    update.CryptoData,
+                    out _);
+
             default:
                 return false;
         }
+    }
+
+    internal bool TryBufferIncomingCryptoData(
+        QuicTlsEncryptionLevel encryptionLevel,
+        ulong offset,
+        ReadOnlyMemory<byte> cryptoData,
+        out QuicCryptoBufferResult result)
+    {
+        return TryBufferCryptoData(GetIngressCryptoBuffer(encryptionLevel), offset, cryptoData, out result);
+    }
+
+    internal bool TryBufferOutgoingCryptoData(
+        QuicTlsEncryptionLevel encryptionLevel,
+        ulong offset,
+        ReadOnlyMemory<byte> cryptoData,
+        out QuicCryptoBufferResult result)
+    {
+        return TryBufferCryptoData(GetEgressCryptoBuffer(encryptionLevel), offset, cryptoData, out result);
+    }
+
+    internal bool TryDequeueIncomingCryptoData(
+        QuicTlsEncryptionLevel encryptionLevel,
+        Span<byte> destination,
+        out int bytesWritten)
+    {
+        QuicCryptoBuffer? cryptoBuffer = GetIngressCryptoBuffer(encryptionLevel);
+        if (cryptoBuffer is null)
+        {
+            bytesWritten = 0;
+            return false;
+        }
+
+        return cryptoBuffer.TryDequeueContiguousData(destination, out bytesWritten);
+    }
+
+    internal bool TryDequeueOutgoingCryptoData(
+        QuicTlsEncryptionLevel encryptionLevel,
+        Span<byte> destination,
+        out int bytesWritten)
+    {
+        QuicCryptoBuffer? cryptoBuffer = GetEgressCryptoBuffer(encryptionLevel);
+        if (cryptoBuffer is null)
+        {
+            bytesWritten = 0;
+            return false;
+        }
+
+        return cryptoBuffer.TryDequeueContiguousData(destination, out bytesWritten);
     }
 
     public bool TryCommitLocalTransportParameters(QuicTransportParameters parameters)
@@ -204,6 +277,49 @@ internal sealed class QuicTransportTlsBridgeState
         KeyUpdateInstalled = false;
         OldKeysDiscarded = true;
         return true;
+    }
+
+    private bool TryBufferCryptoData(
+        QuicCryptoBuffer? cryptoBuffer,
+        ulong offset,
+        ReadOnlyMemory<byte> cryptoData,
+        out QuicCryptoBufferResult result)
+    {
+        result = default;
+
+        if (IsTerminal || cryptoBuffer is null)
+        {
+            return false;
+        }
+
+        int bufferedBytesBefore = cryptoBuffer.BufferedBytes;
+        if (!cryptoBuffer.TryAddFrame(new QuicCryptoFrame(offset, cryptoData.Span), out result))
+        {
+            return false;
+        }
+
+        return result != QuicCryptoBufferResult.BufferExceeded
+            && cryptoBuffer.BufferedBytes != bufferedBytesBefore;
+    }
+
+    private QuicCryptoBuffer? GetIngressCryptoBuffer(QuicTlsEncryptionLevel encryptionLevel)
+    {
+        return encryptionLevel switch
+        {
+            QuicTlsEncryptionLevel.Initial => initialIngressCryptoBuffer,
+            QuicTlsEncryptionLevel.Handshake => handshakeIngressCryptoBuffer,
+            _ => null,
+        };
+    }
+
+    private QuicCryptoBuffer? GetEgressCryptoBuffer(QuicTlsEncryptionLevel encryptionLevel)
+    {
+        return encryptionLevel switch
+        {
+            QuicTlsEncryptionLevel.Initial => initialEgressCryptoBuffer,
+            QuicTlsEncryptionLevel.Handshake => handshakeEgressCryptoBuffer,
+            _ => null,
+        };
     }
 
     private bool TryInstallKeyUpdate(uint keyPhase)

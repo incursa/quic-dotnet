@@ -231,6 +231,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 => ApplyTransportParameters(transportParametersCommittedEvent, nowTicks, ref effects),
             QuicConnectionTlsStateUpdatedEvent tlsStateUpdatedEvent
                 => HandleTlsStateUpdated(tlsStateUpdatedEvent, nowTicks, ref effects),
+            QuicConnectionCryptoFrameReceivedEvent cryptoFrameReceivedEvent
+                => HandleCryptoFrameReceived(cryptoFrameReceivedEvent, nowTicks, ref effects),
             QuicConnectionPacketReceivedEvent packetReceivedEvent
                 => HandlePacketReceived(packetReceivedEvent, nowTicks, ref effects),
             QuicConnectionPathValidationSucceededEvent pathValidationSucceededEvent
@@ -415,6 +417,21 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         return true;
+    }
+
+    private bool HandleCryptoFrameReceived(
+        QuicConnectionCryptoFrameReceivedEvent cryptoFrameReceivedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        _ = nowTicks;
+        _ = effects;
+
+        return tlsState.TryBufferIncomingCryptoData(
+            cryptoFrameReceivedEvent.EncryptionLevel,
+            cryptoFrameReceivedEvent.Offset,
+            cryptoFrameReceivedEvent.CryptoData,
+            out _);
     }
 
     private bool TryCommitLocalTransportParametersFromTlsBridgeState(

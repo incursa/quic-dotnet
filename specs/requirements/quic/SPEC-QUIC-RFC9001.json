@@ -559,7 +559,11 @@
           "RFC 9001 §4 RFC9001-S4-B2-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs::SenderRuntimePreservesCryptoMetadataWhenTrackingSentPacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs::SenderRuntimeRejectsCryptoMetadataThatDoesNotMatchThePacketNumberSpace"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S4-0007",
@@ -585,7 +589,10 @@
           "RFC 9001 §4 RFC9001-S4-B2-P1-S5",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs::RetransmissionPlansPreserveTheOriginalCryptoMetadata"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S4-0008",

@@ -88,6 +88,9 @@
     "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
     "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
     "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs",
     "benchmarks/QuicFrameCodecBenchmarks.cs",
     "benchmarks/QuicHeaderParsingBenchmarks.cs",
     "quality/benchmarks/README.md",
@@ -103,7 +106,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicHeaderParsingBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml"
+      "content": "- tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0008.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicHeaderParsingBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml"
     }
   ],
   "domain": "quic"
