@@ -18,7 +18,7 @@ public sealed class REQ_QUIC_CRT_0025
             new QuicConnectionPacketReceivedEvent(
                 ObservedAtTicks: 0,
                 path,
-                ReadOnlyMemory<byte>.Empty),
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
             nowTicks: MicrosecondsToTicks(50));
 
         QuicConnectionCloseMetadata closeMetadata = new(

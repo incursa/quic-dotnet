@@ -22,6 +22,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0002.json`](VER-QUIC-CRT-0002.json): canonical CRT deadline-scheduling verification source
 - [`VER-QUIC-CRT-0003.json`](VER-QUIC-CRT-0003.json): canonical CRT endpoint-ingress verification source
 - [`VER-QUIC-CRT-0004.json`](VER-QUIC-CRT-0004.json): canonical CRT lifecycle and idle-timeout verification source
+- [`VER-QUIC-CRT-0005.json`](VER-QUIC-CRT-0005.json): canonical CRT path-state and migration verification source
 
 ## Notes
 

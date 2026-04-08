@@ -422,3 +422,7 @@ FodyWeavers.xsd
 
 # Incursa code generator output
 **/Generated/__codegen.marker
+
+
+.dotnet/
+.codex-profile/

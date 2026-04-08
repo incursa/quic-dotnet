@@ -1,0 +1,67 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0005",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC Connection Runtime Path State and Migration Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the runtime-owned active-path and candidate-path model, address-change classification, validation workflow, anti-amplification accounting, and migration promotion rules without expanding into a generalized multipath scheduler.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0005",
+    "VER-QUIC-CRT-0005"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0033",
+    "REQ-QUIC-CRT-0034",
+    "REQ-QUIC-CRT-0059",
+    "REQ-QUIC-CRT-0060",
+    "REQ-QUIC-CRT-0061",
+    "REQ-QUIC-CRT-0062",
+    "REQ-QUIC-CRT-0063",
+    "REQ-QUIC-CRT-0064",
+    "REQ-QUIC-CRT-0065",
+    "REQ-QUIC-CRT-0066",
+    "REQ-QUIC-CRT-0067",
+    "REQ-QUIC-CRT-0068",
+    "REQ-QUIC-CRT-0069",
+    "REQ-QUIC-CRT-0070"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicPathValidation.cs",
+    "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs"
+  ],
+  "design_summary": "The connection runtime owns one active path and a bounded set of candidate and recently validated paths. Packet ingress from a new peer address is classified explicitly, then either ignored, treated as a migration candidate, or matched against the recently validated cache. Validation state, amplification state, and recovery snapshots stay per-path so anti-amplification accounting and migration promotion remain deterministic.\n\nHandshake confirmation gates promotion of migration-sensitive behavior. Validation success can mark a candidate validated, update the last validated remote address, and promote the candidate to active path only when the gate allows it. Trusted reuse can skip a fresh probe when the address is still recent. Promotion emits an explicit effect so the endpoint can update binding state and reset path-local transport state consistently.",
+  "alternatives_considered": [
+    "A generalized multipath scheduler was rejected because the spec only requires one active path plus candidate paths for this slice.",
+    "Inlining endpoint rebinding inside the reducer was rejected because binding updates must remain explicit effects."
+  ],
+  "edge_cases_and_constraints": [
+    "Unvalidated paths must enforce their own amplification budget before any send effect is emitted.",
+    "A new address seen before handshake confirmation may create a candidate path and send validation traffic, but it must not become active prematurely.",
+    "Validated candidates should be promoted only after successful validation or a recent-validation reuse rule the runtime treats as trusted.",
+    "Promotion must reset or restore path-local transport state using the migration semantics already encoded in the runtime effects.",
+    "The recently validated cache must remain bounded so stale addresses cannot bypass the probe and promotion rules."
+  ],
+  "data_and_state_considerations": "Path state is intentionally split into active-path, candidate-path, and recently validated path records so each record can carry its own validation metadata, amplification accounting, and recovery snapshot. The runtime also tracks the last validated remote address as a first-class field to support trusted reuse decisions and explicit change classification.",
+  "risks": [
+    "Recent-validation reuse must remain bounded so stale addresses do not bypass the probe and promotion rules.",
+    "Promotion must keep the active-path reset path deterministic or the congestion and recovery state could drift across path changes.",
+    "The runtime should remain single-owner for connection state; endpoint binding changes stay effect-driven rather than inline."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice covers path ownership, address-change classification, validation orchestration, amplification accounting, and migration promotion. It does not expand the system into a generalized multipath engine."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`QuicConnectionRuntimeStateModels.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs)\n- [`QuicConnectionRuntimeEventModels.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs)\n- [`QuicPathValidation.cs`](../../../src/Incursa.Quic/QuicPathValidation.cs)\n- [`QuicAntiAmplificationBudget.cs`](../../../src/Incursa.Quic/QuicAntiAmplificationBudget.cs)\n- [`QuicConnectionRuntimeEndpoint.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs)\n- [`REQ-QUIC-CRT-0032.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0032.cs)\n- [`REQ-QUIC-CRT-0063.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0063.cs)\n- [`REQ-QUIC-CRT-0064.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0064.cs)\n- [`REQ-QUIC-CRT-0066.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0066.cs)\n- [`REQ-QUIC-CRT-0069.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0069.cs)"
+    }
+  ]
+}

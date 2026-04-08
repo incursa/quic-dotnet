@@ -22,6 +22,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0002.json`](ARC-QUIC-CRT-0002.json): canonical CRT deadline-scheduling design source
 - [`ARC-QUIC-CRT-0003.json`](ARC-QUIC-CRT-0003.json): canonical CRT endpoint-ingress design source
 - [`ARC-QUIC-CRT-0004.json`](ARC-QUIC-CRT-0004.json): canonical CRT lifecycle and idle-timeout design source
+- [`ARC-QUIC-CRT-0005.json`](ARC-QUIC-CRT-0005.json): canonical CRT path-state and migration design source
 
 ## Notes
 

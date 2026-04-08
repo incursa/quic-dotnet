@@ -1,0 +1,48 @@
+{
+  "title": "QUIC Connection Runtime Path State and Migration Work Item",
+  "verification_links": [
+    "VER-QUIC-CRT-0005"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "out_of_scope": [
+    "A generalized multipath scheduler or any future path-selection algorithm beyond one active path plus candidate paths.",
+    "Endpoint route and stateless-reset registries, which remain owned by the endpoint ingress surface.",
+    "Unrelated recovery redesign that is not needed to classify or promote the active path."
+  ],
+  "status": "planned",
+  "domain": "quic",
+  "summary": "Keep the active-path, candidate-path, validation, amplification, and migration-promotion seam traceable while the runtime orchestrator lands.",
+  "verification_plan": "Run the narrow CRT requirement-home tests for candidate creation, handshake-gated promotion, validation reuse, and unvalidated-path amplification, then inspect the path record model for the explicit state fields that back those transitions.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`QuicConnectionRuntimeStateModels.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs)\n- [`QuicConnectionRuntimeEventModels.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs)\n- [`QuicPathValidation.cs`](../../../src/Incursa.Quic/QuicPathValidation.cs)\n- [`QuicAntiAmplificationBudget.cs`](../../../src/Incursa.Quic/QuicAntiAmplificationBudget.cs)\n- [`QuicConnectionRuntimeEndpoint.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs)\n- [`REQ-QUIC-CRT-0032.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0032.cs)\n- [`REQ-QUIC-CRT-0063.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0063.cs)\n- [`REQ-QUIC-CRT-0064.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0064.cs)\n- [`REQ-QUIC-CRT-0066.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0066.cs)\n- [`REQ-QUIC-CRT-0069.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0069.cs)"
+    }
+  ],
+  "artifact_type": "work_item",
+  "planned_changes": "- Add active-path and candidate-path ownership to the runtime state model.\n- Track the last validated remote address and keep a bounded cache of recently validated paths.\n- Classify packets from new peer addresses explicitly and drive path validation through explicit events and effects.\n- Enforce per-path anti-amplification accounting and promotion rules, including handshake gating and path-local state restore or reset on promotion.\n- Add requirement-home tests for new-address handling, candidate creation, validation promotion, and unvalidated-path amplification behavior.",
+  "design_links": [
+    "ARC-QUIC-CRT-0005"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0033",
+    "REQ-QUIC-CRT-0034",
+    "REQ-QUIC-CRT-0059",
+    "REQ-QUIC-CRT-0060",
+    "REQ-QUIC-CRT-0061",
+    "REQ-QUIC-CRT-0063",
+    "REQ-QUIC-CRT-0064",
+    "REQ-QUIC-CRT-0065",
+    "REQ-QUIC-CRT-0066",
+    "REQ-QUIC-CRT-0067",
+    "REQ-QUIC-CRT-0068",
+    "REQ-QUIC-CRT-0069",
+    "REQ-QUIC-CRT-0070"
+  ],
+  "artifact_id": "WI-QUIC-CRT-0005"
+}
