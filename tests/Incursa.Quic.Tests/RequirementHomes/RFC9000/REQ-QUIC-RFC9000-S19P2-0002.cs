@@ -47,4 +47,12 @@ public sealed class REQ_QUIC_RFC9000_S19P2_0002
         Assert.False(QuicFrameCodec.TryParsePingFrame([], out _));
         Assert.False(QuicFrameCodec.TryParsePingFrame([0x00], out _));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P2-0003")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzPingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation()
+    {
+        QuicFrameCodecFuzzSupport.FuzzPingFrame();
+    }
 }

@@ -53,4 +53,14 @@ public sealed class REQ_QUIC_RFC9000_S19P1_0001
         Assert.False(QuicFrameCodec.TryParsePaddingFrame([], out _));
         Assert.False(QuicFrameCodec.TryParsePaddingFrame([0x01], out _));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P1-0006")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzPaddingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation()
+    {
+        QuicFrameCodecFuzzSupport.FuzzPaddingFrame();
+    }
 }

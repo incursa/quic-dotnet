@@ -20,4 +20,15 @@ public sealed class REQ_QUIC_RFC9000_S19P9_0002
         Assert.Equal(encoded.Length, bytesWritten);
         Assert.True(encoded.AsSpan().SequenceEqual(destination[..bytesWritten]));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S19P9-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P9-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P9-0005")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzMaxDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation()
+    {
+        QuicFrameCodecFuzzSupport.FuzzMaxDataFrame();
+    }
 }

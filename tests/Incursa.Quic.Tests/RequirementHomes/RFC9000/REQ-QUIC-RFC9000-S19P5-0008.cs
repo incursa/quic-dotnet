@@ -65,4 +65,17 @@ public sealed class REQ_QUIC_RFC9000_S19P5_0008
         Assert.False(QuicFrameCodec.TryParseStopSendingFrame([], out _, out _));
         Assert.False(QuicFrameCodec.TryParseStopSendingFrame([0x04], out _, out _));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P5-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P5-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P5-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P5-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P5-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S19P5-0010")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzStopSendingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation()
+    {
+        QuicFrameCodecFuzzSupport.FuzzStopSendingFrame();
+    }
 }

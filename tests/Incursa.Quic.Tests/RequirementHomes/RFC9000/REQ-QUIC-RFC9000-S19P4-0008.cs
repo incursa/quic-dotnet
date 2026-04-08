@@ -76,4 +76,19 @@ public sealed class REQ_QUIC_RFC9000_S19P4_0008
         Assert.False(QuicFrameCodec.TryParseResetStreamFrame([], out _, out _));
         Assert.False(QuicFrameCodec.TryParseResetStreamFrame([0x05], out _, out _));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P4-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P4-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P4-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P4-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P4-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P4-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S19P4-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S19P4-0011")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzResetStreamFrame_RoundTripsRepresentativeShapesAndRejectsTruncation()
+    {
+        QuicFrameCodecFuzzSupport.FuzzResetStreamFrame();
+    }
 }

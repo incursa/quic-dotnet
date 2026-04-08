@@ -95,4 +95,11 @@ public sealed class REQ_QUIC_RFC9002_S5P3_0006
         Assert.Equal(1UL, estimator.SmoothedRttMicros);
         Assert.Equal(0UL, estimator.RttVarMicros);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void Constructor_RejectsZeroInitialRtt()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => new QuicRttEstimator(initialRttMicros: 0));
+    }
 }
