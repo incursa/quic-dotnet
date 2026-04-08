@@ -15,6 +15,7 @@ internal enum QuicConnectionEventKind
     ConnectionIdIssued = 10,
     ConnectionIdRetired = 11,
     ConnectionIdAcknowledged = 12,
+    TlsStateUpdated = 13,
 }
 
 internal enum QuicConnectionEffectKind
@@ -113,6 +114,11 @@ internal sealed record QuicConnectionConnectionIdAcknowledgedEvent(
     ulong ConnectionId)
     : QuicConnectionEvent(QuicConnectionEventKind.ConnectionIdAcknowledged, ObservedAtTicks);
 
+internal sealed record QuicConnectionTlsStateUpdatedEvent(
+    long ObservedAtTicks,
+    QuicTlsStateUpdate Update)
+    : QuicConnectionEvent(QuicConnectionEventKind.TlsStateUpdated, ObservedAtTicks);
+
 internal abstract record QuicConnectionEffect(QuicConnectionEffectKind Kind);
 
 internal sealed record QuicConnectionSendDatagramEffect(
@@ -156,7 +162,7 @@ internal sealed record QuicConnectionDiscardConnectionStateEffect(
     QuicConnectionTerminalState? TerminalState = null)
     : QuicConnectionEffect(QuicConnectionEffectKind.DiscardConnectionState);
 
-internal sealed record QuicConnectionEmitDiagnosticEffect(string Message)
+internal sealed record QuicConnectionEmitDiagnosticEffect(QuicDiagnosticEvent Diagnostic)
     : QuicConnectionEffect(QuicConnectionEffectKind.EmitDiagnostic);
 
 internal readonly record struct QuicConnectionTransitionResult(

@@ -19,6 +19,7 @@ repos:
       - id: check-added-large-files
         args: ["--maxkb=5120"]
       - id: detect-private-key
+        exclude: "^tests/Incursa\\.Quic\\.Tests/RequirementHomes/INT/InteropHarnessTestSupport\\.cs$"
       - id: mixed-line-ending
         args: ["--fix=lf"]
         files: "(?i)\\.(cs|csproj|sln|slnx|props|targets|md|markdown|mdx|ya?ml|json|ps1|sh|cmd|bat|config|editorconfig|txt)$"

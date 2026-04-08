@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0006",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Transport Bridge, Diagnostics, and Sender/Recovery Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests and inspection evidence for the new library seam classes.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0006",
+    "WI-QUIC-CRT-0006"
+  ],
+  "expected_result": "The TLS bridge state can represent transport-parameter, key-lifecycle, handshake-confirmation, and fatal-alert facts; the diagnostics sink is cheap when disabled; and the sender/recovery owner retains packet-sent state and PTO ownership in the library.",
+  "verifies": [
+    "REQ-QUIC-CRT-0103",
+    "REQ-QUIC-CRT-0104",
+    "REQ-QUIC-CRT-0105"
+  ],
+  "procedure": [
+    "Run the new CRT requirement-home tests covering the TLS bridge state, diagnostics sink, and sender/recovery runtime owner.",
+    "Inspect the seam implementation files to confirm they remain library-owned and do not embed interop-runner-specific behavior.",
+    "Confirm the solution build and test pass include the new seam files."
+  ],
+  "scope": "This slice verifies the library-owned transport/runtime seams that future hosts and the interop harness will reuse. It does not prove end-to-end QUIC transport behavior.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0105.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicDiagnostics.cs",
+    "src/Incursa.Quic/QuicSenderRecoveryRuntime.cs"
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The tests project can access internal library seams through the existing friend assembly relationship."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0105.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicDiagnostics.cs\n- src/Incursa.Quic/QuicSenderRecoveryRuntime.cs"
+    }
+  ]
+}

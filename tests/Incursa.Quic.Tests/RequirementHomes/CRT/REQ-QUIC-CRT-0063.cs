@@ -40,7 +40,7 @@ public sealed class REQ_QUIC_CRT_0063
         Assert.True(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.PathValidation).HasValue);
         Assert.Contains(result.Effects, effect =>
             effect is QuicConnectionEmitDiagnosticEffect diagnostic
-            && diagnostic.Message.Contains(QuicConnectionPathClassification.ProbableNatRebinding.ToString(), StringComparison.Ordinal));
+            && diagnostic.Diagnostic.Message.Contains(QuicConnectionPathClassification.ProbableNatRebinding.ToString(), StringComparison.Ordinal));
         Assert.Contains(result.Effects, effect =>
             effect is QuicConnectionSendDatagramEffect send
             && send.PathIdentity == candidatePathIdentity

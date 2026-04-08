@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/TestResults/
+.git/
+.vs/
+artifacts/
+coverage/
+*.user
+*.suo
+*.log

@@ -888,6 +888,30 @@
       "notes": [
         "A practical baseline is three times the larger of the current PTO and the new path PTO."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0103",
+      "title": "Expose a transport-facing TLS bridge state",
+      "statement": "The library MUST expose a transport-facing TLS bridge state or contract that can represent local transport parameters, authenticated peer transport parameters, Initial keys available, Handshake keys available, 1-RTT keys available, handshake confirmation, key-update installation, old-key discard, and fatal TLS alerts without depending on a concrete TLS implementation.",
+      "notes": [
+        "The bridge may remain internal if needed, but it must live in the main library because it is part of transport ownership, not runner plumbing."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0104",
+      "title": "Expose a diagnostics sink abstraction",
+      "statement": "The library MUST expose a diagnostics sink abstraction that can be a no-op when disabled and is not hardwired to any single log encoding or qlog serialization format.",
+      "notes": [
+        "The runtime may emit structured diagnostic facts and let a host map them to its own sink."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0105",
+      "title": "Centralize sender and recovery ownership",
+      "statement": "The library MUST provide a sender and recovery runtime owner that centralizes packet-sent state, PTO ownership, and retransmission planning around the existing sender and recovery helpers instead of pushing that responsibility into a host adapter.",
+      "notes": [
+        "The owner may remain internal if needed, but it must live in the library because it is part of the transport runtime."
+      ]
     }
   ]
 }

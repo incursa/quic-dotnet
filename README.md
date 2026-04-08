@@ -14,6 +14,7 @@ The repo-local JSON validator fetches the upstream SpecTrace model schema from [
 - [`benchmarks/`](benchmarks/README.md): permanent microbenchmark suites and performance evidence
 - [`fuzz/`](fuzz/README.md): SharpFuzz harnesses for wire-facing parser slices
 - [`Incursa.Quic`](src/Incursa.Quic/README.md): the packable helper-layer library project and NuGet package root
+- [`Incursa.Quic.InteropHarness`](src/Incursa.Quic.InteropHarness/README.md): the companion interop runner endpoint project and Docker image entrypoint
 - [`Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md): the test project with requirement-tagged positive, negative, property, fuzz, smoke, and blocking checks
 - [`docs/`](docs/README.md): repository documentation
 - [`docs/requirements-workflow.md`](docs/requirements-workflow.md): local order of operations for requirements, testing, fuzzing, and benchmarking
@@ -55,6 +56,7 @@ pwsh -File cleanup.ps1
 - [`benchmarks`](benchmarks/README.md)
 - [`fuzz`](fuzz/README.md)
 - [`src/Incursa.Quic`](src/Incursa.Quic/README.md)
+- [`src/Incursa.Quic.InteropHarness`](src/Incursa.Quic.InteropHarness/README.md)
 - [`tests/Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md)
 - [`docs`](docs/README.md)
 - [`schemas`](schemas/README.md)

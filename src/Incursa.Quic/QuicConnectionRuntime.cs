@@ -15,11 +15,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private const int DefaultCloseFrameOverheadBytes = 32;
 
     private readonly IMonotonicClock clock;
+    private readonly QuicConnectionSendRuntime sendRuntime;
     private readonly QuicConnectionStreamRegistry streamRegistry;
     private readonly Channel<QuicConnectionEvent> inbox;
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
     private readonly long timeOriginTicks;
+    private readonly QuicTlsTransportState tlsState = new();
 
     private int consumerStarted;
     private int disposed;
@@ -48,6 +50,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
+        sendRuntime = new QuicConnectionSendRuntime();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
@@ -156,6 +159,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     internal IMonotonicClock Clock => clock;
 
+    internal QuicConnectionSendRuntime SendRuntime => sendRuntime;
+
+    internal QuicTlsTransportState TlsState => tlsState;
+
     /// <summary>
     /// Posts a network-originated event to the connection inbox.
     /// </summary>
@@ -221,6 +228,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 => HandleHandshakeConfirmed(handshakeConfirmedEvent, nowTicks, ref effects),
             QuicConnectionTransportParametersCommittedEvent transportParametersCommittedEvent
                 => ApplyTransportParameters(transportParametersCommittedEvent, nowTicks, ref effects),
+            QuicConnectionTlsStateUpdatedEvent tlsStateUpdatedEvent
+                => HandleTlsStateUpdated(tlsStateUpdatedEvent, nowTicks, ref effects),
             QuicConnectionPacketReceivedEvent packetReceivedEvent
                 => HandlePacketReceived(packetReceivedEvent, nowTicks, ref effects),
             QuicConnectionPathValidationSucceededEvent pathValidationSucceededEvent
@@ -348,6 +357,42 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return stateChanged;
+    }
+
+    private bool HandleTlsStateUpdated(
+        QuicConnectionTlsStateUpdatedEvent tlsStateUpdatedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!tlsState.TryApply(tlsStateUpdatedEvent.Update))
+        {
+            return false;
+        }
+
+        if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.PeerTransportParametersAuthenticated)
+        {
+            transportFlags |= QuicConnectionTransportState.PeerTransportParametersCommitted;
+        }
+
+        if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.HandshakeConfirmed)
+        {
+            return HandleHandshakeConfirmed(
+                new QuicConnectionHandshakeConfirmedEvent(tlsStateUpdatedEvent.ObservedAtTicks),
+                nowTicks,
+                ref effects);
+        }
+
+        if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.FatalAlert
+            && tlsStateUpdatedEvent.Update.AlertDescription.HasValue)
+        {
+            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+                "connection.runtime.tls",
+                "fatal-alert",
+                $"TLS reported fatal alert {tlsStateUpdatedEvent.Update.AlertDescription.Value}.",
+                QuicDiagnosticSeverity.Error)));
+        }
+
+        return true;
     }
 
     private bool ApplyTransportParameters(
@@ -537,8 +582,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (!HasValidatedPath)
         {
-            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(
-                $"No validated paths remain after path validation failed for {pathValidationFailedEvent.PathIdentity.RemoteAddress}."));
+            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+                "connection.runtime.path",
+                "validated-paths-exhausted",
+                $"No validated paths remain after path validation failed for {pathValidationFailedEvent.PathIdentity.RemoteAddress}.",
+                QuicDiagnosticSeverity.Warning)));
         }
 
         UpdatePeerAddressValidationFlag();
@@ -605,8 +653,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (stateChanged && !HasValidatedPath)
         {
-            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(
-                "No validated paths remain after a path-validation timer expired."));
+            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+                "connection.runtime.path",
+                "path-validation-timer-exhausted",
+                "No validated paths remain after a path-validation timer expired.",
+                QuicDiagnosticSeverity.Warning)));
         }
 
         UpdatePeerAddressValidationFlag();
@@ -885,8 +936,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ref List<QuicConnectionEffect>? effects)
     {
         QuicConnectionPathClassification classification = ClassifyPathChange(pathIdentity);
-        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(
-            $"Packet from {pathIdentity.RemoteAddress} classified as {classification}."));
+        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+            "connection.runtime.path",
+            "address-change-classified",
+            $"Packet from {pathIdentity.RemoteAddress} classified as {classification}.",
+            QuicDiagnosticSeverity.Info)));
 
         if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
         {
@@ -900,8 +954,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (MaximumCandidatePaths == 0 || candidatePaths.Count >= MaximumCandidatePaths)
         {
-            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(
-                $"Packet from {pathIdentity.RemoteAddress} classified as {QuicConnectionPathClassification.NoiseOrAttack} because the candidate-path budget is exhausted."));
+            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+                "connection.runtime.path",
+                "candidate-path-budget-exhausted",
+                $"Packet from {pathIdentity.RemoteAddress} classified as {QuicConnectionPathClassification.NoiseOrAttack} because the candidate-path budget is exhausted.",
+                QuicDiagnosticSeverity.Warning)));
             return false;
         }
 

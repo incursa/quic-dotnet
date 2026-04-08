@@ -5,6 +5,7 @@ Each canonical artifact is authored in `.json`.
 
 ## Current Artifacts
 
+- [`WI-QUIC-INT-0001.json`](WI-QUIC-INT-0001.json): canonical interop harness foundation work item
 - [`WI-QUIC-RFC8999-0001.json`](WI-QUIC-RFC8999-0001.json): canonical RFC 8999 work-item source
 - [`WI-QUIC-RFC9000-0001.json`](WI-QUIC-RFC9000-0001.json): canonical RFC 9000 work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
@@ -13,6 +14,8 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0003.json`](WI-QUIC-CRT-0003.json): canonical CRT endpoint-ingress work item
 - [`WI-QUIC-CRT-0004.json`](WI-QUIC-CRT-0004.json): canonical CRT lifecycle and idle-timeout work item
 - [`WI-QUIC-CRT-0005.json`](WI-QUIC-CRT-0005.json): canonical CRT path-state and migration work item
+- [`WI-QUIC-CRT-0006.json`](WI-QUIC-CRT-0006.json): canonical CRT TLS-bridge, diagnostics, and sender/recovery work item
+- [`WI-QUIC-INT-0001.json`](WI-QUIC-INT-0001.json): canonical interop-harness adapter work item
 
 ## Notes
 

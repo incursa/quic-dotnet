@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0006",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC Transport Bridge, Diagnostics, and Sender/Recovery Ownership Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the main-library seams that keep TLS-facing transport facts, diagnostics emission, and sender/recovery ownership inside Incursa.Quic instead of the interop harness.",
+  "design_summary": "The library adds three adjacent seam types. A TLS bridge state captures transport-visible facts such as local and peer transport parameters, key availability, handshake confirmation, key updates, and fatal alerts. A diagnostics sink abstraction keeps emitters format-agnostic and cheap or no-op when disabled. A sender/recovery runtime owner wraps the existing sender-flow controller and recovery controller so packet-sent state, PTO ownership, and retransmission planning stay in the transport layer where future hosts can reuse them.",
+  "satisfies": [
+    "REQ-QUIC-CRT-0103",
+    "REQ-QUIC-CRT-0104",
+    "REQ-QUIC-CRT-0105"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0006",
+    "VER-QUIC-CRT-0006"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicDiagnostics.cs",
+    "src/Incursa.Quic/QuicSenderRecoveryRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs"
+  ],
+  "risks": [
+    "The new seam classes must stay architectural helpers rather than becoming a second TLS or recovery implementation.",
+    "Diagnostics plumbing should remain opt-in so the library still works cleanly in non-interop hosts."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice stays in the main library because it owns transport/runtime facts that any future host could reuse. The interop harness only consumes the seam later."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicDiagnostics.cs`](../../../src/Incursa.Quic/QuicDiagnostics.cs)\n- [`src/Incursa.Quic/QuicSenderRecoveryRuntime.cs`](../../../src/Incursa.Quic/QuicSenderRecoveryRuntime.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0105.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0105.cs)"
+    }
+  ]
+}

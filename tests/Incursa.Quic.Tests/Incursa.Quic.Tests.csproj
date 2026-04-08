@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Incursa.Quic\Incursa.Quic.csproj" />
+    <ProjectReference Include="..\..\src\Incursa.Quic.InteropHarness\Incursa.Quic.InteropHarness.csproj" />
   </ItemGroup>
 
   <ItemGroup>

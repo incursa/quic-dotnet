@@ -1,0 +1,152 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-INT",
+  "artifact_type": "specification",
+  "title": "QUIC Interop Harness Adapter Contract",
+  "domain": "quic",
+  "capability": "interop-harness",
+  "status": "draft",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0001",
+    "WI-QUIC-INT-0001",
+    "VER-QUIC-INT-0001"
+  ],
+  "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
+  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, unsupported testcase exit behavior, placeholder diagnostics hooks, Docker packaging, and CI participation.",
+  "context": "Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness only exists to satisfy the process, environment, filesystem, and exit-code contract expected by the QUIC interop runner.",
+  "open_questions": [
+    "Which application protocol and ALPN should the eventual file-transfer endpoint use once Incursa.Quic can drive real end-to-end interop behavior?",
+    "When a real TLS provider is selected, what is the practical path for optional SSLKEYLOGFILE support without leaking provider-specific details into the harness?"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Current Support Posture",
+      "content": "No end-to-end interop testcases are currently supported. The harness must return exit code `127` for `handshake`, `transfer`, `retry`, and every other unsupported testcase until Incursa.Quic can execute them for real."
+    },
+    {
+      "heading": "Boundary Split",
+      "content": "Library-owned concerns include connection runtime, sender and recovery ownership, TLS-facing transport state, packet protection lifecycle, handshake confirmation, retransmission planning, timer ownership, path-state ownership, and transport-visible diagnostics hooks. Harness-owned concerns include environment parsing, mounted path mapping, role dispatch, process exit codes, Docker packaging, and startup scripts."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-INT-0001",
+      "title": "Keep the interop endpoint in a companion project",
+      "statement": "The interop endpoint MUST be implemented as a companion project that references `Incursa.Quic` rather than by turning the main library project into an application.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0001"
+        ],
+        "related": [
+          "SPEC-QUIC-CRT"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.InteropHarness/Incursa.Quic.InteropHarness.csproj",
+          "Incursa.Quic.slnx"
+        ]
+      },
+      "notes": [
+        "The harness exists to host the library in the process shape expected by the interop runner.",
+        "Reusable transport behavior remains in the library."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0002",
+      "title": "Own runner-facing process plumbing in the harness",
+      "statement": "The interop harness MUST own parsing of `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE`, mapping of `/www`, `/downloads`, and `/certs`, role dispatch, and runner-facing process exit-code behavior.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0001"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs",
+          "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+          "src/Incursa.Quic.InteropHarness/Program.cs"
+        ]
+      },
+      "notes": [
+        "These concerns exist because of the interop runner contract and would not belong in the library."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0003",
+      "title": "Return unsupported testcases honestly",
+      "statement": "The interop harness MUST return exit code `127` for any unsupported or not-yet-implemented interop testcase, including `handshake`, `transfer`, and `retry` until `Incursa.Quic` can execute those cases end to end for real.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0001"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0002.cs"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-INT-0004",
+      "title": "Keep qlog and keylog hooks honest",
+      "statement": "When `QLOGDIR` is provided, the harness MUST wire that setting into a diagnostics placeholder hook without hardwiring the library to qlog JSON, and when `SSLKEYLOGFILE` is not yet practical it MUST remain a clear TODO rather than fake behavior.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0001"
+        ],
+        "related": [
+          "REQ-QUIC-CRT-0104"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+          "src/Incursa.Quic.InteropHarness/README.md",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0003.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0004.cs"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-INT-0005",
+      "title": "Reject invalid runner configuration with failure status",
+      "statement": "The interop harness MUST reject invalid `ROLE`, missing `TESTCASE`, or other runner-configuration failures that prevent dispatch with exit code `1` instead of reporting unsupported success.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0001"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs",
+          "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0005.cs"
+        ]
+      }
+    }
+  ]
+}

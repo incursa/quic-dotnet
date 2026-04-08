@@ -1,0 +1,66 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0001",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC Interop Harness Boundary and Hosting Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the repository adds a companion interop harness without moving transport ownership out of Incursa.Quic and while keeping the runner contract isolated from reusable protocol code.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-INT-0001",
+    "VER-QUIC-INT-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0001",
+    "REQ-QUIC-INT-0002",
+    "REQ-QUIC-INT-0003",
+    "REQ-QUIC-INT-0004",
+    "REQ-QUIC-INT-0005"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs",
+    "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+    "src/Incursa.Quic.InteropHarness/InteropTlsMaterials.cs",
+    "src/Incursa.Quic.InteropHarness/Program.cs",
+    "src/Incursa.Quic.InteropHarness/Dockerfile",
+    "src/Incursa.Quic.InteropHarness/run_endpoint.sh",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicDiagnostics.cs",
+    "src/Incursa.Quic/QuicSenderRecoveryRuntime.cs"
+  ],
+  "design_summary": "The design keeps one hard boundary: Incursa.Quic owns reusable protocol/runtime seams, while the interop harness owns only the process shape required by the interop runner.\n\nInside the harness, configuration parsing, mounted-path conventions, TLS material loading, and role or testcase dispatch remain pure adapter code. The harness maps runner environment variables into a thin host process and returns `127` for unsupported testcases instead of fabricating protocol support.\n\nInside the library, transport-facing TLS state, structured diagnostics sinks, and sender or recovery ownership remain reusable library seams. The harness may depend on those seams later, but it does not replace them or duplicate protocol behavior.",
+  "alternatives_considered": [
+    "Put transport-facing TLS state, retransmission planning, or diagnostics ownership in the harness. Rejected because those concerns still belong to the library for future applications, benchmarks, or custom hosts.",
+    "Make the library project itself the interop endpoint application. Rejected because the runner process contract, Docker entrypoint, mounted-directory semantics, and exit codes are adapter concerns.",
+    "Report success for unsupported testcases. Rejected because the harness must remain honest until the library can execute the testcase end to end."
+  ],
+  "edge_cases_and_constraints": [
+    "The harness must return `127` for unsupported or not-yet-implemented testcases instead of claiming speculative support.",
+    "QLOGDIR is allowed to prepare a diagnostics placeholder hook, but the library must remain format-agnostic.",
+    "SSLKEYLOGFILE may remain a TODO if the TLS provider hook is not practical yet.",
+    "This slice does not claim end-to-end support for `handshake`, `transfer`, or `retry`."
+  ],
+  "data_and_state_considerations": "The harness keeps only immutable process configuration derived from environment variables plus the loaded TLS material paths. Library-owned TLS, diagnostics, and sender/recovery state remain in Incursa.Quic and are not redefined in the harness.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice establishes a thin companion interop host and keeps runner-specific behavior out of the main library. It does not claim that Incursa.Quic can already complete interop scenarios."
+    },
+    {
+      "heading": "Boundary Split",
+      "content": "Library-owned files stay under [`src/Incursa.Quic`](../../../src/Incursa.Quic), including connection runtime, sender/runtime, TLS-state, and diagnostics abstractions.\nHarness-owned files stay under [`src/Incursa.Quic.InteropHarness`](../../../src/Incursa.Quic.InteropHarness), including environment parsing, startup dispatch, Docker packaging, and runner-facing documentation."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`InteropHarnessEnvironment.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs)\n- [`InteropHarnessRunner.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs)\n- [`InteropTlsMaterials.cs`](../../../src/Incursa.Quic.InteropHarness/InteropTlsMaterials.cs)\n- [`Program.cs`](../../../src/Incursa.Quic.InteropHarness/Program.cs)\n- [`Dockerfile`](../../../src/Incursa.Quic.InteropHarness/Dockerfile)\n- [`run_endpoint.sh`](../../../src/Incursa.Quic.InteropHarness/run_endpoint.sh)\n- [`REQ-QUIC-INT-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0003.cs)\n- [`REQ-QUIC-INT-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0004.cs)\n- [`REQ-QUIC-INT-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0005.cs)\n- [`REQ-QUIC-INT-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0006.cs)\n- [`REQ-QUIC-INT-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs)\n- [`REQ-QUIC-INT-0009.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0009.cs)"
+    }
+  ],
+  "risks": [
+    "A future endpoint implementation must not let harness convenience code become the owner of protocol behavior.",
+    "The current placeholder diagnostics hook is intentionally narrow and will need extension once real qlog emission exists.",
+    "A later host implementation must replace the current `127` paths with real library-driven behavior instead of harness-local protocol logic."
+  ]
+}

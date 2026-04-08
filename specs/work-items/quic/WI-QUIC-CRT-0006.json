@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0006",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC Transport Bridge, Diagnostics, and Sender/Recovery Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the internal main-library seams for TLS-facing transport facts, diagnostics emission, and sender/recovery ownership.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0006"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0006"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0103",
+    "REQ-QUIC-CRT-0104",
+    "REQ-QUIC-CRT-0105"
+  ],
+  "planned_changes": "- Add an internal TLS bridge state that can represent transport parameters, key availability, handshake confirmation, key updates, old-key discard, and fatal alerts.\n- Add an internal diagnostics sink abstraction with a no-op default.\n- Add an internal sender/recovery runtime owner that wraps the existing sender-flow and recovery helpers.\n- Add focused requirement-home tests for the new seam classes.",
+  "verification_plan": "Run the new CRT requirement-home tests and the solution build/test pass that includes the new seam classes.",
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "out_of_scope": [
+    "Any actual TLS stack integration, qlog format implementation, or full retransmission algorithm expansion."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicDiagnostics.cs`](../../../src/Incursa.Quic/QuicDiagnostics.cs)\n- [`src/Incursa.Quic/QuicSenderRecoveryRuntime.cs`](../../../src/Incursa.Quic/QuicSenderRecoveryRuntime.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0105.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0105.cs)"
+    }
+  ]
+}

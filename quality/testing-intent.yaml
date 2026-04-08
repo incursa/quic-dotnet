@@ -5,6 +5,7 @@ scope:
   solutionPath: Incursa.Quic.slnx
   includes:
     - src/Incursa.Quic
+    - src/Incursa.Quic.InteropHarness
     - tests/Incursa.Quic.Tests
 
 expectations:
@@ -28,6 +29,8 @@ scenarios:
   requiredTests:
     - tests/Incursa.Quic.Tests/ScaffoldTests.cs::LibraryAssemblyCanBeLoaded
     - tests/Incursa.Quic.Tests/ScaffoldTests.cs::PublicApiBaselineFilesExist
+    - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0006.cs::HarnessParsesRoleTestCaseRequestListAndFixedMountPaths
+    - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs::UnsupportedInteropTestCasesReturn127WithoutPretendingTlsSupport
 
 intentionalGaps:
   - subject: benchmarks
@@ -44,6 +47,9 @@ related:
     - benchmarks/README.md
     - fuzz/README.md
     - src/Incursa.Quic/README.md
+    - src/Incursa.Quic.InteropHarness/README.md
+    - src/Incursa.Quic.InteropHarness/Dockerfile
+    - src/Incursa.Quic.InteropHarness/run_endpoint.sh
     - tests/Incursa.Quic.Tests/README.md
     - specs/requirements/quic/README.md
     - specs/architecture/quic/README.md
@@ -51,16 +57,22 @@ related:
     - specs/architecture/quic/ARC-QUIC-RFC9000-0001.json
     - specs/architecture/quic/ARC-QUIC-RFC9001-0001.json
     - specs/architecture/quic/ARC-QUIC-RFC9002-0001.json
+    - specs/architecture/quic/ARC-QUIC-CRT-0006.json
+    - specs/architecture/quic/ARC-QUIC-INT-0001.json
     - specs/work-items/quic/README.md
     - specs/verification/quic/README.md
     - specs/requirements/quic/SPEC-QUIC-RFC8999.json
     - specs/requirements/quic/SPEC-QUIC-RFC9000.json
     - specs/requirements/quic/SPEC-QUIC-RFC9001.json
     - specs/requirements/quic/SPEC-QUIC-RFC9002.json
+    - specs/requirements/quic/SPEC-QUIC-CRT.json
+    - specs/requirements/quic/SPEC-QUIC-INT.json
     - specs/verification/quic/VER-QUIC-RFC8999-0001.json
     - specs/verification/quic/VER-QUIC-RFC9000-0001.json
     - specs/verification/quic/VER-QUIC-RFC9001-0001.json
     - specs/verification/quic/VER-QUIC-RFC9002-0001.json
+    - specs/verification/quic/VER-QUIC-CRT-0006.json
+    - specs/verification/quic/VER-QUIC-INT-0001.json
     - specs/requirements/quic/REQUIREMENT-GAPS.md
     - specs/templates/spec-template.json
     - specs/templates/verification-template.json
@@ -69,9 +81,16 @@ related:
     - specs/work-items/quic/WI-QUIC-RFC9000-0001.json
     - specs/work-items/quic/WI-QUIC-RFC9001-0001.json
     - specs/work-items/quic/WI-QUIC-RFC9002-0001.json
+    - specs/work-items/quic/WI-QUIC-CRT-0006.json
+    - specs/work-items/quic/WI-QUIC-INT-0001.json
   codeRefs:
     - src/Incursa.Quic/QuicPacketParser.cs
     - src/Incursa.Quic/QuicFrameCodec.cs
     - src/Incursa.Quic/QuicStreamParser.cs
     - src/Incursa.Quic/QuicTransportParametersCodec.cs
     - src/Incursa.Quic/QuicVariableLengthInteger.cs
+    - src/Incursa.Quic/QuicTlsTransport.cs
+    - src/Incursa.Quic/QuicDiagnostics.cs
+    - src/Incursa.Quic/QuicConnectionSendRuntime.cs
+    - src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs
+    - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
