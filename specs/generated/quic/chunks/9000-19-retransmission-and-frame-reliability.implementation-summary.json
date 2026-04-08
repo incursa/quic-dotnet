@@ -8,30 +8,32 @@
   "completion_status": "partial_with_explicit_blockers",
   "reconciliation_artifact_present": false,
   "files_changed": [
-    "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "src/Incursa.Quic/QuicPathValidation.cs",
-    "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
-    "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
-    "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
-    "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/generated/quic/chunks/9000-19-retransmission-and-frame-reliability.implementation-summary.md",
+    "specs/generated/quic/chunks/9000-19-retransmission-and-frame-reliability.implementation-summary.json",
+    "specs/generated/quic/chunks/9000-19-retransmission-and-frame-reliability.closeout.md",
+    "specs/generated/quic/chunks/9000-19-retransmission-and-frame-reliability.closeout.json"
   ],
   "tests_run": [
     {
-      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicAckGenerationStateTests|FullyQualifiedName~QuicFrameCodecTests|FullyQualifiedName~QuicFrameCodecFuzzTests|FullyQualifiedName~QuicPathValidationTests\"",
-      "result": "23 passed, 0 failed, 0 skipped"
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0027\"",
+      "result": "6 passed, 0 failed, 0 skipped"
     },
     {
       "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
-      "result": "249 passed, 0 failed, 0 skipped"
+      "result": "1344 passed, 0 failed, 0 skipped"
     }
   ],
   "requirements_in_scope": {
     "S13P3": 39,
     "total": 39,
     "covered": 2,
-    "blocked": 37,
+    "blocked": 12,
     "deferred": 0,
-    "partial": 0,
+    "partial": 25,
     "needs_review": 0
   },
   "requirements": [
@@ -41,8 +43,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No packet-assembly or send-scheduler surface exists to guarantee packet composition, coalescing, or pacing.",
-      "notes": "Blocked on a packet composer and send scheduler."
+      "remaining_gap": "No sender/recovery layer exists to guarantee packet composition, coalescing, pacing, or retransmission policy.",
+      "notes": "The repository has frame codecs and helper state, but it does not yet have the sender/recovery architecture needed to prove packet-level retransmission behavior."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0002",
@@ -50,8 +52,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No packet-assembly or send-scheduler surface exists to guarantee packet composition, coalescing, or pacing.",
-      "notes": "Blocked on a packet composer and send scheduler."
+      "remaining_gap": "No sender/recovery layer exists to guarantee packet composition, coalescing, pacing, or retransmission policy.",
+      "notes": "The repository has frame codecs and helper state, but it does not yet have the sender/recovery architecture needed to prove packet-level retransmission behavior."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0003",
@@ -59,8 +61,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No packet-assembly or send-scheduler surface exists to guarantee packet composition, coalescing, or pacing.",
-      "notes": "Blocked on a packet composer and send scheduler."
+      "remaining_gap": "No sender/recovery layer exists to guarantee packet composition, coalescing, pacing, or retransmission policy.",
+      "notes": "The repository has frame codecs and helper state, but it does not yet have the sender/recovery architecture needed to prove packet-level retransmission behavior."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0004",
@@ -68,8 +70,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No packet-assembly or send-scheduler surface exists to guarantee packet composition, coalescing, or pacing.",
-      "notes": "Blocked on a packet composer and send scheduler."
+      "remaining_gap": "No sender/recovery layer exists to guarantee packet composition, coalescing, pacing, or retransmission policy.",
+      "notes": "The repository has frame codecs and helper state, but it does not yet have the sender/recovery architecture needed to prove packet-level retransmission behavior."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0005",
@@ -77,93 +79,131 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No packet-assembly or send-scheduler surface exists to guarantee packet composition, coalescing, or pacing.",
-      "notes": "Blocked on a packet composer and send scheduler."
+      "remaining_gap": "No sender/recovery layer exists to guarantee packet composition, coalescing, pacing, or retransmission policy.",
+      "notes": "The repository has frame codecs and helper state, but it does not yet have the sender/recovery architecture needed to prove packet-level retransmission behavior."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0006",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicCryptoBuffer.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0005.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No send-side retransmission queue or packet-loss recovery model exists for CRYPTO and STREAM data.",
-      "notes": "Blocked on sent-packet history and recovery callbacks."
+      "remaining_gap": "No sender/recovery controller or packet-number-space discard policy exists.",
+      "notes": "CRYPTO buffering/discard helpers exist in src/Incursa.Quic/QuicCryptoBuffer.cs, with coverage in helper-state and frame-codec tests; the sender/recovery controller that would complete retransmission handling is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0007",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicCryptoBuffer.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0005.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No send-side retransmission queue or packet-loss recovery model exists for CRYPTO and STREAM data.",
-      "notes": "Blocked on sent-packet history and recovery callbacks."
+      "remaining_gap": "No sender/recovery controller or packet-number-space discard policy exists.",
+      "notes": "CRYPTO buffering/discard helpers exist in src/Incursa.Quic/QuicCryptoBuffer.cs, with coverage in helper-state and frame-codec tests; the sender/recovery controller that would complete retransmission handling is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0008",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0005.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0018.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0019.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0020.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No send-side retransmission queue or packet-loss recovery model exists for CRYPTO and STREAM data.",
-      "notes": "Blocked on sent-packet history and recovery callbacks."
+      "remaining_gap": "No resend suppression or stream-lifecycle policy exists.",
+      "notes": "STREAM parsing/formatting and RESET_STREAM framing are already expressed in the helper layer, but the repository still lacks the sender-side resend suppression and stream-lifecycle policy that would make the behavior complete."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0009",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0005.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0018.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0019.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0020.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No send-side retransmission queue or packet-loss recovery model exists for CRYPTO and STREAM data.",
-      "notes": "Blocked on sent-packet history and recovery callbacks."
+      "remaining_gap": "No resend suppression or stream-lifecycle policy exists.",
+      "notes": "STREAM parsing/formatting and RESET_STREAM framing are already expressed in the helper layer, but the repository still lacks the sender-side resend suppression and stream-lifecycle policy that would make the behavior complete."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0010",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs"
       ],
       "tests_covering_requirement": [
-        "TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay",
-        "TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed",
-        "TryParseAckFrame_RoundTripsRangesAndEcnCounts",
-        "Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+        "TryBuildAckFrame_UsesTheLargestAcknowledgedPacketForAckDelay",
+        "TryBuildAckFrame_RejectsAnEmptyAckSet",
+        "Fuzz_TryBuildAckFrame_UsesTheLargestAcknowledgedPacketAcrossRandomOrders"
       ],
       "remaining_gap": null,
-      "notes": "ACK freshness and ACK-delay semantics were already present in the helper; the chunk work made the trace explicit with S13P3 tags."
+      "notes": "ACK freshness and ACK-delay semantics are proven by the helper-backed ACK-generation tests and the frame codec round-trip path."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0011",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No stream send-state or connection-close send path exists.",
-      "notes": "Blocked on stream lifecycle and connection-close emission logic."
+      "remaining_gap": "No retransmission-until-acknowledged loop exists.",
+      "notes": "RESET_STREAM and STOP_SENDING codecs are present and tested, but there is no retransmission loop that keeps sending until the peer acknowledges the frame."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0012",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No stream send-state or connection-close send path exists.",
-      "notes": "Blocked on stream lifecycle and connection-close emission logic."
+      "remaining_gap": "No retransmission-until-acknowledged loop exists.",
+      "notes": "RESET_STREAM and STOP_SENDING codecs are present and tested, but there is no retransmission loop that keeps sending until the peer acknowledges the frame."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0013",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No stream send-state or connection-close send path exists.",
-      "notes": "Blocked on stream lifecycle and connection-close emission logic."
+      "remaining_gap": "No retransmission-until-acknowledged loop exists.",
+      "notes": "RESET_STREAM and STOP_SENDING codecs are present and tested, but there is no retransmission loop that keeps sending until the peer acknowledges the frame."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0014",
@@ -171,177 +211,257 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No stream send-state or connection-close send path exists.",
-      "notes": "Blocked on stream lifecycle and connection-close emission logic."
+      "remaining_gap": "No CONNECTION_CLOSE frame/type/sender surface exists anywhere under src or tests.",
+      "notes": "CONNECTION_CLOSE is still absent as a concrete send-side surface."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0015",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No sender-side flow-control tracker exists to drive MAX_DATA, MAX_STREAM_DATA, or MAX_STREAMS retransmission.",
-      "notes": "Blocked on connection and stream flow-control state."
+      "remaining_gap": "No sender-side update-on-loss logic exists.",
+      "notes": "MAX_DATA frame support exists in the helper layer, but sender-side loss handling and retransmission policy are still absent."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0016",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicMaxDataFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No sender-side flow-control tracker exists to drive MAX_DATA, MAX_STREAM_DATA, or MAX_STREAMS retransmission.",
-      "notes": "Blocked on connection and stream flow-control state."
+      "remaining_gap": "No sender-side update-on-loss logic exists.",
+      "notes": "MAX_DATA frame support exists in the helper layer, but sender-side loss handling and retransmission policy are still absent."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0017",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No sender-side flow-control tracker exists to drive MAX_DATA, MAX_STREAM_DATA, or MAX_STREAMS retransmission.",
-      "notes": "Blocked on connection and stream flow-control state."
+      "remaining_gap": "No stream-lifecycle state suppresses further sends.",
+      "notes": "MAX_STREAM_DATA frame support is already expressible, but the repository still lacks the stream-lifecycle state machine that would suppress further sends after loss or completion."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0018",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No sender-side flow-control tracker exists to drive MAX_DATA, MAX_STREAM_DATA, or MAX_STREAMS retransmission.",
-      "notes": "Blocked on connection and stream flow-control state."
+      "remaining_gap": "No stream-lifecycle state suppresses further sends.",
+      "notes": "MAX_STREAM_DATA frame support is already expressible, but the repository still lacks the stream-lifecycle state machine that would suppress further sends after loss or completion."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0019",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No sender-side flow-control tracker exists to drive MAX_DATA, MAX_STREAM_DATA, or MAX_STREAMS retransmission.",
-      "notes": "Blocked on connection and stream flow-control state."
+      "remaining_gap": "No stream-lifecycle state suppresses further sends.",
+      "notes": "MAX_STREAM_DATA frame support is already expressible, but the repository still lacks the stream-lifecycle state machine that would suppress further sends after loss or completion."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0020",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No blocked-frame tracker or resend policy exists for MAX_STREAMS and blocked-signal frames.",
-      "notes": "Blocked on a sender-side blocked-state manager."
+      "remaining_gap": "No resend/update scheduler exists.",
+      "notes": "MAX_STREAMS frame support exists in the helper layer, but there is no resend/update scheduler to keep the peer limit current after loss or reordering."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0021",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No blocked-frame tracker or resend policy exists for MAX_STREAMS and blocked-signal frames.",
-      "notes": "Blocked on a sender-side blocked-state manager."
+      "remaining_gap": "No resend/update scheduler exists.",
+      "notes": "MAX_STREAMS frame support exists in the helper layer, but there is no resend/update scheduler to keep the peer limit current after loss or reordering."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0022",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+        "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+        "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No blocked-frame tracker or resend policy exists for MAX_STREAMS and blocked-signal frames.",
-      "notes": "Blocked on a sender-side blocked-state manager."
+      "remaining_gap": "No sender-side blocked-frame emission policy exists.",
+      "notes": "DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAMS_BLOCKED codecs are present, but the sender-side policy that decides when to emit them is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0023",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+        "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+        "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No blocked-frame tracker or resend policy exists for MAX_STREAMS and blocked-signal frames.",
-      "notes": "Blocked on a sender-side blocked-state manager."
+      "remaining_gap": "No sender-side blocked-frame emission policy exists.",
+      "notes": "DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAMS_BLOCKED codecs are present, but the sender-side policy that decides when to emit them is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0024",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+        "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+        "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No blocked-frame tracker or resend policy exists for MAX_STREAMS and blocked-signal frames.",
-      "notes": "Blocked on a sender-side blocked-state manager."
+      "remaining_gap": "No sender-side blocked-frame emission policy exists.",
+      "notes": "DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAMS_BLOCKED codecs are present, but the sender-side policy that decides when to emit them is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0025",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+        "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+        "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No blocked-frame tracker or resend policy exists for MAX_STREAMS and blocked-signal frames.",
-      "notes": "Blocked on a sender-side blocked-state manager."
+      "remaining_gap": "No sender-side blocked-frame emission policy exists.",
+      "notes": "DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAMS_BLOCKED codecs are present, but the sender-side policy that decides when to emit them is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0026",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicPathValidation.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No path-validation scheduler or responder state exists to drive periodic PATH_CHALLENGE retries or one-shot PATH_RESPONSE emission.",
-      "notes": "Blocked on path-validation lifecycle management."
+      "remaining_gap": "No periodic resend loop or liveness scheduler exists.",
+      "notes": "PATH_CHALLENGE generation and validation helpers exist, but there is no lifecycle state that schedules periodic retries or turns them into a liveness loop."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0027",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPathValidation.cs",
-        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs"
       ],
       "tests_covering_requirement": [
-        "TryGeneratePathChallengeData_WritesEightBytesThatRoundTripThroughTheFrameCodec"
-      ],
-      "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+        "TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec",
+        "TryGeneratePathChallengeData_RejectsShortDestinations",
+        "Fuzz_TryGeneratePathChallengeData_ProducesDistinctPayloadsAcrossRepeatedCalls"
       ],
       "remaining_gap": null,
-      "notes": "PATH_CHALLENGE payload generation now includes a monotonic nonce so successive calls differ while retaining entropy in the remaining bytes."
+      "notes": "PATH_CHALLENGE payload generation now emits distinct 8-byte values across repeated calls while still round-tripping through the frame codec."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0028",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicPathResponseFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No path-validation scheduler or responder state exists to drive periodic PATH_CHALLENGE retries or one-shot PATH_RESPONSE emission.",
-      "notes": "Blocked on path-validation lifecycle management."
+      "remaining_gap": "No one-shot send policy exists.",
+      "notes": "PATH_RESPONSE handling is covered in the helper layer, but there is no one-shot send policy that coordinates when it should be emitted."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0029",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+        "src/Incursa.Quic/QuicRetireConnectionIdFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No connection-ID lifecycle sender state exists.",
-      "notes": "Blocked on NEW_CONNECTION_ID and RETIRE_CONNECTION_ID send tracking."
+      "remaining_gap": "No connection-ID manager or retransmission policy exists.",
+      "notes": "NEW_CONNECTION_ID and RETIRE_CONNECTION_ID framing is present, but there is still no connection-ID lifecycle manager or retransmission policy."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0030",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+        "src/Incursa.Quic/QuicRetireConnectionIdFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No connection-ID lifecycle sender state exists.",
-      "notes": "Blocked on NEW_CONNECTION_ID and RETIRE_CONNECTION_ID send tracking."
+      "remaining_gap": "No connection-ID manager or retransmission policy exists.",
+      "notes": "NEW_CONNECTION_ID and RETIRE_CONNECTION_ID framing is present, but there is still no connection-ID lifecycle manager or retransmission policy."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0031",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicNewTokenFrame.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No NEW_TOKEN duplicate-tracking state or send-path repair engine exists.",
-      "notes": "Blocked on sender-side token tracking; PING and PADDING remain intentionally no-repair frames."
+      "remaining_gap": "No duplicate/reorder detection logic exists.",
+      "notes": "NEW_TOKEN framing is supported, but there is no duplicate/reorder detection or resend policy behind it."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0032",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No NEW_TOKEN duplicate-tracking state or send-path repair engine exists.",
-      "notes": "Blocked on sender-side token tracking; PING and PADDING remain intentionally no-repair frames."
+      "remaining_gap": "No repair-policy layer for lost PING/PADDING packets exists.",
+      "notes": "PING and PADDING frame encoding is already expressible, but the repository does not have a repair-policy layer for lost packets that contain them."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0033",
@@ -349,8 +469,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No HANDSHAKE_DONE surface or retransmission-priority scheduler exists.",
-      "notes": "Blocked on missing frame support and send scheduling."
+      "remaining_gap": "No HANDSHAKE_DONE surface or retransmission-prioritization scheduler exists.",
+      "notes": "HANDSHAKE_DONE and the scheduling surface needed to prioritize it remain unimplemented."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0034",
@@ -358,17 +478,20 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No HANDSHAKE_DONE surface or retransmission-priority scheduler exists.",
-      "notes": "Blocked on missing frame support and send scheduling."
+      "remaining_gap": "No HANDSHAKE_DONE surface or retransmission-prioritization scheduler exists.",
+      "notes": "HANDSHAKE_DONE and the scheduling surface needed to prioritize it remain unimplemented."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0035",
-      "completion_status": "blocked",
+      "completion_status": "partial",
       "files_changed": [],
-      "tests_covering_requirement": [],
+      "tests_covering_requirement": [
+        "src/Incursa.Quic/QuicFrameCodec.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No stale-frame acceptance model or sent-packet history / reordering / loss tracking exists.",
-      "notes": "Blocked on receiver state and recovery history."
+      "remaining_gap": "No stateful receiver comparison/update logic exists.",
+      "notes": "MAX_DATA parsing and formatting are covered, but the repository still lacks stateful receiver comparison and update logic."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0036",
@@ -376,8 +499,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No stale-frame acceptance model or sent-packet history / reordering / loss tracking exists.",
-      "notes": "Blocked on receiver state and recovery history."
+      "remaining_gap": "No loss-detection, acknowledged-data suppression, PTO/memory-limit discard, or congestion-control policy layer exists.",
+      "notes": "These clauses depend on loss recovery and congestion-control orchestration that is not present in the current repository."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0037",
@@ -385,8 +508,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No stale-frame acceptance model or sent-packet history / reordering / loss tracking exists.",
-      "notes": "Blocked on receiver state and recovery history."
+      "remaining_gap": "No loss-detection, acknowledged-data suppression, PTO/memory-limit discard, or congestion-control policy layer exists.",
+      "notes": "These clauses depend on loss recovery and congestion-control orchestration that is not present in the current repository."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0038",
@@ -394,8 +517,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No stale-frame acceptance model or sent-packet history / reordering / loss tracking exists.",
-      "notes": "Blocked on receiver state and recovery history."
+      "remaining_gap": "No loss-detection, acknowledged-data suppression, PTO/memory-limit discard, or congestion-control policy layer exists.",
+      "notes": "These clauses depend on loss recovery and congestion-control orchestration that is not present in the current repository."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P3-0039",
@@ -403,16 +526,11 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "No congestion-control hook exists to react to detected loss.",
-      "notes": "Blocked on a congestion controller."
+      "remaining_gap": "No loss-detection, acknowledged-data suppression, PTO/memory-limit discard, or congestion-control policy layer exists.",
+      "notes": "These clauses depend on loss recovery and congestion-control orchestration that is not present in the current repository."
     }
   ],
   "remaining_open_requirements": [
-    "REQ-QUIC-RFC9000-S13P3-0001",
-    "REQ-QUIC-RFC9000-S13P3-0002",
-    "REQ-QUIC-RFC9000-S13P3-0003",
-    "REQ-QUIC-RFC9000-S13P3-0004",
-    "REQ-QUIC-RFC9000-S13P3-0005",
     "REQ-QUIC-RFC9000-S13P3-0006",
     "REQ-QUIC-RFC9000-S13P3-0007",
     "REQ-QUIC-RFC9000-S13P3-0008",
@@ -420,7 +538,6 @@
     "REQ-QUIC-RFC9000-S13P3-0011",
     "REQ-QUIC-RFC9000-S13P3-0012",
     "REQ-QUIC-RFC9000-S13P3-0013",
-    "REQ-QUIC-RFC9000-S13P3-0014",
     "REQ-QUIC-RFC9000-S13P3-0015",
     "REQ-QUIC-RFC9000-S13P3-0016",
     "REQ-QUIC-RFC9000-S13P3-0017",
@@ -438,17 +555,23 @@
     "REQ-QUIC-RFC9000-S13P3-0030",
     "REQ-QUIC-RFC9000-S13P3-0031",
     "REQ-QUIC-RFC9000-S13P3-0032",
+    "REQ-QUIC-RFC9000-S13P3-0035",
+    "REQ-QUIC-RFC9000-S13P3-0001",
+    "REQ-QUIC-RFC9000-S13P3-0002",
+    "REQ-QUIC-RFC9000-S13P3-0003",
+    "REQ-QUIC-RFC9000-S13P3-0004",
+    "REQ-QUIC-RFC9000-S13P3-0005",
+    "REQ-QUIC-RFC9000-S13P3-0014",
     "REQ-QUIC-RFC9000-S13P3-0033",
     "REQ-QUIC-RFC9000-S13P3-0034",
-    "REQ-QUIC-RFC9000-S13P3-0035",
     "REQ-QUIC-RFC9000-S13P3-0036",
     "REQ-QUIC-RFC9000-S13P3-0037",
     "REQ-QUIC-RFC9000-S13P3-0038",
     "REQ-QUIC-RFC9000-S13P3-0039"
   ],
   "notes": [
-    "No reconciliation artifact existed for this chunk, so the work was treated as greenfield.",
-    "The implemented subset is limited to ACK freshness and PATH_CHALLENGE payload uniqueness; the remaining S13P3 requirements stay blocked until a sender/recovery architecture exists.",
-    "The gap ledger was updated to record the architectural split explicitly."
+    "The helper-backed subset is now closed for REQ-QUIC-RFC9000-S13P3-0010 and REQ-QUIC-RFC9000-S13P3-0027.",
+    "Twenty-five requirements remain helper-backed but partial because the repository still lacks the sender/recovery orchestration and other completion surfaces.",
+    "Twelve requirements remain blocked on missing sender/recovery architecture, handshake-close signaling, or congestion-control/loss-recovery policy."
   ]
 }
