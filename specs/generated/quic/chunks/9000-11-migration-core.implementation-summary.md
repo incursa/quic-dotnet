@@ -5,20 +5,18 @@
 
 ## Files Changed
 - `specs/requirements/quic/REQUIREMENT-GAPS.md`
-- `tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs`
-- `tests/Incursa.Quic.Tests/QuicPathValidationTests.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs`
 - `specs/generated/quic/chunks/9000-11-migration-core.implementation-summary.md`
 - `specs/generated/quic/chunks/9000-11-migration-core.implementation-summary.json`
 
 ## Tests Added or Updated
-- Updated `QuicAntiAmplificationBudgetTests` to carry `REQ-QUIC-RFC9000-S9P3P1-0001` on the capped-send and post-validation send-budget cases.
-- Updated `QuicPathValidationTests` to carry `REQ-QUIC-RFC9000-S9P3P1-0001` on the path-validation padding cases that consult the anti-amplification budget.
+- Updated `REQ-QUIC-RFC9000-S9P3P1-0001.cs` to prove the capped pre-validation send budget, the unlimited post-validation send budget, the rejection of sends beyond the pre-validation budget, and the negative-length guardrail on the helper input.
 
 ## Tests Run and Results
-- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~QuicAntiAmplificationBudgetTests|FullyQualifiedName~QuicPathValidationTests"`
-- Result: `10 passed, 0 failed, 0 skipped`
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P3P1_0001"`
+- Result: `4 passed, 0 failed, 0 skipped`
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj`
-- Result: `298 passed, 0 failed, 0 skipped`
+- Result: `1362 passed, 0 failed, 0 skipped`
 
 ## Remaining Open Requirements In Scope
 - `39` requirements remain open.

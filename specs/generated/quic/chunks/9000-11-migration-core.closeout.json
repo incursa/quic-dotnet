@@ -126,11 +126,10 @@
       "src/Incursa.Quic"
     ],
     "test_files_with_requirement_traits": [
-      "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
-      "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs"
     ],
     "stale_or_wrong_refs_found": [],
-    "notes": "The audited tests carry the exact in-scope requirement ID on the intended cases. No source-side requirement refs were present in the scoped code, which is consistent with the repository convention for this slice."
+    "notes": "The audited requirement-home file carries the exact in-scope requirement ID on the intended cases. No source-side requirement refs were present in the scoped code, which is consistent with the repository convention for this slice."
   },
   "requirements": [
     {
@@ -210,17 +209,16 @@
         "REQ-QUIC-RFC9000-S9P3P1-0001"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs:CanSend_TracksTheThreeTimesAmplificationCapUntilValidation",
-        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs:CanSend_AllowsUnlimitedSendingAfterAddressValidation",
-        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs:TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
-        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs:TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs:CanSend_TracksTheThreeTimesAmplificationCapBeforeValidation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs:CanSend_AllowsUnlimitedSendingAfterAddressValidation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs:TryConsumeSendBudget_RejectsPayloadsThatExceedThePreValidationBudget",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs:TryRegisterReceivedDatagramPayloadBytes_RejectsNegativePayloadLengths"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
-        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs"
       ],
       "remaining_gap": null,
-      "notes": "The existing anti-amplification helper already enforced the send cap until validation; this pass added explicit migration-core trace refs and exercised both budget- and padding-facing entry points."
+      "notes": "The existing anti-amplification helper already enforced the send cap until validation; this pass moved the proof into the requirement-home test and added both pre-validation rejection and negative-length guardrails."
     },
     {
       "section_token": "S9P3P2",
@@ -254,12 +252,12 @@
   ],
   "tests_reviewed": [
     {
-      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicAntiAmplificationBudgetTests|FullyQualifiedName~QuicPathValidationTests\"",
-      "result": "10 passed, 0 failed, 0 skipped"
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S9P3P1_0001\"",
+      "result": "4 passed, 0 failed, 0 skipped"
     },
     {
       "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
-      "result": "298 passed, 0 failed, 0 skipped"
+      "result": "1362 passed, 0 failed, 0 skipped"
     }
   ],
   "notes": [
