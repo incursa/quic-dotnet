@@ -2,7 +2,7 @@
 status: passing
 kind: benchmarks
 suite: header-parsing
-observed_at: 2026-03-31T09:47:04.1214646Z
+observed_at: 2026-04-08T05:11:47.2181237Z
 ---
 
 # Header Parsing Benchmarks

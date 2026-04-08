@@ -23,6 +23,7 @@ This note captures the working order for RFC-derived QUIC work in `Incursa.Quic`
 - Fuzz or property tests should target untrusted input paths, length handling, state machines, and any parser that accepts attacker-controlled bytes.
 - Benchmarks should cover parsing, serialization, encoding, decoding, and other allocation-sensitive or throughput-sensitive code paths.
 - Regression tests should be added for every bug found during implementation or fuzzing.
+- Requirement-backed proofs should live in `tests/Incursa.Quic.Tests/RequirementHomes/<RFC>/REQ-....cs` files. Keep those files narrow and requirement-specific, and retire broad root test classes after the proof has been split into the right requirement homes.
 
 ## Canonical Paths
 

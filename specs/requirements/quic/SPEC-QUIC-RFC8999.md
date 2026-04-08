@@ -32,6 +32,19 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0001.cs::TryClassifyHeaderForm_RecognizesLongHeadersByTheHighBit
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0001.cs::TryClassifyHeaderForm_RecognizesShortHeadersByTheHighBit
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0001.cs::TryClassifyHeaderForm_RejectsEmptyInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_RejectsTheReservedVersionNumberInTheAdvertisedList
 
 ## REQ-QUIC-RFC8999-S5P1-0002 Version-Specific Bits
 The other seven bits in the first byte of a QUIC long header packet MUST be version-specific.
@@ -51,6 +64,10 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0002.cs::TryParseLongHeader_PreservesTheSevenVersionSpecificBits
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0002.cs::TryParseLongHeader_RejectsShortHeadersEvenWhenTheOtherSevenBitsMatch
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0002.cs::TryParseLongHeader_PreservesAnAllZeroVersionSpecificBitField
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC8999-S5P1-0003 Version Field
 The four bytes after the first byte in a QUIC long header packet MUST contain a 32-bit Version field.
@@ -70,6 +87,18 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0003.cs::TryParseLongHeader_ParsesTheEncodedVersionField
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0003.cs::TryParseLongHeader_RejectsPacketsMissingTheVersionField
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0003.cs::TryParseLongHeader_PreservesTheMaximumVersionValue
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_RejectsTheReservedVersionNumberInTheAdvertisedList
 
 ## REQ-QUIC-RFC8999-S5P1-0004 Destination Connection ID Length Encoding
 The byte after the Version field MUST encode the Destination Connection ID length as an 8-bit unsigned integer.
@@ -90,6 +119,18 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0004.cs::TryParseLongHeader_ParsesTheDestinationConnectionIdLengthByte
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0004.cs::TryParseLongHeader_RejectsPacketsMissingTheDestinationConnectionIdLengthByte
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0004.cs::TryParseLongHeader_AllowsZeroLengthDestinationConnectionId
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_RejectsTheReservedVersionNumberInTheAdvertisedList
 
 ## REQ-QUIC-RFC8999-S5P1-0005 Destination Connection ID Size
 The Destination Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.
@@ -129,6 +170,19 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0006.cs::TryParseLongHeader_ParsesTheSourceConnectionIdLengthByte
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0006.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0006.cs::TryParseLongHeader_AllowsZeroLengthSourceConnectionId
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseLongHeader_RejectsTruncatedInputs
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_RejectsTheReservedVersionNumberInTheAdvertisedList
 
 ## REQ-QUIC-RFC8999-S5P1-0007 Source Connection ID Size
 The Source Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.
@@ -165,3 +219,15 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc8999.html#section-5.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0008.cs::TryParseVersionNegotiation_PreservesTheVersionSpecificRemainder
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_RejectsTheReservedVersionNumberInTheAdvertisedList
