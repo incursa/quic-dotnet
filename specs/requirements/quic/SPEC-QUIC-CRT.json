@@ -1,0 +1,893 @@
+{
+  "artifact_id": "SPEC-QUIC-CRT",
+  "artifact_type": "specification",
+  "title": "QUIC Connection Runtime and High-Density Execution Model",
+  "domain": "quic",
+  "capability": "connection-runtime",
+  "status": "draft",
+  "owner": "incursa-quic-maintainers",
+  "tags": [
+    "quic",
+    "rfc9000",
+    "connection-runtime",
+    "state-machine",
+    "high-density",
+    "channels",
+    "timers"
+  ],
+  "purpose": "Define the architecture and implementation requirements for the connection-owned QUIC runtime that arbitrates packet receive events, timer expirations, path changes, stateless reset handling, close and drain transitions, and live stream orchestration.",
+  "scope": "This specification covers endpoint ingress classification, routing tables, connection ownership, execution profiles, event and effect modeling, timer scheduling, lifecycle phases, migration and path state, stateless reset handling, stream ownership, performance posture for high connection density, and reducer-oriented testability.",
+  "context": "The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, and connection stream bookkeeping. The missing seam is the connection-owned runtime that decides ordering across network, timer, and local API events. This specification turns that seam into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, and live-stream blockers can be implemented against one clear architecture.",
+  "supplemental_sections": [
+    {
+      "heading": "Decision Summary",
+      "content": "The endpoint boundary uses a fixed ingress pipeline for datagram parsing, classification, and routing. The connection boundary uses a single-owner reducer that serializes network, timer, and local API events.\n\nThis specification intentionally chooses \"pipeline outside, reducer inside\". It does not define a user-extensible middleware surface inside the connection runtime.\n"
+    },
+    {
+      "heading": "Execution Profiles",
+      "content": "The specification defines one normative semantics and two execution profiles:\n\n1. Sharded high-density profile: many live connections are owned by a bounded number of shard loops. Each shard has one inbox and one timer scheduler.\n2. Dedicated-owner profile: one logical run loop owns one connection. This is optional and primarily useful for diagnostics, focused testing, or lower-density execution.\n\nBoth profiles preserve the same single-owner connection semantics, event ordering rules, and state transition behavior.\n"
+    },
+    {
+      "heading": "Recommended C# Data Structures",
+      "content": "Recommended baseline data structures:\n\n```text\nEndpoint scope\n- ConcurrentDictionary<ConnectionId, ConnectionHandle> routeByDestinationConnectionId\n- ConcurrentDictionary<StatelessResetKey, ConnectionHandle> statelessResetRegistry\n- Channel<ShardEvent> shardInbox with SingleReader = true and SingleWriter = false\n- PriorityQueue<TimerEntry, TimerPriority> shardTimerHeap or endpointTimerHeap\n\nConnection-owner scope\n- plain mutable fields for phase, deadlines, transport flags, close reason, and timer generations\n- Dictionary<PathKey, PathState> candidatePaths\n- Dictionary<long, StreamRuntime> streams\n- ActivePathState activePath\n- bounded cache of recently validated paths and optional saved recovery snapshots\n- absolute monotonic due ticks taken from IMonotonicClock.Ticks\n```\n\n`TimerPriority` should be a composite value such as `(dueTicks, sequence)` so same-deadline events remain deterministic even though `PriorityQueue<TElement, TPriority>` does not promise FIFO ordering for equal priorities.\n"
+    },
+    {
+      "heading": "Connection State Inventory",
+      "content": "The connection-owned state inventory should include at least:\n\n- connection phase\n- handshake-confirmed flag\n- peer transport flags such as disable-active-migration\n- active path record\n- candidate path records\n- last validated remote address\n- bounded recently validated path cache\n- stream registry\n- idle deadline\n- close or drain deadline\n- timer generations\n- close reason and close origin\n- pending endpoint-binding updates represented as effects rather than direct shared mutation\n"
+    },
+    {
+      "heading": "Event Taxonomy",
+      "content": "Minimum event families:\n\n- packet received\n- timer expired\n- handshake confirmed\n- local close requested\n- connection close frame received\n- stateless reset matched\n- path validation succeeded\n- path validation failed or abandoned\n- stream API action\n- transport parameter committed\n- connection ID issued, retired, or acknowledged\n"
+    },
+    {
+      "heading": "Effect Taxonomy",
+      "content": "Minimum effect families:\n\n- send datagram or packet\n- arm timer\n- cancel timer\n- promote active path\n- update endpoint route bindings\n- register or retire stateless reset token\n- notify streams of terminal connection state\n- discard connection state\n- emit diagnostics or metrics event\n"
+    },
+    {
+      "heading": "Repository Anchors",
+      "content": "This specification is designed to compose, not replace, the helper-backed building blocks already present in the repository, including:\n\n- QuicIdleTimeoutState\n- QuicConnectionLifecycleState\n- QuicStatelessReset\n- QuicAntiAmplificationBudget\n- QuicPathValidation\n- QuicConnectionStreamState\n\nThe new runtime becomes the orchestration layer that owns ordering and lifecycle across those helpers.\n"
+    },
+    {
+      "heading": "Backlog This Specification Unlocks",
+      "content": "This specification is intended to unlock the architecture blockers called out for:\n\n- 9000-11-migration-core\n- 9000-13-idle-and-close\n- 9000-14-stateless-reset\n- the live-stream remainder of 9000-02-stream-state\n"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0001",
+      "title": "Use one orchestration owner per connection",
+      "statement": "Each live connection MUST have one orchestration owner that is solely responsible for mutating connection-owned state.",
+      "trace": {
+        "upstream_refs": [
+          "connection-runtime-state-machine.md",
+          "RFC 9000 Section 9",
+          "RFC 9000 Section 10"
+        ]
+      },
+      "notes": [
+        "The owner can be a dedicated connection loop or a shard loop that owns many connections.",
+        "Internal helper objects are allowed, but they do not become independent concurrent owners."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0002",
+      "title": "Keep the endpoint pipeline fixed-order",
+      "statement": "The endpoint ingress pipeline MUST execute datagram parsing, classification, routing, stateless-reset eligibility screening, and connection event dispatch in a fixed order.",
+      "trace": {
+        "upstream_refs": [
+          "connection-runtime-state-machine.md"
+        ]
+      },
+      "notes": [
+        "This is a protocol pipeline, not a general-purpose middleware surface.",
+        "The fixed order preserves deterministic ownership and makes traceability easier."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0003",
+      "title": "Keep the connection pipeline protocol-specific",
+      "statement": "The connection runtime MUST use a fixed protocol-specific processing order rather than application-extensible middleware.",
+      "notes": [
+        "A typical internal stage order is lifecycle gate, path classification, frame or API application, lifecycle effect derivation, and timer recomputation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0004",
+      "title": "Centralize orchestration even when subcomponents exist",
+      "statement": "The implementation MUST expose one connection-runtime orchestration surface even when lifecycle, path, timer, and stream logic are decomposed into internal sub-state records or helper classes."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0005",
+      "title": "Use effect-returning transitions",
+      "statement": "Connection transitions MUST return explicit effects instead of performing socket I/O, shared-registry mutation, or timer registration inline.",
+      "notes": [
+        "Effect-returning transitions are the primary test seam for the runtime."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0006",
+      "title": "Support a sharded high-density profile",
+      "statement": "The production-capable runtime MUST support a sharded execution profile in which many connections share a bounded number of execution owners.",
+      "notes": [
+        "This is the recommended production profile for high connection density.",
+        "The purpose is to avoid one background task and one timer object per live connection."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0007",
+      "title": "Allow a dedicated-owner profile",
+      "statement": "The implementation MAY provide a dedicated-owner execution profile with one logical run loop per connection for diagnostics, focused testing, or lower-density deployments.",
+      "notes": [
+        "The dedicated profile does not change protocol semantics."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0008",
+      "title": "Preserve one semantics across execution profiles",
+      "statement": "All execution profiles MUST preserve the same single-owner ordering semantics, state transitions, and externally visible protocol behavior."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0009",
+      "title": "Separate stable connection handles from external route keys",
+      "statement": "The endpoint runtime MUST distinguish mutable external route keys from an internal stable connection handle that remains constant for the lifetime of the connection.",
+      "notes": [
+        "Connection IDs can be issued, retired, and replaced during the life of a connection.",
+        "A stable connection handle prevents route-table churn from becoming state migration inside the runtime."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0010",
+      "title": "Restrict concurrency to endpoint boundaries",
+      "statement": "Concurrent access MUST be confined to endpoint-shared registries and queues rather than to connection-owned path, lifecycle, timer, or stream state."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0011",
+      "title": "Reuse helper-backed logic where it already exists",
+      "statement": "The runtime SHOULD compose the repository's existing helper-backed idle-timeout, lifecycle, stateless-reset, anti-amplification, path-validation, and connection-stream bookkeeping components rather than reimplement equivalent isolated logic in parallel.",
+      "trace": {
+        "upstream_refs": [
+          "connection-runtime-state-machine.md",
+          "QuicIdleTimeoutState.cs",
+          "QuicConnectionLifecycleState.cs",
+          "QuicStatelessReset.cs",
+          "QuicAntiAmplificationBudget.cs",
+          "QuicPathValidation.cs",
+          "QuicConnectionStreamState.cs"
+        ]
+      },
+      "notes": [
+        "Composition is preferred because the missing seam is orchestration, not helper math."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0012",
+      "title": "Classify every datagram before mutation",
+      "statement": "The endpoint MUST classify each inbound datagram before any connection-owned state is mutated."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0013",
+      "title": "Route live traffic by destination connection ID",
+      "statement": "The endpoint MUST route live connection traffic by destination connection ID together with any secondary bindings required for connection-ID retirement and reissuance.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 5.1",
+          "RFC 9000 Section 9.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0014",
+      "title": "Use concurrent registries at endpoint scope",
+      "statement": "Endpoint-shared route and token registries MUST use `ConcurrentDictionary` or an equivalently safe concurrent hash-map implementation.",
+      "notes": [
+        "This requirement applies at endpoint scope only.",
+        "It does not authorize concurrent collections inside the connection-owned hot path."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0015",
+      "title": "Own stateless-reset token memory at endpoint scope",
+      "statement": "The endpoint MUST maintain a stateless-reset registry that tracks currently matchable reset tokens separately from connection-owned mutable state.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.3.1"
+        ]
+      },
+      "notes": [
+        "The connection runtime produces registration and retirement effects.",
+        "The endpoint registry executes those effects."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0016",
+      "title": "Retire endpoint bindings through explicit effects",
+      "statement": "Connection-ID issuance, retirement, and stateless-reset token lifecycle changes MUST be applied to endpoint-shared registries through explicit effects.",
+      "notes": [
+        "The reducer should not mutate endpoint shared maps directly."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0017",
+      "title": "Use single-consumer multi-producer inboxes",
+      "statement": "Ingress queues MUST use `Channel<T>` instances configured for one consumer and multiple producers.",
+      "notes": [
+        "In .NET terms this maps to `SingleReader = true` and `SingleWriter = false`.",
+        "Use `AllowSynchronousContinuations = false` unless a narrower choice is explicitly proven safe."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0018",
+      "title": "Serialize all connection-affecting inputs through queues",
+      "statement": "Network input, timer input, and local API input MUST all become queued events before they affect connection-owned state."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0019",
+      "title": "Prevent direct mutation from API callers",
+      "statement": "Application-facing APIs MUST enqueue connection or stream actions rather than mutating connection-owned state directly."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0020",
+      "title": "Keep shard ownership stable for a connection",
+      "statement": "The high-density profile MUST assign each stable connection handle to one shard for its entire lifetime.",
+      "notes": [
+        "Route-table changes and connection-ID changes should update the handle-to-route mapping, not the owner."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0021",
+      "title": "Use explicit connection phases",
+      "statement": "The runtime MUST model the connection lifecycle with explicit phases that include at least Establishing, Active, Closing, Draining, and Discarded.",
+      "trace": {
+        "upstream_refs": [
+          "connection-runtime-state-machine.md",
+          "RFC 9000 Section 10.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0022",
+      "title": "Track handshake and transport flags in state",
+      "statement": "Connection-owned state MUST include handshake-confirmed status and transport flags that influence migration and closing behavior.",
+      "notes": [
+        "Examples include disable-active-migration and whether peer parameters required for idle-timeout calculation have been committed."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0023",
+      "title": "Derive sending legality from phase",
+      "statement": "The phase model MUST be the source of truth for whether ordinary sending, close-only sending, or no sending is legal.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.2",
+          "RFC 9000 Section 10.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0024",
+      "title": "Keep phase progression monotonic",
+      "statement": "Connection phase progression MUST move forward only and never return from Closing, Draining, or Discarded to an earlier operational phase."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0025",
+      "title": "Enter Closing on local immediate close",
+      "statement": "A local immediate-close request MUST transition the connection into Closing exactly once.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0026",
+      "title": "Enter Draining on received connection close",
+      "statement": "Receipt of a valid `CONNECTION_CLOSE` frame MUST transition the connection into Draining.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0027",
+      "title": "Enter Draining on accepted stateless reset",
+      "statement": "Acceptance of a valid stateless reset MUST transition the connection into Draining.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0028",
+      "title": "Minimize retained data in Closing",
+      "statement": "The Closing phase MUST retain only the state needed to attribute packets to the connection, retransmit close-related packets, and manage the close deadline.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.2.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0029",
+      "title": "Minimize retained data in Draining",
+      "statement": "The Draining phase MUST retain only the state needed to discard late packets, track the drain deadline, and support minimal diagnostics.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.2.2",
+          "RFC 9000 Section 10.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0030",
+      "title": "Discard connection state after close lifetime",
+      "statement": "A connection MUST transition to Discarded when its closing or draining lifetime ends.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.2",
+          "RFC 9000 Section 10.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0031",
+      "title": "Track close reason and close origin",
+      "statement": "Connection-owned state MUST record the close reason, close origin, and phase-entry timestamp that produced the terminal lifecycle transition."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0032",
+      "title": "Store a complete connection state inventory",
+      "statement": "Connection-owned state MUST include phase, transport flags, active path, candidate paths, recently validated paths, stream registry, deadlines, timer generations, and close metadata.",
+      "notes": [
+        "This is a minimum inventory, not a maximum."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0033",
+      "title": "Model one active path plus candidate paths",
+      "statement": "The runtime MUST model path state as one active path plus zero or more candidate paths rather than as a fully generalized multipath scheduler.",
+      "notes": [
+        "This is the least risky shape for the current blocker set.",
+        "A future multipath expansion can grow from this model if needed."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0034",
+      "title": "Bound per-connection path and cache growth",
+      "statement": "The connection runtime MUST bound the number of retained candidate-path records and recently-validated-path records per connection.",
+      "notes": [
+        "The bound can be configurable.",
+        "Eviction should prefer stale or superseded records."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0035",
+      "title": "Represent all external stimuli as explicit events",
+      "statement": "The runtime MUST represent packet receive, timer expiry, handshake confirmation, close signals, path-validation outcomes, connection-ID lifecycle events, and stream API actions as explicit events."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0036",
+      "title": "Represent all side effects explicitly",
+      "statement": "The runtime MUST represent send operations, timer operations, endpoint-binding updates, path promotion, token retirement, stream notifications, and state discard as explicit effects."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0037",
+      "title": "Use a reducer signature with explicit time",
+      "statement": "The transition surface MUST accept connection state, one event, and the current monotonic tick value as explicit inputs.",
+      "notes": [
+        "A reducer-style signature keeps timer-sensitive logic testable."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0038",
+      "title": "Use a fixed internal stage order",
+      "statement": "The connection owner MUST process each event in a fixed internal stage order.",
+      "notes": [
+        "A recommended order is lifecycle gate, path classification, frame or API application, lifecycle effect derivation, then timer recomputation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0039",
+      "title": "Keep the reducer free of inline I O",
+      "statement": "The reducer MUST NOT perform socket I/O, timer registration, endpoint-registry updates, or external callbacks inline."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0040",
+      "title": "Keep the reducer free of blocking waits",
+      "statement": "The reducer MUST NOT block, sleep, or await asynchronous work while holding ownership of connection state."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0041",
+      "title": "Avoid external locks in connection transitions",
+      "statement": "Connection transitions MUST NOT rely on external locks around connection-owned mutable state."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0042",
+      "title": "Use one ordering surface for all event sources",
+      "statement": "All event sources MUST share the same ordering surface for a given connection owner.",
+      "notes": [
+        "This is what makes idle-timeout, path-validation, stateless-reset, and close interactions deterministic."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0043",
+      "title": "Map internal errors to explicit lifecycle events",
+      "statement": "Protocol and runtime errors MUST be converted into explicit close, drain, or discard events rather than ad hoc control flow."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0044",
+      "title": "Prove transitions with state and effect assertions",
+      "statement": "Reducer-focused tests MUST assert both post-transition state and the full set of emitted effects for each scenario.",
+      "notes": [
+        "Tests should avoid depending on a real socket layer."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0045",
+      "title": "Use the monotonic clock for protocol time",
+      "statement": "Protocol deadlines and elapsed-time measurements MUST use `IMonotonicClock` rather than wall-clock time.",
+      "trace": {
+        "upstream_refs": [
+          "IMonotonicClock.cs",
+          "MonotonicClock.cs",
+          "TimeServiceCollectionExtensions.cs",
+          "monotonic-clock-guide.md"
+        ]
+      },
+      "notes": [
+        "The existing platform abstraction is the required protocol time source.",
+        "The scheduler should consume `IMonotonicClock.Ticks` for deadline comparison."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0046",
+      "title": "Reserve wall clock for external timestamps",
+      "statement": "Wall-clock services SHOULD be reserved for externally meaningful timestamps such as logs, audit records, or API-visible times rather than for protocol deadlines.",
+      "trace": {
+        "upstream_refs": [
+          "monotonic-clock-guide.md"
+        ]
+      },
+      "notes": [
+        "This keeps timeout behavior immune to NTP or manual clock changes."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0047",
+      "title": "Store absolute monotonic due ticks",
+      "statement": "Every protocol deadline MUST be stored as an absolute monotonic due-tick value."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0048",
+      "title": "Use a priority queue for deadlines",
+      "statement": "The deadline scheduler MUST use `PriorityQueue<TElement, TPriority>` or an equivalent min-heap keyed by absolute due ticks.",
+      "notes": [
+        "A min-heap keeps the next wake-up cheap to find."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0049",
+      "title": "Use deterministic tie-breaking for same-deadline timers",
+      "statement": "Timer priorities MUST include a monotonic tie-breaker so equal due ticks are ordered deterministically.",
+      "notes": [
+        "`PriorityQueue<TElement, TPriority>` does not guarantee FIFO behavior for equal priorities."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0050",
+      "title": "Own timer wakeups above the connection",
+      "statement": "Timer wakeups MUST be owned by the endpoint or shard scheduler rather than by one independent timer object per connection."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0051",
+      "title": "Avoid per-connection timers in the production path",
+      "statement": "The production high-density profile MUST NOT depend on one timer instance per live connection."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0052",
+      "title": "Use generation counters for rescheduled timers",
+      "statement": "Every rearmable timer MUST carry a generation counter that allows stale expirations to be recognized and ignored."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0053",
+      "title": "Ignore stale timer expirations safely",
+      "statement": "A timer expiry event with a stale generation MUST be treated as a no-op."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0054",
+      "title": "Inject timer expirations through the same queue",
+      "statement": "Timer expirations MUST re-enter the owning runtime through the same queue used for network and local API events."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0055",
+      "title": "Compute the effective idle timeout in the runtime",
+      "statement": "The runtime MUST derive the effective idle timeout from local and peer transport parameters and enforce the PTO-based floor.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.1",
+          "QuicIdleTimeoutState.cs"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0056",
+      "title": "Restart the idle timer only on allowed events",
+      "statement": "Idle timeout restart logic MUST be triggered only by events permitted by RFC 9000.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.1",
+          "QuicIdleTimeoutState.cs"
+        ]
+      },
+      "notes": [
+        "The critical events are successfully processed received packets and the first ack-eliciting send since the last receive."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0057",
+      "title": "Recompute close and drain deadlines in one place",
+      "statement": "Close and drain deadlines MUST be computed and updated by the connection runtime rather than by scattered helper callers."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0058",
+      "title": "Use fake monotonic clocks in timer tests",
+      "statement": "Timer-sensitive tests MUST use a fake monotonic clock so idle-timeout, path-validation, and close-drain scenarios remain deterministic.",
+      "trace": {
+        "upstream_refs": [
+          "monotonic-clock-guide.md"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0059",
+      "title": "Represent path identity explicitly",
+      "statement": "Each path record MUST use an explicit path identity that includes the remote endpoint address and any relevant local sending address information."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0060",
+      "title": "Track the last validated remote address",
+      "statement": "The connection MUST retain the last validated remote address as a first-class runtime field.",
+      "trace": {
+        "upstream_refs": [
+          "connection-runtime-state-machine.md",
+          "RFC 9000 Section 9.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0061",
+      "title": "Keep a bounded recently-validated path cache",
+      "statement": "The connection SHOULD retain a bounded cache of recently validated peer addresses and optional saved recovery snapshots.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 9.3"
+        ]
+      },
+      "notes": [
+        "This supports fast recovery from spurious migration or return to a known path."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0062",
+      "title": "Store complete per-path state",
+      "statement": "Each path record MUST include validation state, amplification budget state, recovery and RTT state, ECN validation state, last-activity ticks, and any outstanding challenge metadata."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0063",
+      "title": "Classify address changes explicitly",
+      "statement": "A packet that arrives from a different peer address MUST be classified explicitly as same-path traffic, probable NAT rebinding, migration candidate, preferred-address transition, or noise or attack."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0064",
+      "title": "Gate active migration on handshake confirmation",
+      "statement": "The runtime MUST NOT promote an active path migration before handshake confirmation.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 9"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0065",
+      "title": "Require validation for changed peer addresses",
+      "statement": "Any detected change in peer address MUST trigger path validation unless that address is already considered recently validated.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 9.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0066",
+      "title": "Maintain anti-amplification per unvalidated path",
+      "statement": "Every unvalidated path MUST have its own anti-amplification budget and send accounting.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 8.1",
+          "QuicAntiAmplificationBudget.cs"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0067",
+      "title": "Prevent unvalidated paths from bypassing amplification limits",
+      "statement": "The sender MUST budget-check every packet sent on an unvalidated path against that path's amplification limits."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0068",
+      "title": "Track validation challenge state explicitly",
+      "statement": "Candidate-path validation state MUST track challenge payload, send count, deadline, and terminal outcome.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 8.2",
+          "QuicPathValidation.cs"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0069",
+      "title": "Promote paths only after validation or trusted reuse",
+      "statement": "A candidate path MUST become the active path only after successful validation or a recent-validation reuse rule that the runtime treats as trusted."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0070",
+      "title": "Reset or restore path-local transport state on promotion",
+      "statement": "Promotion of a path MUST reset or restore RTT, congestion, and ECN-related state in a manner consistent with migration semantics.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 9.2",
+          "RFC 9000 Section 9.3",
+          "RFC 9000 Section 9.4"
+        ]
+      },
+      "notes": [
+        "Fresh paths normally reset transport state.",
+        "Recently validated return-path scenarios may restore saved state when policy allows."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0071",
+      "title": "Emit binding updates when the active path changes",
+      "statement": "An active-path switch MUST be reported as an explicit effect so endpoint bindings and diagnostics can be updated outside the reducer."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0072",
+      "title": "Revert explicitly when validation fails",
+      "statement": "If validation of a provisional path fails, the runtime MUST revert to the last validated path when one is available.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 9.3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0073",
+      "title": "Surface loss of all validated paths explicitly",
+      "statement": "Loss of every validated path MUST become an explicit runtime condition that policy can map to waiting, silent discard, or connection closure.",
+      "notes": [
+        "This keeps no-viable-path behavior testable instead of implicit."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0074",
+      "title": "Allow ordinary sending only in operational phases",
+      "statement": "Ordinary packet sending MUST be legal only while the connection is in Establishing or Active."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0075",
+      "title": "Restrict Closing to close-related traffic",
+      "statement": "While in Closing, the runtime MUST limit sending to close-related packets and any required attribution responses."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0076",
+      "title": "Forbid sends while Draining or Discarded",
+      "statement": "While in Draining or Discarded, the runtime MUST NOT emit packets for that connection.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.2.2",
+          "RFC 9000 Section 10.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0077",
+      "title": "Enter terminal phases at most once",
+      "statement": "Closing and Draining transitions MUST be idempotent and occur at most once."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0078",
+      "title": "Preserve end time when Draining follows Closing",
+      "statement": "If the connection enters Draining after previously entering Closing, the drain period MUST inherit the existing terminal end time.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.2.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0079",
+      "title": "Ignore later close-like events after terminalization",
+      "statement": "Later close, reset, or timer events MUST NOT reopen the connection or downgrade its terminal phase."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0080",
+      "title": "Screen datagrams for stateless-reset eligibility",
+      "statement": "The endpoint MUST perform stateless-reset eligibility screening when a datagram cannot be associated with a live connection or cannot be decrypted.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0081",
+      "title": "Match reset tokens without leaking token values",
+      "statement": "Stateless-reset token comparison MUST avoid leaking token values through observable timing or equivalent side channels.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0082",
+      "title": "Scope reset matches to remote address and live CID state",
+      "statement": "Stateless-reset matching MUST be scoped to the remote address and to tokens for connection IDs that are currently live for that route.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0083",
+      "title": "Exclude retired and unused tokens from matching",
+      "statement": "Tokens for retired or never-used connection IDs MUST NOT be considered matchable or emittable.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0084",
+      "title": "Terminate ordinary operation on accepted stateless reset",
+      "statement": "Acceptance of a valid stateless reset MUST end ordinary connection operation without first performing the ordinary close handshake.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0085",
+      "title": "Limit stateless-reset emission",
+      "statement": "Stateless-reset emission policy MUST bound send frequency and avoid reset loops or oracle behavior.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0086",
+      "title": "Retire reset tokens with connection-ID retirement",
+      "statement": "Connection-ID retirement MUST produce retirement of any associated stateless-reset tokens in endpoint memory."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0087",
+      "title": "Propagate terminal lifecycle to streams",
+      "statement": "When the connection enters Closing, Draining, or Discarded, the runtime MUST notify live streams of the terminal connection state."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0088",
+      "title": "Own the live stream registry at connection scope",
+      "statement": "The connection runtime MUST own a stream registry layered over `QuicConnectionStreamState` or an equivalent helper-backed bookkeeping surface.",
+      "trace": {
+        "upstream_refs": [
+          "connection-runtime-state-machine.md",
+          "QuicConnectionStreamState.cs"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0089",
+      "title": "Keep stream storage single-owner",
+      "statement": "The live stream registry MUST use single-owner mutable structures rather than concurrent collections."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0090",
+      "title": "Gate stream actions through connection and stream state",
+      "statement": "Inbound stream frames and outbound stream API actions MUST be accepted or rejected by consulting both the connection phase and the stream's own state."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0091",
+      "title": "Route stream lifecycle through the reducer",
+      "statement": "Stream open, write, finish, stop-sending, reset, and abort transitions MUST pass through the same reducer ownership model as connection lifecycle."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0092",
+      "title": "Coordinate abort and final-size rules centrally",
+      "statement": "Abort handling, final-size enforcement, and connection-terminal stream cleanup MUST be coordinated through the connection owner rather than split across independently scheduled components."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0093",
+      "title": "Avoid per-connection background tasks in production",
+      "statement": "The production high-density profile MUST NOT require one background task per live connection."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0094",
+      "title": "Make shard count independently configurable",
+      "statement": "The number of high-density execution shards SHOULD be configurable independently of the live-connection count.",
+      "notes": [
+        "This allows tuning for CPU count and expected traffic mix."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0095",
+      "title": "Post events without per-connection locks",
+      "statement": "Routine network, timer, and API event posting MUST avoid acquiring a per-connection lock in the hot path."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0096",
+      "title": "Keep concurrent collections out of connection-owned state",
+      "statement": "Connection-owned hot-path state MUST use plain fields and ordinary collections rather than concurrent collections."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0097",
+      "title": "Bound runtime memory growth under churn",
+      "statement": "The implementation MUST bound per-connection memory growth for candidate paths, recent-path cache entries, timer metadata, and live-stream bookkeeping.",
+      "notes": [
+        "The goal is predictable memory behavior under migration churn and stream churn."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0098",
+      "title": "Surface runtime observability",
+      "statement": "The runtime SHOULD expose metrics or structured diagnostics for shard queue depth, timer lateness, phase transitions, path promotions, validation failures, and stream-count growth."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0099",
+      "title": "Prove execution-profile equivalence",
+      "statement": "Verification of the runtime MUST demonstrate that dedicated-owner and sharded profiles produce the same externally visible connection semantics for the same event sequence."
+    },
+    {
+      "id": "REQ-QUIC-CRT-0100",
+      "title": "Cover blocker scenarios with reducer-first tests",
+      "statement": "The verification plan MUST include reducer-first scenario coverage for migration classification, idle-timeout restart rules, closing and draining entry, stateless-reset acceptance, connection-ID retirement, and stream abort coordination.",
+      "trace": {
+        "upstream_refs": [
+          "connection-runtime-state-machine.md",
+          "monotonic-clock-guide.md"
+        ]
+      },
+      "notes": [
+        "These are the blocker seams identified in the current decision brief."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0101",
+      "title": "Size close and drain lifetime against PTO",
+      "statement": "Close and drain lifetime policy SHOULD persist for at least three times the current PTO unless a stricter upstream rule is introduced.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 10.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0102",
+      "title": "Use PTO-aware path-validation timeouts",
+      "statement": "Path-validation timeout policy SHOULD use a PTO-aware value that tolerates multiple lost probes before abandonment.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 8.2.4"
+        ]
+      },
+      "notes": [
+        "A practical baseline is three times the larger of the current PTO and the new path PTO."
+      ]
+    }
+  ]
+}
