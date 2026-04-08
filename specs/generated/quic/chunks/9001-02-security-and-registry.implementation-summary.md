@@ -7,6 +7,8 @@
 - `REQ-QUIC-RFC9001-S10-0002` Mark Recommended as Yes
 - `REQ-QUIC-RFC9001-S10-0003` Include CH and EE in TLS 1.3 column
 
+This is the helper-backed ceiling for the chunk in the current repository shape. The remaining S6/S7/S8/S9 clauses stay blocked or deferred until the repo has handshake-confirmation, key-update, and TLS-authentication surfaces.
+
 ## Files Changed
 - [QuicTransportParametersCodec.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicTransportParametersCodec.cs)
 - [PublicAPI.Unshipped.txt](C:/src/incursa/quic-dotnet/src/Incursa.Quic/PublicAPI.Unshipped.txt)

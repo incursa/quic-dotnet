@@ -66,7 +66,7 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero -> REQ-QUIC-RFC9001-S6-0002"
       ],
       "remaining_gap": null,
-      "notes": "The existing short-header parser already surfaces the Key Phase bit; the updated RFC 9001 tags now make that evidence traceable."
+      "notes": "The existing short-header parser already surfaces the Key Phase bit; this requirement is part of the helper-backed ceiling for the chunk."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S6-0003",
@@ -191,7 +191,7 @@
         "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation -> REQ-QUIC-RFC9001-S8-0001"
       ],
       "remaining_gap": null,
-      "notes": "The codec layer already carries transport-parameter values; the updated RFC 9001 tags make that helper-layer proof explicit."
+      "notes": "The codec layer already carries transport-parameter values; this requirement is part of the helper-backed ceiling for the chunk."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S8-0002",
@@ -229,7 +229,7 @@
         "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata -> REQ-QUIC-RFC9001-S10-0001"
       ],
       "remaining_gap": null,
-      "notes": "The helper now exposes the registry codepoint as a public constant for traceability."
+      "notes": "The helper now exposes the registry codepoint as a public constant for traceability; this requirement is part of the helper-backed ceiling for the chunk."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S10-0002",
@@ -247,7 +247,7 @@
         "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata -> REQ-QUIC-RFC9001-S10-0002"
       ],
       "remaining_gap": null,
-      "notes": "The registry recommendation flag is now surfaced as a helper constant for traceability."
+      "notes": "The registry recommendation flag is now surfaced as a helper constant for traceability; this requirement is part of the helper-backed ceiling for the chunk."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S10-0003",
@@ -265,7 +265,7 @@
         "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata -> REQ-QUIC-RFC9001-S10-0003"
       ],
       "remaining_gap": null,
-      "notes": "The TLS 1.3 context metadata is surfaced as explicit helper constants rather than being left implicit."
+      "notes": "The TLS 1.3 context metadata is surfaced as explicit helper constants rather than being left implicit; this requirement is part of the helper-backed ceiling for the chunk."
     }
   ]
 }
