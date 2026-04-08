@@ -24,4 +24,13 @@ public sealed class REQ_QUIC_RFC9000_S10P3_0010
     {
         Assert.False(QuicStatelessReset.TryGetRecommendedDatagramLength(QuicStatelessReset.MinimumDatagramLength, out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryGetRecommendedDatagramLength_RejectsNonPositiveLengths()
+    {
+        Assert.False(QuicStatelessReset.TryGetRecommendedDatagramLength(0, out _));
+        Assert.False(QuicStatelessReset.TryGetRecommendedDatagramLength(-1, out _));
+    }
 }

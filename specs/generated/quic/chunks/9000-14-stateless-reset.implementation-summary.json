@@ -19,13 +19,17 @@
     "REQ-QUIC-RFC9000-S10P3-0022",
     "REQ-QUIC-RFC9000-S10P3-0023",
     "REQ-QUIC-RFC9000-S10P3-0024",
+    "REQ-QUIC-RFC9000-S10P3-0025",
     "REQ-QUIC-RFC9000-S10P3-0026",
     "REQ-QUIC-RFC9000-S10P3-0027",
     "REQ-QUIC-RFC9000-S10P3-0028",
     "REQ-QUIC-RFC9000-S10P3P1-0001",
     "REQ-QUIC-RFC9000-S10P3P1-0003",
     "REQ-QUIC-RFC9000-S10P3P1-0007",
+    "REQ-QUIC-RFC9000-S10P3P1-0008",
     "REQ-QUIC-RFC9000-S10P3P1-0009",
+    "REQ-QUIC-RFC9000-S10P3P1-0011",
+    "REQ-QUIC-RFC9000-S10P3P1-0012",
     "REQ-QUIC-RFC9000-S10P3P2-0001",
     "REQ-QUIC-RFC9000-S10P3P2-0002",
     "REQ-QUIC-RFC9000-S10P3P2-0004",
@@ -37,70 +41,45 @@
   ],
   "completion_status": "partial",
   "files_changed": [
-    "benchmarks/QuicStatelessResetBenchmarks.cs",
+    "specs/generated/quic/chunks/9000-14-stateless-reset.closeout.json",
+    "specs/generated/quic/chunks/9000-14-stateless-reset.closeout.md",
     "specs/generated/quic/chunks/9000-14-stateless-reset.implementation-summary.json",
     "specs/generated/quic/chunks/9000-14-stateless-reset.implementation-summary.md",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
-    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-    "src/Incursa.Quic/QuicStatelessReset.cs",
-    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
-    "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
-    "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
-    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs",
-    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs"
   ],
   "tests_covering_requirement": [
-    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId",
-    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGenerateStatelessResetToken_RejectsZeroLengthConnectionIds",
-    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryFormatStatelessResetDatagram_WritesShortHeaderLayoutWithTokenAtTheTail",
-    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible",
-    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter",
-    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetMinimumPacketLengthForResetResistance_OffsetsByTwentyTwoBytes",
-    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::CanSendStatelessReset_RejectsAmplificationAndLoopingViolations",
-    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes",
-    "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::IsPotentialStatelessReset_RejectsTooShortOrWronglyFormedDatagrams",
-    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
-    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths",
-    "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues",
-    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-    "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-    "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsEmptyInput",
-    "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs::TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs::TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs::TryGetRecommendedDatagramLength_RejectsNonPositiveLengths",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs::MinimumUnpredictableBits_ExposesTheThirtyEightBitFloor",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs::MinimumUnpredictableBits_AreSatisfiedAtTheBoundaryDatagramLength",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs::MinimumUnpredictableBits_RejectsDatagramsShorterThanTheBoundary",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs::CanSendStatelessReset_AllowsResponsesBelowTheThreeTimesAmplificationLimit",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs::CanSendStatelessReset_RejectsResponsesAtTheThreeTimesAmplificationLimit",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs::TryGetTrailingStatelessResetToken_UsesTheTrailingSixteenBytes",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs::TryGetTrailingStatelessResetToken_RejectsDatagramsShorterThanSixteenBytes",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs::TryHandlePotentialStatelessReset_EntersDrainingAndStopsSendingOnMatchingToken",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs::TryHandlePotentialStatelessReset_LeavesTheConnectionSendableWhenTheTokenDoesNotMatch",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs::TryHandlePotentialStatelessReset_TransitionsToDrainingWhenTheTokenMatches",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs::TryHandlePotentialStatelessReset_DoesNotEnterDrainingWhenTheTokenDoesNotMatch",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_DisablesSendingOnAMatchingToken",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_StaysNonSendableAfterARepeatedMatch",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_KeepsSendingEnabledWhenTheTokenDoesNotMatch"
   ],
   "direct_refs_added_or_updated": [
-    "REQ-QUIC-RFC9000-S10P3-0003",
-    "REQ-QUIC-RFC9000-S10P3-0004",
-    "REQ-QUIC-RFC9000-S10P3-0005",
-    "REQ-QUIC-RFC9000-S10P3-0006",
-    "REQ-QUIC-RFC9000-S10P3-0007",
-    "REQ-QUIC-RFC9000-S10P3-0008",
-    "REQ-QUIC-RFC9000-S10P3-0009",
     "REQ-QUIC-RFC9000-S10P3-0010",
-    "REQ-QUIC-RFC9000-S10P3-0011",
-    "REQ-QUIC-RFC9000-S10P3-0012",
-    "REQ-QUIC-RFC9000-S10P3-0013",
-    "REQ-QUIC-RFC9000-S10P3-0016",
-    "REQ-QUIC-RFC9000-S10P3-0017",
-    "REQ-QUIC-RFC9000-S10P3-0018",
-    "REQ-QUIC-RFC9000-S10P3-0021",
-    "REQ-QUIC-RFC9000-S10P3-0022",
-    "REQ-QUIC-RFC9000-S10P3-0023",
-    "REQ-QUIC-RFC9000-S10P3-0024",
-    "REQ-QUIC-RFC9000-S10P3-0026",
-    "REQ-QUIC-RFC9000-S10P3-0027",
+    "REQ-QUIC-RFC9000-S10P3-0025",
     "REQ-QUIC-RFC9000-S10P3-0028",
     "REQ-QUIC-RFC9000-S10P3P1-0001",
-    "REQ-QUIC-RFC9000-S10P3P1-0003",
-    "REQ-QUIC-RFC9000-S10P3P1-0007",
-    "REQ-QUIC-RFC9000-S10P3P1-0009",
-    "REQ-QUIC-RFC9000-S10P3P2-0001",
-    "REQ-QUIC-RFC9000-S10P3P2-0002",
-    "REQ-QUIC-RFC9000-S10P3P2-0004",
-    "REQ-QUIC-RFC9000-S10P3P2-0009",
-    "REQ-QUIC-RFC9000-S10P3P2-0010",
-    "REQ-QUIC-RFC9000-S10P3P2-0011",
-    "REQ-QUIC-RFC9000-S10P3P2-0012",
-    "REQ-QUIC-RFC9000-S10P3P3-0001"
+    "REQ-QUIC-RFC9000-S10P3P1-0008",
+    "REQ-QUIC-RFC9000-S10P3P1-0011",
+    "REQ-QUIC-RFC9000-S10P3P1-0012"
   ],
   "remaining_gap": [
     {
@@ -109,7 +88,7 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3-0014",
-      "reason": "Packet-ending token recognition is helper-covered, but endpoint draining / connection shutdown is still missing."
+      "reason": "Token-ending packet recognition has helper evidence, but endpoint shutdown and receive-path orchestration are still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3-0019",
@@ -140,20 +119,8 @@
       "reason": "Unused and retired-token filtering needs connection-scoped token bookkeeping."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0008",
-      "reason": "Entering draining and ceasing sends on a match requires connection lifecycle state."
-    },
-    {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0010",
       "reason": "Remember-and-scope behavior spans NEW_CONNECTION_ID, transport-parameter, and retirement state that is not yet modeled."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0011",
-      "reason": "Draining-on-match is blocked by the missing connection-state machine."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0012",
-      "reason": "Stopping sends on match is blocked by the missing connection-state machine."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0003",
@@ -181,8 +148,8 @@
     }
   ],
   "notes": [
-    "The helper slice closes packet-layout, token-generation, and token-matching behavior without inventing a connection-state machine.",
-    "The repository now has explicit trace refs for the existing NEW_CONNECTION_ID, transport-parameter, and invalid-too-small-packet tests that already exercised stateless-reset-adjacent behavior.",
-    "Verification passed after a transient parallel-build file lock was resolved by rerunning the test pass serially."
+    "The helper slice now explicitly closes the 38-bit visible-prefix floor, the three-times amplification ceiling, and the matched-reset drain/no-send lifecycle clauses without inventing endpoint orchestration.",
+    "This prompt also tightened packet-sizing and trailing-token negatives in the requirement-home suite.",
+    "The helper and benchmarked code paths were unchanged in this prompt, so the standard verification gate was sufficient and no benchmark dry run was required."
   ]
 }
