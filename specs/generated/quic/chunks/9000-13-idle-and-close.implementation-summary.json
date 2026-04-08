@@ -21,17 +21,20 @@
     "tests/Incursa.Quic.Tests/QuicIdleTimeoutStateTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
     "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs",
     "specs/generated/quic/chunks/9000-13-idle-and-close.implementation-summary.md",
     "specs/generated/quic/chunks/9000-13-idle-and-close.implementation-summary.json"
   ],
   "tests_run": [
     {
-      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicIdleTimeoutStateTests|FullyQualifiedName~QuicFrameCodecTests|FullyQualifiedName~QuicTransportParametersTests\"",
-      "result": "51 passed, 0 failed, 0 skipped"
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P1_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P2_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P2_0004\"",
+      "result": "7 passed, 0 failed, 0 skipped"
     },
     {
-      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
-      "result": "304 passed, 0 failed, 0 skipped"
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore",
+      "result": "1349 passed, 0 failed, 0 skipped"
     }
   ],
   "requirements": [
@@ -395,11 +398,15 @@
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0008",
       "completion_status": "blocked_by_technical_dependency",
-      "files_changed": [],
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0008.cs"
+      ],
       "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "This behavior depends on the closing-state sender and key-retention policy, neither of which exists in the current helper-only transport slice.",
-      "notes": "The repo has no closing-state packet scheduler or packet-protection key lifecycle."
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0008.cs"
+      ],
+      "remaining_gap": "This behavior still needs an endpoint runtime to initiate immediate close and discard connection state; the helper only exposes the closing-state flag and cannot emit or retire packets.",
+      "notes": "The lifecycle helper can flip the closing bit, but immediate-close orchestration remains blocked."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0009",
@@ -421,12 +428,19 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P2P2-0001",
-      "completion_status": "blocked_by_technical_dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "This behavior depends on the closing/draining connection state and packet emission policy, which are not represented yet.",
-      "notes": "The repo has no connection-level closing or draining state machine."
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs::TryEnterDrainingState_DisablesSendingPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs::TryEnterDrainingState_ReturnsFalseWhenAlreadyDraining"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The lifecycle helper now proves that the draining state suppresses packet sending without inventing any send-path runtime."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P2P2-0002",
@@ -439,12 +453,19 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P2P2-0003",
-      "completion_status": "blocked_by_technical_dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "This behavior depends on the closing/draining connection state and packet emission policy, which are not represented yet.",
-      "notes": "The repo has no connection-level closing or draining state machine."
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs::TryEnterClosingState_DisablesFurtherPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs::TryEnterClosingState_ReturnsFalseAfterDraining"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper-backed closing state now proves that further packet generation is suppressed once closing begins."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P2P2-0004",
@@ -452,8 +473,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "This behavior depends on the closing/draining connection state and packet emission policy, which are not represented yet.",
-      "notes": "The repo has no connection-level closing or draining state machine."
+      "remaining_gap": "This behavior still needs a receive pipeline that can bind an incoming CONNECTION_CLOSE frame to a draining transition.",
+      "notes": "The lifecycle helper can model the transition, but the trigger comes from missing CONNECTION_CLOSE receive handling."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P2P2-0005",
@@ -461,8 +482,8 @@
       "files_changed": [],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "This behavior depends on the closing/draining connection state and packet emission policy, which are not represented yet.",
-      "notes": "The repo has no connection-level closing or draining state machine."
+      "remaining_gap": "This behavior still needs a receive pipeline that can bind an incoming CONNECTION_CLOSE frame to a draining transition.",
+      "notes": "The repo has no CONNECTION_CLOSE receive handling yet."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P2P3-0001",
@@ -611,9 +632,7 @@
     "REQ-QUIC-RFC9000-S10P2P1-0008",
     "REQ-QUIC-RFC9000-S10P2P1-0009",
     "REQ-QUIC-RFC9000-S10P2P1-0010",
-    "REQ-QUIC-RFC9000-S10P2P2-0001",
     "REQ-QUIC-RFC9000-S10P2P2-0002",
-    "REQ-QUIC-RFC9000-S10P2P2-0003",
     "REQ-QUIC-RFC9000-S10P2P2-0004",
     "REQ-QUIC-RFC9000-S10P2P2-0005",
     "REQ-QUIC-RFC9000-S10P2P3-0001",
@@ -630,5 +649,5 @@
     "REQ-QUIC-RFC9000-S10P2P3-0012",
     "REQ-QUIC-RFC9000-S10P2P3-0013"
   ],
-  "notes": "No reconciliation artifact existed for this chunk, so it was treated as greenfield. Idle-timeout floor/restart behavior is now covered by a helper state type and existing transport-parameter / ping-wire coverage, but close/draining lifecycle work remains blocked by the missing connection-state machine and CONNECTION_CLOSE wire support."
+  "notes": "No reconciliation artifact existed for this chunk, so it was treated as greenfield. Idle-timeout floor/restart behavior is now covered by a helper state type and existing transport-parameter / ping-wire coverage, and the helper-backed closing/draining no-send clauses are now closed, but the remaining close/drain orchestration still needs the endpoint runtime and CONNECTION_CLOSE wire support."
 }
