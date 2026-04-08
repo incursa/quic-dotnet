@@ -18,7 +18,10 @@ public sealed class REQ_QUIC_CRT_0032
         Assert.Empty(runtime.CandidatePaths);
         Assert.Empty(runtime.RecentlyValidatedPaths);
         Assert.False(runtime.TimerState.HasAnyDeadline);
-        Assert.Equal(0UL, runtime.TimerState.Generation);
+        Assert.Equal(0UL, runtime.TimerState.IdleTimeout.Generation);
+        Assert.Equal(0UL, runtime.TimerState.CloseLifetime.Generation);
+        Assert.Equal(0UL, runtime.TimerState.DrainLifetime.Generation);
+        Assert.Equal(0UL, runtime.TimerState.PathValidation.Generation);
         Assert.Equal(0UL, runtime.TimerState.NextSequence);
         Assert.Null(runtime.TerminalState);
         Assert.Null(runtime.LastValidatedRemoteAddress);
@@ -78,10 +81,10 @@ public sealed class REQ_QUIC_CRT_0032
             SavedRecoverySnapshot: recovery);
 
         QuicConnectionTimerDeadlineState deadlineState = new(
-            IdleTimeoutDueTicks: 1_000,
-            CloseLifetimeDueTicks: 2_000,
-            DrainLifetimeDueTicks: null,
-            Generation: 9,
+            IdleTimeout: new QuicConnectionTimerSchedule(1_000, 9),
+            CloseLifetime: new QuicConnectionTimerSchedule(2_000, 10),
+            DrainLifetime: new QuicConnectionTimerSchedule(null, 11),
+            PathValidation: new QuicConnectionTimerSchedule(3_000, 12),
             NextSequence: 3);
 
         Assert.Equal("203.0.113.9", activePath.Identity.RemoteAddress);
@@ -111,7 +114,14 @@ public sealed class REQ_QUIC_CRT_0032
         Assert.Equal(recovery, validatedPath.SavedRecoverySnapshot.Value);
 
         Assert.True(deadlineState.HasAnyDeadline);
-        Assert.Equal(9UL, deadlineState.Generation);
+        Assert.Equal(1_000L, deadlineState.IdleTimeout.DueTicks);
+        Assert.Equal(9UL, deadlineState.IdleTimeout.Generation);
+        Assert.Equal(2_000L, deadlineState.CloseLifetime.DueTicks);
+        Assert.Equal(10UL, deadlineState.CloseLifetime.Generation);
+        Assert.Null(deadlineState.DrainLifetime.DueTicks);
+        Assert.Equal(11UL, deadlineState.DrainLifetime.Generation);
+        Assert.Equal(3_000L, deadlineState.PathValidation.DueTicks);
+        Assert.Equal(12UL, deadlineState.PathValidation.Generation);
         Assert.Equal(3UL, deadlineState.NextSequence);
         Assert.Equal(new QuicConnectionTimerPriority(1_000, 3), deadlineState.CreatePriority(1_000));
     }

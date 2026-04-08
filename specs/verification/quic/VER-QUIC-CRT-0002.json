@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0002",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Connection Runtime Deadline Scheduling Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused unit tests and inspection evidence from the shard-owned deadline scheduler and runtime timer helpers.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0002",
+    "WI-QUIC-CRT-0002"
+  ],
+  "expected_result": "The scheduler dequeues earlier due ticks first, breaks equal due ticks deterministically, ignores stale generations after a rearm, and the runtime exposes generation-aware arm and cancel effects while treating stale expirations as a no-op.",
+  "verifies": [
+    "REQ-QUIC-CRT-0045",
+    "REQ-QUIC-CRT-0047",
+    "REQ-QUIC-CRT-0048",
+    "REQ-QUIC-CRT-0049",
+    "REQ-QUIC-CRT-0052",
+    "REQ-QUIC-CRT-0053",
+    "REQ-QUIC-CRT-0054",
+    "REQ-QUIC-CRT-0057"
+  ],
+  "procedure": [
+    "Run the CRT requirement-home tests that cover timer ordering, deterministic tie-breaking, stale-generation suppression, and runtime timer expiry handling.",
+    "Confirm the scheduler's stale-registration checks reject older generations after a rearm or cancellation.",
+    "Confirm timer effects continue to use monotonic due ticks and the runtime accepts only matching-generation expirations."
+  ],
+  "scope": "This slice covers deadline scheduling and the timer-effect plumbing around the runtime. It does not prove the RFC 9000 idle-timeout value derivation or any future close/drain policy math beyond the scheduling seam.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0048.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0049.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0052.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0053.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0035.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeDeadlineScheduler.cs"
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The CRT requirement traits are discoverable by the test runner.",
+    "The deadline scheduler remains shard-owned and the runtime timer helpers remain internal to the repository."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0048.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0049.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0052.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0053.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0035.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionRuntimeDeadlineScheduler.cs"
+    }
+  ]
+}

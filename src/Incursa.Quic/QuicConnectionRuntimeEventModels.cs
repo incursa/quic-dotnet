@@ -119,6 +119,7 @@ internal sealed record QuicConnectionSendDatagramEffect(
 
 internal sealed record QuicConnectionArmTimerEffect(
     QuicConnectionTimerKind TimerKind,
+    ulong Generation,
     QuicConnectionTimerPriority Priority)
     : QuicConnectionEffect(QuicConnectionEffectKind.ArmTimer);
 
