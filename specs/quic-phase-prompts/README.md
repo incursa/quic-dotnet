@@ -12,3 +12,4 @@ Generated with `generate-quic-phase-prompts.ps1`.
 - [Phase 06 — Lifecycle, Close, and Error Handling](Phase-06-Lifecycle-Close-and-Error-Handling.md)
 - [Phase 07 — Congestion Control and Recovery State](Phase-07-Congestion-Control-and-Recovery-State.md)
 - [Phase 08 — Late, Policy-Heavy, and Appendix Work](Phase-08-Late-Policy-Heavy-and-Appendix-Work.md)
+- [Phase 09 — Priority Finish Line](Phase-09-Priority-Finish-Line.md)
