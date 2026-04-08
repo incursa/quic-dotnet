@@ -17,6 +17,8 @@
 - Silent gaps: `0`
 - Stale or wrong requirement IDs in scope: none found
 
+The helper-backed ceiling is already closed here: `REQ-QUIC-RFC9001-S6-0002`, `REQ-QUIC-RFC9001-S8-0001`, and `REQ-QUIC-RFC9001-S10-0001` through `REQ-QUIC-RFC9001-S10-0003` are the only requirements this repo shape can prove now. The remaining S6/S7/S8/S9 items stay blocked or deferred until handshake-confirmation, key-update, and TLS-authentication support exists.
+
 ## In-Scope Requirements
 
 ### Implemented And Tested
