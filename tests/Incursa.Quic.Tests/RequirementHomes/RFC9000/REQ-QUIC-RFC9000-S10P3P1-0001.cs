@@ -17,4 +17,13 @@ public sealed class REQ_QUIC_RFC9000_S10P3P1_0001
         Assert.True(QuicStatelessReset.TryGetTrailingStatelessResetToken(datagram, out ReadOnlySpan<byte> trailingToken));
         Assert.True(token.AsSpan().SequenceEqual(trailingToken));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryGetTrailingStatelessResetToken_RejectsDatagramsShorterThanSixteenBytes()
+    {
+        byte[] datagram = QuicStatelessResetRequirementTestData.CreateBytes(QuicStatelessReset.StatelessResetTokenLength - 1, 0x10);
+
+        Assert.False(QuicStatelessReset.TryGetTrailingStatelessResetToken(datagram, out _));
+    }
 }

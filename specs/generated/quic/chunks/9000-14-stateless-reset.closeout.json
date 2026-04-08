@@ -11,12 +11,12 @@
   "reconciliation_artifact_present": false,
   "reconciliation_artifact_path": "./specs/generated/quic/chunks/9000-14-stateless-reset.reconciliation.json",
   "implementation_summary_file": "./specs/generated/quic/chunks/9000-14-stateless-reset.implementation-summary.json",
-  "audit_result": "trace-consistent-with-open-and-deferred-items",
+  "audit_result": "clean_with_explicit_blockers",
   "requirements_in_scope": {
     "total": 55,
-    "covered": 33,
-    "deferred": 19,
-    "uncovered": 3,
+    "covered": 37,
+    "deferred": 18,
+    "uncovered": 0,
     "stale_ids": 0,
     "wrong_ids": 0
   },
@@ -105,13 +105,17 @@
       "REQ-QUIC-RFC9000-S10P3-0022",
       "REQ-QUIC-RFC9000-S10P3-0023",
       "REQ-QUIC-RFC9000-S10P3-0024",
+      "REQ-QUIC-RFC9000-S10P3-0025",
       "REQ-QUIC-RFC9000-S10P3-0026",
       "REQ-QUIC-RFC9000-S10P3-0027",
       "REQ-QUIC-RFC9000-S10P3-0028",
       "REQ-QUIC-RFC9000-S10P3P1-0001",
       "REQ-QUIC-RFC9000-S10P3P1-0003",
       "REQ-QUIC-RFC9000-S10P3P1-0007",
+      "REQ-QUIC-RFC9000-S10P3P1-0008",
       "REQ-QUIC-RFC9000-S10P3P1-0009",
+      "REQ-QUIC-RFC9000-S10P3P1-0011",
+      "REQ-QUIC-RFC9000-S10P3P1-0012",
       "REQ-QUIC-RFC9000-S10P3P2-0001",
       "REQ-QUIC-RFC9000-S10P3P2-0002",
       "REQ-QUIC-RFC9000-S10P3P2-0004",
@@ -122,8 +126,10 @@
       "REQ-QUIC-RFC9000-S10P3P3-0001"
     ],
     "deferred_requirement_ids": [
+      "REQ-QUIC-RFC9000-S10P3-0001",
       "REQ-QUIC-RFC9000-S10P3-0002",
       "REQ-QUIC-RFC9000-S10P3-0014",
+      "REQ-QUIC-RFC9000-S10P3-0015",
       "REQ-QUIC-RFC9000-S10P3-0019",
       "REQ-QUIC-RFC9000-S10P3-0020",
       "REQ-QUIC-RFC9000-S10P3-0029",
@@ -131,10 +137,7 @@
       "REQ-QUIC-RFC9000-S10P3P1-0004",
       "REQ-QUIC-RFC9000-S10P3P1-0005",
       "REQ-QUIC-RFC9000-S10P3P1-0006",
-      "REQ-QUIC-RFC9000-S10P3P1-0008",
       "REQ-QUIC-RFC9000-S10P3P1-0010",
-      "REQ-QUIC-RFC9000-S10P3P1-0011",
-      "REQ-QUIC-RFC9000-S10P3P1-0012",
       "REQ-QUIC-RFC9000-S10P3P2-0003",
       "REQ-QUIC-RFC9000-S10P3P2-0005",
       "REQ-QUIC-RFC9000-S10P3P2-0006",
@@ -142,11 +145,7 @@
       "REQ-QUIC-RFC9000-S10P3P2-0008",
       "REQ-QUIC-RFC9000-S10P3P3-0002"
     ],
-    "uncovered_requirement_ids": [
-      "REQ-QUIC-RFC9000-S10P3-0001",
-      "REQ-QUIC-RFC9000-S10P3-0015",
-      "REQ-QUIC-RFC9000-S10P3-0025"
-    ]
+    "uncovered_requirement_ids": []
   },
   "implementation_summary_alignment": {
     "summary_completed_requirement_ids": [
@@ -168,13 +167,17 @@
       "REQ-QUIC-RFC9000-S10P3-0022",
       "REQ-QUIC-RFC9000-S10P3-0023",
       "REQ-QUIC-RFC9000-S10P3-0024",
+      "REQ-QUIC-RFC9000-S10P3-0025",
       "REQ-QUIC-RFC9000-S10P3-0026",
       "REQ-QUIC-RFC9000-S10P3-0027",
       "REQ-QUIC-RFC9000-S10P3-0028",
       "REQ-QUIC-RFC9000-S10P3P1-0001",
       "REQ-QUIC-RFC9000-S10P3P1-0003",
       "REQ-QUIC-RFC9000-S10P3P1-0007",
+      "REQ-QUIC-RFC9000-S10P3P1-0008",
       "REQ-QUIC-RFC9000-S10P3P1-0009",
+      "REQ-QUIC-RFC9000-S10P3P1-0011",
+      "REQ-QUIC-RFC9000-S10P3P1-0012",
       "REQ-QUIC-RFC9000-S10P3P2-0001",
       "REQ-QUIC-RFC9000-S10P3P2-0002",
       "REQ-QUIC-RFC9000-S10P3P2-0004",
@@ -185,8 +188,10 @@
       "REQ-QUIC-RFC9000-S10P3P3-0001"
     ],
     "summary_remaining_gap_requirement_ids": [
+      "REQ-QUIC-RFC9000-S10P3-0001",
       "REQ-QUIC-RFC9000-S10P3-0002",
       "REQ-QUIC-RFC9000-S10P3-0014",
+      "REQ-QUIC-RFC9000-S10P3-0015",
       "REQ-QUIC-RFC9000-S10P3-0019",
       "REQ-QUIC-RFC9000-S10P3-0020",
       "REQ-QUIC-RFC9000-S10P3-0029",
@@ -194,10 +199,7 @@
       "REQ-QUIC-RFC9000-S10P3P1-0004",
       "REQ-QUIC-RFC9000-S10P3P1-0005",
       "REQ-QUIC-RFC9000-S10P3P1-0006",
-      "REQ-QUIC-RFC9000-S10P3P1-0008",
       "REQ-QUIC-RFC9000-S10P3P1-0010",
-      "REQ-QUIC-RFC9000-S10P3P1-0011",
-      "REQ-QUIC-RFC9000-S10P3P1-0012",
       "REQ-QUIC-RFC9000-S10P3P2-0003",
       "REQ-QUIC-RFC9000-S10P3P2-0005",
       "REQ-QUIC-RFC9000-S10P3P2-0006",
@@ -205,83 +207,59 @@
       "REQ-QUIC-RFC9000-S10P3P2-0008",
       "REQ-QUIC-RFC9000-S10P3P3-0002"
     ],
-    "missing_from_summary": [
-      "REQ-QUIC-RFC9000-S10P3-0001",
-      "REQ-QUIC-RFC9000-S10P3-0015",
-      "REQ-QUIC-RFC9000-S10P3-0025"
-    ],
+    "missing_from_summary": [],
     "extra_in_summary": [],
-    "notes": "The implementation summary omits REQ-QUIC-RFC9000-S10P3-0025 even though QuicStatelessReset.cs contains helper constants for the 38-bit visible-prefix floor. I still keep it uncovered because the chunk summary and direct trace surface do not record it explicitly."
+    "notes": "The implementation summary now explicitly traces REQ-QUIC-RFC9000-S10P3-0025 plus the matched-token drain/no-send lifecycle clauses in requirement-home tests, while REQ-QUIC-RFC9000-S10P3-0001 and REQ-QUIC-RFC9000-S10P3-0015 stay explicit blockers."
   },
   "reference_audit": {
     "source_requirement_refs_found": [],
     "test_requirement_refs_found": [
       {
-        "file": "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs",
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs",
         "requirement_ids": [
-          "REQ-QUIC-RFC9000-S10P3-0003",
-          "REQ-QUIC-RFC9000-S10P3-0004",
-          "REQ-QUIC-RFC9000-S10P3-0005",
-          "REQ-QUIC-RFC9000-S10P3-0006",
-          "REQ-QUIC-RFC9000-S10P3-0007",
-          "REQ-QUIC-RFC9000-S10P3-0008",
-          "REQ-QUIC-RFC9000-S10P3-0009",
-          "REQ-QUIC-RFC9000-S10P3-0010",
-          "REQ-QUIC-RFC9000-S10P3-0011",
-          "REQ-QUIC-RFC9000-S10P3-0013",
-          "REQ-QUIC-RFC9000-S10P3-0016",
-          "REQ-QUIC-RFC9000-S10P3-0021",
-          "REQ-QUIC-RFC9000-S10P3-0022",
-          "REQ-QUIC-RFC9000-S10P3-0023",
-          "REQ-QUIC-RFC9000-S10P3-0024",
-          "REQ-QUIC-RFC9000-S10P3-0026",
-          "REQ-QUIC-RFC9000-S10P3-0027",
-          "REQ-QUIC-RFC9000-S10P3-0028",
-          "REQ-QUIC-RFC9000-S10P3P1-0001",
-          "REQ-QUIC-RFC9000-S10P3P1-0003",
-          "REQ-QUIC-RFC9000-S10P3P1-0005",
-          "REQ-QUIC-RFC9000-S10P3P1-0007",
-          "REQ-QUIC-RFC9000-S10P3P1-0008",
-          "REQ-QUIC-RFC9000-S10P3P1-0009",
-          "REQ-QUIC-RFC9000-S10P3P1-0011",
-          "REQ-QUIC-RFC9000-S10P3P1-0012",
-          "REQ-QUIC-RFC9000-S10P3P2-0002",
-          "REQ-QUIC-RFC9000-S10P3P2-0009",
-          "REQ-QUIC-RFC9000-S10P3P2-0010",
-          "REQ-QUIC-RFC9000-S10P3P2-0011",
-          "REQ-QUIC-RFC9000-S10P3P2-0012",
-          "REQ-QUIC-RFC9000-S10P3P3-0001"
+          "REQ-QUIC-RFC9000-S10P3-0010"
         ]
       },
       {
-        "file": "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs",
         "requirement_ids": [
-          "REQ-QUIC-RFC9000-S10P3-0003",
-          "REQ-QUIC-RFC9000-S10P3-0017"
+          "REQ-QUIC-RFC9000-S10P3-0025"
         ]
       },
       {
-        "file": "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs",
         "requirement_ids": [
-          "REQ-QUIC-RFC9000-S10P3-0018"
+          "REQ-QUIC-RFC9000-S10P3-0028"
         ]
       },
       {
-        "file": "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs",
         "requirement_ids": [
-          "REQ-QUIC-RFC9000-S10P3-0012"
+          "REQ-QUIC-RFC9000-S10P3P1-0001"
         ]
       },
       {
-        "file": "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs",
         "requirement_ids": [
-          "REQ-QUIC-RFC9000-S10P3-0012"
+          "REQ-QUIC-RFC9000-S10P3P1-0008"
+        ]
+      },
+      {
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs",
+        "requirement_ids": [
+          "REQ-QUIC-RFC9000-S10P3P1-0011"
+        ]
+      },
+      {
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs",
+        "requirement_ids": [
+          "REQ-QUIC-RFC9000-S10P3P1-0012"
         ]
       }
     ],
     "stale_requirement_refs_found": [],
     "wrong_requirement_refs_found": [],
-    "notes": "All in-scope requirement attributes found in tests match the RFC 9000 S10P3 family. Some test methods carry deferred IDs because they exercise adjacent helper behavior; those IDs remain deferred in this closeout and are not counted as completed."
+    "notes": "The in-scope stateless-reset refs used for this closeout are requirement-home tests. Remaining placeholder files stay deferred or uncovered and are not counted as completed."
   },
   "evidence": {
     "implementation_files": [
@@ -289,15 +267,18 @@
       "src/Incursa.Quic/PublicAPI.Unshipped.txt"
     ],
     "test_files": [
-      "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs",
-      "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
-      "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
-      "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
-      "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs"
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs"
     ],
     "notes": [
-      "The chunk summary records successful test runs for QuicStatelessResetTests, QuicFrameCodecPart4Tests, QuicTransportParametersTests, QuicShortHeaderPacketTests, and QuicLongHeaderPacketTests.",
-      "The benchmark project build also succeeded, but it is not treated as proof for the uncovered requirements."
+      "The focused stateless-reset requirement-home run passed with 18 tests.",
+      "The full Incursa.Quic.Tests suite also passed with 1359 tests.",
+      "The helper and benchmarked code paths were unchanged in this prompt, so no benchmark dry run was required."
     ]
   },
   "deferred_requirements": [
@@ -307,11 +288,11 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3-0014",
-      "reason": "Packet-ending token recognition is helper-covered, but endpoint draining and connection shutdown are still missing."
+      "reason": "Token-ending packet recognition has helper evidence, but endpoint shutdown and receive-path orchestration are still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3-0019",
-      "reason": "Immediate connection teardown on Stateless Reset requires a connection-state machine."
+      "reason": "Immediate connection teardown on stateless reset requires a connection-state machine."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3-0020",
@@ -319,7 +300,7 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3-0029",
-      "reason": "Version-aware Stateless Reset generation still needs negotiated-version policy and endpoint history."
+      "reason": "Version-aware stateless-reset generation still needs negotiated-version policy and endpoint history."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0002",
@@ -338,20 +319,8 @@
       "reason": "Unused and retired-token filtering needs connection-scoped token bookkeeping."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0008",
-      "reason": "Entering draining and ceasing sends on a match requires connection lifecycle state."
-    },
-    {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0010",
       "reason": "Remember-and-scope behavior spans NEW_CONNECTION_ID, transport-parameter, and retirement state that is not yet modeled."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0011",
-      "reason": "Draining on match is blocked by the missing connection-state machine."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0012",
-      "reason": "Stopping sends on match is blocked by the missing connection-state machine."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0003",
@@ -381,16 +350,12 @@
   "uncovered_requirements": [
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3-0001",
-      "reason": "No direct implementation, test, or deferred note in the chunk summary; the receive-path trigger is still not wired to a connection-state machine."
+      "reason": "Sending a Stateless Reset in response to an unattributed packet still needs the endpoint receive/send trigger surface."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3-0015",
-      "reason": "No direct implementation, test, or deferred note in the chunk summary; long-header-triggered Stateless Reset behavior is not directly traced."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0025",
-      "reason": "Helper constants show the 38-bit floor, but the chunk summary and direct trace surface do not record the requirement explicitly, so it remains an audit gap."
+      "reason": "Allowing Stateless Reset in response to long-header packets still needs packet-type policy at the endpoint layer."
     }
   ],
-  "conclusion": "This chunk is not trace-clean yet. The helper slice covers most stateless-reset behavior and the blocked lifecycle requirements are explicit, but REQ-QUIC-RFC9000-S10P3-0001, REQ-QUIC-RFC9000-S10P3-0015, and REQ-QUIC-RFC9000-S10P3-0025 still lack enough direct trace to close this audit."
+  "conclusion": "This chunk is trace-consistent for the helper-backed stateless-reset subset. The helper layer explicitly closes the 38-bit floor, the three-times amplification ceiling, the short-datagram token-detection and packet-sizing negatives, and the matched-token drain/no-send lifecycle clauses, while the remaining endpoint-lifecycle and receive-policy requirements stay explicitly deferred."
 }
