@@ -13,7 +13,7 @@
 - Audit result: `clean_with_explicit_blockers`
 - No stale requirement IDs remain in scope.
 - No requirement-tagged source refs were found under `src/Incursa.Quic`.
-- Current tests reference the in-scope imported RFC 9000 ID correctly.
+- The in-scope requirement now lives in the requirement-home proof for `REQ-QUIC-RFC9000-S9P3P1-0001`.
 - The 39 remaining open requirements all carry explicit blocker notes; there are no silent gaps.
 - The spec and implementation summary are aligned: 40 in-scope requirement IDs, 0 missing, 0 extra.
 
@@ -35,9 +35,9 @@
 ## Requirements Completed
 
 - `REQ-QUIC-RFC9000-S9P3P1-0001`
-  - Evidence: [SPEC-QUIC-RFC9000.json](/C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.json#L8635), [QuicAntiAmplificationBudgetTests.cs](/C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs#L6), [QuicPathValidationTests.cs](/C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicPathValidationTests.cs#L80)
-  - Test cases: `CanSend_TracksTheThreeTimesAmplificationCapUntilValidation`, `CanSend_AllowsUnlimitedSendingAfterAddressValidation`, `TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows`, `TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded`
-  - Direct refs updated: `tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs`, `tests/Incursa.Quic.Tests/QuicPathValidationTests.cs`
+  - Evidence: [SPEC-QUIC-RFC9000.json](/C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.json#L8635), [REQ-QUIC-RFC9000-S9P3P1-0001.cs](/C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs#L1), [QuicAntiAmplificationBudget.cs](/C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicAntiAmplificationBudget.cs#L1), [QuicPathValidation.cs](/C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicPathValidation.cs#L1)
+  - Test cases: `CanSend_TracksTheThreeTimesAmplificationCapBeforeValidation`, `CanSend_AllowsUnlimitedSendingAfterAddressValidation`, `TryConsumeSendBudget_RejectsPayloadsThatExceedThePreValidationBudget`, `TryRegisterReceivedDatagramPayloadBytes_RejectsNegativePayloadLengths`
+  - Direct refs updated: `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs`
 
 ## Remaining Open Requirements
 
@@ -61,14 +61,14 @@
 - In-scope source requirement refs found: none
 - In-scope test requirement refs found: `REQ-QUIC-RFC9000-S9P3P1-0001`
 - Stale or wrong refs found: none
-- Current in-scope test files: `tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs`, `tests/Incursa.Quic.Tests/QuicPathValidationTests.cs`
+- Current in-scope test files: `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs`
 
 ## Tests Reviewed
 
-- Command: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~QuicAntiAmplificationBudgetTests|FullyQualifiedName~QuicPathValidationTests"`
-  - Result: `10 passed, 0 failed, 0 skipped`
+- Command: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P3P1_0001"`
+  - Result: `4 passed, 0 failed, 0 skipped`
 - Command: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj`
-  - Result: `298 passed, 0 failed, 0 skipped`
+  - Result: `1362 passed, 0 failed, 0 skipped`
 
 ## Risks / Follow-up Notes
 

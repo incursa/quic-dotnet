@@ -9,6 +9,23 @@ public sealed class REQ_QUIC_RFC9000_S9P3P1_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void CanSend_TracksTheThreeTimesAmplificationCapBeforeValidation()
+    {
+        QuicAntiAmplificationBudget budget = new();
+
+        Assert.True(budget.TryRegisterReceivedDatagramPayloadBytes(100, uniquelyAttributedToSingleConnection: true));
+        Assert.False(budget.IsAddressValidated);
+        Assert.Equal(300UL, budget.RemainingSendBudget);
+        Assert.True(budget.CanSend(300));
+        Assert.False(budget.CanSend(301));
+        Assert.True(budget.TryConsumeSendBudget(300));
+        Assert.Equal(300UL, budget.SentPayloadBytes);
+        Assert.Equal(0UL, budget.RemainingSendBudget);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void CanSend_AllowsUnlimitedSendingAfterAddressValidation()
     {
         QuicAntiAmplificationBudget budget = new();
@@ -20,5 +37,32 @@ public sealed class REQ_QUIC_RFC9000_S9P3P1_0001
         Assert.True(budget.TryConsumeSendBudget(int.MaxValue));
         Assert.Equal((ulong)int.MaxValue, budget.SentPayloadBytes);
         Assert.Equal(ulong.MaxValue, budget.RemainingSendBudget);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryConsumeSendBudget_RejectsPayloadsThatExceedThePreValidationBudget()
+    {
+        QuicAntiAmplificationBudget budget = new();
+
+        Assert.True(budget.TryRegisterReceivedDatagramPayloadBytes(100, uniquelyAttributedToSingleConnection: true));
+        Assert.False(budget.TryConsumeSendBudget(301));
+        Assert.Equal(100UL, budget.ReceivedPayloadBytes);
+        Assert.Equal(0UL, budget.SentPayloadBytes);
+        Assert.Equal(300UL, budget.RemainingSendBudget);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryRegisterReceivedDatagramPayloadBytes_RejectsNegativePayloadLengths()
+    {
+        QuicAntiAmplificationBudget budget = new();
+
+        Assert.False(budget.TryRegisterReceivedDatagramPayloadBytes(-1, uniquelyAttributedToSingleConnection: true));
+        Assert.Equal(0UL, budget.ReceivedPayloadBytes);
+        Assert.False(budget.CanSend(-1));
+        Assert.False(budget.TryConsumeSendBudget(-1));
     }
 }
