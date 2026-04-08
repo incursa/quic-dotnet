@@ -12,6 +12,8 @@ public sealed class REQ_QUIC_CRT_0032
         QuicConnectionRuntime runtime = new(bookkeeping);
 
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+        Assert.Equal(QuicConnectionSendingMode.Ordinary, runtime.SendingMode);
+        Assert.True(runtime.CanSendOrdinaryPackets);
         Assert.False(runtime.HandshakeConfirmed);
         Assert.Equal(QuicConnectionTransportState.None, runtime.TransportFlags);
         Assert.Null(runtime.ActivePath);
@@ -24,6 +26,10 @@ public sealed class REQ_QUIC_CRT_0032
         Assert.Equal(0UL, runtime.TimerState.PathValidation.Generation);
         Assert.Equal(0UL, runtime.TimerState.NextSequence);
         Assert.Null(runtime.TerminalState);
+        Assert.Null(runtime.IdleTimeoutState);
+        Assert.Null(runtime.LocalMaxIdleTimeoutMicros);
+        Assert.Null(runtime.PeerMaxIdleTimeoutMicros);
+        Assert.Equal(QuicRttEstimator.DefaultInitialRttMicros, runtime.CurrentProbeTimeoutMicros);
         Assert.Null(runtime.LastValidatedRemoteAddress);
         Assert.Same(bookkeeping, runtime.StreamRegistry.Bookkeeping);
         Assert.Empty(runtime.StreamRegistry.Streams);
@@ -66,19 +72,38 @@ public sealed class REQ_QUIC_CRT_0032
             ActivatedAtTicks: 10,
             LastActivityTicks: 11,
             IsValidated: true,
-            RecoverySnapshot: recovery);
+            RecoverySnapshot: recovery)
+        {
+            AmplificationState = new QuicConnectionPathAmplificationState(
+                ReceivedPayloadBytes: 64,
+                SentPayloadBytes: 16,
+                IsAddressValidated: true),
+        };
 
         QuicConnectionCandidatePathRecord candidatePath = new(
             Identity: identity,
             DiscoveredAtTicks: 12,
             LastActivityTicks: 13,
             Validation: validation,
-            SavedRecoverySnapshot: recovery);
+            SavedRecoverySnapshot: recovery)
+        {
+            AmplificationState = new QuicConnectionPathAmplificationState(
+                ReceivedPayloadBytes: 48,
+                SentPayloadBytes: 8,
+                IsAddressValidated: false),
+        };
 
         QuicConnectionValidatedPathRecord validatedPath = new(
             Identity: identity,
             ValidatedAtTicks: 14,
-            SavedRecoverySnapshot: recovery);
+            SavedRecoverySnapshot: recovery)
+        {
+            LastActivityTicks = 15,
+            AmplificationState = new QuicConnectionPathAmplificationState(
+                ReceivedPayloadBytes: 96,
+                SentPayloadBytes: 24,
+                IsAddressValidated: true),
+        };
 
         QuicConnectionTimerDeadlineState deadlineState = new(
             IdleTimeout: new QuicConnectionTimerSchedule(1_000, 9),
@@ -94,6 +119,9 @@ public sealed class REQ_QUIC_CRT_0032
         Assert.True(activePath.IsValidated);
         Assert.True(activePath.RecoverySnapshot.HasValue);
         Assert.Equal(recovery, activePath.RecoverySnapshot.Value);
+        Assert.Equal(64UL, activePath.AmplificationState.ReceivedPayloadBytes);
+        Assert.Equal(16UL, activePath.AmplificationState.SentPayloadBytes);
+        Assert.True(activePath.AmplificationState.IsAddressValidated);
 
         Assert.Equal(identity, candidatePath.Identity);
         Assert.Equal(12, candidatePath.DiscoveredAtTicks);
@@ -107,11 +135,18 @@ public sealed class REQ_QUIC_CRT_0032
         Assert.True(candidatePath.Validation.ChallengePayload.IsEmpty);
         Assert.True(candidatePath.SavedRecoverySnapshot.HasValue);
         Assert.Equal(recovery, candidatePath.SavedRecoverySnapshot.Value);
+        Assert.Equal(48UL, candidatePath.AmplificationState.ReceivedPayloadBytes);
+        Assert.Equal(8UL, candidatePath.AmplificationState.SentPayloadBytes);
+        Assert.False(candidatePath.AmplificationState.IsAddressValidated);
 
         Assert.Equal(identity, validatedPath.Identity);
         Assert.Equal(14, validatedPath.ValidatedAtTicks);
+        Assert.Equal(15, validatedPath.LastActivityTicks);
         Assert.True(validatedPath.SavedRecoverySnapshot.HasValue);
         Assert.Equal(recovery, validatedPath.SavedRecoverySnapshot.Value);
+        Assert.Equal(96UL, validatedPath.AmplificationState.ReceivedPayloadBytes);
+        Assert.Equal(24UL, validatedPath.AmplificationState.SentPayloadBytes);
+        Assert.True(validatedPath.AmplificationState.IsAddressValidated);
 
         Assert.True(deadlineState.HasAnyDeadline);
         Assert.Equal(1_000L, deadlineState.IdleTimeout.DueTicks);

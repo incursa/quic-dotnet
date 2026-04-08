@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0004",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Connection Runtime Lifecycle Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests and inspection evidence from the runtime lifecycle reducer, idle-timeout helper, and explicit lifecycle effects.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0004",
+    "WI-QUIC-CRT-0004"
+  ],
+  "expected_result": "The runtime derives an effective idle timeout from transport parameters and PTO, restarts the idle timer only on allowed peer activity, transitions to Closing on local immediate close, transitions to Draining on received CONNECTION_CLOSE or matched stateless reset, discards the connection when the close or drain lifetime expires, and exposes ordinary-send legality from the phase model.",
+  "verifies": [
+    "REQ-QUIC-CRT-0023",
+    "REQ-QUIC-CRT-0024",
+    "REQ-QUIC-CRT-0025",
+    "REQ-QUIC-CRT-0026",
+    "REQ-QUIC-CRT-0030",
+    "REQ-QUIC-CRT-0031",
+    "REQ-QUIC-CRT-0032",
+    "REQ-QUIC-CRT-0035",
+    "REQ-QUIC-CRT-0055",
+    "REQ-QUIC-CRT-0056",
+    "REQ-QUIC-CRT-0074",
+    "REQ-QUIC-CRT-0075",
+    "REQ-QUIC-CRT-0076",
+    "REQ-QUIC-CRT-0077",
+    "REQ-QUIC-CRT-0078",
+    "REQ-QUIC-CRT-0087"
+  ],
+  "procedure": [
+    "Run the lifecycle requirement-home tests for REQ-QUIC-CRT-0023, REQ-QUIC-CRT-0025, REQ-QUIC-CRT-0026, REQ-QUIC-CRT-0030, REQ-QUIC-CRT-0032, REQ-QUIC-CRT-0035, REQ-QUIC-CRT-0055, and REQ-QUIC-CRT-0056.",
+    "Confirm the close and drain transitions arm the expected terminal-lifetime timer and emit the explicit send, notify-streams, and discard effects required by the lifecycle reducer.",
+    "Confirm the runtime keeps the idle timer unchanged for disallowed events and re-arms it only when peer activity is permitted by the helper state."
+  ],
+  "scope": "This slice covers connection lifecycle behavior, idle timeout derivation, close/drain lifetimes, and explicit lifecycle effects. It does not prove endpoint routing, stateless-reset token ownership, or the deadline scheduler itself.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0023.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0025.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0030.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0032.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0035.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0055.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0056.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicIdleTimeoutState.cs"
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The CRT requirement traits are discoverable by the test runner.",
+    "The runtime lifecycle reducer remains the single owner of phase transitions and explicit lifecycle effects."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0023.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0025.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0030.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0032.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0035.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0055.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0056.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs\n- src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs\n- src/Incursa.Quic/QuicIdleTimeoutState.cs"
+    }
+  ]
+}

@@ -18,11 +18,12 @@ public sealed class REQ_QUIC_CRT_0035
         Assert.Equal(clock.Ticks, handshakeResult.ObservedAtTicks);
         Assert.Equal(QuicConnectionEventKind.HandshakeConfirmed, handshakeResult.EventKind);
         Assert.Equal(QuicConnectionPhase.Establishing, handshakeResult.PreviousPhase);
-        Assert.Equal(QuicConnectionPhase.Establishing, handshakeResult.CurrentPhase);
+        Assert.Equal(QuicConnectionPhase.Active, handshakeResult.CurrentPhase);
         Assert.True(handshakeResult.StateChanged);
         Assert.False(handshakeResult.HasEffects);
         Assert.Empty(handshakeResult.Effects);
         Assert.True(runtime.HandshakeConfirmed);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.Equal(clock.Ticks, runtime.LastTransitionTicks);
 
         QuicConnectionTransitionResult transportResult = runtime.Transition(

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 
@@ -8,22 +10,32 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 {
+    private const ulong TerminalLifetimePtoMultiplier = 3;
+    private const ulong MicrosecondsPerSecond = 1_000_000UL;
+    private const int DefaultCloseFrameOverheadBytes = 32;
+
     private readonly IMonotonicClock clock;
     private readonly QuicConnectionStreamRegistry streamRegistry;
     private readonly Channel<QuicConnectionEvent> inbox;
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
-    private readonly QuicConnectionPhase phase = QuicConnectionPhase.Establishing;
+    private readonly long timeOriginTicks;
 
     private int consumerStarted;
     private int disposed;
     private Task? processingTask;
     private bool handshakeConfirmed;
     private QuicConnectionTransportState transportFlags;
-    private QuicConnectionActivePathRecord? activePath = null;
+    private QuicConnectionActivePathRecord? activePath;
     private QuicConnectionTimerDeadlineState timerState = default;
-    private QuicConnectionTerminalState? terminalState = null;
-    private readonly string? lastValidatedRemoteAddress = null;
+    private QuicConnectionTerminalState? terminalState;
+    private QuicIdleTimeoutState? idleTimeoutState;
+    private QuicConnectionPhase phase = QuicConnectionPhase.Establishing;
+    private ulong? localMaxIdleTimeoutMicros;
+    private ulong? peerMaxIdleTimeoutMicros;
+    private ulong currentProbeTimeoutMicros;
+    private string? lastValidatedRemoteAddress;
+    private long? terminalEndTicks;
     private long lastTransitionTicks;
     private ulong transitionSequence;
 
@@ -31,9 +43,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         QuicConnectionStreamState bookkeeping,
         IMonotonicClock? clock = null,
         int maximumCandidatePaths = 8,
-        int maximumRecentlyValidatedPaths = 8)
+        int maximumRecentlyValidatedPaths = 8,
+        ulong currentProbeTimeoutMicros = QuicRttEstimator.DefaultInitialRttMicros)
     {
         this.clock = clock ?? new MonotonicClock();
+        timeOriginTicks = this.clock.Ticks;
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
@@ -52,11 +66,29 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             throw new ArgumentOutOfRangeException(nameof(maximumRecentlyValidatedPaths));
         }
 
+        if (currentProbeTimeoutMicros == 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(currentProbeTimeoutMicros));
+        }
+
         MaximumCandidatePaths = maximumCandidatePaths;
         MaximumRecentlyValidatedPaths = maximumRecentlyValidatedPaths;
+        this.currentProbeTimeoutMicros = currentProbeTimeoutMicros;
     }
 
     public QuicConnectionPhase Phase => phase;
+
+    public QuicConnectionSendingMode SendingMode => phase switch
+    {
+        QuicConnectionPhase.Establishing => QuicConnectionSendingMode.Ordinary,
+        QuicConnectionPhase.Active => QuicConnectionSendingMode.Ordinary,
+        QuicConnectionPhase.Closing => QuicConnectionSendingMode.CloseOnly,
+        QuicConnectionPhase.Draining => QuicConnectionSendingMode.None,
+        QuicConnectionPhase.Discarded => QuicConnectionSendingMode.None,
+        _ => throw new InvalidOperationException($"Unknown connection phase {phase}."),
+    };
+
+    public bool CanSendOrdinaryPackets => SendingMode == QuicConnectionSendingMode.Ordinary;
 
     public bool HandshakeConfirmed => handshakeConfirmed;
 
@@ -72,7 +104,41 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     public QuicConnectionTerminalState? TerminalState => terminalState;
 
+    public QuicIdleTimeoutState? IdleTimeoutState => idleTimeoutState;
+
+    public ulong? LocalMaxIdleTimeoutMicros => localMaxIdleTimeoutMicros;
+
+    public ulong? PeerMaxIdleTimeoutMicros => peerMaxIdleTimeoutMicros;
+
+    public ulong CurrentProbeTimeoutMicros => currentProbeTimeoutMicros;
+
     public string? LastValidatedRemoteAddress => lastValidatedRemoteAddress;
+
+    public bool HasValidatedPath
+    {
+        get
+        {
+            if (activePath?.IsValidated ?? false)
+            {
+                return true;
+            }
+
+            if (recentlyValidatedPaths.Count > 0)
+            {
+                return true;
+            }
+
+            foreach (QuicConnectionCandidatePathRecord candidate in candidatePaths.Values)
+            {
+                if (candidate.Validation.IsValidated && !candidate.Validation.IsAbandoned)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
 
     public QuicConnectionStreamRegistry StreamRegistry => streamRegistry;
 
@@ -147,12 +213,28 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         lastTransitionTicks = nowTicks;
         transitionSequence++;
 
+        List<QuicConnectionEffect>? effects = null;
+
         bool stateChanged = connectionEvent switch
         {
-            QuicConnectionHandshakeConfirmedEvent => ConfirmHandshake(),
+            QuicConnectionHandshakeConfirmedEvent handshakeConfirmedEvent
+                => HandleHandshakeConfirmed(handshakeConfirmedEvent, nowTicks, ref effects),
             QuicConnectionTransportParametersCommittedEvent transportParametersCommittedEvent
-                => ApplyTransportParameters(transportParametersCommittedEvent.TransportFlags),
-            QuicConnectionTimerExpiredEvent timerExpiredEvent => TryHandleTimerExpired(timerExpiredEvent),
+                => ApplyTransportParameters(transportParametersCommittedEvent, nowTicks, ref effects),
+            QuicConnectionPacketReceivedEvent packetReceivedEvent
+                => HandlePacketReceived(packetReceivedEvent, nowTicks, ref effects),
+            QuicConnectionPathValidationSucceededEvent pathValidationSucceededEvent
+                => HandlePathValidationSucceeded(pathValidationSucceededEvent, nowTicks, ref effects),
+            QuicConnectionPathValidationFailedEvent pathValidationFailedEvent
+                => HandlePathValidationFailed(pathValidationFailedEvent, nowTicks, ref effects),
+            QuicConnectionTimerExpiredEvent timerExpiredEvent
+                => TryHandleTimerExpired(timerExpiredEvent, nowTicks, ref effects),
+            QuicConnectionLocalCloseRequestedEvent localCloseRequestedEvent
+                => HandleLocalCloseRequested(localCloseRequestedEvent, nowTicks, ref effects),
+            QuicConnectionConnectionCloseFrameReceivedEvent connectionCloseFrameReceivedEvent
+                => HandleConnectionCloseFrameReceived(connectionCloseFrameReceivedEvent, nowTicks, ref effects),
+            QuicConnectionStatelessResetMatchedEvent statelessResetMatchedEvent
+                => HandleStatelessResetMatched(statelessResetMatchedEvent, nowTicks, ref effects),
             _ => false,
         };
 
@@ -163,7 +245,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             previousPhase,
             phase,
             stateChanged,
-            Array.Empty<QuicConnectionEffect>());
+            effects?.ToArray() ?? Array.Empty<QuicConnectionEffect>());
     }
 
     public async ValueTask DisposeAsync()
@@ -239,26 +321,364 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
     }
 
-    private bool ConfirmHandshake()
+    private bool HandleHandshakeConfirmed(
+        QuicConnectionHandshakeConfirmedEvent handshakeConfirmedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
     {
+        _ = handshakeConfirmedEvent;
+
         if (handshakeConfirmed)
         {
             return false;
         }
 
         handshakeConfirmed = true;
-        return true;
+        if (phase == QuicConnectionPhase.Establishing)
+        {
+            phase = QuicConnectionPhase.Active;
+        }
+
+        bool stateChanged = true;
+
+        if (TryPromoteValidatedCandidatePath(nowTicks, ref effects))
+        {
+            stateChanged = true;
+        }
+
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return stateChanged;
     }
 
-    private bool ApplyTransportParameters(QuicConnectionTransportState committedFlags)
+    private bool ApplyTransportParameters(
+        QuicConnectionTransportParametersCommittedEvent transportParametersCommittedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
     {
-        QuicConnectionTransportState updatedFlags = transportFlags | committedFlags;
-        if (updatedFlags == transportFlags)
+        bool stateChanged = false;
+
+        QuicConnectionTransportState updatedFlags = transportFlags | transportParametersCommittedEvent.TransportFlags;
+        if (updatedFlags != transportFlags)
+        {
+            transportFlags = updatedFlags;
+            stateChanged = true;
+        }
+
+        if (transportParametersCommittedEvent.LocalMaxIdleTimeoutMicros.HasValue
+            && localMaxIdleTimeoutMicros != transportParametersCommittedEvent.LocalMaxIdleTimeoutMicros.Value)
+        {
+            localMaxIdleTimeoutMicros = transportParametersCommittedEvent.LocalMaxIdleTimeoutMicros.Value;
+            stateChanged = true;
+        }
+
+        if (transportParametersCommittedEvent.PeerMaxIdleTimeoutMicros.HasValue
+            && peerMaxIdleTimeoutMicros != transportParametersCommittedEvent.PeerMaxIdleTimeoutMicros.Value)
+        {
+            peerMaxIdleTimeoutMicros = transportParametersCommittedEvent.PeerMaxIdleTimeoutMicros.Value;
+            stateChanged = true;
+        }
+
+        if (transportParametersCommittedEvent.CurrentProbeTimeoutMicros.HasValue)
+        {
+            if (transportParametersCommittedEvent.CurrentProbeTimeoutMicros.Value == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(transportParametersCommittedEvent), "CurrentProbeTimeoutMicros must be greater than zero.");
+            }
+
+            if (currentProbeTimeoutMicros != transportParametersCommittedEvent.CurrentProbeTimeoutMicros.Value)
+            {
+                currentProbeTimeoutMicros = transportParametersCommittedEvent.CurrentProbeTimeoutMicros.Value;
+                stateChanged = true;
+            }
+        }
+
+        if (RecomputeIdleTimeoutState(nowTicks))
+        {
+            stateChanged = true;
+        }
+
+        if (stateChanged)
+        {
+            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        }
+
+        return stateChanged;
+    }
+
+    private bool HandlePacketReceived(
+        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (SendingMode != QuicConnectionSendingMode.Ordinary)
         {
             return false;
         }
 
-        transportFlags = updatedFlags;
+        bool stateChanged = false;
+        int payloadBytes = packetReceivedEvent.Datagram.Length;
+
+        if (activePath is null)
+        {
+            stateChanged = InitializeActivePath(packetReceivedEvent.PathIdentity, payloadBytes, nowTicks);
+        }
+        else if (EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, packetReceivedEvent.PathIdentity))
+        {
+            stateChanged = UpdateActivePathTraffic(payloadBytes, nowTicks);
+        }
+        else
+        {
+            stateChanged = HandleAddressChangePacket(packetReceivedEvent.PathIdentity, payloadBytes, nowTicks, ref effects);
+        }
+
+        if (idleTimeoutState is not null)
+        {
+            idleTimeoutState.RecordPeerPacketProcessed(GetElapsedMicros(nowTicks));
+            stateChanged = true;
+        }
+
+        if (stateChanged)
+        {
+            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        }
+
+        return stateChanged;
+    }
+
+    private bool HandlePathValidationSucceeded(
+        QuicConnectionPathValidationSucceededEvent pathValidationSucceededEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!TryGetCandidatePath(pathValidationSucceededEvent.PathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
+        {
+            return false;
+        }
+
+        if (candidatePath.Validation.IsAbandoned || (candidatePath.Validation.IsValidated && !candidatePath.Validation.IsAbandoned))
+        {
+            return false;
+        }
+
+        candidatePath = candidatePath with
+        {
+            Validation = candidatePath.Validation with
+            {
+                IsValidated = true,
+                IsAbandoned = false,
+                ValidationDeadlineTicks = null,
+                ChallengeSentAtTicks = candidatePath.Validation.ChallengeSentAtTicks ?? nowTicks,
+            },
+            AmplificationState = candidatePath.AmplificationState.MarkAddressValidated(),
+            LastActivityTicks = nowTicks,
+        };
+        candidatePaths[pathValidationSucceededEvent.PathIdentity] = candidatePath;
+
+        AppendRecentlyValidatedPath(candidatePath.Identity, nowTicks, candidatePath.SavedRecoverySnapshot, candidatePath.AmplificationState);
+        lastValidatedRemoteAddress = candidatePath.Identity.RemoteAddress;
+
+        bool stateChanged = true;
+        if (CanPromoteActivePathMigration()
+            && TryPromoteValidatedCandidatePath(pathValidationSucceededEvent.PathIdentity, nowTicks, ref effects))
+        {
+            stateChanged = true;
+        }
+
+        UpdatePeerAddressValidationFlag();
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return stateChanged;
+    }
+
+    private bool HandlePathValidationFailed(
+        QuicConnectionPathValidationFailedEvent pathValidationFailedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!TryGetCandidatePath(pathValidationFailedEvent.PathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
+        {
+            if (HasValidatedPath)
+            {
+                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            }
+
+            return false;
+        }
+
+        candidatePath = candidatePath with
+        {
+            Validation = candidatePath.Validation with
+            {
+                IsAbandoned = true,
+                ValidationDeadlineTicks = null,
+            },
+            LastActivityTicks = nowTicks,
+        };
+        candidatePaths[pathValidationFailedEvent.PathIdentity] = candidatePath;
+
+        bool stateChanged = true;
+
+        if (activePath is not null
+            && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, candidatePath.Identity))
+        {
+            if (TryPromoteFallbackValidatedPath(nowTicks, ref effects))
+            {
+                stateChanged = true;
+            }
+            else if (activePath is not null)
+            {
+                activePath = activePath.Value with
+                {
+                    IsValidated = false,
+                    RecoverySnapshot = null,
+                    LastActivityTicks = nowTicks,
+                };
+            }
+        }
+
+        if (!HasValidatedPath)
+        {
+            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(
+                $"No validated paths remain after path validation failed for {pathValidationFailedEvent.PathIdentity.RemoteAddress}."));
+        }
+
+        UpdatePeerAddressValidationFlag();
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return stateChanged;
+    }
+
+    private bool HandlePathValidationTimerExpired(
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        bool stateChanged = false;
+        List<QuicConnectionPathIdentity>? expiredPathIdentities = null;
+
+        foreach (KeyValuePair<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> entry in candidatePaths)
+        {
+            QuicConnectionCandidatePathRecord candidatePath = entry.Value;
+            if (candidatePath.Validation.IsValidated
+                || candidatePath.Validation.IsAbandoned
+                || !candidatePath.Validation.ValidationDeadlineTicks.HasValue
+                || candidatePath.Validation.ValidationDeadlineTicks.Value > nowTicks)
+            {
+                continue;
+            }
+
+            candidatePath = candidatePath with
+            {
+                Validation = candidatePath.Validation with
+                {
+                    IsAbandoned = true,
+                    ValidationDeadlineTicks = null,
+                },
+                LastActivityTicks = nowTicks,
+            };
+            candidatePaths[entry.Key] = candidatePath;
+            (expiredPathIdentities ??= []).Add(entry.Key);
+            stateChanged = true;
+        }
+
+        if (expiredPathIdentities is not null)
+        {
+            foreach (QuicConnectionPathIdentity expiredPathIdentity in expiredPathIdentities)
+            {
+                if (activePath is not null
+                    && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, expiredPathIdentity))
+                {
+                    if (CanPromoteActivePathMigration()
+                        && TryPromoteFallbackValidatedPath(nowTicks, ref effects))
+                    {
+                        stateChanged = true;
+                    }
+                    else if (activePath is not null)
+                    {
+                        activePath = activePath.Value with
+                        {
+                            IsValidated = false,
+                            RecoverySnapshot = null,
+                            LastActivityTicks = nowTicks,
+                        };
+                    }
+                }
+            }
+        }
+
+        if (stateChanged && !HasValidatedPath)
+        {
+            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(
+                "No validated paths remain after a path-validation timer expired."));
+        }
+
+        UpdatePeerAddressValidationFlag();
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return stateChanged;
+    }
+
+    private bool HandleLocalCloseRequested(
+        QuicConnectionLocalCloseRequestedEvent localCloseRequestedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase is QuicConnectionPhase.Closing or QuicConnectionPhase.Draining or QuicConnectionPhase.Discarded)
+        {
+            return false;
+        }
+
+        EnterTerminalPhase(
+            QuicConnectionPhase.Closing,
+            QuicConnectionCloseOrigin.Local,
+            localCloseRequestedEvent.Close,
+            nowTicks,
+            preserveTerminalEndTicks: false);
+
+        AppendTerminalEffects(ref effects, emitClosePacket: true);
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return true;
+    }
+
+    private bool HandleConnectionCloseFrameReceived(
+        QuicConnectionConnectionCloseFrameReceivedEvent connectionCloseFrameReceivedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase is QuicConnectionPhase.Draining or QuicConnectionPhase.Discarded)
+        {
+            return false;
+        }
+
+        EnterTerminalPhase(
+            QuicConnectionPhase.Draining,
+            QuicConnectionCloseOrigin.Remote,
+            connectionCloseFrameReceivedEvent.Close,
+            nowTicks,
+            preserveTerminalEndTicks: phase == QuicConnectionPhase.Closing);
+
+        AppendTerminalEffects(ref effects, emitClosePacket: false);
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return true;
+    }
+
+    private bool HandleStatelessResetMatched(
+        QuicConnectionStatelessResetMatchedEvent statelessResetMatchedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        _ = statelessResetMatchedEvent;
+
+        if (phase is QuicConnectionPhase.Draining or QuicConnectionPhase.Discarded)
+        {
+            return false;
+        }
+
+        EnterTerminalPhase(
+            QuicConnectionPhase.Draining,
+            QuicConnectionCloseOrigin.StatelessReset,
+            default,
+            nowTicks,
+            preserveTerminalEndTicks: phase == QuicConnectionPhase.Closing);
+
+        AppendTerminalEffects(ref effects, emitClosePacket: false);
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return true;
     }
 
@@ -295,7 +715,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         };
     }
 
-    private bool TryHandleTimerExpired(QuicConnectionTimerExpiredEvent timerExpiredEvent)
+    private bool TryHandleTimerExpired(
+        QuicConnectionTimerExpiredEvent timerExpiredEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
     {
         if (!timerState.IsCurrent(timerExpiredEvent.TimerKind, timerExpiredEvent.Generation))
         {
@@ -306,6 +729,919 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             timerState.GetGeneration(timerExpiredEvent.TimerKind));
 
         timerState = timerState.WithSchedule(timerExpiredEvent.TimerKind, null, nextGeneration);
+
+        switch (timerExpiredEvent.TimerKind)
+        {
+            case QuicConnectionTimerKind.IdleTimeout:
+                return HandleIdleTimeoutExpired(nowTicks, ref effects);
+            case QuicConnectionTimerKind.CloseLifetime:
+                return phase == QuicConnectionPhase.Closing
+                    && DiscardConnection(nowTicks, QuicConnectionCloseOrigin.Local, terminalState?.Close ?? default, ref effects);
+            case QuicConnectionTimerKind.DrainLifetime:
+                return phase == QuicConnectionPhase.Draining
+                    && DiscardConnection(nowTicks, terminalState?.Origin ?? QuicConnectionCloseOrigin.Remote, terminalState?.Close ?? default, ref effects);
+            case QuicConnectionTimerKind.PathValidation:
+                return HandlePathValidationTimerExpired(nowTicks, ref effects);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(timerExpiredEvent), "TimerKind was not recognized.");
+        }
+    }
+
+    private bool HandleIdleTimeoutExpired(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase is QuicConnectionPhase.Closing or QuicConnectionPhase.Draining or QuicConnectionPhase.Discarded)
+        {
+            return false;
+        }
+
+        return DiscardConnection(nowTicks, QuicConnectionCloseOrigin.IdleTimeout, default, ref effects);
+    }
+
+    private bool DiscardConnection(
+        long nowTicks,
+        QuicConnectionCloseOrigin origin,
+        QuicConnectionCloseMetadata closeMetadata,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        phase = QuicConnectionPhase.Discarded;
+        idleTimeoutState = null;
+        terminalEndTicks = null;
+        terminalState = new QuicConnectionTerminalState(
+            QuicConnectionPhase.Discarded,
+            origin,
+            closeMetadata,
+            nowTicks);
+
+        AppendEffect(ref effects, new QuicConnectionNotifyStreamsOfTerminalStateEffect(terminalState.Value));
+        AppendEffect(ref effects, new QuicConnectionDiscardConnectionStateEffect(terminalState));
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return true;
+    }
+
+    private bool RecomputeIdleTimeoutState(long nowTicks)
+    {
+        if (!QuicIdleTimeoutState.TryComputeEffectiveIdleTimeoutMicros(
+            localMaxIdleTimeoutMicros,
+            peerMaxIdleTimeoutMicros,
+            currentProbeTimeoutMicros,
+            out ulong effectiveIdleTimeoutMicros))
+        {
+            if (idleTimeoutState is null)
+            {
+                return false;
+            }
+
+            idleTimeoutState = null;
+            return true;
+        }
+
+        if (idleTimeoutState is not null
+            && idleTimeoutState.EffectiveIdleTimeoutMicros == effectiveIdleTimeoutMicros)
+        {
+            return false;
+        }
+
+        idleTimeoutState = new QuicIdleTimeoutState(effectiveIdleTimeoutMicros);
+        idleTimeoutState.RecordPeerPacketProcessed(GetElapsedMicros(nowTicks));
+        return true;
+    }
+
+    private bool InitializeActivePath(
+        QuicConnectionPathIdentity pathIdentity,
+        int payloadBytes,
+        long nowTicks)
+    {
+        QuicConnectionPathAmplificationState amplificationState = default;
+        if (!amplificationState.TryRegisterReceivedDatagramPayloadBytes(payloadBytes, uniquelyAttributedToSingleConnection: true, out amplificationState))
+        {
+            return false;
+        }
+
+        bool trustedReuse = TryGetRecentlyValidatedPath(pathIdentity, out QuicConnectionValidatedPathRecord recentlyValidatedPath);
+        if (trustedReuse)
+        {
+            amplificationState = amplificationState.MarkAddressValidated();
+        }
+
+        activePath = new QuicConnectionActivePathRecord(
+            pathIdentity,
+            ActivatedAtTicks: nowTicks,
+            LastActivityTicks: nowTicks,
+            IsValidated: trustedReuse || transportFlags.HasFlag(QuicConnectionTransportState.PeerAddressValidated),
+            RecoverySnapshot: trustedReuse ? recentlyValidatedPath.SavedRecoverySnapshot : null)
+        {
+            AmplificationState = amplificationState,
+        };
+
+        if (activePath.Value.IsValidated)
+        {
+            lastValidatedRemoteAddress = pathIdentity.RemoteAddress;
+        }
+
+        UpdatePeerAddressValidationFlag();
+        return true;
+    }
+
+    private bool UpdateActivePathTraffic(int payloadBytes, long nowTicks)
+    {
+        if (activePath is null)
+        {
+            return false;
+        }
+
+        QuicConnectionActivePathRecord path = activePath.Value;
+        if (!path.AmplificationState.TryRegisterReceivedDatagramPayloadBytes(
+            payloadBytes,
+            uniquelyAttributedToSingleConnection: true,
+            out QuicConnectionPathAmplificationState updatedAmplificationState))
+        {
+            return false;
+        }
+
+        QuicConnectionActivePathRecord updatedPath = path with
+        {
+            LastActivityTicks = nowTicks,
+            AmplificationState = updatedAmplificationState,
+        };
+
+        if (updatedPath == path)
+        {
+            return false;
+        }
+
+        activePath = updatedPath;
+        if (updatedPath.IsValidated)
+        {
+            lastValidatedRemoteAddress = updatedPath.Identity.RemoteAddress;
+        }
+
+        return true;
+    }
+
+    private bool HandleAddressChangePacket(
+        QuicConnectionPathIdentity pathIdentity,
+        int payloadBytes,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionPathClassification classification = ClassifyPathChange(pathIdentity);
+        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(
+            $"Packet from {pathIdentity.RemoteAddress} classified as {classification}."));
+
+        if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
+        {
+            return HandleExistingCandidatePath(pathIdentity, payloadBytes, nowTicks, ref candidatePath, ref effects);
+        }
+
+        if (TryGetRecentlyValidatedPath(pathIdentity, out QuicConnectionValidatedPathRecord recentlyValidatedPath))
+        {
+            return TryHandleTrustedPathReuse(pathIdentity, payloadBytes, nowTicks, recentlyValidatedPath, ref effects);
+        }
+
+        if (MaximumCandidatePaths == 0 || candidatePaths.Count >= MaximumCandidatePaths)
+        {
+            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(
+                $"Packet from {pathIdentity.RemoteAddress} classified as {QuicConnectionPathClassification.NoiseOrAttack} because the candidate-path budget is exhausted."));
+            return false;
+        }
+
+        return TryCreateCandidatePath(pathIdentity, payloadBytes, nowTicks, recentlyValidatedPath: null, ref effects);
+    }
+
+    private bool HandleExistingCandidatePath(
+        QuicConnectionPathIdentity pathIdentity,
+        int payloadBytes,
+        long nowTicks,
+        ref QuicConnectionCandidatePathRecord candidatePath,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (candidatePath.Validation.IsValidated && !candidatePath.Validation.IsAbandoned)
+        {
+            candidatePath = candidatePath with
+            {
+                LastActivityTicks = nowTicks,
+            };
+            bool pathUpdated = true;
+            if (candidatePath.AmplificationState.TryRegisterReceivedDatagramPayloadBytes(
+                payloadBytes,
+                uniquelyAttributedToSingleConnection: true,
+                out QuicConnectionPathAmplificationState validatedAmplificationState))
+            {
+                candidatePath = candidatePath with
+                {
+                    AmplificationState = validatedAmplificationState,
+                };
+            }
+
+            candidatePaths[pathIdentity] = candidatePath;
+
+            if (CanPromoteActivePathMigration())
+            {
+                return TryPromoteValidatedCandidatePath(pathIdentity, nowTicks, ref effects);
+            }
+
+            UpdatePeerAddressValidationFlag();
+            return pathUpdated;
+        }
+
+        if (candidatePath.Validation.IsAbandoned)
+        {
+            return TryCreateCandidatePath(pathIdentity, payloadBytes, nowTicks, recentlyValidatedPath: null, ref effects);
+        }
+
+        bool stateChanged = true;
+        if (candidatePath.AmplificationState.TryRegisterReceivedDatagramPayloadBytes(
+            payloadBytes,
+            uniquelyAttributedToSingleConnection: true,
+            out QuicConnectionPathAmplificationState updatedAmplificationState))
+        {
+            candidatePath = candidatePath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+        }
+
+        candidatePath = candidatePath with
+        {
+            LastActivityTicks = nowTicks,
+        };
+
+        if (!candidatePath.Validation.ValidationDeadlineTicks.HasValue
+            || candidatePath.Validation.ValidationDeadlineTicks.Value <= nowTicks)
+        {
+            stateChanged |= TrySendPathValidationChallenge(pathIdentity, nowTicks, ref candidatePath, ref effects);
+        }
+
+        candidatePaths[pathIdentity] = candidatePath;
+        UpdatePeerAddressValidationFlag();
+
+        return stateChanged;
+    }
+
+    private bool TryHandleTrustedPathReuse(
+        QuicConnectionPathIdentity pathIdentity,
+        int payloadBytes,
+        long nowTicks,
+        QuicConnectionValidatedPathRecord recentlyValidatedPath,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionPathAmplificationState amplificationState = recentlyValidatedPath.AmplificationState.MarkAddressValidated();
+        if (!amplificationState.TryRegisterReceivedDatagramPayloadBytes(
+            payloadBytes,
+            uniquelyAttributedToSingleConnection: true,
+            out QuicConnectionPathAmplificationState updatedAmplificationState))
+        {
+            return false;
+        }
+
+        QuicConnectionCandidatePathRecord candidatePath = new(
+            pathIdentity,
+            DiscoveredAtTicks: nowTicks,
+            LastActivityTicks: nowTicks,
+            Validation: new QuicConnectionPathValidationState(
+                Generation: 0,
+                IsValidated: true,
+                IsAbandoned: false,
+                ChallengeSendCount: 0,
+                ChallengeSentAtTicks: null,
+                ValidationDeadlineTicks: null,
+                ChallengePayload: ReadOnlyMemory<byte>.Empty),
+            SavedRecoverySnapshot: recentlyValidatedPath.SavedRecoverySnapshot)
+        {
+            AmplificationState = updatedAmplificationState.MarkAddressValidated(),
+        };
+
+        candidatePaths[pathIdentity] = candidatePath;
+        AppendRecentlyValidatedPath(pathIdentity, nowTicks, recentlyValidatedPath.SavedRecoverySnapshot, candidatePath.AmplificationState);
+        lastValidatedRemoteAddress = pathIdentity.RemoteAddress;
+
+        if (CanPromoteActivePathMigration())
+        {
+            return TryPromoteValidatedCandidatePath(pathIdentity, nowTicks, ref effects);
+        }
+
+        UpdatePeerAddressValidationFlag();
+        return true;
+    }
+
+    private bool TryCreateCandidatePath(
+        QuicConnectionPathIdentity pathIdentity,
+        int payloadBytes,
+        long nowTicks,
+        QuicConnectionValidatedPathRecord? recentlyValidatedPath,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionPathAmplificationState amplificationState = default;
+        if (!amplificationState.TryRegisterReceivedDatagramPayloadBytes(payloadBytes, uniquelyAttributedToSingleConnection: true, out amplificationState))
+        {
+            return false;
+        }
+
+        bool isTrustedReuse = recentlyValidatedPath.HasValue;
+        if (isTrustedReuse)
+        {
+            amplificationState = amplificationState.MarkAddressValidated();
+        }
+
+        QuicConnectionCandidatePathRecord candidatePath = new(
+            pathIdentity,
+            DiscoveredAtTicks: nowTicks,
+            LastActivityTicks: nowTicks,
+            Validation: new QuicConnectionPathValidationState(
+                Generation: 0,
+                IsValidated: isTrustedReuse,
+                IsAbandoned: false,
+                ChallengeSendCount: 0,
+                ChallengeSentAtTicks: null,
+                ValidationDeadlineTicks: null,
+                ChallengePayload: ReadOnlyMemory<byte>.Empty),
+            SavedRecoverySnapshot: recentlyValidatedPath?.SavedRecoverySnapshot)
+        {
+            AmplificationState = amplificationState,
+        };
+
+        candidatePaths[pathIdentity] = candidatePath;
+
+        if (!isTrustedReuse)
+        {
+            TrySendPathValidationChallenge(pathIdentity, nowTicks, ref candidatePath, ref effects);
+            candidatePaths[pathIdentity] = candidatePath;
+        }
+        else
+        {
+            AppendRecentlyValidatedPath(pathIdentity, nowTicks, recentlyValidatedPath?.SavedRecoverySnapshot, candidatePath.AmplificationState);
+        }
+
+        if (isTrustedReuse)
+        {
+            lastValidatedRemoteAddress = pathIdentity.RemoteAddress;
+        }
+
+        UpdatePeerAddressValidationFlag();
+        return true;
+    }
+
+    private bool TrySendPathValidationChallenge(
+        QuicConnectionPathIdentity pathIdentity,
+        long nowTicks,
+        ref QuicConnectionCandidatePathRecord candidatePath,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (candidatePath.Validation.IsValidated || candidatePath.Validation.IsAbandoned)
+        {
+            return false;
+        }
+
+        Span<byte> challengePayload = stackalloc byte[QuicPathValidation.PathChallengeDataLength];
+        if (!QuicPathValidation.TryGeneratePathChallengeData(challengePayload, out int challengePayloadBytesWritten))
+        {
+            return false;
+        }
+
+        Span<byte> challengePayloadBuffer = challengePayload[..challengePayloadBytesWritten];
+        Span<byte> challengeFrameBuffer = stackalloc byte[16];
+        if (!QuicFrameCodec.TryFormatPathChallengeFrame(
+            new QuicPathChallengeFrame(challengePayloadBuffer),
+            challengeFrameBuffer,
+            out int challengeFrameBytesWritten))
+        {
+            return false;
+        }
+
+        int totalPayloadLength = challengeFrameBytesWritten;
+        byte[] datagram = challengeFrameBuffer[..challengeFrameBytesWritten].ToArray();
+
+        int paddingLength = 0;
+        if (QuicPathValidation.TryGetPathValidationDatagramPaddingLength(totalPayloadLength, out int computedPaddingLength)
+            && computedPaddingLength > 0)
+        {
+            paddingLength = computedPaddingLength;
+        }
+
+        if (paddingLength > 0
+            && candidatePath.AmplificationState.CanSend(totalPayloadLength + paddingLength))
+        {
+            QuicAntiAmplificationBudget paddingBudget = new();
+            if (!paddingBudget.TryRegisterReceivedDatagramPayloadBytes(paddingLength, uniquelyAttributedToSingleConnection: true))
+            {
+                return false;
+            }
+
+            byte[] paddedDatagram = new byte[totalPayloadLength + paddingLength];
+            datagram.CopyTo(paddedDatagram, 0);
+            if (!QuicPathValidation.TryFormatPathValidationDatagramPadding(
+                totalPayloadLength,
+                paddingBudget,
+                paddedDatagram.AsSpan(totalPayloadLength),
+                out int paddingBytesWritten))
+            {
+                return false;
+            }
+
+            totalPayloadLength += paddingBytesWritten;
+            datagram = paddedDatagram;
+        }
+
+        if (!candidatePath.AmplificationState.TryConsumeSendBudget(totalPayloadLength, out QuicConnectionPathAmplificationState updatedAmplificationState))
+        {
+            return false;
+        }
+
+        candidatePath = candidatePath with
+        {
+            AmplificationState = updatedAmplificationState,
+            Validation = candidatePath.Validation with
+            {
+                Generation = QuicConnectionTimerDeadlineState.IncrementCounter(candidatePath.Validation.Generation),
+                ChallengeSendCount = candidatePath.Validation.ChallengeSendCount + 1,
+                ChallengeSentAtTicks = nowTicks,
+                ValidationDeadlineTicks = SaturatingAdd(nowTicks, ConvertMicrosToTicks(currentProbeTimeoutMicros)),
+                ChallengePayload = challengePayload[..challengePayloadBytesWritten].ToArray(),
+            },
+        };
+
+        candidatePaths[pathIdentity] = candidatePath;
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, datagram));
+        return true;
+    }
+
+    private bool TryGetCandidatePath(QuicConnectionPathIdentity pathIdentity, out QuicConnectionCandidatePathRecord candidatePath)
+    {
+        return candidatePaths.TryGetValue(pathIdentity, out candidatePath);
+    }
+
+    private bool TryGetRecentlyValidatedPath(QuicConnectionPathIdentity pathIdentity, out QuicConnectionValidatedPathRecord validatedPath)
+    {
+        return recentlyValidatedPaths.TryGetValue(pathIdentity, out validatedPath);
+    }
+
+    private QuicConnectionPathClassification ClassifyPathChange(QuicConnectionPathIdentity pathIdentity)
+    {
+        if (TryGetRecentlyValidatedPath(pathIdentity, out _))
+        {
+            return QuicConnectionPathClassification.PreferredAddressTransition;
+        }
+
+        if (string.Equals(lastValidatedRemoteAddress, pathIdentity.RemoteAddress, StringComparison.Ordinal))
+        {
+            return QuicConnectionPathClassification.ProbableNatRebinding;
+        }
+
+        return handshakeConfirmed ? QuicConnectionPathClassification.MigrationCandidate : QuicConnectionPathClassification.ProbableNatRebinding;
+    }
+
+    private void AppendRecentlyValidatedPath(
+        QuicConnectionPathIdentity pathIdentity,
+        long nowTicks,
+        QuicConnectionPathRecoverySnapshot? savedRecoverySnapshot,
+        QuicConnectionPathAmplificationState amplificationState)
+    {
+        if (MaximumRecentlyValidatedPaths == 0)
+        {
+            return;
+        }
+
+        recentlyValidatedPaths[pathIdentity] = new QuicConnectionValidatedPathRecord(
+            pathIdentity,
+            ValidatedAtTicks: nowTicks,
+            SavedRecoverySnapshot: savedRecoverySnapshot)
+        {
+            LastActivityTicks = nowTicks,
+            AmplificationState = amplificationState.MarkAddressValidated(),
+        };
+
+        if (recentlyValidatedPaths.Count <= MaximumRecentlyValidatedPaths)
+        {
+            return;
+        }
+
+        QuicConnectionPathIdentity? candidateToRemove = null;
+        long oldestActivityTicks = long.MaxValue;
+        foreach (KeyValuePair<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> entry in recentlyValidatedPaths)
+        {
+            if (EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(entry.Key, pathIdentity))
+            {
+                continue;
+            }
+
+            if (entry.Value.LastActivityTicks < oldestActivityTicks)
+            {
+                oldestActivityTicks = entry.Value.LastActivityTicks;
+                candidateToRemove = entry.Key;
+            }
+        }
+
+        if (candidateToRemove.HasValue)
+        {
+            recentlyValidatedPaths.Remove(candidateToRemove.Value);
+        }
+    }
+
+    private bool TryPromoteValidatedCandidatePath(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionPathIdentity? bestPathIdentity = null;
+        long bestActivityTicks = long.MinValue;
+
+        foreach (KeyValuePair<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> entry in candidatePaths)
+        {
+            QuicConnectionCandidatePathRecord candidatePath = entry.Value;
+            if (!candidatePath.Validation.IsValidated || candidatePath.Validation.IsAbandoned)
+            {
+                continue;
+            }
+
+            if (candidatePath.LastActivityTicks > bestActivityTicks)
+            {
+                bestActivityTicks = candidatePath.LastActivityTicks;
+                bestPathIdentity = entry.Key;
+            }
+        }
+
+        if (!bestPathIdentity.HasValue)
+        {
+            return false;
+        }
+
+        return TryPromoteValidatedCandidatePath(bestPathIdentity.Value, nowTicks, ref effects);
+    }
+
+    private bool TryPromoteValidatedCandidatePath(
+        QuicConnectionPathIdentity pathIdentity,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath)
+            || !candidatePath.Validation.IsValidated
+            || candidatePath.Validation.IsAbandoned)
+        {
+            return false;
+        }
+
+        bool activePathChanged = activePath is null
+            || !EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity);
+
+        if (activePathChanged && !CanPromoteActivePathMigration())
+        {
+            return false;
+        }
+
+        if (activePath is not null
+            && !EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity)
+            && activePath.Value.IsValidated)
+        {
+            AppendRecentlyValidatedPath(
+                activePath.Value.Identity,
+                nowTicks,
+                activePath.Value.RecoverySnapshot,
+                activePath.Value.AmplificationState);
+        }
+
+        AppendRecentlyValidatedPath(
+            pathIdentity,
+            nowTicks,
+            candidatePath.SavedRecoverySnapshot,
+            candidatePath.AmplificationState);
+
+        QuicConnectionActivePathRecord updatedActivePath = new(
+            pathIdentity,
+            ActivatedAtTicks: nowTicks,
+            LastActivityTicks: nowTicks,
+            IsValidated: true,
+            RecoverySnapshot: candidatePath.SavedRecoverySnapshot)
+        {
+            AmplificationState = candidatePath.AmplificationState.MarkAddressValidated(),
+        };
+
+        activePath = updatedActivePath;
+        candidatePaths.Remove(pathIdentity);
+        lastValidatedRemoteAddress = pathIdentity.RemoteAddress;
+        UpdatePeerAddressValidationFlag();
+
+        if (activePathChanged)
+        {
+            AppendEffect(ref effects, new QuicConnectionPromoteActivePathEffect(
+                pathIdentity,
+                RestoreSavedState: candidatePath.SavedRecoverySnapshot.HasValue));
+        }
+
+        return true;
+    }
+
+    private bool TryPromoteFallbackValidatedPath(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    {
+        if (recentlyValidatedPaths.Count == 0)
+        {
+            return false;
+        }
+
+        QuicConnectionValidatedPathRecord? bestCandidate = null;
+        QuicConnectionPathIdentity? bestPathIdentity = null;
+        long bestActivityTicks = long.MinValue;
+
+        foreach (KeyValuePair<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> entry in recentlyValidatedPaths)
+        {
+            if (activePath is not null
+                && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, entry.Key))
+            {
+                continue;
+            }
+
+            if (entry.Value.LastActivityTicks > bestActivityTicks)
+            {
+                bestActivityTicks = entry.Value.LastActivityTicks;
+                bestCandidate = entry.Value;
+                bestPathIdentity = entry.Key;
+            }
+        }
+
+        if (!bestCandidate.HasValue || !bestPathIdentity.HasValue)
+        {
+            return false;
+        }
+
+        QuicConnectionActivePathRecord promotedPath = new(
+            bestPathIdentity.Value,
+            ActivatedAtTicks: nowTicks,
+            LastActivityTicks: nowTicks,
+            IsValidated: true,
+            RecoverySnapshot: bestCandidate.Value.SavedRecoverySnapshot)
+        {
+            AmplificationState = bestCandidate.Value.AmplificationState.MarkAddressValidated(),
+        };
+
+        AppendRecentlyValidatedPath(
+            bestPathIdentity.Value,
+            nowTicks,
+            bestCandidate.Value.SavedRecoverySnapshot,
+            bestCandidate.Value.AmplificationState);
+
+        activePath = promotedPath;
+        lastValidatedRemoteAddress = bestPathIdentity.Value.RemoteAddress;
+        UpdatePeerAddressValidationFlag();
+        AppendEffect(ref effects, new QuicConnectionPromoteActivePathEffect(
+            bestPathIdentity.Value,
+            RestoreSavedState: bestCandidate.Value.SavedRecoverySnapshot.HasValue));
+        return true;
+    }
+
+    private bool CanPromoteActivePathMigration()
+    {
+        if (!handshakeConfirmed)
+        {
+            return false;
+        }
+
+        if (phase is not QuicConnectionPhase.Establishing and not QuicConnectionPhase.Active)
+        {
+            return false;
+        }
+
+        return !transportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration);
+    }
+
+    private void UpdatePeerAddressValidationFlag()
+    {
+        bool shouldBeValidated = HasValidatedPath;
+        bool isCurrentlyValidated = transportFlags.HasFlag(QuicConnectionTransportState.PeerAddressValidated);
+
+        if (shouldBeValidated == isCurrentlyValidated)
+        {
+            return;
+        }
+
+        transportFlags = shouldBeValidated
+            ? transportFlags | QuicConnectionTransportState.PeerAddressValidated
+            : transportFlags & ~QuicConnectionTransportState.PeerAddressValidated;
+    }
+
+    private void EnterTerminalPhase(
+        QuicConnectionPhase nextPhase,
+        QuicConnectionCloseOrigin origin,
+        QuicConnectionCloseMetadata closeMetadata,
+        long nowTicks,
+        bool preserveTerminalEndTicks)
+    {
+        phase = nextPhase;
+
+        if (!preserveTerminalEndTicks || !terminalEndTicks.HasValue)
+        {
+            terminalEndTicks = ComputeTerminalEndTicks(nowTicks);
+        }
+
+        idleTimeoutState = null;
+        terminalState = new QuicConnectionTerminalState(
+            nextPhase,
+            origin,
+            closeMetadata,
+            nowTicks);
+    }
+
+    private void AppendTerminalEffects(ref List<QuicConnectionEffect>? effects, bool emitClosePacket)
+    {
+        if (terminalState.HasValue)
+        {
+            AppendEffect(ref effects, new QuicConnectionNotifyStreamsOfTerminalStateEffect(terminalState.Value));
+        }
+
+        if (!emitClosePacket
+            || activePath is null
+            || SendingMode != QuicConnectionSendingMode.CloseOnly
+            || terminalState is null)
+        {
+            return;
+        }
+
+        ReadOnlyMemory<byte> closePayload = FormatConnectionClosePayload(terminalState.Value.Close);
+        QuicConnectionActivePathRecord currentPath = activePath.Value;
+        if (!currentPath.AmplificationState.TryConsumeSendBudget(
+            closePayload.Length,
+            out QuicConnectionPathAmplificationState updatedAmplificationState))
+        {
+            return;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            closePayload));
+    }
+
+    private QuicConnectionEffect[] RecomputeLifecycleTimerEffects()
+    {
+        List<QuicConnectionEffect> effects = [];
+        long? idleDueTicks = phase switch
+        {
+            QuicConnectionPhase.Establishing or QuicConnectionPhase.Active when idleTimeoutState is not null
+                => GetAbsoluteTicks(idleTimeoutState.IdleTimeoutDeadlineMicros),
+            _ => null,
+        };
+
+        long? pathValidationDueTicks = GetEarliestPathValidationDueTicks();
+
+        long? closeDueTicks = phase == QuicConnectionPhase.Closing ? terminalEndTicks : null;
+        long? drainDueTicks = phase == QuicConnectionPhase.Draining ? terminalEndTicks : null;
+
+        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.IdleTimeout, idleDueTicks));
+        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.CloseLifetime, closeDueTicks));
+        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.DrainLifetime, drainDueTicks));
+        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.PathValidation, pathValidationDueTicks));
+        return effects.ToArray();
+    }
+
+    private long? GetEarliestPathValidationDueTicks()
+    {
+        if (phase is not QuicConnectionPhase.Establishing and not QuicConnectionPhase.Active)
+        {
+            return null;
+        }
+
+        long? dueTicks = null;
+        foreach (QuicConnectionCandidatePathRecord candidatePath in candidatePaths.Values)
+        {
+            if (candidatePath.Validation.IsValidated
+                || candidatePath.Validation.IsAbandoned
+                || !candidatePath.Validation.ValidationDeadlineTicks.HasValue)
+            {
+                continue;
+            }
+
+            long candidateDueTicks = candidatePath.Validation.ValidationDeadlineTicks.Value;
+            if (!dueTicks.HasValue || candidateDueTicks < dueTicks.Value)
+            {
+                dueTicks = candidateDueTicks;
+            }
+        }
+
+        return dueTicks;
+    }
+
+    private long ComputeTerminalEndTicks(long nowTicks)
+    {
+        ulong terminalLifetimeMicros = MultiplySaturating(currentProbeTimeoutMicros, TerminalLifetimePtoMultiplier);
+        return SaturatingAdd(nowTicks, ConvertMicrosToTicks(terminalLifetimeMicros));
+    }
+
+    private ulong GetElapsedMicros(long nowTicks)
+    {
+        long elapsedTicks = nowTicks - timeOriginTicks;
+        if (elapsedTicks <= 0)
+        {
+            return 0;
+        }
+
+        return ConvertTicksToMicros(elapsedTicks);
+    }
+
+    private long GetAbsoluteTicks(ulong absoluteMicros)
+    {
+        return SaturatingAdd(timeOriginTicks, ConvertMicrosToTicks(absoluteMicros));
+    }
+
+    private static ReadOnlyMemory<byte> FormatConnectionClosePayload(QuicConnectionCloseMetadata closeMetadata)
+    {
+        byte[] reasonBytes = closeMetadata.ReasonPhrase is null
+            ? []
+            : Encoding.UTF8.GetBytes(closeMetadata.ReasonPhrase);
+
+        QuicConnectionCloseFrame frame = closeMetadata.ApplicationErrorCode.HasValue
+            ? new QuicConnectionCloseFrame(closeMetadata.ApplicationErrorCode.Value, reasonBytes)
+            : new QuicConnectionCloseFrame(
+                closeMetadata.TransportErrorCode ?? QuicTransportErrorCode.NoError,
+                closeMetadata.TriggeringFrameType ?? 0,
+                reasonBytes);
+
+        byte[] destination = new byte[DefaultCloseFrameOverheadBytes + reasonBytes.Length];
+        if (!QuicFrameCodec.TryFormatConnectionCloseFrame(frame, destination, out int bytesWritten))
+        {
+            throw new InvalidOperationException("The runtime could not format the CONNECTION_CLOSE payload.");
+        }
+
+        return destination.AsMemory(0, bytesWritten);
+    }
+
+    private static ulong ConvertTicksToMicros(long ticks)
+    {
+        if (ticks <= 0)
+        {
+            return 0;
+        }
+
+        ulong numerator = unchecked((ulong)ticks);
+        if (numerator > ulong.MaxValue / MicrosecondsPerSecond)
+        {
+            return ulong.MaxValue;
+        }
+
+        return (numerator * MicrosecondsPerSecond) / (ulong)Stopwatch.Frequency;
+    }
+
+    private static long ConvertMicrosToTicks(ulong micros)
+    {
+        if (micros == 0)
+        {
+            return 0;
+        }
+
+        ulong frequency = (ulong)Stopwatch.Frequency;
+        ulong wholeTicks = micros > ulong.MaxValue / frequency
+            ? ulong.MaxValue
+            : micros * frequency;
+
+        ulong roundedUp = wholeTicks == ulong.MaxValue
+            ? wholeTicks
+            : wholeTicks + (MicrosecondsPerSecond - 1);
+
+        ulong ticks = roundedUp / MicrosecondsPerSecond;
+        return ticks >= long.MaxValue ? long.MaxValue : (long)ticks;
+    }
+
+    private static ulong MultiplySaturating(ulong value, ulong multiplier)
+    {
+        if (value == 0 || multiplier == 0)
+        {
+            return 0;
+        }
+
+        if (value > ulong.MaxValue / multiplier)
+        {
+            return ulong.MaxValue;
+        }
+
+        return value * multiplier;
+    }
+
+    private static long SaturatingAdd(long left, long right)
+    {
+        if (right <= 0)
+        {
+            return left;
+        }
+
+        if (left > long.MaxValue - right)
+        {
+            return long.MaxValue;
+        }
+
+        return left + right;
+    }
+
+    private static void AppendEffect(ref List<QuicConnectionEffect>? effects, QuicConnectionEffect effect)
+    {
+        (effects ??= []).Add(effect);
+    }
+
+    private static void AppendEffects(ref List<QuicConnectionEffect>? effects, QuicConnectionEffect[] additionalEffects)
+    {
+        if (additionalEffects.Length == 0)
+        {
+            return;
+        }
+
+        effects ??= [];
+        effects.AddRange(additionalEffects);
     }
 }

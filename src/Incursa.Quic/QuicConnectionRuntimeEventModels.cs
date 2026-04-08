@@ -92,7 +92,10 @@ internal sealed record QuicConnectionStreamActionEvent(
 
 internal sealed record QuicConnectionTransportParametersCommittedEvent(
     long ObservedAtTicks,
-    QuicConnectionTransportState TransportFlags)
+    QuicConnectionTransportState TransportFlags,
+    ulong? LocalMaxIdleTimeoutMicros = null,
+    ulong? PeerMaxIdleTimeoutMicros = null,
+    ulong? CurrentProbeTimeoutMicros = null)
     : QuicConnectionEvent(QuicConnectionEventKind.TransportParametersCommitted, ObservedAtTicks);
 
 internal sealed record QuicConnectionConnectionIdIssuedEvent(
