@@ -49,6 +49,9 @@ public sealed class REQ_QUIC_CRT_0103
             QuicTlsUpdateKind.LocalTransportParametersReady,
             TransportParameters: localParameters)));
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
             TransportParameters: parsedPeerParameters)));
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
@@ -276,6 +279,8 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.False(driver.State.HandshakeConfirmed);
         Assert.True(driver.State.IsTerminal);
         Assert.Equal(QuicTlsTranscriptPhase.Failed, driver.State.HandshakeTranscriptPhase);
+        Assert.Empty(driver.PublishAuthenticatedPeerTransportParameters(CreatePeerTransportParameters()));
+        Assert.Empty(driver.PublishHandshakeConfirmed());
     }
 
     [Fact]
@@ -291,6 +296,12 @@ public sealed class REQ_QUIC_CRT_0103
         };
 
         QuicTlsTransportBridgeDriver driver = new();
+        IReadOnlyList<QuicTlsStateUpdate> stageUpdates = driver.PublishTranscriptProgressed(
+            QuicTlsTranscriptPhase.PeerTransportParametersStaged);
+        Assert.Single(stageUpdates);
+        Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, stageUpdates[0].Kind);
+        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, stageUpdates[0].TranscriptPhase);
+
         IReadOnlyList<QuicTlsStateUpdate> updates = driver.PublishAuthenticatedPeerTransportParameters(peerParameters);
 
         Assert.Single(updates);
@@ -298,6 +309,11 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.True(driver.State.PeerTransportParametersAuthenticated);
 
         QuicConnectionRuntime runtime = CreateRuntime();
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                stageUpdates[0]),
+            nowTicks: 11).StateChanged);
         Assert.True(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 11,
@@ -384,6 +400,22 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
         Assert.False(runtime.HandshakeConfirmed);
 
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.TranscriptProgressed,
+                    TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)),
+            nowTicks: 11).StateChanged);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
+                    TransportParameters: CreatePeerTransportParameters())),
+            nowTicks: 11).StateChanged);
+
         QuicConnectionTransitionResult handshakeConfirmedResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 11,
@@ -464,11 +496,18 @@ public sealed class REQ_QUIC_CRT_0103
                 CreateFormattedTransportParameters(peerParameters, QuicTransportParameterRole.Server)));
 
         Assert.Equal(4, updates.Count);
+        Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, updates[0].Kind);
+        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, updates[0].TranscriptPhase);
         Assert.Equal(QuicTlsUpdateKind.PeerTransportParametersAuthenticated, updates[1].Kind);
         Assert.Equal(QuicTlsUpdateKind.HandshakeConfirmed, updates[2].Kind);
         Assert.True(driver.State.HandshakeConfirmed);
 
         QuicConnectionRuntime runtime = CreateRuntime();
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 12,
+                updates[0]),
+            nowTicks: 12).StateChanged);
         Assert.True(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 12,

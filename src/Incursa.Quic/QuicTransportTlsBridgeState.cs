@@ -243,7 +243,10 @@ internal sealed class QuicTransportTlsBridgeState
         ArgumentNullException.ThrowIfNull(parameters);
 
         QuicTransportParameters committedParameters = CloneTransportParameters(parameters);
-        if (IsTerminal || (PeerTransportParametersAuthenticated && AreEquivalent(PeerTransportParameters, committedParameters)))
+        if (IsTerminal
+            || HandshakeTranscriptPhase != QuicTlsTranscriptPhase.PeerTransportParametersStaged
+            || PeerTransportParametersAuthenticated
+            || HandshakeConfirmed)
         {
             return false;
         }
@@ -288,7 +291,10 @@ internal sealed class QuicTransportTlsBridgeState
 
     public bool TryConfirmHandshake()
     {
-        if (IsTerminal || HandshakeConfirmed)
+        if (IsTerminal
+            || HandshakeConfirmed
+            || HandshakeTranscriptPhase != QuicTlsTranscriptPhase.PeerTransportParametersStaged
+            || !PeerTransportParametersAuthenticated)
         {
             return false;
         }
@@ -344,6 +350,23 @@ internal sealed class QuicTransportTlsBridgeState
         if (IsTerminal || HandshakeTranscriptPhase == transcriptPhase)
         {
             return false;
+        }
+
+        if (transcriptPhase == QuicTlsTranscriptPhase.PeerTransportParametersStaged)
+        {
+            if (HandshakeTranscriptPhase != QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage)
+            {
+                return false;
+            }
+        }
+        else if (transcriptPhase == QuicTlsTranscriptPhase.Completed)
+        {
+            if (HandshakeTranscriptPhase != QuicTlsTranscriptPhase.PeerTransportParametersStaged
+                || !PeerTransportParametersAuthenticated
+                || !HandshakeConfirmed)
+            {
+                return false;
+            }
         }
 
         HandshakeTranscriptPhase = transcriptPhase;

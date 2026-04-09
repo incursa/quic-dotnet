@@ -429,10 +429,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 break;
 
             case QuicTlsUpdateKind.HandshakeConfirmed:
-                stateChanged |= HandleHandshakeConfirmed(
-                    new QuicConnectionHandshakeConfirmedEvent(tlsStateUpdatedEvent.ObservedAtTicks),
-                    nowTicks,
-                    ref effects);
+                if (tlsState.HandshakeConfirmed)
+                {
+                    stateChanged |= HandleHandshakeConfirmed(
+                        new QuicConnectionHandshakeConfirmedEvent(tlsStateUpdatedEvent.ObservedAtTicks),
+                        nowTicks,
+                        ref effects);
+                }
                 break;
 
             case QuicTlsUpdateKind.KeysDiscarded:

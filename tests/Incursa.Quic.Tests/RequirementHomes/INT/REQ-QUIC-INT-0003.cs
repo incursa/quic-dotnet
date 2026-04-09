@@ -24,6 +24,9 @@ public sealed class REQ_QUIC_INT_0003
             QuicTlsUpdateKind.LocalTransportParametersReady,
             TransportParameters: localParameters)));
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
             TransportParameters: peerParameters)));
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
@@ -59,6 +62,25 @@ public sealed class REQ_QUIC_INT_0003
     {
         FakeMonotonicClock clock = new(0);
         QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 9,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.TranscriptProgressed,
+                    TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)),
+            nowTicks: 9).StateChanged);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 9,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
+                    TransportParameters: new QuicTransportParameters
+                    {
+                        DisableActiveMigration = true,
+                    })),
+            nowTicks: 9).StateChanged);
 
         QuicConnectionTransitionResult result = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(

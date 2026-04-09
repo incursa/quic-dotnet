@@ -48,6 +48,16 @@ public sealed class REQ_QUIC_CRT_0022
 
         Assert.True(localTransportResult.StateChanged);
 
+        QuicConnectionTransitionResult stageResult = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 15,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.TranscriptProgressed,
+                    TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)),
+            nowTicks: 15);
+
+        Assert.True(stageResult.StateChanged);
+
         QuicConnectionTransitionResult peerTransportResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 20,

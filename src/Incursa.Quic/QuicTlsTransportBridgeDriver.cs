@@ -343,13 +343,29 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                     return;
 
                 case QuicTlsTranscriptStepKind.PeerTransportParametersStaged:
-                    AppendPublishedUpdates(
-                        updates,
-                        PublishTranscriptProgressed(QuicTlsTranscriptPhase.PeerTransportParametersStaged));
-                    AppendPublishedUpdates(
-                        updates,
-                        PublishAuthenticatedPeerTransportParameters(step.TransportParameters!));
-                    AppendPublishedUpdates(updates, PublishHandshakeConfirmed());
+                {
+                    IReadOnlyList<QuicTlsStateUpdate> stagedUpdates = PublishTranscriptProgressed(
+                        QuicTlsTranscriptPhase.PeerTransportParametersStaged);
+                    AppendPublishedUpdates(updates, stagedUpdates);
+                    if (stagedUpdates.Count == 0)
+                    {
+                        return;
+                    }
+
+                    IReadOnlyList<QuicTlsStateUpdate> authenticatedUpdates = PublishAuthenticatedPeerTransportParameters(
+                        step.TransportParameters!);
+                    AppendPublishedUpdates(updates, authenticatedUpdates);
+                    if (authenticatedUpdates.Count == 0)
+                    {
+                        return;
+                    }
+
+                    IReadOnlyList<QuicTlsStateUpdate> handshakeConfirmedUpdates = PublishHandshakeConfirmed();
+                    AppendPublishedUpdates(updates, handshakeConfirmedUpdates);
+                    if (handshakeConfirmedUpdates.Count == 0)
+                    {
+                        return;
+                    }
 
                     if (handshakeTranscriptProgress.MarkPeerTransportParametersAuthenticated())
                     {
@@ -359,6 +375,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                     }
 
                     break;
+                }
 
                 case QuicTlsTranscriptStepKind.Fatal:
                     if (step.AlertDescription.HasValue)

@@ -10,16 +10,55 @@ public sealed class REQ_QUIC_CRT_0106
     {
         QuicConnectionRuntime runtime = CreateRuntime();
 
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 9,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.TranscriptProgressed,
+                    TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)),
+            nowTicks: 9).StateChanged);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 10,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
+                    TransportParameters: new QuicTransportParameters
+                    {
+                        DisableActiveMigration = true,
+                    })),
+            nowTicks: 10).StateChanged);
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.HandshakeConfirmed)),
+            nowTicks: 11);
+
+        Assert.True(result.StateChanged);
+        Assert.True(runtime.HandshakeConfirmed);
+        Assert.True(runtime.TlsState.HandshakeConfirmed);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void RuntimeRejectsHandshakeConfirmationBeforePeerTransportParametersAreAuthenticated()
+    {
+        QuicConnectionRuntime runtime = CreateRuntime();
+
         QuicConnectionTransitionResult result = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 10,
                 new QuicTlsStateUpdate(QuicTlsUpdateKind.HandshakeConfirmed)),
             nowTicks: 10);
 
-        Assert.True(result.StateChanged);
-        Assert.True(runtime.HandshakeConfirmed);
-        Assert.True(runtime.TlsState.HandshakeConfirmed);
-        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.False(result.StateChanged);
+        Assert.False(runtime.TlsState.HandshakeConfirmed);
+        Assert.False(runtime.HandshakeConfirmed);
+        Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+        Assert.Equal(QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage, runtime.TlsState.HandshakeTranscriptPhase);
     }
 
     [Fact]

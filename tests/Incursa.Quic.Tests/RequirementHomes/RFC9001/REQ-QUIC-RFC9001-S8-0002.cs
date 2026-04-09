@@ -38,6 +38,9 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
 
         QuicTransportTlsBridgeState bridge = new();
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
             TransportParameters: parsedParameters)));
 
@@ -53,6 +56,46 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
         Assert.Equal(new byte[] { 0xAA, 0xBB, 0xCC }, bridge.PeerTransportParameters.InitialSourceConnectionId);
         Assert.Equal(new byte[] { 0x44, 0x55 }, bridge.PeerTransportParameters.PreferredAddress!.ConnectionId);
         Assert.Equal(new byte[] { 0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F }, bridge.PeerTransportParameters.PreferredAddress.StatelessResetToken);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void AuthenticatedTransportParametersAreRejectedBeforeTranscriptProgressIsStaged()
+    {
+        QuicTransportParameters sourceParameters = new()
+        {
+            MaxIdleTimeout = 30,
+            DisableActiveMigration = true,
+            InitialSourceConnectionId = [0xAA, 0xBB, 0xCC],
+        };
+
+        Span<byte> encodedParameters = stackalloc byte[128];
+        Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+            sourceParameters,
+            QuicTransportParameterRole.Server,
+            encodedParameters,
+            out int bytesWritten));
+
+        Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+            encodedParameters[..bytesWritten],
+            QuicTransportParameterRole.Client,
+            out QuicTransportParameters parsedParameters));
+
+        QuicTransportTlsBridgeState bridge = new();
+        Assert.False(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
+            TransportParameters: parsedParameters)));
+        Assert.False(bridge.PeerTransportParametersAuthenticated);
+        Assert.Null(bridge.PeerTransportParameters);
+
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
+            TransportParameters: parsedParameters)));
+        Assert.True(bridge.PeerTransportParametersAuthenticated);
     }
 
     [Fact]
