@@ -214,6 +214,113 @@ public sealed class REQ_QUIC_CRT_0103
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void BridgeDriverStartHandshakePublishesLocalTransportParameters()
+    {
+        QuicTransportParameters localParameters = CreateBootstrapLocalTransportParameters();
+
+        QuicTlsTransportBridgeDriver driver = new();
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.StartHandshake(localParameters);
+
+        Assert.Single(updates);
+        Assert.Equal(QuicTlsUpdateKind.LocalTransportParametersReady, updates[0].Kind);
+        Assert.Same(localParameters, updates[0].TransportParameters);
+        Assert.NotSame(localParameters, driver.State.LocalTransportParameters);
+        Assert.Equal(15UL, driver.State.LocalTransportParameters!.MaxIdleTimeout);
+        Assert.Equal(new byte[] { 0x01, 0x02, 0x03 }, driver.State.LocalTransportParameters.InitialSourceConnectionId);
+
+        localParameters.InitialSourceConnectionId![0] = 0xFF;
+
+        Assert.Equal(new byte[] { 0x01, 0x02, 0x03 }, driver.State.LocalTransportParameters.InitialSourceConnectionId);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RuntimeConsumesHandshakeBootstrapUpdatesThroughTheExistingTlsReducer()
+    {
+        QuicTransportParameters localParameters = CreateBootstrapLocalTransportParameters();
+        QuicConnectionRuntime runtime = CreateRuntime();
+
+        QuicConnectionTransitionResult bootstrapResult = runtime.Transition(
+            new QuicConnectionHandshakeBootstrapRequestedEvent(
+                ObservedAtTicks: 10,
+                LocalTransportParameters: localParameters),
+            nowTicks: 10);
+
+        Assert.True(bootstrapResult.StateChanged);
+        Assert.Equal(QuicConnectionEventKind.HandshakeBootstrapRequested, bootstrapResult.EventKind);
+        Assert.NotSame(localParameters, runtime.TlsState.LocalTransportParameters);
+        Assert.Equal(15UL, runtime.TlsState.LocalTransportParameters!.MaxIdleTimeout);
+        Assert.Equal(15UL, runtime.LocalMaxIdleTimeoutMicros);
+        Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+        Assert.False(runtime.HandshakeConfirmed);
+
+        QuicConnectionTransitionResult handshakeConfirmedResult = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.HandshakeConfirmed)),
+            nowTicks: 11);
+
+        Assert.True(handshakeConfirmedResult.StateChanged);
+        Assert.True(runtime.HandshakeConfirmed);
+        Assert.True(runtime.TlsState.HandshakeConfirmed);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void HandshakeBootstrapRejectsRepeatedRequests()
+    {
+        QuicConnectionRuntime runtime = CreateRuntime();
+
+        QuicConnectionTransitionResult firstBootstrapResult = runtime.Transition(
+            new QuicConnectionHandshakeBootstrapRequestedEvent(
+                ObservedAtTicks: 10,
+                LocalTransportParameters: CreateBootstrapLocalTransportParameters()),
+            nowTicks: 10);
+
+        QuicConnectionTransitionResult repeatedBootstrapResult = runtime.Transition(
+            new QuicConnectionHandshakeBootstrapRequestedEvent(
+                ObservedAtTicks: 11,
+                LocalTransportParameters: new QuicTransportParameters
+                {
+                    MaxIdleTimeout = 20,
+                }),
+            nowTicks: 11);
+
+        Assert.True(firstBootstrapResult.StateChanged);
+        Assert.False(repeatedBootstrapResult.StateChanged);
+        Assert.Equal(15UL, runtime.LocalMaxIdleTimeoutMicros);
+        Assert.NotNull(runtime.TlsState.LocalTransportParameters);
+        Assert.Equal(15UL, runtime.TlsState.LocalTransportParameters!.MaxIdleTimeout);
+        Assert.False(runtime.HandshakeConfirmed);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void HandshakeBootstrapRejectsInvalidTransportParameters()
+    {
+        QuicConnectionRuntime runtime = CreateRuntime();
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionHandshakeBootstrapRequestedEvent(
+                ObservedAtTicks: 12,
+                LocalTransportParameters: null),
+            nowTicks: 12);
+
+        Assert.False(result.StateChanged);
+        Assert.Equal(QuicConnectionEventKind.HandshakeBootstrapRequested, result.EventKind);
+        Assert.Null(runtime.TlsState.LocalTransportParameters);
+        Assert.Null(runtime.LocalMaxIdleTimeoutMicros);
+        Assert.False(runtime.HandshakeConfirmed);
+        Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void BridgeDriverEmitsHandshakeConfirmedUpdates()
     {
         QuicTlsTransportBridgeDriver driver = new();
@@ -301,6 +408,15 @@ public sealed class REQ_QUIC_CRT_0103
         return new QuicConnectionRuntime(
             QuicConnectionStreamStateTestHelpers.CreateState(),
             new FakeMonotonicClock(0));
+    }
+
+    private static QuicTransportParameters CreateBootstrapLocalTransportParameters()
+    {
+        return new QuicTransportParameters
+        {
+            MaxIdleTimeout = 15,
+            InitialSourceConnectionId = [0x01, 0x02, 0x03],
+        };
     }
 
     private static QuicConnectionRuntime CreateRuntimeWithActivePath()

@@ -17,6 +17,7 @@ internal enum QuicConnectionEventKind
     ConnectionIdAcknowledged = 12,
     TlsStateUpdated = 13,
     CryptoFrameReceived = 14,
+    HandshakeBootstrapRequested = 15,
 }
 
 internal enum QuicConnectionEffectKind
@@ -59,6 +60,11 @@ internal sealed record QuicConnectionTimerExpiredEvent(
 
 internal sealed record QuicConnectionHandshakeConfirmedEvent(long ObservedAtTicks)
     : QuicConnectionEvent(QuicConnectionEventKind.HandshakeConfirmed, ObservedAtTicks);
+
+internal sealed record QuicConnectionHandshakeBootstrapRequestedEvent(
+    long ObservedAtTicks,
+    QuicTransportParameters? LocalTransportParameters)
+    : QuicConnectionEvent(QuicConnectionEventKind.HandshakeBootstrapRequested, ObservedAtTicks);
 
 internal sealed record QuicConnectionLocalCloseRequestedEvent(
     long ObservedAtTicks,

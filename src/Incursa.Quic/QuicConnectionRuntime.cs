@@ -232,6 +232,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             QuicConnectionHandshakeConfirmedEvent handshakeConfirmedEvent
                 => HandleHandshakeConfirmed(handshakeConfirmedEvent, nowTicks, ref effects),
+            QuicConnectionHandshakeBootstrapRequestedEvent handshakeBootstrapRequestedEvent
+                => HandleHandshakeBootstrapRequested(handshakeBootstrapRequestedEvent, nowTicks, ref effects),
             QuicConnectionTransportParametersCommittedEvent transportParametersCommittedEvent
                 => ApplyTransportParameters(transportParametersCommittedEvent, nowTicks, ref effects),
             QuicConnectionTlsStateUpdatedEvent tlsStateUpdatedEvent
@@ -370,6 +372,42 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return stateChanged;
+    }
+
+    private bool HandleHandshakeBootstrapRequested(
+        QuicConnectionHandshakeBootstrapRequestedEvent handshakeBootstrapRequestedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase != QuicConnectionPhase.Establishing
+            || tlsState.IsTerminal
+            || tlsState.LocalTransportParameters is not null)
+        {
+            return false;
+        }
+
+        QuicTransportParameters? localTransportParameters = handshakeBootstrapRequestedEvent.LocalTransportParameters;
+        if (localTransportParameters is null)
+        {
+            return false;
+        }
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = tlsBridgeDriver.StartHandshake(localTransportParameters);
+        if (updates.Count == 0)
+        {
+            return false;
+        }
+
+        bool stateChanged = true;
+        foreach (QuicTlsStateUpdate update in updates)
+        {
+            stateChanged |= HandleTlsStateUpdated(
+                new QuicConnectionTlsStateUpdatedEvent(handshakeBootstrapRequestedEvent.ObservedAtTicks, update),
+                nowTicks,
+                ref effects);
+        }
+
         return stateChanged;
     }
 
