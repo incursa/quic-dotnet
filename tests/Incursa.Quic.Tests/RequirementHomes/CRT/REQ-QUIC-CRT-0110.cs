@@ -153,6 +153,36 @@ public sealed class REQ_QUIC_CRT_0110
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    public void P1363EncodedCertificateVerifySignatureFailsDeterministically()
+    {
+        QuicTransportParameters peerTransportParameters = CreateServerTransportParameters();
+        ProofInputs inputs = CreateProofInputs(peerTransportParameters);
+        QuicTlsKeySchedule schedule = new(CreateScalar(0x11));
+
+        using ECDsa leafKey = inputs.LeafKey;
+
+        Assert.Equal(3, schedule.ProcessTranscriptStep(CreateServerHelloStep(inputs.ServerHelloTranscript)).Count);
+        Assert.Empty(schedule.ProcessTranscriptStep(CreateEncryptedExtensionsStep(peerTransportParameters)));
+        Assert.Empty(schedule.ProcessTranscriptStep(CreateCertificateStep(inputs.CertificateTranscript)));
+
+        byte[] certificateVerifyTranscript = QuicTlsCertificateVerifyTestSupport.CreateCertificateVerifyTranscript(
+            leafKey,
+            inputs.CertificateVerifyTranscriptHash,
+            signatureFormat: DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = schedule.ProcessTranscriptStep(
+            CreateCertificateVerifyStep(certificateVerifyTranscript));
+
+        Assert.Single(updates);
+        Assert.Equal(QuicTlsUpdateKind.FatalAlert, updates[0].Kind);
+        Assert.Equal((ushort)0x0033, updates[0].AlertDescription);
+        Assert.False(schedule.PeerCertificateVerifyVerified);
+        Assert.Empty(schedule.ProcessTranscriptStep(CreateCertificateVerifyStep(certificateVerifyTranscript)));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void TranscriptMismatchFailsDeterministically()
     {
         QuicTransportParameters signedPeerTransportParameters = CreateServerTransportParameters();

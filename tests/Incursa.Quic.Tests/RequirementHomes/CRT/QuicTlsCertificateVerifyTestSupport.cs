@@ -11,6 +11,7 @@ internal static class QuicTlsCertificateVerifyTestSupport
     private const int UInt16Length = 2;
     private const int UInt24Length = 3;
     private const int CertificateVerifySignedDataPrefixLength = 64;
+    private const DSASignatureFormat CertificateVerifySignatureFormat = DSASignatureFormat.Rfc3279DerSequence;
 
     private static readonly byte[] ServerCertificateVerifyContext =
         Encoding.ASCII.GetBytes("TLS 1.3, server CertificateVerify");
@@ -63,9 +64,10 @@ internal static class QuicTlsCertificateVerifyTestSupport
     internal static byte[] CreateCertificateVerifyTranscript(
         ECDsa leafKey,
         ReadOnlySpan<byte> transcriptHash,
-        QuicTlsSignatureScheme signatureScheme = QuicTlsSignatureScheme.EcdsaSecp256r1Sha256)
+        QuicTlsSignatureScheme signatureScheme = QuicTlsSignatureScheme.EcdsaSecp256r1Sha256,
+        DSASignatureFormat signatureFormat = CertificateVerifySignatureFormat)
     {
-        byte[] signature = CreateCertificateVerifySignature(leafKey, transcriptHash);
+        byte[] signature = CreateCertificateVerifySignature(leafKey, transcriptHash, signatureFormat);
         byte[] body = new byte[UInt16Length + UInt16Length + signature.Length];
         int index = 0;
 
@@ -80,7 +82,8 @@ internal static class QuicTlsCertificateVerifyTestSupport
 
     internal static byte[] CreateCertificateVerifySignature(
         ECDsa leafKey,
-        ReadOnlySpan<byte> transcriptHash)
+        ReadOnlySpan<byte> transcriptHash,
+        DSASignatureFormat signatureFormat = CertificateVerifySignatureFormat)
     {
         ArgumentNullException.ThrowIfNull(leafKey);
 
@@ -94,7 +97,7 @@ internal static class QuicTlsCertificateVerifyTestSupport
         transcriptHash.CopyTo(
             signedData.Slice(CertificateVerifySignedDataPrefixLength + ServerCertificateVerifyContext.Length + 1));
 
-        return leafKey.SignData(signedData, HashAlgorithmName.SHA256);
+        return leafKey.SignData(signedData, HashAlgorithmName.SHA256, signatureFormat);
     }
 
     private static byte[] WrapHandshakeMessage(QuicTlsHandshakeMessageType messageType, ReadOnlySpan<byte> body)

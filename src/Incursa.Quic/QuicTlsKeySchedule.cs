@@ -33,6 +33,7 @@ internal sealed class QuicTlsKeySchedule
     private const int CertificateVerifyContextPrefixLength = 64;
     private const int EcdsaP256KeySizeBits = 256;
     private const byte CertificateVerifySignedDataPrefixByte = 0x20;
+    private const DSASignatureFormat CertificateVerifySignatureFormat = DSASignatureFormat.Rfc3279DerSequence;
 
     private static readonly byte[] HkdfLabelPrefix = Encoding.ASCII.GetBytes("tls13 ");
     private static readonly byte[] DerivedLabel = Encoding.ASCII.GetBytes("derived");
@@ -445,7 +446,11 @@ internal sealed class QuicTlsKeySchedule
             transcriptHash.AsSpan().CopyTo(
                 signedData.Slice(CertificateVerifyContextPrefixLength + ServerCertificateVerifyContext.Length + 1));
 
-            return publicKey.VerifyData(signedData, signature, HashAlgorithmName.SHA256);
+            return publicKey.VerifyData(
+                signedData,
+                signature,
+                HashAlgorithmName.SHA256,
+                CertificateVerifySignatureFormat);
         }
         catch (CryptographicException)
         {
