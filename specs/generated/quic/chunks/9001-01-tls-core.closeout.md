@@ -25,8 +25,8 @@
 - `S5`: 10 requirements
 - Total in scope: **34**
 - Covered: **4**
-- Blocked / deferred: **30**
-- Partial: **0**
+- Blocked / deferred: **28**
+- Partial: **2**
 - Needs review: **0**
 
 ## Requirements Completed
@@ -44,27 +44,39 @@
   - Evidence files: `src/Incursa.Quic/QuicVersionNegotiation.cs`, `tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`.
   - Test files: `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions`, `tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses`.
 
+## Requirements Partially Completed
+
+- `REQ-QUIC-RFC9001-S5-0001` Protect packets with TLS-derived keys.
+  - Evidence files: `src/Incursa.Quic/QuicAeadAlgorithm.cs`, `src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs`, `src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs`, `src/Incursa.Quic/QuicTlsTransport.cs`, `src/Incursa.Quic/QuicTransportTlsBridgeState.cs`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs`.
+  - Test files: `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_AcceptsHandshakeMaterialWithTheExpectedAeadBinding`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_RejectsInitialEncryptionLevelAndLengthInvalidMaterial`.
+  - Status: partial because packet protect/open helpers are still absent.
+
+- `REQ-QUIC-RFC9001-S5-0002` Use the TLS-negotiated AEAD.
+  - Evidence files: `src/Incursa.Quic/QuicAeadAlgorithm.cs`, `src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs`, `src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs`, `src/Incursa.Quic/QuicTlsTransport.cs`, `src/Incursa.Quic/QuicTransportTlsBridgeState.cs`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs`.
+  - Test files: `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::RuntimeConsumesTlsNegotiatedPacketProtectionMaterialUpdates`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::TryCreate_RejectsUnsupportedAeadAlgorithms`.
+  - Status: partial because negotiated material is now accepted by the bridge/runtime seam, but packet protect/open helpers are still absent.
+
 ## Remaining Open Requirements
 
 - `REQ-QUIC-RFC9001-S2-0001`: intentionally deferred; document-level BCP 14 interpretation rule with no live code or test artifact expected.
 - `REQ-QUIC-RFC9001-S3-0001` through `REQ-QUIC-RFC9001-S3-0011`: blocked by the absence of a TLS handshake, packet-protection, and QUIC/TLS delivery surface.
 - `REQ-QUIC-RFC9001-S4-0003` through `REQ-QUIC-RFC9001-S4-0011`: blocked by the absence of handshake transport and encryption-level plumbing needed to package CRYPTO frames end-to-end.
-- `REQ-QUIC-RFC9001-S5-0001`, `REQ-QUIC-RFC9001-S5-0002`, and `REQ-QUIC-RFC9001-S5-0004` through `REQ-QUIC-RFC9001-S5-0010`: blocked by the absence of packet-protection and key-derivation surfaces.
+- `REQ-QUIC-RFC9001-S5-0001` and `REQ-QUIC-RFC9001-S5-0002` are partially implemented; `REQ-QUIC-RFC9001-S5-0004` through `REQ-QUIC-RFC9001-S5-0010` remain blocked by the absence of packet-protection and key-derivation surfaces.
 
 ## Reference Audit
 
 - Source roots checked: `src/Incursa.Quic`
 - Test roots checked: `tests/Incursa.Quic.Tests`
 - In-scope source requirement refs found: none
-- In-scope test requirement refs found: `REQ-QUIC-RFC9001-S3-0012`, `REQ-QUIC-RFC9001-S4-0001`, `REQ-QUIC-RFC9001-S4-0002`, `REQ-QUIC-RFC9001-S5-0003`
+- In-scope test requirement refs found: `REQ-QUIC-RFC9001-S3-0012`, `REQ-QUIC-RFC9001-S4-0001`, `REQ-QUIC-RFC9001-S4-0002`, `REQ-QUIC-RFC9001-S5-0001`, `REQ-QUIC-RFC9001-S5-0002`, `REQ-QUIC-RFC9001-S5-0003`
 - Stale or wrong refs found: none
-- Current in-scope test files: `tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs`, `tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs`, `tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`
+- Current in-scope test files: `tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs`, `tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs`, `tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs`
 
 ## Tests Run And Results
 
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj`
   - Result: `Passed`
-  - Summary: `204 passed, 0 failed, 0 skipped`
+  - Summary: `1461 passed, 0 failed, 0 skipped`
 
 ## Benchmark Evidence
 
@@ -74,6 +86,6 @@
 
 ## Risks / Follow-up Notes
 
-- The remaining RFC 9001 work is still blocked by missing TLS handshake, packet-protection, and key-update surfaces outside this chunk.
-- This audit validates trace consistency for the completed chunk items; it does not add new protocol behavior beyond the existing implementation summary.
+- The remaining RFC 9001 work is still blocked by missing TLS handshake, packet-protection-open, and key-update surfaces outside this chunk.
+- This audit now records the non-Initial packet-protection material boundary as partially implemented; it does not add handshake packet I/O or new protocol behavior beyond the existing implementation summary.
 - `REQ-QUIC-RFC9001-S2-0001` remains a document-level rule and is intentionally deferred.

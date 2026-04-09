@@ -12,12 +12,18 @@
     "src/Incursa.Quic/QuicFrameCodec.cs",
     "src/Incursa.Quic/PublicAPI.Unshipped.txt",
     "src/Incursa.Quic/QuicVersionNegotiation.cs",
+    "src/Incursa.Quic/QuicAeadAlgorithm.cs",
+    "src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
     "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
     "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",
     "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs",
     "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs",
     "benchmarks/QuicFrameCodecBenchmarks.cs",
     "benchmarks/README.md",
     "specs/generated/quic/chunks/9001-01-tls-core.implementation-summary.md",
@@ -323,22 +329,46 @@
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0001",
       "title": "Protect packets with TLS-derived keys",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository still lacks the packet-protection and key-derivation layer needed to encrypt or protect these packet types.",
-      "notes": "These clauses depend on packet-protection, key derivation, and encryption-aware packet assembly."
+      "completion_status": "partially implemented",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAeadAlgorithm.cs",
+        "src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs",
+        "src/Incursa.Quic/QuicTlsTransport.cs",
+        "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_AcceptsHandshakeMaterialWithTheExpectedAeadBinding",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_RejectsInitialEncryptionLevelAndLengthInvalidMaterial"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_AcceptsHandshakeMaterialWithTheExpectedAeadBinding -> REQ-QUIC-RFC9001-S5-0001",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_RejectsInitialEncryptionLevelAndLengthInvalidMaterial -> REQ-QUIC-RFC9001-S5-0001"
+      ],
+      "remaining_gap": "The packet-protection material boundary now exists, but the Handshake packet-protection helper still needs packet I/O, nonce handling, and TLS handshake plumbing.",
+      "notes": "This slice introduces the non-Initial material model and AEAD binding without claiming packet protection I/O support."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0002",
       "title": "Use the TLS-negotiated AEAD",
-      "completion_status": "blocked by concrete dependency",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "The repository still lacks the packet-protection and key-derivation layer needed to encrypt or protect these packet types.",
-      "notes": "These clauses depend on packet-protection, key derivation, and encryption-aware packet assembly."
+      "completion_status": "partially implemented",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAeadAlgorithm.cs",
+        "src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs",
+        "src/Incursa.Quic/QuicTlsTransport.cs",
+        "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::RuntimeConsumesTlsNegotiatedPacketProtectionMaterialUpdates",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::TryCreate_RejectsUnsupportedAeadAlgorithms"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::RuntimeConsumesTlsNegotiatedPacketProtectionMaterialUpdates -> REQ-QUIC-RFC9001-S5-0002",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::TryCreate_RejectsUnsupportedAeadAlgorithms -> REQ-QUIC-RFC9001-S5-0002"
+      ],
+      "remaining_gap": "The negotiated AEAD is now bound to the stored material, but the Handshake packet-protection helper still needs packet I/O, nonce handling, and TLS handshake plumbing.",
+      "notes": "This slice binds material to the negotiated AEAD and threads it through the runtime seam without adding packet protect/open logic."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0003",

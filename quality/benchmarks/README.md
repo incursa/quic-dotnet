@@ -11,6 +11,7 @@ hot-path benchmark suites and to provide benchmark evidence for attestation.
 
 ## Suites Executed
 
+- `benchmarks/QuicInitialPacketProtectionBenchmarks.cs`
 - `benchmarks/QuicHeaderParsingBenchmarks.cs`
 - `benchmarks/QuicStreamParsingBenchmarks.cs`
 - `benchmarks/QuicVariableLengthIntegerBenchmarks.cs`
@@ -18,15 +19,17 @@ hot-path benchmark suites and to provide benchmark evidence for attestation.
 
 ## Command
 
-- `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*Quic*Benchmarks*"`
+- `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicInitialPacketProtectionBenchmarks*"`
 
 ## Outcome
 
-- The dry run completed successfully for all 19 benchmark methods.
+- The dry run completed successfully for all 3 benchmark methods in the Initial packet protection suite.
 - BenchmarkDotNet exported suite reports beneath
   `benchmarks/BenchmarkDotNet.Artifacts/results`.
 - This directory can now be consumed as benchmark evidence by Workbench
   attestation.
+- Earlier benchmark evidence for the existing hot-path suites remains in the
+  repository history and is not replaced by this additive Initial-slice run.
 
 ## Related Verification Artifacts
 

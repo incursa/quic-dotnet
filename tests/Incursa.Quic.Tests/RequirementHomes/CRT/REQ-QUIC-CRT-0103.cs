@@ -114,4 +114,218 @@ public sealed class REQ_QUIC_CRT_0103
             QuicTlsUpdateKind.KeysAvailable,
             QuicTlsEncryptionLevel.Handshake)));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void BridgeDriverConsumesBufferedInboundCryptoBytes()
+    {
+        QuicTlsTransportBridgeDriver driver = new();
+        byte[] inboundCrypto = [0x10, 0x11, 0x12, 0x13];
+
+        Assert.True(driver.TryBufferIncomingCryptoData(
+            QuicTlsEncryptionLevel.Handshake,
+            offset: 0,
+            inboundCrypto,
+            out QuicCryptoBufferResult result));
+        Assert.Equal(QuicCryptoBufferResult.Buffered, result);
+
+        inboundCrypto[0] = 0xFF;
+
+        Span<byte> dequeuedCrypto = stackalloc byte[4];
+        Assert.True(driver.TryDequeueIncomingCryptoData(
+            QuicTlsEncryptionLevel.Handshake,
+            dequeuedCrypto,
+            out int bytesWritten));
+
+        Assert.Equal(4, bytesWritten);
+        Assert.True(new byte[] { 0x10, 0x11, 0x12, 0x13 }.AsSpan().SequenceEqual(dequeuedCrypto[..bytesWritten]));
+        Assert.False(driver.TryDequeueIncomingCryptoData(
+            QuicTlsEncryptionLevel.Handshake,
+            dequeuedCrypto,
+            out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void BridgeDriverQueuesOutboundCryptoBytes()
+    {
+        QuicTlsTransportBridgeDriver driver = new();
+        byte[] outboundCrypto = [0x20, 0x21, 0x22];
+
+        Assert.True(driver.TryBufferOutgoingCryptoData(
+            QuicTlsEncryptionLevel.Handshake,
+            offset: 0,
+            outboundCrypto,
+            out QuicCryptoBufferResult result));
+        Assert.Equal(QuicCryptoBufferResult.Buffered, result);
+
+        outboundCrypto[0] = 0xEE;
+
+        Span<byte> dequeuedCrypto = stackalloc byte[3];
+        Assert.True(driver.TryDequeueOutgoingCryptoData(
+            QuicTlsEncryptionLevel.Handshake,
+            dequeuedCrypto,
+            out int bytesWritten));
+
+        Assert.Equal(3, bytesWritten);
+        Assert.True(new byte[] { 0x20, 0x21, 0x22 }.AsSpan().SequenceEqual(dequeuedCrypto[..bytesWritten]));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void BridgeDriverEmitsAuthenticatedPeerTransportParameters()
+    {
+        QuicTransportParameters peerParameters = new()
+        {
+            MaxIdleTimeout = 30,
+            DisableActiveMigration = true,
+            InitialSourceConnectionId = [0xAA, 0xBB, 0xCC],
+        };
+
+        QuicTlsTransportBridgeDriver driver = new();
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.PublishAuthenticatedPeerTransportParameters(peerParameters);
+
+        Assert.Single(updates);
+        Assert.Equal(QuicTlsUpdateKind.PeerTransportParametersAuthenticated, updates[0].Kind);
+        Assert.True(driver.State.PeerTransportParametersAuthenticated);
+
+        QuicConnectionRuntime runtime = CreateRuntime();
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                updates[0]),
+            nowTicks: 11).StateChanged);
+
+        peerParameters.InitialSourceConnectionId![0] = 0xFF;
+
+        Assert.NotSame(peerParameters, driver.State.PeerTransportParameters);
+        Assert.Equal(30UL, driver.State.PeerTransportParameters!.MaxIdleTimeout);
+        Assert.True(driver.State.PeerTransportParameters.DisableActiveMigration);
+        Assert.Equal(new byte[] { 0xAA, 0xBB, 0xCC }, driver.State.PeerTransportParameters.InitialSourceConnectionId);
+        Assert.True(runtime.TlsState.PeerTransportParametersAuthenticated);
+        Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration));
+        Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.PeerTransportParametersCommitted));
+        Assert.Equal(30UL, runtime.PeerMaxIdleTimeoutMicros);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void BridgeDriverEmitsHandshakeConfirmedUpdates()
+    {
+        QuicTlsTransportBridgeDriver driver = new();
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.PublishHandshakeConfirmed();
+
+        Assert.Single(updates);
+        Assert.Equal(QuicTlsUpdateKind.HandshakeConfirmed, updates[0].Kind);
+        Assert.True(driver.State.HandshakeConfirmed);
+
+        QuicConnectionRuntime runtime = CreateRuntime();
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 12,
+                updates[0]),
+            nowTicks: 12).StateChanged);
+
+        Assert.True(runtime.TlsState.HandshakeConfirmed);
+        Assert.True(runtime.HandshakeConfirmed);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void BridgeDriverEmitsKeyDiscardUpdates()
+    {
+        QuicTlsTransportBridgeDriver driver = new();
+        IReadOnlyList<QuicTlsStateUpdate> availableUpdates = driver.PublishKeysAvailable(QuicTlsEncryptionLevel.Handshake);
+        Assert.Single(availableUpdates);
+        Assert.True(driver.State.HandshakeKeysAvailable);
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.PublishKeyDiscard(QuicTlsEncryptionLevel.Handshake);
+        Assert.Single(updates);
+        Assert.Equal(QuicTlsUpdateKind.KeysDiscarded, updates[0].Kind);
+        Assert.Equal(QuicTlsEncryptionLevel.Handshake, updates[0].EncryptionLevel);
+        Assert.False(driver.State.HandshakeKeysAvailable);
+        Assert.True(driver.State.OldKeysDiscarded);
+
+        QuicConnectionRuntime runtime = CreateRuntime();
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 20,
+                availableUpdates[0]),
+            nowTicks: 20).StateChanged);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 21,
+                updates[0]),
+            nowTicks: 21).StateChanged);
+
+        Assert.False(runtime.TlsState.HandshakeKeysAvailable);
+        Assert.True(runtime.TlsState.OldKeysDiscarded);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void FatalAlertBridgeUpdatesRouteThroughTheExistingRuntimeSeam()
+    {
+        QuicTlsTransportBridgeDriver driver = new();
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.PublishFatalAlert(alertDescription: 0x0017);
+
+        Assert.Single(updates);
+        Assert.Equal(QuicTlsUpdateKind.FatalAlert, updates[0].Kind);
+        Assert.Equal((ushort)0x0017, updates[0].AlertDescription);
+        Assert.True(driver.State.IsTerminal);
+
+        QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 40,
+                updates[0]),
+            nowTicks: 40);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+        Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState?.Origin);
+        Assert.Equal(QuicTransportErrorCode.ProtocolViolation, runtime.TerminalState?.Close.TransportErrorCode);
+        Assert.Equal("TLS alert 23.", runtime.TerminalState?.Close.ReasonPhrase);
+    }
+
+    private static QuicConnectionRuntime CreateRuntime()
+    {
+        return new QuicConnectionRuntime(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            new FakeMonotonicClock(0));
+    }
+
+    private static QuicConnectionRuntime CreateRuntimeWithActivePath()
+    {
+        QuicConnectionRuntime runtime = CreateRuntime();
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 0,
+                new QuicConnectionPathIdentity("203.0.113.10", RemotePort: 443),
+                new byte[1200]),
+            nowTicks: 0).StateChanged);
+
+        return runtime;
+    }
+
+    private sealed class FakeMonotonicClock : IMonotonicClock
+    {
+        public FakeMonotonicClock(long ticks)
+        {
+            Ticks = ticks;
+        }
+
+        public long Ticks { get; }
+
+        public double Seconds => Ticks / (double)TimeSpan.TicksPerSecond;
+    }
 }

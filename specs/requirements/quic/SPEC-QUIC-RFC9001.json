@@ -721,6 +721,10 @@
         "upstream_refs": [
           "RFC 9001 §5 RFC9001-S5-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_AcceptsHandshakeMaterialWithTheExpectedAeadBinding",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_RejectsInitialEncryptionLevelAndLengthInvalidMaterial"
         ]
       }
     },
@@ -747,6 +751,10 @@
         "upstream_refs": [
           "RFC 9001 §5 RFC9001-S5-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::RuntimeConsumesTlsNegotiatedPacketProtectionMaterialUpdates",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::TryCreate_RejectsUnsupportedAeadAlgorithms"
         ]
       }
     },
@@ -802,6 +810,14 @@
         "upstream_refs": [
           "RFC 9001 §5 RFC9001-S5-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::TryGenerateRetryIntegrityTag_ProducesTheRFCAppendixASampleTag",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::TryValidateRetryPacketIntegrity_AcceptsTheRFCAppendixASamplePacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::TryValidateRetryPacketIntegrity_RejectsATamperedRetryPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::TryValidateRetryPacketIntegrity_RejectsRetryPacketsWhenTheOriginalDestinationConnectionIdDoesNotMatch",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::TryGenerateRetryIntegrityTag_RejectsMalformedOrNonRetryInputs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::Fuzz_RetryIntegrity_RoundTripsRandomValidInputs"
         ]
       }
     },
@@ -829,7 +845,10 @@
           "RFC 9001 §5 RFC9001-S5-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0005.cs::TryCreate_UsesAes128GcmForInitialPackets"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S5-0006",
@@ -855,7 +874,10 @@
           "RFC 9001 §5 RFC9001-S5-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs::TryDeriveInitialKeyMaterial_UsesTheFirstClientInitialDcid"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S5-0007",
@@ -867,22 +889,30 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "trace": {
-        "satisfied_by": [
-          "ARC-QUIC-RFC9001-0001"
-        ],
-        "implemented_by": [
-          "WI-QUIC-RFC9001-0001"
-        ],
-        "verified_by": [
-          "VER-QUIC-RFC9001-0001"
-        ],
-        "upstream_refs": [
-          "RFC 9001 §5 RFC9001-S5-B7-P0-S1",
-          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
-        ]
-      }
-    },
+        "trace": {
+          "satisfied_by": [
+            "ARC-QUIC-RFC9001-0001"
+          ],
+          "implemented_by": [
+            "WI-QUIC-RFC9001-0001"
+          ],
+          "verified_by": [
+            "VER-QUIC-RFC9001-0001"
+          ],
+          "upstream_refs": [
+            "RFC 9001 §5 RFC9001-S5-B7-P0-S1",
+            "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+          ],
+          "x_test_refs": [
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryProtectHandshakePacket_AndTryOpenHandshakePacket_RoundTrip",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryCreate_RejectsMissingMaterial",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryCreate_RejectsWrongLevelMaterial",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryOpenHandshakePacket_RejectsTamperedProtectedPayload",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryProtectHandshakePacket_RejectsPacketsThatCannotProvideAHeaderProtectionSample",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::Fuzz_HandshakePacketProtection_RoundTripsRandomValidInputs"
+          ]
+        }
+      },
     {
       "id": "REQ-QUIC-RFC9001-S5-0008",
       "title": "Apply the same protection process to Initial packets",
@@ -907,7 +937,12 @@
           "RFC 9001 §5 RFC9001-S5-B8-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs::TryProtectInitialPacket_AndTryOpenInitialPacket_RoundTrip",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs::TryProtectInitialPacket_RejectsPacketsThatCannotProvideAHeaderProtectionSample",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs::Fuzz_InitialPacketProtection_RoundTripsRandomValidInputs"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S5-0009",
@@ -933,7 +968,11 @@
           "RFC 9001 §5 RFC9001-S5-B8-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0009.cs::TryProtectInitialPacket_LeavesTheLongHeaderConnectionIdsVisible",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0009.cs::TryOpenInitialPacket_WithDifferentClientInitialDcid_DoesNotSucceed"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S5-0010",
@@ -958,6 +997,9 @@
         "upstream_refs": [
           "RFC 9001 §5 RFC9001-S5-B8-P3-S4",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0010.cs::RetryIntegrityKeyAndNonce_UseTheRFC9001FixedValues"
         ]
       }
     },

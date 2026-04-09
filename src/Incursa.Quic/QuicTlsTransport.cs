@@ -33,6 +33,7 @@ internal enum QuicTlsUpdateKind
     FatalAlert = 6,
     ProhibitedKeyUpdateViolation = 7,
     CryptoDataAvailable = 8,
+    PacketProtectionMaterialAvailable = 9,
 }
 
 /// <summary>
@@ -45,7 +46,8 @@ internal readonly record struct QuicTlsStateUpdate(
     uint? KeyPhase = null,
     ushort? AlertDescription = null,
     ulong? CryptoDataOffset = null,
-    ReadOnlyMemory<byte> CryptoData = default);
+    ReadOnlyMemory<byte> CryptoData = default,
+    QuicTlsPacketProtectionMaterial? PacketProtectionMaterial = null);
 
 /// <summary>
 /// A transport-facing bridge to a concrete TLS implementation.

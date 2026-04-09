@@ -4,7 +4,7 @@
 
 ## Scope
 
-This design covers the RFC 9001 packet-protection and TLS-coordination slice, including CRYPTO-frame handling, transport-parameter encoding, key derivation touchpoints, and version-negotiation protection rules.
+This design covers the RFC 9001 packet-protection and TLS-coordination slice, including CRYPTO-frame handling, transport-parameter encoding, the narrow Handshake packet-protection helper, Retry integrity, key derivation touchpoints, and version-negotiation protection rules.
 It does not redefine RFC 9000 transport semantics or RFC 9002 loss-detection logic as separate concerns.
 
 ## Requirements Verified
@@ -83,8 +83,8 @@ Execution, inspection, fuzzing, and benchmark evidence.
 
 ## Procedure or Approach
 
-- Run the relevant unit and property tests.
-- Run the fuzz suites and any available benchmark evidence for the slice.
+- Run the relevant unit, property, and fuzz tests.
+- Run the Handshake and Retry-integrity benchmark suites and any other available benchmark evidence for the slice.
 - Run the repo-local quality evidence scripts.
 - Re-run the JSON render and validation checks so the downstream trace surface reflects the updated requirement links.
 
@@ -92,6 +92,7 @@ Execution, inspection, fuzzing, and benchmark evidence.
 
 - The spec requirements carry downstream trace links.
 - The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.
+- The Handshake-only packet-protection helper is proven without claiming end-to-end handshake support.
 
 ## Evidence
 
@@ -105,8 +106,29 @@ Execution, inspection, fuzzing, and benchmark evidence.
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0008.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0005.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0009.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0010.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicInitialPacketProtectionTestData.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicHandshakePacketProtectionTestData.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicRetryPacketRequirementTestData.cs
+- src/Incursa.Quic/QuicAeadAlgorithm.cs
+- src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs
+- src/Incursa.Quic/QuicTlsTransport.cs
+- src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+- src/Incursa.Quic/QuicInitialPacketProtection.cs
+- src/Incursa.Quic/QuicRetryIntegrity.cs
 - benchmarks/QuicFrameCodecBenchmarks.cs
 - benchmarks/QuicHeaderParsingBenchmarks.cs
+- benchmarks/QuicInitialPacketProtectionBenchmarks.cs
+- benchmarks/QuicHandshakePacketProtectionBenchmarks.cs
+- benchmarks/QuicRetryIntegrityBenchmarks.cs
 - quality/benchmarks/README.md
 - quality/testing-intent.yaml
 

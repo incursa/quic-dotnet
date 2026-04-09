@@ -9,6 +9,7 @@ internal sealed class QuicTransportTlsBridgeState
     private readonly QuicCryptoBuffer handshakeIngressCryptoBuffer = new();
     private readonly QuicCryptoBuffer initialEgressCryptoBuffer = new();
     private readonly QuicCryptoBuffer handshakeEgressCryptoBuffer = new();
+    private readonly Dictionary<QuicTlsEncryptionLevel, QuicTlsPacketProtectionMaterial> packetProtectionMaterials = new();
 
     public QuicTransportParameters? LocalTransportParameters { get; private set; }
 
@@ -35,6 +36,8 @@ internal sealed class QuicTransportTlsBridgeState
     public string? FatalAlertDescription { get; private set; }
 
     public bool HasAnyAvailableKeys => InitialKeysAvailable || HandshakeKeysAvailable || OneRttKeysAvailable;
+
+    public bool HasAnyPacketProtectionMaterial => packetProtectionMaterials.Count > 0;
 
     public bool IsTerminal => FatalAlertCode.HasValue;
 
@@ -114,6 +117,10 @@ internal sealed class QuicTransportTlsBridgeState
                     update.CryptoData,
                     out _);
 
+            case QuicTlsUpdateKind.PacketProtectionMaterialAvailable:
+                return update.PacketProtectionMaterial.HasValue
+                    && TryStorePacketProtectionMaterial(update.PacketProtectionMaterial.Value);
+
             default:
                 return false;
         }
@@ -165,6 +172,13 @@ internal sealed class QuicTransportTlsBridgeState
         }
 
         return cryptoBuffer.TryDequeueContiguousData(destination, out bytesWritten);
+    }
+
+    internal bool TryGetPacketProtectionMaterial(
+        QuicTlsEncryptionLevel encryptionLevel,
+        out QuicTlsPacketProtectionMaterial material)
+    {
+        return packetProtectionMaterials.TryGetValue(encryptionLevel, out material);
     }
 
     public bool TryCommitLocalTransportParameters(QuicTransportParameters parameters)
@@ -259,6 +273,7 @@ internal sealed class QuicTransportTlsBridgeState
         }
 
         OldKeysDiscarded = true;
+        packetProtectionMaterials.Clear();
         return true;
     }
 
@@ -276,6 +291,7 @@ internal sealed class QuicTransportTlsBridgeState
         OneRttKeysAvailable = false;
         KeyUpdateInstalled = false;
         OldKeysDiscarded = true;
+        packetProtectionMaterials.Clear();
         return true;
     }
 
@@ -335,6 +351,33 @@ internal sealed class QuicTransportTlsBridgeState
         return true;
     }
 
+    private bool TryStorePacketProtectionMaterial(QuicTlsPacketProtectionMaterial material)
+    {
+        if (IsTerminal || material.EncryptionLevel is not (QuicTlsEncryptionLevel.Handshake or QuicTlsEncryptionLevel.OneRtt))
+        {
+            return false;
+        }
+
+        if (packetProtectionMaterials.TryGetValue(material.EncryptionLevel, out QuicTlsPacketProtectionMaterial existing)
+            && existing.Matches(material))
+        {
+            return false;
+        }
+
+        packetProtectionMaterials[material.EncryptionLevel] = material;
+        return true;
+    }
+
+    private bool TryDiscardPacketProtectionMaterial(QuicTlsEncryptionLevel encryptionLevel)
+    {
+        return encryptionLevel switch
+        {
+            QuicTlsEncryptionLevel.Handshake or QuicTlsEncryptionLevel.OneRtt
+                => packetProtectionMaterials.Remove(encryptionLevel),
+            _ => false,
+        };
+    }
+
     private bool TryDiscardKeys(QuicTlsEncryptionLevel encryptionLevel)
     {
         if (IsTerminal)
@@ -355,7 +398,9 @@ internal sealed class QuicTransportTlsBridgeState
                 return true;
 
             case QuicTlsEncryptionLevel.Handshake:
-                if (!HandshakeKeysAvailable && OldKeysDiscarded)
+            {
+                bool packetProtectionMaterialDiscarded = TryDiscardPacketProtectionMaterial(encryptionLevel);
+                if (!HandshakeKeysAvailable && OldKeysDiscarded && !packetProtectionMaterialDiscarded)
                 {
                     return false;
                 }
@@ -363,9 +408,12 @@ internal sealed class QuicTransportTlsBridgeState
                 HandshakeKeysAvailable = false;
                 OldKeysDiscarded = true;
                 return true;
+            }
 
             case QuicTlsEncryptionLevel.OneRtt:
-                if (!OneRttKeysAvailable && OldKeysDiscarded)
+            {
+                bool packetProtectionMaterialDiscarded = TryDiscardPacketProtectionMaterial(encryptionLevel);
+                if (!OneRttKeysAvailable && OldKeysDiscarded && !packetProtectionMaterialDiscarded)
                 {
                     return false;
                 }
@@ -373,6 +421,7 @@ internal sealed class QuicTransportTlsBridgeState
                 OneRttKeysAvailable = false;
                 OldKeysDiscarded = true;
                 return true;
+            }
 
             default:
                 return false;

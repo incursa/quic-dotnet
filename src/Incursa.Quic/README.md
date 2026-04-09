@@ -10,6 +10,6 @@ dotnet add package Incursa.Quic
 
 ## Status
 
-- Header parser and view types are present for the first packet-header slice, and the repository now carries helper surfaces for transport parameters, address validation, anti-amplification, path validation, idle timeout, connection close/drain lifecycle, stateless reset, ACK generation, recovery timing, RTT estimation, congestion control, AEAD usage limits, TLS-bridge state, diagnostics sinks, and sender/recovery ownership.
+- Header parser and view types are present for the first packet-header slice, and the repository now carries helper surfaces for transport parameters, address validation, anti-amplification, path validation, idle timeout, connection close/drain lifecycle, stateless reset, ACK generation, recovery timing, RTT estimation, congestion control, AEAD usage limits, Retry integrity, TLS-bridge state, diagnostics sinks, and sender/recovery ownership.
 - Package metadata, versioning, and packaging are already configured in the repository root.
 - Future QUIC implementation code can be added here without changing the surrounding repo structure.

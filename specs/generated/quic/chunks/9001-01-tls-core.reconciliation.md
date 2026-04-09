@@ -35,8 +35,8 @@ Source: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 - `REQ-QUIC-RFC9001-S4-0011` Prefer coalesced packets - `not implemented`
 
 ### S5
-- `REQ-QUIC-RFC9001-S5-0001` Protect packets with TLS-derived keys - `not implemented`
-- `REQ-QUIC-RFC9001-S5-0002` Use the TLS-negotiated AEAD - `not implemented`
+- `REQ-QUIC-RFC9001-S5-0001` Protect packets with TLS-derived keys - `partially implemented`
+- `REQ-QUIC-RFC9001-S5-0002` Use the TLS-negotiated AEAD - `partially implemented`
 - `REQ-QUIC-RFC9001-S5-0003` Leave Version Negotiation packets unprotected - `not implemented`
 - `REQ-QUIC-RFC9001-S5-0004` Protect Retry packets with AEAD_AES_128_GCM - `not implemented`
 - `REQ-QUIC-RFC9001-S5-0005` Use AEAD_AES_128_GCM for Initial packets - `not implemented`
@@ -63,7 +63,8 @@ Source: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 | Status | Count |
 | --- | ---: |
 | unclear / needs human review | 1 |
-| not implemented | 43 |
+| not implemented | 41 |
+| partially implemented | 2 |
 
 ## Generated inputs consulted
 
@@ -75,13 +76,14 @@ Source: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 
 ## Existing implementation evidence
 
-- No direct implementation refs in `src/Incursa.Quic` for RFC 9001 TLS packet-protection or key-update behavior.
-- The closest live code is the packet-header parser surface (`src/Incursa.Quic/QuicPacketParser.cs`, `src/Incursa.Quic/QuicLongHeaderPacket.cs`, `src/Incursa.Quic/QuicVersionNegotiationPacket.cs`), but it only covers RFC 8999 / RFC 9000 header parsing and does not implement RFC 9001 TLS-core behavior.
+- Direct implementation refs now exist for the narrow non-Initial packet-protection material boundary:
+  `src/Incursa.Quic/QuicAeadAlgorithm.cs`, `src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs`, `src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs`, `src/Incursa.Quic/QuicTlsTransport.cs`, and `src/Incursa.Quic/QuicTransportTlsBridgeState.cs`.
+- The closest live packet-framing code is still the packet-header parser surface (`src/Incursa.Quic/QuicPacketParser.cs`, `src/Incursa.Quic/QuicLongHeaderPacket.cs`, `src/Incursa.Quic/QuicVersionNegotiationPacket.cs`), but it still does not implement RFC 9001 handshake packet I/O or packet protect/open helpers.
 
 ## Existing test evidence
 
-- No direct RFC 9001 requirement IDs appear under `tests` or `benchmarks`.
-- The nearest test surfaces (`tests/Incursa.Quic.Tests/QuicPacketParserTests.cs`, `tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs`) still target RFC 8999 / RFC 9000 packet-header behavior only.
+- Direct RFC 9001 requirement-home tests now cover `REQ-QUIC-RFC9001-S5-0001` and `REQ-QUIC-RFC9001-S5-0002` under `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001`.
+- The broader packet-header tests (`tests/Incursa.Quic.Tests/QuicPacketParserTests.cs`, `tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs`) still target RFC 8999 / RFC 9000 behavior and do not imply handshake support.
 
 ## Old -> new requirement ID mappings applied
 
@@ -90,23 +92,24 @@ Source: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 
 ## Gaps fixed in this pass
 
-- None.
+- `REQ-QUIC-RFC9001-S5-0001`: introduced a narrow non-Initial packet-protection material model with explicit encryption-level typing and malformed-input rejection.
+- `REQ-QUIC-RFC9001-S5-0002`: threaded negotiated AEAD-bound material through the TLS bridge/runtime seam and made the binding explicit instead of Initial-only.
 
 ## Remaining gaps
 
 - `S2`: `REQ-QUIC-RFC9001-S2-0001` remains `unclear / needs human review`.
 - `S3`: `REQ-QUIC-RFC9001-S3-0001` through `REQ-QUIC-RFC9001-S3-0012` remain `not implemented`.
 - `S4`: `REQ-QUIC-RFC9001-S4-0001` through `REQ-QUIC-RFC9001-S4-0011` remain `not implemented`.
-- `S5`: `REQ-QUIC-RFC9001-S5-0001` through `REQ-QUIC-RFC9001-S5-0010` remain `not implemented`.
+- `S5`: `REQ-QUIC-RFC9001-S5-0001` and `REQ-QUIC-RFC9001-S5-0002` are now partially implemented; `REQ-QUIC-RFC9001-S5-0004` through `REQ-QUIC-RFC9001-S5-0010` remain `not implemented`.
 - `S6`: `REQ-QUIC-RFC9001-S6-0001` through `REQ-QUIC-RFC9001-S6-0010` remain `not implemented`.
-- The current repository does not contain RFC 9001 TLS packet protection, CRYPTO delivery, or key-update implementation surfaces, so all in-scope requirements remain open in code/test terms.
+- The current repository now has the non-Initial packet-protection material boundary, but it still does not contain RFC 9001 handshake packet I/O or key-update implementation surfaces, so the Handshake half of `S5-0007` remains blocked.
 
 ## Requirements needing deeper implementation work
 
 - `S2`: `REQ-QUIC-RFC9001-S2-0001` is a document-level rule and needs human review to determine whether a repo artifact should capture it.
 - `S3`: `REQ-QUIC-RFC9001-S3-0001` through `REQ-QUIC-RFC9001-S3-0012` need TLS/QUIC integration implementation and proof.
 - `S4`: `REQ-QUIC-RFC9001-S4-0001` through `REQ-QUIC-RFC9001-S4-0011` need CRYPTO-frame, packet-number-space, and encryption-level implementation work.
-- `S5`: `REQ-QUIC-RFC9001-S5-0001` through `REQ-QUIC-RFC9001-S5-0010` need packet-protection, secret-derivation, Retry, and Version Negotiation protection work.
+- `S5`: `REQ-QUIC-RFC9001-S5-0004` through `REQ-QUIC-RFC9001-S5-0010` still need packet-protection, secret-derivation, Retry, and Version Negotiation protection work; the Handshake half of `REQ-QUIC-RFC9001-S5-0007` still needs packet I/O plumbing.
 - `S6`: `REQ-QUIC-RFC9001-S6-0001` through `REQ-QUIC-RFC9001-S6-0010` need key-update and AEAD-limit implementation work.
 
 ## Files written
@@ -120,7 +123,7 @@ Source: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj
 ```
 
-- Passed: 106
+- Passed: 1461
 - Failed: 0
 - Skipped: 0
-- Duration: 155 ms
+- Duration: not recorded in this pass

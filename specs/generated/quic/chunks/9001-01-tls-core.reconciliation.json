@@ -259,23 +259,47 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0001",
-      "status": "not implemented",
-      "implementation_refs": [],
-      "test_refs": [],
+      "status": "partially implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicAeadAlgorithm.cs",
+        "src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs",
+        "src/Incursa.Quic/QuicTlsTransport.cs",
+        "src/Incursa.Quic/QuicTransportTlsBridgeState.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_AcceptsHandshakeMaterialWithTheExpectedAeadBinding",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_RejectsInitialEncryptionLevelAndLengthInvalidMaterial"
+      ],
       "old_requirement_refs_rewritten": [],
-      "changes_made": [],
-      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+      "changes_made": [
+        "Introduced a narrow non-Initial packet-protection material model that stores encryption-level, AEAD, key material, and usage-limit metadata.",
+        "Bound the material to the negotiated AEAD rather than the Initial-only algorithm surface.",
+        "Threaded packet-protection material updates through the TLS bridge state and runtime seam."
+      ],
+      "remaining_gap": "The packet-protection material boundary is now explicit, but the Handshake packet-protection helper still needs packet I/O, nonce handling, and TLS handshake plumbing.",
+      "notes": "This slice advances the key-derivation boundary without claiming handshake packet protect/open support."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0002",
-      "status": "not implemented",
-      "implementation_refs": [],
-      "test_refs": [],
+      "status": "partially implemented",
+      "implementation_refs": [
+        "src/Incursa.Quic/QuicAeadAlgorithm.cs",
+        "src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs",
+        "src/Incursa.Quic/QuicTlsTransport.cs",
+        "src/Incursa.Quic/QuicTransportTlsBridgeState.cs"
+      ],
+      "test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::RuntimeConsumesTlsNegotiatedPacketProtectionMaterialUpdates",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::TryCreate_RejectsUnsupportedAeadAlgorithms"
+      ],
       "old_requirement_refs_rewritten": [],
-      "changes_made": [],
-      "remaining_gap": "No direct implementation or test evidence exists under the selected code/test roots.",
-      "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
+      "changes_made": [
+        "Stored the AEAD selected by TLS alongside the packet-protection material boundary.",
+        "Verified that the runtime seam accepts and retains TLS-negotiated material for the intended encryption level.",
+        "Rejected unsupported AEAD values and malformed usage-limit metadata."
+      ],
+      "remaining_gap": "The negotiated AEAD is now bound to stored material, but the Handshake packet-protection helper still needs packet I/O, nonce handling, and TLS handshake plumbing.",
+      "notes": "This slice binds material to the negotiated AEAD without adding packet protect/open logic."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S5-0003",

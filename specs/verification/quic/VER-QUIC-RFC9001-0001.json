@@ -6,7 +6,7 @@
     "ARC-QUIC-RFC9001-0001",
     "WI-QUIC-RFC9001-0001"
   ],
-  "expected_result": "- The spec requirements carry downstream trace links.\n- The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.",
+  "expected_result": "- The spec requirements carry downstream trace links.\n- The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.\n- The Handshake-only packet-protection helper is proven without claiming end-to-end handshake support.",
   "artifact_id": "VER-QUIC-RFC9001-0001",
   "verifies": [
     "REQ-QUIC-RFC9001-S2-0001",
@@ -74,12 +74,12 @@
   "artifact_type": "verification",
   "status": "planned",
   "procedure": [
-    "Run the relevant unit and property tests.",
-    "Run the fuzz suites and any available benchmark evidence for the slice.",
+    "Run the relevant unit, property, and fuzz tests.",
+    "Run the Handshake and Retry-integrity benchmark suites and any other available benchmark evidence for the slice.",
     "Run the repo-local quality evidence scripts.",
     "Re-run the JSON render and validation checks so the downstream trace surface reflects the updated requirement links."
   ],
-  "scope": "This design covers the RFC 9001 packet-protection and TLS-coordination slice, including CRYPTO-frame handling, transport-parameter encoding, key derivation touchpoints, and version-negotiation protection rules.\nIt does not redefine RFC 9000 transport semantics or RFC 9002 loss-detection logic as separate concerns.",
+  "scope": "This design covers the RFC 9001 packet-protection and TLS-coordination slice, including CRYPTO-frame handling, transport-parameter encoding, the narrow Handshake packet-protection helper, Retry integrity, key derivation touchpoints, and version-negotiation protection rules.\nIt does not redefine RFC 9000 transport semantics or RFC 9002 loss-detection logic as separate concerns.",
   "evidence": [
     "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
@@ -91,8 +91,31 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicHandshakePacketProtectionTestData.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicInitialPacketProtectionTestData.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicRetryPacketRequirementTestData.cs",
+    "src/Incursa.Quic/QuicAeadAlgorithm.cs",
+    "src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicInitialPacketProtection.cs",
+    "src/Incursa.Quic/QuicHandshakePacketProtection.cs",
+    "src/Incursa.Quic/QuicRetryIntegrity.cs",
     "benchmarks/QuicFrameCodecBenchmarks.cs",
     "benchmarks/QuicHeaderParsingBenchmarks.cs",
+    "benchmarks/QuicInitialPacketProtectionBenchmarks.cs",
+    "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
+    "benchmarks/QuicRetryIntegrityBenchmarks.cs",
+    "benchmarks/README.md",
     "quality/benchmarks/README.md",
     "quality/testing-intent.yaml"
   ],
@@ -106,7 +129,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0008.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicHeaderParsingBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml"
+      "content": "- tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0008.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0009.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0010.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicInitialPacketProtectionTestData.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicHandshakePacketProtectionTestData.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicRetryPacketRequirementTestData.cs\n- src/Incursa.Quic/QuicAeadAlgorithm.cs\n- src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicInitialPacketProtection.cs\n- src/Incursa.Quic/QuicRetryIntegrity.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicHeaderParsingBenchmarks.cs\n- benchmarks/QuicInitialPacketProtectionBenchmarks.cs\n- benchmarks/QuicHandshakePacketProtectionBenchmarks.cs\n- benchmarks/QuicRetryIntegrityBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml"
     }
   ],
   "domain": "quic"

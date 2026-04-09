@@ -23,6 +23,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
     private readonly long timeOriginTicks;
     private readonly QuicTransportTlsBridgeState tlsState = new();
+    private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
 
     private int consumerStarted;
     private int disposed;
@@ -53,6 +54,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         timeOriginTicks = this.clock.Ticks;
         sendRuntime = new QuicConnectionSendRuntime();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
+        tlsBridgeDriver = new QuicTlsTransportBridgeDriver(QuicTlsRole.Client, tlsState);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
             SingleReader = true,
@@ -373,7 +375,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (!tlsState.TryApply(tlsStateUpdatedEvent.Update))
+        if (!tlsBridgeDriver.TryApply(tlsStateUpdatedEvent.Update))
         {
             return false;
         }
@@ -427,7 +429,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         _ = nowTicks;
         _ = effects;
 
-        return tlsState.TryBufferIncomingCryptoData(
+        return tlsBridgeDriver.TryBufferIncomingCryptoData(
             cryptoFrameReceivedEvent.EncryptionLevel,
             cryptoFrameReceivedEvent.Offset,
             cryptoFrameReceivedEvent.CryptoData,

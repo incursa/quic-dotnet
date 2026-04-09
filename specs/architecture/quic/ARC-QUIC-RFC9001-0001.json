@@ -8,7 +8,7 @@
   "supplemental_sections": [
     {
       "heading": "Scope",
-      "content": "This design covers the RFC 9001 packet-protection and TLS-coordination slice, including CRYPTO-frame handling, transport-parameter encoding, key derivation touchpoints, and version-negotiation protection rules.\nIt does not redefine RFC 9000 transport semantics or RFC 9002 loss-detection logic as separate concerns."
+      "content": "This design covers the RFC 9001 packet-protection and TLS-coordination slice, including CRYPTO-frame handling, transport-parameter encoding, Retry integrity, key derivation touchpoints, and version-negotiation protection rules.\nIt does not redefine RFC 9000 transport semantics or RFC 9002 loss-detection logic as separate concerns."
     },
     {
       "heading": "Related Artifacts",
@@ -86,17 +86,24 @@
     "If the TLS/protection slice absorbs transport or recovery semantics, the RFC 9001 proof surface will blur into RFC 9000 and RFC 9002.",
     "Version-negotiation behavior is shared infrastructure and needs the same dual-tag discipline as the RFC 8999 wire-shape overlap cases."
   ],
-  "design_summary": "The TLS-facing helpers keep CRYPTO frames, transport parameters, and version-negotiation behavior explicit so the RFC 9001 rules stay visible in tests and quality evidence.\nThe design deliberately leaves transport and recovery behavior in the RFC 9000 and RFC 9002 slices so the TLS-specific proof remains focused.",
+  "design_summary": "The TLS-facing helpers keep CRYPTO frames, transport parameters, Retry integrity, version-negotiation behavior, and a narrow Handshake packet-protection helper explicit so the RFC 9001 rules stay visible in tests and quality evidence.\nThis slice adds a Handshake packet-protection helper that consumes QuicTlsPacketProtectionMaterial, preserves TLS-selected AEAD binding and usage-limit metadata, and performs packet protect/open without introducing endpoint orchestration.\nThe design deliberately leaves transport and recovery behavior in the RFC 9000 and RFC 9002 slices so the TLS-specific proof remains focused.",
   "title": "QUIC RFC 9001 TLS Architecture",
   "owner": "quic-maintainers",
   "key_components": [
+    "src/Incursa.Quic/QuicAeadAlgorithm.cs",
+    "src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs",
     "src/Incursa.Quic/QuicFrameCodec.cs",
     "src/Incursa.Quic/QuicCryptoFrame.cs",
     "src/Incursa.Quic/QuicTransportParameters.cs",
     "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicHandshakePacketProtection.cs",
     "src/Incursa.Quic/QuicVersionNegotiation.cs",
     "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
     "src/Incursa.Quic/QuicLongHeaderPacket.cs",
+    "src/Incursa.Quic/QuicRetryIntegrity.cs",
     "src/Incursa.Quic/QuicVariableLengthInteger.cs"
   ],
   "domain": "quic"

@@ -9,6 +9,9 @@ This directory contains permanent BenchmarkDotNet suites for the QUIC parser hot
 - `QuicCongestionControlBenchmarks`: congestion-window updates, ECN/loss recovery, and persistent-congestion detection
 - `QuicTransportParametersBenchmarks`: transport-parameter parsing and formatting
 - `QuicRttEstimatorBenchmarks`: RTT sample processing, ACK-delay clamping, and explicit min-RTT refresh
+- `QuicInitialPacketProtectionBenchmarks`: Initial secret derivation, protect, and open
+- `QuicHandshakePacketProtectionBenchmarks`: Handshake packet protection protect and open with TLS-derived material
+- `QuicRetryIntegrityBenchmarks`: Retry integrity tag generation and validation
 
 ## Run
 
@@ -21,6 +24,9 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicCongestionControlBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTransportParametersBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRttEstimatorBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicInitialPacketProtectionBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicHandshakePacketProtectionBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRetryIntegrityBenchmarks*"
 ```
 
 Use `--filter` to narrow to a subset of benchmarks when iterating locally.

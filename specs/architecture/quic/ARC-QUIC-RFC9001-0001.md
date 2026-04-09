@@ -8,7 +8,7 @@ Describe how the packet-protection and TLS-coordination surface satisfies the RF
 
 ## Scope
 
-This design covers the RFC 9001 packet-protection and TLS-coordination slice, including CRYPTO-frame handling, transport-parameter encoding, key derivation touchpoints, and version-negotiation protection rules.
+This design covers the RFC 9001 packet-protection and TLS-coordination slice, including CRYPTO-frame handling, transport-parameter encoding, Retry integrity, key derivation touchpoints, and version-negotiation protection rules.
 It does not redefine RFC 9000 transport semantics or RFC 9002 loss-detection logic as separate concerns.
 
 ## Requirements Satisfied
@@ -77,18 +77,26 @@ It does not redefine RFC 9000 transport semantics or RFC 9002 loss-detection log
 
 ## Design Summary
 
-The TLS-facing helpers keep CRYPTO frames, transport parameters, and version-negotiation behavior explicit so the RFC 9001 rules stay visible in tests and quality evidence.
+The TLS-facing helpers keep CRYPTO frames, transport parameters, Retry integrity, version-negotiation behavior, and a narrow Handshake packet-protection helper explicit so the RFC 9001 rules stay visible in tests and quality evidence.
+This slice adds a Handshake packet-protection helper that consumes QuicTlsPacketProtectionMaterial, preserves TLS-selected AEAD binding and usage-limit metadata, and performs packet protect/open without introducing endpoint orchestration.
 The design deliberately leaves transport and recovery behavior in the RFC 9000 and RFC 9002 slices so the TLS-specific proof remains focused.
 
 ## Key Components
 
+- src/Incursa.Quic/QuicAeadAlgorithm.cs
+- src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs
 - src/Incursa.Quic/QuicFrameCodec.cs
 - src/Incursa.Quic/QuicCryptoFrame.cs
 - src/Incursa.Quic/QuicTransportParameters.cs
 - src/Incursa.Quic/QuicTransportParametersCodec.cs
+- src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs
+- src/Incursa.Quic/QuicTlsTransport.cs
+- src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+- src/Incursa.Quic/QuicHandshakePacketProtection.cs
 - src/Incursa.Quic/QuicVersionNegotiation.cs
 - src/Incursa.Quic/QuicVersionNegotiationPacket.cs
 - src/Incursa.Quic/QuicLongHeaderPacket.cs
+- src/Incursa.Quic/QuicRetryIntegrity.cs
 - src/Incursa.Quic/QuicVariableLengthInteger.cs
 
 ## Risks

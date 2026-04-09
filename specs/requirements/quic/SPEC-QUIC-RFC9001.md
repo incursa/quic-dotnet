@@ -414,6 +414,9 @@ Trace:
 - Source Refs:
   - RFC 9001 §5 RFC9001-S5-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_AcceptsHandshakeMaterialWithTheExpectedAeadBinding
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs::TryCreate_RejectsInitialEncryptionLevelAndLengthInvalidMaterial
 
 ## REQ-QUIC-RFC9001-S5-0002 Use the TLS-negotiated AEAD
 QUIC MUST use the AEAD algorithm negotiated by TLS.
@@ -428,6 +431,9 @@ Trace:
 - Source Refs:
   - RFC 9001 §5 RFC9001-S5-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::RuntimeConsumesTlsNegotiatedPacketProtectionMaterialUpdates
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs::TryCreate_RejectsUnsupportedAeadAlgorithms
 
 ## REQ-QUIC-RFC9001-S5-0003 Leave Version Negotiation packets unprotected
 Version Negotiation packets MUST NOT have cryptographic protection.
@@ -458,6 +464,13 @@ Trace:
 - Source Refs:
   - RFC 9001 §5 RFC9001-S5-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::TryGenerateRetryIntegrityTag_ProducesTheRFCAppendixASampleTag
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::TryValidateRetryPacketIntegrity_AcceptsTheRFCAppendixASamplePacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::TryValidateRetryPacketIntegrity_RejectsATamperedRetryPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::TryValidateRetryPacketIntegrity_RejectsRetryPacketsWhenTheOriginalDestinationConnectionIdDoesNotMatch
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::TryGenerateRetryIntegrityTag_RejectsMalformedOrNonRetryInputs
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs::Fuzz_RetryIntegrity_RoundTripsRandomValidInputs
 
 ## REQ-QUIC-RFC9001-S5-0005 Use AEAD_AES_128_GCM for Initial packets
 Initial packets MUST use AEAD_AES_128_GCM.
@@ -500,6 +513,13 @@ Trace:
 - Source Refs:
   - RFC 9001 §5 RFC9001-S5-B7-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryProtectHandshakePacket_AndTryOpenHandshakePacket_RoundTrip
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryCreate_RejectsMissingMaterial
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryCreate_RejectsWrongLevelMaterial
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryOpenHandshakePacket_RejectsTamperedProtectedPayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryProtectHandshakePacket_RejectsPacketsThatCannotProvideAHeaderProtectionSample
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::Fuzz_HandshakePacketProtection_RoundTripsRandomValidInputs
 
 ## REQ-QUIC-RFC9001-S5-0008 Apply the same protection process to Initial packets
 The same packet protection process MUST be applied to Initial packets.
@@ -542,6 +562,8 @@ Trace:
 - Source Refs:
   - RFC 9001 §5 RFC9001-S5-B8-P3-S4
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0010.cs::RetryIntegrityKeyAndNonce_UseTheRFC9001FixedValues
 
 ## REQ-QUIC-RFC9001-S6-0001 Allow key update after handshake confirmation
 Once the handshake is confirmed, an endpoint MAY initiate a key update.
