@@ -55,11 +55,15 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         return AdvanceHandshakeTranscript(encryptionLevel);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Returns an authenticated peer-parameter update only when the bridge gate admits it.
+    /// </summary>
     public IReadOnlyList<QuicTlsStateUpdate> CommitPeerTransportParameters(
         QuicTransportParameters peerTransportParameters)
     {
-        return PublishAuthenticatedPeerTransportParameters(peerTransportParameters);
+        return bridgeState.CanCommitPeerTransportParameters()
+            ? PublishAuthenticatedPeerTransportParameters(peerTransportParameters)
+            : Array.Empty<QuicTlsStateUpdate>();
     }
 
     /// <summary>
@@ -118,7 +122,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <summary>
     /// Publishes authenticated peer transport parameters to the bridge state.
     /// </summary>
-    public IReadOnlyList<QuicTlsStateUpdate> PublishAuthenticatedPeerTransportParameters(
+    private IReadOnlyList<QuicTlsStateUpdate> PublishAuthenticatedPeerTransportParameters(
         QuicTransportParameters peerTransportParameters)
     {
         return PublishUpdate(new QuicTlsStateUpdate(
@@ -137,11 +141,13 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     }
 
     /// <summary>
-    /// Publishes handshake confirmation to the bridge state.
+    /// Returns handshake confirmation only when the bridge gate admits it.
     /// </summary>
     public IReadOnlyList<QuicTlsStateUpdate> PublishHandshakeConfirmed()
     {
-        return PublishUpdate(new QuicTlsStateUpdate(QuicTlsUpdateKind.HandshakeConfirmed));
+        return bridgeState.CanEmitHandshakeConfirmed()
+            ? PublishUpdate(new QuicTlsStateUpdate(QuicTlsUpdateKind.HandshakeConfirmed))
+            : Array.Empty<QuicTlsStateUpdate>();
     }
 
     /// <summary>
@@ -352,7 +358,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                         return;
                     }
 
-                    IReadOnlyList<QuicTlsStateUpdate> authenticatedUpdates = PublishAuthenticatedPeerTransportParameters(
+                    IReadOnlyList<QuicTlsStateUpdate> authenticatedUpdates = CommitPeerTransportParameters(
                         step.TransportParameters!);
                     AppendPublishedUpdates(updates, authenticatedUpdates);
                     if (authenticatedUpdates.Count == 0)

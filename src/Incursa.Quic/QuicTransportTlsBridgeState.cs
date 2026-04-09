@@ -43,6 +43,28 @@ internal sealed class QuicTransportTlsBridgeState
 
     public bool IsTerminal => FatalAlertCode.HasValue;
 
+    /// <summary>
+    /// Returns whether staged peer transport parameters may be committed through the bridge.
+    /// </summary>
+    internal bool CanCommitPeerTransportParameters()
+    {
+        return !IsTerminal
+            && !PeerTransportParametersAuthenticated
+            && !HandshakeConfirmed
+            && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.PeerTransportParametersStaged;
+    }
+
+    /// <summary>
+    /// Returns whether handshake confirmation may be emitted through the bridge.
+    /// </summary>
+    internal bool CanEmitHandshakeConfirmed()
+    {
+        return !IsTerminal
+            && !HandshakeConfirmed
+            && PeerTransportParametersAuthenticated
+            && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.PeerTransportParametersStaged;
+    }
+
     internal QuicCryptoBuffer InitialIngressCryptoBuffer => initialIngressCryptoBuffer;
 
     internal QuicCryptoBuffer HandshakeIngressCryptoBuffer => handshakeIngressCryptoBuffer;
@@ -242,15 +264,12 @@ internal sealed class QuicTransportTlsBridgeState
     {
         ArgumentNullException.ThrowIfNull(parameters);
 
-        QuicTransportParameters committedParameters = CloneTransportParameters(parameters);
-        if (IsTerminal
-            || HandshakeTranscriptPhase != QuicTlsTranscriptPhase.PeerTransportParametersStaged
-            || PeerTransportParametersAuthenticated
-            || HandshakeConfirmed)
+        if (!CanCommitPeerTransportParameters())
         {
             return false;
         }
 
+        QuicTransportParameters committedParameters = CloneTransportParameters(parameters);
         PeerTransportParameters = committedParameters;
         PeerTransportParametersAuthenticated = true;
         return true;
@@ -291,10 +310,7 @@ internal sealed class QuicTransportTlsBridgeState
 
     public bool TryConfirmHandshake()
     {
-        if (IsTerminal
-            || HandshakeConfirmed
-            || HandshakeTranscriptPhase != QuicTlsTranscriptPhase.PeerTransportParametersStaged
-            || !PeerTransportParametersAuthenticated)
+        if (!CanEmitHandshakeConfirmed())
         {
             return false;
         }

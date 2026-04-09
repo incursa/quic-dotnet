@@ -37,12 +37,20 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
             out QuicTransportParameters parsedParameters));
 
         QuicTransportTlsBridgeState bridge = new();
+        Assert.False(bridge.CanCommitPeerTransportParameters());
+        Assert.False(bridge.CanEmitHandshakeConfirmed());
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.TranscriptProgressed,
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.CanCommitPeerTransportParameters());
+        Assert.False(bridge.CanEmitHandshakeConfirmed());
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
             TransportParameters: parsedParameters)));
+        Assert.False(bridge.CanCommitPeerTransportParameters());
+        Assert.True(bridge.CanEmitHandshakeConfirmed());
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.HandshakeConfirmed)));
+        Assert.False(bridge.CanEmitHandshakeConfirmed());
 
         sourceParameters.InitialSourceConnectionId![0] = 0xFF;
         parsedParameters.InitialSourceConnectionId![0] = 0xEE;
@@ -50,6 +58,7 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
         parsedParameters.PreferredAddress.StatelessResetToken[0] = 0xCC;
 
         Assert.True(bridge.PeerTransportParametersAuthenticated);
+        Assert.True(bridge.HandshakeConfirmed);
         Assert.NotSame(parsedParameters, bridge.PeerTransportParameters);
         Assert.Equal(30UL, bridge.PeerTransportParameters!.MaxIdleTimeout);
         Assert.True(bridge.PeerTransportParameters.DisableActiveMigration);
@@ -83,25 +92,36 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
             out QuicTransportParameters parsedParameters));
 
         QuicTransportTlsBridgeState bridge = new();
+        Assert.False(bridge.CanCommitPeerTransportParameters());
+        Assert.False(bridge.CanEmitHandshakeConfirmed());
         Assert.False(bridge.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
             TransportParameters: parsedParameters)));
         Assert.False(bridge.PeerTransportParametersAuthenticated);
         Assert.Null(bridge.PeerTransportParameters);
+        Assert.False(bridge.CanCommitPeerTransportParameters());
+        Assert.False(bridge.CanEmitHandshakeConfirmed());
+        Assert.False(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.HandshakeConfirmed)));
+        Assert.False(bridge.HandshakeConfirmed);
 
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.TranscriptProgressed,
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.CanCommitPeerTransportParameters());
+        Assert.False(bridge.CanEmitHandshakeConfirmed());
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
             TransportParameters: parsedParameters)));
+        Assert.False(bridge.CanCommitPeerTransportParameters());
+        Assert.True(bridge.CanEmitHandshakeConfirmed());
         Assert.True(bridge.PeerTransportParametersAuthenticated);
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void BridgeDriverAuthenticatesPeerTransportParametersOnlyAfterCompleteTranscriptProgress()
+    public void BridgeDriverCommitsAndConfirmsPeerTransportParametersOnlyWhenTheBridgeGateOpens()
     {
         QuicTlsTransportBridgeDriver driver = new();
         Assert.NotEmpty(driver.StartHandshake(new QuicTransportParameters
@@ -124,16 +144,33 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
 
         Assert.Empty(firstUpdates);
         Assert.False(driver.State.PeerTransportParametersAuthenticated);
+        Assert.False(driver.State.HandshakeConfirmed);
+        Assert.False(driver.State.CanCommitPeerTransportParameters());
+        Assert.False(driver.State.CanEmitHandshakeConfirmed());
         Assert.Equal(QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage, driver.State.HandshakeTranscriptPhase);
 
         IReadOnlyList<QuicTlsStateUpdate> secondUpdates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
             transcript[5..]);
 
-        Assert.Contains(
+        Assert.Collection(
             secondUpdates,
-            update => update.Kind == QuicTlsUpdateKind.PeerTransportParametersAuthenticated);
+            update =>
+            {
+                Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, update.Kind);
+                Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, update.TranscriptPhase);
+            },
+            update => Assert.Equal(QuicTlsUpdateKind.PeerTransportParametersAuthenticated, update.Kind),
+            update => Assert.Equal(QuicTlsUpdateKind.HandshakeConfirmed, update.Kind),
+            update =>
+            {
+                Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, update.Kind);
+                Assert.Equal(QuicTlsTranscriptPhase.Completed, update.TranscriptPhase);
+            });
         Assert.True(driver.State.PeerTransportParametersAuthenticated);
+        Assert.True(driver.State.HandshakeConfirmed);
+        Assert.False(driver.State.CanCommitPeerTransportParameters());
+        Assert.False(driver.State.CanEmitHandshakeConfirmed());
         Assert.Equal(QuicTlsTranscriptPhase.Completed, driver.State.HandshakeTranscriptPhase);
         Assert.Equal(30UL, driver.State.PeerTransportParameters!.MaxIdleTimeout);
         Assert.True(driver.State.PeerTransportParameters.DisableActiveMigration);

@@ -279,7 +279,7 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.False(driver.State.HandshakeConfirmed);
         Assert.True(driver.State.IsTerminal);
         Assert.Equal(QuicTlsTranscriptPhase.Failed, driver.State.HandshakeTranscriptPhase);
-        Assert.Empty(driver.PublishAuthenticatedPeerTransportParameters(CreatePeerTransportParameters()));
+        Assert.Empty(driver.CommitPeerTransportParameters(CreatePeerTransportParameters()));
         Assert.Empty(driver.PublishHandshakeConfirmed());
     }
 
@@ -302,7 +302,7 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, stageUpdates[0].Kind);
         Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, stageUpdates[0].TranscriptPhase);
 
-        IReadOnlyList<QuicTlsStateUpdate> updates = driver.PublishAuthenticatedPeerTransportParameters(peerParameters);
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.CommitPeerTransportParameters(peerParameters);
 
         Assert.Single(updates);
         Assert.Equal(QuicTlsUpdateKind.PeerTransportParametersAuthenticated, updates[0].Kind);

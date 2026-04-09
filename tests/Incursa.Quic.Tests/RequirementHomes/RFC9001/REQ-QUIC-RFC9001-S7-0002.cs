@@ -37,6 +37,36 @@ public sealed class REQ_QUIC_RFC9001_S7_0002
             out _));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void FatalTranscriptStateBlocksCommitAndHandshakeConfirmation()
+    {
+        QuicTransportTlsBridgeState bridge = new();
+        QuicTransportParameters peerParameters = new()
+        {
+            MaxIdleTimeout = 30,
+            DisableActiveMigration = true,
+            InitialSourceConnectionId = [0xAA, 0xBB, 0xCC],
+        };
+
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.FatalAlert,
+            AlertDescription: 0x0032)));
+
+        Assert.True(bridge.IsTerminal);
+        Assert.Equal(QuicTlsTranscriptPhase.Failed, bridge.HandshakeTranscriptPhase);
+        Assert.False(bridge.CanCommitPeerTransportParameters());
+        Assert.False(bridge.CanEmitHandshakeConfirmed());
+        Assert.False(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
+            TransportParameters: peerParameters)));
+        Assert.False(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.HandshakeConfirmed)));
+    }
+
     private static byte[] CreateMalformedCryptoPayload()
     {
         byte[] payload = new byte[24];
