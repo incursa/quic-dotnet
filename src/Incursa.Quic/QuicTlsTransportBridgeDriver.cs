@@ -5,6 +5,9 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 {
+    private const ushort HandshakeTranscriptUnavailableAlertDescription = 0x0010;
+    private const ushort HandshakeTranscriptParseFailureAlertDescription = 0x0032;
+
     private readonly QuicTransportTlsBridgeState bridgeState;
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> nextIngressOffsets = [];
 
@@ -29,7 +32,13 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <inheritdoc />
     public IReadOnlyList<QuicTlsStateUpdate> StartHandshake(QuicTransportParameters localTransportParameters)
     {
-        return PublishLocalTransportParameters(localTransportParameters);
+        List<QuicTlsStateUpdate> updates = [];
+
+        AppendPublishedUpdates(updates, PublishLocalTransportParameters(localTransportParameters));
+        AppendPublishedUpdates(updates, PublishKeysAvailable(QuicTlsEncryptionLevel.Handshake));
+        AppendPublishedUpdates(updates, PublishDeterministicHandshakeEgress(localTransportParameters));
+
+        return updates;
     }
 
     /// <inheritdoc />
@@ -43,7 +52,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             nextIngressOffsets[encryptionLevel] = SaturatingAdd(offset, (ulong)cryptoFramePayload.Length);
         }
 
-        return Array.Empty<QuicTlsStateUpdate>();
+        return AdvanceHandshakeTranscript(encryptionLevel);
     }
 
     /// <inheritdoc />
@@ -51,6 +60,65 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         QuicTransportParameters peerTransportParameters)
     {
         return PublishAuthenticatedPeerTransportParameters(peerTransportParameters);
+    }
+
+    /// <summary>
+    /// Advances the deterministic handshake transcript from the buffered inbound CRYPTO bytes.
+    /// </summary>
+    /// <param name="encryptionLevel">The encryption level to advance.</param>
+    /// <returns>The state updates produced by the transcript step.</returns>
+    public IReadOnlyList<QuicTlsStateUpdate> AdvanceHandshakeTranscript(QuicTlsEncryptionLevel encryptionLevel)
+    {
+        if (encryptionLevel != QuicTlsEncryptionLevel.Handshake)
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        if (bridgeState.IsTerminal)
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        int bufferedBytes = bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes;
+        if (bufferedBytes <= 0)
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        if (bridgeState.LocalTransportParameters is null || !bridgeState.HandshakeKeysAvailable)
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        if (bridgeState.HandshakeConfirmed)
+        {
+            return PublishFatalAlert(HandshakeTranscriptUnavailableAlertDescription);
+        }
+
+        byte[] handshakeTranscript = new byte[bufferedBytes];
+        if (!bridgeState.TryDequeueIncomingCryptoData(
+            QuicTlsEncryptionLevel.Handshake,
+            handshakeTranscript,
+            out ulong offset,
+            out int bytesWritten)
+            || offset != 0
+            || bytesWritten <= 0)
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        ReadOnlySpan<byte> transcriptBytes = handshakeTranscript.AsSpan(0, bytesWritten);
+        if (!TryParseHandshakeTranscript(
+            transcriptBytes,
+            out QuicTransportParameters peerTransportParameters))
+        {
+            return PublishFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+        }
+
+        List<QuicTlsStateUpdate> updates = [];
+        AppendPublishedUpdates(updates, PublishAuthenticatedPeerTransportParameters(peerTransportParameters));
+        AppendPublishedUpdates(updates, PublishHandshakeConfirmed());
+        return updates;
     }
 
     /// <summary>
@@ -214,6 +282,54 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private IReadOnlyList<QuicTlsStateUpdate> PublishUpdate(QuicTlsStateUpdate update)
     {
         return bridgeState.TryApply(update) ? [update] : Array.Empty<QuicTlsStateUpdate>();
+    }
+
+    private IReadOnlyList<QuicTlsStateUpdate> PublishDeterministicHandshakeEgress(
+        QuicTransportParameters localTransportParameters)
+    {
+        Span<byte> encodedTransportParameters = stackalloc byte[512];
+        QuicTransportParameterRole parameterRole = Role == QuicTlsRole.Client
+            ? QuicTransportParameterRole.Client
+            : QuicTransportParameterRole.Server;
+
+        if (!QuicTransportParametersCodec.TryFormatTransportParameters(
+            localTransportParameters,
+            parameterRole,
+            encodedTransportParameters,
+            out int bytesWritten))
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        return PublishUpdate(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.CryptoDataAvailable,
+            QuicTlsEncryptionLevel.Handshake,
+            CryptoDataOffset: 0,
+            CryptoData: encodedTransportParameters[..bytesWritten].ToArray()));
+    }
+
+    private static void AppendPublishedUpdates(
+        List<QuicTlsStateUpdate> updates,
+        IReadOnlyList<QuicTlsStateUpdate> publishedUpdates)
+    {
+        if (publishedUpdates.Count > 0)
+        {
+            updates.AddRange(publishedUpdates);
+        }
+    }
+
+    private bool TryParseHandshakeTranscript(
+        ReadOnlySpan<byte> transcriptBytes,
+        out QuicTransportParameters peerTransportParameters)
+    {
+        QuicTransportParameterRole receiverRole = Role == QuicTlsRole.Client
+            ? QuicTransportParameterRole.Client
+            : QuicTransportParameterRole.Server;
+
+        return QuicTransportParametersCodec.TryParseTransportParameters(
+            transcriptBytes,
+            receiverRole,
+            out peerTransportParameters);
     }
 
     private ulong GetNextIngressOffset(QuicTlsEncryptionLevel encryptionLevel)

@@ -511,8 +511,6 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        _ = effects;
-
         bool processedCryptoFrame = false;
         int payloadOffset = 0;
 
@@ -552,7 +550,34 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             payloadOffset += bytesConsumed;
         }
 
-        return processedCryptoFrame;
+        if (!processedCryptoFrame)
+        {
+            return false;
+        }
+
+        return TryAdvanceHandshakeTranscript(nowTicks, ref effects) || processedCryptoFrame;
+    }
+
+    private bool TryAdvanceHandshakeTranscript(
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        IReadOnlyList<QuicTlsStateUpdate> updates = tlsBridgeDriver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.Handshake);
+        if (updates.Count == 0)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        foreach (QuicTlsStateUpdate update in updates)
+        {
+            stateChanged |= HandleTlsStateUpdated(
+                new QuicConnectionTlsStateUpdatedEvent(nowTicks, update),
+                nowTicks,
+                ref effects);
+        }
+
+        return stateChanged;
     }
 
     private bool TryFlushHandshakePackets(ref List<QuicConnectionEffect>? effects)
