@@ -37,6 +37,8 @@ internal sealed class QuicTransportTlsBridgeState
 
     public bool PeerCertificateVerifyVerified { get; private set; }
 
+    public bool PeerCertificatePolicyAccepted { get; private set; }
+
     public bool PeerHandshakeTranscriptCompleted { get; private set; }
 
     public bool PeerFinishedVerified { get; private set; }
@@ -76,6 +78,7 @@ internal sealed class QuicTransportTlsBridgeState
         return !IsTerminal
             && !PeerTransportParametersCommitted
             && PeerCertificateVerifyVerified
+            && PeerCertificatePolicyAccepted
             && PeerFinishedVerified
             && StagedPeerTransportParameters is not null
             && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed
@@ -142,6 +145,9 @@ internal sealed class QuicTransportTlsBridgeState
 
             case QuicTlsUpdateKind.PeerCertificateVerifyVerified:
                 return TryMarkPeerCertificateVerifyVerified();
+
+            case QuicTlsUpdateKind.PeerCertificatePolicyAccepted:
+                return TryMarkPeerCertificatePolicyAccepted();
 
             case QuicTlsUpdateKind.PeerFinishedVerified:
                 return TryMarkPeerFinishedVerified();
@@ -403,6 +409,17 @@ internal sealed class QuicTransportTlsBridgeState
         return true;
     }
 
+    public bool TryMarkPeerCertificatePolicyAccepted()
+    {
+        if (!CanEmitPeerCertificatePolicyAccepted())
+        {
+            return false;
+        }
+
+        PeerCertificatePolicyAccepted = true;
+        return true;
+    }
+
     public bool TryMarkPeerFinishedVerified()
     {
         if (!CanEmitPeerFinishedVerified())
@@ -612,6 +629,7 @@ internal sealed class QuicTransportTlsBridgeState
         OldKeysDiscarded = true;
         PeerTransportParametersCommitted = false;
         PeerCertificateVerifyVerified = false;
+        PeerCertificatePolicyAccepted = false;
         PeerHandshakeTranscriptCompleted = false;
         PeerFinishedVerified = false;
         HandshakeTranscriptPhase = QuicTlsTranscriptPhase.Failed;
@@ -749,6 +767,14 @@ internal sealed class QuicTransportTlsBridgeState
             && HandshakeMessageLength.HasValue
             && SelectedCipherSuite.HasValue
             && TranscriptHashAlgorithm.HasValue;
+    }
+
+    internal bool CanEmitPeerCertificatePolicyAccepted()
+    {
+        return !IsTerminal
+            && !PeerTransportParametersCommitted
+            && !PeerCertificatePolicyAccepted
+            && PeerCertificateVerifyVerified;
     }
 
     private bool TryDiscardPacketProtectionMaterial(QuicTlsEncryptionLevel encryptionLevel)

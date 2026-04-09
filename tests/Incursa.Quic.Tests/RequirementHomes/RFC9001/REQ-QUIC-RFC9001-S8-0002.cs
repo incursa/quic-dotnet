@@ -36,6 +36,8 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
             HandshakeMessageLength: 48,
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted)));
+        Assert.True(bridge.PeerCertificatePolicyAccepted);
 
         Assert.False(bridge.CanCommitPeerTransportParameters(parsedParameters));
         Assert.False(bridge.CanEmitPeerHandshakeTranscriptCompleted());
@@ -156,6 +158,8 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
         Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, certificateVerifyUpdates[0].TranscriptPhase);
         Assert.True(driver.State.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
         Assert.True(driver.State.PeerCertificateVerifyVerified);
+        Assert.True(driver.State.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted)));
+        Assert.True(driver.State.PeerCertificatePolicyAccepted);
         Assert.False(driver.State.CanCommitPeerTransportParameters(peerParameters));
         Assert.False(driver.State.CanEmitPeerHandshakeTranscriptCompleted());
 

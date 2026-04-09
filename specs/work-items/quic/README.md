@@ -16,6 +16,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0005.json`](WI-QUIC-CRT-0005.json): canonical CRT path-state and migration work item
 - [`WI-QUIC-CRT-0006.json`](WI-QUIC-CRT-0006.json): canonical CRT TLS-bridge, diagnostics, and sender/recovery work item
 - [`WI-QUIC-CRT-0008.json`](WI-QUIC-CRT-0008.json): canonical CRT managed TLS 1.3 handshake-crypto work item
+- [`WI-QUIC-CRT-0009.json`](WI-QUIC-CRT-0009.json): canonical CRT client certificate-acceptance policy work item
 - [`WI-QUIC-INT-0001.json`](WI-QUIC-INT-0001.json): canonical interop-harness adapter work item
 
 ## Notes

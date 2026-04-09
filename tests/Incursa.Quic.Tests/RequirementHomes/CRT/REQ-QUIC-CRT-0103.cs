@@ -73,6 +73,8 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.False(bridge.CanCommitPeerTransportParameters(parsedPeerParameters));
         Assert.False(bridge.CanEmitPeerHandshakeTranscriptCompleted());
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted)));
+        Assert.True(bridge.PeerCertificatePolicyAccepted);
         Assert.False(bridge.CanCommitPeerTransportParameters(parsedPeerParameters));
         Assert.False(bridge.CanEmitPeerHandshakeTranscriptCompleted());
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
@@ -411,6 +413,8 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, certificateVerifyUpdates[0].TranscriptPhase);
         Assert.True(driver.State.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
         Assert.True(driver.State.PeerCertificateVerifyVerified);
+        Assert.True(driver.State.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted)));
+        Assert.True(driver.State.PeerCertificatePolicyAccepted);
         Assert.False(driver.State.CanCommitPeerTransportParameters(peerParameters));
         Assert.False(driver.State.CanEmitPeerHandshakeTranscriptCompleted());
 
@@ -458,6 +462,11 @@ public sealed class REQ_QUIC_CRT_0103
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 11,
                 new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)),
+            nowTicks: 11).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted)),
             nowTicks: 11).StateChanged);
         Assert.True(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
@@ -602,6 +611,11 @@ public sealed class REQ_QUIC_CRT_0103
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 11,
                 new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)),
+            nowTicks: 11).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted)),
             nowTicks: 11).StateChanged);
         Assert.False(runtime.TlsState.CanCommitPeerTransportParameters(peerParameters));
         Assert.False(runtime.TlsState.CanEmitPeerHandshakeTranscriptCompleted());
@@ -749,6 +763,8 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, certificateVerifyUpdates[0].TranscriptPhase);
         Assert.True(driver.State.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
         Assert.True(driver.State.PeerCertificateVerifyVerified);
+        Assert.True(driver.State.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted)));
+        Assert.True(driver.State.PeerCertificatePolicyAccepted);
         Assert.False(driver.State.CanCommitPeerTransportParameters(peerParameters));
         Assert.False(driver.State.CanEmitPeerHandshakeTranscriptCompleted());
 
@@ -809,6 +825,11 @@ public sealed class REQ_QUIC_CRT_0103
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 12,
                 new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)),
+            nowTicks: 12).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 12,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted)),
             nowTicks: 12).StateChanged);
         Assert.True(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(

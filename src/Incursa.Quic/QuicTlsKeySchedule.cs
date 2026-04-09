@@ -127,6 +127,22 @@ internal sealed class QuicTlsKeySchedule
     }
 
     /// <summary>
+    /// Gets the SHA-256 fingerprint of the parsed peer leaf certificate, if one has already been staged.
+    /// </summary>
+    internal bool TryGetPeerLeafCertificateSha256Fingerprint(out byte[] fingerprint)
+    {
+        fingerprint = Array.Empty<byte>();
+
+        if (peerLeafCertificateDer is null)
+        {
+            return false;
+        }
+
+        fingerprint = SHA256.HashData(peerLeafCertificateDer);
+        return true;
+    }
+
+    /// <summary>
     /// Processes one handshake transcript step and returns any bridge-visible updates produced by the key schedule.
     /// </summary>
     internal IReadOnlyList<QuicTlsStateUpdate> ProcessTranscriptStep(QuicTlsTranscriptStep step)

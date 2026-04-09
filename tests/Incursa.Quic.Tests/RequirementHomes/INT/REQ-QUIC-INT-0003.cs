@@ -43,6 +43,9 @@ public sealed class REQ_QUIC_INT_0003
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
+        Assert.True(state.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.PeerCertificatePolicyAccepted)));
+        Assert.True(state.PeerCertificatePolicyAccepted);
         Assert.False(state.CanCommitPeerTransportParameters(peerParameters));
         Assert.False(state.CanEmitPeerHandshakeTranscriptCompleted());
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
@@ -129,6 +132,11 @@ public sealed class REQ_QUIC_INT_0003
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 9,
                 new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)),
+            nowTicks: 9).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 9,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted)),
             nowTicks: 9).StateChanged);
 
         Assert.False(runtime.Transition(

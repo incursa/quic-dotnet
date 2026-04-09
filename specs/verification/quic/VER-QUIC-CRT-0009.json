@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0009",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Client Certificate Acceptance Policy Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests and inspection evidence for the client-side certificate-acceptance seam, its pinned-fingerprint policy, and the tightened peer transport-parameter commit gate.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0009",
+    "WI-QUIC-CRT-0009"
+  ],
+  "expected_result": "The bridge accepts a pinned leaf SHA-256 fingerprint only after the peer CertificateVerify proof exists, leaves no-policy configurations blocked without silent acceptance, rejects mismatched pinned fingerprints through the existing fatal path, surfaces PeerCertificatePolicyAccepted explicitly when the pin matches, and does not allow peer transport-parameter commit until proof, policy acceptance, and peer Finished verification all exist. PeerHandshakeTranscriptCompleted remains a transcript milestone, not a trust or authentication claim.",
+  "verifies": [
+    "REQ-QUIC-CRT-0103",
+    "REQ-QUIC-CRT-0109",
+    "REQ-QUIC-CRT-0111"
+  ],
+  "procedure": [
+    "Run the CRT requirement-home tests that cover the default-deny path, pinned-fingerprint positive and negative paths, explicit acceptance-state behavior, runtime propagation, and the tightened commit gate.",
+    "Run the RFC9001 requirement-home tests that still cover inbound Handshake packet processing, outbound Handshake packet emission, malformed-frame rejection, tampered-packet rejection, and wrong-material rejection for the bridge seam.",
+    "Inspect the bridge state and runtime integration to confirm that PeerCertificatePolicyAccepted remains explicit, no-policy configurations stay blocked, and PeerTransportParametersCommitted cannot occur before proof, policy acceptance, and peer Finished verification all exist."
+  ],
+  "scope": "This slice verifies the permanent client-side certificate-acceptance policy seam and the tightened peer transport-parameter commit gate. It does not prove certificate trust, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, or server-role handshake crypto.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0022.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The tests project can access internal library seams through the existing friend assembly relationship."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0022.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicTlsTranscriptProgress.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs\n- src/Incursa.Quic/QuicTlsKeySchedule.cs\n- src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
+    }
+  ]
+}

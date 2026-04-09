@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace Incursa.Quic;
 
 /// <summary>
@@ -6,16 +8,20 @@ namespace Incursa.Quic;
 internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 {
     private const int HandshakeIngressDrainChunkBytes = 512;
+    private const int Sha256FingerprintLength = 32;
+    private const ushort PeerCertificatePolicyMismatchAlertDescription = 0x0031;
 
     private readonly QuicTransportTlsBridgeState bridgeState;
     private readonly QuicTlsTranscriptProgress handshakeTranscriptProgress;
     private readonly QuicTlsKeySchedule? keySchedule;
+    private readonly byte[]? pinnedPeerLeafCertificateSha256;
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> nextIngressOffsets = [];
 
     public QuicTlsTransportBridgeDriver(
         QuicTlsRole role = QuicTlsRole.Client,
         QuicTransportTlsBridgeState? bridgeState = null,
-        ReadOnlyMemory<byte> localHandshakePrivateKey = default)
+        ReadOnlyMemory<byte> localHandshakePrivateKey = default,
+        ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState();
@@ -23,6 +29,21 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         keySchedule = Role == QuicTlsRole.Client
             ? new QuicTlsKeySchedule(localHandshakePrivateKey)
             : null;
+
+        if (!pinnedPeerLeafCertificateSha256.IsEmpty)
+        {
+            if (Role != QuicTlsRole.Client)
+            {
+                throw new ArgumentException("The pinned peer leaf certificate fingerprint is only supported for the client role.", nameof(pinnedPeerLeafCertificateSha256));
+            }
+
+            if (pinnedPeerLeafCertificateSha256.Length != Sha256FingerprintLength)
+            {
+                throw new ArgumentException("The pinned peer leaf certificate fingerprint must be exactly 32 bytes.", nameof(pinnedPeerLeafCertificateSha256));
+            }
+
+            this.pinnedPeerLeafCertificateSha256 = pinnedPeerLeafCertificateSha256.ToArray();
+        }
     }
 
     /// <summary>
@@ -375,10 +396,50 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         List<QuicTlsStateUpdate> publishedUpdates = [];
         foreach (QuicTlsStateUpdate update in keyScheduleUpdates)
         {
-            AppendPublishedUpdates(publishedUpdates, PublishUpdate(update));
+            IReadOnlyList<QuicTlsStateUpdate> publishedUpdate = PublishUpdate(update);
+            AppendPublishedUpdates(publishedUpdates, publishedUpdate);
+
+            if (publishedUpdate.Count > 0
+                && update.Kind == QuicTlsUpdateKind.PeerCertificateVerifyVerified)
+            {
+                AppendPublishedUpdates(publishedUpdates, PublishPeerCertificatePolicyAcceptance());
+                if (bridgeState.IsTerminal)
+                {
+                    return publishedUpdates;
+                }
+            }
         }
 
         return publishedUpdates;
+    }
+
+    private IReadOnlyList<QuicTlsStateUpdate> PublishPeerCertificatePolicyAcceptance()
+    {
+        if (pinnedPeerLeafCertificateSha256 is null
+            || keySchedule is null
+            || !bridgeState.CanEmitPeerCertificatePolicyAccepted())
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        if (!keySchedule.TryGetPeerLeafCertificateSha256Fingerprint(out byte[] peerLeafCertificateSha256))
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        try
+        {
+            if (!CryptographicOperations.FixedTimeEquals(pinnedPeerLeafCertificateSha256, peerLeafCertificateSha256))
+            {
+                return PublishFatalAlert(PeerCertificatePolicyMismatchAlertDescription);
+            }
+
+            return PublishUpdate(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted));
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(peerLeafCertificateSha256);
+        }
     }
 
     private void DriveTranscriptProgress(List<QuicTlsStateUpdate> updates)

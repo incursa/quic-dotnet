@@ -91,6 +91,12 @@ public sealed class REQ_QUIC_CRT_0022
                 ObservedAtTicks: 16,
                 new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)),
             nowTicks: 16).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 16,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted)),
+            nowTicks: 16).StateChanged);
+        Assert.True(runtime.TlsState.PeerCertificatePolicyAccepted);
 
         QuicConnectionTransitionResult completedResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(

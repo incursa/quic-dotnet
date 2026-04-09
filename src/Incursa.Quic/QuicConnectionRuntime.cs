@@ -51,14 +51,19 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         int maximumCandidatePaths = 8,
         int maximumRecentlyValidatedPaths = 8,
         ulong currentProbeTimeoutMicros = QuicRttEstimator.DefaultInitialRttMicros,
-        ReadOnlyMemory<byte> localHandshakePrivateKey = default)
+        ReadOnlyMemory<byte> localHandshakePrivateKey = default,
+        ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
         sendRuntime = new QuicConnectionSendRuntime();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         handshakeFlowCoordinator = new QuicHandshakeFlowCoordinator();
-        tlsBridgeDriver = new QuicTlsTransportBridgeDriver(QuicTlsRole.Client, tlsState, localHandshakePrivateKey);
+        tlsBridgeDriver = new QuicTlsTransportBridgeDriver(
+            QuicTlsRole.Client,
+            tlsState,
+            localHandshakePrivateKey,
+            pinnedPeerLeafCertificateSha256);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
             SingleReader = true,

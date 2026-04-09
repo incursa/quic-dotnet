@@ -98,6 +98,7 @@ internal enum QuicTlsUpdateKind
     HandshakeOpenPacketProtectionMaterialAvailable = 12,
     HandshakeProtectPacketProtectionMaterialAvailable = 13,
     PeerCertificateVerifyVerified = 14,
+    PeerCertificatePolicyAccepted = 15,
 }
 
 /// <summary>
