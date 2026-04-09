@@ -20,6 +20,17 @@ internal enum QuicTlsEncryptionLevel
 }
 
 /// <summary>
+/// Handshake transcript progress owned behind the transport-facing TLS bridge.
+/// </summary>
+internal enum QuicTlsTranscriptPhase
+{
+    AwaitingPeerHandshakeMessage = 0,
+    PeerTransportParametersStaged = 1,
+    Completed = 2,
+    Failed = 3,
+}
+
+/// <summary>
 /// TLS-to-transport state update kinds.
 /// </summary>
 internal enum QuicTlsUpdateKind
@@ -34,6 +45,7 @@ internal enum QuicTlsUpdateKind
     ProhibitedKeyUpdateViolation = 7,
     CryptoDataAvailable = 8,
     PacketProtectionMaterialAvailable = 9,
+    TranscriptProgressed = 10,
 }
 
 /// <summary>
@@ -47,7 +59,8 @@ internal readonly record struct QuicTlsStateUpdate(
     ushort? AlertDescription = null,
     ulong? CryptoDataOffset = null,
     ReadOnlyMemory<byte> CryptoData = default,
-    QuicTlsPacketProtectionMaterial? PacketProtectionMaterial = null);
+    QuicTlsPacketProtectionMaterial? PacketProtectionMaterial = null,
+    QuicTlsTranscriptPhase? TranscriptPhase = null);
 
 /// <summary>
 /// A transport-facing bridge to a concrete TLS implementation.

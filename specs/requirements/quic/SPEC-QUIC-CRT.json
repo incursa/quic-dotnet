@@ -929,6 +929,20 @@
         "This is a Handshake-level runtime flow slice only and does not imply a full TLS implementation.",
         "The coordinator does not add 1-RTT support, 0-RTT support, key update support, certificate validation, or production handshake orchestration."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0107",
+      "title": "Own the narrow Handshake transcript-progress boundary",
+      "statement": "The library MUST own a narrow Handshake transcript-progress boundary behind the transport-facing TLS bridge that accepts ordered Handshake CRYPTO fragments incrementally, preserves an ingress cursor and partial transcript buffer, stages peer transport parameters only after a complete EncryptedExtensions-style transcript has been assembled and parsed, latches terminal transcript/parse failure, and surfaces transcript progression and fatal alerts through the existing bridge-update path. Authenticated peer transport parameter commitment remains a bridge/runtime policy decision, and this slice MUST NOT imply certificate validation, 0-RTT, 1-RTT, key update, or production TLS handshake support.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9001 Sections 5 and 8",
+          "connection-runtime-state-machine.md"
+        ]
+      },
+      "notes": [
+        "This slice advances transcript/message progression only. It does not by itself make peer-authentication policy or broader TLS orchestration available."
+      ]
     }
   ]
 }

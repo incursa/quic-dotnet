@@ -5,10 +5,10 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 {
-    private const ushort HandshakeTranscriptUnavailableAlertDescription = 0x0010;
-    private const ushort HandshakeTranscriptParseFailureAlertDescription = 0x0032;
+    private const int HandshakeIngressDrainChunkBytes = 512;
 
     private readonly QuicTransportTlsBridgeState bridgeState;
+    private readonly QuicTlsTranscriptProgress handshakeTranscriptProgress = new();
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> nextIngressOffsets = [];
 
     public QuicTlsTransportBridgeDriver(
@@ -90,34 +90,9 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             return Array.Empty<QuicTlsStateUpdate>();
         }
 
-        if (bridgeState.HandshakeConfirmed)
-        {
-            return PublishFatalAlert(HandshakeTranscriptUnavailableAlertDescription);
-        }
-
-        byte[] handshakeTranscript = new byte[bufferedBytes];
-        if (!bridgeState.TryDequeueIncomingCryptoData(
-            QuicTlsEncryptionLevel.Handshake,
-            handshakeTranscript,
-            out ulong offset,
-            out int bytesWritten)
-            || offset != 0
-            || bytesWritten <= 0)
-        {
-            return Array.Empty<QuicTlsStateUpdate>();
-        }
-
-        ReadOnlySpan<byte> transcriptBytes = handshakeTranscript.AsSpan(0, bytesWritten);
-        if (!TryParseHandshakeTranscript(
-            transcriptBytes,
-            out QuicTransportParameters peerTransportParameters))
-        {
-            return PublishFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
-        }
-
         List<QuicTlsStateUpdate> updates = [];
-        AppendPublishedUpdates(updates, PublishAuthenticatedPeerTransportParameters(peerTransportParameters));
-        AppendPublishedUpdates(updates, PublishHandshakeConfirmed());
+        DrainBufferedHandshakeCryptoIntoTranscript();
+        DriveTranscriptProgress(updates);
         return updates;
     }
 
@@ -195,6 +170,16 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     public IReadOnlyList<QuicTlsStateUpdate> PublishProhibitedKeyUpdateViolation()
     {
         return PublishUpdate(new QuicTlsStateUpdate(QuicTlsUpdateKind.ProhibitedKeyUpdateViolation));
+    }
+
+    /// <summary>
+    /// Publishes handshake transcript progression to the bridge state.
+    /// </summary>
+    public IReadOnlyList<QuicTlsStateUpdate> PublishTranscriptProgressed(QuicTlsTranscriptPhase transcriptPhase)
+    {
+        return PublishUpdate(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            TranscriptPhase: transcriptPhase));
     }
 
     /// <summary>
@@ -287,15 +272,15 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private IReadOnlyList<QuicTlsStateUpdate> PublishDeterministicHandshakeEgress(
         QuicTransportParameters localTransportParameters)
     {
-        Span<byte> encodedTransportParameters = stackalloc byte[512];
+        Span<byte> encodedTranscript = stackalloc byte[512];
         QuicTransportParameterRole parameterRole = Role == QuicTlsRole.Client
             ? QuicTransportParameterRole.Client
             : QuicTransportParameterRole.Server;
 
-        if (!QuicTransportParametersCodec.TryFormatTransportParameters(
+        if (!QuicTlsTranscriptProgress.TryFormatDeterministicTransportParametersMessage(
             localTransportParameters,
             parameterRole,
-            encodedTransportParameters,
+            encodedTranscript,
             out int bytesWritten))
         {
             return Array.Empty<QuicTlsStateUpdate>();
@@ -305,7 +290,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             QuicTlsUpdateKind.CryptoDataAvailable,
             QuicTlsEncryptionLevel.Handshake,
             CryptoDataOffset: 0,
-            CryptoData: encodedTransportParameters[..bytesWritten].ToArray()));
+            CryptoData: encodedTranscript[..bytesWritten].ToArray()));
     }
 
     private static void AppendPublishedUpdates(
@@ -318,18 +303,72 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
     }
 
-    private bool TryParseHandshakeTranscript(
-        ReadOnlySpan<byte> transcriptBytes,
-        out QuicTransportParameters peerTransportParameters)
+    private void DrainBufferedHandshakeCryptoIntoTranscript()
     {
-        QuicTransportParameterRole receiverRole = Role == QuicTlsRole.Client
-            ? QuicTransportParameterRole.Client
-            : QuicTransportParameterRole.Server;
+        Span<byte> cryptoBytes = stackalloc byte[HandshakeIngressDrainChunkBytes];
 
-        return QuicTransportParametersCodec.TryParseTransportParameters(
-            transcriptBytes,
-            receiverRole,
-            out peerTransportParameters);
+        while (bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes > 0)
+        {
+            int bytesToRead = Math.Min(
+                cryptoBytes.Length,
+                bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes);
+
+            if (!bridgeState.TryDequeueIncomingCryptoData(
+                QuicTlsEncryptionLevel.Handshake,
+                cryptoBytes[..bytesToRead],
+                out ulong offset,
+                out int bytesWritten)
+                || bytesWritten <= 0)
+            {
+                break;
+            }
+
+            handshakeTranscriptProgress.AppendCryptoBytes(offset, cryptoBytes[..bytesWritten]);
+            if (handshakeTranscriptProgress.TerminalAlertDescription.HasValue)
+            {
+                break;
+            }
+        }
+    }
+
+    private void DriveTranscriptProgress(List<QuicTlsStateUpdate> updates)
+    {
+        while (true)
+        {
+            QuicTlsTranscriptStep step = handshakeTranscriptProgress.Advance(Role);
+
+            switch (step.Kind)
+            {
+                case QuicTlsTranscriptStepKind.None:
+                    return;
+
+                case QuicTlsTranscriptStepKind.PeerTransportParametersStaged:
+                    AppendPublishedUpdates(
+                        updates,
+                        PublishTranscriptProgressed(QuicTlsTranscriptPhase.PeerTransportParametersStaged));
+                    AppendPublishedUpdates(
+                        updates,
+                        PublishAuthenticatedPeerTransportParameters(step.TransportParameters!));
+                    AppendPublishedUpdates(updates, PublishHandshakeConfirmed());
+
+                    if (handshakeTranscriptProgress.MarkPeerTransportParametersAuthenticated())
+                    {
+                        AppendPublishedUpdates(
+                            updates,
+                            PublishTranscriptProgressed(QuicTlsTranscriptPhase.Completed));
+                    }
+
+                    break;
+
+                case QuicTlsTranscriptStepKind.Fatal:
+                    if (step.AlertDescription.HasValue)
+                    {
+                        AppendPublishedUpdates(updates, PublishFatalAlert(step.AlertDescription.Value));
+                    }
+
+                    return;
+            }
+        }
     }
 
     private ulong GetNextIngressOffset(QuicTlsEncryptionLevel encryptionLevel)

@@ -4,11 +4,12 @@
 
 ## Scope
 
-This slice verifies the narrow Handshake packet-flow coordinator only. It does not prove full TLS handshake progression, 1-RTT, 0-RTT, key update, or certificate validation behavior.
+This slice verifies the narrow Handshake packet-flow coordinator and transcript-progress owner only. It does not prove full TLS handshake progression, 1-RTT, 0-RTT, key update, or certificate validation behavior.
 
 ## Requirements Verified
 
 - REQ-QUIC-CRT-0106
+- REQ-QUIC-CRT-0107
 
 ## Verification Method
 
@@ -21,22 +22,27 @@ Focused requirement-home tests and inspection evidence for the narrow Handshake 
 
 ## Procedure or Approach
 
-- Run the new CRT and RFC9001 requirement-home tests that cover inbound Handshake packet processing, outbound Handshake packet emission, malformed-frame rejection, and wrong-material rejection.
+- Run the CRT requirement-home tests that cover fragmented transcript progression, truncation and incomplete-message handling, repeated progression rejection, malformed transcript rejection, and the bootstrap-to-confirmed deterministic handshake smoke path.
+- Run the RFC9001 requirement-home tests that cover inbound Handshake packet processing, outbound Handshake packet emission, malformed-frame rejection, tampered-packet rejection, and wrong-material rejection.
 - Run the bridge-driver and runtime integration tests that prove handshake confirmation and handshake key discard still route through the runtime reducer.
 - Inspect the coordinator and runtime implementation to confirm they stay in the main library and do not introduce a polling loop or native TLS fallback.
 
 ## Expected Result
 
-Inbound Handshake packets can be opened with the existing handshake packet-protection helper, their CRYPTO frames are parsed and fed through the bridge-driver buffering path, outbound CRYPTO bytes can be drained from the bridge driver and packaged as protected Handshake packets, malformed or tampered packets are rejected, and handshake confirmation plus handshake key discard continue to flow through the runtime without implying 1-RTT or full TLS support.
+Inbound Handshake packets can be opened with the existing handshake packet-protection helper, ordered Handshake CRYPTO fragments can be accumulated by the transcript-progress owner, peer transport parameters can be staged only after a complete deterministic transcript has been parsed, outbound CRYPTO bytes can be drained from the bridge driver and packaged as protected Handshake packets, malformed or tampered packets are rejected, and handshake confirmation plus handshake key discard continue to flow through the runtime without implying 1-RTT or full TLS support.
 
 ## Evidence
 
+- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0001.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0002.cs
-- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs
+- src/Incursa.Quic/QuicTlsTranscriptProgress.cs
 - src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs
 - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs

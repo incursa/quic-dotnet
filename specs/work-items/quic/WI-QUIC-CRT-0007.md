@@ -7,6 +7,7 @@ status: "planned"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0106"
+  - "REQ-QUIC-CRT-0107"
 design_links:
   - "ARC-QUIC-CRT-0007"
 verification_links:
@@ -21,11 +22,12 @@ related_artifacts:
 
 ## Summary
 
-Add the narrow Handshake runtime coordinator, the runtime integration that uses it, and the packet assembly/parsing glue needed to move CRYPTO bytes through Handshake packets inside the library.
+Add the narrow Handshake runtime coordinator, the transcript-progress owner behind the bridge seam, and the packet assembly/parsing glue needed to move CRYPTO bytes through Handshake packets inside the library.
 
 ## Requirements Addressed
 
 - REQ-QUIC-CRT-0106
+- REQ-QUIC-CRT-0107
 
 ## Design Inputs
 
@@ -34,9 +36,10 @@ Add the narrow Handshake runtime coordinator, the runtime integration that uses 
 ## Planned Changes
 
 - Add an internal Handshake flow coordinator that opens protected Handshake packets, parses padding and CRYPTO frames, and formats outbound CRYPTO bytes into protected Handshake packets.
+- Add an internal Handshake transcript-progress owner behind the existing bridge seam that stages peer transport parameters from ordered Handshake CRYPTO fragments, latches malformed transcript failures, and publishes transcript progression updates through the bridge state.
 - Thread the coordinator into the connection runtime so inbound Handshake packets flow through the existing bridge-driver buffering path and outbound bridge bytes surface as send effects.
 - Keep the coordinator event-driven and library-owned; do not add a polling loop, harness logic, OpenSSL fallback, or 1-RTT behavior.
-- Add focused requirement-home tests for inbound packet opening, outbound packet formatting, malformed frame rejection, wrong-material rejection, and the runtime state transitions for handshake confirmation and key discard.
+- Add focused requirement-home tests for inbound packet opening, outbound packet formatting, fragmented transcript progression, malformed transcript rejection, wrong-material rejection, and the runtime state transitions for handshake confirmation and key discard.
 
 ## Out of Scope
 
@@ -48,13 +51,14 @@ Run the new CRT and RFC9001 requirement-home tests that cover the handshake flow
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+The runtime-owned smoke proof remains intentionally narrow. The evidence now includes a deterministic bootstrap-to-confirmed Handshake CRYPTO path plus a separate transcript-progress owner that stages peer transport parameters from fragmented Handshake input without claiming 1-RTT, certificate validation, or production handshake support.
 
 ## Trace Links
 
 Addresses:
 
 - REQ-QUIC-CRT-0106
+- REQ-QUIC-CRT-0107
 
 Uses Design:
 
@@ -69,9 +73,14 @@ Verified By:
 - [`src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)
 - [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)
 - [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)
+- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)
 - [`src/Incursa.Quic/QuicHandshakePacketProtection.cs`](../../../src/Incursa.Quic/QuicHandshakePacketProtection.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0001.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0002.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs)

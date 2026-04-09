@@ -31,6 +31,8 @@ internal sealed class QuicTransportTlsBridgeState
 
     public uint CurrentOneRttKeyPhase { get; private set; }
 
+    public QuicTlsTranscriptPhase HandshakeTranscriptPhase { get; private set; } = QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage;
+
     public QuicTransportErrorCode? FatalAlertCode { get; private set; }
 
     public string? FatalAlertDescription { get; private set; }
@@ -120,6 +122,10 @@ internal sealed class QuicTransportTlsBridgeState
             case QuicTlsUpdateKind.PacketProtectionMaterialAvailable:
                 return update.PacketProtectionMaterial.HasValue
                     && TryStorePacketProtectionMaterial(update.PacketProtectionMaterial.Value);
+
+            case QuicTlsUpdateKind.TranscriptProgressed:
+                return update.TranscriptPhase.HasValue
+                    && TrySetHandshakeTranscriptPhase(update.TranscriptPhase.Value);
 
             default:
                 return false;
@@ -328,7 +334,19 @@ internal sealed class QuicTransportTlsBridgeState
         OneRttKeysAvailable = false;
         KeyUpdateInstalled = false;
         OldKeysDiscarded = true;
+        HandshakeTranscriptPhase = QuicTlsTranscriptPhase.Failed;
         packetProtectionMaterials.Clear();
+        return true;
+    }
+
+    public bool TrySetHandshakeTranscriptPhase(QuicTlsTranscriptPhase transcriptPhase)
+    {
+        if (IsTerminal || HandshakeTranscriptPhase == transcriptPhase)
+        {
+            return false;
+        }
+
+        HandshakeTranscriptPhase = transcriptPhase;
         return true;
     }
 
