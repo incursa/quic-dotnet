@@ -24,7 +24,7 @@ public sealed class REQ_QUIC_CRT_0018
 
         Assert.All(posted, value => Assert.True(value));
         Assert.Equal(0UL, runtime.TransitionSequence);
-        Assert.False(runtime.HandshakeConfirmed);
+        Assert.False(runtime.PeerHandshakeTranscriptCompleted);
         Assert.Equal(QuicConnectionTransportState.None, runtime.TransportFlags);
 
         List<ulong> observedSequences = [];

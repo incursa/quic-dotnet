@@ -30,7 +30,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private int consumerStarted;
     private int disposed;
     private Task? processingTask;
-    private bool handshakeConfirmed;
+    private bool peerHandshakeTranscriptCompleted;
     private QuicConnectionTransportState transportFlags;
     private QuicConnectionActivePathRecord? activePath;
     private QuicConnectionTimerDeadlineState timerState = default;
@@ -99,7 +99,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     public bool CanSendOrdinaryPackets => SendingMode == QuicConnectionSendingMode.Ordinary;
 
-    public bool HandshakeConfirmed => handshakeConfirmed;
+    public bool PeerHandshakeTranscriptCompleted => peerHandshakeTranscriptCompleted;
 
     public QuicConnectionTransportState TransportFlags => transportFlags;
 
@@ -230,8 +230,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         bool stateChanged = connectionEvent switch
         {
-            QuicConnectionHandshakeConfirmedEvent handshakeConfirmedEvent
-                => HandleHandshakeConfirmed(handshakeConfirmedEvent, nowTicks, ref effects),
+            QuicConnectionPeerHandshakeTranscriptCompletedEvent peerHandshakeTranscriptCompletedEvent
+                => HandlePeerHandshakeTranscriptCompleted(peerHandshakeTranscriptCompletedEvent, nowTicks, ref effects),
             QuicConnectionHandshakeBootstrapRequestedEvent handshakeBootstrapRequestedEvent
                 => HandleHandshakeBootstrapRequested(handshakeBootstrapRequestedEvent, nowTicks, ref effects),
             QuicConnectionTransportParametersCommittedEvent transportParametersCommittedEvent
@@ -346,18 +346,18 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
     }
 
-    private bool HandleHandshakeConfirmed(
-        QuicConnectionHandshakeConfirmedEvent handshakeConfirmedEvent,
+    private bool HandlePeerHandshakeTranscriptCompleted(
+        QuicConnectionPeerHandshakeTranscriptCompletedEvent peerHandshakeTranscriptCompletedEvent,
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        _ = handshakeConfirmedEvent;
+        _ = peerHandshakeTranscriptCompletedEvent;
 
-        bool stateChanged = tlsState.TryConfirmHandshake();
+        bool stateChanged = tlsState.TryMarkPeerHandshakeTranscriptCompleted();
 
-        if (!handshakeConfirmed)
+        if (!peerHandshakeTranscriptCompleted)
         {
-            handshakeConfirmed = true;
+            peerHandshakeTranscriptCompleted = true;
             stateChanged = true;
 
             if (phase == QuicConnectionPhase.Establishing)
@@ -424,15 +424,15 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 stateChanged |= TryCommitLocalTransportParametersFromTlsBridgeState(nowTicks, ref effects);
                 break;
 
-            case QuicTlsUpdateKind.PeerTransportParametersAuthenticated:
+            case QuicTlsUpdateKind.PeerTransportParametersCommitted:
                 stateChanged |= TryCommitPeerTransportParametersFromTlsBridgeState(nowTicks, ref effects);
                 break;
 
-            case QuicTlsUpdateKind.HandshakeConfirmed:
-                if (tlsState.HandshakeConfirmed)
+            case QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted:
+                if (tlsState.PeerHandshakeTranscriptCompleted)
                 {
-                    stateChanged |= HandleHandshakeConfirmed(
-                        new QuicConnectionHandshakeConfirmedEvent(tlsStateUpdatedEvent.ObservedAtTicks),
+                    stateChanged |= HandlePeerHandshakeTranscriptCompleted(
+                        new QuicConnectionPeerHandshakeTranscriptCompletedEvent(tlsStateUpdatedEvent.ObservedAtTicks),
                         nowTicks,
                         ref effects);
                 }
@@ -1638,7 +1638,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return QuicConnectionPathClassification.ProbableNatRebinding;
         }
 
-        return handshakeConfirmed ? QuicConnectionPathClassification.MigrationCandidate : QuicConnectionPathClassification.ProbableNatRebinding;
+        return peerHandshakeTranscriptCompleted ? QuicConnectionPathClassification.MigrationCandidate : QuicConnectionPathClassification.ProbableNatRebinding;
     }
 
     private void AppendRecentlyValidatedPath(
@@ -1837,7 +1837,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     private bool CanPromoteActivePathMigration()
     {
-        if (!handshakeConfirmed)
+        if (!peerHandshakeTranscriptCompleted)
         {
             return false;
         }

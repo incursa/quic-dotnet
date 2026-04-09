@@ -9,9 +9,9 @@ The TLS handshake and key-management bridge is the contract between QUIC transpo
 This seam is responsible for turning TLS facts into transport events such as:
 
 - transport parameters are available to send
-- peer transport parameters are authenticated
+- staged peer transport parameters are committed explicitly
 - Initial, Handshake, 0-RTT, or 1-RTT keys are available
-- Handshake is confirmed
+- peer handshake transcript completion is surfaced
 - keys were updated
 - old keys were discarded
 - TLS produced an alert or other error condition
@@ -30,10 +30,10 @@ Today the repo can answer questions like:
 
 What it cannot answer yet is:
 
-- "When is handshake confirmation true?"
+- "When does peer handshake transcript completion become true?"
 - "Which 1-RTT key generation is current, and when do we rotate it?"
 - "If the Key Phase bit changes, which keys do we attempt for decryption and when do we install the new generation?"
-- "How do authenticated peer transport parameters reach the transport runtime?"
+- "How do staged peer transport parameters reach the transport runtime, and when do they become committed?"
 - "What happens if TLS emits a `KeyUpdate` message or a fatal alert?"
 
 That missing contract is the TLS wall.
@@ -42,7 +42,7 @@ That missing contract is the TLS wall.
 
 | Chunk | What the requirements are asking for | Current status |
 | --- | --- | --- |
-| `9001-02-security-and-registry` | Key update after handshake confirmation, Key Phase semantics, prohibition and handling of TLS `KeyUpdate` messages, handshake tamper detection, transport-parameter authentication, and TLS registry metadata. | Only 5 helper-backed requirements are closed. The remaining executable security clauses are blocked by missing handshake and key-management surfaces. |
+| `9001-02-security-and-registry` | Key update after peer handshake transcript completion, Key Phase semantics, prohibition and handling of TLS `KeyUpdate` messages, handshake tamper detection, transport-parameter commitment, and TLS registry metadata. | Only 5 helper-backed requirements are closed. The remaining executable security clauses are blocked by missing handshake and key-management surfaces. |
 | Cross-seam `9002-03-loss-detection` remainder | Reset PTO and discard recovery state when keys go away. | The timing helpers exist, but key-discard events do not yet exist as live runtime inputs. |
 | Cross-seam `9002-06` appendix remainder | Connection-owned cleanup on key discard. | Still deferred because there is no bridge that exposes key lifecycle transitions to the sender/recovery runtime. |
 
@@ -52,7 +52,7 @@ That missing contract is the TLS wall.
 
 RFC 9001 Section 6 is asking for a transport that can:
 
-- allow key update only after handshake confirmation
+- allow key update only after the bridge/runtime transcript-completion gate
 - initialize Key Phase correctly
 - toggle Key Phase for each update
 - detect a peer key change from the Key Phase bit
@@ -68,12 +68,12 @@ The same chunk is also asking for a transport that can:
 - treat any received TLS `KeyUpdate` as a connection error
 - fail closed when the handshake transcript is tampered with
 
-### Transport Parameter Authentication
+### Transport Parameter Commitment
 
 The transport-parameter security clauses are asking for:
 
 - the ability to carry transport parameters in TLS messages
-- the ability to treat peer transport parameters as authenticated handshake transcript material, not just as parsed bytes
+- the ability to treat peer transport parameters as committed handshake transcript material, not just as parsed bytes
 
 ## Current Repository Evidence
 
@@ -120,9 +120,9 @@ The repo does not yet have:
 
 The blocked requirements are all about ownership and sequencing:
 
-- Handshake confirmation is not just a boolean. Someone has to define when it becomes true and which subsystems observe it.
+- Peer handshake transcript completion is not just a boolean. Someone has to define when it becomes true and which subsystems observe it.
 - Key update is not just a bit toggle. Someone has to own current, next, and retired key generations and decide when they become valid for send and receive.
-- Transport parameters are not just bytes. Someone has to tell the transport "these peer parameters are now authenticated".
+- Transport parameters are not just bytes. Someone has to tell the transport "these peer parameters are now committed".
 - Key discard is not just cleanup. It must notify recovery so bytes in flight and timers are updated consistently.
 
 If those decisions are not explicit, the transport, TLS adapter, and recovery logic will all grow their own partial interpretations.
@@ -169,13 +169,13 @@ Option B: transport owns the full key-generation state after initial derivation.
 
 Least risky direction now: TLS bridge owns derivation and lifecycle events; transport owns selection of which valid generation to apply.
 
-### 3. How Should Handshake Confirmation Be Surfaced?
+### 3. How Should Peer Handshake Transcript Completion Be Surfaced?
 
 This needs one canonical signal.
 
 Possible shapes:
 
-- explicit event: `HandshakeConfirmed`
+- explicit event: `PeerHandshakeTranscriptCompleted`
 - bridge property plus edge-triggered callback
 - connection-runtime derived state from multiple lower-level TLS facts
 
@@ -196,8 +196,8 @@ This is the core of the RFC 9001 Section 6 blocker set.
 
 The parser already exists. The missing question is the ownership model:
 
-- does TLS hand the transport already-authenticated peer parameters?
-- does the transport supply raw bytes to TLS and later receive an authentication result?
+- does TLS hand the transport staged peer parameters and later a commit signal?
+- does the transport supply raw bytes to TLS and later receive a commit result?
 - where do parse failure, transcript failure, and policy failure become connection errors?
 
 Without an answer here, `REQ-QUIC-RFC9001-S8-0002` cannot move.
@@ -209,11 +209,11 @@ The smallest architecture that appears sufficient is:
 - one narrow TLS bridge abstraction
 - explicit transport-facing events for:
   - local transport parameters ready to send
-  - peer transport parameters authenticated
+  - peer transport parameters committed
   - Initial keys available
   - Handshake keys available
   - 1-RTT keys available
-  - handshake confirmed
+  - peer handshake transcript completed
   - key update installed
   - old keys discarded
   - TLS alert or fatal error
@@ -229,14 +229,14 @@ Picking the TLS bridge shape unlocks:
 - the remaining executable blockers in `9001-02-security-and-registry`
 - the key-discard related blockers in `9002-03-loss-detection`
 - the deferred key-discard cleanup overlap in `9002-06`
-- the handshake-confirmation dependency in migration and application-data PTO behavior
+- the peer-handshake-completion dependency in migration and application-data PTO behavior
 
 It also gives the connection runtime and sender/recovery runtime a stable way to consume:
 
-- handshake confirmation
+- peer handshake transcript completion
 - key availability
 - key discard
-- authenticated peer transport parameters
+- committed peer transport parameters
 - TLS-originated connection errors
 
 ## Questions For Decision-Making
@@ -245,9 +245,9 @@ If you want to guide this seam directly, these are the questions worth answering
 
 1. Do we want a narrow event-driven TLS bridge, or direct transport access to a concrete TLS implementation?
 2. Does the TLS bridge own key derivation and generation lifecycle, or does transport own more of that state?
-3. What exact event or state transition is the canonical source of truth for handshake confirmation?
+3. What exact event or state transition is the canonical source of truth for peer handshake transcript completion?
 4. How should key updates be initiated, observed, and retired?
-5. How do authenticated peer transport parameters enter the transport runtime?
+5. How do staged peer transport parameters become committed in the transport runtime?
 
 ## Source Artifacts Consulted
 

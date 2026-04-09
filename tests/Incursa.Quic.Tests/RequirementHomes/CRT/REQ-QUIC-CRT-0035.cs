@@ -12,17 +12,17 @@ public sealed class REQ_QUIC_CRT_0035
         QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
 
         QuicConnectionTransitionResult handshakeResult = runtime.Transition(
-            new QuicConnectionHandshakeConfirmedEvent(ObservedAtTicks: -1));
+            new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: -1));
 
         Assert.Equal(1UL, handshakeResult.Sequence);
         Assert.Equal(clock.Ticks, handshakeResult.ObservedAtTicks);
-        Assert.Equal(QuicConnectionEventKind.HandshakeConfirmed, handshakeResult.EventKind);
+        Assert.Equal(QuicConnectionEventKind.PeerHandshakeTranscriptCompleted, handshakeResult.EventKind);
         Assert.Equal(QuicConnectionPhase.Establishing, handshakeResult.PreviousPhase);
         Assert.Equal(QuicConnectionPhase.Active, handshakeResult.CurrentPhase);
         Assert.True(handshakeResult.StateChanged);
         Assert.False(handshakeResult.HasEffects);
         Assert.Empty(handshakeResult.Effects);
-        Assert.True(runtime.HandshakeConfirmed);
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.Equal(clock.Ticks, runtime.LastTransitionTicks);
 

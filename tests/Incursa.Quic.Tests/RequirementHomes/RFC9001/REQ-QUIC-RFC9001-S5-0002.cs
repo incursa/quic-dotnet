@@ -49,7 +49,7 @@ public sealed class REQ_QUIC_RFC9001_S5_0002
         Assert.True(CreateSequentialBytes(0x11, 16).AsSpan().SequenceEqual(storedMaterial.AeadKey));
         Assert.True(CreateSequentialBytes(0x21, 12).AsSpan().SequenceEqual(storedMaterial.AeadIv));
         Assert.True(CreateSequentialBytes(0x31, 16).AsSpan().SequenceEqual(storedMaterial.HeaderProtectionKey));
-        Assert.False(runtime.HandshakeConfirmed);
+        Assert.False(runtime.PeerHandshakeTranscriptCompleted);
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
     }
 

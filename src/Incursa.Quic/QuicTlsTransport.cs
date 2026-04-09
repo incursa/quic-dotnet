@@ -68,9 +68,9 @@ internal enum QuicTlsTranscriptPhase
 internal enum QuicTlsUpdateKind
 {
     LocalTransportParametersReady = 0,
-    PeerTransportParametersAuthenticated = 1,
+    PeerTransportParametersCommitted = 1,
     KeysAvailable = 2,
-    HandshakeConfirmed = 3,
+    PeerHandshakeTranscriptCompleted = 3,
     KeyUpdateInstalled = 4,
     KeysDiscarded = 5,
     FatalAlert = 6,
@@ -126,9 +126,9 @@ internal interface IQuicTlsTransportBridge
         ReadOnlyMemory<byte> cryptoFramePayload);
 
     /// <summary>
-    /// Commits authenticated peer transport parameters into the bridge.
+    /// Commits staged peer transport parameters into the bridge.
     /// </summary>
-    /// <param name="peerTransportParameters">The authenticated peer transport parameters.</param>
+    /// <param name="peerTransportParameters">The staged peer transport parameters to commit.</param>
     /// <returns>The state updates produced by TLS.</returns>
     IReadOnlyList<QuicTlsStateUpdate> CommitPeerTransportParameters(
         QuicTransportParameters peerTransportParameters);

@@ -48,7 +48,7 @@ public sealed class REQ_QUIC_CRT_0056
         long initialDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.IdleTimeout)!.Value;
 
         runtime.Transition(
-            new QuicConnectionHandshakeConfirmedEvent(ObservedAtTicks: 0),
+            new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 0),
             nowTicks: MicrosecondsToTicks(25));
 
         Assert.Equal(initialDueTicks, runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.IdleTimeout));

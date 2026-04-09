@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_CRT_0063
             new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 20, candidatePathIdentity, datagram),
             nowTicks: 20);
 
-        Assert.False(runtime.HandshakeConfirmed);
+        Assert.False(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
 

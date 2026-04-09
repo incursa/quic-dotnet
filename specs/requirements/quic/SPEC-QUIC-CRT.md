@@ -56,7 +56,7 @@ Connection-owner scope
 The connection-owned state inventory should include at least:
 
 - connection phase
-- handshake-confirmed flag
+- peer handshake transcript completed flag
 - peer transport flags such as disable-active-migration
 - active path record
 - candidate path records
@@ -75,7 +75,7 @@ Minimum event families:
 
 - packet received
 - timer expired
-- handshake confirmed
+- peer handshake transcript completed
 - local close requested
 - connection close frame received
 - stateless reset matched
@@ -264,8 +264,8 @@ Trace:
   - connection-runtime-state-machine.md
   - RFC 9000 Section 10.2
 
-## REQ-QUIC-CRT-0022 Track handshake and transport flags in state
-Connection-owned state MUST include handshake-confirmed status and transport flags that influence migration and closing behavior.
+## REQ-QUIC-CRT-0022 Track peer transcript completion and transport flags in state
+Connection-owned state MUST include peer handshake transcript completed status and transport flags that influence migration and closing behavior.
 
 Notes:
 - Examples include disable-active-migration and whether peer parameters required for idle-timeout calculation have been committed.
@@ -349,7 +349,7 @@ Notes:
 - Eviction should prefer stale or superseded records.
 
 ## REQ-QUIC-CRT-0035 Represent all external stimuli as explicit events
-The runtime MUST represent packet receive, timer expiry, handshake confirmation, close signals, path-validation outcomes, connection-ID lifecycle events, and stream API actions as explicit events.
+The runtime MUST represent packet receive, timer expiry, peer handshake transcript completion, close signals, path-validation outcomes, connection-ID lifecycle events, and stream API actions as explicit events.
 
 ## REQ-QUIC-CRT-0036 Represent all side effects explicitly
 The runtime MUST represent send operations, timer operations, endpoint-binding updates, path promotion, token retirement, stream notifications, and state discard as explicit effects.
@@ -500,8 +500,8 @@ Each path record MUST include validation state, amplification budget state, reco
 ## REQ-QUIC-CRT-0063 Classify address changes explicitly
 A packet that arrives from a different peer address MUST be classified explicitly as same-path traffic, probable NAT rebinding, migration candidate, preferred-address transition, or noise or attack.
 
-## REQ-QUIC-CRT-0064 Gate active migration on handshake confirmation
-The runtime MUST NOT promote an active path migration before handshake confirmation.
+## REQ-QUIC-CRT-0064 Gate active migration on peer handshake transcript completion
+The runtime MUST NOT promote an active path migration before peer handshake transcript completion.
 
 Trace:
 - Source Refs:
@@ -716,7 +716,7 @@ Notes:
 - A practical baseline is three times the larger of the current PTO and the new path PTO.
 
 ## REQ-QUIC-CRT-0103 Expose a transport-facing TLS bridge state
-The library MUST expose a transport-facing TLS bridge state or contract that can represent local transport parameters, authenticated peer transport parameters, Initial keys available, Handshake keys available, 1-RTT keys available, handshake confirmation, key-update installation, old-key discard, and fatal TLS alerts without depending on a concrete TLS implementation.
+The library MUST expose a transport-facing TLS bridge state or contract that can represent local transport parameters, staged peer transport parameters, committed peer transport parameters, Initial keys available, Handshake keys available, 1-RTT keys available, peer handshake transcript completion, key-update installation, old-key discard, and fatal TLS alerts without depending on a concrete TLS implementation.
 
 Notes:
 - The bridge may remain internal if needed, but it must live in the main library because it is part of transport ownership, not runner plumbing.
@@ -746,7 +746,7 @@ Notes:
 - The coordinator does not add 1-RTT support, 0-RTT support, key update support, certificate validation, or production handshake orchestration.
 
 ## REQ-QUIC-CRT-0107 Own the narrow Handshake transcript-progress boundary
-The library MUST own a narrow Handshake transcript-progress boundary behind the transport-facing TLS bridge that accepts ordered Handshake CRYPTO fragments incrementally, preserves an ingress cursor and partial transcript buffer, stages peer transport parameters only after a complete EncryptedExtensions-style transcript has been assembled and parsed, latches terminal transcript/parse failure, and surfaces transcript progression and fatal alerts through the existing bridge-update path. Authenticated peer transport parameter commitment remains a bridge/runtime policy decision, and this slice MUST NOT imply certificate validation, 0-RTT, 1-RTT, key update, or production TLS handshake support.
+The library MUST own a narrow Handshake transcript-progress boundary behind the transport-facing TLS bridge that accepts ordered Handshake CRYPTO fragments incrementally, preserves an ingress cursor and partial transcript buffer, stages peer transport parameters only after a complete EncryptedExtensions-style transcript has been assembled and parsed, latches terminal transcript/parse failure, and surfaces transcript progression and fatal alerts through the existing bridge-update path. Peer transport parameter commitment and peer handshake transcript completion remain explicit bridge/runtime policy decisions, and this slice MUST NOT imply certificate validation, signature verification, 0-RTT, 1-RTT, key update, or production TLS handshake support.
 
 Trace:
 - Source Refs:
@@ -754,4 +754,4 @@ Trace:
   - connection-runtime-state-machine.md
 
 Notes:
-- This slice advances transcript/message progression only. It does not by itself make peer-authentication policy or broader TLS orchestration available.
+- This slice advances transcript/message progression only. It does not by itself make peer-authentication policy, certificate validation, signature verification, peer handshake transcript completion, or broader TLS orchestration available.

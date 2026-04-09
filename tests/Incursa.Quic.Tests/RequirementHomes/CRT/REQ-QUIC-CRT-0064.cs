@@ -6,7 +6,7 @@ public sealed class REQ_QUIC_CRT_0064
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    public void ValidationBeforeHandshakeConfirmationDoesNotPromoteThePath()
+    public void ValidationBeforePeerHandshakeTranscriptCompletionDoesNotPromoteThePath()
     {
         FakeMonotonicClock clock = new(0);
         QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
@@ -27,7 +27,7 @@ public sealed class REQ_QUIC_CRT_0064
             new QuicConnectionPathValidationSucceededEvent(ObservedAtTicks: 30, candidatePathIdentity),
             nowTicks: 30);
 
-        Assert.False(runtime.HandshakeConfirmed);
+        Assert.False(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
         Assert.False(runtime.ActivePath.Value.IsValidated);
@@ -41,10 +41,10 @@ public sealed class REQ_QUIC_CRT_0064
         Assert.DoesNotContain(validationResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
 
         QuicConnectionTransitionResult handshakeResult = runtime.Transition(
-            new QuicConnectionHandshakeConfirmedEvent(ObservedAtTicks: 40),
+            new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 40),
             nowTicks: 40);
 
-        Assert.True(runtime.HandshakeConfirmed);
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(candidatePathIdentity, runtime.ActivePath!.Value.Identity);

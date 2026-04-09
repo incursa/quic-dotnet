@@ -6,7 +6,7 @@ public sealed class REQ_QUIC_CRT_0069
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ValidationSuccessPromotesTheValidatedCandidatePathWhenHandshakeIsConfirmed()
+    public void ValidationSuccessPromotesTheValidatedCandidatePathWhenPeerHandshakeTranscriptCompletes()
     {
         FakeMonotonicClock clock = new(0);
         QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
@@ -16,7 +16,7 @@ public sealed class REQ_QUIC_CRT_0069
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         runtime.Transition(
-            new QuicConnectionHandshakeConfirmedEvent(ObservedAtTicks: 5),
+            new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 5),
             nowTicks: 5);
 
         runtime.Transition(
@@ -31,7 +31,7 @@ public sealed class REQ_QUIC_CRT_0069
             new QuicConnectionPathValidationSucceededEvent(ObservedAtTicks: 30, candidatePathIdentity),
             nowTicks: 30);
 
-        Assert.True(runtime.HandshakeConfirmed);
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(candidatePathIdentity, runtime.ActivePath!.Value.Identity);
         Assert.Null(runtime.ActivePath.Value.RecoverySnapshot);

@@ -35,7 +35,7 @@ public sealed class REQ_QUIC_CRT_0020
         Task<bool>[] producerTasks = Enumerable.Range(0, 32)
             .Select(_ => Task.Run(() => host.TryPostEvent(
                 handle,
-                new QuicConnectionHandshakeConfirmedEvent(ObservedAtTicks: 0))))
+                new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 0))))
             .ToArray();
 
         bool[] posted = await Task.WhenAll(producerTasks);
@@ -50,6 +50,6 @@ public sealed class REQ_QUIC_CRT_0020
         Assert.Equal(32, observedShardIndexes.Count);
         Assert.All(observedShardIndexes, shardIndex => Assert.Equal(observedShardIndexes[0], shardIndex));
         Assert.Equal(32UL, runtime.TransitionSequence);
-        Assert.True(runtime.HandshakeConfirmed);
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
     }
 }

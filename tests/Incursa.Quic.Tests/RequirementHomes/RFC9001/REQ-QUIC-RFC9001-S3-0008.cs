@@ -31,7 +31,7 @@ public sealed class REQ_QUIC_RFC9001_S3_0008
 
         Assert.Equal(4, bytesWritten);
         Assert.True(new byte[] { 0x01, 0x02, 0x03, 0x04 }.AsSpan().SequenceEqual(dequeuedCryptoBytes[..bytesWritten]));
-        Assert.False(runtime.HandshakeConfirmed);
+        Assert.False(runtime.PeerHandshakeTranscriptCompleted);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public sealed class REQ_QUIC_RFC9001_S3_0008
             nowTicks: 10);
 
         Assert.False(result.StateChanged);
-        Assert.False(runtime.HandshakeConfirmed);
+        Assert.False(runtime.PeerHandshakeTranscriptCompleted);
         Span<byte> dequeuedCryptoBytes = stackalloc byte[1];
         Assert.False(runtime.TlsState.TryDequeueOutgoingCryptoData(
             QuicTlsEncryptionLevel.OneRtt,

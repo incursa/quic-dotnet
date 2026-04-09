@@ -66,8 +66,8 @@ public sealed class REQ_QUIC_RFC9001_S4_0005
         Assert.Equal(0UL, offset);
         Assert.Equal(24, bytesWritten);
         Assert.True(cryptoData.AsSpan().SequenceEqual(surfacedCryptoBytes[..bytesWritten]));
-        Assert.False(runtime.HandshakeConfirmed);
-        Assert.False(runtime.TlsState.HandshakeConfirmed);
+        Assert.False(runtime.PeerHandshakeTranscriptCompleted);
+        Assert.False(runtime.TlsState.PeerHandshakeTranscriptCompleted);
     }
 
     private static QuicConnectionRuntime CreateRuntime()

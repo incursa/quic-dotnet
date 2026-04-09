@@ -31,7 +31,7 @@ public sealed class REQ_QUIC_CRT_0017
             new QuicConnectionPathIdentity("203.0.113.1"),
             ReadOnlyMemory<byte>.Empty)));
 
-        Assert.True(runtime.TryPostLocalApiEvent(new QuicConnectionHandshakeConfirmedEvent(ObservedAtTicks: 2)));
+        Assert.True(runtime.TryPostLocalApiEvent(new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 2)));
 
         Assert.True(runtime.TryPostTimerEvent(new QuicConnectionTimerExpiredEvent(
             ObservedAtTicks: 3,
@@ -47,13 +47,13 @@ public sealed class REQ_QUIC_CRT_0017
         Assert.Equal(
             [
                 QuicConnectionEventKind.PacketReceived,
-                QuicConnectionEventKind.HandshakeConfirmed,
+                QuicConnectionEventKind.PeerHandshakeTranscriptCompleted,
                 QuicConnectionEventKind.TimerExpired,
             ],
             observedKinds);
         Assert.Equal(3UL, runtime.TransitionSequence);
         Assert.Equal(clock.Ticks, runtime.LastTransitionTicks);
-        Assert.True(runtime.HandshakeConfirmed);
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
     }
 
     private sealed class FakeMonotonicClock : IMonotonicClock

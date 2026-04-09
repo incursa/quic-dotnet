@@ -14,7 +14,7 @@ public sealed class REQ_QUIC_CRT_0032
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
         Assert.Equal(QuicConnectionSendingMode.Ordinary, runtime.SendingMode);
         Assert.True(runtime.CanSendOrdinaryPackets);
-        Assert.False(runtime.HandshakeConfirmed);
+        Assert.False(runtime.PeerHandshakeTranscriptCompleted);
         Assert.Equal(QuicConnectionTransportState.None, runtime.TransportFlags);
         Assert.Null(runtime.ActivePath);
         Assert.Empty(runtime.CandidatePaths);

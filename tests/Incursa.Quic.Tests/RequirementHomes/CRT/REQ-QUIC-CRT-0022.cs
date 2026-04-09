@@ -6,7 +6,7 @@ public sealed class REQ_QUIC_CRT_0022
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void RuntimeConsumesTlsTransportParametersAndHandshakeConfirmation()
+    public void RuntimeConsumesTlsTransportParametersAndHandshakeCompletion()
     {
         FakeMonotonicClock clock = new(0);
         QuicConnectionRuntime runtime = new(
@@ -48,6 +48,20 @@ public sealed class REQ_QUIC_CRT_0022
 
         Assert.True(localTransportResult.StateChanged);
 
+        QuicConnectionTransitionResult serverHelloResult = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 12,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.TranscriptProgressed,
+                    HandshakeMessageType: QuicTlsHandshakeMessageType.ServerHello,
+                    HandshakeMessageLength: 48,
+                    SelectedCipherSuite: QuicTlsCipherSuite.TlsAes256GcmSha384,
+                    TranscriptHashAlgorithm: QuicTlsTranscriptHashAlgorithm.Sha384,
+                    TranscriptPhase: QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage)),
+            nowTicks: 12);
+
+        Assert.True(serverHelloResult.StateChanged);
+
         QuicConnectionTransitionResult stageResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 15,
@@ -60,16 +74,6 @@ public sealed class REQ_QUIC_CRT_0022
             nowTicks: 15);
 
         Assert.True(stageResult.StateChanged);
-
-        QuicConnectionTransitionResult peerTransportResult = runtime.Transition(
-            new QuicConnectionTlsStateUpdatedEvent(
-                ObservedAtTicks: 20,
-                new QuicTlsStateUpdate(
-                    QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
-                    TransportParameters: peerParameters)),
-            nowTicks: 20);
-
-        Assert.True(peerTransportResult.StateChanged);
 
         QuicConnectionTransitionResult completedResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
@@ -86,13 +90,22 @@ public sealed class REQ_QUIC_CRT_0022
         QuicConnectionTransitionResult handshakeResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 30,
-                new QuicTlsStateUpdate(QuicTlsUpdateKind.HandshakeConfirmed)),
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted)),
             nowTicks: 30);
 
         Assert.True(handshakeResult.StateChanged);
+        QuicConnectionTransitionResult peerTransportResult = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 35,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PeerTransportParametersCommitted,
+                    TransportParameters: peerParameters)),
+            nowTicks: 35);
+
+        Assert.True(peerTransportResult.StateChanged);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
-        Assert.True(runtime.HandshakeConfirmed);
-        Assert.True(runtime.TlsState.HandshakeConfirmed);
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
+        Assert.True(runtime.TlsState.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.PeerTransportParametersCommitted));
         Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration));
         Assert.Equal(15UL, runtime.LocalMaxIdleTimeoutMicros);

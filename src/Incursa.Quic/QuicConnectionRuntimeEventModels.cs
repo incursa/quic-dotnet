@@ -4,7 +4,7 @@ internal enum QuicConnectionEventKind
 {
     PacketReceived = 0,
     TimerExpired = 1,
-    HandshakeConfirmed = 2,
+    PeerHandshakeTranscriptCompleted = 2,
     LocalCloseRequested = 3,
     ConnectionCloseFrameReceived = 4,
     AcceptedStatelessReset = 5,
@@ -58,8 +58,8 @@ internal sealed record QuicConnectionTimerExpiredEvent(
     ulong Generation)
     : QuicConnectionEvent(QuicConnectionEventKind.TimerExpired, ObservedAtTicks);
 
-internal sealed record QuicConnectionHandshakeConfirmedEvent(long ObservedAtTicks)
-    : QuicConnectionEvent(QuicConnectionEventKind.HandshakeConfirmed, ObservedAtTicks);
+internal sealed record QuicConnectionPeerHandshakeTranscriptCompletedEvent(long ObservedAtTicks)
+    : QuicConnectionEvent(QuicConnectionEventKind.PeerHandshakeTranscriptCompleted, ObservedAtTicks);
 
 internal sealed record QuicConnectionHandshakeBootstrapRequestedEvent(
     long ObservedAtTicks,

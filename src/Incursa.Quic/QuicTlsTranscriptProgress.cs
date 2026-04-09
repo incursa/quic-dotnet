@@ -144,20 +144,6 @@ internal sealed class QuicTlsTranscriptProgress
         };
     }
 
-    internal bool MarkPeerTransportParametersAuthenticated()
-    {
-        if (phase != QuicTlsTranscriptPhase.PeerTransportParametersStaged
-            || stagedPeerTransportParameters is null
-            || terminalAlertDescription.HasValue)
-        {
-            return false;
-        }
-
-        phase = QuicTlsTranscriptPhase.Completed;
-        progressState = HandshakeProgressState.Completed;
-        return true;
-    }
-
     internal static bool TryFormatDeterministicTransportParametersMessage(
         QuicTransportParameters transportParameters,
         QuicTransportParameterRole senderRole,
