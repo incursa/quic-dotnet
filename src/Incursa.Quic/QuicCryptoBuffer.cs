@@ -157,11 +157,38 @@ public enum QuicCryptoBufferResult
     }
 
     /// <summary>
+    /// Peeks contiguous buffered CRYPTO data into <paramref name="destination"/> without consuming it.
+    /// </summary>
+    internal bool TryPeekContiguousData(Span<byte> destination, out ulong offset, out int bytesWritten)
+    {
+        return TryAccessContiguousData(destination, consume: false, out offset, out bytesWritten);
+    }
+
+    /// <summary>
+    /// Copies contiguous buffered CRYPTO data into <paramref name="destination"/> and consumes it.
+    /// </summary>
+    internal bool TryDequeueContiguousData(Span<byte> destination, out ulong offset, out int bytesWritten)
+    {
+        return TryAccessContiguousData(destination, consume: true, out offset, out bytesWritten);
+    }
+
+    /// <summary>
     /// Copies contiguous buffered CRYPTO data into <paramref name="destination"/>.
     /// </summary>
     public bool TryDequeueContiguousData(Span<byte> destination, out int bytesWritten)
     {
+        return TryAccessContiguousData(destination, consume: true, out _, out bytesWritten);
+    }
+
+    private bool TryAccessContiguousData(
+        Span<byte> destination,
+        bool consume,
+        out ulong offset,
+        out int bytesWritten)
+    {
+        offset = nextReadOffset;
         bytesWritten = 0;
+
         if (destination.IsEmpty || entries.Count == 0)
         {
             return false;
@@ -169,12 +196,26 @@ public enum QuicCryptoBufferResult
 
         ulong expectedOffset = nextReadOffset;
         int destinationIndex = 0;
+        int currentIndex = 0;
+        int remainingBufferedBytes = bufferedBytes;
+        List<Entry>? retainedEntries = consume ? new List<Entry>(entries.Count) : null;
 
-        while (destinationIndex < destination.Length && entries.Count > 0)
+        while (currentIndex < entries.Count && destinationIndex < destination.Length)
         {
-            Entry entry = entries[0];
+            Entry entry = entries[currentIndex];
+
             if (entry.Offset > expectedOffset)
             {
+                if (consume)
+                {
+                    for (int i = currentIndex; i < entries.Count; i++)
+                    {
+                        retainedEntries!.Add(entries[i]);
+                    }
+
+                    currentIndex = entries.Count;
+                }
+
                 break;
             }
 
@@ -183,8 +224,8 @@ public enum QuicCryptoBufferResult
                 int skip = (int)(expectedOffset - entry.Offset);
                 if (skip >= entry.Data.Length)
                 {
-                    bufferedBytes -= entry.Data.Length;
-                    entries.RemoveAt(0);
+                    remainingBufferedBytes -= entry.Data.Length;
+                    currentIndex++;
                     continue;
                 }
 
@@ -195,22 +236,60 @@ public enum QuicCryptoBufferResult
             entry.Data.AsSpan(0, bytesToCopy).CopyTo(destination[destinationIndex..]);
             destinationIndex += bytesToCopy;
             expectedOffset += (ulong)bytesToCopy;
-            bufferedBytes -= bytesToCopy;
+            remainingBufferedBytes -= bytesToCopy;
+
+            if (!consume)
+            {
+                currentIndex++;
+                if (bytesToCopy < entry.Data.Length)
+                {
+                    break;
+                }
+
+                continue;
+            }
 
             if (bytesToCopy == entry.Data.Length)
             {
-                entries.RemoveAt(0);
+                currentIndex++;
+                continue;
             }
-            else
+
+            retainedEntries!.Add(new Entry(entry.Offset + (ulong)bytesToCopy, entry.Data[bytesToCopy..]));
+            currentIndex++;
+
+            for (int i = currentIndex; i < entries.Count; i++)
             {
-                entries[0] = new Entry(entry.Offset + (ulong)bytesToCopy, entry.Data[bytesToCopy..]);
-                break;
+                retainedEntries.Add(entries[i]);
             }
+
+            currentIndex = entries.Count;
+            break;
         }
 
-        nextReadOffset = expectedOffset;
+        if (destinationIndex == 0)
+        {
+            return false;
+        }
+
+        if (consume)
+        {
+            if (currentIndex < entries.Count)
+            {
+                for (int i = currentIndex; i < entries.Count; i++)
+                {
+                    retainedEntries!.Add(entries[i]);
+                }
+            }
+
+            entries.Clear();
+            entries.AddRange(retainedEntries!);
+            bufferedBytes = remainingBufferedBytes;
+            nextReadOffset = expectedOffset;
+        }
+
         bytesWritten = destinationIndex;
-        return bytesWritten > 0;
+        return true;
     }
 
     private bool TryInsertFrameData(ulong offset, byte[] data, out int newBufferedBytes)

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0007",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC Handshake Flow Coordinator Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the narrow main-library handshake-flow seam that opens inbound Handshake packets, feeds CRYPTO bytes into the bridge driver, drains outbound CRYPTO bytes back into protected Handshake packets, and returns send effects to the connection runtime.",
+  "design_summary": "The connection runtime owns a narrow Handshake coordinator rather than a full TLS stack. Inbound Handshake packets are opened with the existing Handshake packet protection helper, parsed for CRYPTO and padding frames, and forwarded into the existing bridge-driver buffering path. Outbound CRYPTO bytes are drained from the bridge driver, formatted as CRYPTO frames, wrapped in Handshake packets, protected with the same Handshake packet protection helper, and surfaced as connection-owned send-datagram effects. The slice intentionally reuses the existing packet codec, bridge driver, and runtime reducer instead of adding polling or a parallel TLS backend.",
+  "satisfies": [
+    "REQ-QUIC-CRT-0106"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0007",
+    "VER-QUIC-CRT-0007"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicHandshakePacketProtection.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs"
+  ],
+  "risks": [
+    "The coordinator must remain a narrow runtime helper and must not become a TLS implementation by another name.",
+    "Handshake send effects must respect the active path's amplification budget and should not imply 1-RTT availability.",
+    "The packet glue should continue to reject malformed frame layouts, wrong protection material, and unsupported packet spaces."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicHandshakePacketProtection.cs`](../../../src/Incursa.Quic/QuicHandshakePacketProtection.cs)\n- [`src/Incursa.Quic/QuicFrameCodec.cs`](../../../src/Incursa.Quic/QuicFrameCodec.cs)\n- [`src/Incursa.Quic/QuicPacketParser.cs`](../../../src/Incursa.Quic/QuicPacketParser.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0002.cs)"
+    }
+  ]
+}

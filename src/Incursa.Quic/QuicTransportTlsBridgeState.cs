@@ -149,14 +149,24 @@ internal sealed class QuicTransportTlsBridgeState
         Span<byte> destination,
         out int bytesWritten)
     {
+        return TryDequeueIncomingCryptoData(encryptionLevel, destination, out _, out bytesWritten);
+    }
+
+    internal bool TryDequeueIncomingCryptoData(
+        QuicTlsEncryptionLevel encryptionLevel,
+        Span<byte> destination,
+        out ulong offset,
+        out int bytesWritten)
+    {
         QuicCryptoBuffer? cryptoBuffer = GetIngressCryptoBuffer(encryptionLevel);
         if (cryptoBuffer is null)
         {
+            offset = 0;
             bytesWritten = 0;
             return false;
         }
 
-        return cryptoBuffer.TryDequeueContiguousData(destination, out bytesWritten);
+        return cryptoBuffer.TryDequeueContiguousData(destination, out offset, out bytesWritten);
     }
 
     internal bool TryDequeueOutgoingCryptoData(
@@ -164,14 +174,41 @@ internal sealed class QuicTransportTlsBridgeState
         Span<byte> destination,
         out int bytesWritten)
     {
+        return TryDequeueOutgoingCryptoData(encryptionLevel, destination, out _, out bytesWritten);
+    }
+
+    internal bool TryDequeueOutgoingCryptoData(
+        QuicTlsEncryptionLevel encryptionLevel,
+        Span<byte> destination,
+        out ulong offset,
+        out int bytesWritten)
+    {
         QuicCryptoBuffer? cryptoBuffer = GetEgressCryptoBuffer(encryptionLevel);
         if (cryptoBuffer is null)
         {
+            offset = 0;
             bytesWritten = 0;
             return false;
         }
 
-        return cryptoBuffer.TryDequeueContiguousData(destination, out bytesWritten);
+        return cryptoBuffer.TryDequeueContiguousData(destination, out offset, out bytesWritten);
+    }
+
+    internal bool TryPeekOutgoingCryptoData(
+        QuicTlsEncryptionLevel encryptionLevel,
+        Span<byte> destination,
+        out ulong offset,
+        out int bytesWritten)
+    {
+        QuicCryptoBuffer? cryptoBuffer = GetEgressCryptoBuffer(encryptionLevel);
+        if (cryptoBuffer is null)
+        {
+            offset = 0;
+            bytesWritten = 0;
+            return false;
+        }
+
+        return cryptoBuffer.TryPeekContiguousData(destination, out offset, out bytesWritten);
     }
 
     internal bool TryGetPacketProtectionMaterial(

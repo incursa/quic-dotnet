@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0007",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Handshake Flow Coordinator Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests and inspection evidence for the narrow Handshake coordinator and its runtime integration.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0007",
+    "WI-QUIC-CRT-0007"
+  ],
+  "expected_result": "Inbound Handshake packets can be opened with the existing handshake packet-protection helper, their CRYPTO frames are parsed and fed through the bridge-driver buffering path, outbound CRYPTO bytes can be drained from the bridge driver and packaged as protected Handshake packets, malformed or tampered packets are rejected, and handshake confirmation plus handshake key discard continue to flow through the runtime without implying 1-RTT or full TLS support.",
+  "verifies": [
+    "REQ-QUIC-CRT-0106"
+  ],
+  "procedure": [
+    "Run the new CRT and RFC9001 requirement-home tests that cover inbound Handshake packet processing, outbound Handshake packet emission, malformed-frame rejection, and wrong-material rejection.",
+    "Run the bridge-driver and runtime integration tests that prove handshake confirmation and handshake key discard still route through the runtime reducer.",
+    "Inspect the coordinator and runtime implementation to confirm they stay in the main library and do not introduce a polling loop or native TLS fallback."
+  ],
+  "scope": "This slice verifies the narrow Handshake packet-flow coordinator only. It does not prove full TLS handshake progression, 1-RTT, 0-RTT, key update, or certificate validation behavior.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicHandshakePacketProtection.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs"
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The tests project can access internal library seams through the existing friend assembly relationship."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs\n- src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicHandshakePacketProtection.cs\n- src/Incursa.Quic/QuicFrameCodec.cs"
+    }
+  ]
+}

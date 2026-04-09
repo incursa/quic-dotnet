@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0007",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC Handshake Flow Coordinator Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the narrow Handshake runtime coordinator, the runtime integration that uses it, and the packet assembly/parsing glue needed to move CRYPTO bytes through Handshake packets inside the library.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0007"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0007"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0106"
+  ],
+  "planned_changes": "- Add an internal Handshake flow coordinator that opens protected Handshake packets, parses padding and CRYPTO frames, and formats outbound CRYPTO bytes into protected Handshake packets.\n- Thread the coordinator into the connection runtime so inbound Handshake packets flow through the existing bridge-driver buffering path and outbound bridge bytes surface as send effects.\n- Keep the coordinator event-driven and library-owned; do not add a polling loop, harness logic, OpenSSL fallback, or 1-RTT behavior.\n- Add focused requirement-home tests for inbound packet opening, outbound packet formatting, malformed frame rejection, wrong-material rejection, and the runtime state transitions for handshake confirmation and key discard.",
+  "verification_plan": "Run the new CRT and RFC9001 requirement-home tests that cover the handshake flow coordinator, then run the relevant solution build/test pass for the main library and tests project.",
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "out_of_scope": [
+    "Any full TLS stack integration, certificate validation, 0-RTT support, key update support, or native TLS/QUIC fallback."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicHandshakePacketProtection.cs`](../../../src/Incursa.Quic/QuicHandshakePacketProtection.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0002.cs)"
+    }
+  ]
+}

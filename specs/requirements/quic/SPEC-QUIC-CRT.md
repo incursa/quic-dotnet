@@ -4,15 +4,15 @@
 
 ## Purpose
 
-Define the architecture and implementation requirements for the connection-owned QUIC runtime that arbitrates packet receive events, timer expirations, path changes, stateless reset handling, close and drain transitions, and live stream orchestration.
+Define the architecture and implementation requirements for the connection-owned QUIC runtime that arbitrates packet receive events, timer expirations, path changes, stateless reset handling, handshake packet flow, close and drain transitions, and live stream orchestration.
 
 ## Scope
 
-This specification covers endpoint ingress classification, routing tables, connection ownership, execution profiles, event and effect modeling, timer scheduling, lifecycle phases, migration and path state, stateless reset handling, stream ownership, performance posture for high connection density, and reducer-oriented testability.
+This specification covers endpoint ingress classification, routing tables, connection ownership, execution profiles, event and effect modeling, timer scheduling, lifecycle phases, migration and path state, handshake packet open/protect coordination, stateless reset handling, stream ownership, performance posture for high connection density, and reducer-oriented testability.
 
 ## Context
 
-The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, and connection stream bookkeeping. The missing seam is the connection-owned runtime that decides ordering across network, timer, and local API events. This specification turns that seam into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, and live-stream blockers can be implemented against one clear architecture.
+The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, and handshake packet protection helpers. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, and live-stream blockers can be implemented against one clear architecture.
 
 ## Decision Summary
 
@@ -732,3 +732,15 @@ The library MUST provide a sender and recovery runtime owner that centralizes pa
 
 Notes:
 - The owner may remain internal if needed, but it must live in the library because it is part of the transport runtime.
+
+## REQ-QUIC-CRT-0106 Own the narrow Handshake flow coordinator
+The connection runtime MUST own a narrow Handshake flow coordinator that opens inbound Handshake packets with the existing Handshake packet protection helper, parses and feeds CRYPTO frames into the TLS bridge driver, drains outbound CRYPTO bytes from the bridge driver, formats them into Handshake packets, protects them with the existing Handshake packet protection helper, and surfaces the protected packets as connection-owned send effects.
+
+Trace:
+- Source Refs:
+  - RFC 9001 Sections 5 and 7
+  - connection-runtime-state-machine.md
+
+Notes:
+- This is a Handshake-level runtime flow slice only and does not imply a full TLS implementation.
+- The coordinator does not add 1-RTT support, 0-RTT support, key update support, certificate validation, or production handshake orchestration.

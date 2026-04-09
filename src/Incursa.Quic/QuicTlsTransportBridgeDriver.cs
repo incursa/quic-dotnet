@@ -153,6 +153,18 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     }
 
     /// <summary>
+    /// Dequeues buffered inbound CRYPTO bytes from the bridge state together with their starting offset.
+    /// </summary>
+    public bool TryDequeueIncomingCryptoData(
+        QuicTlsEncryptionLevel encryptionLevel,
+        Span<byte> destination,
+        out ulong offset,
+        out int bytesWritten)
+    {
+        return bridgeState.TryDequeueIncomingCryptoData(encryptionLevel, destination, out offset, out bytesWritten);
+    }
+
+    /// <summary>
     /// Buffers outbound CRYPTO bytes into the runtime-owned bridge state.
     /// </summary>
     public bool TryBufferOutgoingCryptoData(
@@ -173,6 +185,30 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         out int bytesWritten)
     {
         return bridgeState.TryDequeueOutgoingCryptoData(encryptionLevel, destination, out bytesWritten);
+    }
+
+    /// <summary>
+    /// Dequeues buffered outbound CRYPTO bytes from the bridge state together with their starting offset.
+    /// </summary>
+    public bool TryDequeueOutgoingCryptoData(
+        QuicTlsEncryptionLevel encryptionLevel,
+        Span<byte> destination,
+        out ulong offset,
+        out int bytesWritten)
+    {
+        return bridgeState.TryDequeueOutgoingCryptoData(encryptionLevel, destination, out offset, out bytesWritten);
+    }
+
+    /// <summary>
+    /// Peeks buffered outbound CRYPTO bytes from the bridge state without consuming them.
+    /// </summary>
+    public bool TryPeekOutgoingCryptoData(
+        QuicTlsEncryptionLevel encryptionLevel,
+        Span<byte> destination,
+        out ulong offset,
+        out int bytesWritten)
+    {
+        return bridgeState.TryPeekOutgoingCryptoData(encryptionLevel, destination, out offset, out bytesWritten);
     }
 
     private IReadOnlyList<QuicTlsStateUpdate> PublishUpdate(QuicTlsStateUpdate update)
