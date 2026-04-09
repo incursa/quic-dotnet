@@ -44,6 +44,24 @@ public sealed class REQ_QUIC_CRT_0106
                 ObservedAtTicks: 10,
                 new QuicTlsStateUpdate(
                     QuicTlsUpdateKind.TranscriptProgressed,
+                    HandshakeMessageType: QuicTlsHandshakeMessageType.CertificateVerify,
+                    HandshakeMessageLength: 48,
+                    TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)),
+            nowTicks: 10).StateChanged);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 10,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)),
+            nowTicks: 10).StateChanged);
+        Assert.False(runtime.TlsState.CanCommitPeerTransportParameters(peerTransportParameters));
+        Assert.False(runtime.TlsState.CanEmitPeerHandshakeTranscriptCompleted());
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 10,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.TranscriptProgressed,
                     HandshakeMessageType: QuicTlsHandshakeMessageType.Finished,
                     HandshakeMessageLength: 48,
                     TranscriptPhase: QuicTlsTranscriptPhase.Completed)),

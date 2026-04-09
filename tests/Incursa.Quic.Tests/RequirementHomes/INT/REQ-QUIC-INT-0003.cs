@@ -38,6 +38,15 @@ public sealed class REQ_QUIC_INT_0003
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.CertificateVerify,
+            HandshakeMessageLength: 48,
+            TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(state.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
+        Assert.False(state.CanCommitPeerTransportParameters(peerParameters));
+        Assert.False(state.CanEmitPeerHandshakeTranscriptCompleted());
+        Assert.True(state.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
             HandshakeMessageType: QuicTlsHandshakeMessageType.Finished,
             HandshakeMessageLength: 48,
             TranscriptPhase: QuicTlsTranscriptPhase.Completed)));
@@ -105,6 +114,21 @@ public sealed class REQ_QUIC_INT_0003
                         DisableActiveMigration = true,
                     },
                     TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)),
+            nowTicks: 9).StateChanged);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 9,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.TranscriptProgressed,
+                    HandshakeMessageType: QuicTlsHandshakeMessageType.CertificateVerify,
+                    HandshakeMessageLength: 48,
+                    TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)),
+            nowTicks: 9).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 9,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)),
             nowTicks: 9).StateChanged);
 
         Assert.False(runtime.Transition(

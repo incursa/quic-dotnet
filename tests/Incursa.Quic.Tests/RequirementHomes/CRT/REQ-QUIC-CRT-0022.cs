@@ -75,6 +75,23 @@ public sealed class REQ_QUIC_CRT_0022
 
         Assert.True(stageResult.StateChanged);
 
+        QuicConnectionTransitionResult certificateVerifyResult = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 16,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.TranscriptProgressed,
+                    HandshakeMessageType: QuicTlsHandshakeMessageType.CertificateVerify,
+                    HandshakeMessageLength: 48,
+                    TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)),
+            nowTicks: 16);
+
+        Assert.True(certificateVerifyResult.StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 16,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)),
+            nowTicks: 16).StateChanged);
+
         QuicConnectionTransitionResult completedResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 25,

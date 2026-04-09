@@ -63,8 +63,16 @@ public sealed class REQ_QUIC_CRT_0103
             HandshakeMessageLength: 48,
             TransportParameters: parsedPeerParameters,
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.CertificateVerify,
+            HandshakeMessageLength: 48,
+            TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
         Assert.False(bridge.PeerTransportParametersCommitted);
         Assert.False(bridge.PeerHandshakeTranscriptCompleted);
+        Assert.False(bridge.CanCommitPeerTransportParameters(parsedPeerParameters));
+        Assert.False(bridge.CanEmitPeerHandshakeTranscriptCompleted());
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
         Assert.False(bridge.CanCommitPeerTransportParameters(parsedPeerParameters));
         Assert.False(bridge.CanEmitPeerHandshakeTranscriptCompleted());
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
@@ -393,6 +401,19 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, stageUpdates[0].TranscriptPhase);
         Assert.True(stageUpdates[0].TransportParameters is not null);
 
+        IReadOnlyList<QuicTlsStateUpdate> certificateVerifyUpdates = driver.PublishTranscriptProgressed(
+            QuicTlsTranscriptPhase.PeerTransportParametersStaged,
+            QuicTlsHandshakeMessageType.CertificateVerify,
+            handshakeMessageLength: 48);
+        Assert.Single(certificateVerifyUpdates);
+        Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, certificateVerifyUpdates[0].Kind);
+        Assert.Equal(QuicTlsHandshakeMessageType.CertificateVerify, certificateVerifyUpdates[0].HandshakeMessageType);
+        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, certificateVerifyUpdates[0].TranscriptPhase);
+        Assert.True(driver.State.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
+        Assert.True(driver.State.PeerCertificateVerifyVerified);
+        Assert.False(driver.State.CanCommitPeerTransportParameters(peerParameters));
+        Assert.False(driver.State.CanEmitPeerHandshakeTranscriptCompleted());
+
         IReadOnlyList<QuicTlsStateUpdate> completedUpdates = driver.PublishTranscriptProgressed(
             QuicTlsTranscriptPhase.Completed,
             QuicTlsHandshakeMessageType.Finished,
@@ -401,6 +422,8 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.Single(completedUpdates);
         Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, completedUpdates[0].Kind);
         Assert.Equal(QuicTlsHandshakeMessageType.Finished, completedUpdates[0].HandshakeMessageType);
+        Assert.False(driver.State.CanEmitPeerHandshakeTranscriptCompleted());
+        Assert.False(driver.State.CanCommitPeerTransportParameters(peerParameters));
         Assert.True(driver.State.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerFinishedVerified)));
         Assert.True(driver.State.PeerFinishedVerified);
         Assert.True(driver.State.CanCommitPeerTransportParameters(peerParameters));
@@ -425,6 +448,16 @@ public sealed class REQ_QUIC_CRT_0103
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 11,
                 stageUpdates[0]),
+            nowTicks: 11).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                certificateVerifyUpdates[0]),
+            nowTicks: 11).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)),
             nowTicks: 11).StateChanged);
         Assert.True(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
@@ -553,6 +586,23 @@ public sealed class REQ_QUIC_CRT_0103
 
         Assert.False(runtime.TlsState.PeerTransportParametersCommitted);
         Assert.False(runtime.TlsState.PeerHandshakeTranscriptCompleted);
+        Assert.False(runtime.TlsState.CanCommitPeerTransportParameters(peerParameters));
+        Assert.False(runtime.TlsState.CanEmitPeerHandshakeTranscriptCompleted());
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.TranscriptProgressed,
+                    HandshakeMessageType: QuicTlsHandshakeMessageType.CertificateVerify,
+                    HandshakeMessageLength: 48,
+                    TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)),
+            nowTicks: 11).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)),
+            nowTicks: 11).StateChanged);
         Assert.False(runtime.TlsState.CanCommitPeerTransportParameters(peerParameters));
         Assert.False(runtime.TlsState.CanEmitPeerHandshakeTranscriptCompleted());
 
@@ -689,6 +739,19 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.False(driver.State.CanCommitPeerTransportParameters(peerParameters));
         Assert.False(driver.State.CanEmitPeerHandshakeTranscriptCompleted());
 
+        IReadOnlyList<QuicTlsStateUpdate> certificateVerifyUpdates = driver.PublishTranscriptProgressed(
+            QuicTlsTranscriptPhase.PeerTransportParametersStaged,
+            QuicTlsHandshakeMessageType.CertificateVerify,
+            handshakeMessageLength: 48);
+        Assert.Single(certificateVerifyUpdates);
+        Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, certificateVerifyUpdates[0].Kind);
+        Assert.Equal(QuicTlsHandshakeMessageType.CertificateVerify, certificateVerifyUpdates[0].HandshakeMessageType);
+        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, certificateVerifyUpdates[0].TranscriptPhase);
+        Assert.True(driver.State.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
+        Assert.True(driver.State.PeerCertificateVerifyVerified);
+        Assert.False(driver.State.CanCommitPeerTransportParameters(peerParameters));
+        Assert.False(driver.State.CanEmitPeerHandshakeTranscriptCompleted());
+
         IReadOnlyList<QuicTlsStateUpdate> completedUpdates = driver.PublishTranscriptProgressed(
             QuicTlsTranscriptPhase.Completed,
             QuicTlsHandshakeMessageType.Finished,
@@ -736,6 +799,16 @@ public sealed class REQ_QUIC_CRT_0103
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 12,
                 stageUpdates[4]),
+            nowTicks: 12).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 12,
+                certificateVerifyUpdates[0]),
+            nowTicks: 12).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 12,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)),
             nowTicks: 12).StateChanged);
         Assert.True(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(

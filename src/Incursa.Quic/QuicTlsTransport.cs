@@ -43,6 +43,14 @@ internal enum QuicTlsCipherSuite : ushort
 }
 
 /// <summary>
+/// TLS 1.3 signature schemes supported by the client-role certificate proof slice.
+/// </summary>
+internal enum QuicTlsSignatureScheme : ushort
+{
+    EcdsaSecp256r1Sha256 = 0x0403,
+}
+
+/// <summary>
 /// TLS 1.3 named groups supported by the managed key schedule slice.
 /// </summary>
 internal enum QuicTlsNamedGroup : ushort
@@ -89,6 +97,7 @@ internal enum QuicTlsUpdateKind
     PeerFinishedVerified = 11,
     HandshakeOpenPacketProtectionMaterialAvailable = 12,
     HandshakeProtectPacketProtectionMaterialAvailable = 13,
+    PeerCertificateVerifyVerified = 14,
 }
 
 /// <summary>

@@ -30,6 +30,12 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
             HandshakeMessageLength: 48,
             TransportParameters: parsedParameters,
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.CertificateVerify,
+            HandshakeMessageLength: 48,
+            TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
 
         Assert.False(bridge.CanCommitPeerTransportParameters(parsedParameters));
         Assert.False(bridge.CanEmitPeerHandshakeTranscriptCompleted());
@@ -138,6 +144,20 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
         Assert.False(driver.State.CanEmitPeerHandshakeTranscriptCompleted());
 
         Assert.Empty(driver.CommitPeerTransportParameters(peerParameters));
+
+        IReadOnlyList<QuicTlsStateUpdate> certificateVerifyUpdates = driver.PublishTranscriptProgressed(
+            QuicTlsTranscriptPhase.PeerTransportParametersStaged,
+            QuicTlsHandshakeMessageType.CertificateVerify,
+            handshakeMessageLength: 48);
+
+        Assert.Single(certificateVerifyUpdates);
+        Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, certificateVerifyUpdates[0].Kind);
+        Assert.Equal(QuicTlsHandshakeMessageType.CertificateVerify, certificateVerifyUpdates[0].HandshakeMessageType);
+        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, certificateVerifyUpdates[0].TranscriptPhase);
+        Assert.True(driver.State.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
+        Assert.True(driver.State.PeerCertificateVerifyVerified);
+        Assert.False(driver.State.CanCommitPeerTransportParameters(peerParameters));
+        Assert.False(driver.State.CanEmitPeerHandshakeTranscriptCompleted());
 
         IReadOnlyList<QuicTlsStateUpdate> completedUpdates = driver.PublishTranscriptProgressed(
             QuicTlsTranscriptPhase.Completed,

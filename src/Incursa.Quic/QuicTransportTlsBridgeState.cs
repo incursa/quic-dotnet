@@ -35,6 +35,8 @@ internal sealed class QuicTransportTlsBridgeState
 
     public bool OneRttKeysAvailable { get; private set; }
 
+    public bool PeerCertificateVerifyVerified { get; private set; }
+
     public bool PeerHandshakeTranscriptCompleted { get; private set; }
 
     public bool PeerFinishedVerified { get; private set; }
@@ -73,6 +75,7 @@ internal sealed class QuicTransportTlsBridgeState
 
         return !IsTerminal
             && !PeerTransportParametersCommitted
+            && PeerCertificateVerifyVerified
             && PeerFinishedVerified
             && StagedPeerTransportParameters is not null
             && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed
@@ -90,6 +93,7 @@ internal sealed class QuicTransportTlsBridgeState
     {
         return !IsTerminal
             && !PeerHandshakeTranscriptCompleted
+            && PeerCertificateVerifyVerified
             && PeerFinishedVerified
             && StagedPeerTransportParameters is not null
             && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed
@@ -135,6 +139,9 @@ internal sealed class QuicTransportTlsBridgeState
 
             case QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted:
                 return TryMarkPeerHandshakeTranscriptCompleted();
+
+            case QuicTlsUpdateKind.PeerCertificateVerifyVerified:
+                return TryMarkPeerCertificateVerifyVerified();
 
             case QuicTlsUpdateKind.PeerFinishedVerified:
                 return TryMarkPeerFinishedVerified();
@@ -385,6 +392,17 @@ internal sealed class QuicTransportTlsBridgeState
         return true;
     }
 
+    public bool TryMarkPeerCertificateVerifyVerified()
+    {
+        if (!CanEmitPeerCertificateVerifyVerified())
+        {
+            return false;
+        }
+
+        PeerCertificateVerifyVerified = true;
+        return true;
+    }
+
     public bool TryMarkPeerFinishedVerified()
     {
         if (!CanEmitPeerFinishedVerified())
@@ -593,6 +611,7 @@ internal sealed class QuicTransportTlsBridgeState
         KeyUpdateInstalled = false;
         OldKeysDiscarded = true;
         PeerTransportParametersCommitted = false;
+        PeerCertificateVerifyVerified = false;
         PeerHandshakeTranscriptCompleted = false;
         PeerFinishedVerified = false;
         HandshakeTranscriptPhase = QuicTlsTranscriptPhase.Failed;
@@ -715,6 +734,18 @@ internal sealed class QuicTransportTlsBridgeState
             && StagedPeerTransportParameters is not null
             && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed
             && HandshakeMessageType == QuicTlsHandshakeMessageType.Finished
+            && HandshakeMessageLength.HasValue
+            && SelectedCipherSuite.HasValue
+            && TranscriptHashAlgorithm.HasValue;
+    }
+
+    private bool CanEmitPeerCertificateVerifyVerified()
+    {
+        return !IsTerminal
+            && !PeerCertificateVerifyVerified
+            && StagedPeerTransportParameters is not null
+            && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.PeerTransportParametersStaged
+            && HandshakeMessageType == QuicTlsHandshakeMessageType.CertificateVerify
             && HandshakeMessageLength.HasValue
             && SelectedCipherSuite.HasValue
             && TranscriptHashAlgorithm.HasValue;

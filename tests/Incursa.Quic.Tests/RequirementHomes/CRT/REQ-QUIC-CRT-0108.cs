@@ -14,6 +14,19 @@ public sealed class REQ_QUIC_CRT_0108
         QuicTlsKeySchedule schedule = new(localHandshakePrivateKey);
         QuicTransportTlsBridgeState bridge = new();
         QuicTransportParameters peerTransportParameters = CreateServerTransportParameters();
+        using ECDsa leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        byte[] leafCertificateDer = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(leafKey);
+        byte[] serverKeyShare = CreateServerKeyShare(0x02);
+        byte[] serverHelloTranscript = CreateServerHelloTranscript(
+            QuicTlsCipherSuite.TlsAes128GcmSha256,
+            serverKeyShare);
+        byte[] encryptedExtensionsTranscript = CreateEncryptedExtensionsTranscript(peerTransportParameters);
+        byte[] certificateTranscript = QuicTlsCertificateVerifyTestSupport.CreateCertificateTranscript(leafCertificateDer);
+        byte[] certificateVerifyTranscriptHash = SHA256.HashData([
+            .. serverHelloTranscript,
+            .. encryptedExtensionsTranscript,
+            .. certificateTranscript,
+        ]);
 
         Assert.False(schedule.HandshakeSecretsDerived);
         Assert.False(schedule.TryGetExpectedPeerFinishedVerifyData(out _));
@@ -21,7 +34,7 @@ public sealed class REQ_QUIC_CRT_0108
 
         QuicTlsTranscriptStep serverHelloStep = CreateServerHelloStep(
             QuicTlsCipherSuite.TlsAes128GcmSha256,
-            CreateServerKeyShare(0x02));
+            serverKeyShare);
 
         IReadOnlyList<QuicTlsStateUpdate> serverHelloUpdates = schedule.ProcessTranscriptStep(serverHelloStep);
         Assert.Equal(3, serverHelloUpdates.Count);
@@ -43,8 +56,16 @@ public sealed class REQ_QUIC_CRT_0108
 
         Assert.True(schedule.TryGetExpectedPeerFinishedVerifyData(out byte[] serverHelloOnlyVerifyData));
         Assert.Empty(schedule.ProcessTranscriptStep(CreateEncryptedExtensionsStep(peerTransportParameters)));
-        Assert.Empty(schedule.ProcessTranscriptStep(CreateCertificateStep()));
-        Assert.Empty(schedule.ProcessTranscriptStep(CreateCertificateVerifyStep()));
+        Assert.Empty(schedule.ProcessTranscriptStep(CreateCertificateStep(leafCertificateDer)));
+
+        IReadOnlyList<QuicTlsStateUpdate> certificateVerifyUpdates = schedule.ProcessTranscriptStep(
+            CreateCertificateVerifyStep(
+                leafKey,
+                certificateVerifyTranscriptHash));
+
+        Assert.Single(certificateVerifyUpdates);
+        Assert.Equal(QuicTlsUpdateKind.PeerCertificateVerifyVerified, certificateVerifyUpdates[0].Kind);
+        Assert.True(schedule.PeerCertificateVerifyVerified);
         Assert.True(schedule.TryGetExpectedPeerFinishedVerifyData(out byte[] finishedVerifyData));
         Assert.False(serverHelloOnlyVerifyData.SequenceEqual(finishedVerifyData));
 
@@ -103,6 +124,19 @@ public sealed class REQ_QUIC_CRT_0108
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTransportParameters peerTransportParameters = CreateServerTransportParameters();
+        using ECDsa leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        byte[] leafCertificateDer = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(leafKey);
+        byte[] serverKeyShare = CreateServerKeyShare(0x02);
+        byte[] serverHelloTranscript = CreateServerHelloTranscript(
+            QuicTlsCipherSuite.TlsAes128GcmSha256,
+            serverKeyShare);
+        byte[] encryptedExtensionsTranscript = CreateEncryptedExtensionsTranscript(peerTransportParameters);
+        byte[] certificateTranscript = QuicTlsCertificateVerifyTestSupport.CreateCertificateTranscript(leafCertificateDer);
+        byte[] certificateVerifyTranscriptHash = SHA256.HashData([
+            .. serverHelloTranscript,
+            .. encryptedExtensionsTranscript,
+            .. certificateTranscript,
+        ]);
 
         QuicTlsKeySchedule firstSchedule = new(localHandshakePrivateKey);
         QuicTlsKeySchedule secondSchedule = new(localHandshakePrivateKey);
@@ -111,7 +145,7 @@ public sealed class REQ_QUIC_CRT_0108
 
         QuicTlsTranscriptStep serverHelloStep = CreateServerHelloStep(
             QuicTlsCipherSuite.TlsAes128GcmSha256,
-            CreateServerKeyShare(0x02));
+            serverKeyShare);
 
         IReadOnlyList<QuicTlsStateUpdate> firstServerHelloUpdates = firstSchedule.ProcessTranscriptStep(serverHelloStep);
         IReadOnlyList<QuicTlsStateUpdate> secondServerHelloUpdates = secondSchedule.ProcessTranscriptStep(serverHelloStep);
@@ -134,12 +168,23 @@ public sealed class REQ_QUIC_CRT_0108
         Assert.True(firstOpenMaterial.Matches(secondOpenMaterial));
         Assert.True(firstProtectMaterial.Matches(secondProtectMaterial));
 
+        byte[] certificateVerifyTranscript = QuicTlsCertificateVerifyTestSupport.CreateCertificateVerifyTranscript(
+            leafKey,
+            certificateVerifyTranscriptHash);
+
         Assert.Empty(firstSchedule.ProcessTranscriptStep(CreateEncryptedExtensionsStep(peerTransportParameters)));
-        Assert.Empty(firstSchedule.ProcessTranscriptStep(CreateCertificateStep()));
-        Assert.Empty(firstSchedule.ProcessTranscriptStep(CreateCertificateVerifyStep()));
+        Assert.Empty(firstSchedule.ProcessTranscriptStep(CreateCertificateStep(leafCertificateDer)));
+        IReadOnlyList<QuicTlsStateUpdate> firstCertificateVerifyUpdates = firstSchedule.ProcessTranscriptStep(
+            CreateCertificateVerifyStep(certificateVerifyTranscript));
+        Assert.Single(firstCertificateVerifyUpdates);
+        Assert.Equal(QuicTlsUpdateKind.PeerCertificateVerifyVerified, firstCertificateVerifyUpdates[0].Kind);
+
         Assert.Empty(secondSchedule.ProcessTranscriptStep(CreateEncryptedExtensionsStep(peerTransportParameters)));
-        Assert.Empty(secondSchedule.ProcessTranscriptStep(CreateCertificateStep()));
-        Assert.Empty(secondSchedule.ProcessTranscriptStep(CreateCertificateVerifyStep()));
+        Assert.Empty(secondSchedule.ProcessTranscriptStep(CreateCertificateStep(leafCertificateDer)));
+        IReadOnlyList<QuicTlsStateUpdate> secondCertificateVerifyUpdates = secondSchedule.ProcessTranscriptStep(
+            CreateCertificateVerifyStep(certificateVerifyTranscript));
+        Assert.Single(secondCertificateVerifyUpdates);
+        Assert.Equal(QuicTlsUpdateKind.PeerCertificateVerifyVerified, secondCertificateVerifyUpdates[0].Kind);
 
         Assert.True(firstSchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] firstFinishedVerifyData));
         Assert.True(secondSchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] secondFinishedVerifyData));
@@ -182,9 +227,9 @@ public sealed class REQ_QUIC_CRT_0108
             HandshakeMessageBytes: transcriptBytes);
     }
 
-    private static QuicTlsTranscriptStep CreateCertificateStep()
+    private static QuicTlsTranscriptStep CreateCertificateStep(byte[] leafCertificateDer)
     {
-        byte[] transcriptBytes = CreateCertificateTranscript();
+        byte[] transcriptBytes = QuicTlsCertificateVerifyTestSupport.CreateCertificateTranscript(leafCertificateDer);
         return new QuicTlsTranscriptStep(
             QuicTlsTranscriptStepKind.Progressed,
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged,
@@ -193,9 +238,18 @@ public sealed class REQ_QUIC_CRT_0108
             HandshakeMessageBytes: transcriptBytes);
     }
 
-    private static QuicTlsTranscriptStep CreateCertificateVerifyStep()
+    private static QuicTlsTranscriptStep CreateCertificateVerifyStep(
+        ECDsa leafKey,
+        ReadOnlySpan<byte> transcriptHash)
     {
-        byte[] transcriptBytes = CreateCertificateVerifyTranscript();
+        byte[] transcriptBytes = QuicTlsCertificateVerifyTestSupport.CreateCertificateVerifyTranscript(
+            leafKey,
+            transcriptHash);
+        return CreateCertificateVerifyStep(transcriptBytes);
+    }
+
+    private static QuicTlsTranscriptStep CreateCertificateVerifyStep(byte[] transcriptBytes)
+    {
         return new QuicTlsTranscriptStep(
             QuicTlsTranscriptStepKind.Progressed,
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged,
@@ -317,40 +371,6 @@ public sealed class REQ_QUIC_CRT_0108
 
         Array.Resize(ref transcript, messageBytesWritten);
         return transcript;
-    }
-
-    private static byte[] CreateCertificateTranscript()
-    {
-        byte[] certificateEntry = new byte[6];
-        int index = 0;
-
-        WriteUInt24(certificateEntry.AsSpan(index, 3), 1);
-        index += 3;
-        certificateEntry[index++] = 0x01;
-        WriteUInt16(certificateEntry.AsSpan(index, 2), 0);
-
-        byte[] body = new byte[1 + 3 + certificateEntry.Length];
-        index = 0;
-
-        body[index++] = 0;
-        WriteUInt24(body.AsSpan(index, 3), certificateEntry.Length);
-        index += 3;
-        certificateEntry.CopyTo(body.AsSpan(index));
-
-        return WrapHandshakeMessage(QuicTlsHandshakeMessageType.Certificate, body);
-    }
-
-    private static byte[] CreateCertificateVerifyTranscript()
-    {
-        byte[] body =
-        [
-            0x04,
-            0x03,
-            0x02,
-            0x01,
-        ];
-
-        return WrapHandshakeMessage(QuicTlsHandshakeMessageType.CertificateVerify, body);
     }
 
     private static byte[] CreateFinishedTranscript(byte[] verifyData)
