@@ -53,6 +53,9 @@ public sealed class REQ_QUIC_CRT_0022
                 ObservedAtTicks: 15,
                 new QuicTlsStateUpdate(
                     QuicTlsUpdateKind.TranscriptProgressed,
+                    HandshakeMessageType: QuicTlsHandshakeMessageType.EncryptedExtensions,
+                    HandshakeMessageLength: 48,
+                    TransportParameters: peerParameters,
                     TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)),
             nowTicks: 15);
 
@@ -67,6 +70,18 @@ public sealed class REQ_QUIC_CRT_0022
             nowTicks: 20);
 
         Assert.True(peerTransportResult.StateChanged);
+
+        QuicConnectionTransitionResult completedResult = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 25,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.TranscriptProgressed,
+                    HandshakeMessageType: QuicTlsHandshakeMessageType.Finished,
+                    HandshakeMessageLength: 48,
+                    TranscriptPhase: QuicTlsTranscriptPhase.Completed)),
+            nowTicks: 25);
+
+        Assert.True(completedResult.StateChanged);
 
         QuicConnectionTransitionResult handshakeResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(

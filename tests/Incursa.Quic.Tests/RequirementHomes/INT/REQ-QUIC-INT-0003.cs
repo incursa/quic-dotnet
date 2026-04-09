@@ -25,10 +25,18 @@ public sealed class REQ_QUIC_INT_0003
             TransportParameters: localParameters)));
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.EncryptedExtensions,
+            HandshakeMessageLength: 48,
+            TransportParameters: peerParameters,
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.PeerTransportParametersAuthenticated,
             TransportParameters: peerParameters)));
+        Assert.True(state.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.Finished,
+            HandshakeMessageLength: 48,
+            TranscriptPhase: QuicTlsTranscriptPhase.Completed)));
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.KeysAvailable,
             QuicTlsEncryptionLevel.Initial)));
@@ -68,6 +76,12 @@ public sealed class REQ_QUIC_INT_0003
                 ObservedAtTicks: 9,
                 new QuicTlsStateUpdate(
                     QuicTlsUpdateKind.TranscriptProgressed,
+                    HandshakeMessageType: QuicTlsHandshakeMessageType.EncryptedExtensions,
+                    HandshakeMessageLength: 48,
+                    TransportParameters: new QuicTransportParameters
+                    {
+                        DisableActiveMigration = true,
+                    },
                     TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)),
             nowTicks: 9).StateChanged);
 
@@ -80,6 +94,16 @@ public sealed class REQ_QUIC_INT_0003
                     {
                         DisableActiveMigration = true,
                     })),
+            nowTicks: 9).StateChanged);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 9,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.TranscriptProgressed,
+                    HandshakeMessageType: QuicTlsHandshakeMessageType.Finished,
+                    HandshakeMessageLength: 48,
+                    TranscriptPhase: QuicTlsTranscriptPhase.Completed)),
             nowTicks: 9).StateChanged);
 
         QuicConnectionTransitionResult result = runtime.Transition(

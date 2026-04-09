@@ -20,6 +20,38 @@ internal enum QuicTlsEncryptionLevel
 }
 
 /// <summary>
+/// TLS 1.3 handshake message types relevant to the transcript owner.
+/// </summary>
+internal enum QuicTlsHandshakeMessageType : byte
+{
+    ClientHello = 0x01,
+    ServerHello = 0x02,
+    EncryptedExtensions = 0x08,
+    Certificate = 0x0B,
+    CertificateVerify = 0x0F,
+    Finished = 0x14,
+}
+
+/// <summary>
+/// TLS 1.3 cipher suites supported by the transcript owner.
+/// </summary>
+internal enum QuicTlsCipherSuite : ushort
+{
+    TlsAes128GcmSha256 = 0x1301,
+    TlsAes256GcmSha384 = 0x1302,
+    TlsChacha20Poly1305Sha256 = 0x1303,
+}
+
+/// <summary>
+/// TLS transcript hash algorithms implied by the supported cipher suites.
+/// </summary>
+internal enum QuicTlsTranscriptHashAlgorithm
+{
+    Sha256 = 0,
+    Sha384 = 1,
+}
+
+/// <summary>
 /// Handshake transcript progress owned behind the transport-facing TLS bridge.
 /// </summary>
 internal enum QuicTlsTranscriptPhase
@@ -55,6 +87,10 @@ internal readonly record struct QuicTlsStateUpdate(
     QuicTlsUpdateKind Kind,
     QuicTlsEncryptionLevel? EncryptionLevel = null,
     QuicTransportParameters? TransportParameters = null,
+    QuicTlsHandshakeMessageType? HandshakeMessageType = null,
+    uint? HandshakeMessageLength = null,
+    QuicTlsCipherSuite? SelectedCipherSuite = null,
+    QuicTlsTranscriptHashAlgorithm? TranscriptHashAlgorithm = null,
     uint? KeyPhase = null,
     ushort? AlertDescription = null,
     ulong? CryptoDataOffset = null,

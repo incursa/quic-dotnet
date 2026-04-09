@@ -933,7 +933,7 @@
     {
       "id": "REQ-QUIC-CRT-0107",
       "title": "Own the narrow Handshake transcript-progress boundary",
-      "statement": "The library MUST own a narrow Handshake transcript-progress boundary behind the transport-facing TLS bridge that accepts ordered Handshake CRYPTO fragments incrementally, preserves an ingress cursor and partial transcript buffer, stages peer transport parameters only after a complete EncryptedExtensions-style transcript has been assembled and parsed, latches terminal transcript/parse failure, and surfaces transcript progression and fatal alerts through the existing bridge-update path. Authenticated peer transport parameter commitment remains a bridge/runtime policy decision, and this slice MUST NOT imply certificate validation, 0-RTT, 1-RTT, key update, or production TLS handshake support.",
+      "statement": "The library MUST own a narrow Handshake transcript-progress boundary behind the transport-facing TLS bridge that accepts ordered Handshake CRYPTO fragments incrementally, preserves an ingress cursor and partial transcript buffer, parses the minimal TLS 1.3 peer handshake message progression for the current role (ClientHello for server role; ServerHello, EncryptedExtensions, Certificate, CertificateVerify, and Finished for client role), preserves the parsed handshake message type and length together with the selected ServerHello cipher suite, its implied transcript hash algorithm, and the role-specific QUIC transport-parameters extension payload needed for later policy, stages peer transport parameters only from the correct role-specific message, latches terminal transcript/parse failure, and surfaces transcript progression and fatal alerts through the existing bridge-update path. Authenticated peer transport parameter commitment and handshake confirmation remain bridge/runtime policy decisions, and this slice MUST NOT imply certificate validation, signature verification, 0-RTT, 1-RTT, key update, or production TLS handshake support.",
       "trace": {
         "upstream_refs": [
           "RFC 9001 Sections 5 and 8",
@@ -941,7 +941,8 @@
         ]
       },
       "notes": [
-        "This slice advances transcript/message progression only. It does not by itself make peer-authentication policy or broader TLS orchestration available."
+        "This slice advances transcript/message progression only. It does not by itself make peer-authentication policy, certificate validation, signature verification, handshake confirmation, or broader TLS orchestration available.",
+        "The transport bridge remains the policy sink for staged parameters; the runtime decides when later slices authenticate or commit them."
       ]
     }
   ]

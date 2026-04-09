@@ -17,6 +17,16 @@ internal sealed class QuicTransportTlsBridgeState
 
     public bool PeerTransportParametersAuthenticated { get; private set; }
 
+    public QuicTransportParameters? StagedPeerTransportParameters { get; private set; }
+
+    public QuicTlsHandshakeMessageType? HandshakeMessageType { get; private set; }
+
+    public uint? HandshakeMessageLength { get; private set; }
+
+    public QuicTlsCipherSuite? SelectedCipherSuite { get; private set; }
+
+    public QuicTlsTranscriptHashAlgorithm? TranscriptHashAlgorithm { get; private set; }
+
     public bool InitialKeysAvailable { get; private set; }
 
     public bool HandshakeKeysAvailable { get; private set; }
@@ -50,8 +60,7 @@ internal sealed class QuicTransportTlsBridgeState
     {
         return !IsTerminal
             && !PeerTransportParametersAuthenticated
-            && !HandshakeConfirmed
-            && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.PeerTransportParametersStaged;
+            && StagedPeerTransportParameters is not null;
     }
 
     /// <summary>
@@ -62,7 +71,7 @@ internal sealed class QuicTransportTlsBridgeState
         return !IsTerminal
             && !HandshakeConfirmed
             && PeerTransportParametersAuthenticated
-            && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.PeerTransportParametersStaged;
+            && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed;
     }
 
     internal QuicCryptoBuffer InitialIngressCryptoBuffer => initialIngressCryptoBuffer;
@@ -146,8 +155,7 @@ internal sealed class QuicTransportTlsBridgeState
                     && TryStorePacketProtectionMaterial(update.PacketProtectionMaterial.Value);
 
             case QuicTlsUpdateKind.TranscriptProgressed:
-                return update.TranscriptPhase.HasValue
-                    && TrySetHandshakeTranscriptPhase(update.TranscriptPhase.Value);
+                return TryApplyTranscriptProgress(update);
 
             default:
                 return false;
@@ -264,7 +272,9 @@ internal sealed class QuicTransportTlsBridgeState
     {
         ArgumentNullException.ThrowIfNull(parameters);
 
-        if (!CanCommitPeerTransportParameters())
+        if (!CanCommitPeerTransportParameters()
+            || StagedPeerTransportParameters is null
+            || !AreEquivalent(StagedPeerTransportParameters, parameters))
         {
             return false;
         }
@@ -272,6 +282,127 @@ internal sealed class QuicTransportTlsBridgeState
         QuicTransportParameters committedParameters = CloneTransportParameters(parameters);
         PeerTransportParameters = committedParameters;
         PeerTransportParametersAuthenticated = true;
+        return true;
+    }
+
+    private bool TryApplyTranscriptProgress(QuicTlsStateUpdate update)
+    {
+        if (IsTerminal)
+        {
+            return false;
+        }
+
+        if (update.HandshakeMessageType.HasValue != update.HandshakeMessageLength.HasValue)
+        {
+            return false;
+        }
+
+        if (update.SelectedCipherSuite.HasValue != update.TranscriptHashAlgorithm.HasValue)
+        {
+            return false;
+        }
+
+        if (update.SelectedCipherSuite.HasValue
+            && (!update.HandshakeMessageType.HasValue
+                || update.HandshakeMessageType.Value != QuicTlsHandshakeMessageType.ServerHello))
+        {
+            return false;
+        }
+
+        if (update.TransportParameters is not null)
+        {
+            if (StagedPeerTransportParameters is not null
+                || update.HandshakeMessageType is not (QuicTlsHandshakeMessageType.ClientHello
+                    or QuicTlsHandshakeMessageType.EncryptedExtensions))
+            {
+                return false;
+            }
+
+            if (update.TranscriptPhase is not (QuicTlsTranscriptPhase.PeerTransportParametersStaged
+                or QuicTlsTranscriptPhase.Completed))
+            {
+                return false;
+            }
+        }
+        else if (update.TranscriptPhase == QuicTlsTranscriptPhase.PeerTransportParametersStaged)
+        {
+            return false;
+        }
+
+        if (update.TranscriptPhase == QuicTlsTranscriptPhase.Completed
+            && StagedPeerTransportParameters is null
+            && update.TransportParameters is null)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+
+        if (update.HandshakeMessageType.HasValue)
+        {
+            if (HandshakeMessageType != update.HandshakeMessageType)
+            {
+                HandshakeMessageType = update.HandshakeMessageType;
+                stateChanged = true;
+            }
+        }
+
+        if (update.HandshakeMessageLength.HasValue
+            && HandshakeMessageLength != update.HandshakeMessageLength)
+        {
+            HandshakeMessageLength = update.HandshakeMessageLength;
+            stateChanged = true;
+        }
+
+        if (update.SelectedCipherSuite.HasValue
+            && SelectedCipherSuite != update.SelectedCipherSuite)
+        {
+            SelectedCipherSuite = update.SelectedCipherSuite;
+            stateChanged = true;
+        }
+
+        if (update.TranscriptHashAlgorithm.HasValue
+            && TranscriptHashAlgorithm != update.TranscriptHashAlgorithm)
+        {
+            TranscriptHashAlgorithm = update.TranscriptHashAlgorithm;
+            stateChanged = true;
+        }
+
+        if (update.TransportParameters is not null)
+        {
+            if (!TryStagePeerTransportParameters(update.TransportParameters))
+            {
+                return false;
+            }
+
+            stateChanged = true;
+        }
+
+        if (update.TranscriptPhase.HasValue
+            && TrySetHandshakeTranscriptPhase(update.TranscriptPhase.Value))
+        {
+            stateChanged = true;
+        }
+
+        return stateChanged;
+    }
+
+    private bool TryStagePeerTransportParameters(QuicTransportParameters parameters)
+    {
+        ArgumentNullException.ThrowIfNull(parameters);
+
+        if (IsTerminal)
+        {
+            return false;
+        }
+
+        if (StagedPeerTransportParameters is not null)
+        {
+            return false;
+        }
+
+        QuicTransportParameters stagedParameters = CloneTransportParameters(parameters);
+        StagedPeerTransportParameters = stagedParameters;
         return true;
     }
 
@@ -356,7 +487,13 @@ internal sealed class QuicTransportTlsBridgeState
         OneRttKeysAvailable = false;
         KeyUpdateInstalled = false;
         OldKeysDiscarded = true;
+        HandshakeConfirmed = false;
         HandshakeTranscriptPhase = QuicTlsTranscriptPhase.Failed;
+        StagedPeerTransportParameters = null;
+        HandshakeMessageType = null;
+        HandshakeMessageLength = null;
+        SelectedCipherSuite = null;
+        TranscriptHashAlgorithm = null;
         packetProtectionMaterials.Clear();
         return true;
     }
@@ -370,16 +507,16 @@ internal sealed class QuicTransportTlsBridgeState
 
         if (transcriptPhase == QuicTlsTranscriptPhase.PeerTransportParametersStaged)
         {
-            if (HandshakeTranscriptPhase != QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage)
+            if (HandshakeTranscriptPhase != QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage
+                || StagedPeerTransportParameters is null)
             {
                 return false;
             }
         }
         else if (transcriptPhase == QuicTlsTranscriptPhase.Completed)
         {
-            if (HandshakeTranscriptPhase != QuicTlsTranscriptPhase.PeerTransportParametersStaged
-                || !PeerTransportParametersAuthenticated
-                || !HandshakeConfirmed)
+            if (HandshakeTranscriptPhase is QuicTlsTranscriptPhase.Completed or QuicTlsTranscriptPhase.Failed
+                || StagedPeerTransportParameters is null)
             {
                 return false;
             }

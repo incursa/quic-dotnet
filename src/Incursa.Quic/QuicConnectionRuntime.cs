@@ -538,16 +538,29 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             }
 
             processedCryptoFrame = true;
-            if (!HandleCryptoFrameReceived(
-                new QuicConnectionCryptoFrameReceivedEvent(
-                    nowTicks,
-                    QuicTlsEncryptionLevel.Handshake,
-                    cryptoFrame.Offset,
-                    cryptoFrame.CryptoData.ToArray()),
-                nowTicks,
-                ref effects))
+            if (!tlsBridgeDriver.TryBufferIncomingCryptoData(
+                QuicTlsEncryptionLevel.Handshake,
+                cryptoFrame.Offset,
+                cryptoFrame.CryptoData.ToArray(),
+                out _))
             {
                 return false;
+            }
+
+            IReadOnlyList<QuicTlsStateUpdate> transcriptUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(
+                QuicTlsEncryptionLevel.Handshake);
+            if (transcriptUpdates.Count == 0)
+            {
+                payloadOffset += bytesConsumed;
+                continue;
+            }
+
+            if (transcriptUpdates[0].Kind == QuicTlsUpdateKind.FatalAlert)
+            {
+                _ = HandleTlsStateUpdated(
+                    new QuicConnectionTlsStateUpdatedEvent(nowTicks, transcriptUpdates[0]),
+                    nowTicks,
+                    ref effects);
             }
 
             payloadOffset += bytesConsumed;
@@ -558,29 +571,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
-        return TryAdvanceHandshakeTranscript(nowTicks, ref effects) || processedCryptoFrame;
-    }
-
-    private bool TryAdvanceHandshakeTranscript(
-        long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
-    {
-        IReadOnlyList<QuicTlsStateUpdate> updates = tlsBridgeDriver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.Handshake);
-        if (updates.Count == 0)
-        {
-            return false;
-        }
-
-        bool stateChanged = false;
-        foreach (QuicTlsStateUpdate update in updates)
-        {
-            stateChanged |= HandleTlsStateUpdated(
-                new QuicConnectionTlsStateUpdatedEvent(nowTicks, update),
-                nowTicks,
-                ref effects);
-        }
-
-        return stateChanged;
+        return true;
     }
 
     private bool TryFlushHandshakePackets(ref List<QuicConnectionEffect>? effects)

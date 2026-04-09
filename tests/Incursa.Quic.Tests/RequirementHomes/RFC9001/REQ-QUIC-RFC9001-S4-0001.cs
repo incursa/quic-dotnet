@@ -73,13 +73,15 @@ public sealed class REQ_QUIC_RFC9001_S4_0001
             nowTicks: 6);
 
         Assert.True(receiveResult.StateChanged);
-        Assert.True(runtime.TlsState.PeerTransportParametersAuthenticated);
-        Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.PeerTransportParametersCommitted));
-        Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration));
-        Assert.Equal(30UL, runtime.PeerMaxIdleTimeoutMicros);
-        Assert.True(runtime.TlsState.HandshakeConfirmed);
-        Assert.True(runtime.HandshakeConfirmed);
-        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.False(runtime.TlsState.PeerTransportParametersAuthenticated);
+        Assert.Null(runtime.TlsState.PeerTransportParameters);
+        Assert.Null(runtime.TlsState.StagedPeerTransportParameters);
+        Assert.Equal(QuicTlsTranscriptPhase.Failed, runtime.TlsState.HandshakeTranscriptPhase);
+        Assert.Equal(QuicTransportErrorCode.ProtocolViolation, runtime.TlsState.FatalAlertCode);
+        Assert.Equal("TLS alert 50.", runtime.TlsState.FatalAlertDescription);
+        Assert.False(runtime.TlsState.HandshakeConfirmed);
+        Assert.False(runtime.HandshakeConfirmed);
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
         Assert.False(runtime.TlsState.OneRttKeysAvailable);
     }
 

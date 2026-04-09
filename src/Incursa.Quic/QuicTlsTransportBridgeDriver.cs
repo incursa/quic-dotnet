@@ -8,7 +8,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private const int HandshakeIngressDrainChunkBytes = 512;
 
     private readonly QuicTransportTlsBridgeState bridgeState;
-    private readonly QuicTlsTranscriptProgress handshakeTranscriptProgress = new();
+    private readonly QuicTlsTranscriptProgress handshakeTranscriptProgress;
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> nextIngressOffsets = [];
 
     public QuicTlsTransportBridgeDriver(
@@ -17,6 +17,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState();
+        handshakeTranscriptProgress = new QuicTlsTranscriptProgress(Role);
     }
 
     /// <summary>
@@ -181,10 +182,21 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <summary>
     /// Publishes handshake transcript progression to the bridge state.
     /// </summary>
-    public IReadOnlyList<QuicTlsStateUpdate> PublishTranscriptProgressed(QuicTlsTranscriptPhase transcriptPhase)
+    public IReadOnlyList<QuicTlsStateUpdate> PublishTranscriptProgressed(
+        QuicTlsTranscriptPhase transcriptPhase,
+        QuicTlsHandshakeMessageType? handshakeMessageType = null,
+        uint? handshakeMessageLength = null,
+        QuicTlsCipherSuite? selectedCipherSuite = null,
+        QuicTlsTranscriptHashAlgorithm? transcriptHashAlgorithm = null,
+        QuicTransportParameters? transportParameters = null)
     {
         return PublishUpdate(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.TranscriptProgressed,
+            TransportParameters: transportParameters,
+            HandshakeMessageType: handshakeMessageType,
+            HandshakeMessageLength: handshakeMessageLength,
+            SelectedCipherSuite: selectedCipherSuite,
+            TranscriptHashAlgorithm: transcriptHashAlgorithm,
             TranscriptPhase: transcriptPhase));
     }
 
@@ -348,36 +360,20 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                 case QuicTlsTranscriptStepKind.None:
                     return;
 
+                case QuicTlsTranscriptStepKind.Progressed:
                 case QuicTlsTranscriptStepKind.PeerTransportParametersStaged:
                 {
-                    IReadOnlyList<QuicTlsStateUpdate> stagedUpdates = PublishTranscriptProgressed(
-                        QuicTlsTranscriptPhase.PeerTransportParametersStaged);
-                    AppendPublishedUpdates(updates, stagedUpdates);
-                    if (stagedUpdates.Count == 0)
+                    IReadOnlyList<QuicTlsStateUpdate> progressedUpdates = PublishTranscriptProgressed(
+                        step.TranscriptPhase ?? QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage,
+                        step.HandshakeMessageType,
+                        step.HandshakeMessageLength,
+                        step.SelectedCipherSuite,
+                        step.TranscriptHashAlgorithm,
+                        step.TransportParameters);
+                    AppendPublishedUpdates(updates, progressedUpdates);
+                    if (progressedUpdates.Count == 0)
                     {
                         return;
-                    }
-
-                    IReadOnlyList<QuicTlsStateUpdate> authenticatedUpdates = CommitPeerTransportParameters(
-                        step.TransportParameters!);
-                    AppendPublishedUpdates(updates, authenticatedUpdates);
-                    if (authenticatedUpdates.Count == 0)
-                    {
-                        return;
-                    }
-
-                    IReadOnlyList<QuicTlsStateUpdate> handshakeConfirmedUpdates = PublishHandshakeConfirmed();
-                    AppendPublishedUpdates(updates, handshakeConfirmedUpdates);
-                    if (handshakeConfirmedUpdates.Count == 0)
-                    {
-                        return;
-                    }
-
-                    if (handshakeTranscriptProgress.MarkPeerTransportParametersAuthenticated())
-                    {
-                        AppendPublishedUpdates(
-                            updates,
-                            PublishTranscriptProgressed(QuicTlsTranscriptPhase.Completed));
                     }
 
                     break;

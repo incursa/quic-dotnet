@@ -52,6 +52,9 @@ public sealed class REQ_QUIC_RFC9001_S7_0002
 
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.EncryptedExtensions,
+            HandshakeMessageLength: 48,
+            TransportParameters: peerParameters,
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.FatalAlert,
