@@ -43,6 +43,14 @@ internal enum QuicTlsCipherSuite : ushort
 }
 
 /// <summary>
+/// TLS 1.3 named groups supported by the managed key schedule slice.
+/// </summary>
+internal enum QuicTlsNamedGroup : ushort
+{
+    Secp256r1 = 0x0017,
+}
+
+/// <summary>
 /// TLS transcript hash algorithms implied by the supported cipher suites.
 /// </summary>
 internal enum QuicTlsTranscriptHashAlgorithm
@@ -78,6 +86,9 @@ internal enum QuicTlsUpdateKind
     CryptoDataAvailable = 8,
     PacketProtectionMaterialAvailable = 9,
     TranscriptProgressed = 10,
+    PeerFinishedVerified = 11,
+    HandshakeOpenPacketProtectionMaterialAvailable = 12,
+    HandshakeProtectPacketProtectionMaterialAvailable = 13,
 }
 
 /// <summary>

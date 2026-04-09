@@ -21,8 +21,15 @@ internal sealed class QuicTlsTranscriptProgress
     private const int FinishedSha256Length = 32;
     private const int FinishedSha384Length = 48;
     private const ushort TlsLegacyVersion = 0x0303;
+    private const ushort Tls13Version = 0x0304;
     private const byte NullCompressionMethod = 0x00;
     private const int MaximumSessionIdLength = 32;
+    private const ushort SupportedVersionsExtensionType = 0x002b;
+    private const ushort KeyShareExtensionType = 0x0033;
+    private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
+    private const byte UncompressedPointFormat = 0x04;
+    private const int Secp256r1CoordinateLength = 32;
+    private const int Secp256r1KeyShareLength = 1 + (Secp256r1CoordinateLength * 2);
 
     private readonly QuicTlsRole role;
     private readonly ArrayBufferWriter<byte> partialTranscript = new();
@@ -224,6 +231,7 @@ internal sealed class QuicTlsTranscriptProgress
         ReadOnlySpan<byte> handshakeMessageBody = transcriptBytes.Slice(
             HandshakeHeaderLength,
             checked((int)handshakeMessageBodyLength));
+        ReadOnlyMemory<byte> handshakeMessageBytes = transcriptBytes.Slice(0, totalMessageLength).ToArray();
 
         if (!TryParseCurrentMessage(
             messageType,
@@ -243,7 +251,10 @@ internal sealed class QuicTlsTranscriptProgress
             parsedMessage.HandshakeMessageType,
             parsedMessage.HandshakeMessageLength,
             parsedMessage.SelectedCipherSuite,
-            parsedMessage.TranscriptHashAlgorithm);
+            parsedMessage.TranscriptHashAlgorithm,
+            parsedMessage.NamedGroup,
+            parsedMessage.KeyShare,
+            handshakeMessageBytes);
         return TranscriptAdvanceResult.Progressed;
     }
 
@@ -344,7 +355,10 @@ internal sealed class QuicTlsTranscriptProgress
             || sessionIdLength > MaximumSessionIdLength
             || !TrySkipBytes(handshakeMessageBody, ref index, sessionIdLength)
             || !TryReadUInt16(handshakeMessageBody, ref index, out ushort cipherSuiteValue)
-            || !TryMapCipherSuite(cipherSuiteValue, out QuicTlsCipherSuite cipherSuite, out QuicTlsTranscriptHashAlgorithm hashAlgorithm)
+            || !TryMapCipherSuite(
+                cipherSuiteValue,
+                out QuicTlsCipherSuite cipherSuite,
+                out QuicTlsTranscriptHashAlgorithm hashAlgorithm)
             || !TryReadUInt8(handshakeMessageBody, ref index, out int compressionMethod)
             || compressionMethod != NullCompressionMethod
             || !TryReadUInt16(handshakeMessageBody, ref index, out ushort extensionsLength)
@@ -354,12 +368,10 @@ internal sealed class QuicTlsTranscriptProgress
             return false;
         }
 
-        if (!TryParseExtensions(
+        if (!TryParseServerHelloExtensions(
             handshakeMessageBody.Slice(handshakeMessageBody.Length - extensionsLength, extensionsLength),
-            allowTransportParameters: false,
-            requireTransportParameters: false,
-            GetTransportParameterRoleForCurrentEndpoint(),
-            out _))
+            out QuicTlsNamedGroup peerNamedGroup,
+            out ReadOnlyMemory<byte> peerKeyShare))
         {
             return false;
         }
@@ -371,7 +383,9 @@ internal sealed class QuicTlsTranscriptProgress
             QuicTlsHandshakeMessageType.ServerHello,
             handshakeMessageLengthValue,
             SelectedCipherSuite: cipherSuite,
-            TranscriptHashAlgorithm: hashAlgorithm);
+            TranscriptHashAlgorithm: hashAlgorithm,
+            NamedGroup: peerNamedGroup,
+            KeyShare: peerKeyShare);
         return true;
     }
 
@@ -489,6 +503,104 @@ internal sealed class QuicTlsTranscriptProgress
             HandshakeProgressState.Completed,
             QuicTlsHandshakeMessageType.Finished,
             handshakeMessageLengthValue);
+        return true;
+    }
+
+    private bool TryParseServerHelloExtensions(
+        ReadOnlySpan<byte> extensions,
+        out QuicTlsNamedGroup peerNamedGroup,
+        out ReadOnlyMemory<byte> peerKeyShare)
+    {
+        peerNamedGroup = default;
+        peerKeyShare = default;
+
+        bool foundSupportedVersions = false;
+        bool foundKeyShare = false;
+        List<ushort> seenExtensionTypes = [];
+
+        int index = 0;
+        while (index < extensions.Length)
+        {
+            if (!TryReadUInt16(extensions, ref index, out ushort extensionType)
+                || !TryReadUInt16(extensions, ref index, out ushort extensionLength)
+                || !TrySkipBytes(extensions, ref index, extensionLength))
+            {
+                return false;
+            }
+
+            if (seenExtensionTypes.Contains(extensionType))
+            {
+                return false;
+            }
+
+            seenExtensionTypes.Add(extensionType);
+            ReadOnlySpan<byte> extensionValue = extensions.Slice(index - extensionLength, extensionLength);
+
+            if (extensionType == SupportedVersionsExtensionType)
+            {
+                if (foundSupportedVersions || extensionLength != 2)
+                {
+                    return false;
+                }
+
+                int selectedVersionIndex = 0;
+                if (!TryReadUInt16(extensionValue, ref selectedVersionIndex, out ushort selectedVersion)
+                    || selectedVersion != Tls13Version)
+                {
+                    return false;
+                }
+
+                foundSupportedVersions = true;
+            }
+            else if (extensionType == KeyShareExtensionType)
+            {
+                if (foundKeyShare || !TryParseServerHelloKeyShare(extensionValue, out peerNamedGroup, out peerKeyShare))
+                {
+                    return false;
+                }
+
+                foundKeyShare = true;
+            }
+            else if (extensionType == QuicTransportParametersCodec.QuicTransportParametersExtensionType)
+            {
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return foundSupportedVersions && foundKeyShare;
+    }
+
+    private static bool TryParseServerHelloKeyShare(
+        ReadOnlySpan<byte> extensionValue,
+        out QuicTlsNamedGroup namedGroup,
+        out ReadOnlyMemory<byte> peerKeyShare)
+    {
+        namedGroup = default;
+        peerKeyShare = default;
+
+        int index = 0;
+        if (!TryReadUInt16(extensionValue, ref index, out ushort namedGroupValue)
+            || namedGroupValue != Secp256r1NamedGroup
+            || !TryReadUInt16(extensionValue, ref index, out ushort keyShareLength)
+            || keyShareLength != Secp256r1KeyShareLength
+            || !TrySkipBytes(extensionValue, ref index, keyShareLength)
+            || index != extensionValue.Length)
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> keyShareBytes = extensionValue.Slice(extensionValue.Length - keyShareLength, keyShareLength);
+        if (keyShareBytes[0] != UncompressedPointFormat)
+        {
+            return false;
+        }
+
+        namedGroup = QuicTlsNamedGroup.Secp256r1;
+        peerKeyShare = keyShareBytes.ToArray();
         return true;
     }
 
@@ -659,13 +771,10 @@ internal sealed class QuicTlsTranscriptProgress
         transcriptHashAlgorithmValue = cipherSuite switch
         {
             QuicTlsCipherSuite.TlsAes128GcmSha256 => QuicTlsTranscriptHashAlgorithm.Sha256,
-            QuicTlsCipherSuite.TlsAes256GcmSha384 => QuicTlsTranscriptHashAlgorithm.Sha384,
-            QuicTlsCipherSuite.TlsChacha20Poly1305Sha256 => QuicTlsTranscriptHashAlgorithm.Sha256,
             _ => default,
         };
 
-        return transcriptHashAlgorithmValue is QuicTlsTranscriptHashAlgorithm.Sha256
-            or QuicTlsTranscriptHashAlgorithm.Sha384;
+        return transcriptHashAlgorithmValue == QuicTlsTranscriptHashAlgorithm.Sha256;
     }
 
     private static bool TryReadUInt8(ReadOnlySpan<byte> source, ref int index, out int value)
@@ -763,7 +872,9 @@ internal sealed class QuicTlsTranscriptProgress
         uint HandshakeMessageLength,
         QuicTransportParameters? TransportParameters = null,
         QuicTlsCipherSuite? SelectedCipherSuite = null,
-        QuicTlsTranscriptHashAlgorithm? TranscriptHashAlgorithm = null);
+        QuicTlsTranscriptHashAlgorithm? TranscriptHashAlgorithm = null,
+        QuicTlsNamedGroup? NamedGroup = null,
+        ReadOnlyMemory<byte> KeyShare = default);
 }
 
 /// <summary>
@@ -788,6 +899,9 @@ internal readonly record struct QuicTlsTranscriptStep(
     uint? HandshakeMessageLength = null,
     QuicTlsCipherSuite? SelectedCipherSuite = null,
     QuicTlsTranscriptHashAlgorithm? TranscriptHashAlgorithm = null,
+    QuicTlsNamedGroup? NamedGroup = null,
+    ReadOnlyMemory<byte> KeyShare = default,
+    ReadOnlyMemory<byte> HandshakeMessageBytes = default,
     ushort? AlertDescription = null);
 
 #pragma warning restore S109

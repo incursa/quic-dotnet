@@ -55,8 +55,8 @@ public sealed class REQ_QUIC_CRT_0022
                     QuicTlsUpdateKind.TranscriptProgressed,
                     HandshakeMessageType: QuicTlsHandshakeMessageType.ServerHello,
                     HandshakeMessageLength: 48,
-                    SelectedCipherSuite: QuicTlsCipherSuite.TlsAes256GcmSha384,
-                    TranscriptHashAlgorithm: QuicTlsTranscriptHashAlgorithm.Sha384,
+                    SelectedCipherSuite: QuicTlsCipherSuite.TlsAes128GcmSha256,
+                    TranscriptHashAlgorithm: QuicTlsTranscriptHashAlgorithm.Sha256,
                     TranscriptPhase: QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage)),
             nowTicks: 12);
 
@@ -90,19 +90,26 @@ public sealed class REQ_QUIC_CRT_0022
         QuicConnectionTransitionResult handshakeResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 30,
-                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted)),
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerFinishedVerified)),
             nowTicks: 30);
 
         Assert.True(handshakeResult.StateChanged);
         QuicConnectionTransitionResult peerTransportResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 35,
-                new QuicTlsStateUpdate(
-                    QuicTlsUpdateKind.PeerTransportParametersCommitted,
-                    TransportParameters: peerParameters)),
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted)),
             nowTicks: 35);
 
         Assert.True(peerTransportResult.StateChanged);
+        QuicConnectionTransitionResult peerTransportCommitResult = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 40,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PeerTransportParametersCommitted,
+                    TransportParameters: peerParameters)),
+            nowTicks: 40);
+
+        Assert.True(peerTransportCommitResult.StateChanged);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.PeerHandshakeTranscriptCompleted);

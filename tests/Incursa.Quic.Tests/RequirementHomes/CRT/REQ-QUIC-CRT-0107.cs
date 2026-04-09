@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-CRT-0107")]
@@ -9,11 +11,11 @@ public sealed class REQ_QUIC_CRT_0107
     public void ClientRoleConsumesAnOrderedHandshakeTranscriptAndStagesPeerTransportParametersFromEncryptedExtensions()
     {
         QuicTlsTranscriptProgress progress = new(QuicTlsRole.Client);
-        byte[] serverHello = CreateServerHelloTranscript(QuicTlsCipherSuite.TlsAes256GcmSha384);
+        byte[] serverHello = CreateServerHelloTranscript(QuicTlsCipherSuite.TlsAes128GcmSha256);
         byte[] encryptedExtensions = CreateEncryptedExtensionsTranscript(CreateServerTransportParameters());
         byte[] certificate = CreateCertificateTranscript();
         byte[] certificateVerify = CreateCertificateVerifyTranscript();
-        byte[] finished = CreateFinishedTranscript(QuicTlsTranscriptHashAlgorithm.Sha384);
+        byte[] finished = CreateFinishedTranscript(QuicTlsTranscriptHashAlgorithm.Sha256);
 
         progress.AppendCryptoBytes(0, serverHello[..5]);
         Assert.Equal(QuicTlsTranscriptStepKind.None, progress.Advance(QuicTlsRole.Client).Kind);
@@ -27,8 +29,8 @@ public sealed class REQ_QUIC_CRT_0107
         Assert.Equal(QuicTlsTranscriptStepKind.Progressed, serverHelloStep.Kind);
         Assert.Equal(QuicTlsHandshakeMessageType.ServerHello, serverHelloStep.HandshakeMessageType);
         Assert.Equal((uint)(serverHello.Length - 4), serverHelloStep.HandshakeMessageLength);
-        Assert.Equal(QuicTlsCipherSuite.TlsAes256GcmSha384, serverHelloStep.SelectedCipherSuite);
-        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha384, serverHelloStep.TranscriptHashAlgorithm);
+        Assert.Equal(QuicTlsCipherSuite.TlsAes128GcmSha256, serverHelloStep.SelectedCipherSuite);
+        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, serverHelloStep.TranscriptHashAlgorithm);
         Assert.Equal(QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage, serverHelloStep.TranscriptPhase);
         Assert.Equal(QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage, progress.Phase);
         Assert.Null(progress.StagedPeerTransportParameters);
@@ -84,8 +86,8 @@ public sealed class REQ_QUIC_CRT_0107
         Assert.Equal(QuicTlsHandshakeMessageType.Finished, finishedStep.HandshakeMessageType);
         Assert.Equal(QuicTlsTranscriptPhase.Completed, finishedStep.TranscriptPhase);
         Assert.Null(finishedStep.TransportParameters);
-        Assert.Equal(QuicTlsCipherSuite.TlsAes256GcmSha384, progress.SelectedCipherSuite);
-        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha384, progress.TranscriptHashAlgorithm);
+        Assert.Equal(QuicTlsCipherSuite.TlsAes128GcmSha256, progress.SelectedCipherSuite);
+        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, progress.TranscriptHashAlgorithm);
         Assert.Equal(QuicTlsHandshakeMessageType.Finished, progress.HandshakeMessageType);
         Assert.Equal((uint)(finished.Length - 4), progress.HandshakeMessageLength);
         Assert.Equal(QuicTlsTranscriptPhase.Completed, progress.Phase);
@@ -306,11 +308,15 @@ public sealed class REQ_QUIC_CRT_0107
         QuicTlsCipherSuite cipherSuite,
         bool includeTransportParametersExtension = false)
     {
+        byte[] keyShare = CreateServerKeyShare();
         byte[] transportParametersExtension = includeTransportParametersExtension
             ? CreateTransportParametersExtension(CreateServerTransportParameters(), QuicTransportParameterRole.Server)
             : [];
 
-        byte[] body = new byte[40 + transportParametersExtension.Length];
+        int supportedVersionsExtensionLength = 6;
+        int keyShareExtensionLength = 2 + 2 + 2 + 2 + keyShare.Length;
+        int extensionsLength = supportedVersionsExtensionLength + keyShareExtensionLength + transportParametersExtension.Length;
+        byte[] body = new byte[40 + extensionsLength];
         int index = 0;
 
         WriteUInt16(body.AsSpan(index, 2), 0x0303);
@@ -325,11 +331,54 @@ public sealed class REQ_QUIC_CRT_0107
 
         body[index++] = 0x00;
 
-        WriteUInt16(body.AsSpan(index, 2), (ushort)transportParametersExtension.Length);
+        WriteUInt16(body.AsSpan(index, 2), (ushort)extensionsLength);
         index += 2;
+
+        WriteUInt16(body.AsSpan(index, 2), 0x002b);
+        index += 2;
+        WriteUInt16(body.AsSpan(index, 2), 2);
+        index += 2;
+        WriteUInt16(body.AsSpan(index, 2), 0x0304);
+        index += 2;
+
+        WriteUInt16(body.AsSpan(index, 2), 0x0033);
+        index += 2;
+        WriteUInt16(body.AsSpan(index, 2), (ushort)(2 + 2 + keyShare.Length));
+        index += 2;
+        WriteUInt16(body.AsSpan(index, 2), (ushort)QuicTlsNamedGroup.Secp256r1);
+        index += 2;
+        WriteUInt16(body.AsSpan(index, 2), (ushort)keyShare.Length);
+        index += 2;
+        keyShare.CopyTo(body.AsSpan(index, keyShare.Length));
+        index += keyShare.Length;
+
         transportParametersExtension.CopyTo(body.AsSpan(index));
 
         return WrapHandshakeMessage(QuicTlsHandshakeMessageType.ServerHello, body);
+    }
+
+    private static byte[] CreateServerKeyShare()
+    {
+        using ECDiffieHellman serverKeyPair = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
+        serverKeyPair.ImportParameters(new ECParameters
+        {
+            Curve = ECCurve.NamedCurves.nistP256,
+            D = CreateScalar(2),
+        });
+
+        ECParameters parameters = serverKeyPair.ExportParameters(true);
+        byte[] keyShare = new byte[1 + (2 * 32)];
+        keyShare[0] = 0x04;
+        parameters.Q.X!.CopyTo(keyShare, 1);
+        parameters.Q.Y!.CopyTo(keyShare, 33);
+        return keyShare;
+    }
+
+    private static byte[] CreateScalar(byte value)
+    {
+        byte[] scalar = new byte[32];
+        scalar[^1] = value;
+        return scalar;
     }
 
     private static byte[] CreateEncryptedExtensionsTranscript(

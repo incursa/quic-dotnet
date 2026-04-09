@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-CRT-0106")]
@@ -21,8 +23,8 @@ public sealed class REQ_QUIC_CRT_0106
                     QuicTlsUpdateKind.TranscriptProgressed,
                     HandshakeMessageType: QuicTlsHandshakeMessageType.ServerHello,
                     HandshakeMessageLength: 48,
-                    SelectedCipherSuite: QuicTlsCipherSuite.TlsAes256GcmSha384,
-                    TranscriptHashAlgorithm: QuicTlsTranscriptHashAlgorithm.Sha384,
+                    SelectedCipherSuite: QuicTlsCipherSuite.TlsAes128GcmSha256,
+                    TranscriptHashAlgorithm: QuicTlsTranscriptHashAlgorithm.Sha256,
                     TranscriptPhase: QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage)),
             nowTicks: 9).StateChanged);
 
@@ -50,7 +52,7 @@ public sealed class REQ_QUIC_CRT_0106
         Assert.False(runtime.TlsState.PeerTransportParametersCommitted);
         Assert.False(runtime.TlsState.PeerHandshakeTranscriptCompleted);
         Assert.False(runtime.TlsState.CanCommitPeerTransportParameters(peerTransportParameters));
-        Assert.True(runtime.TlsState.CanEmitPeerHandshakeTranscriptCompleted());
+        Assert.False(runtime.TlsState.CanEmitPeerHandshakeTranscriptCompleted());
 
         Assert.False(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
@@ -63,10 +65,16 @@ public sealed class REQ_QUIC_CRT_0106
         QuicConnectionTransitionResult result = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 11,
-                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted)),
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerFinishedVerified)),
             nowTicks: 11);
 
         Assert.True(result.StateChanged);
+        Assert.True(runtime.TlsState.CanCommitPeerTransportParameters(peerTransportParameters));
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 11,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted)),
+            nowTicks: 11).StateChanged);
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.CanCommitPeerTransportParameters(peerTransportParameters));
@@ -179,8 +187,7 @@ public sealed class REQ_QUIC_CRT_0106
         Assert.True(bootstrapResult.StateChanged);
         Assert.NotSame(localTransportParameters, runtime.TlsState.LocalTransportParameters);
         Assert.Equal(15UL, runtime.TlsState.LocalTransportParameters!.MaxIdleTimeout);
-        Assert.True(runtime.TlsState.HandshakeKeysAvailable);
-        Assert.Equal(0, runtime.TlsState.HandshakeEgressCryptoBuffer.BufferedBytes);
+        Assert.False(runtime.TlsState.HandshakeKeysAvailable);
 
         QuicConnectionSendDatagramEffect outboundHandshake = Assert.IsType<QuicConnectionSendDatagramEffect>(
             Assert.Single(
@@ -554,7 +561,9 @@ public sealed class REQ_QUIC_CRT_0106
 
     private static byte[] CreateServerHelloTranscript()
     {
-        byte[] body = new byte[40];
+        byte[] keyShare = CreateServerKeyShare();
+        int extensionsLength = 6 + 4 + 2 + 2 + keyShare.Length;
+        byte[] body = new byte[40 + extensionsLength];
         int index = 0;
 
         WriteUInt16(body.AsSpan(index, 2), 0x0303);
@@ -564,10 +573,29 @@ public sealed class REQ_QUIC_CRT_0106
         index += 32;
 
         body[index++] = 0;
-        WriteUInt16(body.AsSpan(index, 2), (ushort)QuicTlsCipherSuite.TlsAes256GcmSha384);
+        WriteUInt16(body.AsSpan(index, 2), (ushort)QuicTlsCipherSuite.TlsAes128GcmSha256);
         index += 2;
         body[index++] = 0x00;
-        WriteUInt16(body.AsSpan(index, 2), 0);
+
+        WriteUInt16(body.AsSpan(index, 2), (ushort)extensionsLength);
+        index += 2;
+
+        WriteUInt16(body.AsSpan(index, 2), 0x002b);
+        index += 2;
+        WriteUInt16(body.AsSpan(index, 2), 2);
+        index += 2;
+        WriteUInt16(body.AsSpan(index, 2), 0x0304);
+        index += 2;
+
+        WriteUInt16(body.AsSpan(index, 2), 0x0033);
+        index += 2;
+        WriteUInt16(body.AsSpan(index, 2), (ushort)(2 + 2 + keyShare.Length));
+        index += 2;
+        WriteUInt16(body.AsSpan(index, 2), (ushort)QuicTlsNamedGroup.Secp256r1);
+        index += 2;
+        WriteUInt16(body.AsSpan(index, 2), (ushort)keyShare.Length);
+        index += 2;
+        keyShare.CopyTo(body.AsSpan(index, keyShare.Length));
 
         return WrapHandshakeMessage(QuicTlsHandshakeMessageType.ServerHello, body);
     }
@@ -628,6 +656,30 @@ public sealed class REQ_QUIC_CRT_0106
             out QuicTlsPacketProtectionMaterial material));
 
         return material;
+    }
+
+    private static byte[] CreateServerKeyShare()
+    {
+        using ECDiffieHellman serverKeyPair = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
+        serverKeyPair.ImportParameters(new ECParameters
+        {
+            Curve = ECCurve.NamedCurves.nistP256,
+            D = CreateScalar(0x02),
+        });
+
+        ECParameters parameters = serverKeyPair.ExportParameters(true);
+        byte[] keyShare = new byte[1 + (2 * 32)];
+        keyShare[0] = 0x04;
+        parameters.Q.X!.CopyTo(keyShare, 1);
+        parameters.Q.Y!.CopyTo(keyShare, 33);
+        return keyShare;
+    }
+
+    private static byte[] CreateScalar(byte value)
+    {
+        byte[] scalar = new byte[32];
+        scalar[^1] = value;
+        return scalar;
     }
 
     private static byte[] CreateSequentialBytes(byte startValue, int length)

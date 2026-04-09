@@ -12,7 +12,7 @@ This specification covers endpoint ingress classification, routing tables, conne
 
 ## Context
 
-The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, and handshake packet protection helpers. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, and live-stream blockers can be implemented against one clear architecture.
+The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, and live-stream blockers can be implemented against one clear architecture.
 
 ## Decision Summary
 
@@ -716,10 +716,12 @@ Notes:
 - A practical baseline is three times the larger of the current PTO and the new path PTO.
 
 ## REQ-QUIC-CRT-0103 Expose a transport-facing TLS bridge state
-The library MUST expose a transport-facing TLS bridge state or contract that can represent local transport parameters, staged peer transport parameters, committed peer transport parameters, Initial keys available, Handshake keys available, 1-RTT keys available, peer handshake transcript completion, key-update installation, old-key discard, and fatal TLS alerts without depending on a concrete TLS implementation.
+The library MUST expose a transport-facing TLS bridge state or contract that can represent local transport parameters, staged peer transport parameters, committed peer transport parameters, Initial keys available, Handshake keys available, `PeerFinishedVerified`, 1-RTT keys available, peer handshake transcript completion, key-update installation, old-key discard, and fatal TLS alerts without depending on a concrete TLS implementation.
 
 Notes:
 - The bridge may remain internal if needed, but it must live in the main library because it is part of transport ownership, not runner plumbing.
+- `PeerFinishedVerified` means the client role has cryptographically verified the peer Finished with the managed TLS 1.3 key schedule; it does not imply certificate validation, `CertificateVerify` signature verification, or identity authentication.
+- `PeerHandshakeTranscriptCompleted` remains a transcript milestone; it is not the commit gate for peer transport parameters.
 
 ## REQ-QUIC-CRT-0104 Expose a diagnostics sink abstraction
 The library MUST expose a diagnostics sink abstraction that can be a no-op when disabled and is not hardwired to any single log encoding or qlog serialization format.
@@ -755,3 +757,30 @@ Trace:
 
 Notes:
 - This slice advances transcript/message progression only. It does not by itself make peer-authentication policy, certificate validation, signature verification, peer handshake transcript completion, or broader TLS orchestration available.
+- Transcript progression feeds later key-schedule and Finished-verification logic, but it does not derive handshake keys or gate peer transport-parameter commit by itself.
+
+## REQ-QUIC-CRT-0108 Own the managed client-role TLS 1.3 key schedule
+The library MUST own a permanent managed TLS 1.3 key-schedule owner behind the transport-facing TLS bridge that, for the client role and the supported subset `TLS_AES_128_GCM_SHA256` with `secp256r1`, derives handshake traffic secrets and handshake packet-protection material from the local ephemeral key share state, the peer `ServerHello` key share state, and the transcript hash, publishes explicit bridge-visible updates when handshake open/protect keys become available, and deterministically rejects malformed or unsupported cipher-suite or key-share input through the existing fatal/update path.
+
+Trace:
+- Source Refs:
+  - RFC 9001 Sections 5 and 7
+  - RFC 9001 Section 8
+  - connection-runtime-state-machine.md
+
+Notes:
+- This slice is intentionally client-only and permanent. It does not add certificate validation, `CertificateVerify` signature verification, 0-RTT, 1-RTT, key update, or server-role handshake crypto.
+- The supported cryptographic subset for this slice is exactly `TLS_AES_128_GCM_SHA256` over `secp256r1`.
+
+## REQ-QUIC-CRT-0109 Gate peer transport-parameter commit on Finished verification
+In the client role, the library MUST cryptographically verify peer Finished with the managed TLS 1.3 key schedule and transcript hash, surface `PeerFinishedVerified` only after that verification succeeds, and allow `PeerTransportParametersCommitted` only after `PeerFinishedVerified`; malformed, unsupported, or mismatched peer Finished input MUST fail deterministically through the existing fatal/update path, and server-role transport-parameter commit remains unavailable in this slice.
+
+Trace:
+- Source Refs:
+  - RFC 9001 Sections 5 and 8
+  - connection-runtime-state-machine.md
+
+Notes:
+- This requirement is narrower than certificate authentication: it proves Finished verification only and does not add certificate validation, identity validation, or `CertificateVerify` signature verification.
+- The commit gate moves from transcript completion to `PeerFinishedVerified`; `PeerHandshakeTranscriptCompleted` remains a transcript milestone.
+- Server-role commit remains unavailable until equivalent cryptographic coverage exists.

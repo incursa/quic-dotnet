@@ -9,15 +9,20 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
     private readonly QuicTransportTlsBridgeState bridgeState;
     private readonly QuicTlsTranscriptProgress handshakeTranscriptProgress;
+    private readonly QuicTlsKeySchedule? keySchedule;
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> nextIngressOffsets = [];
 
     public QuicTlsTransportBridgeDriver(
         QuicTlsRole role = QuicTlsRole.Client,
-        QuicTransportTlsBridgeState? bridgeState = null)
+        QuicTransportTlsBridgeState? bridgeState = null,
+        ReadOnlyMemory<byte> localHandshakePrivateKey = default)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState();
         handshakeTranscriptProgress = new QuicTlsTranscriptProgress(Role);
+        keySchedule = Role == QuicTlsRole.Client
+            ? new QuicTlsKeySchedule(localHandshakePrivateKey)
+            : null;
     }
 
     /// <summary>
@@ -30,13 +35,17 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// </summary>
     public QuicTransportTlsBridgeState State => bridgeState;
 
+    /// <summary>
+    /// Gets the local ephemeral handshake key share used by the managed client-role key schedule slice.
+    /// </summary>
+    internal ReadOnlyMemory<byte> LocalHandshakeKeyShare => keySchedule?.LocalKeyShare ?? ReadOnlyMemory<byte>.Empty;
+
     /// <inheritdoc />
     public IReadOnlyList<QuicTlsStateUpdate> StartHandshake(QuicTransportParameters localTransportParameters)
     {
         List<QuicTlsStateUpdate> updates = [];
 
         AppendPublishedUpdates(updates, PublishLocalTransportParameters(localTransportParameters));
-        AppendPublishedUpdates(updates, PublishKeysAvailable(QuicTlsEncryptionLevel.Handshake));
         AppendPublishedUpdates(updates, PublishDeterministicHandshakeEgress(localTransportParameters));
 
         return updates;
@@ -90,7 +99,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             return Array.Empty<QuicTlsStateUpdate>();
         }
 
-        if (bridgeState.LocalTransportParameters is null || !bridgeState.HandshakeKeysAvailable)
+        if (bridgeState.LocalTransportParameters is null)
         {
             return Array.Empty<QuicTlsStateUpdate>();
         }
@@ -350,6 +359,28 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             TranscriptPhase: QuicTlsTranscriptPhase.Completed));
     }
 
+    private IReadOnlyList<QuicTlsStateUpdate> PublishKeyScheduleUpdates(QuicTlsTranscriptStep step)
+    {
+        if (keySchedule is null)
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        IReadOnlyList<QuicTlsStateUpdate> keyScheduleUpdates = keySchedule.ProcessTranscriptStep(step);
+        if (keyScheduleUpdates.Count == 0)
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        List<QuicTlsStateUpdate> publishedUpdates = [];
+        foreach (QuicTlsStateUpdate update in keyScheduleUpdates)
+        {
+            AppendPublishedUpdates(publishedUpdates, PublishUpdate(update));
+        }
+
+        return publishedUpdates;
+    }
+
     private void DriveTranscriptProgress(List<QuicTlsStateUpdate> updates)
     {
         while (true)
@@ -373,6 +404,12 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                         step.TransportParameters);
                     AppendPublishedUpdates(updates, progressedUpdates);
                     if (progressedUpdates.Count == 0)
+                    {
+                        return;
+                    }
+
+                    AppendPublishedUpdates(updates, PublishKeyScheduleUpdates(step));
+                    if (bridgeState.IsTerminal)
                     {
                         return;
                     }

@@ -10,6 +10,8 @@ internal sealed class QuicTransportTlsBridgeState
     private readonly QuicCryptoBuffer initialEgressCryptoBuffer = new();
     private readonly QuicCryptoBuffer handshakeEgressCryptoBuffer = new();
     private readonly Dictionary<QuicTlsEncryptionLevel, QuicTlsPacketProtectionMaterial> packetProtectionMaterials = new();
+    private QuicTlsPacketProtectionMaterial? handshakeOpenPacketProtectionMaterial;
+    private QuicTlsPacketProtectionMaterial? handshakeProtectPacketProtectionMaterial;
 
     public QuicTransportParameters? LocalTransportParameters { get; private set; }
 
@@ -35,9 +37,15 @@ internal sealed class QuicTransportTlsBridgeState
 
     public bool PeerHandshakeTranscriptCompleted { get; private set; }
 
+    public bool PeerFinishedVerified { get; private set; }
+
     public bool KeyUpdateInstalled { get; private set; }
 
     public bool OldKeysDiscarded { get; private set; }
+
+    public QuicTlsPacketProtectionMaterial? HandshakeOpenPacketProtectionMaterial => handshakeOpenPacketProtectionMaterial;
+
+    public QuicTlsPacketProtectionMaterial? HandshakeProtectPacketProtectionMaterial => handshakeProtectPacketProtectionMaterial;
 
     public uint CurrentOneRttKeyPhase { get; private set; }
 
@@ -49,7 +57,10 @@ internal sealed class QuicTransportTlsBridgeState
 
     public bool HasAnyAvailableKeys => InitialKeysAvailable || HandshakeKeysAvailable || OneRttKeysAvailable;
 
-    public bool HasAnyPacketProtectionMaterial => packetProtectionMaterials.Count > 0;
+    public bool HasAnyPacketProtectionMaterial =>
+        packetProtectionMaterials.Count > 0
+        || handshakeOpenPacketProtectionMaterial.HasValue
+        || handshakeProtectPacketProtectionMaterial.HasValue;
 
     public bool IsTerminal => FatalAlertCode.HasValue;
 
@@ -62,7 +73,7 @@ internal sealed class QuicTransportTlsBridgeState
 
         return !IsTerminal
             && !PeerTransportParametersCommitted
-            && PeerHandshakeTranscriptCompleted
+            && PeerFinishedVerified
             && StagedPeerTransportParameters is not null
             && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed
             && HandshakeMessageType == QuicTlsHandshakeMessageType.Finished
@@ -79,6 +90,7 @@ internal sealed class QuicTransportTlsBridgeState
     {
         return !IsTerminal
             && !PeerHandshakeTranscriptCompleted
+            && PeerFinishedVerified
             && StagedPeerTransportParameters is not null
             && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed
             && HandshakeMessageType == QuicTlsHandshakeMessageType.Finished
@@ -124,6 +136,9 @@ internal sealed class QuicTransportTlsBridgeState
             case QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted:
                 return TryMarkPeerHandshakeTranscriptCompleted();
 
+            case QuicTlsUpdateKind.PeerFinishedVerified:
+                return TryMarkPeerFinishedVerified();
+
             case QuicTlsUpdateKind.KeyUpdateInstalled:
                 if (!update.KeyPhase.HasValue)
                 {
@@ -166,6 +181,14 @@ internal sealed class QuicTransportTlsBridgeState
             case QuicTlsUpdateKind.PacketProtectionMaterialAvailable:
                 return update.PacketProtectionMaterial.HasValue
                     && TryStorePacketProtectionMaterial(update.PacketProtectionMaterial.Value);
+
+            case QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable:
+                return update.PacketProtectionMaterial.HasValue
+                    && TryStoreHandshakeOpenPacketProtectionMaterial(update.PacketProtectionMaterial.Value);
+
+            case QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable:
+                return update.PacketProtectionMaterial.HasValue
+                    && TryStoreHandshakeProtectPacketProtectionMaterial(update.PacketProtectionMaterial.Value);
 
             case QuicTlsUpdateKind.TranscriptProgressed:
                 return TryApplyTranscriptProgress(update);
@@ -264,7 +287,62 @@ internal sealed class QuicTransportTlsBridgeState
         QuicTlsEncryptionLevel encryptionLevel,
         out QuicTlsPacketProtectionMaterial material)
     {
-        return packetProtectionMaterials.TryGetValue(encryptionLevel, out material);
+        if (packetProtectionMaterials.TryGetValue(encryptionLevel, out material))
+        {
+            return true;
+        }
+
+        if (encryptionLevel == QuicTlsEncryptionLevel.Handshake)
+        {
+            if (handshakeProtectPacketProtectionMaterial.HasValue)
+            {
+                material = handshakeProtectPacketProtectionMaterial.Value;
+                return true;
+            }
+
+            if (handshakeOpenPacketProtectionMaterial.HasValue)
+            {
+                material = handshakeOpenPacketProtectionMaterial.Value;
+                return true;
+            }
+        }
+
+        material = default;
+        return false;
+    }
+
+    internal bool TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial material)
+    {
+        if (handshakeOpenPacketProtectionMaterial.HasValue)
+        {
+            material = handshakeOpenPacketProtectionMaterial.Value;
+            return true;
+        }
+
+        if (packetProtectionMaterials.TryGetValue(QuicTlsEncryptionLevel.Handshake, out material))
+        {
+            return true;
+        }
+
+        material = default;
+        return false;
+    }
+
+    internal bool TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial material)
+    {
+        if (handshakeProtectPacketProtectionMaterial.HasValue)
+        {
+            material = handshakeProtectPacketProtectionMaterial.Value;
+            return true;
+        }
+
+        if (packetProtectionMaterials.TryGetValue(QuicTlsEncryptionLevel.Handshake, out material))
+        {
+            return true;
+        }
+
+        material = default;
+        return false;
     }
 
     public bool TryCommitLocalTransportParameters(QuicTransportParameters parameters)
@@ -304,6 +382,17 @@ internal sealed class QuicTransportTlsBridgeState
         }
 
         PeerHandshakeTranscriptCompleted = true;
+        return true;
+    }
+
+    public bool TryMarkPeerFinishedVerified()
+    {
+        if (!CanEmitPeerFinishedVerified())
+        {
+            return false;
+        }
+
+        PeerFinishedVerified = true;
         return true;
     }
 
@@ -348,7 +437,12 @@ internal sealed class QuicTransportTlsBridgeState
         }
         else if (update.TranscriptPhase == QuicTlsTranscriptPhase.PeerTransportParametersStaged)
         {
-            return false;
+            if (StagedPeerTransportParameters is null
+                || update.HandshakeMessageType is not (QuicTlsHandshakeMessageType.Certificate
+                    or QuicTlsHandshakeMessageType.CertificateVerify))
+            {
+                return false;
+            }
         }
 
         if (update.TranscriptPhase == QuicTlsTranscriptPhase.Completed
@@ -500,12 +594,15 @@ internal sealed class QuicTransportTlsBridgeState
         OldKeysDiscarded = true;
         PeerTransportParametersCommitted = false;
         PeerHandshakeTranscriptCompleted = false;
+        PeerFinishedVerified = false;
         HandshakeTranscriptPhase = QuicTlsTranscriptPhase.Failed;
         StagedPeerTransportParameters = null;
         HandshakeMessageType = null;
         HandshakeMessageLength = null;
         SelectedCipherSuite = null;
         TranscriptHashAlgorithm = null;
+        handshakeOpenPacketProtectionMaterial = null;
+        handshakeProtectPacketProtectionMaterial = null;
         packetProtectionMaterials.Clear();
         return true;
     }
@@ -611,14 +708,78 @@ internal sealed class QuicTransportTlsBridgeState
         return true;
     }
 
+    private bool CanEmitPeerFinishedVerified()
+    {
+        return !IsTerminal
+            && !PeerFinishedVerified
+            && StagedPeerTransportParameters is not null
+            && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed
+            && HandshakeMessageType == QuicTlsHandshakeMessageType.Finished
+            && HandshakeMessageLength.HasValue
+            && SelectedCipherSuite.HasValue
+            && TranscriptHashAlgorithm.HasValue;
+    }
+
     private bool TryDiscardPacketProtectionMaterial(QuicTlsEncryptionLevel encryptionLevel)
     {
         return encryptionLevel switch
         {
-            QuicTlsEncryptionLevel.Handshake or QuicTlsEncryptionLevel.OneRtt
+            QuicTlsEncryptionLevel.Handshake
+                => TryDiscardHandshakePacketProtectionMaterial(encryptionLevel),
+            QuicTlsEncryptionLevel.OneRtt
                 => packetProtectionMaterials.Remove(encryptionLevel),
             _ => false,
         };
+    }
+
+    private bool TryStoreHandshakeOpenPacketProtectionMaterial(QuicTlsPacketProtectionMaterial material)
+    {
+        if (IsTerminal || material.EncryptionLevel != QuicTlsEncryptionLevel.Handshake)
+        {
+            return false;
+        }
+
+        if (handshakeOpenPacketProtectionMaterial.HasValue
+            && handshakeOpenPacketProtectionMaterial.Value.Matches(material))
+        {
+            return false;
+        }
+
+        handshakeOpenPacketProtectionMaterial = material;
+        return true;
+    }
+
+    private bool TryStoreHandshakeProtectPacketProtectionMaterial(QuicTlsPacketProtectionMaterial material)
+    {
+        if (IsTerminal || material.EncryptionLevel != QuicTlsEncryptionLevel.Handshake)
+        {
+            return false;
+        }
+
+        if (handshakeProtectPacketProtectionMaterial.HasValue
+            && handshakeProtectPacketProtectionMaterial.Value.Matches(material))
+        {
+            return false;
+        }
+
+        handshakeProtectPacketProtectionMaterial = material;
+        return true;
+    }
+
+    private bool TryDiscardHandshakePacketProtectionMaterial()
+    {
+        bool discarded = handshakeOpenPacketProtectionMaterial.HasValue
+            || handshakeProtectPacketProtectionMaterial.HasValue;
+        handshakeOpenPacketProtectionMaterial = null;
+        handshakeProtectPacketProtectionMaterial = null;
+        return discarded;
+    }
+
+    private bool TryDiscardHandshakePacketProtectionMaterial(QuicTlsEncryptionLevel encryptionLevel)
+    {
+        bool discardedDirectionalMaterial = TryDiscardHandshakePacketProtectionMaterial();
+        bool discardedLegacyMaterial = packetProtectionMaterials.Remove(encryptionLevel);
+        return discardedDirectionalMaterial || discardedLegacyMaterial;
     }
 
     private bool TryDiscardKeys(QuicTlsEncryptionLevel encryptionLevel)

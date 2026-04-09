@@ -50,14 +50,15 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         IMonotonicClock? clock = null,
         int maximumCandidatePaths = 8,
         int maximumRecentlyValidatedPaths = 8,
-        ulong currentProbeTimeoutMicros = QuicRttEstimator.DefaultInitialRttMicros)
+        ulong currentProbeTimeoutMicros = QuicRttEstimator.DefaultInitialRttMicros,
+        ReadOnlyMemory<byte> localHandshakePrivateKey = default)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
         sendRuntime = new QuicConnectionSendRuntime();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         handshakeFlowCoordinator = new QuicHandshakeFlowCoordinator();
-        tlsBridgeDriver = new QuicTlsTransportBridgeDriver(QuicTlsRole.Client, tlsState);
+        tlsBridgeDriver = new QuicTlsTransportBridgeDriver(QuicTlsRole.Client, tlsState, localHandshakePrivateKey);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
             SingleReader = true,
@@ -461,6 +462,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             case QuicTlsUpdateKind.KeysAvailable:
             case QuicTlsUpdateKind.CryptoDataAvailable:
             case QuicTlsUpdateKind.PacketProtectionMaterialAvailable:
+            case QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable:
+            case QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable:
                 stateChanged |= TryFlushHandshakePackets(ref effects);
                 break;
         }
@@ -491,8 +494,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ReadOnlySpan<byte> datagram = packetReceivedEvent.Datagram.Span;
         if (!QuicPacketParser.TryGetPacketNumberSpace(datagram, out QuicPacketNumberSpace packetNumberSpace)
             || packetNumberSpace != QuicPacketNumberSpace.Handshake
-            || !tlsState.HandshakeKeysAvailable
-            || !tlsState.TryGetPacketProtectionMaterial(QuicTlsEncryptionLevel.Handshake, out QuicTlsPacketProtectionMaterial packetProtectionMaterial)
+            || !tlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial packetProtectionMaterial)
             || !handshakeFlowCoordinator.TryOpenHandshakePacket(
                 datagram,
                 packetProtectionMaterial,
@@ -555,12 +557,16 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 continue;
             }
 
-            if (transcriptUpdates[0].Kind == QuicTlsUpdateKind.FatalAlert)
+            foreach (QuicTlsStateUpdate transcriptUpdate in transcriptUpdates)
             {
-                _ = HandleTlsStateUpdated(
-                    new QuicConnectionTlsStateUpdatedEvent(nowTicks, transcriptUpdates[0]),
-                    nowTicks,
-                    ref effects);
+                if (transcriptUpdate.Kind == QuicTlsUpdateKind.FatalAlert)
+                {
+                    _ = HandleTlsStateUpdated(
+                        new QuicConnectionTlsStateUpdatedEvent(nowTicks, transcriptUpdate),
+                        nowTicks,
+                        ref effects);
+                    break;
+                }
             }
 
             payloadOffset += bytesConsumed;
@@ -578,9 +584,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     {
         if (phase != QuicConnectionPhase.Establishing
             || activePath is null
-            || !tlsState.HandshakeKeysAvailable
             || tlsState.HandshakeEgressCryptoBuffer.BufferedBytes <= 0
-            || !tlsState.TryGetPacketProtectionMaterial(QuicTlsEncryptionLevel.Handshake, out QuicTlsPacketProtectionMaterial packetProtectionMaterial))
+            || !tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial packetProtectionMaterial))
         {
             return false;
         }
