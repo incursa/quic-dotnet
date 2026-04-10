@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0011",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Server-Role EncryptedExtensions Continuation Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests and inspection evidence for the narrow server-role local EncryptedExtensions continuation behind the existing transcript-progress and bridge-driver seam.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0011",
+    "WI-QUIC-CRT-0011"
+  ],
+  "expected_result": "The server role emits one local EncryptedExtensions after the supported ClientHello has been accepted, the local ServerHello has been published, Handshake keys are available, and local transport parameters are available; exposes those bytes through the existing Handshake crypto-output seam with correct offset semantics; appends the local EncryptedExtensions bytes at the correct transcript boundary immediately after the local ServerHello; rejects premature or repeated local EncryptedExtensions progression deterministically; and still leaves server-role commit and wider handshake support unavailable.",
+  "verifies": [
+    "REQ-QUIC-CRT-0113"
+  ],
+  "procedure": [
+    "Run the CRT requirement-home tests that cover the supported server-role EncryptedExtensions continuation path, outbound local EncryptedExtensions exposure, Handshake key-availability publication ordering, offset semantics, local transport-parameter availability gating, transcript append behavior, and repeated or conflicting progression rejection.",
+    "Run the prerequisite server-role floor tests that cover the supported ClientHello path, outbound ServerHello exposure, and Handshake key-availability publication ordering.",
+    "Inspect the bridge driver, transcript-progress owner, and key-schedule implementation to confirm the slice stays inside the main library seam, keeps runtime or host wiring unchanged, keeps commit unavailable, and does not add native TLS fallback."
+  ],
+  "scope": "This slice verifies only the permanent server-role continuation from peer ClientHello and local ServerHello through local EncryptedExtensions and Handshake packet-protection material availability. It does not prove certificate flight, server Finished, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The tests project can access internal library seams through the existing friend assembly relationship."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicTlsTranscriptProgress.cs\n- src/Incursa.Quic/QuicTlsKeySchedule.cs\n- src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
+    }
+  ]
+}

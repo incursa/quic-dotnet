@@ -8,7 +8,6 @@ owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0103"
   - "REQ-QUIC-CRT-0108"
-  - "REQ-QUIC-CRT-0109"
   - "REQ-QUIC-CRT-0110"
 design_links:
   - "ARC-QUIC-CRT-0008"
@@ -24,13 +23,12 @@ related_artifacts:
 
 ## Summary
 
-Add the permanent client-only managed TLS 1.3 key-schedule owner behind the existing transcript-progress and bridge seam, derive handshake secrets and packet-protection material for the supported subset, verify the peer leaf `CertificateVerify` proof path, and make peer transport-parameter commit explicit so peer transport-parameter commit is gated by both `PeerCertificateVerifyVerified` and `PeerFinishedVerified` rather than by transcript completion alone.
+Add the permanent client-only managed TLS 1.3 key-schedule owner behind the existing transcript-progress and bridge seam, derive handshake secrets and packet-protection material for the supported subset, and verify the peer leaf CertificateVerify proof path while leaving local acceptance policy and peer transport-parameter commit to a later explicit seam.
 
 ## Requirements Addressed
 
 - REQ-QUIC-CRT-0103
 - REQ-QUIC-CRT-0108
-- REQ-QUIC-CRT-0109
 - REQ-QUIC-CRT-0110
 
 ## Design Inputs
@@ -40,10 +38,10 @@ Add the permanent client-only managed TLS 1.3 key-schedule owner behind the exis
 ## Planned Changes
 
 - Add a permanent managed TLS 1.3 key-schedule owner inside the main library that remains behind the existing transport-facing bridge seam.
-- Restrict that owner to the explicit client-only subset `TLS_AES_128_GCM_SHA256` over `secp256r1` and derive handshake traffic secrets, handshake packet-protection material, and peer Finished verification material from the local ephemeral share, the peer `ServerHello` key share, and the transcript hash.
-- Publish explicit bridge-visible updates for handshake key availability, `PeerCertificateVerifyVerified`, and `PeerFinishedVerified` without implying certificate trust, hostname validation, identity validation, or certificate-path validation.
-- Keep the transcript-progress owner narrow and transcript-focused; do not move orchestration into the interop harness, add a native TLS fallback, or widen the slice to 0-RTT, 1-RTT, key update, or server-role handshake crypto.
-- Add focused requirement-home tests for the supported positive path, malformed and unsupported `ServerHello` inputs, deterministic derivation, peer CertificateVerify proof success and failure, peer Finished verification success and failure, commit gating, fatal-state blocking, and server-role commit remaining unavailable.
+- Restrict that owner to the explicit client-only subset TLS_AES_128_GCM_SHA256 over secp256r1 and derive handshake traffic secrets, handshake packet-protection material, and peer proof-state material from the local ephemeral share, the peer ServerHello key share, and the transcript hash.
+- Publish explicit bridge-visible updates for handshake key availability and PeerCertificateVerifyVerified without implying certificate trust, hostname validation, identity validation, or certificate-path validation.
+- Keep the transcript-progress owner narrow and transcript-focused; do not move orchestration into the interop harness, add a native TLS fallback, or widen the slice to 0-RTT, 1-RTT, key update, local acceptance policy, or server-role handshake crypto.
+- Add focused requirement-home tests for the supported positive path, malformed and unsupported ServerHello inputs, deterministic derivation, peer CertificateVerify proof success and failure, peer Finished verification success and failure, and server-role commit remaining unavailable once the later acceptance seam owns commit gating.
 
 ## Out of Scope
 
@@ -51,11 +49,11 @@ Add the permanent client-only managed TLS 1.3 key-schedule owner behind the exis
 
 ## Verification Plan
 
-Run the new CRT requirement-home tests that cover the managed TLS 1.3 key schedule, the client-role CertificateVerify proof path, and peer Finished gating, then run the relevant solution build/test pass for the main library and tests project.
+Run the new CRT requirement-home tests that cover the managed TLS 1.3 key schedule and the client-role CertificateVerify proof path, then run the relevant solution build/test pass for the main library and tests project.
 
 ## Completion Notes
 
-The resulting slice is intentionally narrower than full handshake support. It proves client-only handshake cryptography for one explicit suite and group, publishes `PeerCertificateVerifyVerified` and `PeerFinishedVerified` as bridge-visible states, and keeps `PeerHandshakeTranscriptCompleted` as a transcript milestone rather than a trust or authentication claim.
+The resulting slice is intentionally narrower than full handshake support. It proves client-only handshake cryptography for one explicit suite and group, publishes PeerCertificateVerifyVerified as a bridge-visible state, and leaves PeerHandshakeTranscriptCompleted and peer transport-parameter commit to the later policy seam.
 
 ## Trace Links
 
@@ -63,7 +61,6 @@ Addresses:
 
 - REQ-QUIC-CRT-0103
 - REQ-QUIC-CRT-0108
-- REQ-QUIC-CRT-0109
 - REQ-QUIC-CRT-0110
 
 Uses Design:
@@ -86,7 +83,6 @@ Verified By:
 - [`src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs`](../../../src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs)
-- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0110.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0110.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs)

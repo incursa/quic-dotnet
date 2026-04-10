@@ -388,7 +388,9 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             return Array.Empty<QuicTlsStateUpdate>();
         }
 
-        IReadOnlyList<QuicTlsStateUpdate> keyScheduleUpdates = keySchedule.ProcessTranscriptStep(step);
+        IReadOnlyList<QuicTlsStateUpdate> keyScheduleUpdates = keySchedule.ProcessTranscriptStep(
+            step,
+            bridgeState.LocalTransportParameters);
         if (keyScheduleUpdates.Count == 0)
         {
             return Array.Empty<QuicTlsStateUpdate>();

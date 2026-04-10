@@ -4,13 +4,12 @@
 
 ## Scope
 
-This slice verifies the permanent client-only managed TLS 1.3 key-schedule seam, the explicit bridge-visible `PeerCertificateVerifyVerified` and `PeerFinishedVerified` states, and the commit gate that depends on both proof states. It does not prove certificate trust, hostname validation, certificate-path validation, 0-RTT, 1-RTT, key update, or server-role handshake crypto.
+This slice verifies the permanent client-only managed TLS 1.3 key-schedule seam and the explicit bridge-visible PeerCertificateVerifyVerified state. It does not prove certificate trust, hostname validation, certificate-path validation, local acceptance policy, 0-RTT, 1-RTT, key update, or server-role handshake crypto.
 
 ## Requirements Verified
 
 - REQ-QUIC-CRT-0103
 - REQ-QUIC-CRT-0108
-- REQ-QUIC-CRT-0109
 - REQ-QUIC-CRT-0110
 
 ## Verification Method
@@ -24,19 +23,18 @@ Focused requirement-home tests and inspection evidence for the managed client-on
 
 ## Procedure or Approach
 
-- Run the CRT requirement-home tests that cover the supported positive path, unsupported or malformed `ServerHello` key-share and cipher-suite handling, deterministic transcript-hash-driven derivation, peer CertificateVerify proof success and failure, peer Finished verification success and failure, fatal-state blocking, and the server-role-commit-unavailable path.
+- Run the CRT requirement-home tests that cover the supported positive path, unsupported or malformed ServerHello key-share and cipher-suite handling, deterministic transcript-hash-driven derivation, peer CertificateVerify proof success and failure, peer Finished verification success and failure, and the server-role-commit-unavailable path.
 - Run the RFC9001 requirement-home tests that still cover inbound Handshake packet processing, outbound Handshake packet emission, malformed-frame rejection, tampered-packet rejection, and wrong-material rejection for the bridge seam.
-- Inspect the bridge state and runtime integration to confirm that handshake keys are not published before the required cryptographic inputs exist and that `PeerTransportParametersCommitted` cannot occur before both `PeerCertificateVerifyVerified` and `PeerFinishedVerified`.
+- Inspect the bridge state and runtime integration to confirm that handshake keys are not published before the required cryptographic inputs exist and that PeerCertificateVerifyVerified is surfaced without implying local acceptance or peer transport-parameter commit.
 
 ## Expected Result
 
-The bridge exposes handshake-key availability only after the managed key-schedule inputs exist, unsupported or malformed key-share and cipher-suite input fails deterministically, transcript-hash-driven derivation is repeatable, peer CertificateVerify proof succeeds on the supported client path and fails deterministically on mismatch, peer Finished verification succeeds on the supported client path and fails deterministically on mismatch, peer transport-parameter commit is gated by both proof states, fatal crypto state blocks later commit progression, and server-role commit remains unavailable. This does not imply certificate trust, hostname validation, identity validation, or full handshake support.
+The bridge exposes handshake-key availability only after the managed key-schedule inputs exist, unsupported or malformed key-share and cipher-suite input fails deterministically, transcript-hash-driven derivation is repeatable, peer CertificateVerify proof succeeds on the supported client path and fails deterministically on mismatch, peer Finished verification succeeds on the supported client path and fails deterministically on mismatch, and server-role commit remains unavailable. This does not imply certificate trust, hostname validation, identity validation, local acceptance policy, or full handshake support.
 
 ## Evidence
 
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs
-- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0110.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0002.cs

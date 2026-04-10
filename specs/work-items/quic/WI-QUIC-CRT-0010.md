@@ -39,9 +39,9 @@ Extend the server role from ClientHello-only transcript staging into a permanent
 
 - Extend the server-role ClientHello transcript parser so it semantically validates TLS 1.3, TLS_AES_128_GCM_SHA256, secp256r1 key-share input, and QUIC transport-parameter placement while keeping unrelated handshake content opaque.
 - Reuse the existing local Handshake private-key seam for the server role, construct one local ServerHello for the supported subset, and emit it through the existing Handshake CryptoDataAvailable seam instead of adding a parallel TLS backend.
-- Derive server-role Handshake open/protect packet-protection material at the ClientHello plus ServerHello transcript boundary and publish explicit bridge-visible key-availability updates.
+- Derive server-role Handshake open/protect packet-protection material at the ClientHello plus ServerHello transcript boundary.
 - Keep server-role peer transport-parameter staging from ClientHello intact, keep server-role commit unavailable, and reject malformed, unsupported, premature, or conflicting ClientHello progression deterministically through the existing fatal/update path.
-- Add focused requirement-home tests for the positive server-role path, early key-publication prevention, deterministic failure cases, repeated/conflicting progression rejection, preserved transport-parameter staging, and the continued absence of server-role commit.
+- Add focused requirement-home tests for the positive server-role floor, early key-publication prevention, deterministic failure cases, preserved transport-parameter staging, and the continued absence of server-role commit.
 - Do not add EncryptedExtensions, certificate flight, server Finished, endpoint-host wiring, harness changes, or interop-runner handshake enablement in this slice.
 
 ## Out of Scope
@@ -50,7 +50,7 @@ Extend the server role from ClientHello-only transcript staging into a permanent
 
 ## Verification Plan
 
-Run the updated CRT and RFC9001 requirement-home tests that cover the server-role positive path, deterministic malformed or unsupported ClientHello rejection, outbound ServerHello availability, and Handshake packet-protection material publication, then run the relevant solution build and targeted test pass for the main library and tests project.
+Run the updated CRT and RFC9001 requirement-home tests that cover the server-role positive floor path, deterministic malformed or unsupported ClientHello rejection, outbound ServerHello availability, and Handshake packet-protection material publication, then run the relevant solution build and targeted test pass for the main library and tests project.
 
 ## Completion Notes
 

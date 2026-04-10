@@ -132,6 +132,22 @@ internal sealed class QuicTlsKeySchedule
     public bool PeerCertificateVerifyVerified => peerCertificateVerifyVerified;
 
     /// <summary>
+    /// Copies the current managed handshake transcript bytes for focused tests.
+    /// </summary>
+    internal bool TryCopyHandshakeTranscriptBytes(Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = transcriptBytes.WrittenCount;
+        if (destination.Length < bytesWritten)
+        {
+            bytesWritten = 0;
+            return false;
+        }
+
+        transcriptBytes.WrittenSpan.CopyTo(destination);
+        return true;
+    }
+
+    /// <summary>
     /// Gets the peer Finished verify data for the current handshake transcript, if the handshake secret has been derived.
     /// </summary>
     internal bool TryGetExpectedPeerFinishedVerifyData(out byte[] verifyData)
@@ -168,6 +184,16 @@ internal sealed class QuicTlsKeySchedule
     /// </summary>
     internal IReadOnlyList<QuicTlsStateUpdate> ProcessTranscriptStep(QuicTlsTranscriptStep step)
     {
+        return ProcessTranscriptStep(step, localTransportParameters: null);
+    }
+
+    /// <summary>
+    /// Processes one handshake transcript step and returns any bridge-visible updates produced by the key schedule.
+    /// </summary>
+    internal IReadOnlyList<QuicTlsStateUpdate> ProcessTranscriptStep(
+        QuicTlsTranscriptStep step,
+        QuicTransportParameters? localTransportParameters)
+    {
         if (isTerminal || step.HandshakeMessageType is null || step.HandshakeMessageBytes.IsEmpty)
         {
             return Array.Empty<QuicTlsStateUpdate>();
@@ -177,7 +203,7 @@ internal sealed class QuicTlsKeySchedule
         {
             return step.HandshakeMessageType.Value switch
             {
-                QuicTlsHandshakeMessageType.ClientHello => ProcessClientHello(step),
+                QuicTlsHandshakeMessageType.ClientHello => ProcessClientHello(step, localTransportParameters),
                 _ => BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription),
             };
         }
@@ -193,7 +219,9 @@ internal sealed class QuicTlsKeySchedule
         };
     }
 
-    private IReadOnlyList<QuicTlsStateUpdate> ProcessClientHello(QuicTlsTranscriptStep step)
+    private IReadOnlyList<QuicTlsStateUpdate> ProcessClientHello(
+        QuicTlsTranscriptStep step,
+        QuicTransportParameters? localTransportParameters)
     {
         if (handshakeSecretsDerived
             || step.Kind != QuicTlsTranscriptStepKind.PeerTransportParametersStaged
@@ -204,7 +232,8 @@ internal sealed class QuicTlsKeySchedule
             || step.SelectedCipherSuite != profile.CipherSuite
             || step.TranscriptHashAlgorithm != profile.TranscriptHashAlgorithm
             || step.NamedGroup != profile.NamedGroup
-            || step.KeyShare.IsEmpty)
+            || step.KeyShare.IsEmpty
+            || localTransportParameters is null)
         {
             return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
         }
@@ -227,6 +256,13 @@ internal sealed class QuicTlsKeySchedule
             return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
         }
 
+        if (!TryCreateEncryptedExtensions(localTransportParameters, out byte[] encryptedExtensionsBytes))
+        {
+            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+        }
+
+        ulong encryptedExtensionsOffset = (ulong)serverHelloBytes.Length;
+        AppendTranscriptMessage(encryptedExtensionsBytes);
         handshakeSecretsDerived = true;
         return
         [
@@ -244,6 +280,11 @@ internal sealed class QuicTlsKeySchedule
             new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.KeysAvailable,
                 QuicTlsEncryptionLevel.Handshake),
+            new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.CryptoDataAvailable,
+                QuicTlsEncryptionLevel.Handshake,
+                CryptoDataOffset: encryptedExtensionsOffset,
+                CryptoData: encryptedExtensionsBytes),
         ];
     }
 
@@ -494,6 +535,26 @@ internal sealed class QuicTlsKeySchedule
         localKeyShare.CopyTo(body, index);
 
         serverHelloBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.ServerHello, body);
+        return true;
+    }
+
+    private static bool TryCreateEncryptedExtensions(
+        QuicTransportParameters localTransportParameters,
+        out byte[] encryptedExtensionsBytes)
+    {
+        encryptedExtensionsBytes = Array.Empty<byte>();
+
+        Span<byte> encodedMessage = stackalloc byte[512];
+        if (!QuicTlsTranscriptProgress.TryFormatDeterministicTransportParametersMessage(
+            localTransportParameters,
+            QuicTransportParameterRole.Server,
+            encodedMessage,
+            out int bytesWritten))
+        {
+            return false;
+        }
+
+        encryptedExtensionsBytes = encodedMessage[..bytesWritten].ToArray();
         return true;
     }
 

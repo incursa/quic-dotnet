@@ -22,7 +22,7 @@ related_artifacts:
 
 ## Summary
 
-Add the narrow Handshake runtime coordinator, the transcript-progress owner behind the bridge seam, and the packet assembly/parsing glue needed to move CRYPTO bytes through Handshake packets inside the library.
+Add the narrow Handshake runtime coordinator, the role-aware transcript-progress owner behind the bridge seam, and the packet assembly/parsing glue needed to move CRYPTO bytes through Handshake packets inside the library.
 
 ## Requirements Addressed
 
@@ -36,10 +36,10 @@ Add the narrow Handshake runtime coordinator, the transcript-progress owner behi
 ## Planned Changes
 
 - Add an internal Handshake flow coordinator that opens protected Handshake packets, parses padding and CRYPTO frames, and formats outbound CRYPTO bytes into protected Handshake packets.
-- Add an internal Handshake transcript-progress owner behind the existing bridge seam that stages peer transport parameters from ordered Handshake CRYPTO fragments, latches malformed transcript failures, and publishes transcript progression updates through the bridge state.
+- Add an internal Handshake transcript-progress owner behind the existing bridge seam that consumes ordered Handshake CRYPTO fragments, preserves handshake message metadata and cipher-suite/hash selection, stages peer transport parameters from the correct role-specific message, and publishes transcript progression updates through the bridge state without auto-committing or confirming the handshake.
 - Thread the coordinator into the connection runtime so inbound Handshake packets flow through the existing bridge-driver buffering path and outbound bridge bytes surface as send effects.
 - Keep the coordinator event-driven and library-owned; do not add a polling loop, harness logic, OpenSSL fallback, or 1-RTT behavior.
-- Add focused requirement-home tests for inbound packet opening, outbound packet formatting, fragmented transcript progression, malformed transcript rejection, wrong-material rejection, and the runtime state transitions for handshake confirmation and key discard.
+- Add focused requirement-home tests for inbound packet opening, outbound packet formatting, fragmented transcript progression, role-specific transport-parameter staging, malformed transcript rejection, wrong-material rejection, and the runtime state transitions that remain policy-gated.
 
 ## Out of Scope
 
@@ -47,11 +47,11 @@ Add the narrow Handshake runtime coordinator, the transcript-progress owner behi
 
 ## Verification Plan
 
-Run the new CRT and RFC9001 requirement-home tests that cover the handshake flow coordinator, then run the relevant solution build/test pass for the main library and tests project.
+Run the new CRT and RFC9001 requirement-home tests that cover the handshake flow coordinator and transcript-progress owner, then run the relevant solution build/test pass for the main library and tests project.
 
 ## Completion Notes
 
-The runtime-owned smoke proof remains intentionally narrow. The evidence now includes a deterministic bootstrap-to-confirmed Handshake CRYPTO path plus a separate transcript-progress owner that stages peer transport parameters from fragmented Handshake input without claiming 1-RTT, certificate validation, or production handshake support.
+The runtime-owned smoke proof remains intentionally narrow. The evidence now includes a deterministic CRYPTO transcript-progress owner that stages role-specific peer transport parameters and preserves handshake metadata without claiming certificate validation, signature verification, 1-RTT, or production handshake support.
 
 ## Trace Links
 

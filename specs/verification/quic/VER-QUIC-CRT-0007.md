@@ -13,7 +13,7 @@ This slice verifies the narrow Handshake packet-flow coordinator and transcript-
 
 ## Verification Method
 
-Focused requirement-home tests and inspection evidence for the narrow Handshake coordinator and its runtime integration.
+Focused requirement-home tests and inspection evidence for the narrow Handshake coordinator, transcript-progress owner, and their runtime integration.
 
 ## Preconditions
 
@@ -22,14 +22,14 @@ Focused requirement-home tests and inspection evidence for the narrow Handshake 
 
 ## Procedure or Approach
 
-- Run the CRT requirement-home tests that cover fragmented transcript progression, truncation and incomplete-message handling, repeated progression rejection, malformed transcript rejection, and the bootstrap-to-confirmed deterministic handshake smoke path.
+- Run the CRT requirement-home tests that cover fragmented transcript progression, role-specific message parsing, truncation and incomplete-message handling, repeated progression rejection, malformed transcript rejection, and the no-auto-confirm runtime integration path.
 - Run the RFC9001 requirement-home tests that cover inbound Handshake packet processing, outbound Handshake packet emission, malformed-frame rejection, tampered-packet rejection, and wrong-material rejection.
-- Run the bridge-driver and runtime integration tests that prove handshake confirmation and handshake key discard still route through the runtime reducer.
+- Run the bridge-driver and runtime integration tests that prove transcript progress still routes through the runtime reducer while handshake confirmation remains a separate policy gate.
 - Inspect the coordinator and runtime implementation to confirm they stay in the main library and do not introduce a polling loop or native TLS fallback.
 
 ## Expected Result
 
-Inbound Handshake packets can be opened with the existing handshake packet-protection helper, ordered Handshake CRYPTO fragments can be accumulated by the transcript-progress owner, peer transport parameters can be staged only after a complete deterministic transcript has been parsed, outbound CRYPTO bytes can be drained from the bridge driver and packaged as protected Handshake packets, malformed or tampered packets are rejected, and handshake confirmation plus handshake key discard continue to flow through the runtime without implying 1-RTT or full TLS support.
+Inbound Handshake packets can be opened with the existing handshake packet-protection helper, ordered Handshake CRYPTO fragments can be accumulated by the transcript-progress owner, the minimal role-aware peer handshake progression can be parsed and preserved message by message, peer transport parameters can be staged only from ClientHello in server role or EncryptedExtensions in client role, outbound CRYPTO bytes can be drained from the bridge driver and packaged as protected Handshake packets, malformed or tampered packets are rejected, and the runtime still keeps handshake confirmation policy-gated without implying 1-RTT, certificate validation, signature verification, or full TLS support.
 
 ## Evidence
 

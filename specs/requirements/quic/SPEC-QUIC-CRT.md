@@ -828,3 +828,17 @@ Notes:
 - This slice is intentionally server-role only and permanent. It does not add `EncryptedExtensions`, certificate flight, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
 - The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.
 - Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist.
+
+## REQ-QUIC-CRT-0113 Emit local server EncryptedExtensions on the permanent handshake seam
+In the server role, the library MUST emit one local `EncryptedExtensions` message for the same supported TLS 1.3 subset using the local QUIC transport parameters only after the supported `ClientHello` has been accepted, the local `ServerHello` has been published, Handshake keys are available, and the local transport parameters are available, append that local `EncryptedExtensions` at the correct transcript boundary immediately after the local `ServerHello`, surface the local `EncryptedExtensions` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after the local `ServerHello` bytes, and deterministically reject premature, repeated, conflicting, or malformed local `EncryptedExtensions` progression through the existing fatal/update path.
+
+Trace:
+- Source Refs:
+  - RFC 8446 Sections 4.1.2, 4.1.3, and 7.1
+  - RFC 9001 Sections 5 and 8
+  - connection-runtime-state-machine.md
+
+Notes:
+- This slice extends the permanent server-role crypto floor and remains server-role only. It does not add certificate flight, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
+- The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.
+- Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist.

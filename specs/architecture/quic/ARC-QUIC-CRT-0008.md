@@ -4,18 +4,17 @@
 
 ## Purpose
 
-Describe the permanent client-only managed TLS 1.3 key-schedule seam that lives behind the existing transcript-progress and bridge-driver boundary, derives real handshake secrets and packet-protection material for the supported subset `TLS_AES_128_GCM_SHA256` over `secp256r1`, verifies the peer leaf `CertificateVerify` proof path, verifies peer `Finished`, and gates peer transport-parameter commit on both `PeerCertificateVerifyVerified` and `PeerFinishedVerified` without claiming certificate trust or full handshake support.
+Describe the permanent client-only managed TLS 1.3 key-schedule seam that lives behind the existing transcript-progress and bridge-driver boundary, derives real handshake secrets and packet-protection material for the supported subset TLS_AES_128_GCM_SHA256 over secp256r1, verifies the peer leaf CertificateVerify proof path, verifies peer Finished, and publishes proof states that a later local acceptance seam consumes without claiming certificate trust or full handshake support.
 
 ## Requirements Satisfied
 
 - REQ-QUIC-CRT-0103
 - REQ-QUIC-CRT-0108
-- REQ-QUIC-CRT-0109
 - REQ-QUIC-CRT-0110
 
 ## Design Summary
 
-The connection runtime keeps transcript progression and handshake cryptography as separate but coordinated managed owners. The existing transcript-progress owner remains responsible for ordered Handshake CRYPTO fragments, handshake message parsing, and staged transport-parameter metadata. A new permanent key-schedule owner lives behind the same bridge seam and consumes the local client ephemeral share, the peer `ServerHello` key share, and the transcript hash to derive handshake traffic secrets, handshake packet-protection material, and the peer proof states for the explicit client-only subset. That owner parses the peer Certificate message only as far as needed to verify a single supported leaf certificate proof path and then verifies the peer Finished against the resulting transcript state. The bridge publishes explicit updates when handshake open/protect keys become available, surfaces `PeerCertificateVerifyVerified` only after the supported CertificateVerify proof succeeds, surfaces `PeerFinishedVerified` only after peer Finished verification succeeds, and keeps `PeerHandshakeTranscriptCompleted` as a transcript milestone rather than a commit gate. Server-role commit remains unavailable until equivalent cryptographic coverage exists.
+The connection runtime keeps transcript progression and handshake cryptography as separate but coordinated managed owners. The existing transcript-progress owner remains responsible for ordered Handshake CRYPTO fragments, handshake message parsing, and staged transport-parameter metadata. A new permanent key-schedule owner lives behind the same bridge seam and consumes the local client ephemeral share, the peer ServerHello key share, and the transcript hash to derive handshake traffic secrets, handshake packet-protection material, and the peer proof states for the explicit client-only subset. That owner parses the peer Certificate message only as far as needed to verify a single supported leaf certificate proof path and then verifies the peer Finished against the resulting transcript state. The bridge publishes explicit updates when handshake open/protect keys become available, surfaces PeerCertificateVerifyVerified only after the supported CertificateVerify proof succeeds, surfaces PeerFinishedVerified only after peer Finished verification succeeds, and keeps PeerHandshakeTranscriptCompleted as a transcript milestone rather than a commit gate. A later local acceptance policy seam consumes those proof states before peer transport-parameter commit. Server-role commit remains unavailable until equivalent cryptographic coverage exists.
 
 ## Key Components
 
@@ -31,9 +30,10 @@ The connection runtime keeps transcript progression and handshake cryptography a
 ## Risks
 
 - The key-schedule owner must stay permanently narrow and client-only; it must not grow into a general TLS subsystem.
-- The supported subset must stay pinned to `TLS_AES_128_GCM_SHA256` over `secp256r1` until a later requirement explicitly widens it.
-- `PeerCertificateVerifyVerified` must not be mistaken for certificate trust, certificate-path validation, hostname validation, or identity authentication.
-- `PeerFinishedVerified` must not be mistaken for certificate trust, identity authentication, or `CertificateVerify` signature verification.
+- The supported subset must stay pinned to TLS_AES_128_GCM_SHA256 over secp256r1 until a later requirement explicitly widens it.
+- PeerCertificateVerifyVerified must not be mistaken for certificate trust, certificate-path validation, hostname validation, or identity authentication.
+- PeerCertificatePolicyAccepted must not be mistaken for certificate trust, certificate-path validation, hostname validation, or revocation.
+- PeerFinishedVerified must not be mistaken for certificate trust, identity authentication, or CertificateVerify signature verification.
 - Unsupported or malformed cipher-suite or key-share input must fail deterministically rather than silently falling back.
 
 ## Related Code And Tests
@@ -48,7 +48,6 @@ The connection runtime keeps transcript progression and handshake cryptography a
 - [`src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs`](../../../src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs)
-- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0110.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0110.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0001.cs)

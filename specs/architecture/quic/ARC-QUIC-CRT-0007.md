@@ -13,7 +13,7 @@ Describe the narrow main-library handshake-flow seam that opens inbound Handshak
 
 ## Design Summary
 
-The connection runtime owns a narrow Handshake coordinator rather than a full TLS stack. Inbound Handshake packets are opened with the existing Handshake packet protection helper, parsed for CRYPTO and padding frames, and forwarded into the existing bridge-driver buffering path. Behind that seam, a small transcript-progress owner consumes ordered Handshake CRYPTO fragments incrementally, tracks ingress cursor plus partial transcript bytes, stages peer transport parameters only after a complete deterministic EncryptedExtensions-style message has been parsed, and latches terminal transcript failure without claiming broader TLS support. Outbound CRYPTO bytes are drained from the bridge driver, formatted as CRYPTO frames, wrapped in Handshake packets, protected with the same Handshake packet protection helper, and surfaced as connection-owned send-datagram effects. The slice intentionally reuses the existing packet codec, bridge driver, and runtime reducer instead of adding polling or a parallel TLS backend.
+The connection runtime owns a narrow Handshake coordinator rather than a full TLS stack. Inbound Handshake packets are opened with the existing Handshake packet protection helper, parsed for CRYPTO and padding frames, and forwarded into the existing bridge-driver buffering path. Behind that seam, a small transcript-progress owner consumes ordered Handshake CRYPTO fragments incrementally, tracks ingress cursor plus partial transcript bytes, parses the minimal role-aware TLS 1.3 peer handshake progression (ClientHello for server role; ServerHello, EncryptedExtensions, Certificate, CertificateVerify, and Finished for client role), preserves handshake message type and length plus the selected ServerHello cipher suite and transcript hash, stages peer transport parameters only from the correct role-specific message, and latches terminal transcript failure without auto-committing peer parameters or confirming the handshake. Outbound CRYPTO bytes are drained from the bridge driver, formatted as CRYPTO frames, wrapped in Handshake packets, protected with the same Handshake packet protection helper, and surfaced as connection-owned send-datagram effects. The slice intentionally reuses the existing packet codec, bridge driver, and runtime reducer instead of adding polling or a parallel TLS backend.
 
 ## Key Components
 
@@ -30,7 +30,7 @@ The connection runtime owns a narrow Handshake coordinator rather than a full TL
 
 - The coordinator and transcript-progress owner must remain narrow runtime helpers and must not become a TLS implementation by another name.
 - Handshake send effects must respect the active path's amplification budget and should not imply 1-RTT availability.
-- The packet glue should continue to reject malformed frame layouts, wrong protection material, unsupported packet spaces, and unsupported transcript progress.
+- The packet glue should continue to reject malformed frame layouts, wrong protection material, unsupported packet spaces, unsupported transcript progress, and any invalid handshake ordering or duplicate transport-parameter placement.
 
 ## Related Code And Tests
 

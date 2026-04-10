@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0011",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC Server-Role EncryptedExtensions Continuation Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Extend the server role from the managed ServerHello floor into a permanent local EncryptedExtensions continuation that uses local transport parameters after handshake keys are available, appends the local EncryptedExtensions bytes at the correct transcript boundary, and exposes the continuation through the existing library seam while leaving commit and wider handshake work unavailable.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0011"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0011"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0113"
+  ],
+  "planned_changes": "- Extend the server-role handshake continuation so it formats one local EncryptedExtensions message from the local transport parameters only after the supported ClientHello has been accepted, the local ServerHello has been published, and Handshake keys are available.\n- Reuse the existing bridge-owned transcript seam to append the local EncryptedExtensions bytes immediately after the local ServerHello and expose the bytes through the existing Handshake CryptoDataAvailable path with deterministic offset semantics.\n- Keep server-role peer transport-parameter staging from ClientHello intact, keep server-role commit unavailable, and reject premature, repeated, conflicting, or malformed local EncryptedExtensions progression deterministically through the existing fatal/update path.\n- Add focused requirement-home tests for the positive EncryptedExtensions continuation, early emission prevention, local transport-parameter gating, deterministic failure cases, repeated/conflicting progression rejection, transcript append and offset semantics, and the continued absence of server-role commit.\n- Do not add certificate flight, server Finished, endpoint-host wiring, harness changes, or interop-runner handshake enablement in this slice.",
+  "verification_plan": "Run the updated CRT requirement-home tests that cover the positive EncryptedExtensions continuation path, deterministic malformed or unsupported progression rejection, outbound local EncryptedExtensions availability, offset semantics, local transport-parameter availability gating, and transcript append behavior, then run the relevant solution build and targeted test pass for the main library and tests project.",
+  "completion_notes": "The resulting slice is intentionally smaller than full server handshake support. It proves only that the library can continue from a supported peer ClientHello and local ServerHello into a local EncryptedExtensions flight on the same handshake seam while leaving commit and wider handshake flight ownership unavailable.",
+  "out_of_scope": [
+    "server certificate flight, server Finished, client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, harness changes, interop-runner handshake support, or any native TLS / QUIC fallback."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs)"
+    }
+  ]
+}
