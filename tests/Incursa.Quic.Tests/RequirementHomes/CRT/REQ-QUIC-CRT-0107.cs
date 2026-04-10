@@ -274,11 +274,16 @@ public sealed class REQ_QUIC_CRT_0107
 
     private static byte[] CreateClientHelloTranscript(QuicTransportParameters transportParameters)
     {
+        byte[] supportedVersionsExtension = CreateClientSupportedVersionsExtension();
+        byte[] keyShareExtension = CreateClientKeyShareExtension();
         byte[] transportParametersExtension = CreateTransportParametersExtension(
             transportParameters,
             QuicTransportParameterRole.Client);
 
-        byte[] body = new byte[43 + transportParametersExtension.Length];
+        int extensionsLength = supportedVersionsExtension.Length
+            + keyShareExtension.Length
+            + transportParametersExtension.Length;
+        byte[] body = new byte[43 + extensionsLength];
         int index = 0;
 
         WriteUInt16(body.AsSpan(index, 2), 0x0303);
@@ -297,8 +302,12 @@ public sealed class REQ_QUIC_CRT_0107
         body[index++] = 1;
         body[index++] = 0x00;
 
-        WriteUInt16(body.AsSpan(index, 2), (ushort)transportParametersExtension.Length);
+        WriteUInt16(body.AsSpan(index, 2), (ushort)extensionsLength);
         index += 2;
+        supportedVersionsExtension.CopyTo(body.AsSpan(index));
+        index += supportedVersionsExtension.Length;
+        keyShareExtension.CopyTo(body.AsSpan(index));
+        index += keyShareExtension.Length;
         transportParametersExtension.CopyTo(body.AsSpan(index));
 
         return WrapHandshakeMessage(QuicTlsHandshakeMessageType.ClientHello, body);
@@ -367,6 +376,55 @@ public sealed class REQ_QUIC_CRT_0107
         });
 
         ECParameters parameters = serverKeyPair.ExportParameters(true);
+        byte[] keyShare = new byte[1 + (2 * 32)];
+        keyShare[0] = 0x04;
+        parameters.Q.X!.CopyTo(keyShare, 1);
+        parameters.Q.Y!.CopyTo(keyShare, 33);
+        return keyShare;
+    }
+
+    private static byte[] CreateClientSupportedVersionsExtension()
+    {
+        byte[] extension = new byte[7];
+        int index = 0;
+        WriteUInt16(extension.AsSpan(index, 2), 0x002b);
+        index += 2;
+        WriteUInt16(extension.AsSpan(index, 2), 3);
+        index += 2;
+        extension[index++] = 2;
+        WriteUInt16(extension.AsSpan(index, 2), 0x0304);
+        return extension;
+    }
+
+    private static byte[] CreateClientKeyShareExtension()
+    {
+        byte[] keyShare = CreateClientKeyShare();
+        byte[] extension = new byte[2 + 2 + 2 + 2 + 2 + keyShare.Length];
+        int index = 0;
+        WriteUInt16(extension.AsSpan(index, 2), 0x0033);
+        index += 2;
+        WriteUInt16(extension.AsSpan(index, 2), (ushort)(2 + 2 + 2 + keyShare.Length));
+        index += 2;
+        WriteUInt16(extension.AsSpan(index, 2), (ushort)(2 + 2 + keyShare.Length));
+        index += 2;
+        WriteUInt16(extension.AsSpan(index, 2), (ushort)QuicTlsNamedGroup.Secp256r1);
+        index += 2;
+        WriteUInt16(extension.AsSpan(index, 2), (ushort)keyShare.Length);
+        index += 2;
+        keyShare.CopyTo(extension.AsSpan(index, keyShare.Length));
+        return extension;
+    }
+
+    private static byte[] CreateClientKeyShare()
+    {
+        using ECDiffieHellman clientKeyPair = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
+        clientKeyPair.ImportParameters(new ECParameters
+        {
+            Curve = ECCurve.NamedCurves.nistP256,
+            D = CreateScalar(1),
+        });
+
+        ECParameters parameters = clientKeyPair.ExportParameters(true);
         byte[] keyShare = new byte[1 + (2 * 32)];
         keyShare[0] = 0x04;
         parameters.Q.X!.CopyTo(keyShare, 1);

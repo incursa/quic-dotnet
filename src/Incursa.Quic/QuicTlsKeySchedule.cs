@@ -7,7 +7,7 @@ using System.Text;
 namespace Incursa.Quic;
 
 /// <summary>
-/// Owns the narrow managed TLS 1.3 key schedule slice for the client role.
+/// Owns the narrow managed TLS 1.3 key schedule slice for the current endpoint role.
 /// </summary>
 internal sealed class QuicTlsKeySchedule
 {
@@ -30,6 +30,14 @@ internal sealed class QuicTlsKeySchedule
     private const int UInt24HighByteIndex = 0;
     private const int UInt24MidByteIndex = 1;
     private const int UInt24LowByteIndex = 2;
+    private const int TlsRandomLength = 32;
+    private const byte NullCompressionMethod = 0x00;
+    private const int MaximumSessionIdLength = 32;
+    private const ushort TlsLegacyVersion = 0x0303;
+    private const ushort Tls13Version = 0x0304;
+    private const ushort SupportedVersionsExtensionType = 0x002b;
+    private const ushort KeyShareExtensionType = 0x0033;
+    private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
     private const int CertificateVerifyContextPrefixLength = 64;
     private const int EcdsaP256KeySizeBits = 256;
     private const byte CertificateVerifySignedDataPrefixByte = 0x20;
@@ -47,6 +55,7 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] EmptyTranscriptHash = SHA256.HashData(Array.Empty<byte>());
     private static readonly QuicAeadUsageLimits HandshakeUsageLimits = new(64, 128);
 
+    private readonly QuicTlsRole role;
     private readonly ECDiffieHellman localKeyPair;
     private readonly QuicTlsCipherSuiteProfile profile;
     private readonly ArrayBufferWriter<byte> transcriptBytes = new();
@@ -64,7 +73,19 @@ internal sealed class QuicTlsKeySchedule
     /// </summary>
     /// <param name="localPrivateKey">An optional P-256 private scalar to import for deterministic tests.</param>
     internal QuicTlsKeySchedule(ReadOnlyMemory<byte> localPrivateKey = default)
+        : this(QuicTlsRole.Client, localPrivateKey)
     {
+    }
+
+    /// <summary>
+    /// Creates the managed TLS key schedule for the current role, optionally seeded with a deterministic local private key for tests.
+    /// </summary>
+    /// <param name="role">The endpoint role that owns the key schedule.</param>
+    /// <param name="localPrivateKey">An optional P-256 private scalar to import for deterministic tests.</param>
+    internal QuicTlsKeySchedule(QuicTlsRole role, ReadOnlyMemory<byte> localPrivateKey = default)
+    {
+        this.role = role;
+
         if (!QuicTlsCipherSuiteProfile.TryGet(QuicTlsCipherSuite.TlsAes128GcmSha256, out profile))
         {
             throw new InvalidOperationException("The supported TLS 1.3 profile is unavailable.");
@@ -91,7 +112,7 @@ internal sealed class QuicTlsKeySchedule
     }
 
     /// <summary>
-    /// Gets the public local ephemeral key share associated with the current client key pair.
+    /// Gets the public local ephemeral key share associated with the current role's key pair.
     /// </summary>
     public ReadOnlyMemory<byte> LocalKeyShare => localKeyShare;
 
@@ -117,7 +138,7 @@ internal sealed class QuicTlsKeySchedule
     {
         verifyData = Array.Empty<byte>();
 
-        if (serverHandshakeTrafficSecret is null)
+        if (role != QuicTlsRole.Client || serverHandshakeTrafficSecret is null)
         {
             return false;
         }
@@ -152,6 +173,15 @@ internal sealed class QuicTlsKeySchedule
             return Array.Empty<QuicTlsStateUpdate>();
         }
 
+        if (role == QuicTlsRole.Server)
+        {
+            return step.HandshakeMessageType.Value switch
+            {
+                QuicTlsHandshakeMessageType.ClientHello => ProcessClientHello(step),
+                _ => BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription),
+            };
+        }
+
         return step.HandshakeMessageType.Value switch
         {
             QuicTlsHandshakeMessageType.ServerHello => ProcessServerHello(step),
@@ -161,6 +191,60 @@ internal sealed class QuicTlsKeySchedule
             QuicTlsHandshakeMessageType.Finished => ProcessFinished(step),
             _ => AppendTranscriptMessage(step.HandshakeMessageBytes.Span),
         };
+    }
+
+    private IReadOnlyList<QuicTlsStateUpdate> ProcessClientHello(QuicTlsTranscriptStep step)
+    {
+        if (handshakeSecretsDerived
+            || step.Kind != QuicTlsTranscriptStepKind.PeerTransportParametersStaged
+            || step.TranscriptPhase != QuicTlsTranscriptPhase.Completed
+            || step.HandshakeMessageType != QuicTlsHandshakeMessageType.ClientHello
+            || step.HandshakeMessageLength is null
+            || step.TransportParameters is null
+            || step.SelectedCipherSuite != profile.CipherSuite
+            || step.TranscriptHashAlgorithm != profile.TranscriptHashAlgorithm
+            || step.NamedGroup != profile.NamedGroup
+            || step.KeyShare.IsEmpty)
+        {
+            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+        }
+
+        AppendTranscriptMessage(step.HandshakeMessageBytes.Span);
+        if (!TryCreateServerHello(step.HandshakeMessageBytes.Span, out byte[] serverHelloBytes))
+        {
+            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+        }
+
+        AppendTranscriptMessage(serverHelloBytes);
+        ReadOnlySpan<byte> transcriptHash = HashTranscript();
+        if (!TryDeriveHandshakeTrafficSecrets(
+                step.KeyShare.Span,
+                transcriptHash,
+                protectWithClientTrafficSecret: false,
+                out QuicTlsPacketProtectionMaterial openMaterial,
+                out QuicTlsPacketProtectionMaterial protectMaterial))
+        {
+            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+        }
+
+        handshakeSecretsDerived = true;
+        return
+        [
+            new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.CryptoDataAvailable,
+                QuicTlsEncryptionLevel.Handshake,
+                CryptoDataOffset: 0,
+                CryptoData: serverHelloBytes),
+            new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
+                PacketProtectionMaterial: openMaterial),
+            new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable,
+                PacketProtectionMaterial: protectMaterial),
+            new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.KeysAvailable,
+                QuicTlsEncryptionLevel.Handshake),
+        ];
     }
 
     private IReadOnlyList<QuicTlsStateUpdate> ProcessServerHello(QuicTlsTranscriptStep step)
@@ -181,13 +265,29 @@ internal sealed class QuicTlsKeySchedule
         AppendTranscriptMessage(step.HandshakeMessageBytes.Span);
         ReadOnlySpan<byte> transcriptHash = HashTranscript();
 
-        if (!TryDeriveHandshakeTrafficSecrets(step.KeyShare.Span, transcriptHash, out IReadOnlyList<QuicTlsStateUpdate> updates))
+        if (!TryDeriveHandshakeTrafficSecrets(
+                step.KeyShare.Span,
+                transcriptHash,
+                protectWithClientTrafficSecret: true,
+                out QuicTlsPacketProtectionMaterial openMaterial,
+                out QuicTlsPacketProtectionMaterial protectMaterial))
         {
             return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
         }
 
         handshakeSecretsDerived = true;
-        return updates;
+        return
+        [
+            new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
+                PacketProtectionMaterial: openMaterial),
+            new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable,
+                PacketProtectionMaterial: protectMaterial),
+            new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.KeysAvailable,
+                QuicTlsEncryptionLevel.Handshake),
+        ];
     }
 
     private IReadOnlyList<QuicTlsStateUpdate> ProcessCertificate(QuicTlsTranscriptStep step)
@@ -257,9 +357,12 @@ internal sealed class QuicTlsKeySchedule
     private bool TryDeriveHandshakeTrafficSecrets(
         ReadOnlySpan<byte> peerKeyShareBytes,
         ReadOnlySpan<byte> transcriptHash,
-        out IReadOnlyList<QuicTlsStateUpdate> updates)
+        bool protectWithClientTrafficSecret,
+        out QuicTlsPacketProtectionMaterial openMaterial,
+        out QuicTlsPacketProtectionMaterial protectMaterial)
     {
-        updates = Array.Empty<QuicTlsStateUpdate>();
+        openMaterial = default;
+        protectMaterial = default;
 
         if (peerKeyShareBytes.Length != UncompressedPointLength || peerKeyShareBytes[0] != UncompressedPointFormat)
         {
@@ -290,30 +393,22 @@ internal sealed class QuicTlsKeySchedule
         byte[] earlySecret = HkdfExtract(new byte[HashLength], []);
         byte[] derivedSecret = HkdfExpandLabel(earlySecret, DerivedLabel, EmptyTranscriptHash, HashLength);
         byte[] handshakeSecret = HkdfExtract(derivedSecret, sharedSecret);
+        byte[] clientHandshakeTrafficSecret = HkdfExpandLabel(handshakeSecret, ClientHandshakeTrafficLabel, transcriptHash, HashLength);
         serverHandshakeTrafficSecret = HkdfExpandLabel(handshakeSecret, ServerHandshakeTrafficLabel, transcriptHash, HashLength);
 
-        if (!TryCreateHandshakePacketProtectionMaterial(
-            HkdfExpandLabel(handshakeSecret, ClientHandshakeTrafficLabel, transcriptHash, HashLength),
-            out QuicTlsPacketProtectionMaterial protectMaterial)
-            || !TryCreateHandshakePacketProtectionMaterial(
-                serverHandshakeTrafficSecret,
-                out QuicTlsPacketProtectionMaterial openMaterial))
+        ReadOnlySpan<byte> openTrafficSecret = protectWithClientTrafficSecret
+            ? serverHandshakeTrafficSecret
+            : clientHandshakeTrafficSecret;
+        ReadOnlySpan<byte> protectTrafficSecret = protectWithClientTrafficSecret
+            ? clientHandshakeTrafficSecret
+            : serverHandshakeTrafficSecret;
+
+        if (!TryCreateHandshakePacketProtectionMaterial(openTrafficSecret, out openMaterial)
+            || !TryCreateHandshakePacketProtectionMaterial(protectTrafficSecret, out protectMaterial))
         {
             return false;
         }
 
-        updates =
-        [
-            new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
-                PacketProtectionMaterial: openMaterial),
-            new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable,
-                PacketProtectionMaterial: protectMaterial),
-            new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.KeysAvailable,
-                QuicTlsEncryptionLevel.Handshake),
-        ];
         return true;
     }
 
@@ -335,6 +430,106 @@ internal sealed class QuicTlsKeySchedule
             headerProtectionKey,
             HandshakeUsageLimits,
             out material);
+    }
+
+    private bool TryCreateServerHello(ReadOnlySpan<byte> clientHelloBytes, out byte[] serverHelloBytes)
+    {
+        serverHelloBytes = Array.Empty<byte>();
+
+        if (!TryParseClientHelloSessionId(clientHelloBytes, out byte[] sessionId))
+        {
+            return false;
+        }
+
+        byte[] serverRandom = SHA256.HashData([.. localKeyShare, .. clientHelloBytes]);
+        int sessionIdLength = sessionId.Length;
+        int keyShareExtensionLength = UInt16Length + UInt16Length + localKeyShare.Length;
+        int extensionsLength =
+            (UInt16Length + UInt16Length + UInt16Length)
+            + (UInt16Length + UInt16Length + keyShareExtensionLength);
+        byte[] body = new byte[
+            UInt16Length
+            + TlsRandomLength
+            + 1
+            + sessionIdLength
+            + UInt16Length
+            + 1
+            + UInt16Length
+            + extensionsLength];
+
+        int index = 0;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), TlsLegacyVersion);
+        index += UInt16Length;
+        serverRandom.CopyTo(body, index);
+        index += TlsRandomLength;
+
+        body[index++] = checked((byte)sessionIdLength);
+        if (sessionIdLength > 0)
+        {
+            sessionId.CopyTo(body, index);
+            index += sessionIdLength;
+        }
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), (ushort)profile.CipherSuite);
+        index += UInt16Length;
+        body[index++] = NullCompressionMethod;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)extensionsLength));
+        index += UInt16Length;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedVersionsExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), UInt16Length);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Tls13Version);
+        index += UInt16Length;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), KeyShareExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)keyShareExtensionLength));
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Secp256r1NamedGroup);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)localKeyShare.Length));
+        index += UInt16Length;
+        localKeyShare.CopyTo(body, index);
+
+        serverHelloBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.ServerHello, body);
+        return true;
+    }
+
+    private static bool TryParseClientHelloSessionId(ReadOnlySpan<byte> clientHelloBytes, out byte[] sessionId)
+    {
+        sessionId = Array.Empty<byte>();
+
+        if (clientHelloBytes.Length <= HandshakeHeaderLength
+            || clientHelloBytes[0] != (byte)QuicTlsHandshakeMessageType.ClientHello)
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> clientHelloBody = clientHelloBytes.Slice(HandshakeHeaderLength);
+        int index = 0;
+        if (!TryReadUInt16(clientHelloBody, ref index, out ushort legacyVersion)
+            || legacyVersion != TlsLegacyVersion
+            || !TrySkipBytes(clientHelloBody, ref index, TlsRandomLength)
+            || !TryReadUInt8(clientHelloBody, ref index, out int sessionIdLength)
+            || sessionIdLength > MaximumSessionIdLength
+            || !TrySkipBytes(clientHelloBody, ref index, sessionIdLength))
+        {
+            return false;
+        }
+
+        sessionId = clientHelloBody.Slice(index - sessionIdLength, sessionIdLength).ToArray();
+        return true;
+    }
+
+    private static byte[] WrapHandshakeMessage(QuicTlsHandshakeMessageType messageType, ReadOnlySpan<byte> body)
+    {
+        byte[] transcript = new byte[HandshakeHeaderLength + body.Length];
+        transcript[0] = (byte)messageType;
+        WriteUInt24(transcript.AsSpan(1, UInt24Length), body.Length);
+        body.CopyTo(transcript.AsSpan(HandshakeHeaderLength));
+        return transcript;
     }
 
     private bool TryParsePeerLeafCertificate(
@@ -638,6 +833,13 @@ internal sealed class QuicTlsKeySchedule
         return (uint)((source[UInt24HighByteIndex] << UInt24HighByteShift)
             | (source[UInt24MidByteIndex] << UInt24MidByteShift)
             | source[UInt24LowByteIndex]);
+    }
+
+    private static void WriteUInt24(Span<byte> destination, int value)
+    {
+        destination[UInt24HighByteIndex] = (byte)(value >> UInt24HighByteShift);
+        destination[UInt24MidByteIndex] = (byte)(value >> UInt24MidByteShift);
+        destination[UInt24LowByteIndex] = (byte)value;
     }
 
     private static byte[] ExportUncompressedPoint(ECParameters parameters)

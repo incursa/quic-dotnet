@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0010",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Server-Role Managed TLS Crypto Floor Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests and inspection evidence for the narrow server-role ClientHello to ServerHello crypto floor behind the existing transcript-progress and bridge-driver seam.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0010",
+    "WI-QUIC-CRT-0010"
+  ],
+  "expected_result": "The server role accepts only the supported ClientHello subset for TLS 1.3 with TLS_AES_128_GCM_SHA256 over secp256r1, preserves staged peer transport parameters from that ClientHello, constructs one local ServerHello, exposes those bytes through the existing Handshake crypto-output seam, publishes explicit Handshake open/protect material and Handshake key availability only after the ClientHello plus ServerHello transcript boundary exists, rejects malformed or unsupported ClientHello progression deterministically, and still leaves server-role commit and wider handshake support unavailable.",
+  "verifies": [
+    "REQ-QUIC-CRT-0103",
+    "REQ-QUIC-CRT-0107",
+    "REQ-QUIC-CRT-0112"
+  ],
+  "procedure": [
+    "Run the CRT requirement-home tests that cover the supported server-role ClientHello path, outbound ServerHello exposure, Handshake key-availability publication ordering, malformed framing rejection, unsupported version or cipher-suite rejection, unsupported named-group or key-share rejection, and repeated or conflicting progression rejection.",
+    "Run the RFC9001 requirement-home tests that still cover outbound Handshake packet emission, Handshake packet protection, transport-parameter staging, and deterministic rejection of malformed Handshake packet input on the bridge seam.",
+    "Inspect the bridge driver, transcript-progress owner, and key-schedule implementation to confirm the slice stays inside the main library seam, keeps runtime or host wiring unchanged, keeps commit unavailable, and does not add native TLS fallback."
+  ],
+  "scope": "This slice verifies only the permanent server-role crypto floor from peer ClientHello through local ServerHello and Handshake packet-protection material availability. It does not prove EncryptedExtensions, certificate flight, server Finished, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The tests project can access internal library seams through the existing friend assembly relationship."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicTlsTranscriptProgress.cs\n- src/Incursa.Quic/QuicTlsKeySchedule.cs\n- src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
+    }
+  ]
+}

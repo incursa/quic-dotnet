@@ -149,31 +149,6 @@ public sealed class REQ_QUIC_CRT_0109
         Assert.Empty(driver.CommitPeerTransportParameters(peerTransportParameters));
     }
 
-    [Fact]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
-    public void ServerRoleCommitRemainsUnavailableWithoutEquivalentCryptoCoverage()
-    {
-        QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
-        QuicTransportParameters peerTransportParameters = CreateClientTransportParameters();
-        QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
-
-        Assert.NotEmpty(driver.StartHandshake(localTransportParameters));
-
-        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
-            QuicTlsEncryptionLevel.Handshake,
-            CreateClientHelloTranscript(peerTransportParameters));
-
-        Assert.Single(updates);
-        Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, updates[0].Kind);
-        Assert.Equal(QuicTlsHandshakeMessageType.ClientHello, updates[0].HandshakeMessageType);
-        Assert.NotNull(updates[0].TransportParameters);
-        Assert.False(driver.State.PeerFinishedVerified);
-        Assert.False(driver.State.PeerHandshakeTranscriptCompleted);
-        Assert.False(driver.State.CanCommitPeerTransportParameters(peerTransportParameters));
-        Assert.Empty(driver.CommitPeerTransportParameters(peerTransportParameters));
-    }
-
     private static (
         byte[] ServerHelloTranscript,
         byte[] EncryptedExtensionsTranscript,
@@ -287,16 +262,6 @@ public sealed class REQ_QUIC_CRT_0109
         };
     }
 
-    private static QuicTransportParameters CreateClientTransportParameters()
-    {
-        return new QuicTransportParameters
-        {
-            MaxIdleTimeout = 21,
-            DisableActiveMigration = true,
-            InitialSourceConnectionId = [0x01, 0x02, 0x03],
-        };
-    }
-
     private static QuicTransportParameters CreateServerTransportParameters()
     {
         return new QuicTransportParameters
@@ -315,38 +280,6 @@ public sealed class REQ_QUIC_CRT_0109
             },
             ActiveConnectionIdLimit = 4,
         };
-    }
-
-    private static byte[] CreateClientHelloTranscript(QuicTransportParameters transportParameters)
-    {
-        byte[] transportParametersExtension = CreateTransportParametersExtension(
-            transportParameters,
-            QuicTransportParameterRole.Client);
-
-        byte[] body = new byte[43 + transportParametersExtension.Length];
-        int index = 0;
-
-        WriteUInt16(body.AsSpan(index, 2), 0x0303);
-        index += 2;
-
-        CreateSequentialBytes(0x10, 32).CopyTo(body.AsSpan(index, 32));
-        index += 32;
-
-        body[index++] = 0;
-
-        WriteUInt16(body.AsSpan(index, 2), 2);
-        index += 2;
-        WriteUInt16(body.AsSpan(index, 2), (ushort)QuicTlsCipherSuite.TlsAes128GcmSha256);
-        index += 2;
-
-        body[index++] = 1;
-        body[index++] = 0x00;
-
-        WriteUInt16(body.AsSpan(index, 2), (ushort)transportParametersExtension.Length);
-        index += 2;
-        transportParametersExtension.CopyTo(body.AsSpan(index));
-
-        return WrapHandshakeMessage(QuicTlsHandshakeMessageType.ClientHello, body);
     }
 
     private static byte[] CreateServerHelloTranscript(

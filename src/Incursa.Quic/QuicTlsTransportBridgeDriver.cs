@@ -26,9 +26,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState();
         handshakeTranscriptProgress = new QuicTlsTranscriptProgress(Role);
-        keySchedule = Role == QuicTlsRole.Client
-            ? new QuicTlsKeySchedule(localHandshakePrivateKey)
-            : null;
+        keySchedule = new QuicTlsKeySchedule(Role, localHandshakePrivateKey);
 
         if (!pinnedPeerLeafCertificateSha256.IsEmpty)
         {
@@ -57,7 +55,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     public QuicTransportTlsBridgeState State => bridgeState;
 
     /// <summary>
-    /// Gets the local ephemeral handshake key share used by the managed client-role key schedule slice.
+    /// Gets the local ephemeral handshake key share used by the managed key schedule slice.
     /// </summary>
     internal ReadOnlyMemory<byte> LocalHandshakeKeyShare => keySchedule?.LocalKeyShare ?? ReadOnlyMemory<byte>.Empty;
 
@@ -67,7 +65,10 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         List<QuicTlsStateUpdate> updates = [];
 
         AppendPublishedUpdates(updates, PublishLocalTransportParameters(localTransportParameters));
-        AppendPublishedUpdates(updates, PublishDeterministicHandshakeEgress(localTransportParameters));
+        if (Role == QuicTlsRole.Client)
+        {
+            AppendPublishedUpdates(updates, PublishDeterministicHandshakeEgress(localTransportParameters));
+        }
 
         return updates;
     }
@@ -460,8 +461,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                         step.TranscriptPhase ?? QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage,
                         step.HandshakeMessageType,
                         step.HandshakeMessageLength,
-                        step.SelectedCipherSuite,
-                        step.TranscriptHashAlgorithm,
+                        step.HandshakeMessageType == QuicTlsHandshakeMessageType.ServerHello ? step.SelectedCipherSuite : null,
+                        step.HandshakeMessageType == QuicTlsHandshakeMessageType.ServerHello ? step.TranscriptHashAlgorithm : null,
                         step.TransportParameters);
                     AppendPublishedUpdates(updates, progressedUpdates);
                     if (progressedUpdates.Count == 0)
