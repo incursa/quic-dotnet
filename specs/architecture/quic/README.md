@@ -15,6 +15,7 @@ Each canonical artifact is authored in `.json`.
 ## Current Artifacts
 
 - [`ARC-QUIC-INT-0001.json`](ARC-QUIC-INT-0001.json): canonical interop harness boundary design source
+- [`ARC-QUIC-INT-0002.json`](ARC-QUIC-INT-0002.json): canonical interop endpoint-host shell design source
 - [`ARC-QUIC-RFC8999-0001.json`](ARC-QUIC-RFC8999-0001.json): canonical RFC 8999 design source
 - [`ARC-QUIC-RFC9000-0001.json`](ARC-QUIC-RFC9000-0001.json): canonical RFC 9000 design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
@@ -34,7 +35,6 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0014.json`](ARC-QUIC-CRT-0014.json): canonical CRT server-role Finished continuation design source
 - [`ARC-QUIC-CRT-0015.json`](ARC-QUIC-CRT-0015.json): canonical CRT server-role inbound client Finished proof design source
 - [`ARC-QUIC-CRT-0017.json`](ARC-QUIC-CRT-0017.json): canonical CRT server-role 1-RTT publication design source
-- [`ARC-QUIC-INT-0001.json`](ARC-QUIC-INT-0001.json): canonical interop-harness adapter design source
 
 ## Notes
 

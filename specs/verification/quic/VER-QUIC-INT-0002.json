@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0002",
+  "artifact_type": "verification",
+  "title": "QUIC Interop Endpoint-Host Shell Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "status": "planned",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0002",
+    "WI-QUIC-INT-0002"
+  ],
+  "scope": "Verify the endpoint-host shell, the connected-UDP bridge into the library-owned runtime endpoint, the outbound datagram handoff, and the honesty of route-miss handling.",
+  "preconditions": [
+    "The solution builds successfully with the shell and test-support files included.",
+    "The INT requirement-home tests can be discovered and executed locally.",
+    "Loopback UDP sockets are available in the test environment."
+  ],
+  "verification_method": "Focused requirement-home tests plus build execution and artifact inspection of the shell README and gap ledger.",
+  "verifies": [
+    "REQ-QUIC-INT-0008"
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/InteropEndpointHostTestSupport.cs",
+    "src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic.InteropHarness/README.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md"
+  ],
+  "procedure": [
+    "Run the positive and negative endpoint-host requirement-home tests to confirm routed ingress, outbound datagram emission, and unroutable route misses.",
+    "Build the solution and confirm the harness shell participates in the normal build graph without moving protocol ownership out of the library.",
+    "Inspect the README and gap ledger to confirm unsupported harness testcases remain honest and the new shell does not claim completed handshake support."
+  ],
+  "expected_result": "A real connected UDP socket boundary can now drive one library-owned runtime connection, the runtime can surface an outbound handshake datagram back to the socket layer, and route misses stay unroutable. Unsupported harness testcase dispatch remains `127`.",
+  "status_summary": "This verification slice proves the shell boundary only. Full handshake testcase enablement still depends on runner-side wiring and the remaining Initial/DCID bootstrap work.",
+  "supplemental_sections": [
+    {
+      "heading": "Deferred Coverage",
+      "content": "Actual interop-runner handshake enablement, 0-RTT, 1-RTT data-path ownership, and key update are intentionally deferred. This artifact only proves the shell and its honest failure mode."
+    }
+  ]
+}

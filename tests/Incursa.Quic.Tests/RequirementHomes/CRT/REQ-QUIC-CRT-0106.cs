@@ -93,7 +93,8 @@ public sealed class REQ_QUIC_CRT_0106
             nowTicks: 11);
 
         Assert.True(result.StateChanged);
-        Assert.True(runtime.TlsState.CanCommitPeerTransportParameters(peerTransportParameters));
+        Assert.True(runtime.TlsState.PeerTransportParametersCommitted);
+        Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.PeerTransportParametersCommitted));
         Assert.True(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 11,
@@ -101,17 +102,7 @@ public sealed class REQ_QUIC_CRT_0106
             nowTicks: 11).StateChanged);
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.PeerHandshakeTranscriptCompleted);
-        Assert.True(runtime.TlsState.CanCommitPeerTransportParameters(peerTransportParameters));
 
-        Assert.True(runtime.Transition(
-            new QuicConnectionTlsStateUpdatedEvent(
-                ObservedAtTicks: 11,
-                new QuicTlsStateUpdate(
-                    QuicTlsUpdateKind.PeerTransportParametersCommitted,
-                    TransportParameters: peerTransportParameters)),
-            nowTicks: 11).StateChanged);
-
-        Assert.True(runtime.TlsState.PeerTransportParametersCommitted);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
     }
 

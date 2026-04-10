@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0002",
+  "artifact_type": "work_item",
+  "title": "QUIC Interop Endpoint-Host Shell Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "status": "planned",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0002",
+    "VER-QUIC-INT-0002"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0002"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0008"
+  ],
+  "summary": "Add the smallest honest endpoint-host shell around the library runtime so the interop harness can drive a real connected UDP socket boundary without taking protocol ownership away from Incursa.Quic.",
+  "planned_changes": "- Add a harness-owned `InteropEndpointHost` wrapper around the library-owned endpoint host.\n- Add test support for a connected UDP socket pair and deterministic handshake packet construction.\n- Add positive and negative requirement-home coverage for routed ingress, outbound datagram emission, and unroutable route misses.\n- Update the INT spec, gap ledger, harness README, and test-intent surface so the new shell remains traceable and unsupported cases stay honest.",
+  "verification_plan": "Build the solution, run the new endpoint-host requirement-home tests, confirm the runtime emits a real outbound datagram through the socket boundary, and confirm route misses stay unroutable while unsupported harness testcase dispatch still returns `127`.",
+  "out_of_scope": [
+    "Enabling the QUIC interop runner handshake testcase.",
+    "Moving packet open/protect or TLS ownership into the harness.",
+    "Adding 0-RTT, 1-RTT data-path ownership, key update, or native TLS fallback."
+  ],
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`InteropEndpointHost.cs`](../../../src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs)\n- [`QuicConnectionEndpointHost.cs`](../../../src/Incursa.Quic/QuicConnectionEndpointHost.cs)\n- [`QuicConnectionRuntimeEndpoint.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs)\n- [`QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`InteropEndpointHostTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/InteropEndpointHostTestSupport.cs)\n- [`REQ-QUIC-INT-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs)"
+    }
+  ]
+}

@@ -478,15 +478,12 @@ public sealed class REQ_QUIC_CRT_0103
                 ObservedAtTicks: 11,
                 new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerFinishedVerified)),
             nowTicks: 11).StateChanged);
+        Assert.True(runtime.TlsState.PeerTransportParametersCommitted);
+        Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.PeerTransportParametersCommitted));
         Assert.True(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 11,
                 new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted)),
-            nowTicks: 11).StateChanged);
-        Assert.True(runtime.Transition(
-            new QuicConnectionTlsStateUpdatedEvent(
-                ObservedAtTicks: 11,
-                updates[0]),
             nowTicks: 11).StateChanged);
 
         peerParameters.InitialSourceConnectionId![0] = 0xFF;
@@ -645,16 +642,8 @@ public sealed class REQ_QUIC_CRT_0103
             nowTicks: 11);
 
         Assert.True(peerFinishedVerifiedResult.StateChanged);
-        Assert.True(runtime.TlsState.CanCommitPeerTransportParameters(peerParameters));
-
-        Assert.True(runtime.Transition(
-            new QuicConnectionTlsStateUpdatedEvent(
-                ObservedAtTicks: 11,
-                new QuicTlsStateUpdate(
-                    QuicTlsUpdateKind.PeerTransportParametersCommitted,
-                    TransportParameters: peerParameters)),
-            nowTicks: 11).StateChanged);
         Assert.True(runtime.TlsState.PeerTransportParametersCommitted);
+        Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.PeerTransportParametersCommitted));
 
         QuicConnectionTransitionResult peerHandshakeTranscriptCompletedResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
@@ -841,11 +830,8 @@ public sealed class REQ_QUIC_CRT_0103
                 ObservedAtTicks: 12,
                 new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerFinishedVerified)),
             nowTicks: 12).StateChanged);
-        Assert.True(runtime.Transition(
-            new QuicConnectionTlsStateUpdatedEvent(
-                ObservedAtTicks: 12,
-                commitUpdates[0]),
-            nowTicks: 12).StateChanged);
+        Assert.True(runtime.TlsState.PeerTransportParametersCommitted);
+        Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.PeerTransportParametersCommitted));
         Assert.True(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 12,

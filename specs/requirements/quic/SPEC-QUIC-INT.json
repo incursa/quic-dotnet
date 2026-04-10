@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "SPEC-QUIC-INT",
   "artifact_type": "specification",
-  "title": "QUIC Interop Harness Adapter Contract",
+  "title": "QUIC Interop Harness Adapter and Endpoint Host Contract",
   "domain": "quic",
   "capability": "interop-harness",
   "status": "draft",
@@ -10,12 +10,15 @@
   "related_artifacts": [
     "SPEC-QUIC-CRT",
     "ARC-QUIC-INT-0001",
+    "ARC-QUIC-INT-0002",
     "WI-QUIC-INT-0001",
-    "VER-QUIC-INT-0001"
+    "WI-QUIC-INT-0002",
+    "VER-QUIC-INT-0001",
+    "VER-QUIC-INT-0002"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
-  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, unsupported testcase exit behavior, placeholder diagnostics hooks, Docker packaging, and CI participation.",
-  "context": "Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness only exists to satisfy the process, environment, filesystem, and exit-code contract expected by the QUIC interop runner.",
+  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, unsupported testcase exit behavior, placeholder diagnostics hooks, Docker packaging, and CI participation.",
+  "context": "Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing when a future testcase is ready to use it.",
   "open_questions": [
     "Which application protocol and ALPN should the eventual file-transfer endpoint use once Incursa.Quic can drive real end-to-end interop behavior?",
     "When a real TLS provider is selected, what is the practical path for optional SSLKEYLOGFILE support without leaking provider-specific details into the harness?"
@@ -23,11 +26,11 @@
   "supplemental_sections": [
     {
       "heading": "Current Support Posture",
-      "content": "No end-to-end interop testcases are currently supported. The harness must return exit code `127` for `handshake`, `transfer`, `retry`, and every other unsupported testcase until Incursa.Quic can execute them for real."
+      "content": "No end-to-end interop testcases are currently supported. The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, but the harness must still return exit code `127` for `handshake`, `transfer`, and `retry` until Initial/DCID bootstrap and runner-side testcase enablement exist."
     },
     {
       "heading": "Boundary Split",
-      "content": "Library-owned concerns include connection runtime, sender and recovery ownership, TLS-facing transport state, packet protection lifecycle, handshake confirmation, retransmission planning, timer ownership, path-state ownership, and transport-visible diagnostics hooks. Harness-owned concerns include environment parsing, mounted path mapping, role dispatch, process exit codes, Docker packaging, and startup scripts."
+      "content": "Library-owned concerns include connection runtime, sender and recovery ownership, TLS-facing transport state, packet protection lifecycle, handshake confirmation, retransmission planning, timer ownership, path-state ownership, packet open/protect helpers, and transport-visible diagnostics hooks. Endpoint-host concerns include the connected UDP socket lifecycle, receive loop, effect-to-socket send plumbing, and ingress/transition/effect observers. Harness-owned concerns include environment parsing, mounted path mapping, role dispatch, process exit codes, Docker packaging, startup scripts, and the thin endpoint-host shell wrapper."
     }
   ],
   "requirements": [
@@ -144,9 +147,39 @@
         "x_code_refs": [
           "src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs",
           "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
-          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0005.cs"
-        ]
+        "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0005.cs"
+      ]
       }
+    },
+    {
+      "id": "REQ-QUIC-INT-0008",
+      "title": "Bridge runtime-owned handshake packets through a real UDP socket shell",
+      "statement": "The interop harness MUST provide a thin endpoint-host shell that composes the library-owned connection runtime endpoint through a connected UDP socket, forwards inbound datagrams into the library ingress path, surfaces outbound datagram effects back to the socket layer, and keeps route misses and unsupported cases honest instead of fabricating transport success.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0002"
+        ],
+        "related": [
+          "SPEC-QUIC-CRT"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs",
+          "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs"
+        ]
+      },
+      "notes": [
+        "The shell remains adapter-only: it owns socket/process lifecycle and observers, not protocol behavior.",
+        "The harness still returns `127` for unsupported testcase dispatch until runner-side enablement exists."
+      ]
     }
   ]
 }

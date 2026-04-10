@@ -15,6 +15,7 @@ Each canonical artifact is authored in `.json`.
 ## Current Artifacts
 
 - [`VER-QUIC-INT-0001.json`](VER-QUIC-INT-0001.json): canonical interop harness foundation verification source
+- [`VER-QUIC-INT-0002.json`](VER-QUIC-INT-0002.json): canonical interop endpoint-host shell verification source
 - [`VER-QUIC-RFC8999-0001.json`](VER-QUIC-RFC8999-0001.json): canonical RFC 8999 verification source
 - [`VER-QUIC-RFC9000-0001.json`](VER-QUIC-RFC9000-0001.json): canonical RFC 9000 verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
@@ -34,7 +35,6 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0014.json`](VER-QUIC-CRT-0014.json): canonical CRT server-role Finished continuation verification source
 - [`VER-QUIC-CRT-0015.json`](VER-QUIC-CRT-0015.json): canonical CRT server-role inbound client Finished proof verification source
 - [`VER-QUIC-CRT-0017.json`](VER-QUIC-CRT-0017.json): canonical CRT server-role 1-RTT publication verification source
-- [`VER-QUIC-INT-0001.json`](VER-QUIC-INT-0001.json): canonical interop-harness adapter verification source
 
 ## Notes
 

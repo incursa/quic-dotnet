@@ -436,11 +436,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 stateChanged |= TryCommitLocalTransportParametersFromTlsBridgeState(nowTicks, ref effects);
                 break;
 
-            case QuicTlsUpdateKind.PeerTransportParametersCommitted:
-                stateChanged |= TryCommitPeerTransportParametersFromTlsBridgeState(nowTicks, ref effects);
+            case QuicTlsUpdateKind.PeerCertificatePolicyAccepted:
+            case QuicTlsUpdateKind.PeerFinishedVerified:
+                stateChanged |= TryCommitPeerTransportParametersFromTlsBridgeDriver(nowTicks, ref effects);
                 break;
 
             case QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted:
+                stateChanged |= TryCommitPeerTransportParametersFromTlsBridgeDriver(nowTicks, ref effects);
                 if (tlsState.PeerHandshakeTranscriptCompleted)
                 {
                     stateChanged |= HandlePeerHandshakeTranscriptCompleted(
@@ -448,6 +450,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                         nowTicks,
                         ref effects);
                 }
+                break;
+
+            case QuicTlsUpdateKind.PeerTransportParametersCommitted:
+                stateChanged |= TryCommitPeerTransportParametersFromTlsBridgeState(nowTicks, ref effects);
                 break;
 
             case QuicTlsUpdateKind.KeysDiscarded:
@@ -682,6 +688,36 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 LocalMaxIdleTimeoutMicros: localTransportParameters.MaxIdleTimeout),
             nowTicks,
             ref effects);
+    }
+
+    private bool TryCommitPeerTransportParametersFromTlsBridgeDriver(
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        QuicTransportParameters? stagedPeerTransportParameters = tlsState.StagedPeerTransportParameters;
+        if (stagedPeerTransportParameters is null
+            || !tlsState.CanCommitPeerTransportParameters(stagedPeerTransportParameters))
+        {
+            return false;
+        }
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = tlsBridgeDriver.CommitPeerTransportParameters(
+            stagedPeerTransportParameters);
+        if (updates.Count == 0)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        foreach (QuicTlsStateUpdate update in updates)
+        {
+            stateChanged |= HandleTlsStateUpdated(
+                new QuicConnectionTlsStateUpdatedEvent(nowTicks, update),
+                nowTicks,
+                ref effects);
+        }
+
+        return stateChanged;
     }
 
     private bool TryCommitPeerTransportParametersFromTlsBridgeState(

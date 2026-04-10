@@ -4,14 +4,19 @@
 
 ## Boundary
 
-- Library-owned: connection runtime, sender and recovery ownership, TLS-facing transport contracts, packet protection lifecycle state, handshake confirmation, timers, path validation, retransmission planning, and transport-visible diagnostics.
-- Harness-owned: `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE` parsing; fixed mount-path mapping; client or server dispatch; exit codes; Docker packaging; and the startup script.
+- Library-owned: connection runtime, sender and recovery ownership, TLS-facing transport contracts, packet protection lifecycle state, handshake confirmation, timers, path validation, retransmission planning, transport-visible diagnostics, `QuicConnectionEndpointHost`, and the packet open/protect helpers.
+- Harness-owned: `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE` parsing; fixed mount-path mapping; client or server dispatch; exit codes; Docker packaging; the startup script; and the thin `InteropEndpointHost` wrapper.
+
+## Endpoint Host Shell
+
+`InteropEndpointHost` is the narrow harness-owned shell around the library-owned endpoint host. It connects the runtime to a real UDP socket boundary so requirement-home tests can observe ingress, transition, and outbound datagram effects without moving protocol ownership into the harness.
 
 ## What it does
 
 - Reads `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE` from the runner environment.
 - Maps the fixed container paths used by the runner: `/www`, `/downloads`, and `/certs/cert.pem` plus `/certs/priv.key`.
 - Preserves TLS material and diagnostics placeholder hooks without claiming end-to-end transport support yet.
+- Exercises the library-owned runtime through a real connected UDP socket in requirement-home coverage.
 - Returns `127` for unsupported interop test cases instead of faking success.
 - Returns `1` for invalid process configuration.
 
@@ -49,10 +54,11 @@ docker run --rm \
   incursa-quic-interop-harness
 ```
 
-The current build returns `127` for the QUIC test cases above because the library still owns the real transport behavior and the harness is only the adapter layer.
+The current build still returns `127` for the QUIC test cases above because the runner does not yet dispatch into the endpoint-host shell and the harness remains honest about unsupported testcase execution.
 
 ## Stubbed today
 
 - `handshake`, `transfer`, and `retry` are recognized interop targets but still unsupported.
+- `InteropEndpointHost` is a real shell around the library-owned endpoint host, but it is exercised by requirement-home tests rather than runner-dispatched testcases.
 - `QLOGDIR` currently selects a placeholder diagnostics sink rather than real qlog output.
 - `SSLKEYLOGFILE` is recorded as future TLS-provider work and does not emit key logs yet.

@@ -25,12 +25,14 @@ coverage:
     - src/Incursa.Quic/QuicTransportParametersCodec.cs
     - src/Incursa.Quic/QuicVariableLengthInteger.cs
 
-scenarios:
-  requiredTests:
-    - tests/Incursa.Quic.Tests/ScaffoldTests.cs::LibraryAssemblyCanBeLoaded
-    - tests/Incursa.Quic.Tests/ScaffoldTests.cs::PublicApiBaselineFilesExist
-    - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0006.cs::HarnessParsesRoleTestCaseRequestListAndFixedMountPaths
-    - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs::UnsupportedInteropTestCasesReturn127WithoutPretendingTlsSupport
+  scenarios:
+    requiredTests:
+      - tests/Incursa.Quic.Tests/ScaffoldTests.cs::LibraryAssemblyCanBeLoaded
+      - tests/Incursa.Quic.Tests/ScaffoldTests.cs::PublicApiBaselineFilesExist
+      - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0006.cs::HarnessParsesRoleTestCaseRequestListAndFixedMountPaths
+      - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs::UnsupportedInteropTestCasesReturn127WithoutPretendingTlsSupport
+      - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs::EndpointHostShellBridgesTheLibraryRuntimeThroughAConnectedUdpSocketAndSurfacesOutboundHandshakeDatagrams
+      - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs::RouteMissesRemainUnroutableAndDoNotReachTheRuntimeConsumer
 
 intentionalGaps:
   - subject: benchmarks
@@ -50,7 +52,14 @@ related:
     - src/Incursa.Quic.InteropHarness/README.md
     - src/Incursa.Quic.InteropHarness/Dockerfile
     - src/Incursa.Quic.InteropHarness/run_endpoint.sh
+    - src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs
+    - src/Incursa.Quic/QuicConnectionEndpointHost.cs
+    - src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
+    - src/Incursa.Quic/QuicConnectionRuntime.cs
+    - src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs
     - tests/Incursa.Quic.Tests/README.md
+    - tests/Incursa.Quic.Tests/RequirementHomes/INT/InteropEndpointHostTestSupport.cs
+    - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs
     - specs/requirements/quic/README.md
     - specs/architecture/quic/README.md
     - specs/architecture/quic/ARC-QUIC-RFC8999-0001.json
@@ -59,7 +68,9 @@ related:
     - specs/architecture/quic/ARC-QUIC-RFC9002-0001.json
     - specs/architecture/quic/ARC-QUIC-CRT-0006.json
     - specs/architecture/quic/ARC-QUIC-INT-0001.json
+    - specs/architecture/quic/ARC-QUIC-INT-0002.json
     - specs/work-items/quic/README.md
+    - specs/work-items/quic/WI-QUIC-INT-0002.json
     - specs/verification/quic/README.md
     - specs/requirements/quic/SPEC-QUIC-RFC8999.json
     - specs/requirements/quic/SPEC-QUIC-RFC9000.json
@@ -73,6 +84,7 @@ related:
     - specs/verification/quic/VER-QUIC-RFC9002-0001.json
     - specs/verification/quic/VER-QUIC-CRT-0006.json
     - specs/verification/quic/VER-QUIC-INT-0001.json
+    - specs/verification/quic/VER-QUIC-INT-0002.json
     - specs/requirements/quic/REQUIREMENT-GAPS.md
     - specs/templates/spec-template.json
     - specs/templates/verification-template.json
@@ -83,6 +95,7 @@ related:
     - specs/work-items/quic/WI-QUIC-RFC9002-0001.json
     - specs/work-items/quic/WI-QUIC-CRT-0006.json
     - specs/work-items/quic/WI-QUIC-INT-0001.json
+    - specs/work-items/quic/WI-QUIC-INT-0002.json
   codeRefs:
     - src/Incursa.Quic/QuicPacketParser.cs
     - src/Incursa.Quic/QuicFrameCodec.cs
@@ -92,5 +105,10 @@ related:
     - src/Incursa.Quic/QuicTlsTransport.cs
     - src/Incursa.Quic/QuicDiagnostics.cs
     - src/Incursa.Quic/QuicConnectionSendRuntime.cs
+    - src/Incursa.Quic/QuicConnectionEndpointHost.cs
+    - src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
+    - src/Incursa.Quic/QuicConnectionRuntime.cs
+    - src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs
     - src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs
     - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
+    - src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs
