@@ -13,6 +13,8 @@ internal sealed class QuicTransportTlsBridgeState
     private readonly QuicTlsRole role;
     private QuicTlsPacketProtectionMaterial? handshakeOpenPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial? handshakeProtectPacketProtectionMaterial;
+    private QuicTlsPacketProtectionMaterial? oneRttOpenPacketProtectionMaterial;
+    private QuicTlsPacketProtectionMaterial? oneRttProtectPacketProtectionMaterial;
 
     internal QuicTransportTlsBridgeState()
         : this(QuicTlsRole.Client)
@@ -64,6 +66,10 @@ internal sealed class QuicTransportTlsBridgeState
 
     public QuicTlsPacketProtectionMaterial? HandshakeProtectPacketProtectionMaterial => handshakeProtectPacketProtectionMaterial;
 
+    public QuicTlsPacketProtectionMaterial? OneRttOpenPacketProtectionMaterial => oneRttOpenPacketProtectionMaterial;
+
+    public QuicTlsPacketProtectionMaterial? OneRttProtectPacketProtectionMaterial => oneRttProtectPacketProtectionMaterial;
+
     public uint CurrentOneRttKeyPhase { get; private set; }
 
     public QuicTlsTranscriptPhase HandshakeTranscriptPhase { get; private set; } = QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage;
@@ -77,7 +83,9 @@ internal sealed class QuicTransportTlsBridgeState
     public bool HasAnyPacketProtectionMaterial =>
         packetProtectionMaterials.Count > 0
         || handshakeOpenPacketProtectionMaterial.HasValue
-        || handshakeProtectPacketProtectionMaterial.HasValue;
+        || handshakeProtectPacketProtectionMaterial.HasValue
+        || oneRttOpenPacketProtectionMaterial.HasValue
+        || oneRttProtectPacketProtectionMaterial.HasValue;
 
     public bool IsTerminal => FatalAlertCode.HasValue;
 
@@ -248,6 +256,14 @@ internal sealed class QuicTransportTlsBridgeState
                 return update.PacketProtectionMaterial.HasValue
                     && TryStoreHandshakeProtectPacketProtectionMaterial(update.PacketProtectionMaterial.Value);
 
+            case QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable:
+                return update.PacketProtectionMaterial.HasValue
+                    && TryStoreOneRttOpenPacketProtectionMaterial(update.PacketProtectionMaterial.Value);
+
+            case QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable:
+                return update.PacketProtectionMaterial.HasValue
+                    && TryStoreOneRttProtectPacketProtectionMaterial(update.PacketProtectionMaterial.Value);
+
             case QuicTlsUpdateKind.TranscriptProgressed:
                 return TryApplyTranscriptProgress(update);
 
@@ -345,11 +361,6 @@ internal sealed class QuicTransportTlsBridgeState
         QuicTlsEncryptionLevel encryptionLevel,
         out QuicTlsPacketProtectionMaterial material)
     {
-        if (packetProtectionMaterials.TryGetValue(encryptionLevel, out material))
-        {
-            return true;
-        }
-
         if (encryptionLevel == QuicTlsEncryptionLevel.Handshake)
         {
             if (handshakeProtectPacketProtectionMaterial.HasValue)
@@ -363,6 +374,25 @@ internal sealed class QuicTransportTlsBridgeState
                 material = handshakeOpenPacketProtectionMaterial.Value;
                 return true;
             }
+        }
+        else if (encryptionLevel == QuicTlsEncryptionLevel.OneRtt)
+        {
+            if (oneRttProtectPacketProtectionMaterial.HasValue)
+            {
+                material = oneRttProtectPacketProtectionMaterial.Value;
+                return true;
+            }
+
+            if (oneRttOpenPacketProtectionMaterial.HasValue)
+            {
+                material = oneRttOpenPacketProtectionMaterial.Value;
+                return true;
+            }
+        }
+
+        if (packetProtectionMaterials.TryGetValue(encryptionLevel, out material))
+        {
+            return true;
         }
 
         material = default;
@@ -686,6 +716,8 @@ internal sealed class QuicTransportTlsBridgeState
         TranscriptHashAlgorithm = null;
         handshakeOpenPacketProtectionMaterial = null;
         handshakeProtectPacketProtectionMaterial = null;
+        oneRttOpenPacketProtectionMaterial = null;
+        oneRttProtectPacketProtectionMaterial = null;
         packetProtectionMaterials.Clear();
         return true;
     }
@@ -791,6 +823,16 @@ internal sealed class QuicTransportTlsBridgeState
         return true;
     }
 
+    private bool TryStoreOneRttOpenPacketProtectionMaterial(QuicTlsPacketProtectionMaterial material)
+    {
+        return TryStoreOneRttPacketProtectionMaterial(ref oneRttOpenPacketProtectionMaterial, material);
+    }
+
+    private bool TryStoreOneRttProtectPacketProtectionMaterial(QuicTlsPacketProtectionMaterial material)
+    {
+        return TryStoreOneRttPacketProtectionMaterial(ref oneRttProtectPacketProtectionMaterial, material);
+    }
+
     private bool CanEmitPeerFinishedVerified()
     {
         return !IsTerminal
@@ -830,7 +872,7 @@ internal sealed class QuicTransportTlsBridgeState
             QuicTlsEncryptionLevel.Handshake
                 => TryDiscardHandshakePacketProtectionMaterial(encryptionLevel),
             QuicTlsEncryptionLevel.OneRtt
-                => packetProtectionMaterials.Remove(encryptionLevel),
+                => TryDiscardOneRttPacketProtectionMaterial(),
             _ => false,
         };
     }
@@ -885,6 +927,16 @@ internal sealed class QuicTransportTlsBridgeState
         return discardedDirectionalMaterial || discardedLegacyMaterial;
     }
 
+    private bool TryDiscardOneRttPacketProtectionMaterial()
+    {
+        bool discardedDirectionalMaterial = oneRttOpenPacketProtectionMaterial.HasValue
+            || oneRttProtectPacketProtectionMaterial.HasValue;
+        oneRttOpenPacketProtectionMaterial = null;
+        oneRttProtectPacketProtectionMaterial = null;
+        bool discardedLegacyMaterial = packetProtectionMaterials.Remove(QuicTlsEncryptionLevel.OneRtt);
+        return discardedDirectionalMaterial || discardedLegacyMaterial;
+    }
+
     private bool TryDiscardKeys(QuicTlsEncryptionLevel encryptionLevel)
     {
         if (IsTerminal)
@@ -933,6 +985,23 @@ internal sealed class QuicTransportTlsBridgeState
             default:
                 return false;
         }
+    }
+
+    private bool TryStoreOneRttPacketProtectionMaterial(
+        ref QuicTlsPacketProtectionMaterial? target,
+        QuicTlsPacketProtectionMaterial material)
+    {
+        if (IsTerminal
+            || role != QuicTlsRole.Server
+            || !PeerFinishedVerified
+            || material.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt
+            || target.HasValue)
+        {
+            return false;
+        }
+
+        target = material;
+        return true;
     }
 
     private static QuicTransportParameters CloneTransportParameters(QuicTransportParameters parameters)

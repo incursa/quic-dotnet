@@ -1,0 +1,40 @@
+{
+  "title": "QUIC CRT server-role 1-RTT publication work item",
+  "verification_links": [
+    "VER-QUIC-CRT-0017"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "out_of_scope": [
+    "1-RTT stream/data processing.",
+    "Key update.",
+    "Endpoint-host wiring.",
+    "Interop-runner handshake support.",
+    "New trust, identity, or hostname policy work."
+  ],
+  "status": "planned",
+  "domain": "quic",
+  "summary": "Add the smallest permanent server-role 1-RTT packet-protection publication slice on the existing managed TLS seam.\nKeep the bridge-visible open/protect material explicit and server-only.\nDo not add 1-RTT data-path processing, key update, endpoint-host wiring, or interop-runner handshake support.",
+  "verification_plan": "Run the server-role Finished publication tests, the bridge-state rejection tests, the client-role regression test, and the repo-local SpecTrace validation checks.\nRun the benchmark that exercises the server Finished publication path if the benchmark artifact is present.\nKeep the proof boundary narrow: publication is valid only after server-role `PeerFinishedVerified`.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- src/Incursa.Quic/QuicTlsKeySchedule.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0117.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0119.cs"
+    }
+  ],
+  "artifact_type": "work_item",
+  "planned_changes": "- Add explicit server-role 1-RTT open/protect material updates to the managed TLS key schedule.\n- Extend the bridge state with directional 1-RTT material storage and deterministic rejection of premature, repeated, conflicting, malformed, or terminal publication.\n- Add requirement-home coverage for the publication boundary, rejection paths, and client-role regression.\n- Keep the 1-RTT data path, key update, endpoint-host wiring, and interop harness unsupported.",
+  "design_links": [
+    "ARC-QUIC-CRT-0017"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0103",
+    "REQ-QUIC-CRT-0117",
+    "REQ-QUIC-CRT-0119"
+  ],
+  "artifact_id": "WI-QUIC-CRT-0017"
+}

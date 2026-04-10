@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "verification_method": "Execution, inspection, and benchmark evidence.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0017",
+    "WI-QUIC-CRT-0017"
+  ],
+  "expected_result": "- The server role publishes explicit 1-RTT open/protect packet-protection material only after the supported `PeerFinishedVerified` boundary.\n- Premature, repeated, conflicting, malformed, fatal, or terminal publication is rejected deterministically.\n- Client-role generic 1-RTT packet-protection behavior remains intact while the new server-only directional updates stay rejected on client role.\n- The verification lane does not imply 1-RTT data-path support, key update, endpoint-host wiring, or interop-runner handshake support.",
+  "artifact_id": "VER-QUIC-CRT-0017",
+  "verifies": [
+    "REQ-QUIC-CRT-0103",
+    "REQ-QUIC-CRT-0117",
+    "REQ-QUIC-CRT-0119"
+  ],
+  "artifact_type": "verification",
+  "status": "planned",
+  "procedure": [
+    "Run the requirement-home tests that prove the server-role Finished proof boundary and the new 1-RTT publication slice.",
+    "Run the bridge-state rejection tests for premature, repeated, conflicting, and fatal publication attempts.",
+    "Run the client-role regression test that keeps the existing generic OneRtt packet-protection path intact while rejecting the server-only directional updates.",
+    "Run the benchmark that exercises the server Finished publication path if the benchmark artifact is present.",
+    "Re-run the JSON validation and markdown render checks so the trace surface stays synchronized."
+  ],
+  "scope": "This verification covers the server-role 1-RTT packet-protection publication slice on the existing managed TLS seam.\nIt proves explicit directional open/protect material publication after the supported Finished proof boundary and keeps 1-RTT data-path support, key update, endpoint-host wiring, and interop-runner handshake support out of scope.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0117.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0119.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0003.cs",
+    "benchmarks/QuicTlsServerFinishedPublicationBenchmarks.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs"
+  ],
+  "preconditions": [
+    "The `Incursa.Quic` solution builds successfully.",
+    "The CRT requirement traits are discoverable by the quality inventory.",
+    "The benchmark suite and test suite remain runnable in the local workbench flow."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0117.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0119.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0003.cs\n- benchmarks/QuicTlsServerFinishedPublicationBenchmarks.cs\n- src/Incursa.Quic/QuicTlsKeySchedule.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs"
+    }
+  ],
+  "owner": "quic-maintainers",
+  "domain": "quic"
+}

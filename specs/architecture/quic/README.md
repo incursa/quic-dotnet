@@ -33,6 +33,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0013.json`](ARC-QUIC-CRT-0013.json): canonical CRT server-role CertificateVerify continuation design source
 - [`ARC-QUIC-CRT-0014.json`](ARC-QUIC-CRT-0014.json): canonical CRT server-role Finished continuation design source
 - [`ARC-QUIC-CRT-0015.json`](ARC-QUIC-CRT-0015.json): canonical CRT server-role inbound client Finished proof design source
+- [`ARC-QUIC-CRT-0017.json`](ARC-QUIC-CRT-0017.json): canonical CRT server-role 1-RTT publication design source
 - [`ARC-QUIC-INT-0001.json`](ARC-QUIC-INT-0001.json): canonical interop-harness adapter design source
 
 ## Notes

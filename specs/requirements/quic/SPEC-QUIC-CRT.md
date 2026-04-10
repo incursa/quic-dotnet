@@ -716,13 +716,14 @@ Notes:
 - A practical baseline is three times the larger of the current PTO and the new path PTO.
 
 ## REQ-QUIC-CRT-0103 Expose a transport-facing TLS bridge state
-The library MUST expose a transport-facing TLS bridge state or contract that can represent local transport parameters, staged peer transport parameters, committed peer transport parameters, Initial keys available, Handshake keys available, `PeerCertificateVerifyVerified`, `PeerCertificatePolicyAccepted`, `PeerFinishedVerified`, 1-RTT keys available, peer handshake transcript completion, key-update installation, old-key discard, and fatal TLS alerts without depending on a concrete TLS implementation.
+The library MUST expose a transport-facing TLS bridge state or contract that can represent local transport parameters, staged peer transport parameters, committed peer transport parameters, Initial keys available, Handshake keys available, `PeerCertificateVerifyVerified`, `PeerCertificatePolicyAccepted`, `PeerFinishedVerified`, 1-RTT keys available, 1-RTT open packet-protection material, 1-RTT protect packet-protection material, peer handshake transcript completion, key-update installation, old-key discard, and fatal TLS alerts without depending on a concrete TLS implementation.
 
 Notes:
 - The bridge may remain internal if needed, but it must live in the main library because it is part of transport ownership, not runner plumbing.
 - `PeerCertificateVerifyVerified` means the client role has cryptographically verified the peer leaf certificate's supported `CertificateVerify` proof path with the managed TLS 1.3 key schedule; it does not imply certificate trust, certificate-path validation, hostname validation, or identity authentication.
 - `PeerCertificatePolicyAccepted` means the client role's explicit local certificate-acceptance policy matched the presented leaf certificate facts; it does not imply certificate trust, certificate-path validation, hostname validation, revocation, or identity authentication.
 - `PeerFinishedVerified` means the client role has cryptographically verified the peer Finished with the managed TLS 1.3 key schedule; in the server role it names the same proof after verifying the inbound client Finished against the complete local server flight; it does not imply certificate validation, `CertificateVerify` signature verification, or identity authentication.
+- 1-RTT open/protect packet-protection material is directional bridge-visible state, distinct from 1-RTT key availability, and is published only through explicit update kinds.
 - `PeerHandshakeTranscriptCompleted` remains a transcript milestone; on the client role it is only emitted after both peer proof states exist, and on the server role it is only emitted after inbound client Finished verification succeeds; it is not the commit gate for peer transport parameters.
 - Peer transport-parameter commit stays explicit and role-aware rather than implied by construction.
 
@@ -897,8 +898,9 @@ Trace:
   - connection-runtime-state-machine.md
 
 Notes:
-- This slice is intentionally server-role only. It does not add client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
+- This slice is intentionally server-role only. It does not add client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT data-path processing, 1-RTT data-path processing, key update, endpoint-host wiring, or interop-runner handshake support.
 - `PeerFinishedVerified` is the narrow proof claim for the supported server-role path; it proves Finished possession only and does not imply client identity or trust.
+- Server-role 1-RTT packet-protection publication is defined separately in REQ-QUIC-CRT-0119.
 - Server-role peer transport-parameter commit is defined separately in REQ-QUIC-CRT-0118.
 
 ## REQ-QUIC-CRT-0118 Gate server-role peer transport-parameter commit on Finished verification
@@ -911,6 +913,20 @@ Trace:
   - connection-runtime-state-machine.md
 
 Notes:
-- This slice is intentionally server-role only and narrow. It does not add client identity, certificate trust, hostname validation, client-certificate authentication, 0-RTT, 1-RTT, key update, or interop-runner handshake support.
+- This slice is intentionally server-role only and narrow. It does not add client identity, certificate trust, hostname validation, client-certificate authentication, 0-RTT data-path processing, 1-RTT data-path processing, key update, or interop-runner handshake support.
 - `PeerFinishedVerified` is the proof foundation for the supported server-role path; it proves Finished possession only and does not imply client identity or trust.
 - `PeerHandshakeTranscriptCompleted` remains a transcript milestone and is not required for the commit gate.
+
+## REQ-QUIC-CRT-0119 Publish server-role 1-RTT packet-protection material after Finished proof
+In the server role, the library MUST derive the first TLS 1.3 application packet-protection material from the transcript boundary that includes the completed local server flight through local Finished, surface explicit bridge-visible `OneRttOpenPacketProtectionMaterialAvailable` and `OneRttProtectPacketProtectionMaterialAvailable` updates only after `PeerFinishedVerified` has been surfaced for the same supported TLS session, and deterministically reject premature, repeated, conflicting, malformed, terminal-state, or unsupported 1-RTT publication through the existing fatal/update path; this slice MUST NOT add 1-RTT data-path processing, key update, endpoint-host wiring, or broader handshake-completion semantics.
+
+Trace:
+- Source Refs:
+  - RFC 8446 Sections 4.4.4 and 7.1
+  - RFC 9001 Sections 4.1.2 and 4.1.4
+  - connection-runtime-state-machine.md
+
+Notes:
+- This slice is intentionally server-role only and narrow. It does not add 1-RTT stream or application-data processing, key update, peer transport-parameter commit, endpoint-host wiring, or interop-runner handshake support.
+- The publication boundary is `PeerFinishedVerified`; it does not depend on server-role peer transport-parameter commit.
+- The bridge-visible state is directional packet-protection material only; it does not imply `OneRttKeysAvailable` or any application-data path.
