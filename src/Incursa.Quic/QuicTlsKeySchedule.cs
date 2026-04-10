@@ -193,7 +193,8 @@ internal sealed class QuicTlsKeySchedule
     internal IReadOnlyList<QuicTlsStateUpdate> ProcessTranscriptStep(
         QuicTlsTranscriptStep step,
         QuicTransportParameters? localTransportParameters,
-        ReadOnlyMemory<byte> localServerLeafCertificateDer = default)
+        ReadOnlyMemory<byte> localServerLeafCertificateDer = default,
+        ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default)
     {
         if (isTerminal || step.HandshakeMessageType is null || step.HandshakeMessageBytes.IsEmpty)
         {
@@ -207,7 +208,8 @@ internal sealed class QuicTlsKeySchedule
                 QuicTlsHandshakeMessageType.ClientHello => ProcessClientHello(
                     step,
                     localTransportParameters,
-                    localServerLeafCertificateDer),
+                    localServerLeafCertificateDer,
+                    localServerLeafSigningPrivateKey),
                 _ => BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription),
             };
         }
@@ -226,92 +228,135 @@ internal sealed class QuicTlsKeySchedule
     private IReadOnlyList<QuicTlsStateUpdate> ProcessClientHello(
         QuicTlsTranscriptStep step,
         QuicTransportParameters? localTransportParameters,
-        ReadOnlyMemory<byte> localServerLeafCertificateDer)
+        ReadOnlyMemory<byte> localServerLeafCertificateDer,
+        ReadOnlyMemory<byte> localServerLeafSigningPrivateKey)
     {
         byte[]? certificateBytes = null;
+        ECDsa? localServerLeafSigningKey = null;
 
-        if (handshakeSecretsDerived
-            || step.Kind != QuicTlsTranscriptStepKind.PeerTransportParametersStaged
-            || step.TranscriptPhase != QuicTlsTranscriptPhase.Completed
-            || step.HandshakeMessageType != QuicTlsHandshakeMessageType.ClientHello
-            || step.HandshakeMessageLength is null
-            || step.TransportParameters is null
-            || step.SelectedCipherSuite != profile.CipherSuite
-            || step.TranscriptHashAlgorithm != profile.TranscriptHashAlgorithm
-            || step.NamedGroup != profile.NamedGroup
-            || step.KeyShare.IsEmpty
-            || localTransportParameters is null)
+        try
         {
-            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
-        }
+            if (handshakeSecretsDerived
+                || step.Kind != QuicTlsTranscriptStepKind.PeerTransportParametersStaged
+                || step.TranscriptPhase != QuicTlsTranscriptPhase.Completed
+                || step.HandshakeMessageType != QuicTlsHandshakeMessageType.ClientHello
+                || step.HandshakeMessageLength is null
+                || step.TransportParameters is null
+                || step.SelectedCipherSuite != profile.CipherSuite
+                || step.TranscriptHashAlgorithm != profile.TranscriptHashAlgorithm
+                || step.NamedGroup != profile.NamedGroup
+                || step.KeyShare.IsEmpty
+                || localTransportParameters is null)
+            {
+                return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+            }
 
-        if (!localServerLeafCertificateDer.IsEmpty
-            && !TryCreateCertificate(localServerLeafCertificateDer.Span, out certificateBytes))
-        {
-            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
-        }
+            if (!localServerLeafCertificateDer.IsEmpty
+                && !TryCreateCertificate(localServerLeafCertificateDer.Span, out certificateBytes))
+            {
+                return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+            }
 
-        AppendTranscriptMessage(step.HandshakeMessageBytes.Span);
-        if (!TryCreateServerHello(step.HandshakeMessageBytes.Span, out byte[] serverHelloBytes))
-        {
-            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
-        }
+            if (!TryCreateServerLeafSigningKey(localServerLeafSigningPrivateKey.Span, out localServerLeafSigningKey))
+            {
+                return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+            }
 
-        AppendTranscriptMessage(serverHelloBytes);
-        ReadOnlySpan<byte> transcriptHash = HashTranscript();
-        if (!TryDeriveHandshakeTrafficSecrets(
-                step.KeyShare.Span,
-                transcriptHash,
-                protectWithClientTrafficSecret: false,
-                out QuicTlsPacketProtectionMaterial openMaterial,
-                out QuicTlsPacketProtectionMaterial protectMaterial))
-        {
-            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
-        }
+            if (localServerLeafSigningKey is not null
+                && !localServerLeafCertificateDer.IsEmpty
+                && !TryValidateServerLeafSigningCompatibility(
+                    localServerLeafCertificateDer.Span,
+                    localServerLeafSigningKey))
+            {
+                return BuildFatalAlert(HandshakeTranscriptVerificationFailureAlertDescription);
+            }
 
-        if (!TryCreateEncryptedExtensions(localTransportParameters, out byte[] encryptedExtensionsBytes))
-        {
-            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
-        }
+            AppendTranscriptMessage(step.HandshakeMessageBytes.Span);
+            if (!TryCreateServerHello(step.HandshakeMessageBytes.Span, out byte[] serverHelloBytes))
+            {
+                return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+            }
 
-        ulong encryptedExtensionsOffset = (ulong)serverHelloBytes.Length;
-        AppendTranscriptMessage(encryptedExtensionsBytes);
-        List<QuicTlsStateUpdate> updates =
-        [
-            new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.CryptoDataAvailable,
-                QuicTlsEncryptionLevel.Handshake,
-                CryptoDataOffset: 0,
-                CryptoData: serverHelloBytes),
-            new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
-                PacketProtectionMaterial: openMaterial),
-            new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable,
-                PacketProtectionMaterial: protectMaterial),
-            new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.KeysAvailable,
-                QuicTlsEncryptionLevel.Handshake),
-            new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.CryptoDataAvailable,
-                QuicTlsEncryptionLevel.Handshake,
-                CryptoDataOffset: encryptedExtensionsOffset,
-                CryptoData: encryptedExtensionsBytes),
-        ];
+            AppendTranscriptMessage(serverHelloBytes);
+            ReadOnlySpan<byte> transcriptHash = HashTranscript();
+            if (!TryDeriveHandshakeTrafficSecrets(
+                    step.KeyShare.Span,
+                    transcriptHash,
+                    protectWithClientTrafficSecret: false,
+                    out QuicTlsPacketProtectionMaterial openMaterial,
+                    out QuicTlsPacketProtectionMaterial protectMaterial))
+            {
+                return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+            }
 
-        if (certificateBytes is not null)
-        {
+            if (!TryCreateEncryptedExtensions(localTransportParameters, out byte[] encryptedExtensionsBytes))
+            {
+                return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+            }
+
+            ulong encryptedExtensionsOffset = (ulong)serverHelloBytes.Length;
+            AppendTranscriptMessage(encryptedExtensionsBytes);
+            List<QuicTlsStateUpdate> updates =
+            [
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.CryptoDataAvailable,
+                    QuicTlsEncryptionLevel.Handshake,
+                    CryptoDataOffset: 0,
+                    CryptoData: serverHelloBytes),
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: openMaterial),
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: protectMaterial),
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.KeysAvailable,
+                    QuicTlsEncryptionLevel.Handshake),
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.CryptoDataAvailable,
+                    QuicTlsEncryptionLevel.Handshake,
+                    CryptoDataOffset: encryptedExtensionsOffset,
+                    CryptoData: encryptedExtensionsBytes),
+            ];
+
             ulong certificateOffset = encryptedExtensionsOffset + (ulong)encryptedExtensionsBytes.Length;
-            AppendTranscriptMessage(certificateBytes);
-            updates.Add(new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.CryptoDataAvailable,
-                QuicTlsEncryptionLevel.Handshake,
-                CryptoDataOffset: certificateOffset,
-                CryptoData: certificateBytes));
-        }
+            if (certificateBytes is not null)
+            {
+                AppendTranscriptMessage(certificateBytes);
+                updates.Add(new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.CryptoDataAvailable,
+                    QuicTlsEncryptionLevel.Handshake,
+                    CryptoDataOffset: certificateOffset,
+                    CryptoData: certificateBytes));
+            }
 
-        handshakeSecretsDerived = true;
-        return updates;
+            if (localServerLeafSigningKey is not null && certificateBytes is not null)
+            {
+                ReadOnlySpan<byte> transcriptHashAfterCertificate = HashTranscript();
+                if (!TryCreateCertificateVerify(
+                        localServerLeafSigningKey,
+                        transcriptHashAfterCertificate,
+                        out byte[] certificateVerifyBytes))
+                {
+                    return BuildFatalAlert(HandshakeTranscriptVerificationFailureAlertDescription);
+                }
+
+                ulong certificateVerifyOffset = certificateOffset + (ulong)certificateBytes.Length;
+                AppendTranscriptMessage(certificateVerifyBytes);
+                updates.Add(new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.CryptoDataAvailable,
+                    QuicTlsEncryptionLevel.Handshake,
+                    CryptoDataOffset: certificateVerifyOffset,
+                    CryptoData: certificateVerifyBytes));
+            }
+
+            handshakeSecretsDerived = true;
+            return updates;
+        }
+        finally
+        {
+            localServerLeafSigningKey?.Dispose();
+        }
     }
 
     private IReadOnlyList<QuicTlsStateUpdate> ProcessServerHello(QuicTlsTranscriptStep step)
@@ -800,6 +845,15 @@ internal sealed class QuicTlsKeySchedule
 
     private static bool TryValidateEcdsaP256PublicKey(ECDsa publicKey)
     {
+        return TryGetEcdsaP256PublicKeyParameters(publicKey, out _);
+    }
+
+    private static bool TryGetEcdsaP256PublicKeyParameters(
+        ECDsa publicKey,
+        out ECParameters parameters)
+    {
+        parameters = default;
+
         if (publicKey.KeySize != EcdsaP256KeySizeBits)
         {
             return false;
@@ -807,9 +861,115 @@ internal sealed class QuicTlsKeySchedule
 
         try
         {
-            ECParameters parameters = publicKey.ExportParameters(false);
+            parameters = publicKey.ExportParameters(false);
             return parameters.Curve.IsNamed
-                && parameters.Curve.Oid.Value == ECCurve.NamedCurves.nistP256.Oid.Value;
+                && parameters.Curve.Oid.Value == ECCurve.NamedCurves.nistP256.Oid.Value
+                && parameters.Q.X is not null
+                && parameters.Q.Y is not null;
+        }
+        catch (CryptographicException)
+        {
+            return false;
+        }
+    }
+
+    private static bool TryCreateServerLeafSigningKey(
+        ReadOnlySpan<byte> localServerLeafSigningPrivateKey,
+        out ECDsa? signingKey)
+    {
+        signingKey = null;
+
+        if (localServerLeafSigningPrivateKey.IsEmpty)
+        {
+            return true;
+        }
+
+        try
+        {
+            ECDsa createdSigningKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+            createdSigningKey.ImportParameters(new ECParameters
+            {
+                Curve = ECCurve.NamedCurves.nistP256,
+                D = localServerLeafSigningPrivateKey.ToArray(),
+            });
+
+            if (!TryValidateEcdsaP256PublicKey(createdSigningKey))
+            {
+                createdSigningKey.Dispose();
+                return false;
+            }
+
+            signingKey = createdSigningKey;
+            return true;
+        }
+        catch (CryptographicException)
+        {
+            return false;
+        }
+    }
+
+    private static bool TryValidateServerLeafSigningCompatibility(
+        ReadOnlySpan<byte> localServerLeafCertificateDer,
+        ECDsa serverLeafSigningKey)
+    {
+        try
+        {
+            using X509Certificate2 certificate = X509CertificateLoader.LoadCertificate(localServerLeafCertificateDer.ToArray());
+            using ECDsa? certificatePublicKey = certificate.GetECDsaPublicKey();
+            if (certificatePublicKey is null
+                || !TryGetEcdsaP256PublicKeyParameters(certificatePublicKey, out ECParameters certificateParameters)
+                || !TryGetEcdsaP256PublicKeyParameters(serverLeafSigningKey, out ECParameters signingParameters))
+            {
+                return false;
+            }
+
+            return CryptographicOperations.FixedTimeEquals(certificateParameters.Q.X!, signingParameters.Q.X!)
+                && CryptographicOperations.FixedTimeEquals(certificateParameters.Q.Y!, signingParameters.Q.Y!);
+        }
+        catch (CryptographicException)
+        {
+            return false;
+        }
+    }
+
+    private static bool TryCreateCertificateVerify(
+        ECDsa serverLeafSigningKey,
+        ReadOnlySpan<byte> transcriptHash,
+        out byte[] certificateVerifyBytes)
+    {
+        certificateVerifyBytes = Array.Empty<byte>();
+
+        Span<byte> signedData = stackalloc byte[CertificateVerifyContextPrefixLength
+            + ServerCertificateVerifyContext.Length
+            + 1
+            + transcriptHash.Length];
+        signedData[..CertificateVerifyContextPrefixLength].Fill(CertificateVerifySignedDataPrefixByte);
+        ServerCertificateVerifyContext.CopyTo(signedData.Slice(CertificateVerifyContextPrefixLength));
+        signedData[CertificateVerifyContextPrefixLength + ServerCertificateVerifyContext.Length] = 0x00;
+        transcriptHash.CopyTo(
+            signedData.Slice(CertificateVerifyContextPrefixLength + ServerCertificateVerifyContext.Length + 1));
+
+        try
+        {
+            byte[] signature = serverLeafSigningKey.SignData(
+                signedData,
+                HashAlgorithmName.SHA256,
+                CertificateVerifySignatureFormat);
+
+            int bodyLength = checked(UInt16Length + UInt16Length + signature.Length);
+            byte[] body = new byte[bodyLength];
+            int index = 0;
+
+            BinaryPrimitives.WriteUInt16BigEndian(
+                body.AsSpan(index, UInt16Length),
+                (ushort)QuicTlsSignatureScheme.EcdsaSecp256r1Sha256);
+            index += UInt16Length;
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)signature.Length));
+            index += UInt16Length;
+            signature.CopyTo(body.AsSpan(index, signature.Length));
+
+            certificateVerifyBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.CertificateVerify, body);
+            return true;
         }
         catch (CryptographicException)
         {

@@ -16,6 +16,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private readonly QuicTlsKeySchedule? keySchedule;
     private readonly byte[]? pinnedPeerLeafCertificateSha256;
     private readonly ReadOnlyMemory<byte> localServerLeafCertificateDer;
+    private readonly ReadOnlyMemory<byte> localServerLeafSigningPrivateKey;
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> nextIngressOffsets = [];
 
     public QuicTlsTransportBridgeDriver(
@@ -23,7 +24,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         QuicTransportTlsBridgeState? bridgeState = null,
         ReadOnlyMemory<byte> localHandshakePrivateKey = default,
         ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default,
-        ReadOnlyMemory<byte> localServerLeafCertificateDer = default)
+        ReadOnlyMemory<byte> localServerLeafCertificateDer = default,
+        ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState();
@@ -45,6 +47,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
         this.pinnedPeerLeafCertificateSha256 = pinnedPeerLeafCertificateSha256.ToArray();
         this.localServerLeafCertificateDer = localServerLeafCertificateDer;
+        this.localServerLeafSigningPrivateKey = localServerLeafSigningPrivateKey;
     }
 
     /// <summary>
@@ -394,7 +397,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         IReadOnlyList<QuicTlsStateUpdate> keyScheduleUpdates = keySchedule.ProcessTranscriptStep(
             step,
             bridgeState.LocalTransportParameters,
-            localServerLeafCertificateDer);
+            localServerLeafCertificateDer,
+            localServerLeafSigningPrivateKey);
         if (keyScheduleUpdates.Count == 0)
         {
             return Array.Empty<QuicTlsStateUpdate>();
