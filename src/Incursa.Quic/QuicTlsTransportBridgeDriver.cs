@@ -15,13 +15,15 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private readonly QuicTlsTranscriptProgress handshakeTranscriptProgress;
     private readonly QuicTlsKeySchedule? keySchedule;
     private readonly byte[]? pinnedPeerLeafCertificateSha256;
+    private readonly ReadOnlyMemory<byte> localServerLeafCertificateDer;
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> nextIngressOffsets = [];
 
     public QuicTlsTransportBridgeDriver(
         QuicTlsRole role = QuicTlsRole.Client,
         QuicTransportTlsBridgeState? bridgeState = null,
         ReadOnlyMemory<byte> localHandshakePrivateKey = default,
-        ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default)
+        ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default,
+        ReadOnlyMemory<byte> localServerLeafCertificateDer = default)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState();
@@ -39,9 +41,10 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             {
                 throw new ArgumentException("The pinned peer leaf certificate fingerprint must be exactly 32 bytes.", nameof(pinnedPeerLeafCertificateSha256));
             }
-
-            this.pinnedPeerLeafCertificateSha256 = pinnedPeerLeafCertificateSha256.ToArray();
         }
+
+        this.pinnedPeerLeafCertificateSha256 = pinnedPeerLeafCertificateSha256.ToArray();
+        this.localServerLeafCertificateDer = localServerLeafCertificateDer;
     }
 
     /// <summary>
@@ -390,7 +393,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
         IReadOnlyList<QuicTlsStateUpdate> keyScheduleUpdates = keySchedule.ProcessTranscriptStep(
             step,
-            bridgeState.LocalTransportParameters);
+            bridgeState.LocalTransportParameters,
+            localServerLeafCertificateDer);
         if (keyScheduleUpdates.Count == 0)
         {
             return Array.Empty<QuicTlsStateUpdate>();
@@ -419,6 +423,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private IReadOnlyList<QuicTlsStateUpdate> PublishPeerCertificatePolicyAcceptance()
     {
         if (pinnedPeerLeafCertificateSha256 is null
+            || pinnedPeerLeafCertificateSha256.Length == 0
             || keySchedule is null
             || !bridgeState.CanEmitPeerCertificatePolicyAccepted())
         {

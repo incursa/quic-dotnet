@@ -27,6 +27,9 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0006.json`](ARC-QUIC-CRT-0006.json): canonical CRT TLS-bridge, diagnostics, and sender/recovery design source
 - [`ARC-QUIC-CRT-0008.json`](ARC-QUIC-CRT-0008.json): canonical CRT managed TLS 1.3 handshake-crypto design source
 - [`ARC-QUIC-CRT-0009.json`](ARC-QUIC-CRT-0009.json): canonical CRT client certificate-acceptance policy design source
+- [`ARC-QUIC-CRT-0010.json`](ARC-QUIC-CRT-0010.json): canonical CRT server-role crypto-floor design source
+- [`ARC-QUIC-CRT-0011.json`](ARC-QUIC-CRT-0011.json): canonical CRT server-role EncryptedExtensions continuation design source
+- [`ARC-QUIC-CRT-0012.json`](ARC-QUIC-CRT-0012.json): canonical CRT server-role Certificate continuation design source
 - [`ARC-QUIC-INT-0001.json`](ARC-QUIC-INT-0001.json): canonical interop-harness adapter design source
 
 ## Notes

@@ -1051,6 +1051,23 @@
         "The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.",
         "Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0114",
+      "title": "Emit local server Certificate on the permanent handshake seam",
+      "statement": "In the server role, the library MUST expose a narrow local leaf-certificate material seam that accepts explicit raw DER for one supported leaf certificate, and when that material is configured after the supported `ClientHello` has been accepted, the local `ServerHello` and local `EncryptedExtensions` have been published, Handshake keys are available, and the local leaf certificate validates as the supported single-leaf ECDSA P-256 input, format one local TLS 1.3 `Certificate` message with empty `certificate_request_context` and no certificate-entry extensions from that material, append that local `Certificate` at the correct transcript boundary immediately after the local `EncryptedExtensions`, surface the local `Certificate` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after the local `EncryptedExtensions` bytes, and deterministically reject premature, repeated, conflicting, malformed, or unsupported local `Certificate` progression through the existing fatal/update path.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 8446 Sections 4.1.2, 4.1.3, and 4.4.2",
+          "RFC 9001 Sections 5 and 8",
+          "connection-runtime-state-machine.md"
+        ]
+      },
+      "notes": [
+        "This slice extends the permanent server-role crypto floor and remains server-role only. It does not add `CertificateVerify`, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
+        "The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.",
+        "Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist."
+      ]
     }
   ]
 }

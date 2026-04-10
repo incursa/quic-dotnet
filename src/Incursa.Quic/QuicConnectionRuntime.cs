@@ -52,7 +52,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         int maximumRecentlyValidatedPaths = 8,
         ulong currentProbeTimeoutMicros = QuicRttEstimator.DefaultInitialRttMicros,
         ReadOnlyMemory<byte> localHandshakePrivateKey = default,
-        ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default)
+        ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default,
+        ReadOnlyMemory<byte> localServerLeafCertificateDer = default)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -63,7 +64,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             QuicTlsRole.Client,
             tlsState,
             localHandshakePrivateKey,
-            pinnedPeerLeafCertificateSha256);
+            pinnedPeerLeafCertificateSha256,
+            localServerLeafCertificateDer);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
             SingleReader = true,

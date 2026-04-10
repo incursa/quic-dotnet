@@ -27,6 +27,9 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0006.json`](VER-QUIC-CRT-0006.json): canonical CRT TLS-bridge, diagnostics, and sender/recovery verification source
 - [`VER-QUIC-CRT-0008.json`](VER-QUIC-CRT-0008.json): canonical CRT managed TLS 1.3 handshake-crypto verification source
 - [`VER-QUIC-CRT-0009.json`](VER-QUIC-CRT-0009.json): canonical CRT client certificate-acceptance policy verification source
+- [`VER-QUIC-CRT-0010.json`](VER-QUIC-CRT-0010.json): canonical CRT server-role crypto-floor verification source
+- [`VER-QUIC-CRT-0011.json`](VER-QUIC-CRT-0011.json): canonical CRT server-role EncryptedExtensions continuation verification source
+- [`VER-QUIC-CRT-0012.json`](VER-QUIC-CRT-0012.json): canonical CRT server-role Certificate continuation verification source
 - [`VER-QUIC-INT-0001.json`](VER-QUIC-INT-0001.json): canonical interop-harness adapter verification source
 
 ## Notes
