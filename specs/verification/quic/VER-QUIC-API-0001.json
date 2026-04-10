@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-API-0001",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Incursa.Quic Public API Surface Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Execution, inspection, and API-diff evidence from the public API analyzer, plus targeted surface tests derived from the Microsoft public-surface behavior baseline.",
+  "related_artifacts": [
+    "SPEC-QUIC-API",
+    "ARC-QUIC-API-0001",
+    "WI-QUIC-API-0001"
+  ],
+  "verifies": [
+    "REQ-QUIC-API-0001",
+    "REQ-QUIC-API-0002",
+    "REQ-QUIC-API-0003",
+    "REQ-QUIC-API-0004",
+    "REQ-QUIC-API-0005",
+    "REQ-QUIC-API-0006",
+    "REQ-QUIC-API-0007",
+    "REQ-QUIC-API-0008"
+  ],
+  "preconditions": [
+    "The approved SPEC-QUIC-API and ARC-QUIC-API-0001 artifacts exist.",
+    "The Incursa.Quic project builds with public API analyzer support enabled.",
+    "The consumer facade types are available for inspection or promotion.",
+    "The Microsoft reference tests used as behavioral evidence have been reviewed and mapped to the refined surface expectations."
+  ],
+  "scope": "This verification slice covers the consumer-facing public API surface, the async lifecycle and terminal-state behavior visible through that surface, and the internal-only boundary. It proves that only the approved facade types are public and that the listed helper/runtime seam types remain internal. It does not attempt to prove wire behavior, handshake correctness, packet parsing, or performance.",
+  "expected_result": "The public API matches the approved consumer-facing surface, the client/server split is visible, the async lifecycle obeys the documented cancellation and terminal-state rules, and the helper/runtime seam types remain internal.",
+  "procedure": [
+    "Compare src/Incursa.Quic/PublicAPI.Unshipped.txt and any future API approval diffs against the approved type list.",
+    "Run compile-time or reflection checks that the approved public types and members are present.",
+    "Run negative access checks that the helper and runtime seam types cannot be referenced from outside the assembly.",
+    "Add or review focused consumer-behavior tests for listener accept, client connect, stream open/accept, cancellation, close/error mapping, and stream completion-task behavior.",
+    "Review the design note, spec, and the reference Microsoft test evidence together to confirm no extra public abstractions were introduced."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "src/Incursa.Quic/PublicAPI.Shipped.txt",
+    "docs/design/quic-public-api.md",
+    "specs/requirements/quic/SPEC-QUIC-API.json",
+    "specs/architecture/quic/ARC-QUIC-API-0001.json",
+    "specs/work-items/quic/WI-QUIC-API-0001.json"
+  ],
+  "status_summary": "Planned. No execution evidence exists yet because the public facade has not been promoted.",
+  "supplemental_sections": [
+    {
+      "heading": "Evidence Notes",
+      "content": "The first concrete proof will come from API-diff output and surface tests once the consumer facade is implemented. This verification artifact keeps the gate narrow and explicitly excludes wire-behavior proofs."
+    },
+    {
+      "heading": "Reference Behavioral Evidence",
+      "content": "- `C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicListenerTests.cs`\n- `C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicConnectionTests.cs`\n- `C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicStreamTests.cs`\n- `C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicStreamConnectedStreamConformanceTests.cs`\n- `C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\MsQuicCipherSuitesPolicyTests.cs`\n- `C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\MsQuicTests.cs`\n\nThese tests are not target-repo proof, but they define the baseline public-behavior expectations that the target verification plan should mirror."
+    }
+  ]
+}

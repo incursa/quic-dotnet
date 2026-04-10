@@ -20,6 +20,7 @@ Each canonical artifact is authored in `.json`.
 - [`SPEC-QUIC-RFC9001.json`](SPEC-QUIC-RFC9001.json): canonical RFC 9001 TLS source
 - [`SPEC-QUIC-RFC9002.json`](SPEC-QUIC-RFC9002.json): canonical RFC 9002 recovery source
 - [`SPEC-QUIC-CRT.json`](SPEC-QUIC-CRT.json): canonical connection-runtime source
+- [`SPEC-QUIC-API.json`](SPEC-QUIC-API.json): canonical public API surface source
 - [`REQUIREMENT-GAPS.md`](REQUIREMENT-GAPS.md): the local gap ledger
 
 ## Notes

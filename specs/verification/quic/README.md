@@ -35,6 +35,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0014.json`](VER-QUIC-CRT-0014.json): canonical CRT server-role Finished continuation verification source
 - [`VER-QUIC-CRT-0015.json`](VER-QUIC-CRT-0015.json): canonical CRT server-role inbound client Finished proof verification source
 - [`VER-QUIC-CRT-0017.json`](VER-QUIC-CRT-0017.json): canonical CRT server-role 1-RTT publication verification source
+- [`VER-QUIC-API-0001.json`](VER-QUIC-API-0001.json): canonical public API surface verification source
 
 ## Notes
 

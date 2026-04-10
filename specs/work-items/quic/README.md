@@ -25,6 +25,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0014.json`](WI-QUIC-CRT-0014.json): canonical CRT server-role Finished continuation work item
 - [`WI-QUIC-CRT-0015.json`](WI-QUIC-CRT-0015.json): canonical CRT server-role inbound client Finished proof work item
 - [`WI-QUIC-CRT-0017.json`](WI-QUIC-CRT-0017.json): canonical CRT server-role 1-RTT publication work item
+- [`WI-QUIC-API-0001.json`](WI-QUIC-API-0001.json): canonical public API surface promotion work item
 
 ## Notes
 

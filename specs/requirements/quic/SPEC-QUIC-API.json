@@ -1,0 +1,179 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-API",
+  "artifact_type": "specification",
+  "status": "draft",
+  "title": "Incursa.Quic Public API Surface",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "capability": "public-api",
+  "purpose": "Define the intended public API surface for Incursa.Quic using the public surface of System.Net.Quic as the baseline for the initial consumer cut.",
+  "scope": "This specification defines the initial consumer-facing public API surface for Incursa.Quic. The slice includes listener, connection, stream, options, error, and callback types. It excludes helper-layer packet, frame, TLS, handshake, runtime, and recovery types unless a future specification explicitly promotes them.",
+  "context": "The reference surface in Microsoft System.Net.Quic is the strongest baseline for the initial cut. The target repository already contains a broad internal helper and runtime surface under src/Incursa.Quic, but that surface is not the consumer contract. This specification makes the public/internal boundary explicit so future implementation work can promote only the approved facade types.",
+  "related_artifacts": [
+    "ARC-QUIC-API-0001",
+    "WI-QUIC-API-0001",
+    "VER-QUIC-API-0001"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-API-0001",
+      "title": "Limit the public consumer surface to the approved facade types",
+      "statement": "The library MUST expose only the consumer-facing facade types named in this specification, and it MUST keep all other current helper, parser, runtime, TLS, handshake, packet, frame, transport-parameter, recovery, congestion, and seam types internal unless a future requirement explicitly promotes them.",
+      "trace": {
+        "upstream_refs": [
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs",
+          "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+          "docs/quic-triage.md"
+        ]
+      },
+      "notes": [
+        "The approved public facade for the initial cut is QuicListener, QuicConnection, QuicStream, QuicConnectionOptions, QuicClientConnectionOptions, QuicServerConnectionOptions, QuicListenerOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicStreamType, and QuicStreamCapacityChangedArgs.",
+        "The initial cut should reuse existing framework types such as EndPoint, IPEndPoint, SslApplicationProtocol, SslClientAuthenticationOptions, SslServerAuthenticationOptions, and SslClientHelloInfo rather than invent new endpoint or TLS wrappers."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-API-0002",
+      "title": "Split client and server entry points",
+      "statement": "The library MUST expose client connection establishment through QuicConnection.ConnectAsync(QuicClientConnectionOptions, CancellationToken) and server listener creation and accept through QuicListener.ListenAsync(QuicListenerOptions, CancellationToken) and QuicListener.AcceptConnectionAsync(CancellationToken), with client-specific and server-specific settings kept in distinct options types.",
+      "trace": {
+        "upstream_refs": [
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs"
+        ]
+      },
+      "notes": [
+        "Listener setup requires non-null ListenEndPoint and ApplicationProtocols values before ListenAsync can succeed.",
+        "The listener callback selects server connection options; it is not a middleware pipeline.",
+        "The server-side callback surface remains narrow and should not expose the internal handshake machinery.",
+        "The listener callback receives a cancellation token so the accept flow can stop when the handshake times out or the listener is disposed."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-API-0003",
+      "title": "Keep the connection model opaque and consumer-facing",
+      "statement": "The QuicConnection type MUST represent a connected QUIC session and expose the local endpoint, remote endpoint, target host name, negotiated application protocol, negotiated cipher suite, negotiated TLS protocol, remote certificate, AcceptInboundStreamAsync, OpenOutboundStreamAsync, CloseAsync, DisposeAsync, and ToString, while keeping handshake details, packet state, runtime state, and transport-helper state out of the public surface.",
+      "trace": {
+        "upstream_refs": [
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs"
+        ]
+      },
+      "notes": [
+        "The connection object is the consumer's lifecycle anchor and may be used only after a successful connect or server accept.",
+        "Transport internals should be accessed through the internal runtime, not through public connection properties.",
+        "Connection close and stream-open operations may pend, but they must surface documented terminal results rather than expose scheduler or transport state.",
+        "The connection object is not a middleware or event-pipeline surface."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-API-0004",
+      "title": "Keep the stream model aligned with standard .NET stream consumers",
+      "statement": "The QuicStream type MUST derive from Stream, expose the stream identifier, stream direction, closed-completion tasks, abort and graceful write-completion operations, and the standard synchronous, asynchronous, span-based, capability, and timeout overrides used by Stream.",
+      "trace": {
+        "upstream_refs": [
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs"
+        ]
+      },
+      "notes": [
+        "The public QuicStreamType enum MUST use the Microsoft-style direction-only model with Bidirectional and Unidirectional values.",
+        "The richer internal stream-identity model may continue to track initiator detail separately, but it stays internal.",
+        "CanRead and CanWrite are structural direction properties, not live readiness indicators; a side that has been aborted still reports the same structural capability.",
+        "ReadsClosed and WritesClosed are terminal completion tasks: graceful EOF completes successfully, while abort and connection shutdown fault them with the public QuicError surface.",
+        "The Stream surface stays timeout-aware for consumers that rely on the standard Stream timeout properties."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-API-0005",
+      "title": "Expose configuration through the approved option and callback types",
+      "statement": "The library MUST carry configuration through QuicConnectionOptions, QuicClientConnectionOptions, QuicServerConnectionOptions, QuicListenerOptions, and QuicReceiveWindowSizes, and it MUST expose only the approved knobs on those types: close and stream default error codes, handshake and idle timeouts, keep-alive interval, inbound stream limits, stream-capacity callback, client authentication options, server authentication options, listener endpoint and backlog, application protocols, and the listener connection-options callback.",
+      "trace": {
+        "upstream_refs": [
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs"
+        ]
+      },
+      "notes": [
+        "No custom endpoint or handshake wrapper types are introduced for the initial cut; the public surface reuses EndPoint, IPEndPoint, SslApplicationProtocol, SslClientAuthenticationOptions, SslServerAuthenticationOptions, and SslClientHelloInfo directly.",
+        "Public option objects are configuration bags, not live mutable protocol state.",
+        "Listener setup requires ApplicationProtocols and ListenEndPoint to be populated; client connect requires RemoteEndPoint, ClientAuthenticationOptions, DefaultCloseErrorCode, and DefaultStreamErrorCode to be populated before ConnectAsync begins.",
+        "The listener connection-options callback may narrow the negotiated ALPN list by returning a customized QuicServerConnectionOptions instance.",
+        "StreamCapacityCallback reports bidirectional and unidirectional increments and may fire repeatedly as capacity changes; it is a notification surface, not a general event pipeline."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-API-0006",
+      "title": "Keep the close and error surface explicit",
+      "statement": "The library MUST classify terminal and shutdown outcomes through QuicError and QuicException, surface application and transport error codes on the exception, and support per-stream abort direction through QuicAbortDirection so consumers can distinguish read, write, and both-side termination without referencing internal protocol state.",
+      "trace": {
+        "upstream_refs": [
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs"
+        ]
+      },
+      "notes": [
+        "Connection shutdown remains available through QuicConnection.CloseAsync(long errorCode, CancellationToken) and DisposeAsync.",
+        "The exception surface is the consumer-facing representation of terminal outcomes, not a protocol debug channel.",
+        "CloseAsync validates the application error code and throws ArgumentOutOfRangeException for invalid values.",
+        "CloseAsync is terminal and repeated close calls are ignored once the connection is already closed.",
+        "DisposeAsync is the consumer-facing cleanup path when no explicit close is issued; it uses the configured default close error code."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-API-0007",
+      "title": "Keep the TLS, handshake, packet, and runtime seams internal",
+      "statement": "The library MUST keep QuicTlsTranscriptProgress, QuicTlsKeySchedule, QuicTransportTlsBridgeState, QuicHandshakeFlowCoordinator, QuicInitialPacketProtection, QuicHandshakePacketProtection, QuicTlsPacketProtectionMaterial, QuicConnectionRuntime, QuicConnectionRuntimeHost, QuicConnectionRuntimeShard, and QuicConnectionSendRuntime internal, and it MUST keep the remainder of the packet, frame, transport-parameter, recovery, congestion, and stream-identity helpers internal unless a future requirement explicitly promotes them.",
+      "trace": {
+        "upstream_refs": [
+          "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+          "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+          "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+          "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+          "src/Incursa.Quic/QuicInitialPacketProtection.cs",
+          "src/Incursa.Quic/QuicHandshakePacketProtection.cs",
+          "src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeHost.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
+          "src/Incursa.Quic/QuicConnectionSendRuntime.cs"
+        ]
+      },
+      "notes": [
+        "This boundary keeps transcript progress, key schedule, bridge state, handshake coordination, packet-protection details, and runtime reducer details out of the consumer contract.",
+        "The public API must not expose the existing helper-layer runtime model by accident."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-API-0008",
+      "title": "Honor async lifecycle cancellation and terminal-state transitions",
+      "statement": "The library MUST honor cancellation tokens on pending connect, listen, accept, open-stream, and close operations, and the server connection-options callback MUST observe the cancellation token supplied by the listener accept flow. A pre-canceled or later-canceled token MUST complete the still-pending operation with OperationCanceledException, but once a connection or stream has committed or reached a terminal state the public API MUST complete with the documented QuicError or ObjectDisposedException outcome instead of silently reviving or hiding the operation.",
+      "trace": {
+        "upstream_refs": [
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicListenerTests.cs",
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicConnectionTests.cs",
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicStreamTests.cs",
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\MsQuicTests.cs"
+        ]
+      },
+      "notes": [
+        "The Microsoft tests directly prove cancellation for listener accept, the listener callback, and blocked outbound stream opens; the client connect path uses the same async contract shape and should remain cancellation-aware.",
+        "Cancellation does not retroactively undo a committed connection, accepted stream, or completed close.",
+        "Idempotent close and dispose semantics are consumer-facing terminal behavior, not a hidden runtime optimization."
+      ]
+    }
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Public Surface Inventory",
+      "content": "- `QuicListener`: server-side accept/listen entry point.\n- `QuicConnection`: connected session facade.\n- `QuicStream`: standard `Stream` facade for a QUIC stream.\n- `QuicConnectionOptions`: shared connection knobs.\n- `QuicClientConnectionOptions`: client-only connect options.\n- `QuicServerConnectionOptions`: server-only accept/listen options.\n- `QuicListenerOptions`: listener configuration and server connection-options callback.\n- `QuicReceiveWindowSizes`: connection and stream receive-window settings.\n- `QuicAbortDirection`: stream abort direction.\n- `QuicError` and `QuicException`: close and terminal error surface.\n- `QuicStreamType`: bidirectional/unidirectional stream direction.\n- `QuicStreamCapacityChangedArgs`: callback payload for stream-capacity notifications.\n\nThe public API should reuse `EndPoint`, `IPEndPoint`, `SslApplicationProtocol`, `SslClientAuthenticationOptions`, `SslServerAuthenticationOptions`, and `SslClientHelloInfo` directly rather than introduce new endpoint or TLS wrapper abstractions."
+    },
+    {
+      "heading": "Behavioral Evidence From Microsoft Tests",
+      "content": "The following Microsoft library-focused tests were the behavioral baseline for this pass:\n\n- `tests/FunctionalTests/QuicListenerTests.cs`: listener setup validation, callback exception and timeout behavior, cancellation, backlog, ALPN, and listener-disposal behavior.\n- `tests/FunctionalTests/QuicConnectionTests.cs`: connect validation, close/dispose terminal-state behavior, stream-capacity callback deltas, peer-certificate lifetime, and peer-abort propagation.\n- `tests/FunctionalTests/QuicStreamTests.cs`: direction-based capabilities, EOF and graceful completion, abort mapping, completion-task behavior, cancellation, and stream-dispose behavior.\n- `tests/FunctionalTests/QuicStreamConnectedStreamConformanceTests.cs`: `QuicStream` participates in the standard timeout-aware `Stream` contract.\n- `tests/FunctionalTests/MsQuicCipherSuitesPolicyTests.cs`: the API reuses BCL TLS options directly and surfaces invalid cipher-suite combinations through public exceptions.\n- `tests/FunctionalTests/MsQuicTests.cs`: idle timeout, blocked outbound stream open cancellation, and idempotent close behavior.\n\nThese tests justified the added lifecycle and cancellation language in `REQ-QUIC-API-0008` and the tightened validation notes in `REQ-QUIC-API-0005` and `REQ-QUIC-API-0006`."
+    },
+    {
+      "heading": "Internal-Only Surface",
+      "content": "The current helper and runtime seam types stay internal, including `QuicTlsTranscriptProgress`, `QuicTlsKeySchedule`, `QuicTransportTlsBridgeState`, `QuicHandshakeFlowCoordinator`, `QuicInitialPacketProtection`, `QuicHandshakePacketProtection`, `QuicTlsPacketProtectionMaterial`, `QuicConnectionRuntime`, `QuicConnectionRuntimeHost`, `QuicConnectionRuntimeShard`, `QuicConnectionSendRuntime`, and `QuicConnectionRuntimeDeadlineScheduler`.\n\nThe remainder of the packet, frame, transport-parameter, recovery, congestion, and stream-identity helpers also remain internal unless a future requirement explicitly promotes one of them."
+    },
+    {
+      "heading": "Deviation Policy",
+      "content": "No intentional deviations from the Microsoft ref surface are required for this initial cut.\n\nThe repo-specific rule is that the richer internal transport engine stays hidden behind the consumer facade, and the public surface does not grow into a general middleware model."
+    }
+  ]
+}
