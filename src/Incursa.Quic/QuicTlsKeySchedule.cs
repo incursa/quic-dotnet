@@ -348,6 +348,19 @@ internal sealed class QuicTlsKeySchedule
                     QuicTlsEncryptionLevel.Handshake,
                     CryptoDataOffset: certificateVerifyOffset,
                     CryptoData: certificateVerifyBytes));
+
+                if (!TryCreateFinished(HashTranscript(), out byte[] finishedBytes))
+                {
+                    return BuildFatalAlert(HandshakeTranscriptVerificationFailureAlertDescription);
+                }
+
+                ulong finishedOffset = certificateVerifyOffset + (ulong)certificateVerifyBytes.Length;
+                AppendTranscriptMessage(finishedBytes);
+                updates.Add(new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.CryptoDataAvailable,
+                    QuicTlsEncryptionLevel.Handshake,
+                    CryptoDataOffset: finishedOffset,
+                    CryptoData: finishedBytes));
             }
 
             handshakeSecretsDerived = true;
@@ -975,6 +988,21 @@ internal sealed class QuicTlsKeySchedule
         {
             return false;
         }
+    }
+
+    private bool TryCreateFinished(ReadOnlySpan<byte> transcriptHash, out byte[] finishedBytes)
+    {
+        finishedBytes = Array.Empty<byte>();
+
+        if (serverHandshakeTrafficSecret is null)
+        {
+            return false;
+        }
+
+        finishedBytes = WrapHandshakeMessage(
+            QuicTlsHandshakeMessageType.Finished,
+            DeriveFinishedVerifyData(serverHandshakeTrafficSecret, transcriptHash));
+        return true;
     }
 
     private static bool TryMapSignatureScheme(

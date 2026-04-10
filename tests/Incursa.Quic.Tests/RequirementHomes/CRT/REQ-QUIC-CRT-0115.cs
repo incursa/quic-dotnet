@@ -10,7 +10,7 @@ public sealed class REQ_QUIC_CRT_0115
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ServerRoleEmitsLocalCertificateVerifyAfterLocalCertificateAtTheNextHandshakeOffset()
+    public void ServerRoleEmitsLocalCertificateVerifyAndLocalFinishedAfterLocalCertificateAtTheNextHandshakeOffset()
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x22);
         byte[] localSigningPrivateKey = CreateScalar(0x44);
@@ -39,17 +39,24 @@ public sealed class REQ_QUIC_CRT_0115
             QuicTlsEncryptionLevel.Handshake,
             CreateClientHelloTranscript(peerTransportParameters));
 
-        Assert.Equal(8, updates.Count);
+        Assert.Equal(9, updates.Count);
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[1].Kind);
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[5].Kind);
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[6].Kind);
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[7].Kind);
+        Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[8].Kind);
         Assert.Equal(0UL, updates[1].CryptoDataOffset);
         Assert.Equal((ulong)updates[1].CryptoData.Length, updates[5].CryptoDataOffset);
         Assert.Equal((ulong)updates[1].CryptoData.Length + (ulong)updates[5].CryptoData.Length, updates[6].CryptoDataOffset);
         Assert.Equal(
             (ulong)updates[1].CryptoData.Length + (ulong)updates[5].CryptoData.Length + (ulong)updates[6].CryptoData.Length,
             updates[7].CryptoDataOffset);
+        Assert.Equal(
+            (ulong)updates[1].CryptoData.Length
+            + (ulong)updates[5].CryptoData.Length
+            + (ulong)updates[6].CryptoData.Length
+            + (ulong)updates[7].CryptoData.Length,
+            updates[8].CryptoDataOffset);
         Assert.True(expectedCertificateTranscript.AsSpan().SequenceEqual(updates[6].CryptoData.Span));
 
         byte[] expectedTranscriptBeforeCertificateVerify =
@@ -77,7 +84,8 @@ public sealed class REQ_QUIC_CRT_0115
             updates[1].CryptoData.Length
             + updates[5].CryptoData.Length
             + updates[6].CryptoData.Length
-            + updates[7].CryptoData.Length];
+            + updates[7].CryptoData.Length
+            + updates[8].CryptoData.Length];
         Assert.True(driver.TryPeekOutgoingCryptoData(
             QuicTlsEncryptionLevel.Handshake,
             surfacedHandshakeBytes,
@@ -92,9 +100,12 @@ public sealed class REQ_QUIC_CRT_0115
             .. updates[5].CryptoData.ToArray(),
             .. updates[6].CryptoData.ToArray(),
             .. updates[7].CryptoData.ToArray(),
+            .. updates[8].CryptoData.ToArray(),
         ];
         Assert.True(expectedHandshakeBytes.AsSpan().SequenceEqual(surfacedHandshakeBytes));
 
+        Assert.Equal(QuicTlsHandshakeMessageType.CertificateVerify, ParseHandshakeMessageType(updates[7].CryptoData.Span));
+        Assert.Equal(QuicTlsHandshakeMessageType.Finished, ParseHandshakeMessageType(updates[8].CryptoData.Span));
         Assert.True(driver.State.HandshakeKeysAvailable);
         Assert.True(driver.State.TryGetHandshakeOpenPacketProtectionMaterial(out _));
         Assert.True(driver.State.TryGetHandshakeProtectPacketProtectionMaterial(out _));
@@ -209,7 +220,7 @@ public sealed class REQ_QUIC_CRT_0115
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ServerRoleAppendsLocalCertificateVerifyToTheManagedTranscriptExplicitly()
+    public void ServerRoleAppendsLocalCertificateVerifyAndLocalFinishedToTheManagedTranscriptExplicitly()
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x22);
         byte[] localSigningPrivateKey = CreateScalar(0x44);
@@ -239,13 +250,14 @@ public sealed class REQ_QUIC_CRT_0115
             localLeafCertificateDer,
             localSigningPrivateKey);
 
-        Assert.Equal(7, updates.Count);
+        Assert.Equal(8, updates.Count);
         byte[] expectedTranscript = new byte[
             clientHello.Length
             + updates[0].CryptoData.Length
             + updates[4].CryptoData.Length
             + updates[5].CryptoData.Length
-            + updates[6].CryptoData.Length];
+            + updates[6].CryptoData.Length
+            + updates[7].CryptoData.Length];
         clientHello.CopyTo(expectedTranscript, 0);
         updates[0].CryptoData.CopyTo(expectedTranscript.AsMemory(clientHello.Length));
         updates[4].CryptoData.CopyTo(expectedTranscript.AsMemory(clientHello.Length + updates[0].CryptoData.Length));
@@ -256,6 +268,12 @@ public sealed class REQ_QUIC_CRT_0115
             + updates[0].CryptoData.Length
             + updates[4].CryptoData.Length
             + updates[5].CryptoData.Length));
+        updates[7].CryptoData.CopyTo(expectedTranscript.AsMemory(
+            clientHello.Length
+            + updates[0].CryptoData.Length
+            + updates[4].CryptoData.Length
+            + updates[5].CryptoData.Length
+            + updates[6].CryptoData.Length));
 
         byte[] actualTranscript = new byte[expectedTranscript.Length];
         Assert.True(schedule.TryCopyHandshakeTranscriptBytes(actualTranscript, out int bytesWritten));
@@ -263,6 +281,7 @@ public sealed class REQ_QUIC_CRT_0115
         Assert.True(expectedTranscript.AsSpan().SequenceEqual(actualTranscript));
         Assert.True(expectedCertificateTranscript.AsSpan().SequenceEqual(updates[5].CryptoData.Span));
         Assert.Equal(QuicTlsHandshakeMessageType.CertificateVerify, ParseHandshakeMessageType(updates[6].CryptoData.Span));
+        Assert.Equal(QuicTlsHandshakeMessageType.Finished, ParseHandshakeMessageType(updates[7].CryptoData.Span));
         Assert.True(TryParseCertificateVerifyTranscript(
             updates[6].CryptoData.Span,
             out QuicTlsSignatureScheme signatureScheme,
@@ -285,7 +304,7 @@ public sealed class REQ_QUIC_CRT_0115
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void RepeatedServerRoleCertificateVerifyProgressionIsRejectedDeterministically()
+    public void RepeatedServerRoleCertificateVerifyAndFinishedProgressionIsRejectedDeterministically()
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x22);
         byte[] localSigningPrivateKey = CreateScalar(0x44);
@@ -308,7 +327,7 @@ public sealed class REQ_QUIC_CRT_0115
         QuicTlsTranscriptStep clientHelloStep = progress.Advance(QuicTlsRole.Server);
 
         QuicTlsKeySchedule schedule = new(QuicTlsRole.Server, localHandshakePrivateKey);
-        Assert.Equal(7, schedule.ProcessTranscriptStep(
+        Assert.Equal(8, schedule.ProcessTranscriptStep(
             clientHelloStep,
             localTransportParameters,
             localLeafCertificateDer,
@@ -333,7 +352,7 @@ public sealed class REQ_QUIC_CRT_0115
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ServerRoleCommitRemainsUnavailableAfterLocalCertificateVerify()
+    public void ServerRoleCommitRemainsUnavailableAfterLocalCertificateVerifyAndLocalFinished()
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x22);
         byte[] localSigningPrivateKey = CreateScalar(0x44);
