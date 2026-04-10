@@ -24,7 +24,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
     private readonly long timeOriginTicks;
     private readonly QuicHandshakeFlowCoordinator handshakeFlowCoordinator;
-    private readonly QuicTransportTlsBridgeState tlsState = new();
+    private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
 
     private int consumerStarted;
@@ -54,15 +54,17 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ReadOnlyMemory<byte> localHandshakePrivateKey = default,
         ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default,
         ReadOnlyMemory<byte> localServerLeafCertificateDer = default,
-        ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default)
+        ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default,
+        QuicTlsRole tlsRole = QuicTlsRole.Client)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
         sendRuntime = new QuicConnectionSendRuntime();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         handshakeFlowCoordinator = new QuicHandshakeFlowCoordinator();
+        tlsState = new QuicTransportTlsBridgeState(tlsRole);
         tlsBridgeDriver = new QuicTlsTransportBridgeDriver(
-            QuicTlsRole.Client,
+            tlsRole,
             tlsState,
             localHandshakePrivateKey,
             pinnedPeerLeafCertificateSha256,

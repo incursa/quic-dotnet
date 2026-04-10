@@ -90,13 +90,27 @@ internal sealed class QuicTransportTlsBridgeState
 
         if (role == QuicTlsRole.Server)
         {
-            return false;
+            return CanCommitServerPeerTransportParameters(parameters);
         }
 
         return !IsTerminal
             && !PeerTransportParametersCommitted
             && PeerCertificateVerifyVerified
             && PeerCertificatePolicyAccepted
+            && PeerFinishedVerified
+            && StagedPeerTransportParameters is not null
+            && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed
+            && HandshakeMessageType == QuicTlsHandshakeMessageType.Finished
+            && HandshakeMessageLength.HasValue
+            && SelectedCipherSuite.HasValue
+            && TranscriptHashAlgorithm.HasValue
+            && AreEquivalent(StagedPeerTransportParameters, parameters);
+    }
+
+    private bool CanCommitServerPeerTransportParameters(QuicTransportParameters parameters)
+    {
+        return !IsTerminal
+            && !PeerTransportParametersCommitted
             && PeerFinishedVerified
             && StagedPeerTransportParameters is not null
             && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed

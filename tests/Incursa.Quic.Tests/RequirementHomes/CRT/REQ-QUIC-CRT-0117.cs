@@ -76,8 +76,6 @@ public sealed class REQ_QUIC_CRT_0117
         Assert.Equal(QuicTlsTranscriptPhase.Completed, driver.State.HandshakeTranscriptPhase);
         Assert.Equal(QuicTlsHandshakeMessageType.Finished, driver.State.HandshakeMessageType);
         Assert.False(driver.State.PeerTransportParametersCommitted);
-        Assert.False(driver.State.CanCommitPeerTransportParameters(peerTransportParameters));
-        Assert.Empty(driver.CommitPeerTransportParameters(peerTransportParameters));
     }
 
     [Fact]

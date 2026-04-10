@@ -903,7 +903,7 @@
         "`PeerCertificatePolicyAccepted` means the client role's explicit local certificate-acceptance policy matched the presented leaf certificate facts; it does not imply certificate trust, certificate-path validation, hostname validation, revocation, or identity authentication.",
         "`PeerFinishedVerified` means the client role has cryptographically verified the peer Finished with the managed TLS 1.3 key schedule; in the server role it names the same proof after verifying the inbound client Finished against the complete local server flight; it does not imply certificate validation, `CertificateVerify` signature verification, or identity authentication.",
         "`PeerHandshakeTranscriptCompleted` remains a transcript milestone; on the client role it is only emitted after both peer proof states exist, and on the server role it is only emitted after inbound client Finished verification succeeds; it is not the commit gate for peer transport parameters.",
-        "Server-role peer transport-parameter commit remains unavailable in this slice."
+        "Peer transport-parameter commit stays explicit and role-aware rather than implied by construction."
       ]
     },
     {
@@ -984,7 +984,7 @@
       "notes": [
         "This requirement is narrower than certificate authentication: it proves Finished verification only and does not add certificate trust, hostname validation, identity validation, or certificate-path validation.",
         "The commit gate moves from transcript completion to the conjunction of `PeerCertificateVerifyVerified`, `PeerCertificatePolicyAccepted`, and `PeerFinishedVerified`; `PeerHandshakeTranscriptCompleted` remains a transcript milestone.",
-        "Server-role commit remains unavailable until equivalent cryptographic coverage exists."
+        "This client-role slice does not add server-role peer transport-parameter commit."
       ]
     },
     {
@@ -1034,7 +1034,7 @@
       "notes": [
         "This slice is intentionally server-role only and permanent. It does not add `EncryptedExtensions`, certificate flight, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
         "The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.",
-        "Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist."
+        "This slice does not add server-role peer transport-parameter commitment."
       ]
     },
     {
@@ -1051,7 +1051,7 @@
       "notes": [
         "This slice extends the permanent server-role crypto floor and remains server-role only. It does not add certificate flight, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
         "The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.",
-        "Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist."
+        "This slice does not add server-role peer transport-parameter commitment."
       ]
     },
     {
@@ -1068,7 +1068,7 @@
       "notes": [
         "This slice extends the permanent server-role crypto floor and remains server-role only. It does not add `CertificateVerify`, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
         "The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.",
-        "Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist."
+        "This slice does not add server-role peer transport-parameter commitment."
       ]
     },
     {
@@ -1085,7 +1085,7 @@
       "notes": [
         "This slice extends the permanent server-role crypto floor and remains server-role only. It does not add server `Finished`, client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
         "The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`, with ECDSA P-256 as the only signing path.",
-        "Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist."
+        "This slice does not add server-role peer transport-parameter commitment."
       ]
     },
     {
@@ -1119,7 +1119,24 @@
       "notes": [
         "This slice is intentionally server-role only. It does not add client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
         "`PeerFinishedVerified` is the narrow proof claim for the supported server-role path; it proves Finished possession only and does not imply client identity or trust.",
-        "Server-role peer transport-parameter commit remains unavailable in this slice; `PeerHandshakeTranscriptCompleted` is the next honest post-proof milestone."
+        "Server-role peer transport-parameter commit is defined separately in REQ-QUIC-CRT-0118."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0118",
+      "title": "Gate server-role peer transport-parameter commit on Finished verification",
+      "statement": "In the server role, the library MUST allow `PeerTransportParametersCommitted` only after `PeerFinishedVerified` has been surfaced, the transcript boundary is at the completed local server flight with `HandshakeTranscriptPhase` set to `Completed`, `HandshakeMessageType` set to `Finished`, `HandshakeMessageLength`, `SelectedCipherSuite`, and `TranscriptHashAlgorithm` present, and the supplied peer transport parameters are equivalent to the staged peer transport parameters; malformed, unsupported, repeated, conflicting, terminal, or mismatched commit progression MUST fail deterministically through the existing fatal/update path, and `PeerHandshakeTranscriptCompleted` remains a transcript milestone rather than a commit prerequisite.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 8446 Section 4.4.4",
+          "RFC 9001 Sections 5 and 8",
+          "connection-runtime-state-machine.md"
+        ]
+      },
+      "notes": [
+        "This slice is intentionally server-role only and narrow. It does not add client identity, certificate trust, hostname validation, client-certificate authentication, 0-RTT, 1-RTT, key update, or interop-runner handshake support.",
+        "`PeerFinishedVerified` is the proof foundation for the supported server-role path; it proves Finished possession only and does not imply client identity or trust.",
+        "`PeerHandshakeTranscriptCompleted` remains a transcript milestone and is not required for the commit gate."
       ]
     }
   ]

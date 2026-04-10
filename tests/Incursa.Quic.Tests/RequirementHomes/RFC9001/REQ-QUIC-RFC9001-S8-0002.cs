@@ -81,6 +81,43 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ServerRoleAllowsStagedTransportParametersOnlyAfterFinishedProof()
+    {
+        QuicTransportParameters peerParameters = CreatePeerTransportParameters();
+
+        QuicTransportTlsBridgeState bridge = new(QuicTlsRole.Server);
+
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.ClientHello,
+            HandshakeMessageLength: 48,
+            SelectedCipherSuite: QuicTlsCipherSuite.TlsAes128GcmSha256,
+            TranscriptHashAlgorithm: QuicTlsTranscriptHashAlgorithm.Sha256,
+            TransportParameters: peerParameters,
+            TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.Finished,
+            HandshakeMessageLength: 32,
+            TranscriptPhase: QuicTlsTranscriptPhase.Completed)));
+
+        Assert.False(bridge.CanCommitPeerTransportParameters(peerParameters));
+        Assert.False(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.PeerTransportParametersCommitted,
+            TransportParameters: peerParameters)));
+
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerFinishedVerified)));
+        Assert.True(bridge.CanCommitPeerTransportParameters(peerParameters));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.PeerTransportParametersCommitted,
+            TransportParameters: peerParameters)));
+        Assert.True(bridge.PeerTransportParametersCommitted);
+        Assert.False(bridge.PeerHandshakeTranscriptCompleted);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void FatalTranscriptStateBlocksCommitAndTranscriptCompletion()

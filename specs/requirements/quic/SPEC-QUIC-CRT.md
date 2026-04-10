@@ -724,7 +724,7 @@ Notes:
 - `PeerCertificatePolicyAccepted` means the client role's explicit local certificate-acceptance policy matched the presented leaf certificate facts; it does not imply certificate trust, certificate-path validation, hostname validation, revocation, or identity authentication.
 - `PeerFinishedVerified` means the client role has cryptographically verified the peer Finished with the managed TLS 1.3 key schedule; in the server role it names the same proof after verifying the inbound client Finished against the complete local server flight; it does not imply certificate validation, `CertificateVerify` signature verification, or identity authentication.
 - `PeerHandshakeTranscriptCompleted` remains a transcript milestone; on the client role it is only emitted after both peer proof states exist, and on the server role it is only emitted after inbound client Finished verification succeeds; it is not the commit gate for peer transport parameters.
-- Server-role peer transport-parameter commit remains unavailable in this slice.
+- Peer transport-parameter commit stays explicit and role-aware rather than implied by construction.
 
 ## REQ-QUIC-CRT-0104 Expose a diagnostics sink abstraction
 The library MUST expose a diagnostics sink abstraction that can be a no-op when disabled and is not hardwired to any single log encoding or qlog serialization format.
@@ -788,7 +788,7 @@ Trace:
 Notes:
 - This requirement is narrower than certificate authentication: it proves Finished verification only and does not add certificate trust, hostname validation, identity validation, or certificate-path validation.
 - The commit gate moves from transcript completion to the conjunction of `PeerCertificateVerifyVerified`, `PeerCertificatePolicyAccepted`, and `PeerFinishedVerified`; `PeerHandshakeTranscriptCompleted` remains a transcript milestone.
-- Server-role commit remains unavailable until equivalent cryptographic coverage exists.
+- This client-role slice does not add server-role peer transport-parameter commit.
 
 ## REQ-QUIC-CRT-0110 Verify the client-role peer CertificateVerify proof
 In the client role, the library MUST parse the peer Certificate message only as far as permanently needed to extract a single leaf certificate with an empty request context and no certificate-entry extensions, accept only an ECDSA P-256 public key for the supported proof path, build the TLS 1.3 server CertificateVerify signed input from the current handshake transcript hash with the standard 64-space prefix and server context string, verify the peer CertificateVerify signature for the supported `ecdsa_secp256r1_sha256` scheme, surface `PeerCertificateVerifyVerified` only after that verification succeeds, and deterministically reject malformed certificate payloads, unsupported signature schemes, malformed CertificateVerify payloads, transcript mismatches, and invalid signatures through the existing fatal/update path.
@@ -829,7 +829,7 @@ Trace:
 Notes:
 - This slice is intentionally server-role only and permanent. It does not add `EncryptedExtensions`, certificate flight, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
 - The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.
-- Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist.
+- This slice does not add server-role peer transport-parameter commitment.
 
 ## REQ-QUIC-CRT-0113 Emit local server EncryptedExtensions on the permanent handshake seam
 In the server role, the library MUST emit one local `EncryptedExtensions` message for the same supported TLS 1.3 subset using the local QUIC transport parameters only after the supported `ClientHello` has been accepted, the local `ServerHello` has been published, Handshake keys are available, and the local transport parameters are available, append that local `EncryptedExtensions` at the correct transcript boundary immediately after the local `ServerHello`, surface the local `EncryptedExtensions` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after the local `ServerHello` bytes, and deterministically reject premature, repeated, conflicting, or malformed local `EncryptedExtensions` progression through the existing fatal/update path.
@@ -843,7 +843,7 @@ Trace:
 Notes:
 - This slice extends the permanent server-role crypto floor and remains server-role only. It does not add certificate flight, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
 - The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.
-- Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist.
+- This slice does not add server-role peer transport-parameter commitment.
 
 ## REQ-QUIC-CRT-0114 Emit local server Certificate on the permanent handshake seam
 In the server role, the library MUST expose a narrow local leaf-certificate material seam that accepts explicit raw DER for one supported leaf certificate, and when that material is configured after the supported `ClientHello` has been accepted, the local `ServerHello` and local `EncryptedExtensions` have been published, Handshake keys are available, and the local leaf certificate validates as the supported single-leaf ECDSA P-256 input, format one local TLS 1.3 `Certificate` message with empty `certificate_request_context` and no certificate-entry extensions from that material, append that local `Certificate` at the correct transcript boundary immediately after the local `EncryptedExtensions`, surface the local `Certificate` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after the local `EncryptedExtensions` bytes, and deterministically reject premature, repeated, conflicting, malformed, or unsupported local `Certificate` progression through the existing fatal/update path.
@@ -857,7 +857,7 @@ Trace:
 Notes:
 - This slice extends the permanent server-role crypto floor and remains server-role only. It does not add `CertificateVerify`, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
 - The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.
-- Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist.
+- This slice does not add server-role peer transport-parameter commitment.
 
 ## REQ-QUIC-CRT-0115 Emit local server CertificateVerify on the permanent handshake seam
 In the server role, the library MUST expose a narrow local signing-material seam that accepts explicit raw P-256 signing key material for the supported ECDSA leaf-certificate subset, and when that material is configured after the supported `ClientHello` has been accepted, the local `ServerHello`, local `EncryptedExtensions`, and local `Certificate` have been published, Handshake keys are available, the local signing material is compatible with the previously supplied local leaf certificate, and the supported subset remains pinned to TLS 1.3 with `TLS_AES_128_GCM_SHA256`, `secp256r1`, and ECDSA P-256, format one local TLS 1.3 `CertificateVerify` message with the supported server verification context and `ecdsa_secp256r1_sha256`, append that local `CertificateVerify` at the correct transcript boundary immediately after the local `Certificate`, surface the local `CertificateVerify` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after `ServerHello || EncryptedExtensions || Certificate`, and deterministically reject premature, repeated, conflicting, malformed, or unsupported local `CertificateVerify` progression through the existing fatal/update path.
@@ -871,7 +871,7 @@ Trace:
 Notes:
 - This slice extends the permanent server-role crypto floor and remains server-role only. It does not add server `Finished`, client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
 - The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`, with ECDSA P-256 as the only signing path.
-- Server-role peer transport-parameter commitment remains unavailable until later server proof and policy slices exist.
+- This slice does not add server-role peer transport-parameter commitment.
 
 ## REQ-QUIC-CRT-0116 Emit local server Finished on the permanent handshake seam
 In the server role, the library MUST emit one local TLS 1.3 `Finished` message for the same supported `TLS_AES_128_GCM_SHA256` over `secp256r1` subset only after the supported `ClientHello` has been accepted, the local `ServerHello`, local `EncryptedExtensions`, local `Certificate`, and local `CertificateVerify` have all been published, Handshake keys are available, and the local `CertificateVerify` has already been emitted, derive that local `Finished` from the server handshake traffic secret and the transcript hash that includes the local `CertificateVerify` boundary, append that local `Finished` at the correct transcript boundary immediately after the local `CertificateVerify`, surface the local `Finished` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after `ServerHello || EncryptedExtensions || Certificate || CertificateVerify`, and deterministically reject premature, repeated, conflicting, malformed, or unsupported local `Finished` progression through the existing fatal/update path.
@@ -899,4 +899,18 @@ Trace:
 Notes:
 - This slice is intentionally server-role only. It does not add client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
 - `PeerFinishedVerified` is the narrow proof claim for the supported server-role path; it proves Finished possession only and does not imply client identity or trust.
-- Server-role peer transport-parameter commit remains unavailable in this slice; `PeerHandshakeTranscriptCompleted` is the next honest post-proof milestone.
+- Server-role peer transport-parameter commit is defined separately in REQ-QUIC-CRT-0118.
+
+## REQ-QUIC-CRT-0118 Gate server-role peer transport-parameter commit on Finished verification
+In the server role, the library MUST allow `PeerTransportParametersCommitted` only after `PeerFinishedVerified` has been surfaced, the transcript boundary is at the completed local server flight with `HandshakeTranscriptPhase` set to `Completed`, `HandshakeMessageType` set to `Finished`, `HandshakeMessageLength`, `SelectedCipherSuite`, and `TranscriptHashAlgorithm` present, and the supplied peer transport parameters are equivalent to the staged peer transport parameters; malformed, unsupported, repeated, conflicting, terminal, or mismatched commit progression MUST fail deterministically through the existing fatal/update path, and `PeerHandshakeTranscriptCompleted` remains a transcript milestone rather than a commit prerequisite.
+
+Trace:
+- Source Refs:
+  - RFC 8446 Section 4.4.4
+  - RFC 9001 Sections 5 and 8
+  - connection-runtime-state-machine.md
+
+Notes:
+- This slice is intentionally server-role only and narrow. It does not add client identity, certificate trust, hostname validation, client-certificate authentication, 0-RTT, 1-RTT, key update, or interop-runner handshake support.
+- `PeerFinishedVerified` is the proof foundation for the supported server-role path; it proves Finished possession only and does not imply client identity or trust.
+- `PeerHandshakeTranscriptCompleted` remains a transcript milestone and is not required for the commit gate.
