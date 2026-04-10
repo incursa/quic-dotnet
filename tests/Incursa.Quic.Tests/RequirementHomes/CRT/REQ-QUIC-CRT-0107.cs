@@ -204,6 +204,25 @@ public sealed class REQ_QUIC_CRT_0107
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    public void UnexpectedEncryptedExtensionsPeerExtensionsAreRejectedDeterministically()
+    {
+        QuicTlsTranscriptProgress progress = new(QuicTlsRole.Client);
+        byte[] encryptedExtensions = CreateEncryptedExtensionsTranscript(
+            CreateServerTransportParameters(),
+            includeUnknownExtension: true);
+
+        progress.AppendCryptoBytes(0, encryptedExtensions);
+        QuicTlsTranscriptStep step = progress.Advance(QuicTlsRole.Client);
+
+        Assert.Equal(QuicTlsTranscriptStepKind.Fatal, step.Kind);
+        Assert.Equal((ushort)0x0032, step.AlertDescription);
+        Assert.Equal(QuicTlsTranscriptPhase.Failed, progress.Phase);
+        Assert.True(progress.IsTerminalFailure);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void TruncatedOrMalformedHandshakeFramingFailsDeterministically()
     {
         QuicTlsTranscriptProgress progress = new(QuicTlsRole.Client);
@@ -443,15 +462,20 @@ public sealed class REQ_QUIC_CRT_0107
 
     private static byte[] CreateEncryptedExtensionsTranscript(
         QuicTransportParameters transportParameters,
-        bool duplicateTransportParametersExtension = false)
+        bool duplicateTransportParametersExtension = false,
+        bool includeUnknownExtension = false)
     {
         byte[] transportParametersExtension = CreateTransportParametersExtension(
             transportParameters,
             QuicTransportParameterRole.Server);
+        byte[] unknownExtension = includeUnknownExtension
+            ? CreateUnknownExtension(0x1234, new byte[] { 0xAB })
+            : Array.Empty<byte>();
 
         int extensionsLength = duplicateTransportParametersExtension
             ? transportParametersExtension.Length * 2
             : transportParametersExtension.Length;
+        extensionsLength += unknownExtension.Length;
 
         byte[] body = new byte[2 + extensionsLength];
         int index = 0;
@@ -459,9 +483,16 @@ public sealed class REQ_QUIC_CRT_0107
         WriteUInt16(body.AsSpan(index, 2), (ushort)extensionsLength);
         index += 2;
         transportParametersExtension.CopyTo(body.AsSpan(index));
+        index += transportParametersExtension.Length;
         if (duplicateTransportParametersExtension)
         {
-            transportParametersExtension.CopyTo(body.AsSpan(index + transportParametersExtension.Length));
+            transportParametersExtension.CopyTo(body.AsSpan(index));
+            index += transportParametersExtension.Length;
+        }
+
+        if (includeUnknownExtension)
+        {
+            unknownExtension.CopyTo(body.AsSpan(index));
         }
 
         return WrapHandshakeMessage(QuicTlsHandshakeMessageType.EncryptedExtensions, body);
@@ -538,6 +569,15 @@ public sealed class REQ_QUIC_CRT_0107
         WriteUInt16(extension.AsSpan(0, 2), QuicTransportParametersCodec.QuicTransportParametersExtensionType);
         WriteUInt16(extension.AsSpan(2, 2), (ushort)bytesWritten);
         encodedTransportParameters.AsSpan(0, bytesWritten).CopyTo(extension.AsSpan(4));
+        return extension;
+    }
+
+    private static byte[] CreateUnknownExtension(ushort extensionType, ReadOnlySpan<byte> extensionValue)
+    {
+        byte[] extension = new byte[4 + extensionValue.Length];
+        WriteUInt16(extension.AsSpan(0, 2), extensionType);
+        WriteUInt16(extension.AsSpan(2, 2), (ushort)extensionValue.Length);
+        extensionValue.CopyTo(extension.AsSpan(4));
         return extension;
     }
 

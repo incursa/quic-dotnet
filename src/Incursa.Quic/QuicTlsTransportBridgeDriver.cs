@@ -71,10 +71,6 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         List<QuicTlsStateUpdate> updates = [];
 
         AppendPublishedUpdates(updates, PublishLocalTransportParameters(localTransportParameters));
-        if (Role == QuicTlsRole.Client)
-        {
-            AppendPublishedUpdates(updates, PublishDeterministicHandshakeEgress(localTransportParameters));
-        }
 
         return updates;
     }
@@ -312,30 +308,6 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private IReadOnlyList<QuicTlsStateUpdate> PublishUpdate(QuicTlsStateUpdate update)
     {
         return bridgeState.TryApply(update) ? [update] : Array.Empty<QuicTlsStateUpdate>();
-    }
-
-    private IReadOnlyList<QuicTlsStateUpdate> PublishDeterministicHandshakeEgress(
-        QuicTransportParameters localTransportParameters)
-    {
-        Span<byte> encodedTranscript = stackalloc byte[512];
-        QuicTransportParameterRole parameterRole = Role == QuicTlsRole.Client
-            ? QuicTransportParameterRole.Client
-            : QuicTransportParameterRole.Server;
-
-        if (!QuicTlsTranscriptProgress.TryFormatDeterministicTransportParametersMessage(
-            localTransportParameters,
-            parameterRole,
-            encodedTranscript,
-            out int bytesWritten))
-        {
-            return Array.Empty<QuicTlsStateUpdate>();
-        }
-
-        return PublishUpdate(new QuicTlsStateUpdate(
-            QuicTlsUpdateKind.CryptoDataAvailable,
-            QuicTlsEncryptionLevel.Handshake,
-            CryptoDataOffset: 0,
-            CryptoData: encodedTranscript[..bytesWritten].ToArray()));
     }
 
     private static void AppendPublishedUpdates(

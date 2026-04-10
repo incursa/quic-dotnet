@@ -205,6 +205,121 @@ public sealed class REQ_QUIC_CRT_0117
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RuntimePromotesAValidatedCandidatePathWhenHandshakePacketIngressCarriesFinishedCompletion()
+    {
+        byte[] localHandshakePrivateKey = CreateScalar(0x22);
+        byte[] localSigningPrivateKey = CreateScalar(0x44);
+        QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
+        QuicTransportParameters peerTransportParameters = CreateClientTransportParameters();
+        (byte[] clientHelloTranscript, _) = CreateServerRoleClientHello(peerTransportParameters);
+        byte[] localLeafCertificateDer = CreateLocalLeafCertificateDer(localSigningPrivateKey);
+
+        QuicTlsTransportBridgeDriver driver = new(
+            QuicTlsRole.Server,
+            localHandshakePrivateKey: localHandshakePrivateKey,
+            localServerLeafCertificateDer: localLeafCertificateDer,
+            localServerLeafSigningPrivateKey: localSigningPrivateKey);
+
+        Assert.Single(driver.StartHandshake(localTransportParameters));
+        IReadOnlyList<QuicTlsStateUpdate> clientHelloUpdates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            clientHelloTranscript);
+
+        Assert.Equal(9, clientHelloUpdates.Count);
+        FieldInfo keyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
+            "keySchedule",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        QuicTlsKeySchedule driverKeySchedule = (QuicTlsKeySchedule)keyScheduleField.GetValue(driver)!;
+        Assert.True(driverKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
+
+        QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            new FakeMonotonicClock(0),
+            localHandshakePrivateKey: localHandshakePrivateKey,
+            localServerLeafCertificateDer: localLeafCertificateDer,
+            localServerLeafSigningPrivateKey: localSigningPrivateKey,
+            tlsRole: QuicTlsRole.Server);
+        QuicTlsPacketProtectionMaterial initialMaterial = CreateHandshakeMaterial();
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 1,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: initialMaterial)),
+            nowTicks: 1).StateChanged);
+
+        QuicConnectionPathIdentity activePath = new("203.0.113.50", RemotePort: 443);
+        QuicConnectionPathIdentity candidatePath = new("203.0.113.51", RemotePort: 443);
+
+        byte[] clientHelloPacket = BuildProtectedHandshakePacket(
+            initialMaterial,
+            clientHelloTranscript,
+            cryptoOffset: 0);
+
+        QuicConnectionTransitionResult clientHelloResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 2,
+                activePath,
+                clientHelloPacket),
+            nowTicks: 2);
+
+        Assert.True(clientHelloResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.False(runtime.PeerHandshakeTranscriptCompleted);
+        Assert.False(runtime.TlsState.PeerHandshakeTranscriptCompleted);
+        Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+        Assert.True(runtime.TlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial runtimeHandshakePacketMaterial));
+
+        QuicConnectionTransitionResult candidatePacketResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 3,
+                candidatePath,
+                new byte[1200]),
+            nowTicks: 3);
+
+        Assert.True(candidatePacketResult.StateChanged);
+        Assert.True(runtime.CandidatePaths.ContainsKey(candidatePath));
+
+        QuicConnectionTransitionResult validationResult = runtime.Transition(
+            new QuicConnectionPathValidationSucceededEvent(
+                ObservedAtTicks: 4,
+                candidatePath),
+            nowTicks: 4);
+
+        Assert.True(validationResult.StateChanged);
+        Assert.True(runtime.CandidatePaths.TryGetValue(candidatePath, out QuicConnectionCandidatePathRecord validatedCandidatePath));
+        Assert.True(validatedCandidatePath.Validation.IsValidated);
+        Assert.DoesNotContain(validationResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+
+        byte[] finishedPacket = BuildProtectedHandshakePacket(
+            runtimeHandshakePacketMaterial,
+            CreateFinishedTranscript(expectedFinishedVerifyData),
+            cryptoOffset: (ulong)clientHelloTranscript.Length);
+
+        QuicConnectionTransitionResult finishedResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 5,
+                activePath,
+                finishedPacket),
+            nowTicks: 5);
+
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
+        Assert.True(runtime.TlsState.PeerHandshakeTranscriptCompleted);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(candidatePath, runtime.ActivePath!.Value.Identity);
+        Assert.DoesNotContain(runtime.CandidatePaths, entry => entry.Key == candidatePath);
+        Assert.Contains(finishedResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promote
+            && promote.PathIdentity == candidatePath
+            && !promote.RestoreSavedState);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ServerRoleDriverRejectsRepeatedOrConflictingInboundClientFinishedProgressionDeterministically()
@@ -287,6 +402,34 @@ public sealed class REQ_QUIC_CRT_0117
         });
 
         return QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(localCertificateKey);
+    }
+
+    private static byte[] BuildProtectedHandshakePacket(
+        QuicTlsPacketProtectionMaterial material,
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoOffset = 0)
+    {
+        QuicHandshakeFlowCoordinator coordinator = new();
+        Assert.True(coordinator.TryBuildProtectedHandshakePacket(
+            cryptoPayload,
+            cryptoOffset,
+            material,
+            out byte[] protectedPacket));
+        return protectedPacket;
+    }
+
+    private static QuicTlsPacketProtectionMaterial CreateHandshakeMaterial()
+    {
+        Assert.True(QuicTlsPacketProtectionMaterial.TryCreate(
+            QuicTlsEncryptionLevel.Handshake,
+            QuicAeadAlgorithm.Aes128Gcm,
+            CreateSequentialBytes(0x11, 16),
+            CreateSequentialBytes(0x21, 12),
+            CreateSequentialBytes(0x31, 16),
+            new QuicAeadUsageLimits(64, 128),
+            out QuicTlsPacketProtectionMaterial material));
+
+        return material;
     }
 
     private static (byte[] ClientHelloTranscript, QuicTlsTranscriptStep ClientHelloStep) CreateServerRoleClientHello(

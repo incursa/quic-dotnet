@@ -6,7 +6,7 @@ public sealed class REQ_QUIC_RFC9001_S4_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void RuntimeCarriesDeterministicHandshakeDataThroughCryptoFramesFromBootstrapToConfirmation()
+    public void RuntimeCarriesPeerHandshakeDataThroughCryptoFramesAndRejectsMalformedProgression()
     {
         QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
         QuicTlsPacketProtectionMaterial material = CreateHandshakeMaterial();
@@ -26,62 +26,32 @@ public sealed class REQ_QUIC_RFC9001_S4_0001
             nowTicks: 5);
 
         Assert.True(bootstrapResult.StateChanged);
-        QuicConnectionSendDatagramEffect outboundHandshake = Assert.IsType<QuicConnectionSendDatagramEffect>(
-            Assert.Single(
-                bootstrapResult.Effects,
-                effect => effect is QuicConnectionSendDatagramEffect sendEffect
-                    && sendEffect.PathIdentity == runtime.ActivePath!.Value.Identity
-                    && !sendEffect.Datagram.IsEmpty));
+        Assert.Empty(bootstrapResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.Equal(0, runtime.TlsState.HandshakeEgressCryptoBuffer.BufferedBytes);
 
-        QuicHandshakeFlowCoordinator coordinator = new();
-        Assert.True(coordinator.TryOpenHandshakePacket(
-            outboundHandshake.Datagram.Span,
+        byte[] serverHelloTranscript = InteropEndpointHostTestSupport.CreateServerHelloTranscript();
+        byte[] serverHelloPacket = BuildProtectedHandshakePacket(
             material,
-            out byte[] openedPacket,
-            out int payloadOffset,
-            out int payloadLength));
+            serverHelloTranscript);
 
-        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
-            openedPacket.AsSpan(payloadOffset, payloadLength),
-            out QuicCryptoFrame localCryptoFrame,
-            out int localBytesConsumed));
-        Assert.True(localBytesConsumed > 0);
-        Assert.True(localBytesConsumed <= payloadLength);
-        Assert.Equal(0UL, localCryptoFrame.Offset);
-        Assert.True(openedPacket
-            .AsSpan(payloadOffset + localBytesConsumed, payloadLength - localBytesConsumed)
-            .IndexOfAnyExcept((byte)0) < 0);
-
-        byte[] expectedLocalTranscript = CreateEncryptedExtensionsTranscript(
-            CreateFormattedTransportParameters(
-                CreateLocalTransportParameters(),
-                QuicTransportParameterRole.Client));
-        Assert.True(expectedLocalTranscript.AsSpan().SequenceEqual(localCryptoFrame.CryptoData));
-
-        byte[] inboundHandshakePacket = BuildProtectedHandshakePacket(
-            material,
-            CreateEncryptedExtensionsTranscript(
-                CreateFormattedTransportParameters(
-                    CreatePeerTransportParameters(),
-                    QuicTransportParameterRole.Server)));
-
-        QuicConnectionTransitionResult receiveResult = runtime.Transition(
+        QuicConnectionTransitionResult serverHelloResult = runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
                 ObservedAtTicks: 6,
                 runtime.ActivePath!.Value.Identity,
-                inboundHandshakePacket),
+                serverHelloPacket),
             nowTicks: 6);
 
-        Assert.True(receiveResult.StateChanged);
+        Assert.True(serverHelloResult.StateChanged);
+        Assert.True(runtime.TlsState.HandshakeKeysAvailable);
+        Assert.Equal(QuicTlsHandshakeMessageType.ServerHello, runtime.TlsState.HandshakeMessageType);
         Assert.False(runtime.TlsState.PeerTransportParametersCommitted);
         Assert.Null(runtime.TlsState.PeerTransportParameters);
         Assert.Null(runtime.TlsState.StagedPeerTransportParameters);
-        Assert.Equal(QuicTlsTranscriptPhase.Failed, runtime.TlsState.HandshakeTranscriptPhase);
-        Assert.Equal(QuicTransportErrorCode.ProtocolViolation, runtime.TlsState.FatalAlertCode);
-        Assert.Equal("TLS alert 50.", runtime.TlsState.FatalAlertDescription);
+        Assert.Equal(QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage, runtime.TlsState.HandshakeTranscriptPhase);
+        Assert.Equal(0, runtime.TlsState.HandshakeIngressCryptoBuffer.BufferedBytes);
         Assert.False(runtime.TlsState.PeerHandshakeTranscriptCompleted);
         Assert.False(runtime.PeerHandshakeTranscriptCompleted);
-        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+        Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
         Assert.False(runtime.TlsState.OneRttKeysAvailable);
     }
 
@@ -152,7 +122,7 @@ public sealed class REQ_QUIC_RFC9001_S4_0001
             out QuicTransportParameters parameters));
 
         byte[] transcript = new byte[512];
-        Assert.True(QuicTlsTranscriptProgress.TryFormatDeterministicTransportParametersMessage(
+        Assert.True(QuicTlsTranscriptProgress.TryFormatDeterministicEncryptedExtensionsTransportParametersMessage(
             parameters,
             QuicTransportParameterRole.Server,
             transcript,
@@ -164,12 +134,13 @@ public sealed class REQ_QUIC_RFC9001_S4_0001
 
     private static byte[] BuildProtectedHandshakePacket(
         QuicTlsPacketProtectionMaterial material,
-        ReadOnlySpan<byte> cryptoPayload)
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoOffset = 0)
     {
         QuicHandshakeFlowCoordinator coordinator = new();
         Assert.True(coordinator.TryBuildProtectedHandshakePacket(
             cryptoPayload,
-            cryptoPayloadOffset: 0,
+            cryptoOffset,
             material,
             out byte[] protectedPacket));
         return protectedPacket;

@@ -139,7 +139,7 @@ internal static class InteropEndpointHostTestSupport
             out QuicTransportParameters parameters));
 
         byte[] transcript = new byte[512];
-        Assert.True(QuicTlsTranscriptProgress.TryFormatDeterministicTransportParametersMessage(
+        Assert.True(QuicTlsTranscriptProgress.TryFormatDeterministicEncryptedExtensionsTransportParametersMessage(
             parameters,
             QuicTransportParameterRole.Server,
             transcript,
@@ -149,7 +149,7 @@ internal static class InteropEndpointHostTestSupport
         return transcript;
     }
 
-    private static byte[] CreateServerHelloTranscript()
+    public static byte[] CreateServerHelloTranscript()
     {
         byte[] keyShare = CreateServerKeyShare();
         int extensionsLength = 6 + 4 + 2 + 2 + keyShare.Length;

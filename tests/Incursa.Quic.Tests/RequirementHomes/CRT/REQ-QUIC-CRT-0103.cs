@@ -506,36 +506,23 @@ public sealed class REQ_QUIC_CRT_0103
     public void BridgeDriverStartHandshakePublishesLocalTransportParameters()
     {
         QuicTransportParameters localParameters = CreateBootstrapLocalTransportParameters();
-        byte[] expectedHandshakeTranscript = CreateEncryptedExtensionsTranscript(
-            CreateFormattedTransportParameters(
-                localParameters,
-                QuicTransportParameterRole.Client));
 
         QuicTlsTransportBridgeDriver driver = new();
         IReadOnlyList<QuicTlsStateUpdate> updates = driver.StartHandshake(localParameters);
 
-        Assert.Equal(2, updates.Count);
+        Assert.Single(updates);
         Assert.Equal(QuicTlsUpdateKind.LocalTransportParametersReady, updates[0].Kind);
-        Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[1].Kind);
-        Assert.Equal(QuicTlsEncryptionLevel.Handshake, updates[1].EncryptionLevel);
-        Assert.Equal(0UL, updates[1].CryptoDataOffset);
         Assert.Same(localParameters, updates[0].TransportParameters);
         Assert.NotSame(localParameters, driver.State.LocalTransportParameters);
         Assert.Equal(15UL, driver.State.LocalTransportParameters!.MaxIdleTimeout);
         Assert.Equal(new byte[] { 0x01, 0x02, 0x03 }, driver.State.LocalTransportParameters.InitialSourceConnectionId);
         Assert.False(driver.State.HandshakeKeysAvailable);
-        Assert.True(driver.State.HandshakeEgressCryptoBuffer.BufferedBytes > 0);
-
-        Span<byte> surfacedHandshakeTranscript = stackalloc byte[expectedHandshakeTranscript.Length];
-        Assert.True(driver.TryPeekOutgoingCryptoData(
+        Assert.Equal(0, driver.State.HandshakeEgressCryptoBuffer.BufferedBytes);
+        Assert.False(driver.TryPeekOutgoingCryptoData(
             QuicTlsEncryptionLevel.Handshake,
-            surfacedHandshakeTranscript,
-            out ulong offset,
-            out int bytesWritten));
-
-        Assert.Equal(0UL, offset);
-        Assert.Equal(expectedHandshakeTranscript.Length, bytesWritten);
-        Assert.True(expectedHandshakeTranscript.AsSpan().SequenceEqual(surfacedHandshakeTranscript[..bytesWritten]));
+            stackalloc byte[1],
+            out _,
+            out _));
 
         localParameters.InitialSourceConnectionId![0] = 0xFF;
 
@@ -563,7 +550,7 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.Equal(15UL, runtime.TlsState.LocalTransportParameters!.MaxIdleTimeout);
         Assert.Equal(15UL, runtime.LocalMaxIdleTimeoutMicros);
         Assert.False(runtime.TlsState.HandshakeKeysAvailable);
-        Assert.True(runtime.TlsState.HandshakeEgressCryptoBuffer.BufferedBytes > 0);
+        Assert.Equal(0, runtime.TlsState.HandshakeEgressCryptoBuffer.BufferedBytes);
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
         Assert.False(runtime.PeerHandshakeTranscriptCompleted);
 
@@ -995,7 +982,7 @@ public sealed class REQ_QUIC_CRT_0103
             out parameters));
 
         byte[] transcript = new byte[512];
-        Assert.True(QuicTlsTranscriptProgress.TryFormatDeterministicTransportParametersMessage(
+        Assert.True(QuicTlsTranscriptProgress.TryFormatDeterministicEncryptedExtensionsTransportParametersMessage(
             parameters,
             QuicTransportParameterRole.Server,
             transcript,

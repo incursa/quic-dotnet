@@ -534,6 +534,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ref List<QuicConnectionEffect>? effects)
     {
         bool processedCryptoFrame = false;
+        bool stateChanged = false;
         int payloadOffset = 0;
 
         while (payloadOffset < payload.Length)
@@ -574,15 +575,32 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 continue;
             }
 
+            bool sawFatalAlert = false;
             foreach (QuicTlsStateUpdate transcriptUpdate in transcriptUpdates)
             {
                 if (transcriptUpdate.Kind == QuicTlsUpdateKind.FatalAlert)
                 {
-                    _ = HandleTlsStateUpdated(
+                    stateChanged |= HandleTlsStateUpdated(
                         new QuicConnectionTlsStateUpdatedEvent(nowTicks, transcriptUpdate),
                         nowTicks,
                         ref effects);
+                    sawFatalAlert = true;
                     break;
+                }
+            }
+
+            if (!sawFatalAlert)
+            {
+                foreach (QuicTlsStateUpdate transcriptUpdate in transcriptUpdates)
+                {
+                    if (transcriptUpdate.Kind is QuicTlsUpdateKind.PeerFinishedVerified
+                        or QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted)
+                    {
+                        stateChanged |= HandleTlsStateUpdated(
+                            new QuicConnectionTlsStateUpdatedEvent(nowTicks, transcriptUpdate),
+                            nowTicks,
+                            ref effects);
+                    }
                 }
             }
 
@@ -594,7 +612,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
-        return true;
+        return stateChanged || processedCryptoFrame;
     }
 
     private bool TryFlushHandshakePackets(ref List<QuicConnectionEffect>? effects)
@@ -695,8 +713,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ref List<QuicConnectionEffect>? effects)
     {
         QuicTransportParameters? stagedPeerTransportParameters = tlsState.StagedPeerTransportParameters;
-        if (stagedPeerTransportParameters is null
-            || !tlsState.CanCommitPeerTransportParameters(stagedPeerTransportParameters))
+        if (stagedPeerTransportParameters is null)
+        {
+            return false;
+        }
+
+        if (!tlsState.CanCommitPeerTransportParameters(stagedPeerTransportParameters))
         {
             return false;
         }

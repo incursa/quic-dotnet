@@ -727,7 +727,7 @@ internal sealed class QuicTlsKeySchedule
         encryptedExtensionsBytes = Array.Empty<byte>();
 
         Span<byte> encodedMessage = stackalloc byte[512];
-        if (!QuicTlsTranscriptProgress.TryFormatDeterministicTransportParametersMessage(
+        if (!QuicTlsTranscriptProgress.TryFormatDeterministicEncryptedExtensionsTransportParametersMessage(
             localTransportParameters,
             QuicTransportParameterRole.Server,
             encodedMessage,

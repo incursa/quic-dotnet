@@ -363,7 +363,7 @@ public sealed class REQ_QUIC_CRT_0108
             out QuicTransportParameters parsedTransportParameters));
 
         byte[] transcript = new byte[512];
-        Assert.True(QuicTlsTranscriptProgress.TryFormatDeterministicTransportParametersMessage(
+        Assert.True(QuicTlsTranscriptProgress.TryFormatDeterministicEncryptedExtensionsTransportParametersMessage(
             parsedTransportParameters,
             QuicTransportParameterRole.Server,
             transcript,

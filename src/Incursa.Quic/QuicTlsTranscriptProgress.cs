@@ -152,7 +152,7 @@ internal sealed class QuicTlsTranscriptProgress
         };
     }
 
-    internal static bool TryFormatDeterministicTransportParametersMessage(
+    internal static bool TryFormatDeterministicEncryptedExtensionsTransportParametersMessage(
         QuicTransportParameters transportParameters,
         QuicTransportParameterRole senderRole,
         Span<byte> destination,
@@ -417,7 +417,7 @@ internal sealed class QuicTlsTranscriptProgress
             return false;
         }
 
-        if (!TryParseExtensions(
+        if (!TryParseEncryptedExtensionsTransportParameters(
             handshakeMessageBody.Slice(handshakeMessageBody.Length - extensionsLength, extensionsLength),
             allowTransportParameters: true,
             requireTransportParameters: true,
@@ -744,7 +744,7 @@ internal sealed class QuicTlsTranscriptProgress
         return true;
     }
 
-    private bool TryParseExtensions(
+    private bool TryParseEncryptedExtensionsTransportParameters(
         ReadOnlySpan<byte> extensions,
         bool allowTransportParameters,
         bool requireTransportParameters,
@@ -790,6 +790,10 @@ internal sealed class QuicTlsTranscriptProgress
 
                 transportParameters = parsedTransportParameters;
                 foundTransportParameters = true;
+            }
+            else
+            {
+                return false;
             }
         }
 

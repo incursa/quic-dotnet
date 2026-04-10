@@ -9,7 +9,7 @@ public sealed class REQ_QUIC_INT_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void EndpointHostShellBridgesTheLibraryRuntimeThroughAConnectedUdpSocketAndSurfacesOutboundHandshakeDatagrams()
+    public void EndpointHostShellBridgesTheLibraryRuntimeThroughAConnectedUdpSocketAndRoutesInboundHandshakeDatagrams()
     {
         var (serverSocket, clientSocket, serverEndPoint, clientEndPoint) = InteropEndpointHostTestSupport.CreateConnectedUdpSocketPair();
         using QuicConnectionRuntimeEndpoint endpoint = new(1);
@@ -25,7 +25,6 @@ public sealed class REQ_QUIC_INT_0008
 
             QuicTlsPacketProtectionMaterial material = InteropEndpointHostTestSupport.CreateHandshakeMaterial();
             QuicTransportParameters localTransportParameters = InteropEndpointHostTestSupport.CreateBootstrapLocalTransportParameters();
-            QuicTransportParameters peerTransportParameters = InteropEndpointHostTestSupport.CreatePeerTransportParameters();
 
             Assert.True(endpoint.Host.TryPostEvent(handle, new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 1,
@@ -39,7 +38,6 @@ public sealed class REQ_QUIC_INT_0008
             using ManualResetEventSlim ingressSeen = new(false);
             using ManualResetEventSlim packetReceivedSeen = new(false);
             using ManualResetEventSlim bootstrapSeen = new(false);
-            using ManualResetEventSlim sendSeen = new(false);
 
             using InteropEndpointHost shell = new(
                 endpoint,
@@ -69,11 +67,7 @@ public sealed class REQ_QUIC_INT_0008
                 effectObserver: effect =>
                 {
                     effectResults.Enqueue(effect);
-                    if (effect is QuicConnectionSendDatagramEffect)
-                    {
-                        sendSeen.Set();
-                    }
-            });
+                });
 
             _ = shell.RunAsync();
 
@@ -81,19 +75,16 @@ public sealed class REQ_QUIC_INT_0008
                 ObservedAtTicks: 3,
                 LocalTransportParameters: localTransportParameters)));
             Assert.True(bootstrapSeen.Wait(TimeSpan.FromSeconds(5)));
-            Assert.True(runtime.TlsState.HandshakeEgressCryptoBuffer.BufferedBytes > 0);
 
-            byte[] peerTranscript = InteropEndpointHostTestSupport.CreateClientHandshakeTranscript(peerTransportParameters);
-            byte[] protectedPeerPacket = InteropEndpointHostTestSupport.BuildProtectedHandshakePacket(
+            byte[] serverHelloTranscript = InteropEndpointHostTestSupport.CreateServerHelloTranscript();
+
+            byte[] serverHelloPacket = InteropEndpointHostTestSupport.BuildProtectedHandshakePacket(
                 material,
-                peerTranscript,
+                serverHelloTranscript,
                 routeConnectionId);
 
-            for (int i = 0; i < 16; i++)
-            {
-                int bytesSent = clientSocket.Send(protectedPeerPacket);
-                Assert.Equal(protectedPeerPacket.Length, bytesSent);
-            }
+            int bytesSent = clientSocket.Send(serverHelloPacket);
+            Assert.Equal(serverHelloPacket.Length, bytesSent);
 
             Assert.True(ingressSeen.Wait(TimeSpan.FromSeconds(5)));
             Assert.All(ingressResults, result => Assert.True(result.RoutedToConnection));
@@ -104,42 +95,15 @@ public sealed class REQ_QUIC_INT_0008
             Assert.Equal(handle, ingressResult.Handle);
 
             Assert.True(packetReceivedSeen.Wait(TimeSpan.FromSeconds(5)));
+            Assert.Equal(0, runtime.TlsState.HandshakeEgressCryptoBuffer.BufferedBytes);
+            Assert.True(runtime.TlsState.HandshakeKeysAvailable);
+            Assert.Equal(QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage, runtime.TlsState.HandshakeTranscriptPhase);
+            Assert.Null(runtime.TlsState.PeerTransportParameters);
+            Assert.Null(runtime.TlsState.StagedPeerTransportParameters);
+            Assert.DoesNotContain(effectResults, effect => effect is QuicConnectionSendDatagramEffect);
             QuicConnectionTransitionResult packetReceivedResult = GetPacketReceivedTransitionResult(transitionResults);
             Assert.Equal(QuicConnectionEventKind.PacketReceived, packetReceivedResult.EventKind);
             Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
-
-            Assert.True(sendSeen.Wait(TimeSpan.FromSeconds(5)));
-            Assert.True(runtime.TlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeProtectMaterial));
-            QuicConnectionSendDatagramEffect sendEffect = effectResults.OfType<QuicConnectionSendDatagramEffect>().Last();
-
-            byte[] receivedDatagram = new byte[2048];
-            clientSocket.ReceiveTimeout = 5000;
-            int receivedBytes = clientSocket.Receive(receivedDatagram);
-            Assert.Equal(sendEffect.Datagram.Length, receivedBytes);
-            Assert.True(sendEffect.Datagram.Span.SequenceEqual(receivedDatagram.AsSpan(0, receivedBytes)));
-            Assert.True(QuicPacketParser.TryClassifyHeaderForm(receivedDatagram.AsSpan(0, receivedBytes), out QuicHeaderForm headerForm));
-            Assert.Equal(QuicHeaderForm.Long, headerForm);
-            Assert.True(QuicPacketParser.TryParseLongHeader(receivedDatagram.AsSpan(0, receivedBytes), out QuicLongHeaderPacket longHeader));
-            Assert.Equal(QuicLongPacketTypeBits.Handshake, longHeader.LongPacketTypeBits);
-
-            QuicHandshakeFlowCoordinator coordinator = new();
-            Assert.True(coordinator.TryOpenHandshakePacket(
-                receivedDatagram.AsSpan(0, receivedBytes),
-                handshakeProtectMaterial,
-                out byte[] openedPacket,
-                out int payloadOffset,
-                out int payloadLength));
-
-            Assert.True(QuicFrameCodec.TryParseCryptoFrame(
-                openedPacket.AsSpan(payloadOffset, payloadLength),
-                out QuicCryptoFrame outboundCryptoFrame,
-                out int bytesConsumed));
-            Assert.True(bytesConsumed > 0);
-            Assert.Equal(0UL, outboundCryptoFrame.Offset);
-            Assert.True(
-                InteropEndpointHostTestSupport.CreateExpectedEncryptedExtensionsTranscript()
-                    .AsSpan()
-                    .SequenceEqual(outboundCryptoFrame.CryptoData));
         }
         finally
         {
