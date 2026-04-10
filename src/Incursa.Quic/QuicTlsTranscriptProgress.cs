@@ -341,8 +341,8 @@ internal sealed class QuicTlsTranscriptProgress
 
         parsedMessage = new ParsedHandshakeMessage(
             QuicTlsTranscriptStepKind.PeerTransportParametersStaged,
-            QuicTlsTranscriptPhase.Completed,
-            HandshakeProgressState.Completed,
+            QuicTlsTranscriptPhase.PeerTransportParametersStaged,
+            HandshakeProgressState.AwaitingFinished,
             QuicTlsHandshakeMessageType.ClientHello,
             handshakeMessageLengthValue,
             transportParameters,
@@ -817,13 +817,15 @@ internal sealed class QuicTlsTranscriptProgress
         handshakeMessageType = parsedMessage.HandshakeMessageType;
         handshakeMessageLength = parsedMessage.HandshakeMessageLength;
 
-        if (parsedMessage.HandshakeMessageType == QuicTlsHandshakeMessageType.ServerHello
+        if ((parsedMessage.HandshakeMessageType == QuicTlsHandshakeMessageType.ServerHello
+            || parsedMessage.HandshakeMessageType == QuicTlsHandshakeMessageType.ClientHello)
             && parsedMessage.SelectedCipherSuite.HasValue)
         {
             selectedCipherSuite = parsedMessage.SelectedCipherSuite;
         }
 
-        if (parsedMessage.HandshakeMessageType == QuicTlsHandshakeMessageType.ServerHello
+        if ((parsedMessage.HandshakeMessageType == QuicTlsHandshakeMessageType.ServerHello
+            || parsedMessage.HandshakeMessageType == QuicTlsHandshakeMessageType.ClientHello)
             && parsedMessage.TranscriptHashAlgorithm.HasValue)
         {
             transcriptHashAlgorithm = parsedMessage.TranscriptHashAlgorithm;

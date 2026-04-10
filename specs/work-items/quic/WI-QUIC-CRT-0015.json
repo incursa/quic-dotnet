@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0015",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC Server-Role Inbound Client Finished Proof Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Extend the server role from the local Finished continuation into a permanent inbound client Finished proof slice that verifies the peer Finished against the complete local server flight, publishes PeerFinishedVerified, and exposes PeerHandshakeTranscriptCompleted as the first honest server-side post-proof milestone while leaving server-role commit and wider handshake work unavailable.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0015"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0015"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0103",
+    "REQ-QUIC-CRT-0107",
+    "REQ-QUIC-CRT-0117"
+  ],
+  "planned_changes": "- Extend the server-role handshake continuation from the existing local Finished emission slice into inbound peer Finished verification only after the supported ClientHello has been accepted, the local ServerHello has been published, local EncryptedExtensions has been published, local Certificate has been published, local CertificateVerify has been published, local Finished has been published, and Handshake keys are available.\n- Reuse the existing bridge-owned transcript and key-schedule seam to derive the expected client Finished verify data from the complete local server flight, verify it cryptographically, and publish PeerFinishedVerified only after that proof succeeds.\n- Keep PeerHandshakeTranscriptCompleted as the first honest server-side post-proof milestone, keep server-role transport-parameter commit unavailable, and reject premature, repeated, conflicting, malformed, or mismatched inbound Finished progression deterministically through the existing fatal/update path.\n- Add focused requirement-home tests for the positive inbound Finished proof path, premature or repeated progression rejection, malformed or mismatched verify-data failure cases, and the exact narrow meaning of PeerFinishedVerified and PeerHandshakeTranscriptCompleted on the server role.\n- Do not add client-certificate auth, trust-store policy, hostname validation, endpoint-host wiring, harness changes, or interop-runner handshake enablement in this slice.",
+  "verification_plan": "Run the updated CRT requirement-home tests that cover the positive inbound client Finished proof path, deterministic premature or repeated progression rejection, malformed or mismatched verify-data failure cases, and the server-role proof publication boundary, then run the relevant solution build and targeted test pass for the main library and tests project.",
+  "completion_notes": "The resulting slice is intentionally smaller than full server handshake support. It proves only that the library can continue from a supported peer ClientHello, local ServerHello, local EncryptedExtensions, local Certificate, local CertificateVerify, and local Finished into cryptographic verification of the inbound client Finished on the same handshake seam while leaving server-role commit and wider handshake flight ownership unavailable.",
+  "out_of_scope": [
+    "client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, harness changes, interop-runner handshake support, or any native TLS / QUIC fallback."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0114.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0114.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0115.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0115.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0116.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0116.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0117.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0117.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicTlsCertificateVerifyTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicTlsCertificateVerifyTestSupport.cs)"
+    }
+  ]
+}

@@ -28,7 +28,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default)
     {
         Role = role;
-        this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState();
+        this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState(role);
         handshakeTranscriptProgress = new QuicTlsTranscriptProgress(Role);
         keySchedule = new QuicTlsKeySchedule(Role, localHandshakePrivateKey);
 
@@ -469,12 +469,12 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                 case QuicTlsTranscriptStepKind.PeerTransportParametersStaged:
                 {
                     IReadOnlyList<QuicTlsStateUpdate> progressedUpdates = PublishTranscriptProgressed(
-                        step.TranscriptPhase ?? QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage,
-                        step.HandshakeMessageType,
-                        step.HandshakeMessageLength,
-                        step.HandshakeMessageType == QuicTlsHandshakeMessageType.ServerHello ? step.SelectedCipherSuite : null,
-                        step.HandshakeMessageType == QuicTlsHandshakeMessageType.ServerHello ? step.TranscriptHashAlgorithm : null,
-                        step.TransportParameters);
+                    step.TranscriptPhase ?? QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage,
+                    step.HandshakeMessageType,
+                    step.HandshakeMessageLength,
+                    step.SelectedCipherSuite,
+                    step.TranscriptHashAlgorithm,
+                    step.TransportParameters);
                     AppendPublishedUpdates(updates, progressedUpdates);
                     if (progressedUpdates.Count == 0)
                     {

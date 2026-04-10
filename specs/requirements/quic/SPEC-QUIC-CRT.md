@@ -722,8 +722,9 @@ Notes:
 - The bridge may remain internal if needed, but it must live in the main library because it is part of transport ownership, not runner plumbing.
 - `PeerCertificateVerifyVerified` means the client role has cryptographically verified the peer leaf certificate's supported `CertificateVerify` proof path with the managed TLS 1.3 key schedule; it does not imply certificate trust, certificate-path validation, hostname validation, or identity authentication.
 - `PeerCertificatePolicyAccepted` means the client role's explicit local certificate-acceptance policy matched the presented leaf certificate facts; it does not imply certificate trust, certificate-path validation, hostname validation, revocation, or identity authentication.
-- `PeerFinishedVerified` means the client role has cryptographically verified the peer Finished with the managed TLS 1.3 key schedule; it does not imply certificate validation, `CertificateVerify` signature verification, or identity authentication.
-- `PeerHandshakeTranscriptCompleted` remains a transcript milestone; it is only emitted after both peer proof states exist, and it is not the commit gate for peer transport parameters.
+- `PeerFinishedVerified` means the client role has cryptographically verified the peer Finished with the managed TLS 1.3 key schedule; in the server role it names the same proof after verifying the inbound client Finished against the complete local server flight; it does not imply certificate validation, `CertificateVerify` signature verification, or identity authentication.
+- `PeerHandshakeTranscriptCompleted` remains a transcript milestone; on the client role it is only emitted after both peer proof states exist, and on the server role it is only emitted after inbound client Finished verification succeeds; it is not the commit gate for peer transport parameters.
+- Server-role peer transport-parameter commit remains unavailable in this slice.
 
 ## REQ-QUIC-CRT-0104 Expose a diagnostics sink abstraction
 The library MUST expose a diagnostics sink abstraction that can be a no-op when disabled and is not hardwired to any single log encoding or qlog serialization format.
@@ -750,7 +751,7 @@ Notes:
 - The coordinator does not add 1-RTT support, 0-RTT support, key update support, certificate validation, or production handshake orchestration.
 
 ## REQ-QUIC-CRT-0107 Own the narrow Handshake transcript-progress boundary
-The library MUST own a narrow Handshake transcript-progress boundary behind the transport-facing TLS bridge that accepts ordered Handshake CRYPTO fragments incrementally, preserves an ingress cursor and partial transcript buffer, parses the minimal TLS 1.3 peer handshake message progression for the current role (ClientHello for server role; ServerHello, EncryptedExtensions, Certificate, CertificateVerify, and Finished for client role), preserves the parsed handshake message type and length together with the selected ServerHello cipher suite, its implied transcript hash algorithm, and the role-specific QUIC transport-parameters extension payload needed for later policy, stages peer transport parameters only from the correct role-specific message, latches terminal transcript/parse failure, and surfaces transcript progression and fatal alerts through the existing bridge-update path. Peer transport parameter commitment and peer handshake transcript completion remain explicit bridge/runtime policy decisions, and this slice MUST NOT imply certificate validation, signature verification, 0-RTT, 1-RTT, key update, or production TLS handshake support.
+The library MUST own a narrow Handshake transcript-progress boundary behind the transport-facing TLS bridge that accepts ordered Handshake CRYPTO fragments incrementally, preserves an ingress cursor and partial transcript buffer, parses the minimal TLS 1.3 peer handshake message progression for the current role (ClientHello and later Finished for server role; ServerHello, EncryptedExtensions, Certificate, CertificateVerify, and Finished for client role), preserves the parsed handshake message type and length together with the selected cipher suite, its implied transcript hash algorithm, and the role-specific QUIC transport-parameters extension payload needed for later policy, stages peer transport parameters only from the correct role-specific message, latches terminal transcript/parse failure, and surfaces transcript progression and fatal alerts through the existing bridge-update path. Peer transport parameter commitment and peer handshake transcript completion remain explicit bridge/runtime policy decisions, and this slice MUST NOT imply certificate validation, signature verification, 0-RTT, 1-RTT, key update, or production TLS handshake support.
 
 Trace:
 - Source Refs:
@@ -761,6 +762,7 @@ Notes:
 - This slice advances transcript/message progression only. It does not by itself make peer-authentication policy, certificate validation, signature verification, peer handshake transcript completion, or broader TLS orchestration available.
 - The transport bridge remains the policy sink for staged parameters; the runtime decides when later slices commit them.
 - Transcript progression feeds later key-schedule and Finished-verification logic, but it does not derive handshake keys or gate peer transport-parameter commit by itself.
+- Server-role transcript progression remains open after ClientHello so the inbound Finished proof slice can complete it.
 
 ## REQ-QUIC-CRT-0108 Own the managed client-role TLS 1.3 key schedule
 The library MUST own a permanent managed TLS 1.3 key-schedule owner behind the transport-facing TLS bridge that, for the client role and the supported subset `TLS_AES_128_GCM_SHA256` with `secp256r1`, derives handshake traffic secrets and handshake packet-protection material from the local ephemeral key share state, the peer `ServerHello` key share state, and the transcript hash, publishes explicit bridge-visible updates when handshake open/protect keys become available, and deterministically rejects malformed or unsupported cipher-suite or key-share input through the existing fatal/update path.
@@ -884,3 +886,17 @@ Notes:
 - This slice extends the permanent server-role crypto floor and remains server-role only. It does not add inbound client `Finished` proof, server-role transport-parameter commit, client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
 - The supported cryptographic subset for this slice remains pinned to TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.
 - No new server-side handshake-visible completion state is emitted by this slice; the server flight still stops short of any commit or confirmation claim.
+
+## REQ-QUIC-CRT-0117 Verify inbound client Finished after the complete server flight
+In the server role, the library MUST verify one inbound TLS 1.3 `Finished` message for the same supported `TLS_AES_128_GCM_SHA256` over `secp256r1` subset only after the supported `ClientHello` has been accepted, the local `ServerHello`, local `EncryptedExtensions`, local `Certificate`, local `CertificateVerify`, and local `Finished` have all been published, Handshake keys are available, and the local server flight is complete, derive the expected client Finished verify data from the transcript boundary that includes that complete local server flight, verify that Finished cryptographically with the managed TLS 1.3 key schedule, surface `PeerFinishedVerified` only after that verification succeeds, surface `PeerHandshakeTranscriptCompleted` as the next honest server-role post-proof milestone, and deterministically reject premature, repeated, conflicting, malformed, or mismatched inbound Finished progression through the existing fatal/update path.
+
+Trace:
+- Source Refs:
+  - RFC 8446 Section 4.4.4
+  - RFC 9001 Sections 5 and 8
+  - connection-runtime-state-machine.md
+
+Notes:
+- This slice is intentionally server-role only. It does not add client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
+- `PeerFinishedVerified` is the narrow proof claim for the supported server-role path; it proves Finished possession only and does not imply client identity or trust.
+- Server-role peer transport-parameter commit remains unavailable in this slice; `PeerHandshakeTranscriptCompleted` is the next honest post-proof milestone.

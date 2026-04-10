@@ -61,9 +61,11 @@ internal sealed class QuicTlsKeySchedule
     private readonly ArrayBufferWriter<byte> transcriptBytes = new();
     private readonly byte[] localKeyShare;
 
+    private byte[]? clientHandshakeTrafficSecret;
     private byte[]? serverHandshakeTrafficSecret;
     private byte[]? peerLeafCertificateDer;
     private bool handshakeSecretsDerived;
+    private bool localServerFlightCompleted;
     private bool peerCertificateVerifyVerified;
     private bool peerFinishedVerified;
     private bool isTerminal;
@@ -154,12 +156,17 @@ internal sealed class QuicTlsKeySchedule
     {
         verifyData = Array.Empty<byte>();
 
-        if (role != QuicTlsRole.Client || serverHandshakeTrafficSecret is null)
+        ReadOnlySpan<byte> peerFinishedTrafficSecret = role == QuicTlsRole.Server
+            ? clientHandshakeTrafficSecret ?? []
+            : serverHandshakeTrafficSecret ?? [];
+
+        if (peerFinishedTrafficSecret.IsEmpty
+            || (role == QuicTlsRole.Server && !localServerFlightCompleted))
         {
             return false;
         }
 
-        verifyData = DeriveFinishedVerifyData(serverHandshakeTrafficSecret, HashTranscript());
+        verifyData = DeriveFinishedVerifyData(peerFinishedTrafficSecret, HashTranscript());
         return true;
     }
 
@@ -210,6 +217,7 @@ internal sealed class QuicTlsKeySchedule
                     localTransportParameters,
                     localServerLeafCertificateDer,
                     localServerLeafSigningPrivateKey),
+                QuicTlsHandshakeMessageType.Finished => ProcessFinished(step),
                 _ => BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription),
             };
         }
@@ -238,7 +246,7 @@ internal sealed class QuicTlsKeySchedule
         {
             if (handshakeSecretsDerived
                 || step.Kind != QuicTlsTranscriptStepKind.PeerTransportParametersStaged
-                || step.TranscriptPhase != QuicTlsTranscriptPhase.Completed
+                || step.TranscriptPhase != QuicTlsTranscriptPhase.PeerTransportParametersStaged
                 || step.HandshakeMessageType != QuicTlsHandshakeMessageType.ClientHello
                 || step.HandshakeMessageLength is null
                 || step.TransportParameters is null
@@ -361,6 +369,8 @@ internal sealed class QuicTlsKeySchedule
                     QuicTlsEncryptionLevel.Handshake,
                     CryptoDataOffset: finishedOffset,
                     CryptoData: finishedBytes));
+
+                localServerFlightCompleted = true;
             }
 
             handshakeSecretsDerived = true;
@@ -459,16 +469,21 @@ internal sealed class QuicTlsKeySchedule
 
     private IReadOnlyList<QuicTlsStateUpdate> ProcessFinished(QuicTlsTranscriptStep step)
     {
+        ReadOnlySpan<byte> peerFinishedTrafficSecret = role == QuicTlsRole.Server
+            ? clientHandshakeTrafficSecret ?? []
+            : serverHandshakeTrafficSecret ?? [];
+
         if (!handshakeSecretsDerived
-            || serverHandshakeTrafficSecret is null
-            || step.HandshakeMessageBytes.Length != HandshakeHeaderLength + HashLength)
+            || peerFinishedTrafficSecret.IsEmpty
+            || step.HandshakeMessageBytes.Length != HandshakeHeaderLength + HashLength
+            || (role == QuicTlsRole.Server && !localServerFlightCompleted))
         {
             return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
         }
 
         ReadOnlySpan<byte> expectedFinished = step.HandshakeMessageBytes.Span.Slice(HandshakeHeaderLength, HashLength);
         ReadOnlySpan<byte> transcriptHash = HashTranscript();
-        byte[] expectedVerifyData = DeriveFinishedVerifyData(serverHandshakeTrafficSecret, transcriptHash);
+        byte[] expectedVerifyData = DeriveFinishedVerifyData(peerFinishedTrafficSecret, transcriptHash);
         if (!expectedFinished.SequenceEqual(expectedVerifyData))
         {
             return BuildFatalAlert(HandshakeTranscriptVerificationFailureAlertDescription);
@@ -518,7 +533,7 @@ internal sealed class QuicTlsKeySchedule
         byte[] earlySecret = HkdfExtract(new byte[HashLength], []);
         byte[] derivedSecret = HkdfExpandLabel(earlySecret, DerivedLabel, EmptyTranscriptHash, HashLength);
         byte[] handshakeSecret = HkdfExtract(derivedSecret, sharedSecret);
-        byte[] clientHandshakeTrafficSecret = HkdfExpandLabel(handshakeSecret, ClientHandshakeTrafficLabel, transcriptHash, HashLength);
+        clientHandshakeTrafficSecret = HkdfExpandLabel(handshakeSecret, ClientHandshakeTrafficLabel, transcriptHash, HashLength);
         serverHandshakeTrafficSecret = HkdfExpandLabel(handshakeSecret, ServerHandshakeTrafficLabel, transcriptHash, HashLength);
 
         ReadOnlySpan<byte> openTrafficSecret = protectWithClientTrafficSecret

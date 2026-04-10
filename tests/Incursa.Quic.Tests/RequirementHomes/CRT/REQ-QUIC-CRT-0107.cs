@@ -114,17 +114,19 @@ public sealed class REQ_QUIC_CRT_0107
 
         Assert.Equal(QuicTlsTranscriptStepKind.PeerTransportParametersStaged, clientHelloStep.Kind);
         Assert.Equal(QuicTlsHandshakeMessageType.ClientHello, clientHelloStep.HandshakeMessageType);
-        Assert.Equal(QuicTlsTranscriptPhase.Completed, clientHelloStep.TranscriptPhase);
+        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, clientHelloStep.TranscriptPhase);
         Assert.NotNull(clientHelloStep.TransportParameters);
+        Assert.Equal(QuicTlsCipherSuite.TlsAes128GcmSha256, clientHelloStep.SelectedCipherSuite);
+        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, clientHelloStep.TranscriptHashAlgorithm);
         Assert.Equal(21UL, clientHelloStep.TransportParameters!.MaxIdleTimeout);
         Assert.True(clientHelloStep.TransportParameters.DisableActiveMigration);
         Assert.Equal(new byte[] { 0x01, 0x02, 0x03 }, clientHelloStep.TransportParameters.InitialSourceConnectionId);
-        Assert.Equal(QuicTlsTranscriptPhase.Completed, progress.Phase);
+        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, progress.Phase);
         Assert.NotNull(progress.StagedPeerTransportParameters);
         Assert.Equal(QuicTlsHandshakeMessageType.ClientHello, progress.HandshakeMessageType);
         Assert.Equal((uint)(clientHello.Length - 4), progress.HandshakeMessageLength);
-        Assert.Null(progress.SelectedCipherSuite);
-        Assert.Null(progress.TranscriptHashAlgorithm);
+        Assert.Equal(QuicTlsCipherSuite.TlsAes128GcmSha256, progress.SelectedCipherSuite);
+        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, progress.TranscriptHashAlgorithm);
         Assert.False(progress.IsTerminalFailure);
     }
 

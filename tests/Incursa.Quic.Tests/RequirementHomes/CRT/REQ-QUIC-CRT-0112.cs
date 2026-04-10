@@ -19,6 +19,7 @@ public sealed class REQ_QUIC_CRT_0112
         progress.AppendCryptoBytes(0, clientHello);
         QuicTlsTranscriptStep clientHelloStep = progress.Advance(QuicTlsRole.Server);
         Assert.Equal(QuicTlsTranscriptStepKind.PeerTransportParametersStaged, clientHelloStep.Kind);
+        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, clientHelloStep.TranscriptPhase);
 
         QuicTlsKeySchedule schedule = new(QuicTlsRole.Server, localHandshakePrivateKey);
         IReadOnlyList<QuicTlsStateUpdate> updates = schedule.ProcessTranscriptStep(clientHelloStep, localTransportParameters);
@@ -68,7 +69,9 @@ public sealed class REQ_QUIC_CRT_0112
         Assert.True(updates.Count >= 5);
         Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, updates[0].Kind);
         Assert.Equal(QuicTlsHandshakeMessageType.ClientHello, updates[0].HandshakeMessageType);
-        Assert.Equal(QuicTlsTranscriptPhase.Completed, updates[0].TranscriptPhase);
+        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, updates[0].TranscriptPhase);
+        Assert.Equal(QuicTlsCipherSuite.TlsAes128GcmSha256, updates[0].SelectedCipherSuite);
+        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, updates[0].TranscriptHashAlgorithm);
         Assert.NotNull(updates[0].TransportParameters);
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[1].Kind);
         Assert.Equal(QuicTlsEncryptionLevel.Handshake, updates[1].EncryptionLevel);
@@ -91,6 +94,8 @@ public sealed class REQ_QUIC_CRT_0112
         Assert.Equal(peerTransportParameters.MaxIdleTimeout, driver.State.StagedPeerTransportParameters!.MaxIdleTimeout);
         Assert.Equal(peerTransportParameters.DisableActiveMigration, driver.State.StagedPeerTransportParameters.DisableActiveMigration);
         Assert.Equal(peerTransportParameters.InitialSourceConnectionId, driver.State.StagedPeerTransportParameters.InitialSourceConnectionId);
+        Assert.Equal(QuicTlsCipherSuite.TlsAes128GcmSha256, driver.State.SelectedCipherSuite);
+        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, driver.State.TranscriptHashAlgorithm);
         Assert.True(driver.State.HandshakeKeysAvailable);
         Assert.True(driver.State.TryGetHandshakeOpenPacketProtectionMaterial(out _));
         Assert.True(driver.State.TryGetHandshakeProtectPacketProtectionMaterial(out _));
@@ -236,7 +241,7 @@ public sealed class REQ_QUIC_CRT_0112
 
         Assert.Single(repeatedUpdates);
         Assert.Equal(QuicTlsUpdateKind.FatalAlert, repeatedUpdates[0].Kind);
-        Assert.Equal((ushort)0x0010, repeatedUpdates[0].AlertDescription);
+        Assert.Equal((ushort)0x0032, repeatedUpdates[0].AlertDescription);
         Assert.True(driver.State.IsTerminal);
     }
 

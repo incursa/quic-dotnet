@@ -10,8 +10,21 @@ internal sealed class QuicTransportTlsBridgeState
     private readonly QuicCryptoBuffer initialEgressCryptoBuffer = new();
     private readonly QuicCryptoBuffer handshakeEgressCryptoBuffer = new();
     private readonly Dictionary<QuicTlsEncryptionLevel, QuicTlsPacketProtectionMaterial> packetProtectionMaterials = new();
+    private readonly QuicTlsRole role;
     private QuicTlsPacketProtectionMaterial? handshakeOpenPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial? handshakeProtectPacketProtectionMaterial;
+
+    internal QuicTransportTlsBridgeState()
+        : this(QuicTlsRole.Client)
+    {
+    }
+
+    internal QuicTransportTlsBridgeState(QuicTlsRole role)
+    {
+        this.role = role;
+    }
+
+    internal QuicTlsRole Role => role;
 
     public QuicTransportParameters? LocalTransportParameters { get; private set; }
 
@@ -75,6 +88,11 @@ internal sealed class QuicTransportTlsBridgeState
     {
         ArgumentNullException.ThrowIfNull(parameters);
 
+        if (role == QuicTlsRole.Server)
+        {
+            return false;
+        }
+
         return !IsTerminal
             && !PeerTransportParametersCommitted
             && PeerCertificateVerifyVerified
@@ -94,6 +112,19 @@ internal sealed class QuicTransportTlsBridgeState
     /// </summary>
     internal bool CanEmitPeerHandshakeTranscriptCompleted()
     {
+        if (role == QuicTlsRole.Server)
+        {
+            return !IsTerminal
+                && !PeerHandshakeTranscriptCompleted
+                && PeerFinishedVerified
+                && StagedPeerTransportParameters is not null
+                && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed
+                && HandshakeMessageType == QuicTlsHandshakeMessageType.Finished
+                && HandshakeMessageLength.HasValue
+                && SelectedCipherSuite.HasValue
+                && TranscriptHashAlgorithm.HasValue;
+        }
+
         return !IsTerminal
             && !PeerHandshakeTranscriptCompleted
             && PeerCertificateVerifyVerified
@@ -450,7 +481,8 @@ internal sealed class QuicTransportTlsBridgeState
 
         if (update.SelectedCipherSuite.HasValue
             && (!update.HandshakeMessageType.HasValue
-                || update.HandshakeMessageType.Value != QuicTlsHandshakeMessageType.ServerHello))
+                || update.HandshakeMessageType.Value is not (QuicTlsHandshakeMessageType.ServerHello
+                    or QuicTlsHandshakeMessageType.ClientHello)))
         {
             return false;
         }
