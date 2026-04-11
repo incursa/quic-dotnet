@@ -421,13 +421,13 @@ internal sealed class QuicTlsKeySchedule
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
             }
 
-            ulong encryptedExtensionsOffset = 0;
+            ulong encryptedExtensionsOffset = (ulong)serverHelloBytes.Length;
             AppendTranscriptMessage(encryptedExtensionsBytes);
             List<QuicTlsStateUpdate> updates =
             [
                 new QuicTlsStateUpdate(
                     QuicTlsUpdateKind.CryptoDataAvailable,
-                    QuicTlsEncryptionLevel.Initial,
+                    QuicTlsEncryptionLevel.Handshake,
                     CryptoDataOffset: 0,
                     CryptoData: serverHelloBytes),
                 new QuicTlsStateUpdate(
@@ -608,53 +608,39 @@ internal sealed class QuicTlsKeySchedule
             return BuildFatalAlert(HandshakeTranscriptVerificationFailureAlertDescription);
         }
 
-        byte[] applicationTrafficTranscriptHash = role == QuicTlsRole.Client
-            ? HashTranscriptWithAppendedMessage(step.HandshakeMessageBytes.Span)
-            : transcriptHash.ToArray();
-
-        QuicTlsPacketProtectionMaterial oneRttOpenMaterial = default;
-        QuicTlsPacketProtectionMaterial oneRttProtectMaterial = default;
-        if (!TryDeriveApplicationPacketProtectionMaterial(
-            applicationTrafficTranscriptHash,
-            out oneRttOpenMaterial,
-            out oneRttProtectMaterial))
-        {
-            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
-        }
-
         List<QuicTlsStateUpdate> updates = [];
 
         AppendTranscriptMessage(step.HandshakeMessageBytes.Span);
 
-        if (role == QuicTlsRole.Client)
+        peerFinishedVerified = true;
+        updates.Add(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerFinishedVerified));
+
+        if (role == QuicTlsRole.Server)
         {
-            if (!TryCreateFinished(
-                clientHandshakeTrafficSecret ?? [],
-                HashTranscript(),
-                out byte[] finishedBytes))
+            byte[] applicationTrafficTranscriptHash = transcriptHash.ToArray();
+            QuicTlsPacketProtectionMaterial oneRttOpenMaterial = default;
+            QuicTlsPacketProtectionMaterial oneRttProtectMaterial = default;
+            if (!TryDeriveApplicationPacketProtectionMaterial(
+                applicationTrafficTranscriptHash,
+                out oneRttOpenMaterial,
+                out oneRttProtectMaterial))
             {
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
             }
 
             updates.Add(new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.CryptoDataAvailable,
-                QuicTlsEncryptionLevel.Handshake,
-                CryptoDataOffset: 0,
-                CryptoData: finishedBytes));
+                QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable,
+                PacketProtectionMaterial: oneRttOpenMaterial));
+            updates.Add(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable,
+                PacketProtectionMaterial: oneRttProtectMaterial));
+            updates.Add(new QuicTlsStateUpdate(QuicTlsUpdateKind.KeysAvailable, QuicTlsEncryptionLevel.OneRtt));
         }
 
-        peerFinishedVerified = true;
-        updates.Add(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerFinishedVerified));
-
-        updates.Add(new QuicTlsStateUpdate(
-            QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable,
-            PacketProtectionMaterial: oneRttOpenMaterial));
-        updates.Add(new QuicTlsStateUpdate(
-            QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable,
-            PacketProtectionMaterial: oneRttProtectMaterial));
-        updates.Add(new QuicTlsStateUpdate(
-            QuicTlsUpdateKind.KeysAvailable,
-            QuicTlsEncryptionLevel.OneRtt));
+        if (role == QuicTlsRole.Client)
+        {
+            handshakeSecret = null;
+        }
 
         return updates;
     }
@@ -1269,19 +1255,6 @@ internal sealed class QuicTlsKeySchedule
     private byte[] HashTranscript()
     {
         return SHA256.HashData(transcriptBytes.WrittenSpan);
-    }
-
-    private byte[] HashTranscriptWithAppendedMessage(ReadOnlySpan<byte> handshakeMessageBytes)
-    {
-        if (handshakeMessageBytes.IsEmpty)
-        {
-            return HashTranscript();
-        }
-
-        byte[] transcriptBuffer = new byte[transcriptBytes.WrittenCount + handshakeMessageBytes.Length];
-        transcriptBytes.WrittenSpan.CopyTo(transcriptBuffer);
-        handshakeMessageBytes.CopyTo(transcriptBuffer.AsSpan(transcriptBytes.WrittenCount));
-        return SHA256.HashData(transcriptBuffer);
     }
 
     private static byte[] DeriveFinishedVerifyData(ReadOnlySpan<byte> trafficSecret, ReadOnlySpan<byte> transcriptHash)

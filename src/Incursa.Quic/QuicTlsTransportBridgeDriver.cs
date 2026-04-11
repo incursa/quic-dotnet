@@ -21,6 +21,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private ReadOnlyMemory<byte> localServerLeafCertificateDer;
     private ReadOnlyMemory<byte> localServerLeafSigningPrivateKey;
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> nextIngressOffsets = [];
+    private readonly Dictionary<QuicTlsEncryptionLevel, ulong> transcriptIngressBaseOffsets = [];
 
     public QuicTlsTransportBridgeDriver(
         QuicTlsRole role = QuicTlsRole.Client,
@@ -174,7 +175,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
 
         List<QuicTlsStateUpdate> updates = [];
-        if (DrainBufferedCryptoIntoTranscript(QuicTlsEncryptionLevel.Initial, 0))
+        if (DrainBufferedCryptoIntoTranscript(QuicTlsEncryptionLevel.Initial))
         {
             DriveTranscriptProgress(updates);
             if (bridgeState.IsTerminal)
@@ -184,10 +185,9 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
 
         if (bridgeState.InitialIngressCryptoBuffer.BufferedBytes == 0
-            && handshakeTranscriptProgress.HandshakeMessageType.HasValue)
+            && bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes > 0)
         {
-            ulong transcriptOffsetBase = handshakeTranscriptProgress.IngressCursor;
-            if (DrainBufferedCryptoIntoTranscript(QuicTlsEncryptionLevel.Handshake, transcriptOffsetBase))
+            if (DrainBufferedCryptoIntoTranscript(QuicTlsEncryptionLevel.Handshake))
             {
                 DriveTranscriptProgress(updates);
             }
@@ -382,9 +382,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
     }
 
-    private bool DrainBufferedCryptoIntoTranscript(
-        QuicTlsEncryptionLevel encryptionLevel,
-        ulong transcriptOffsetBase)
+    private bool DrainBufferedCryptoIntoTranscript(QuicTlsEncryptionLevel encryptionLevel)
     {
         Span<byte> cryptoBytes = stackalloc byte[HandshakeIngressDrainChunkBytes];
         bool drainedAny = false;
@@ -415,7 +413,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             }
 
             handshakeTranscriptProgress.AppendCryptoBytes(
-                SaturatingAdd(transcriptOffsetBase, offset),
+                TranslateIngressOffset(encryptionLevel, offset),
                 cryptoBytes[..bytesWritten]);
             drainedAny = true;
             if (handshakeTranscriptProgress.TerminalAlertDescription.HasValue)
@@ -604,6 +602,19 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         return nextIngressOffsets.TryGetValue(encryptionLevel, out ulong offset)
             ? offset
             : 0;
+    }
+
+    private ulong TranslateIngressOffset(QuicTlsEncryptionLevel encryptionLevel, ulong cryptoOffset)
+    {
+        if (!transcriptIngressBaseOffsets.TryGetValue(encryptionLevel, out ulong transcriptOffsetBase))
+        {
+            transcriptOffsetBase = handshakeTranscriptProgress.IngressCursor >= cryptoOffset
+                ? handshakeTranscriptProgress.IngressCursor - cryptoOffset
+                : 0;
+            transcriptIngressBaseOffsets[encryptionLevel] = transcriptOffsetBase;
+        }
+
+        return SaturatingAdd(transcriptOffsetBase, cryptoOffset);
     }
 
     private static ulong SaturatingAdd(ulong left, ulong right)
