@@ -321,11 +321,6 @@ internal sealed class QuicHandshakeFlowCoordinator
     {
         plaintextPacket = [];
 
-        if (destinationConnectionId.Length == 0 || sourceConnectionId.Length == 0)
-        {
-            return false;
-        }
-
         if (!TryFormatCryptoFramePayload(
             cryptoPayload,
             cryptoPayloadOffset,

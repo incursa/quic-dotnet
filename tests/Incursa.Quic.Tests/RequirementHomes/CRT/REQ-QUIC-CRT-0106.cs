@@ -5,6 +5,9 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-CRT-0106")]
 public sealed class REQ_QUIC_CRT_0106
 {
+    private static readonly byte[] HandshakeDestinationConnectionId = [0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28];
+    private static readonly byte[] HandshakeSourceConnectionId = [0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48];
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -444,9 +447,13 @@ public sealed class REQ_QUIC_CRT_0106
 
     private static QuicConnectionRuntime CreateRuntime()
     {
-        return new QuicConnectionRuntime(
+        QuicConnectionRuntime runtime = new QuicConnectionRuntime(
             QuicConnectionStreamStateTestHelpers.CreateState(),
             new FakeMonotonicClock(0));
+
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(HandshakeDestinationConnectionId));
+        Assert.True(runtime.TrySetHandshakeSourceConnectionId(HandshakeSourceConnectionId));
+        return runtime;
     }
 
     private static QuicConnectionRuntime CreateRuntimeWithActivePath()
@@ -612,7 +619,9 @@ public sealed class REQ_QUIC_CRT_0106
         ReadOnlySpan<byte> cryptoPayload,
         ulong cryptoOffset = 0)
     {
-        QuicHandshakeFlowCoordinator coordinator = new();
+        QuicHandshakeFlowCoordinator coordinator = new(
+            HandshakeDestinationConnectionId,
+            HandshakeSourceConnectionId);
         Assert.True(coordinator.TryBuildProtectedHandshakePacket(
             cryptoPayload,
             cryptoOffset,

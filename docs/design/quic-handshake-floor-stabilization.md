@@ -4,6 +4,7 @@ This note scopes the narrow managed handshake-floor slice under active work. It 
 
 ## In Scope
 
+- `REQ-QUIC-CRT-0106`
 - `REQ-QUIC-CRT-0108`
 - `REQ-QUIC-CRT-0112`
 - `REQ-QUIC-CRT-0113`
@@ -16,6 +17,7 @@ This note scopes the narrow managed handshake-floor slice under active work. It 
 
 - Keep the current narrow managed loopback subset unchanged.
 - Keep the public API promise narrow: connection establishment, basic stream usage, write/read/EOF, narrow `RESET_STREAM` / `STOP_SENDING`, narrow stream-capacity callback behavior, and narrow `IsSupported`.
+- The runtime coordinator proof for `REQ-QUIC-CRT-0106` still depends on explicit handshake destination/source connection IDs being seeded by the existing internal host/runtime seam before protected Handshake packets can be built or opened; that does not widen the public boundary.
 - Keep the handshake-floor proof focused on the existing managed bridge/runtime seam:
   - `QuicTlsTransportBridgeDriver`
   - `QuicTransportTlsBridgeState`
@@ -25,7 +27,6 @@ This note scopes the narrow managed handshake-floor slice under active work. It 
 
 ## Out Of Scope
 
-- `REQ-QUIC-CRT-0106`
 - `REQ-QUIC-CRT-0109`
 - `REQ-QUIC-CRT-0111`
 - `REQ-QUIC-CRT-0117`
@@ -55,6 +56,7 @@ Those seams feed the transcript-progress owner, the key schedule, and the bridge
 ## Proof Expected
 
 - Positive and negative requirement-home coverage in:
+  - `tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs`
   - `tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs`
   - `tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs`
   - `tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs`
