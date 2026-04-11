@@ -8,6 +8,7 @@ namespace Incursa.Quic;
 public sealed class QuicStream : Stream
 {
     private static readonly TimeSpan PendingReadPollInterval = TimeSpan.FromMilliseconds(10);
+    private const long MaximumErrorCodeValue = (1L << 62) - 1;
 
     private readonly QuicConnectionStreamState bookkeeping;
     private readonly QuicConnectionRuntime? runtime;
@@ -16,7 +17,11 @@ public sealed class QuicStream : Stream
     private readonly bool canRead;
     private readonly bool canWrite;
     private readonly TaskCompletionSource<object?> readsClosed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private readonly TaskCompletionSource<object?> writesClosed = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly SemaphoreSlim writeGate = new(1, 1);
+    private readonly long? runtimeObserverId;
+    private Exception? readTerminalException;
+    private Exception? writeTerminalException;
     private int disposed;
 
     internal QuicStream(QuicConnectionStreamState bookkeeping, ulong streamId, QuicConnectionRuntime? runtime = null)
@@ -38,6 +43,16 @@ public sealed class QuicStream : Stream
         {
             readsClosed.TrySetResult(null);
         }
+
+        if (!canWrite || snapshot.SendState == QuicStreamSendState.DataSent)
+        {
+            writesClosed.TrySetResult(null);
+        }
+
+        if (runtime is not null)
+        {
+            runtimeObserverId = runtime.RegisterStreamObserver(streamId, HandleRuntimeNotification);
+        }
     }
 
     /// <summary>
@@ -55,13 +70,18 @@ public sealed class QuicStream : Stream
     /// </summary>
     public Task ReadsClosed => readsClosed.Task;
 
-    public override bool CanRead => Volatile.Read(ref disposed) == 0 && canRead;
+    /// <summary>
+    /// Gets a task that completes when the write side is closed.
+    /// </summary>
+    public Task WritesClosed => writesClosed.Task;
+
+    public override bool CanRead => Volatile.Read(ref disposed) == 0 && canRead && !readsClosed.Task.IsCompleted;
 
     public override bool CanSeek => false;
 
     public override bool CanTimeout => false;
 
-    public override bool CanWrite => Volatile.Read(ref disposed) == 0 && canWrite;
+    public override bool CanWrite => Volatile.Read(ref disposed) == 0 && canWrite && !writesClosed.Task.IsCompleted;
 
     public override long Length => throw new NotSupportedException();
 
@@ -126,6 +146,63 @@ public sealed class QuicStream : Stream
         throw new NotSupportedException();
     }
 
+    public void Abort(QuicAbortDirection abortDirection, long errorCode)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+        ValidateErrorCode(errorCode);
+
+        bool abortRead = (abortDirection & QuicAbortDirection.Read) != 0;
+        bool abortWrite = (abortDirection & QuicAbortDirection.Write) != 0;
+
+        if (abortRead && abortWrite)
+        {
+            throw new NotSupportedException("The supported runtime path does not yet expose combined read/write aborts.");
+        }
+
+        if (!abortRead && !abortWrite)
+        {
+            throw new ArgumentOutOfRangeException(nameof(abortDirection));
+        }
+
+        if (abortRead)
+        {
+            if (!canRead)
+            {
+                throw new InvalidOperationException("This stream does not have a readable side.");
+            }
+
+            if (readsClosed.Task.IsCompleted)
+            {
+                return;
+            }
+
+            if (runtime is null)
+            {
+                throw new NotSupportedException("Aborting reads requires the supported connection runtime path.");
+            }
+
+            runtime.AbortStreamReadsAsync(streamId, checked((ulong)errorCode)).GetAwaiter().GetResult();
+            return;
+        }
+
+        if (!canWrite)
+        {
+            throw new InvalidOperationException("This stream does not have a writable side.");
+        }
+
+        if (writesClosed.Task.IsCompleted)
+        {
+            return;
+        }
+
+        if (runtime is null)
+        {
+            throw new NotSupportedException("Aborting writes requires the supported connection runtime path.");
+        }
+
+        runtime.AbortStreamWritesAsync(streamId, checked((ulong)errorCode)).GetAwaiter().GetResult();
+    }
+
     public override ValueTask DisposeAsync()
     {
         return DisposeCoreAsync(useAsyncWait: true);
@@ -151,6 +228,11 @@ public sealed class QuicStream : Stream
 
         try
         {
+            if (runtime is not null && runtimeObserverId.HasValue)
+            {
+                runtime.UnregisterStreamObserver(streamId, runtimeObserverId.Value);
+            }
+
             if (canWrite && runtime is not null)
             {
                 if (useAsyncWait)
@@ -169,6 +251,7 @@ public sealed class QuicStream : Stream
                         && snapshot.SendState is QuicStreamSendState.Ready or QuicStreamSendState.Send)
                     {
                         await runtime.CompleteStreamWritesAsync(streamId).ConfigureAwait(false);
+                        writesClosed.TrySetResult(null);
                     }
                 }
                 catch
@@ -184,6 +267,7 @@ public sealed class QuicStream : Stream
         finally
         {
             readsClosed.TrySetResult(null);
+            writesClosed.TrySetResult(null);
             writeGate.Dispose();
             base.Dispose(disposing: true);
         }
@@ -201,6 +285,11 @@ public sealed class QuicStream : Stream
             }
 
             cancellationToken.ThrowIfCancellationRequested();
+
+            if (readTerminalException is Exception readException)
+            {
+                throw readException;
+            }
 
             Exception? runtimeException = runtime?.GetStreamOperationException();
             if (runtimeException is not null)
@@ -236,6 +325,11 @@ public sealed class QuicStream : Stream
                 return 0;
             }
 
+            if (TryCreateReadAbortException(out Exception? readAbortException))
+            {
+                throw readAbortException!;
+            }
+
             if (errorCode != default)
             {
                 throw new QuicException(QuicError.TransportError, null, (long)errorCode, "The stream could not be read.");
@@ -266,6 +360,11 @@ public sealed class QuicStream : Stream
             throw new NotSupportedException("Writing requires the supported connection runtime path.");
         }
 
+        if (writeTerminalException is Exception writeException)
+        {
+            throw writeException;
+        }
+
         Exception? runtimeException = runtime.GetStreamOperationException();
         if (runtimeException is not null)
         {
@@ -288,11 +387,78 @@ public sealed class QuicStream : Stream
                 throw runtimeException;
             }
 
+            if (writeTerminalException is Exception completedWriteException)
+            {
+                throw completedWriteException;
+            }
+
             await runtime.WriteStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
             writeGate.Release();
+        }
+    }
+
+    private void HandleRuntimeNotification(QuicStreamNotification notification)
+    {
+        switch (notification.Kind)
+        {
+            case QuicStreamNotificationKind.ReadAborted:
+                readTerminalException ??= notification.Exception;
+                readsClosed.TrySetException(notification.Exception);
+                break;
+            case QuicStreamNotificationKind.WriteAborted:
+                writeTerminalException ??= notification.Exception;
+                writesClosed.TrySetException(notification.Exception);
+                break;
+            case QuicStreamNotificationKind.ConnectionTerminated:
+                if (canRead && !readsClosed.Task.IsCompleted)
+                {
+                    readTerminalException ??= notification.Exception;
+                    readsClosed.TrySetException(notification.Exception);
+                }
+
+                if (canWrite && !writesClosed.Task.IsCompleted)
+                {
+                    writeTerminalException ??= notification.Exception;
+                    writesClosed.TrySetException(notification.Exception);
+                }
+
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(notification));
+        }
+    }
+
+    private bool TryCreateReadAbortException(out Exception? exception)
+    {
+        exception = null;
+        if (!bookkeeping.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot)
+            || snapshot.ReceiveState is not QuicStreamReceiveState.ResetRecvd and not QuicStreamReceiveState.ResetRead)
+        {
+            return false;
+        }
+
+        if (!snapshot.HasReceiveAbortErrorCode)
+        {
+            return false;
+        }
+
+        bookkeeping.TryAcknowledgeReset(streamId);
+        exception = readTerminalException ??= new QuicException(
+            QuicError.StreamAborted,
+            checked((long)snapshot.ReceiveAbortErrorCode),
+            "The peer aborted the stream.");
+        readsClosed.TrySetException(exception);
+        return true;
+    }
+
+    private static void ValidateErrorCode(long errorCode)
+    {
+        if (errorCode < 0 || errorCode > MaximumErrorCodeValue)
+        {
+            throw new ArgumentOutOfRangeException(nameof(errorCode));
         }
     }
 

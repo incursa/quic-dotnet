@@ -373,6 +373,63 @@ internal sealed class QuicConnectionStreamState
         state.AccountedBytes = newAccountedBytes;
         connectionAccountedBytesReceived += additionalAccountedBytes;
         state.ReceiveState = QuicStreamReceiveState.ResetRecvd;
+        state.ReceiveAbortErrorCode = frame.ApplicationProtocolErrorCode;
+        state.HasReceiveAbortErrorCode = true;
+        return true;
+    }
+
+    public bool TryAbortLocalStreamWrites(
+        ulong streamIdValue,
+        out ulong finalSize,
+        out QuicTransportErrorCode errorCode)
+    {
+        finalSize = 0;
+        errorCode = default;
+
+        QuicStreamId streamId = new(streamIdValue);
+        if (!TryResolveSendCapableStream(streamId, allowImplicitPeerOpen: false, out StreamState? state, out errorCode))
+        {
+            return false;
+        }
+
+        if (state.SendState is QuicStreamSendState.DataSent or QuicStreamSendState.ResetSent)
+        {
+            errorCode = QuicTransportErrorCode.StreamStateError;
+            return false;
+        }
+
+        finalSize = state.FinalSize ?? state.HighestSentOffset;
+        state.FinalSize = finalSize;
+        state.SendState = QuicStreamSendState.ResetSent;
+        return true;
+    }
+
+    public bool TryReceiveStopSendingFrame(
+        QuicStopSendingFrame frame,
+        out QuicResetStreamFrame resetStreamFrame,
+        out QuicTransportErrorCode errorCode)
+    {
+        resetStreamFrame = default;
+        errorCode = default;
+
+        QuicStreamId streamId = new(frame.StreamId);
+        if (!TryResolveSendCapableStream(streamId, allowImplicitPeerOpen: false, out StreamState? state, out errorCode))
+        {
+            return false;
+        }
+
+        if (state.SendState is QuicStreamSendState.DataSent or QuicStreamSendState.ResetSent)
+        {
+            errorCode = QuicTransportErrorCode.StreamStateError;
+            return false;
+        }
+
+        ulong finalSize = state.FinalSize ?? state.HighestSentOffset;
+        state.FinalSize = finalSize;
+        state.SendState = QuicStreamSendState.ResetSent;
+        state.SendAbortErrorCode = frame.ApplicationProtocolErrorCode;
+        state.HasSendAbortErrorCode = true;
+        resetStreamFrame = new QuicResetStreamFrame(frame.StreamId, frame.ApplicationProtocolErrorCode, finalSize);
         return true;
     }
 
@@ -486,6 +543,32 @@ internal sealed class QuicConnectionStreamState
         return true;
     }
 
+    public bool TryGetReceiveAbortErrorCode(ulong streamIdValue, out ulong applicationErrorCode)
+    {
+        applicationErrorCode = 0;
+        if (!streams.TryGetValue(streamIdValue, out StreamState? state)
+            || !state.HasReceiveAbortErrorCode)
+        {
+            return false;
+        }
+
+        applicationErrorCode = state.ReceiveAbortErrorCode;
+        return true;
+    }
+
+    public bool TryGetSendAbortErrorCode(ulong streamIdValue, out ulong applicationErrorCode)
+    {
+        applicationErrorCode = 0;
+        if (!streams.TryGetValue(streamIdValue, out StreamState? state)
+            || !state.HasSendAbortErrorCode)
+        {
+            return false;
+        }
+
+        applicationErrorCode = state.SendAbortErrorCode;
+        return true;
+    }
+
     public bool TryGetStreamSnapshot(ulong streamIdValue, out QuicConnectionStreamSnapshot snapshot)
     {
         snapshot = default;
@@ -507,7 +590,11 @@ internal sealed class QuicConnectionStreamState
             state.ReceivedRanges.TotalLength,
             state.AccountedBytes,
             state.ReadOffset,
-            state.BufferedReadableBytes);
+            state.BufferedReadableBytes,
+            state.ReceiveAbortErrorCode,
+            state.HasReceiveAbortErrorCode,
+            state.SendAbortErrorCode,
+            state.HasSendAbortErrorCode);
         return true;
     }
 
@@ -795,6 +882,10 @@ internal sealed class QuicConnectionStreamState
         public int BufferedReadableBytes { get; set; }
         public ulong HighestSentOffset { get; set; }
         public ulong HighestReceivedOffset { get; set; }
+        public ulong ReceiveAbortErrorCode { get; set; }
+        public bool HasReceiveAbortErrorCode { get; set; }
+        public ulong SendAbortErrorCode { get; set; }
+        public bool HasSendAbortErrorCode { get; set; }
         public QuicByteRangeSet SentRanges { get; } = new();
         public QuicByteRangeSet ReceivedRanges { get; } = new();
         public List<BufferedSegment> BufferedSegments { get; } = [];

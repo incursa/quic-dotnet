@@ -13,4 +13,8 @@ internal readonly record struct QuicConnectionStreamSnapshot(
     ulong UniqueBytesReceived,
     ulong AccountedBytesReceived,
     ulong ReadOffset,
-    int BufferedReadableBytes);
+    int BufferedReadableBytes,
+    ulong ReceiveAbortErrorCode,
+    bool HasReceiveAbortErrorCode,
+    ulong SendAbortErrorCode,
+    bool HasSendAbortErrorCode);

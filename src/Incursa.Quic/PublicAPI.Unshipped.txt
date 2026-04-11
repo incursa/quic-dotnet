@@ -83,9 +83,11 @@ Incursa.Quic.QuicReceiveWindowSizes.RemotelyInitiatedBidirectionalStream.set -> 
 Incursa.Quic.QuicReceiveWindowSizes.UnidirectionalStream.get -> int
 Incursa.Quic.QuicReceiveWindowSizes.UnidirectionalStream.set -> void
 Incursa.Quic.QuicStream
+Incursa.Quic.QuicStream.Abort(Incursa.Quic.QuicAbortDirection abortDirection, long errorCode) -> void
 Incursa.Quic.QuicStream.Id.get -> long
 Incursa.Quic.QuicStream.Type.get -> Incursa.Quic.QuicStreamType
 Incursa.Quic.QuicStream.ReadsClosed.get -> System.Threading.Tasks.Task!
+Incursa.Quic.QuicStream.WritesClosed.get -> System.Threading.Tasks.Task!
 override Incursa.Quic.QuicStream.CanRead.get -> bool
 override Incursa.Quic.QuicStream.CanSeek.get -> bool
 override Incursa.Quic.QuicStream.CanTimeout.get -> bool

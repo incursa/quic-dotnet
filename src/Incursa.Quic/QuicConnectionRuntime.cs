@@ -27,6 +27,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly Channel<QuicConnectionEvent> inbox;
     private readonly ConcurrentDictionary<long, TaskCompletionSource<ulong>> pendingStreamOpenRequests = new();
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingStreamActionRequests = new();
+    private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> streamObservers = new();
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
     private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
@@ -55,6 +56,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private long lastTransitionTicks;
     private ulong transitionSequence;
     private long nextStreamActionRequestId;
+    private long nextStreamObserverId;
     private Exception? inboundStreamQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Action<int, int>? streamCapacityObserver;
@@ -290,6 +292,60 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         streamCapacityObserver = observer;
     }
 
+    internal long RegisterStreamObserver(ulong streamId, Action<QuicStreamNotification> observer)
+    {
+        ArgumentNullException.ThrowIfNull(observer);
+
+        long observerId = Interlocked.Increment(ref nextStreamObserverId);
+        ConcurrentDictionary<long, Action<QuicStreamNotification>> observers = streamObservers.GetOrAdd(
+            streamId,
+            static _ => new ConcurrentDictionary<long, Action<QuicStreamNotification>>());
+
+        if (!observers.TryAdd(observerId, observer))
+        {
+            throw new InvalidOperationException("The connection runtime could not register the stream observer.");
+        }
+
+        if (terminalState is QuicConnectionTerminalState terminalStateValue)
+        {
+            observer(new QuicStreamNotification(
+                QuicStreamNotificationKind.ConnectionTerminated,
+                CreateTerminalException(terminalStateValue)));
+        }
+        else
+        {
+            if (streamRegistry.Bookkeeping.TryGetReceiveAbortErrorCode(streamId, out ulong receiveAbortErrorCode))
+            {
+                observer(new QuicStreamNotification(
+                    QuicStreamNotificationKind.ReadAborted,
+                    CreateStreamReadAbortedException(receiveAbortErrorCode)));
+            }
+
+            if (streamRegistry.Bookkeeping.TryGetSendAbortErrorCode(streamId, out ulong sendAbortErrorCode))
+            {
+                observer(new QuicStreamNotification(
+                    QuicStreamNotificationKind.WriteAborted,
+                    CreateStreamWriteAbortedException(sendAbortErrorCode)));
+            }
+        }
+
+        return observerId;
+    }
+
+    internal void UnregisterStreamObserver(ulong streamId, long observerId)
+    {
+        if (!streamObservers.TryGetValue(streamId, out ConcurrentDictionary<long, Action<QuicStreamNotification>>? observers))
+        {
+            return;
+        }
+
+        observers.TryRemove(observerId, out _);
+        if (observers.IsEmpty)
+        {
+            streamObservers.TryRemove(streamId, out _);
+        }
+    }
+
     internal async ValueTask<QuicStream> AcceptInboundStreamAsync(CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
@@ -497,6 +553,106 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             throw IsDisposed
                 ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
                 : new InvalidOperationException("The connection runtime could not queue the stream finish request.");
+        }
+
+        await completion.Task.ConfigureAwait(false);
+    }
+
+    internal async ValueTask AbortStreamWritesAsync(
+        ulong streamId,
+        ulong applicationErrorCode,
+        CancellationToken cancellationToken = default)
+    {
+        ThrowIfDisposed();
+
+        if (terminalState is not null)
+        {
+            throw CreateTerminalException(terminalState.Value);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
+        TaskCompletionSource<object?> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        if (!pendingStreamActionRequests.TryAdd(requestId, completion))
+        {
+            throw new InvalidOperationException("The connection runtime could not queue the stream reset request.");
+        }
+
+        using CancellationTokenRegistration cancellationRegistration = cancellationToken.CanBeCanceled
+            ? cancellationToken.Register(static state =>
+            {
+                (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
+                    ((QuicConnectionRuntime, long, CancellationToken))state!;
+
+                if (runtime.pendingStreamActionRequests.TryRemove(requestId, out TaskCompletionSource<object?>? pendingCompletion))
+                {
+                    pendingCompletion.TrySetCanceled(token);
+                }
+            }, (this, requestId, cancellationToken))
+            : default;
+
+        if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+            clock.Ticks,
+            requestId,
+            QuicConnectionStreamActionKind.Reset,
+            StreamId: streamId,
+            ApplicationErrorCode: applicationErrorCode)))
+        {
+            pendingStreamActionRequests.TryRemove(requestId, out _);
+            throw IsDisposed
+                ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
+                : new InvalidOperationException("The connection runtime could not queue the stream reset request.");
+        }
+
+        await completion.Task.ConfigureAwait(false);
+    }
+
+    internal async ValueTask AbortStreamReadsAsync(
+        ulong streamId,
+        ulong applicationErrorCode,
+        CancellationToken cancellationToken = default)
+    {
+        ThrowIfDisposed();
+
+        if (terminalState is not null)
+        {
+            throw CreateTerminalException(terminalState.Value);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
+        TaskCompletionSource<object?> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        if (!pendingStreamActionRequests.TryAdd(requestId, completion))
+        {
+            throw new InvalidOperationException("The connection runtime could not queue the stream stop-sending request.");
+        }
+
+        using CancellationTokenRegistration cancellationRegistration = cancellationToken.CanBeCanceled
+            ? cancellationToken.Register(static state =>
+            {
+                (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
+                    ((QuicConnectionRuntime, long, CancellationToken))state!;
+
+                if (runtime.pendingStreamActionRequests.TryRemove(requestId, out TaskCompletionSource<object?>? pendingCompletion))
+                {
+                    pendingCompletion.TrySetCanceled(token);
+                }
+            }, (this, requestId, cancellationToken))
+            : default;
+
+        if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+            clock.Ticks,
+            requestId,
+            QuicConnectionStreamActionKind.StopSending,
+            StreamId: streamId,
+            ApplicationErrorCode: applicationErrorCode)))
+        {
+            pendingStreamActionRequests.TryRemove(requestId, out _);
+            throw IsDisposed
+                ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
+                : new InvalidOperationException("The connection runtime could not queue the stream stop-sending request.");
         }
 
         await completion.Task.ConfigureAwait(false);
@@ -862,6 +1018,20 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                     ReadOnlyMemory<byte>.Empty,
                     finishWrites: true,
                     ref effects),
+            QuicConnectionStreamActionKind.Reset
+                when streamActionEvent.StreamId.HasValue && streamActionEvent.ApplicationErrorCode.HasValue
+                => HandleResetStreamAction(
+                    streamActionEvent.RequestId,
+                    streamActionEvent.StreamId.Value,
+                    streamActionEvent.ApplicationErrorCode.Value,
+                    ref effects),
+            QuicConnectionStreamActionKind.StopSending
+                when streamActionEvent.StreamId.HasValue && streamActionEvent.ApplicationErrorCode.HasValue
+                => HandleStopSendingStreamAction(
+                    streamActionEvent.RequestId,
+                    streamActionEvent.StreamId.Value,
+                    streamActionEvent.ApplicationErrorCode.Value,
+                    ref effects),
             _ => false,
         };
     }
@@ -1029,6 +1199,131 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             currentPath.Identity,
             protectedPacket));
+
+        completion.TrySetResult(null);
+        return true;
+    }
+
+    private bool HandleResetStreamAction(
+        long requestId,
+        ulong streamId,
+        ulong applicationErrorCode,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!pendingStreamActionRequests.TryRemove(requestId, out TaskCompletionSource<object?>? completion))
+        {
+            return false;
+        }
+
+        if (!TryValidateStreamSendBoundary(out Exception? exception))
+        {
+            completion.TrySetException(exception!);
+            return false;
+        }
+
+        if (!streamRegistry.Bookkeeping.TryAbortLocalStreamWrites(
+            streamId,
+            out ulong finalSize,
+            out QuicTransportErrorCode errorCode))
+        {
+            completion.TrySetException(errorCode != default
+                ? new QuicException(
+                    QuicError.TransportError,
+                    null,
+                    (long)errorCode,
+                    "The stream reset could not be committed.")
+                : new InvalidOperationException("The writable side is already completed."));
+            return false;
+        }
+
+        if (!TryBuildOutboundResetPayload(streamId, applicationErrorCode, finalSize, out byte[] streamPayload))
+        {
+            completion.TrySetException(new InvalidOperationException("The connection runtime could not build the stream reset payload."));
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            streamPayload,
+            "The connection runtime could not protect the stream reset packet.",
+            "The connection cannot send the stream reset packet.",
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out exception))
+        {
+            completion.TrySetException(exception!);
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+
+        NotifyStreamObservers(
+            streamId,
+            new QuicStreamNotification(
+                QuicStreamNotificationKind.WriteAborted,
+                CreateLocalOperationAbortedException("The local write side was aborted.")));
+
+        completion.TrySetResult(null);
+        return true;
+    }
+
+    private bool HandleStopSendingStreamAction(
+        long requestId,
+        ulong streamId,
+        ulong applicationErrorCode,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!pendingStreamActionRequests.TryRemove(requestId, out TaskCompletionSource<object?>? completion))
+        {
+            return false;
+        }
+
+        if (!TryValidateStreamSendBoundary(out Exception? exception))
+        {
+            completion.TrySetException(exception!);
+            return false;
+        }
+
+        if (!TryBuildOutboundStopSendingPayload(streamId, applicationErrorCode, out byte[] streamPayload))
+        {
+            completion.TrySetException(new InvalidOperationException("The connection runtime could not build the stream stop-sending payload."));
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            streamPayload,
+            "The connection runtime could not protect the stream stop-sending packet.",
+            "The connection cannot send the stream stop-sending packet.",
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out exception))
+        {
+            completion.TrySetException(exception!);
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+
+        NotifyStreamObservers(
+            streamId,
+            new QuicStreamNotification(
+                QuicStreamNotificationKind.ReadAborted,
+                CreateLocalOperationAbortedException("The local read side was aborted.")));
 
         completion.TrySetResult(null);
         return true;
@@ -1223,6 +1518,40 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 }
 
                 offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseStopSendingFrame(remaining, out QuicStopSendingFrame stopSendingFrame, out int stopSendingBytesConsumed))
+            {
+                if (stopSendingBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (!TryHandleStopSendingFrame(stopSendingFrame, ref effects))
+                {
+                    return false;
+                }
+
+                stateChanged = true;
+                offset += stopSendingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseResetStreamFrame(remaining, out QuicResetStreamFrame resetStreamFrame, out int resetBytesConsumed))
+            {
+                if (resetBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (!TryHandleResetStreamFrame(resetStreamFrame))
+                {
+                    return false;
+                }
+
+                stateChanged = true;
+                offset += resetBytesConsumed;
                 continue;
             }
 
@@ -1539,6 +1868,138 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return true;
     }
 
+    private bool TryBuildOutboundResetPayload(
+        ulong streamId,
+        ulong applicationErrorCode,
+        ulong finalSize,
+        out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
+        if (!QuicFrameCodec.TryFormatResetStreamFrame(
+            new QuicResetStreamFrame(streamId, applicationErrorCode, finalSize),
+            buffer,
+            out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
+    private bool TryBuildOutboundStopSendingPayload(
+        ulong streamId,
+        ulong applicationErrorCode,
+        out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
+        if (!QuicFrameCodec.TryFormatStopSendingFrame(
+            new QuicStopSendingFrame(streamId, applicationErrorCode),
+            buffer,
+            out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
+    private bool TryHandleResetStreamFrame(QuicResetStreamFrame resetStreamFrame)
+    {
+        if (!streamRegistry.Bookkeeping.TryReceiveResetStreamFrame(
+            resetStreamFrame,
+            out _,
+            out QuicTransportErrorCode errorCode))
+        {
+            _ = errorCode;
+            return false;
+        }
+
+        NotifyStreamObservers(
+            resetStreamFrame.StreamId,
+            new QuicStreamNotification(
+                QuicStreamNotificationKind.ReadAborted,
+                CreateStreamReadAbortedException(resetStreamFrame.ApplicationProtocolErrorCode)));
+
+        return true;
+    }
+
+    private bool TryHandleStopSendingFrame(QuicStopSendingFrame stopSendingFrame, ref List<QuicConnectionEffect>? effects)
+    {
+        if (!streamRegistry.Bookkeeping.TryReceiveStopSendingFrame(
+            stopSendingFrame,
+            out QuicResetStreamFrame resetStreamFrame,
+            out QuicTransportErrorCode errorCode))
+        {
+            _ = errorCode;
+            return false;
+        }
+
+        if (!TryBuildOutboundResetPayload(
+            resetStreamFrame.StreamId,
+            resetStreamFrame.ApplicationProtocolErrorCode,
+            resetStreamFrame.FinalSize,
+            out byte[] streamPayload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            streamPayload,
+            "The connection runtime could not protect the stream reset packet.",
+            "The connection cannot send the stream reset packet.",
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+
+        NotifyStreamObservers(
+            stopSendingFrame.StreamId,
+            new QuicStreamNotification(
+                QuicStreamNotificationKind.WriteAborted,
+                CreateStreamWriteAbortedException(stopSendingFrame.ApplicationProtocolErrorCode)));
+
+        return true;
+    }
+
     private void TryQueueInboundStreamId(ulong streamId)
     {
         _ = inboundStreamIds.Writer.TryWrite(streamId);
@@ -1595,6 +2056,53 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
     }
 
+    private void NotifyStreamObservers(ulong streamId, QuicStreamNotification notification)
+    {
+        if (!streamObservers.TryGetValue(streamId, out ConcurrentDictionary<long, Action<QuicStreamNotification>>? observers))
+        {
+            return;
+        }
+
+        foreach (Action<QuicStreamNotification> observer in observers.Values)
+        {
+            try
+            {
+                observer(notification);
+            }
+            catch
+            {
+                // Stream observer failures remain local to the public facade boundary.
+            }
+        }
+    }
+
+    private void NotifyAllStreamObservers(Exception completionException)
+    {
+        if (streamObservers.IsEmpty)
+        {
+            return;
+        }
+
+        foreach (KeyValuePair<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> entry in streamObservers)
+        {
+            QuicStreamNotification notification = new(
+                QuicStreamNotificationKind.ConnectionTerminated,
+                completionException);
+
+            foreach (Action<QuicStreamNotification> observer in entry.Value.Values)
+            {
+                try
+                {
+                    observer(notification);
+                }
+                catch
+                {
+                    // Stream observer failures remain local to the public facade boundary.
+                }
+            }
+        }
+    }
+
     private static Exception CreateTerminalException(QuicConnectionTerminalState terminalState)
     {
         if (terminalState.Close.TransportErrorCode.HasValue)
@@ -1622,6 +2130,30 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             QuicError.ConnectionAborted,
             applicationErrorCode,
             terminalState.Close.ReasonPhrase ?? "The connection terminated.");
+    }
+
+    private static Exception CreateLocalOperationAbortedException(string message)
+    {
+        return new QuicException(
+            QuicError.OperationAborted,
+            null,
+            message);
+    }
+
+    private static Exception CreateStreamReadAbortedException(ulong applicationErrorCode)
+    {
+        return new QuicException(
+            QuicError.StreamAborted,
+            checked((long)applicationErrorCode),
+            "The peer aborted the stream.");
+    }
+
+    private static Exception CreateStreamWriteAbortedException(ulong applicationErrorCode)
+    {
+        return new QuicException(
+            QuicError.StreamAborted,
+            checked((long)applicationErrorCode),
+            "The peer requested the stream stop sending.");
     }
 
     private bool TryCommitLocalTransportParametersFromTlsBridgeState(
@@ -2266,7 +2798,9 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             closeMetadata,
             nowTicks);
 
-        CompletePendingStreamOperations(CreateTerminalException(terminalState.Value));
+        Exception terminalException = CreateTerminalException(terminalState.Value);
+        CompletePendingStreamOperations(terminalException);
+        NotifyAllStreamObservers(terminalException);
         AppendEffect(ref effects, new QuicConnectionNotifyStreamsOfTerminalStateEffect(terminalState.Value));
         AppendEffect(ref effects, new QuicConnectionDiscardConnectionStateEffect(terminalState));
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
@@ -2953,7 +3487,9 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             closeMetadata,
             nowTicks);
 
-        CompletePendingStreamOperations(CreateTerminalException(terminalState.Value));
+        Exception terminalException = CreateTerminalException(terminalState.Value);
+        CompletePendingStreamOperations(terminalException);
+        NotifyAllStreamObservers(terminalException);
     }
 
     private void AppendTerminalEffects(ref List<QuicConnectionEffect>? effects, bool emitClosePacket)

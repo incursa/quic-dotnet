@@ -21,6 +21,7 @@ public sealed class REQ_QUIC_API_0010
         byte[] payload = [0x10, 0x20, 0x30, 0x40, 0x50];
         await pair.ClientStream.WriteAsync(payload, 0, payload.Length).WaitAsync(TimeSpan.FromSeconds(5));
         await pair.ClientStream.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        await pair.ClientStream.WritesClosed.WaitAsync(TimeSpan.FromSeconds(5));
 
         byte[] receiveBuffer = new byte[payload.Length];
         int bytesRead = await ReadWithDiagnosticsAsync(pair, receiveBuffer, payload.Length);
