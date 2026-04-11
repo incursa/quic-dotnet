@@ -212,7 +212,11 @@ public sealed class REQ_QUIC_CRT_0117
         byte[] localHandshakePrivateKey = CreateScalar(0x22);
         byte[] localSigningPrivateKey = CreateScalar(0x44);
         QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
-        QuicTransportParameters peerTransportParameters = CreateClientTransportParameters();
+        QuicTransportParameters peerTransportParameters = new()
+        {
+            MaxIdleTimeout = 21,
+            InitialSourceConnectionId = [0x0A, 0x0B, 0x0C],
+        };
         (byte[] clientHelloTranscript, _) = CreateServerRoleClientHello(peerTransportParameters);
         byte[] localLeafCertificateDer = CreateLocalLeafCertificateDer(localSigningPrivateKey);
 
@@ -228,11 +232,6 @@ public sealed class REQ_QUIC_CRT_0117
             clientHelloTranscript);
 
         Assert.Equal(9, clientHelloUpdates.Count);
-        FieldInfo keyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
-            "keySchedule",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsKeySchedule driverKeySchedule = (QuicTlsKeySchedule)keyScheduleField.GetValue(driver)!;
-        Assert.True(driverKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
 
         QuicConnectionRuntime runtime = new(
             QuicConnectionStreamStateTestHelpers.CreateState(),
@@ -243,6 +242,11 @@ public sealed class REQ_QUIC_CRT_0117
             tlsRole: QuicTlsRole.Server);
         QuicTlsPacketProtectionMaterial initialMaterial = CreateHandshakeMaterial();
 
+        Assert.True(runtime.Transition(
+            new QuicConnectionHandshakeBootstrapRequestedEvent(
+                ObservedAtTicks: 0,
+                LocalTransportParameters: localTransportParameters),
+            nowTicks: 0).StateChanged);
         Assert.True(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 1,
@@ -273,6 +277,16 @@ public sealed class REQ_QUIC_CRT_0117
         Assert.False(runtime.TlsState.PeerHandshakeTranscriptCompleted);
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
         Assert.True(runtime.TlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial runtimeHandshakePacketMaterial));
+        Assert.True(runtime.TlsState.HandshakeKeysAvailable);
+        FieldInfo runtimeDriverField = typeof(QuicConnectionRuntime).GetField(
+            "tlsBridgeDriver",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        QuicTlsTransportBridgeDriver runtimeDriver = (QuicTlsTransportBridgeDriver)runtimeDriverField.GetValue(runtime)!;
+        FieldInfo runtimeKeyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
+            "keySchedule",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        QuicTlsKeySchedule runtimeKeySchedule = (QuicTlsKeySchedule)runtimeKeyScheduleField.GetValue(runtimeDriver)!;
+        Assert.True(runtimeKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
 
         QuicConnectionTransitionResult candidatePacketResult = runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
@@ -307,6 +321,8 @@ public sealed class REQ_QUIC_CRT_0117
                 finishedPacket),
             nowTicks: 5);
 
+        Assert.False(runtime.TlsState.IsTerminal);
+        Assert.True(runtime.TlsState.PeerFinishedVerified);
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.PeerHandshakeTranscriptCompleted);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);

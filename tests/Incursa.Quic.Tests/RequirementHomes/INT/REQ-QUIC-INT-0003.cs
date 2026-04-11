@@ -175,7 +175,8 @@ public sealed class REQ_QUIC_INT_0003
         Assert.Equal(QuicConnectionEventKind.TlsStateUpdated, result.EventKind);
         Assert.True(runtime.TlsState.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
-        Assert.True(runtime.Transition(
+        Assert.True(runtime.TlsState.PeerTransportParametersCommitted);
+        Assert.False(runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 10,
                 new QuicTlsStateUpdate(
