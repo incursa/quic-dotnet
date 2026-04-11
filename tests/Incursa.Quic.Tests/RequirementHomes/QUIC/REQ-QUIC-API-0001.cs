@@ -3,7 +3,7 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0001">The approved public facade now includes QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicServerConnectionOptions, and the corrected QuicStreamType. Client connect, the remaining TLS-auth wrappers, and any broader middleware-style surface remain deferred.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0001">The approved public facade now includes QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicClientConnectionOptions, QuicServerConnectionOptions, and the corrected QuicStreamType. The client entry point is now public, while broader middleware-style surface and stream-capacity callbacks remain deferred.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0001")]
 public sealed class REQ_QUIC_API_0001
@@ -22,6 +22,7 @@ public sealed class REQ_QUIC_API_0001
         string[] expectedTypeNames =
         [
             "Incursa.Quic.QuicAbortDirection",
+            "Incursa.Quic.QuicClientConnectionOptions",
             "Incursa.Quic.QuicConnection",
             "Incursa.Quic.QuicConnectionOptions",
             "Incursa.Quic.QuicError",
@@ -46,6 +47,10 @@ public sealed class REQ_QUIC_API_0001
         [
             typeof(QuicConnectionCloseFrame),
             typeof(QuicConnectionLifecycleState),
+            typeof(QuicConnectionEndpointHost),
+            typeof(QuicConnectionRuntimeEndpoint),
+            typeof(QuicClientConnectionHost),
+            typeof(QuicClientConnectionOptionsValidator),
             typeof(QuicListenerHost),
             typeof(QuicConnectionRuntime),
             typeof(QuicConnectionStreamRegistry),
@@ -140,6 +145,20 @@ public sealed class REQ_QUIC_API_0001
 
         Assert.Equal(expectedPropertyNames, propertyNames);
         Assert.DoesNotContain(propertyNames, name => name == "StreamCapacityCallback");
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void QuicConnection_ExposesTheApprovedStaticConnectEntryPoint()
+    {
+        MethodInfo? method = typeof(QuicConnection).GetMethod(
+            nameof(QuicConnection.ConnectAsync),
+            BindingFlags.Public | BindingFlags.Static,
+            [typeof(QuicClientConnectionOptions), typeof(CancellationToken)]);
+
+        Assert.NotNull(method);
+        Assert.Equal(typeof(ValueTask<QuicConnection>), method.ReturnType);
     }
 
     [Fact]

@@ -4,8 +4,17 @@ Incursa.Quic.QuicAbortDirection.Read = 1 -> Incursa.Quic.QuicAbortDirection
 Incursa.Quic.QuicAbortDirection.Write = 2 -> Incursa.Quic.QuicAbortDirection
 Incursa.Quic.QuicAbortDirection.Both = Incursa.Quic.QuicAbortDirection.Read | Incursa.Quic.QuicAbortDirection.Write -> Incursa.Quic.QuicAbortDirection
 Incursa.Quic.QuicConnection
+Incursa.Quic.QuicConnection.ConnectAsync(Incursa.Quic.QuicClientConnectionOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicConnection!>
 Incursa.Quic.QuicConnection.CloseAsync(long errorCode, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
 Incursa.Quic.QuicConnection.DisposeAsync() -> System.Threading.Tasks.ValueTask
+Incursa.Quic.QuicClientConnectionOptions
+Incursa.Quic.QuicClientConnectionOptions.QuicClientConnectionOptions() -> void
+Incursa.Quic.QuicClientConnectionOptions.ClientAuthenticationOptions.get -> System.Net.Security.SslClientAuthenticationOptions!
+Incursa.Quic.QuicClientConnectionOptions.ClientAuthenticationOptions.set -> void
+Incursa.Quic.QuicClientConnectionOptions.LocalEndPoint.get -> System.Net.IPEndPoint?
+Incursa.Quic.QuicClientConnectionOptions.LocalEndPoint.set -> void
+Incursa.Quic.QuicClientConnectionOptions.RemoteEndPoint.get -> System.Net.EndPoint!
+Incursa.Quic.QuicClientConnectionOptions.RemoteEndPoint.set -> void
 Incursa.Quic.QuicConnectionOptions
 Incursa.Quic.QuicConnectionOptions.DefaultCloseErrorCode.get -> long
 Incursa.Quic.QuicConnectionOptions.DefaultCloseErrorCode.set -> void

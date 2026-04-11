@@ -189,6 +189,27 @@ internal sealed class QuicTlsKeySchedule
         return true;
     }
 
+    internal bool TryCreatePeerLeafCertificate(out X509Certificate2? certificate)
+    {
+        certificate = null;
+
+        if (peerLeafCertificateDer is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            certificate = X509CertificateLoader.LoadCertificate(peerLeafCertificateDer);
+            return true;
+        }
+        catch (CryptographicException)
+        {
+            certificate = null;
+            return false;
+        }
+    }
+
     /// <summary>
     /// Processes one handshake transcript step and returns any bridge-visible updates produced by the key schedule.
     /// </summary>

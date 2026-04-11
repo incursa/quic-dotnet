@@ -7,9 +7,9 @@
   "owner": "quic-maintainers",
   "domain": "quic",
   "capability": "public-api",
-  "purpose": "Define the intended public API surface for Incursa.Quic using the public surface of System.Net.Quic as the baseline for the initial consumer cut and the first honest server-entry slice.",
-  "scope": "This specification defines the initial consumer-facing public API surface for Incursa.Quic. The repository is implementing the surface in phases, and the current slice promotes the connection-side facade plus the first server-side entry surface (`QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `ListenAsync`, and `AcceptConnectionAsync`) over the existing runtime and host machinery. Client connection establishment and the fuller TLS-auth contract remain deferred. Helper-layer packet, frame, TLS, handshake, runtime, recovery, and congestion types remain internal unless a future specification explicitly promotes them.",
-  "context": "The reference surface in Microsoft System.Net.Quic is the strongest baseline for the eventual API, but this repository is deliberately shipping that surface in smaller phases. The target repository already contains a broad internal helper and runtime surface under src/Incursa.Quic, and this specification makes the public/internal boundary explicit so the connection-first facade can land without exposing the implementation seams.",
+  "purpose": "Define the intended public API surface for Incursa.Quic using the public surface of System.Net.Quic as the baseline for the initial consumer cut, the first honest server-entry slice, and the first honest client-entry slice.",
+  "scope": "This specification defines the initial consumer-facing public API surface for Incursa.Quic. The repository is implementing the surface in phases, and the current slice promotes the connection-side facade, the first server-side entry surface (`QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `ListenAsync`, and `AcceptConnectionAsync`), and the first client-side entry surface (`QuicClientConnectionOptions` and `QuicConnection.ConnectAsync(...)`) over the existing runtime and host machinery. Full TLS trust-store and hostname validation, stream entry points, `QuicStreamCapacityChangedArgs`, `IsSupported`, Initial/DCID bootstrap, and the data path remain deferred. Helper-layer packet, frame, TLS, handshake, runtime, recovery, and congestion types remain internal unless a future specification explicitly promotes them.",
+  "context": "The reference surface in Microsoft System.Net.Quic is the strongest baseline for the eventual API, but this repository is deliberately shipping that surface in smaller phases. The target repository already contains a broad internal helper and runtime surface under src/Incursa.Quic, and this specification makes the public/internal boundary explicit so the connection-first facade can land without exposing the implementation seams. The client-entry slice is intentionally honest: it promotes the public option bag and connect entry point now, but it does not claim positive connection establishment beyond what the existing runtime and TLS seam can really prove.",
   "related_artifacts": [
     "ARC-QUIC-API-0001",
     "WI-QUIC-API-0001",
@@ -28,22 +28,23 @@
         ]
       },
       "notes": [
-        "The approved public facade for the current slice is QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicServerConnectionOptions, and the corrected QuicStreamType. QuicClientConnectionOptions, QuicStreamCapacityChangedArgs, and the client-connect surface remain deferred to the next slice.",
-        "The current slice reuses the existing runtime, stream-state, and listener-host machinery directly. The current surface reuses EndPoint, IPEndPoint, SslApplicationProtocol, SslServerAuthenticationOptions, and SslClientHelloInfo directly where needed, while client-auth wrappers remain deferred."
+        "The approved public facade for the current slice is QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicClientConnectionOptions, QuicServerConnectionOptions, and the corrected QuicStreamType.",
+        "The current slice reuses the existing runtime, stream-state, listener-host, runtime-endpoint, and endpoint-host machinery directly. The current surface reuses EndPoint, IPEndPoint, SslApplicationProtocol, SslClientAuthenticationOptions, SslServerAuthenticationOptions, and SslClientHelloInfo directly where needed."
       ]
     },
     {
       "id": "REQ-QUIC-API-0002",
-      "title": "Expose the server listener entry surface",
-      "statement": "The library MUST expose server listener creation and accept through QuicListener.ListenAsync(QuicListenerOptions, CancellationToken) and QuicListener.AcceptConnectionAsync(CancellationToken), while keeping client connection establishment outside this slice.",
+      "title": "Expose the listener and client entry surfaces honestly",
+      "statement": "The library MUST expose server listener creation and accept through QuicListener.ListenAsync(QuicListenerOptions, CancellationToken) and QuicListener.AcceptConnectionAsync(CancellationToken), and it MUST expose client connection establishment through QuicConnection.ConnectAsync(QuicClientConnectionOptions, CancellationToken). The client entry point MUST complete only when the existing runtime reaches the supported connection-establishment boundary, and it MUST otherwise remain pending or fail with an explicit terminal outcome instead of fabricating success.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs"
         ]
       },
       "notes": [
-        "The listener shell is now honest and is backed by the internal endpoint-host machinery.",
-        "Client connection establishment remains deferred to the follow-on slice."
+        "The listener shell is honest and is backed by the internal listener host.",
+        "The client shell is honest and is backed by the existing runtime-endpoint and endpoint-host seams over a connected UDP socket.",
+        "This slice does not promise a positive client/server loopback path because Initial/DCID bootstrap and listener-side datagram admission are still outside the approved boundary."
       ]
     },
     {
@@ -56,7 +57,7 @@
         ]
       },
       "notes": [
-        "The connection object is the consumer's lifecycle anchor for this slice and may be created only by internal wiring or listener accept flow.",
+        "The connection object is the consumer's lifecycle anchor for this slice and may be created only by internal wiring, listener accept flow, or the approved client connect flow.",
         "Transport internals should be accessed through the internal runtime, not through public connection properties.",
         "Connection close, dispose, and terminal-state projection are the only lifecycle behaviors this slice promises.",
         "The connection object is not a middleware or event-pipeline surface."
@@ -81,16 +82,19 @@
     {
       "id": "REQ-QUIC-API-0005",
       "title": "Expose configuration through the approved option and callback types",
-      "statement": "The library MUST carry configuration through QuicConnectionOptions, QuicListenerOptions, QuicServerConnectionOptions, and QuicReceiveWindowSizes, and it MUST expose only the approved knobs on those types: close and stream default error codes, handshake and idle timeouts, keep-alive interval, inbound stream limits, listener endpoint and backlog, application protocols, the narrow server connection-options callback, and server authentication options.",
+      "statement": "The library MUST carry configuration through QuicConnectionOptions, QuicListenerOptions, QuicClientConnectionOptions, QuicServerConnectionOptions, and QuicReceiveWindowSizes, and it MUST expose only the approved knobs on those types: close and stream default error codes, handshake and idle timeouts, keep-alive interval, inbound stream limits, listener endpoint and backlog, client local/remote endpoints, application protocols, the narrow server connection-options callback, server authentication options, and the supported subset of SslClientAuthenticationOptions.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs"
         ]
       },
       "notes": [
-        "No custom endpoint or handshake wrapper types are introduced for this slice; the listener surface reuses EndPoint, IPEndPoint, SslApplicationProtocol, SslClientHelloInfo, and SslServerAuthenticationOptions directly.",
+        "No custom endpoint or handshake wrapper types are introduced for this slice; the listener and client surfaces reuse EndPoint, IPEndPoint, SslApplicationProtocol, SslClientAuthenticationOptions, SslClientHelloInfo, and SslServerAuthenticationOptions directly.",
         "Public option objects are configuration bags, not live mutable protocol state.",
-        "Listener setup and the server callback are now live; client connect, client-auth wrappers, and StreamCapacityCallback remain deferred to the follow-on slices."
+        "Listener setup, client connect setup, and the server callback are now live.",
+        "The supported client TLS/auth subset is intentionally narrow: non-empty ALPN, TLS 1.3 or the default protocol selection, no target host / hostname validation, no client certificates or chain policy, an explicit RemoteCertificateValidationCallback gate, and no custom trust, cipher-suite, or renegotiation/resumption overrides. Unsupported SslClientAuthenticationOptions settings MUST be rejected deterministically instead of being silently ignored.",
+        "Unsupported SslClientAuthenticationOptions settings MUST be rejected deterministically instead of being silently ignored.",
+        "StreamCapacityCallback remains deferred to the follow-on slices."
       ]
     },
     {
@@ -114,7 +118,7 @@
     {
       "id": "REQ-QUIC-API-0007",
       "title": "Keep the TLS, handshake, packet, and runtime seams internal",
-      "statement": "The library MUST keep QuicTlsTranscriptProgress, QuicTlsKeySchedule, QuicTransportTlsBridgeState, QuicHandshakeFlowCoordinator, QuicInitialPacketProtection, QuicHandshakePacketProtection, QuicTlsPacketProtectionMaterial, QuicConnectionRuntime, QuicConnectionRuntimeHost, QuicListenerHost, QuicConnectionRuntimeShard, and QuicConnectionSendRuntime internal, and it MUST keep the remainder of the packet, frame, transport-parameter, recovery, congestion, and stream-identity helpers internal unless a future requirement explicitly promotes them.",
+      "statement": "The library MUST keep QuicTlsTranscriptProgress, QuicTlsKeySchedule, QuicTransportTlsBridgeState, QuicHandshakeFlowCoordinator, QuicInitialPacketProtection, QuicHandshakePacketProtection, QuicTlsPacketProtectionMaterial, QuicConnectionRuntime, QuicConnectionRuntimeHost, QuicListenerHost, QuicConnectionRuntimeShard, QuicConnectionSendRuntime, QuicConnectionRuntimeEndpoint, QuicConnectionEndpointHost, QuicClientConnectionHost, and QuicClientConnectionOptionsValidator internal, and it MUST keep the remainder of the packet, frame, transport-parameter, recovery, congestion, and stream-identity helpers internal unless a future requirement explicitly promotes them.",
       "trace": {
         "upstream_refs": [
           "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
@@ -128,18 +132,22 @@
           "src/Incursa.Quic/QuicConnectionRuntimeHost.cs",
           "src/Incursa.Quic/QuicListenerHost.cs",
           "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
-          "src/Incursa.Quic/QuicConnectionSendRuntime.cs"
+          "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+          "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+          "src/Incursa.Quic/QuicClientConnectionHost.cs",
+          "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs"
         ]
       },
       "notes": [
-        "This boundary keeps listener-host, transcript progress, key schedule, bridge state, handshake coordination, packet-protection details, runtime reducer details, stream-state helpers, packet helpers, and transport-parameter helpers out of the consumer contract.",
+        "This boundary keeps listener-host, client-host, runtime-endpoint, endpoint-host, validator, transcript progress, key schedule, bridge state, handshake coordination, packet-protection details, runtime reducer details, stream-state helpers, packet helpers, and transport-parameter helpers out of the consumer contract.",
         "The public API must not expose the existing helper-layer runtime model by accident."
       ]
     },
     {
       "id": "REQ-QUIC-API-0008",
       "title": "Honor async lifecycle cancellation and terminal-state transitions",
-      "statement": "The library MUST honor cancellation tokens on pending listen, accept, open-stream, and close operations, and the server connection-options callback MUST observe the cancellation token supplied by the listener accept flow. A pre-canceled or later-canceled token MUST complete the still-pending operation with OperationCanceledException, but once a listener accept, connection, or stream has committed or reached a terminal state the public API MUST complete with the documented QuicError or ObjectDisposedException outcome instead of silently reviving or hiding the operation.",
+      "statement": "The library MUST honor cancellation tokens on pending listen, accept, connect, open-stream, and close operations, and the server connection-options callback MUST observe the cancellation token supplied by the listener accept flow. A pre-canceled or later-canceled token MUST complete the still-pending operation with OperationCanceledException, but once a listener accept, connection, or stream has committed or reached a terminal state the public API MUST complete with the documented QuicError or ObjectDisposedException outcome instead of silently reviving or hiding the operation.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicListenerTests.cs",
@@ -149,8 +157,9 @@
         ]
       },
       "notes": [
-        "The Microsoft tests directly prove cancellation for listener accept, the listener callback, and blocked outbound stream opens; this slice applies that evidence to the listener path and keeps client connect deferred.",
+        "The Microsoft tests directly prove cancellation for listener accept, connect, the listener callback, and blocked outbound stream opens; this slice applies that evidence to the listener path and to the still-pending client connect path.",
         "Cancellation does not retroactively undo a committed connection, accepted stream, or completed close.",
+        "Pending connect cancellation and disposal must not fabricate handshake completion.",
         "Idempotent close and dispose semantics are consumer-facing terminal behavior, not a hidden runtime optimization."
       ]
     }
@@ -158,7 +167,7 @@
   "supplemental_sections": [
     {
       "heading": "Public Surface Inventory",
-      "content": "- `QuicListener`: server-side listen/accept entry point.\n- `QuicConnection`: connected session facade.\n- `QuicStream`: standard `Stream` facade for a QUIC stream.\n- `QuicConnectionOptions`: shared connection knobs.\n- `QuicListenerOptions`: listener configuration and narrow server connection-options callback.\n- `QuicServerConnectionOptions`: server-side accept options.\n- `QuicReceiveWindowSizes`: connection and stream receive-window settings.\n- `QuicAbortDirection`: stream abort direction.\n- `QuicError` and `QuicException`: close and terminal error surface.\n- `QuicStreamType`: bidirectional/unidirectional stream direction.\n- `QuicClientConnectionOptions`: still deferred to the client-connect slice.\n- `QuicStreamCapacityChangedArgs`: still deferred to the stream-capacity slice.\n\nThe public API should reuse `EndPoint`, `IPEndPoint`, `SslApplicationProtocol`, `SslClientHelloInfo`, and `SslServerAuthenticationOptions` directly rather than introduce new endpoint or TLS wrapper abstractions."
+      "content": "- `QuicListener`: server-side listen/accept entry point.\n- `QuicConnection`: connected session facade and client connect entry point.\n- `QuicStream`: standard `Stream` facade for a QUIC stream.\n- `QuicConnectionOptions`: shared connection knobs.\n- `QuicListenerOptions`: listener configuration and narrow server connection-options callback.\n- `QuicClientConnectionOptions`: client-side connect configuration.\n- `QuicServerConnectionOptions`: server-side accept options.\n- `QuicReceiveWindowSizes`: connection and stream receive-window settings.\n- `QuicAbortDirection`: stream abort direction.\n- `QuicError` and `QuicException`: close and terminal error surface.\n- `QuicStreamType`: bidirectional/unidirectional stream direction.\n- `QuicStreamCapacityChangedArgs`: still deferred to the stream-capacity slice.\n\nThe public API should reuse `EndPoint`, `IPEndPoint`, `SslApplicationProtocol`, `SslClientAuthenticationOptions`, `SslClientHelloInfo`, and `SslServerAuthenticationOptions` directly rather than introduce new endpoint or TLS wrapper abstractions."
     },
     {
       "heading": "Behavioral Evidence From Microsoft Tests",
@@ -166,11 +175,11 @@
     },
     {
       "heading": "Internal-Only Surface",
-      "content": "The current helper and runtime seam types stay internal, including `QuicTlsTranscriptProgress`, `QuicTlsKeySchedule`, `QuicTransportTlsBridgeState`, `QuicHandshakeFlowCoordinator`, `QuicInitialPacketProtection`, `QuicHandshakePacketProtection`, `QuicTlsPacketProtectionMaterial`, `QuicConnectionRuntime`, `QuicConnectionRuntimeHost`, `QuicListenerHost`, `QuicConnectionRuntimeShard`, `QuicConnectionSendRuntime`, and `QuicConnectionRuntimeDeadlineScheduler`.\n\nThe remainder of the packet, frame, transport-parameter, recovery, congestion, and stream-identity helpers also remain internal unless a future requirement explicitly promotes one of them."
+      "content": "The current helper and runtime seam types stay internal, including `QuicTlsTranscriptProgress`, `QuicTlsKeySchedule`, `QuicTransportTlsBridgeState`, `QuicHandshakeFlowCoordinator`, `QuicInitialPacketProtection`, `QuicHandshakePacketProtection`, `QuicTlsPacketProtectionMaterial`, `QuicConnectionRuntime`, `QuicConnectionRuntimeHost`, `QuicListenerHost`, `QuicConnectionRuntimeShard`, `QuicConnectionSendRuntime`, `QuicConnectionRuntimeEndpoint`, `QuicConnectionEndpointHost`, `QuicClientConnectionHost`, and `QuicClientConnectionOptionsValidator`.\n\nThe remainder of the packet, frame, transport-parameter, recovery, congestion, and stream-identity helpers also remain internal unless a future requirement explicitly promotes one of them."
     },
     {
       "heading": "Deviation Policy",
-      "content": "No intentional deviations from the Microsoft ref surface are required for this slice.\n\nThe repo-specific rule is that the richer internal transport engine stays hidden behind the consumer facade, and the public surface does not grow into a general middleware model."
+      "content": "No intentional deviations from the Microsoft ref surface are required for this slice.\n\nThe repo-specific rule is that the richer internal transport engine stays hidden behind the consumer facade, the supported client TLS/auth subset is explicit and reject-first, and the public surface does not grow into a general middleware model."
     }
   ]
 }

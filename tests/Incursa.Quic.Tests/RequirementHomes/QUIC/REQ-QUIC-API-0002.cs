@@ -4,7 +4,7 @@ using System.Net.Security;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0002">The library now exposes the server-side listener entry surface through QuicListener.ListenAsync(QuicListenerOptions, CancellationToken) and QuicListener.AcceptConnectionAsync(CancellationToken), while keeping client connect deferred.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0002">The library now exposes the server-side listener entry surface through QuicListener.ListenAsync(QuicListenerOptions, CancellationToken) and QuicListener.AcceptConnectionAsync(CancellationToken), and it exposes the first honest client entry surface through QuicConnection.ConnectAsync(QuicClientConnectionOptions, CancellationToken).</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0002")]
 public sealed class REQ_QUIC_API_0002
@@ -75,6 +75,47 @@ public sealed class REQ_QUIC_API_0002
         Assert.Throws<ObjectDisposedException>(() => listener.AcceptConnectionAsync());
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ConnectAsync_RejectsNullOptions()
+    {
+        Assert.Throws<ArgumentNullException>(() => QuicConnection.ConnectAsync(null!));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ConnectAsync_RejectsMissingRemoteEndPoint()
+    {
+        QuicClientConnectionOptions options = CreateClientOptions();
+        options.RemoteEndPoint = null!;
+
+        Assert.Throws<ArgumentNullException>(() => QuicConnection.ConnectAsync(options));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ConnectAsync_RejectsMissingClientAuthenticationOptions()
+    {
+        QuicClientConnectionOptions options = CreateClientOptions();
+        options.ClientAuthenticationOptions = null!;
+
+        Assert.Throws<ArgumentNullException>(() => QuicConnection.ConnectAsync(options));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ConnectAsync_RejectsUnsupportedRemoteEndPointTypes()
+    {
+        QuicClientConnectionOptions options = CreateClientOptions();
+        options.RemoteEndPoint = new DnsEndPoint("localhost", 443);
+
+        Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(options));
+    }
+
     private static QuicListenerOptions CreateListenerOptions(
         Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>>? connectionOptionsCallback = null)
     {
@@ -84,6 +125,19 @@ public sealed class REQ_QUIC_API_0002
             ApplicationProtocols = [SslApplicationProtocol.Http3],
             ListenBacklog = 1,
             ConnectionOptionsCallback = connectionOptionsCallback ?? ((connection, clientHello, cancellationToken) => ValueTask.FromResult(new QuicServerConnectionOptions())),
+        };
+    }
+
+    private static QuicClientConnectionOptions CreateClientOptions()
+    {
+        return new QuicClientConnectionOptions
+        {
+            RemoteEndPoint = new IPEndPoint(IPAddress.Loopback, 443),
+            ClientAuthenticationOptions = new SslClientAuthenticationOptions
+            {
+                ApplicationProtocols = [SslApplicationProtocol.Http3],
+                RemoteCertificateValidationCallback = (_, _, _, errors) => errors == SslPolicyErrors.RemoteCertificateChainErrors,
+            },
         };
     }
 }

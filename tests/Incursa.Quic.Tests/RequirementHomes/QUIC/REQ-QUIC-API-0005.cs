@@ -6,7 +6,7 @@ using System.Security.Authentication;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0005">The listener surface carries configuration through QuicListenerOptions and QuicServerConnectionOptions, and the listener connection-options callback remains a narrow server-side selector rather than a middleware pipeline.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0005">The listener and client surfaces carry configuration through QuicListenerOptions, QuicClientConnectionOptions, and QuicServerConnectionOptions, and the supported client TLS subset is explicit, callback-gated, and reject-first rather than implied.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0005")]
 public sealed class REQ_QUIC_API_0005
@@ -64,6 +64,52 @@ public sealed class REQ_QUIC_API_0005
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void QuicClientConnectionOptions_ExposeOnlyTheApprovedClientKnobs()
+    {
+        string[] propertyNames = typeof(QuicClientConnectionOptions)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+            .Select(property => property.Name)
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.Equal(new[]
+        {
+            "ClientAuthenticationOptions",
+            "LocalEndPoint",
+            "RemoteEndPoint",
+        }, propertyNames);
+
+        QuicClientConnectionOptions options = new();
+        Assert.Null(options.LocalEndPoint);
+        Assert.Null(options.ClientAuthenticationOptions);
+        Assert.Null(options.RemoteEndPoint);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ConnectAsync_RejectsUnsupportedClientTlsSettingsDeterministically()
+    {
+        QuicClientConnectionOptions targetHostOptions = CreateClientOptions();
+        targetHostOptions.ClientAuthenticationOptions.TargetHost = "example.com";
+        Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(targetHostOptions));
+
+        QuicClientConnectionOptions emptyAlpnOptions = CreateClientOptions();
+        emptyAlpnOptions.ClientAuthenticationOptions.ApplicationProtocols = [];
+        Assert.Throws<ArgumentException>(() => QuicConnection.ConnectAsync(emptyAlpnOptions));
+
+        QuicClientConnectionOptions missingCallbackOptions = CreateClientOptions();
+        missingCallbackOptions.ClientAuthenticationOptions.RemoteCertificateValidationCallback = null;
+        Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(missingCallbackOptions));
+
+        QuicClientConnectionOptions protocolOptions = CreateClientOptions();
+        protocolOptions.ClientAuthenticationOptions.EnabledSslProtocols = SslProtocols.Tls12;
+        Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(protocolOptions));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task ConnectionOptionsCallback_IsInvokedThroughTheNarrowListenerPath()
     {
         int invocationCount = 0;
@@ -110,6 +156,19 @@ public sealed class REQ_QUIC_API_0005
             ApplicationProtocols = [SslApplicationProtocol.Http3],
             ListenBacklog = 1,
             ConnectionOptionsCallback = connectionOptionsCallback ?? ((connection, clientHello, cancellationToken) => ValueTask.FromResult(new QuicServerConnectionOptions())),
+        };
+    }
+
+    private static QuicClientConnectionOptions CreateClientOptions()
+    {
+        return new QuicClientConnectionOptions
+        {
+            RemoteEndPoint = new IPEndPoint(IPAddress.Loopback, 443),
+            ClientAuthenticationOptions = new SslClientAuthenticationOptions
+            {
+                ApplicationProtocols = [SslApplicationProtocol.Http3],
+                RemoteCertificateValidationCallback = (_, _, _, errors) => errors == SslPolicyErrors.RemoteCertificateChainErrors,
+            },
         };
     }
 }

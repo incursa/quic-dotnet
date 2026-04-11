@@ -14,7 +14,7 @@ That ref file is the strongest reference for the initial consumer shape. The cur
 
 ## Proposed Public Surface
 
-### Connection And Listener Slice
+### Connection, Listener, And Client-Entry Slice
 
 This pass promotes the consumer-lifetime facade that is already backed by the existing runtime and stream-state machinery, plus the first server-side listener surface:
 
@@ -27,16 +27,16 @@ This pass promotes the consumer-lifetime facade that is already backed by the ex
 - `QuicException`
 - `QuicListener`
 - `QuicListenerOptions`
+- `QuicClientConnectionOptions`
 - `QuicServerConnectionOptions`
+- `QuicConnection.ConnectAsync(...)`
 - `QuicStreamType` with the direction-only `Bidirectional` and `Unidirectional` values
 
-### Deferred To The Next Slice
+### Deferred After This Slice
 
 The following remain intentionally out of scope for this pass:
 
-- `QuicClientConnectionOptions`
 - `QuicStreamCapacityChangedArgs`
-- `QuicConnection.ConnectAsync(...)`
 - `QuicConnection.AcceptInboundStreamAsync(...)`
 - `QuicConnection.OpenOutboundStreamAsync(...)`
 - `QuicConnection.IsSupported`
@@ -64,35 +64,37 @@ They imply these public-behavior expectations:
 
 ## Spec Refinements
 
-This pass promotes the connection/stream facade and the listener/server entry surface while leaving client connect and the fuller TLS-auth contract to the next slice:
+This pass promotes the connection/stream facade, the listener/server entry surface, and the first honest client-entry shell while keeping the remaining TLS and stream work narrow:
 
 - `REQ-QUIC-API-0001` keeps the helper/runtime/wire surface internal while the facade is promoted.
-- `REQ-QUIC-API-0002` covers the server listener entry surface and its honest accept shell.
+- `REQ-QUIC-API-0002` covers the server listener and client connect entry surfaces and their honest pending/terminal behavior.
 - `REQ-QUIC-API-0004` only promises the stream identity, lifetime, EOF, and read-side behavior that is backed by `QuicConnectionStreamState`.
-- `REQ-QUIC-API-0005` covers the shared connection options, listener options, and receive-window settings that are already backed by the runtime seam.
+- `REQ-QUIC-API-0005` covers the shared connection options, listener options, receive-window settings, and the narrow supported subset of `SslClientAuthenticationOptions`.
 - `REQ-QUIC-API-0006` records the public close/error projection through `QuicError`, `QuicException`, and `QuicAbortDirection`.
-- `REQ-QUIC-API-0008` covers the cancellation and terminal-state behavior for listener accept, stream open, and close.
+- `REQ-QUIC-API-0008` covers the cancellation and terminal-state behavior for listener accept, pending client connect, stream open, and close.
 
 ## Public Member Shape
 
 The first slice keeps the consumer contract intentionally narrow:
 
-- `QuicConnection` is the connection-lifetime facade over the runtime seam.
+- `QuicConnection` is the connection-lifetime facade over the runtime seam and exposes the client connect entry point.
 - `QuicStream` is the stream-lifetime facade over the stream-state seam.
 - `QuicConnectionOptions` is the shared bag for connection close/error defaults, timeouts, and receive-window knobs.
 - `QuicReceiveWindowSizes` carries the configured receive-window values.
 - `QuicException` carries the close/error classification.
 - `QuicAbortDirection`, `QuicError`, and `QuicStreamType` are the public classification enums used by the facade.
 
-The public types do not introduce new endpoint or TLS wrapper abstractions in this slice. `QuicListener`, `QuicListenerOptions`, and `QuicServerConnectionOptions` are now part of the approved facade, while `QuicClientConnectionOptions` and `QuicStreamCapacityChangedArgs` remain deferred until the next slice.
+The public types do not introduce new endpoint or TLS wrapper abstractions in this slice. `QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, and `QuicClientConnectionOptions` are now part of the approved facade, while `QuicStreamCapacityChangedArgs` remains deferred.
 
-## Listener And Connection Split
+## Listener And Client Split
 
 The listener entry points are now part of this slice.
 
-- The connection/listener slice reuses `QuicConnectionRuntime`, `QuicConnectionStreamState`, and `QuicListenerHost` directly.
+- The connection/listener/client slice reuses `QuicConnectionRuntime`, `QuicConnectionStreamState`, `QuicListenerHost`, `QuicConnectionRuntimeEndpoint`, `QuicConnectionEndpointHost`, and `QuicClientConnectionHost` directly.
 - Listener startup and listener acceptance are honest and backed by the internal listener host.
-- Client connect remains the next slice.
+- Client connect now starts a real client host/runtime shell and stays pending until the runtime reaches the existing peer-handshake-complete boundary.
+- Client connect does not yet claim a real loopback success path because Initial/DCID bootstrap, inbound Initial handling, and listener-side datagram admission remain outside this slice.
+- The supported `SslClientAuthenticationOptions` subset is intentionally narrow: non-empty ALPN, TLS 1.3 or the default protocol selection, no target host or SNI/hostname validation, no client certificates, no chain policy, and an explicit `RemoteCertificateValidationCallback` gate over the parsed peer leaf certificate. Unsupported settings are rejected deterministically instead of being ignored.
 - The capacity callback surface remains deferred until the stream-capacity path exists end to end.
 
 ## Internal-Only Boundary
@@ -111,6 +113,10 @@ The following seam types stay internal and should not be part of the consumer co
 - `QuicListenerHost`
 - `QuicConnectionRuntimeShard`
 - `QuicConnectionSendRuntime`
+- `QuicConnectionRuntimeEndpoint`
+- `QuicConnectionEndpointHost`
+- `QuicClientConnectionHost`
+- `QuicClientConnectionOptionsValidator`
 - `QuicConnectionRuntimeDeadlineScheduler`
 - `QuicConnectionStreamState`
 - `QuicConnectionStreamRegistry`
@@ -142,7 +148,7 @@ The remainder of the packet, frame, transport-parameter, recovery, congestion, a
 
 No intentional deviations from the Microsoft ref surface are required for this initial cut.
 
-The repo-specific rule is that the richer internal transport engine stays hidden behind the consumer facade, and the public surface does not grow into a general middleware model.
+The repo-specific rule is that the richer internal transport engine stays hidden behind the consumer facade, the supported client TLS/auth subset is explicit and reject-first, and the public surface does not grow into a general middleware model.
 
 ## Trace Links
 

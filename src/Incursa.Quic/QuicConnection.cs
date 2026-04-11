@@ -11,12 +11,24 @@ public sealed class QuicConnection : IAsyncDisposable
 
     private readonly QuicConnectionRuntime runtime;
     private readonly QuicConnectionOptions options;
+    private readonly IAsyncDisposable? lifetimeOwner;
     private int disposed;
 
-    internal QuicConnection(QuicConnectionRuntime runtime, QuicConnectionOptions options)
+    internal QuicConnection(QuicConnectionRuntime runtime, QuicConnectionOptions options, IAsyncDisposable? lifetimeOwner = null)
     {
         this.runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
         this.options = options ?? throw new ArgumentNullException(nameof(options));
+        this.lifetimeOwner = lifetimeOwner;
+    }
+
+    /// <summary>
+    /// Creates and starts a client-side connection shell and completes only when the supported establishment boundary is reached.
+    /// </summary>
+    public static ValueTask<QuicConnection> ConnectAsync(QuicClientConnectionOptions options, CancellationToken cancellationToken = default)
+    {
+        QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(options, nameof(options));
+        cancellationToken.ThrowIfCancellationRequested();
+        return new QuicClientConnectionHost(settings).ConnectAsync(cancellationToken);
     }
 
     /// <summary>
@@ -66,6 +78,12 @@ public sealed class QuicConnection : IAsyncDisposable
                     ReasonPhrase: null)));
         }
 
+        if (lifetimeOwner is not null)
+        {
+            await lifetimeOwner.DisposeAsync().ConfigureAwait(false);
+            return;
+        }
+
         await runtime.DisposeAsync().ConfigureAwait(false);
     }
 
@@ -77,4 +95,3 @@ public sealed class QuicConnection : IAsyncDisposable
         }
     }
 }
-

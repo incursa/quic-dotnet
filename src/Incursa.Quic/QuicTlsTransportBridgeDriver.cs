@@ -1,4 +1,6 @@
+using System.Net.Security;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Incursa.Quic;
 
@@ -15,6 +17,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private readonly QuicTlsTranscriptProgress handshakeTranscriptProgress;
     private readonly QuicTlsKeySchedule? keySchedule;
     private readonly byte[]? pinnedPeerLeafCertificateSha256;
+    private readonly RemoteCertificateValidationCallback? remoteCertificateValidationCallback;
     private readonly ReadOnlyMemory<byte> localServerLeafCertificateDer;
     private readonly ReadOnlyMemory<byte> localServerLeafSigningPrivateKey;
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> nextIngressOffsets = [];
@@ -25,7 +28,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         ReadOnlyMemory<byte> localHandshakePrivateKey = default,
         ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default,
         ReadOnlyMemory<byte> localServerLeafCertificateDer = default,
-        ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default)
+        ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default,
+        RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState(role);
@@ -46,6 +50,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
 
         this.pinnedPeerLeafCertificateSha256 = pinnedPeerLeafCertificateSha256.ToArray();
+        this.remoteCertificateValidationCallback = remoteCertificateValidationCallback;
         this.localServerLeafCertificateDer = localServerLeafCertificateDer;
         this.localServerLeafSigningPrivateKey = localServerLeafSigningPrivateKey;
     }
@@ -398,10 +403,17 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
     private IReadOnlyList<QuicTlsStateUpdate> PublishPeerCertificatePolicyAcceptance()
     {
-        if (pinnedPeerLeafCertificateSha256 is null
-            || pinnedPeerLeafCertificateSha256.Length == 0
-            || keySchedule is null
-            || !bridgeState.CanEmitPeerCertificatePolicyAccepted())
+        if (keySchedule is null || !bridgeState.CanEmitPeerCertificatePolicyAccepted())
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        if (remoteCertificateValidationCallback is not null)
+        {
+            return PublishCallbackAcceptedPeerCertificatePolicy();
+        }
+
+        if (pinnedPeerLeafCertificateSha256 is null || pinnedPeerLeafCertificateSha256.Length == 0)
         {
             return Array.Empty<QuicTlsStateUpdate>();
         }
@@ -423,6 +435,41 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         finally
         {
             CryptographicOperations.ZeroMemory(peerLeafCertificateSha256);
+        }
+    }
+
+    private IReadOnlyList<QuicTlsStateUpdate> PublishCallbackAcceptedPeerCertificatePolicy()
+    {
+        if (remoteCertificateValidationCallback is null
+            || keySchedule is null
+            || !keySchedule.TryCreatePeerLeafCertificate(out X509Certificate2? peerCertificate)
+            || peerCertificate is null)
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        using (peerCertificate)
+        {
+            try
+            {
+                bool accepted = remoteCertificateValidationCallback(
+                    sender: this,
+                    certificate: peerCertificate,
+                    chain: null,
+                    sslPolicyErrors: SslPolicyErrors.RemoteCertificateChainErrors);
+
+                return accepted
+                    ? PublishUpdate(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted))
+                    : PublishFatalAlert(PeerCertificatePolicyMismatchAlertDescription);
+            }
+            catch (Exception ex)
+            {
+                throw new QuicException(
+                    QuicError.CallbackError,
+                    null,
+                    "The remote certificate validation callback failed.",
+                    ex);
+            }
         }
     }
 

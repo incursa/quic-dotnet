@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
@@ -55,6 +56,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default,
         ReadOnlyMemory<byte> localServerLeafCertificateDer = default,
         ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default,
+        RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null,
         QuicTlsRole tlsRole = QuicTlsRole.Client)
     {
         this.clock = clock ?? new MonotonicClock();
@@ -69,7 +71,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             localHandshakePrivateKey,
             pinnedPeerLeafCertificateSha256,
             localServerLeafCertificateDer,
-            localServerLeafSigningPrivateKey);
+            localServerLeafSigningPrivateKey,
+            remoteCertificateValidationCallback);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
             SingleReader = true,
