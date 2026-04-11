@@ -14,6 +14,11 @@ public sealed class QuicListener : IAsyncDisposable
     }
 
     /// <summary>
+    /// Gets whether the current runtime supports the repository's managed QUIC loopback slice.
+    /// </summary>
+    public static bool IsSupported => QuicRuntimeSupport.IsSupported;
+
+    /// <summary>
     /// Creates and starts a listener.
     /// </summary>
     public static ValueTask<QuicListener> ListenAsync(QuicListenerOptions options, CancellationToken cancellationToken = default)

@@ -25,6 +25,11 @@ public sealed class QuicConnection : IAsyncDisposable
     }
 
     /// <summary>
+    /// Gets whether the current runtime supports the repository's managed QUIC loopback slice.
+    /// </summary>
+    public static bool IsSupported => QuicRuntimeSupport.IsSupported;
+
+    /// <summary>
     /// Creates and starts a client-side connection shell and completes only when the supported establishment boundary is reached.
     /// </summary>
     public static ValueTask<QuicConnection> ConnectAsync(QuicClientConnectionOptions options, CancellationToken cancellationToken = default)

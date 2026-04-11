@@ -4,6 +4,7 @@ Incursa.Quic.QuicAbortDirection.Read = 1 -> Incursa.Quic.QuicAbortDirection
 Incursa.Quic.QuicAbortDirection.Write = 2 -> Incursa.Quic.QuicAbortDirection
 Incursa.Quic.QuicAbortDirection.Both = Incursa.Quic.QuicAbortDirection.Read | Incursa.Quic.QuicAbortDirection.Write -> Incursa.Quic.QuicAbortDirection
 Incursa.Quic.QuicConnection
+Incursa.Quic.QuicConnection.IsSupported.get -> bool
 Incursa.Quic.QuicConnection.ConnectAsync(Incursa.Quic.QuicClientConnectionOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicConnection!>
 Incursa.Quic.QuicConnection.AcceptInboundStreamAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicStream!>
 Incursa.Quic.QuicConnection.OpenOutboundStreamAsync(Incursa.Quic.QuicStreamType streamType, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicStream!>
@@ -69,6 +70,7 @@ Incursa.Quic.QuicListenerOptions.ListenBacklog.set -> void
 Incursa.Quic.QuicListenerOptions.ListenEndPoint.get -> System.Net.IPEndPoint!
 Incursa.Quic.QuicListenerOptions.ListenEndPoint.set -> void
 Incursa.Quic.QuicListener
+Incursa.Quic.QuicListener.IsSupported.get -> bool
 Incursa.Quic.QuicListener.AcceptConnectionAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicConnection!>
 Incursa.Quic.QuicListener.DisposeAsync() -> System.Threading.Tasks.ValueTask
 Incursa.Quic.QuicListener.ListenAsync(Incursa.Quic.QuicListenerOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicListener!>
