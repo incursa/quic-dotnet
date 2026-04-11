@@ -3,10 +3,10 @@
   "artifact_id": "VER-QUIC-API-0002",
   "artifact_type": "verification",
   "status": "planned",
-  "title": "Incursa.Quic Initial Stream Capacity Callback Verification",
+  "title": "Incursa.Quic Stream Capacity Callback Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "verification_method": "Reflection checks, public API diff inspection, and focused loopback tests against the existing runtime seam.",
+  "verification_method": "Reflection checks, public API diff inspection, and focused loopback tests against the existing runtime seam and supported active-loopback MAX_STREAMS path.",
   "related_artifacts": [
     "SPEC-QUIC-API",
     "ARC-QUIC-API-0002",
@@ -23,14 +23,15 @@
     "The public API analyzer files are available for comparison.",
     "The loopback establishment helpers can create a supported client/server pair."
   ],
-  "scope": "This slice covers the public callback surface, the initial peer stream-capacity delta on the supported loopback path, silence when the boundary is not reached, zero-delta silence, and cancellation/disposal honesty. It does not prove later MAX_STREAMS-driven growth, write-heavy stream behavior, reset/stop-sending parity, 0-RTT, key update, or interop-runner enablement.",
-  "expected_result": "The public API includes QuicStreamCapacityChangedArgs and QuicConnectionOptions.StreamCapacityCallback, the supported loopback path reports the initial peer delta exactly once, the callback stays silent when it should, and the public/internal boundary remains clean.",
+  "scope": "This slice covers the public callback surface, the initial peer stream-capacity delta on the supported loopback path, later real peer `MAX_STREAMS` growth on the supported active loopback path, silence when the boundary is not reached, zero-delta silence, and cancellation/disposal honesty. It does not prove stream-close-driven capacity release, write-heavy stream behavior, reset/stop-sending parity, 0-RTT, key update, or interop-runner enablement.",
+  "expected_result": "The public API includes QuicStreamCapacityChangedArgs and QuicConnectionOptions.StreamCapacityCallback, the supported loopback path reports the initial peer delta exactly once, later real peer `MAX_STREAMS` growth is reported truthfully, the callback stays silent when it should, and the public/internal boundary remains clean.",
   "procedure": [
     "Compare src/Incursa.Quic/PublicAPI.Unshipped.txt against the approved public surface to confirm the callback type and property are present once.",
     "Run the requirement-home shape tests for REQ-QUIC-API-0001 and REQ-QUIC-API-0005.",
     "Run the supported loopback positive callback test in REQ-QUIC-API-0009.",
-    "Run the zero-delta and cancellation/disposal tests that keep the callback silent when it should not fire.",
-    "Inspect the connection/runtime seam to confirm the callback is backed by existing transport-parameter commit bookkeeping."
+    "Run the later MAX_STREAMS growth and zero-delta suppression tests in REQ-QUIC-API-0009.",
+    "Run the cancellation/disposal tests that keep the callback silent when it should not fire.",
+    "Inspect the connection/runtime seam to confirm the callback is backed by existing transport-parameter commit bookkeeping and the supported active-loopback MAX_STREAMS parse path."
   ],
   "evidence": [
     "src/Incursa.Quic/PublicAPI.Unshipped.txt",
@@ -44,5 +45,5 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0009.cs"
   ],
-  "status_summary": "Execution evidence is expected to cover the initial peer stream-capacity callback delta, zero-delta suppression, and cancellation/disposal honesty. Later stream-capacity evolution and broader write-heavy stream behavior remain out of scope."
+    "status_summary": "Execution evidence is expected to cover the initial peer stream-capacity callback delta, later real MAX_STREAMS growth, zero-delta suppression, and cancellation/disposal honesty. Stream-close-driven capacity release and broader write-heavy stream behavior remain out of scope."
 }

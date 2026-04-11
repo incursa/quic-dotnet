@@ -7,7 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0005">The listener and client surfaces carry configuration through QuicListenerOptions, QuicClientConnectionOptions, and QuicServerConnectionOptions, and the supported client TLS subset is explicit, callback-gated, reject-first, and honest about the supported initial stream-capacity callback subset rather than implied.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0005">The listener and client surfaces carry configuration through QuicListenerOptions, QuicClientConnectionOptions, and QuicServerConnectionOptions, and the supported client TLS subset is explicit, callback-gated, reject-first, and honest about the supported stream-capacity callback subset rather than implied.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0005")]
 public sealed class REQ_QUIC_API_0005

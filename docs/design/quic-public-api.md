@@ -43,7 +43,6 @@ The following remain intentionally out of scope for this pass:
 - `QuicConnection.IsSupported`
 - `QuicListener.IsSupported`
 - combined `Abort(Both, ...)`
-- later `MAX_STREAMS`-driven capacity updates
 - stream-close-driven capacity release
 - `0-RTT`
 - key update
@@ -66,7 +65,7 @@ They imply these public-behavior expectations:
 - Listener accept, blocked stream open, and close operations must honor cancellation while the operation is still pending.
 - `QuicStream` is a consumer-facing `Stream` abstraction, and this repo now supports a narrow read-side plus write/completion subset honestly on send-capable streams, plus a narrow `RESET_STREAM` / `STOP_SENDING`-backed `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` pair and matching `ReadsClosed` / `WritesClosed` outcomes on that same path; `Flush` stays a narrow no-op, and combined `Abort(Both, ...)` plus broader abort-heavy behavior remains deferred.
 - Stream entry points are only honest on an active connection that already has the minimal 1-RTT application-data lane; the supported loopback path opens and accepts a real QUIC stream facade and can now publish bytes, EOF, and the supported abort pair without exposing the broader abort-heavy contract.
-- The stream-capacity callback is only honest for non-zero initial peer stream-capacity increments committed from peer transport parameters on the supported loopback path.
+- The stream-capacity callback is only honest for the initial peer stream-capacity increment committed from peer transport parameters on the supported loopback path plus later real peer `MAX_STREAMS` growth on the supported active loopback path.
 - Stream abort, connection close, and dispose must map to the public `QuicError` surface and preserve the configured application error codes.
 - The public API should reuse the BCL TLS options objects directly where that slice needs them, including the listener endpoint and server authentication options.
 - Idle timeout and repeated close behavior belong to the public terminal-state contract, not to internal runtime state.
@@ -79,10 +78,10 @@ This pass promotes the connection/stream facade, the listener/server entry surfa
 - `REQ-QUIC-API-0002` covers the server listener and client connect entry surfaces and their honest pending/terminal behavior.
 - `REQ-QUIC-API-0003` now covers the connected-session facade plus the supported stream-entry boundary on the established loopback path.
 - `REQ-QUIC-API-0004` only promises the stream identity, lifetime, EOF, stream-entry, and the narrow read-side, write-side completion, and abort members that are backed by `QuicConnectionStreamState`.
-- `REQ-QUIC-API-0005` covers the shared connection options, listener options, receive-window settings, the supported initial stream-capacity callback subset, and the narrow supported subset of `SslClientAuthenticationOptions`.
+- `REQ-QUIC-API-0005` covers the shared connection options, listener options, receive-window settings, the supported stream-capacity callback subset, and the narrow supported subset of `SslClientAuthenticationOptions`.
 - `REQ-QUIC-API-0006` records the public close/error projection through `QuicError`, `QuicException`, and the currently supported `QuicAbortDirection.Read` / `QuicAbortDirection.Write` subset.
-- `REQ-QUIC-API-0008` covers the cancellation and terminal-state behavior for listener accept, pending client connect, stream open, stream accept, supported write, close, and deferred callback dispatch.
-- `REQ-QUIC-API-0009` covers the initial peer stream-capacity callback subset on the supported loopback path.
+- `REQ-QUIC-API-0008` covers the cancellation and terminal-state behavior for listener accept, pending client connect, stream open, stream accept, supported write, close, and stream-capacity callback dispatch honesty.
+- `REQ-QUIC-API-0009` covers the supported stream-capacity callback deltas on the supported loopback and active-loopback paths.
 - `REQ-QUIC-API-0010` covers the narrow runtime-backed stream write, completion, and write-abort lane on send-capable streams.
 
 ## Public Member Shape
@@ -94,7 +93,7 @@ The first slice keeps the consumer contract intentionally narrow:
 - `QuicStream` is the stream-lifetime facade over the stream-state seam.
 - `QuicStream` now exposes a narrow read/write-side capability, `ReadsClosed` and `WritesClosed`, and the corresponding write/completion plus `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` behavior on send-capable streams.
 - `QuicConnectionOptions` is the shared bag for connection close/error defaults, timeouts, and receive-window knobs.
-- `QuicConnectionOptions.StreamCapacityCallback` is the narrow initial outbound stream-capacity callback seam.
+- `QuicConnectionOptions.StreamCapacityCallback` is the narrow outbound stream-capacity callback seam.
 - `QuicReceiveWindowSizes` carries the configured receive-window values.
 - `QuicException` carries the close/error classification.
 - `QuicAbortDirection`, `QuicError`, `QuicStreamType`, and `QuicStreamCapacityChangedArgs` are the public classification/payload types used by the facade.
@@ -109,9 +108,9 @@ The listener entry points are now part of this slice.
 - Listener startup and listener acceptance are honest and backed by the internal listener host.
 - Client connect now starts a real client host/runtime shell and completes on the supported positive loopback boundary through the existing host seams, with Initial/DCID bootstrap, inbound Initial handling, and listener-side datagram admission already in place.
 - Stream entry now reuses the same runtime and stream-state seams, plus a minimal 1-RTT short-header stream-control path, so the supported loopback connection can open and accept a real `QuicStream` facade and publish bytes plus EOF on the supported writable side while honoring the narrow read/write abort pair without surfacing the broader abort-heavy pipeline.
-- The initial stream-capacity callback now reuses the same runtime and stream-state seams by projecting only non-zero initial peer stream-limit increments committed from transport parameters.
+- The stream-capacity callback now reuses the same runtime and stream-state seams by projecting the initial peer stream-limit increments committed from transport parameters and later real peer `MAX_STREAMS` growth on the supported active loopback path.
 - The supported `SslClientAuthenticationOptions` subset is intentionally narrow: non-empty ALPN, TLS 1.3 or the default protocol selection, no target host or SNI/hostname validation, no client certificates, no chain policy, and an explicit `RemoteCertificateValidationCallback` gate over the parsed peer leaf certificate. Unsupported settings are rejected deterministically instead of being ignored.
-- Later `MAX_STREAMS`-driven capacity updates and stream-close-driven capacity release remain deferred until the fuller stream-capacity path exists end to end.
+- Stream-close-driven capacity release remains deferred until the fuller stream-capacity path exists end to end.
 
 ## Internal-Only Boundary
 

@@ -1504,6 +1504,9 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         bool stateChanged = false;
         bool processedStreamFrame = false;
+        bool processedMaxStreamsFrame = false;
+        ulong originalBidirectionalLimit = streamRegistry.Bookkeeping.PeerBidirectionalStreamLimit;
+        ulong originalUnidirectionalLimit = streamRegistry.Bookkeeping.PeerUnidirectionalStreamLimit;
         int payloadEnd = payloadOffset + payloadLength;
         int offset = payloadOffset;
 
@@ -1535,6 +1538,23 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
                 stateChanged = true;
                 offset += stopSendingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseMaxStreamsFrame(remaining, out QuicMaxStreamsFrame maxStreamsFrame, out int maxStreamsBytesConsumed))
+            {
+                if (maxStreamsBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (streamRegistry.Bookkeeping.TryApplyMaxStreamsFrame(maxStreamsFrame))
+                {
+                    processedMaxStreamsFrame = true;
+                    stateChanged = true;
+                }
+
+                offset += maxStreamsBytesConsumed;
                 continue;
             }
 
@@ -1580,6 +1600,21 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
             stateChanged = true;
             offset += streamFrame.ConsumedLength;
+        }
+
+        if (processedMaxStreamsFrame)
+        {
+            int bidirectionalIncrement = GetPositiveIncrement(
+                originalBidirectionalLimit,
+                streamRegistry.Bookkeeping.PeerBidirectionalStreamLimit);
+            int unidirectionalIncrement = GetPositiveIncrement(
+                originalUnidirectionalLimit,
+                streamRegistry.Bookkeeping.PeerUnidirectionalStreamLimit);
+
+            if (bidirectionalIncrement != 0 || unidirectionalIncrement != 0)
+            {
+                streamCapacityObserver?.Invoke(bidirectionalIncrement, unidirectionalIncrement);
+            }
         }
 
         return processedStreamFrame || stateChanged;
