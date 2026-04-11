@@ -1,24 +1,18 @@
 namespace Incursa.Quic;
 
 /// <summary>
-/// Identifies the four QUIC stream type combinations.
+/// Identifies the direction of a QUIC stream.
 /// </summary>
 public enum QuicStreamType : byte
 {
     /// <summary>
-    /// A client-initiated bidirectional stream.
+    /// A unidirectional stream.
     /// </summary>
-    ClientInitiatedBidirectional = 0,
+    Unidirectional = 0,
+
     /// <summary>
-    /// A server-initiated bidirectional stream.
+    /// A bidirectional stream.
     /// </summary>
-    ServerInitiatedBidirectional = 1,
-    /// <summary>
-    /// A client-initiated unidirectional stream.
-    /// </summary>
-    ClientInitiatedUnidirectional = 2,
-    /// <summary>
-    /// A server-initiated unidirectional stream.
-    /// </summary>
-    ServerInitiatedUnidirectional = 3,
+    Bidirectional = 1,
 }
+

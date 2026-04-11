@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Provides Appendix B AEAD packet-use limits for the AEADs and packet-size profiles modeled in this library.
 /// </summary>
-public static class QuicAeadUsageLimitCalculator
+internal static class QuicAeadUsageLimitCalculator
 {
     /// <summary>
     /// The Appendix B AEAD limits are expressed as powers of two, so the formulas use a base of 2.
@@ -47,7 +47,7 @@ public static class QuicAeadUsageLimitCalculator
     /// The selected packet-size profiles are intentionally narrow. They model the Appendix B guidance that is
     /// exercised by the repository's RFC 9001 requirements, not a full generic AEAD policy engine.
     /// </remarks>
-    public static bool TryGetUsageLimits(
+    internal static bool TryGetUsageLimits(
         QuicAeadAlgorithm algorithm,
         QuicAeadPacketSizeProfile confidentialityPacketSizeProfile,
         QuicAeadPacketSizeProfile integrityPacketSizeProfile,
@@ -156,3 +156,4 @@ public static class QuicAeadUsageLimitCalculator
         return true;
     }
 }
+

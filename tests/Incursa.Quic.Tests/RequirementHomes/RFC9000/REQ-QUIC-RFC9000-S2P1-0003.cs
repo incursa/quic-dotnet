@@ -30,7 +30,7 @@ public sealed class REQ_QUIC_RFC9000_S2P1_0003
         Assert.True(QuicStreamParser.TryParseStreamIdentifier(encoded, out QuicStreamId streamId, out int bytesConsumed));
         Assert.Equal(value, streamId.Value);
         Assert.Equal(bytesConsumed, encoded.Length);
-        Assert.Equal((QuicStreamType)(value & 0x03), streamId.StreamType);
+        Assert.Equal((value & 0x02) == 0 ? QuicStreamType.Bidirectional : QuicStreamType.Unidirectional, streamId.StreamType);
         Assert.Equal((value & 0x01) == 0, streamId.IsClientInitiated);
         Assert.Equal((value & 0x01) != 0, streamId.IsServerInitiated);
         Assert.Equal((value & 0x02) == 0, streamId.IsBidirectional);

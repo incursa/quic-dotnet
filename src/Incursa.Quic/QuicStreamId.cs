@@ -3,13 +3,8 @@ namespace Incursa.Quic;
 /// <summary>
 /// A parsed QUIC stream identifier.
 /// </summary>
-public readonly struct QuicStreamId
+internal readonly struct QuicStreamId
 {
-    /// <summary>
-    /// The low two bits that identify the QUIC stream type.
-    /// </summary>
-    private const ulong StreamTypeMask = 0x03;
-
     /// <summary>
     /// The bit that distinguishes client-initiated and server-initiated streams.
     /// </summary>
@@ -30,30 +25,31 @@ public readonly struct QuicStreamId
     /// <summary>
     /// Gets the decoded stream identifier value.
     /// </summary>
-    public ulong Value => value;
+    internal ulong Value => value;
 
     /// <summary>
     /// Gets the stream type classification derived from the low-order bits.
     /// </summary>
-    public QuicStreamType StreamType => (QuicStreamType)(value & StreamTypeMask);
+    internal QuicStreamType StreamType => IsBidirectional ? QuicStreamType.Bidirectional : QuicStreamType.Unidirectional;
 
     /// <summary>
     /// Gets whether the stream was initiated by a client.
     /// </summary>
-    public bool IsClientInitiated => (value & ClientInitiatedBitMask) == 0;
+    internal bool IsClientInitiated => (value & ClientInitiatedBitMask) == 0;
 
     /// <summary>
     /// Gets whether the stream was initiated by a server.
     /// </summary>
-    public bool IsServerInitiated => !IsClientInitiated;
+    internal bool IsServerInitiated => !IsClientInitiated;
 
     /// <summary>
     /// Gets whether the stream is bidirectional.
     /// </summary>
-    public bool IsBidirectional => (value & BidirectionalBitMask) == 0;
+    internal bool IsBidirectional => (value & BidirectionalBitMask) == 0;
 
     /// <summary>
     /// Gets whether the stream is unidirectional.
     /// </summary>
-    public bool IsUnidirectional => !IsBidirectional;
+    internal bool IsUnidirectional => !IsBidirectional;
 }
+

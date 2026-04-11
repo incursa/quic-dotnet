@@ -14,40 +14,35 @@ That ref file is the strongest reference for the initial consumer shape. The cur
 
 ## Proposed Public Surface
 
-### Capability Probes And Entry Points
+### Connection-First Slice
 
-- `QuicConnection.IsSupported`
-- `QuicListener.IsSupported`
+This pass only promotes the consumer-lifetime facade that is already backed by the existing runtime and stream-state machinery:
+
+- `QuicConnection`
+- `QuicStream`
+- `QuicConnectionOptions`
+- `QuicReceiveWindowSizes`
+- `QuicAbortDirection`
+- `QuicError`
+- `QuicException`
+- `QuicStreamType` with the direction-only `Bidirectional` and `Unidirectional` values
+
+### Deferred To The Next Slice
+
+The following remain intentionally out of scope for this pass:
+
+- `QuicListener`
+- `QuicListenerOptions`
+- `QuicClientConnectionOptions`
+- `QuicServerConnectionOptions`
+- `QuicStreamCapacityChangedArgs`
 - `QuicConnection.ConnectAsync(...)`
 - `QuicListener.ListenAsync(...)`
 - `QuicListener.AcceptConnectionAsync(...)`
 - `QuicConnection.AcceptInboundStreamAsync(...)`
 - `QuicConnection.OpenOutboundStreamAsync(...)`
-
-### Main Object Model
-
-- `QuicListener`
-- `QuicConnection`
-- `QuicStream`
-
-### Configuration And Callback Types
-
-- `QuicConnectionOptions`
-- `QuicClientConnectionOptions`
-- `QuicServerConnectionOptions`
-- `QuicListenerOptions`
-- `QuicReceiveWindowSizes`
-- `QuicStreamCapacityChangedArgs`
-
-### Close And Error Surface
-
-- `QuicAbortDirection`
-- `QuicError`
-- `QuicException`
-
-### Stream Typing
-
-- `QuicStreamType` with the Microsoft-style `Bidirectional` and `Unidirectional` values
+- `QuicConnection.IsSupported`
+- `QuicListener.IsSupported`
 
 ## Behavioral Evidence
 
@@ -73,34 +68,34 @@ They imply these public-behavior expectations:
 
 ## Spec Refinements
 
-This pass tightened the canonical requirement set in three places:
+This pass narrows the first consumer slice to the connection/stream facade and defers the listener and TLS-auth contract:
 
-- `REQ-QUIC-API-0005` now calls out the mandatory listener and client option inputs that the Microsoft tests prove are required.
-- `REQ-QUIC-API-0006` now records invalid close-code validation, idempotent close behavior, and `DisposeAsync` as the consumer-facing cleanup path.
-- `REQ-QUIC-API-0008` now captures the async cancellation and terminal-state rules for connect, listen, accept, open-stream, close, and the server callback token.
+- `REQ-QUIC-API-0001` keeps the helper/runtime/wire surface internal while the facade is promoted.
+- `REQ-QUIC-API-0004` only promises the stream identity, lifetime, EOF, and read-side behavior that is backed by `QuicConnectionStreamState`.
+- `REQ-QUIC-API-0005` covers the shared connection options and receive-window settings that are already backed by the runtime seam.
+- `REQ-QUIC-API-0006` records the public close/error projection through `QuicError`, `QuicException`, and `QuicAbortDirection`.
+- `REQ-QUIC-API-0002`, `REQ-QUIC-API-0005`, and `REQ-QUIC-API-0008` leave listener, connect, accept, stream-open, and full TLS option plumbing to the next slice.
 
 ## Public Member Shape
 
-The initial cut should keep the Microsoft-shaped consumer contract:
+The first slice keeps the consumer contract intentionally narrow:
 
-- `QuicConnection` is the connected session object.
-- `QuicListener` is the server-side accept/listen object.
-- `QuicStream` is a `Stream`-derived QUIC stream wrapper.
-- `QuicConnectionOptions` is the shared base for per-connection settings.
-- `QuicClientConnectionOptions` and `QuicServerConnectionOptions` split the client and server configuration paths.
-- `QuicListenerOptions` owns listener configuration and the server-side connection-options callback.
-- `QuicReceiveWindowSizes` carries the configured receive-window knobs.
+- `QuicConnection` is the connection-lifetime facade over the runtime seam.
+- `QuicStream` is the stream-lifetime facade over the stream-state seam.
+- `QuicConnectionOptions` is the shared bag for connection close/error defaults, timeouts, and receive-window knobs.
+- `QuicReceiveWindowSizes` carries the configured receive-window values.
 - `QuicException` carries the close/error classification.
+- `QuicAbortDirection`, `QuicError`, and `QuicStreamType` are the public classification enums used by the facade.
 
-The public types should reuse `EndPoint`, `IPEndPoint`, `SslApplicationProtocol`, `SslClientAuthenticationOptions`, `SslServerAuthenticationOptions`, and `SslClientHelloInfo` directly rather than introduce new endpoint or TLS wrapper abstractions.
+The public types do not introduce new endpoint or TLS wrapper abstractions in this slice. `QuicClientConnectionOptions`, `QuicServerConnectionOptions`, `QuicListenerOptions`, and `QuicStreamCapacityChangedArgs` remain deferred until the next slice, when the listener and connect surface are promoted.
 
 ## Listener And Connection Split
 
-- Client connection establishment goes through `QuicConnection.ConnectAsync(QuicClientConnectionOptions, CancellationToken)`.
-- Server startup goes through `QuicListener.ListenAsync(QuicListenerOptions, CancellationToken)`.
-- Incoming server connections are accepted through `QuicListener.AcceptConnectionAsync(CancellationToken)`.
-- `QuicListenerOptions.ConnectionOptionsCallback` is the only server-side dynamic configuration hook in the public surface.
-- `QuicConnectionOptions.StreamCapacityCallback` is a narrow capacity notification hook, not a middleware or interception pipeline.
+The listener and connect entry points are intentionally deferred in this pass.
+
+- The connection-first slice reuses `QuicConnectionRuntime` and `QuicConnectionStreamState` directly.
+- Listener startup, listener acceptance, and client connect remain the next slice.
+- The capacity callback surface remains deferred until the stream-capacity path exists end to end.
 
 ## Internal-Only Boundary
 
@@ -118,6 +113,29 @@ The following seam types stay internal and should not be part of the consumer co
 - `QuicConnectionRuntimeShard`
 - `QuicConnectionSendRuntime`
 - `QuicConnectionRuntimeDeadlineScheduler`
+- `QuicConnectionStreamState`
+- `QuicConnectionStreamRegistry`
+- `QuicConnectionStreamStateOptions`
+- `QuicConnectionStreamSnapshot`
+- `QuicConnectionLifecycleState`
+- `QuicIdleTimeoutState`
+- `QuicStreamId`
+- `QuicStreamFrame`
+- `QuicStreamParser`
+- `QuicTransportErrorCode`
+- `QuicTransportParameters`
+- `QuicTransportParametersCodec`
+- `QuicVersionNegotiation`
+- `QuicFrameCodec`
+- `QuicConnectionCloseFrame`
+- `QuicResetStreamFrame`
+- `QuicStopSendingFrame`
+- `QuicMaxDataFrame`
+- `QuicMaxStreamDataFrame`
+- `QuicMaxStreamsFrame`
+- `QuicDataBlockedFrame`
+- `QuicStreamDataBlockedFrame`
+- `QuicStreamsBlockedFrame`
 
 The remainder of the packet, frame, transport-parameter, recovery, congestion, and stream-identity helpers also remain internal unless a future requirement explicitly promotes one of them.
 

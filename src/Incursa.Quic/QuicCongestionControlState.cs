@@ -5,32 +5,32 @@ namespace Incursa.Quic;
 /// <summary>
 /// Tracks the RFC 9002 congestion-control state that can be modeled without a full sender or pacer.
 /// </summary>
-public sealed class QuicCongestionControlState
+internal sealed class QuicCongestionControlState
 {
     /// <summary>
     /// The recommended persistent congestion threshold from RFC 9002.
     /// </summary>
-    public const int RecommendedPersistentCongestionThreshold = 3;
+    internal const int RecommendedPersistentCongestionThreshold = 3;
 
     /// <summary>
     /// RFC 9002 reduces the congestion window by one-half on loss.
     /// </summary>
-    public const ulong RecommendedLossReductionNumerator = 1;
+    internal const ulong RecommendedLossReductionNumerator = 1;
 
     /// <summary>
     /// RFC 9002 reduces the congestion window by one-half on loss.
     /// </summary>
-    public const ulong RecommendedLossReductionDenominator = 2;
+    internal const ulong RecommendedLossReductionDenominator = 2;
 
     /// <summary>
     /// RFC 9002's pacing gain is 5/4.
     /// </summary>
-    public const ulong RecommendedPacingGainNumerator = 5;
+    internal const ulong RecommendedPacingGainNumerator = 5;
 
     /// <summary>
     /// RFC 9002's pacing gain is 5/4.
     /// </summary>
-    public const ulong RecommendedPacingGainDenominator = 4;
+    internal const ulong RecommendedPacingGainDenominator = 4;
 
     /// <summary>
     /// QUIC tracks three packet number spaces: Initial, Handshake, and Application Data.
@@ -72,7 +72,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Initializes a new congestion-control state using the RFC 9002 default maximum datagram size.
     /// </summary>
-    public QuicCongestionControlState(ulong maxDatagramSizeBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize)
+    internal QuicCongestionControlState(ulong maxDatagramSizeBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize)
     {
         if (maxDatagramSizeBytes == 0)
         {
@@ -88,52 +88,52 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Gets the current maximum datagram size used for congestion-window computations.
     /// </summary>
-    public ulong MaxDatagramSizeBytes { get; private set; }
+    internal ulong MaxDatagramSizeBytes { get; private set; }
 
     /// <summary>
     /// Gets the minimum congestion window in bytes.
     /// </summary>
-    public ulong MinimumCongestionWindowBytes { get; }
+    internal ulong MinimumCongestionWindowBytes { get; }
 
     /// <summary>
     /// Gets the current congestion window in bytes.
     /// </summary>
-    public ulong CongestionWindowBytes { get; private set; }
+    internal ulong CongestionWindowBytes { get; private set; }
 
     /// <summary>
     /// Gets the slow-start threshold in bytes.
     /// </summary>
-    public ulong SlowStartThresholdBytes { get; private set; }
+    internal ulong SlowStartThresholdBytes { get; private set; }
 
     /// <summary>
     /// Gets the current number of bytes in flight.
     /// </summary>
-    public ulong BytesInFlightBytes { get; private set; }
+    internal ulong BytesInFlightBytes { get; private set; }
 
     /// <summary>
     /// Gets the start time of the most recent recovery period, if any.
     /// </summary>
-    public ulong? RecoveryStartTimeMicros { get; private set; }
+    internal ulong? RecoveryStartTimeMicros { get; private set; }
 
     /// <summary>
     /// Gets whether recovery has started for any packet sent at or before <see cref="RecoveryStartTimeMicros"/>.
     /// </summary>
-    public bool HasRecoveryStartTime => RecoveryStartTimeMicros.HasValue;
+    internal bool HasRecoveryStartTime => RecoveryStartTimeMicros.HasValue;
 
     /// <summary>
     /// Gets whether the current controller is in slow start.
     /// </summary>
-    public bool IsInSlowStart => CongestionWindowBytes < SlowStartThresholdBytes;
+    internal bool IsInSlowStart => CongestionWindowBytes < SlowStartThresholdBytes;
 
     /// <summary>
     /// Gets whether the current controller is in congestion avoidance.
     /// </summary>
-    public bool IsInCongestionAvoidance => CongestionWindowBytes >= SlowStartThresholdBytes;
+    internal bool IsInCongestionAvoidance => CongestionWindowBytes >= SlowStartThresholdBytes;
 
     /// <summary>
     /// Recomputes the initial congestion window for the supplied datagram size.
     /// </summary>
-    public static ulong ComputeInitialCongestionWindowBytes(ulong maxDatagramSizeBytes)
+    internal static ulong ComputeInitialCongestionWindowBytes(ulong maxDatagramSizeBytes)
     {
         if (maxDatagramSizeBytes == 0)
         {
@@ -149,7 +149,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Computes the RFC 9002 minimum congestion window for the supplied datagram size.
     /// </summary>
-    public static ulong ComputeMinimumCongestionWindowBytes(ulong maxDatagramSizeBytes)
+    internal static ulong ComputeMinimumCongestionWindowBytes(ulong maxDatagramSizeBytes)
     {
         if (maxDatagramSizeBytes == 0)
         {
@@ -165,7 +165,7 @@ public sealed class QuicCongestionControlState
     /// <remarks>
     /// ACK-only packets are intentionally not paced.
     /// </remarks>
-    public static bool TryComputePacingIntervalMicros(
+    internal static bool TryComputePacingIntervalMicros(
         ulong congestionWindowBytes,
         ulong smoothedRttMicros,
         ulong packetSizeBytes,
@@ -199,7 +199,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Computes the burst budget in bytes for paced or burst-limited senders.
     /// </summary>
-    public static bool TryGetBurstLimitBytes(
+    internal static bool TryGetBurstLimitBytes(
         ulong initialCongestionWindowBytes,
         bool pathCanAbsorbLargerBursts,
         out ulong burstLimitBytes,
@@ -223,7 +223,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Resets the controller to a new maximum datagram size while recomputing the initial window.
     /// </summary>
-    public void UpdateMaxDatagramSize(ulong maxDatagramSizeBytes, bool resetToInitialWindow)
+    internal void UpdateMaxDatagramSize(ulong maxDatagramSizeBytes, bool resetToInitialWindow)
     {
         if (maxDatagramSizeBytes == 0)
         {
@@ -242,7 +242,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Determines whether a packet may be sent without exceeding the congestion window.
     /// </summary>
-    public bool CanSend(ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false)
+    internal bool CanSend(ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false)
     {
         if (isAckOnlyPacket || isProbePacket)
         {
@@ -256,7 +256,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Records a sent packet.
     /// </summary>
-    public void RegisterPacketSent(ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false)
+    internal void RegisterPacketSent(ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false)
     {
         if (isAckOnlyPacket)
         {
@@ -269,7 +269,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Records an acknowledged packet and applies the RFC 9002 cwnd growth rules.
     /// </summary>
-    public bool TryRegisterAcknowledgedPacket(
+    internal bool TryRegisterAcknowledgedPacket(
         ulong sentBytes,
         ulong sentAtMicros,
         bool packetInFlight = true,
@@ -320,7 +320,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Records a loss signal and enters recovery when the signal is eligible to do so.
     /// </summary>
-    public bool TryRegisterLoss(
+    internal bool TryRegisterLoss(
         ulong sentBytes,
         ulong sentAtMicros,
         bool packetInFlight,
@@ -371,7 +371,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Processes an ECN-CE counter report for the supplied packet number space.
     /// </summary>
-    public bool TryProcessEcn(
+    internal bool TryProcessEcn(
         QuicPacketNumberSpace packetNumberSpace,
         ulong reportedEcnCeCount,
         ulong largestAcknowledgedPacketSentAtMicros,
@@ -401,7 +401,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Computes the RFC 9002 persistent congestion duration.
     /// </summary>
-    public static bool TryComputePersistentCongestionDurationMicros(
+    internal static bool TryComputePersistentCongestionDurationMicros(
         ulong smoothedRttMicros,
         ulong rttVarMicros,
         ulong maxAckDelayMicros,
@@ -433,7 +433,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Evaluates persistent congestion and optionally applies the cwnd collapse when the test passes.
     /// </summary>
-    public bool TryDetectPersistentCongestion(
+    internal bool TryDetectPersistentCongestion(
         ReadOnlySpan<QuicPersistentCongestionPacket> packets,
         ulong firstRttSampleMicros,
         ulong smoothedRttMicros,
@@ -565,7 +565,7 @@ public sealed class QuicCongestionControlState
     /// <summary>
     /// Computes a reduced congestion window with an optional gentler reduction factor.
     /// </summary>
-    public static ulong ComputeReducedCongestionWindowBytes(
+    internal static ulong ComputeReducedCongestionWindowBytes(
         ulong congestionWindowBytes,
         ulong reductionNumerator = RecommendedLossReductionNumerator,
         ulong reductionDenominator = RecommendedLossReductionDenominator,
@@ -649,12 +649,12 @@ public sealed class QuicCongestionControlState
 /// <summary>
 /// Describes a packet relevant to persistent congestion evaluation.
 /// </summary>
-public readonly struct QuicPersistentCongestionPacket
+internal readonly struct QuicPersistentCongestionPacket
 {
     /// <summary>
     /// Initializes a new persistent congestion packet descriptor.
     /// </summary>
-    public QuicPersistentCongestionPacket(
+    internal QuicPersistentCongestionPacket(
         QuicPacketNumberSpace packetNumberSpace,
         ulong sentAtMicros,
         ulong sentBytes,
@@ -677,55 +677,55 @@ public readonly struct QuicPersistentCongestionPacket
     /// <summary>
     /// Gets the packet number space.
     /// </summary>
-    public QuicPacketNumberSpace PacketNumberSpace { get; }
+    internal QuicPacketNumberSpace PacketNumberSpace { get; }
 
     /// <summary>
     /// Gets the packet number.
     /// </summary>
-    public ulong PacketNumber { get; }
+    internal ulong PacketNumber { get; }
 
     /// <summary>
     /// Gets the send time in microseconds.
     /// </summary>
-    public ulong SentAtMicros { get; }
+    internal ulong SentAtMicros { get; }
 
     /// <summary>
     /// Gets the number of sent bytes.
     /// </summary>
-    public ulong SentBytes { get; }
+    internal ulong SentBytes { get; }
 
     /// <summary>
     /// Gets whether the packet was ack-eliciting.
     /// </summary>
-    public bool AckEliciting { get; }
+    internal bool AckEliciting { get; }
 
     /// <summary>
     /// Gets whether the packet counted as in flight.
     /// </summary>
-    public bool InFlight { get; }
+    internal bool InFlight { get; }
 
     /// <summary>
     /// Gets whether the packet was acknowledged.
     /// </summary>
-    public bool Acknowledged { get; }
+    internal bool Acknowledged { get; }
 
     /// <summary>
     /// Gets whether the packet was lost.
     /// </summary>
-    public bool Lost { get; }
+    internal bool Lost { get; }
 }
 
 /// <summary>
 /// Minimal sender-facing facade that ties ACK generation to congestion-control state.
 /// </summary>
-public sealed class QuicSenderFlowController
+internal sealed class QuicSenderFlowController
 {
     private readonly Dictionary<QuicPacketNumberSpace, SortedDictionary<ulong, SentPacketState>> sentPacketsBySpace = [];
 
     /// <summary>
     /// Initializes a new sender-flow controller.
     /// </summary>
-    public QuicSenderFlowController(
+    internal QuicSenderFlowController(
         ulong maxDatagramSizeBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
         int maximumRetainedAckRanges = 32,
         int minimumAckElicitingPacketsBeforeDelayedAck = 2)
@@ -742,17 +742,17 @@ public sealed class QuicSenderFlowController
     /// <summary>
     /// Gets the per-path congestion controller used by this facade.
     /// </summary>
-    public QuicCongestionControlState CongestionControlState { get; }
+    internal QuicCongestionControlState CongestionControlState { get; }
 
     /// <summary>
     /// Gets the ACK-generation state used by this facade.
     /// </summary>
-    public QuicAckGenerationState AckGenerationState { get; }
+    internal QuicAckGenerationState AckGenerationState { get; }
 
     /// <summary>
     /// Checks congestion-window limits before sending.
     /// </summary>
-    public bool CanSend(
+    internal bool CanSend(
         QuicPacketNumberSpace packetNumberSpace,
         ulong sentBytes,
         bool isAckOnlyPacket = false,
@@ -765,7 +765,7 @@ public sealed class QuicSenderFlowController
     /// <summary>
     /// Records a sent packet and tracks it for ACK and loss processing.
     /// </summary>
-    public void RecordPacketSent(
+    internal void RecordPacketSent(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,
         ulong sentBytes,
@@ -787,7 +787,7 @@ public sealed class QuicSenderFlowController
     /// <summary>
     /// Processes an incoming ACK frame and advances congestion state.
     /// </summary>
-    public bool TryProcessAckFrame(
+    internal bool TryProcessAckFrame(
         QuicPacketNumberSpace packetNumberSpace,
         QuicAckFrame ackFrame,
         ulong ackReceivedAtMicros,
@@ -848,7 +848,7 @@ public sealed class QuicSenderFlowController
     /// <summary>
     /// Processes a loss signal for a specific sent packet number.
     /// </summary>
-    public bool TryRegisterLoss(
+    internal bool TryRegisterLoss(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,
         ulong sentAtMicros,
@@ -898,7 +898,7 @@ public sealed class QuicSenderFlowController
     /// <summary>
     /// Records a received packet and drives ACK scheduling logic.
     /// </summary>
-    public void RecordIncomingPacket(
+    internal void RecordIncomingPacket(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,
         bool ackEliciting,
@@ -918,7 +918,7 @@ public sealed class QuicSenderFlowController
     /// <summary>
     /// Determines whether this state should send an immediate ACK for a packet number space.
     /// </summary>
-    public bool ShouldSendAckImmediately(QuicPacketNumberSpace packetNumberSpace)
+    internal bool ShouldSendAckImmediately(QuicPacketNumberSpace packetNumberSpace)
     {
         return AckGenerationState.ShouldSendAckImmediately(packetNumberSpace);
     }
@@ -926,7 +926,7 @@ public sealed class QuicSenderFlowController
     /// <summary>
     /// Determines whether an ACK frame should be included with an outgoing packet.
     /// </summary>
-    public bool ShouldIncludeAckFrameWithOutgoingPacket(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros)
+    internal bool ShouldIncludeAckFrameWithOutgoingPacket(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros)
     {
         return AckGenerationState.ShouldIncludeAckFrameWithOutgoingPacket(packetNumberSpace, nowMicros, maxAckDelayMicros);
     }
@@ -934,7 +934,7 @@ public sealed class QuicSenderFlowController
     /// <summary>
     /// Determines whether an ACK-only packet should be sent for received packets.
     /// </summary>
-    public bool CanSendAckOnlyPacket(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros)
+    internal bool CanSendAckOnlyPacket(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros)
     {
         return AckGenerationState.CanSendAckOnlyPacket(packetNumberSpace, nowMicros, maxAckDelayMicros);
     }
@@ -942,7 +942,7 @@ public sealed class QuicSenderFlowController
     /// <summary>
     /// Builds an ACK frame for the given packet number space.
     /// </summary>
-    public bool TryBuildAckFrame(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out QuicAckFrame frame)
+    internal bool TryBuildAckFrame(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out QuicAckFrame frame)
     {
         return AckGenerationState.TryBuildAckFrame(packetNumberSpace, nowMicros, out frame);
     }
@@ -950,7 +950,7 @@ public sealed class QuicSenderFlowController
     /// <summary>
     /// Marks an ACK frame as sent after processing.
     /// </summary>
-    public void MarkAckFrameSent(QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket)
+    internal void MarkAckFrameSent(QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket)
     {
         AckGenerationState.MarkAckFrameSent(packetNumberSpace, sentAtMicros, ackOnlyPacket);
     }
@@ -1013,3 +1013,4 @@ public sealed class QuicSenderFlowController
         bool InFlight,
         bool IsProbePacket);
 }
+

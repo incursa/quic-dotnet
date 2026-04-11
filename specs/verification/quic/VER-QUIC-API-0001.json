@@ -6,7 +6,7 @@
   "title": "Incursa.Quic Public API Surface Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "verification_method": "Execution, inspection, and API-diff evidence from the public API analyzer, plus targeted surface tests derived from the Microsoft public-surface behavior baseline.",
+  "verification_method": "Execution, inspection, and API-diff evidence from the public API analyzer, plus targeted surface tests derived from the Microsoft public-surface behavior baseline and the existing connection/runtime seams.",
   "related_artifacts": [
     "SPEC-QUIC-API",
     "ARC-QUIC-API-0001",
@@ -28,13 +28,13 @@
     "The consumer facade types are available for inspection or promotion.",
     "The Microsoft reference tests used as behavioral evidence have been reviewed and mapped to the refined surface expectations."
   ],
-  "scope": "This verification slice covers the consumer-facing public API surface, the async lifecycle and terminal-state behavior visible through that surface, and the internal-only boundary. It proves that only the approved facade types are public and that the listed helper/runtime seam types remain internal. It does not attempt to prove wire behavior, handshake correctness, packet parsing, or performance.",
-  "expected_result": "The public API matches the approved consumer-facing surface, the client/server split is visible, the async lifecycle obeys the documented cancellation and terminal-state rules, and the helper/runtime seam types remain internal.",
+  "scope": "This verification slice covers the connection-first consumer-facing public API surface, the close/dispose/error projection visible through that surface, and the internal-only boundary. It proves that only the approved facade types are public, that `QuicStreamType` has the direction-only shape, and that the listed helper/runtime seam types remain internal. It does not attempt to prove listener behavior, connect/listen wiring, wire behavior, handshake correctness, packet parsing, or performance.",
+  "expected_result": "The public API matches the approved connection-first consumer-facing surface, the close/dispose/error projection is visible, `QuicStreamType` has the approved direction-only shape, and the helper/runtime seam types remain internal.",
   "procedure": [
     "Compare src/Incursa.Quic/PublicAPI.Unshipped.txt and any future API approval diffs against the approved type list.",
     "Run compile-time or reflection checks that the approved public types and members are present.",
     "Run negative access checks that the helper and runtime seam types cannot be referenced from outside the assembly.",
-    "Add or review focused consumer-behavior tests for listener accept, client connect, stream open/accept, cancellation, close/error mapping, and stream completion-task behavior.",
+    "Add or review focused consumer-behavior tests for `QuicStreamType` shape, close/dispose/error mapping, read-side terminal behavior, and facade-to-runtime mapping.",
     "Review the design note, spec, and the reference Microsoft test evidence together to confirm no extra public abstractions were introduced."
   ],
   "evidence": [
@@ -45,11 +45,11 @@
     "specs/architecture/quic/ARC-QUIC-API-0001.json",
     "specs/work-items/quic/WI-QUIC-API-0001.json"
   ],
-  "status_summary": "Planned. No execution evidence exists yet because the public facade has not been promoted.",
+  "status_summary": "Planned. No execution evidence exists yet because the connection-first public facade has not been promoted.",
   "supplemental_sections": [
     {
       "heading": "Evidence Notes",
-      "content": "The first concrete proof will come from API-diff output and surface tests once the consumer facade is implemented. This verification artifact keeps the gate narrow and explicitly excludes wire-behavior proofs."
+      "content": "The first concrete proof will come from API-diff output and surface tests once the connection-first consumer facade is implemented. This verification artifact keeps the gate narrow and explicitly excludes wire-behavior, listener, connect/listen, and TLS-auth proofs."
     },
     {
       "heading": "Reference Behavioral Evidence",

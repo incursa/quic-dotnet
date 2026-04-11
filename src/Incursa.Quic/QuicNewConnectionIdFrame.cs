@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// A parsed or constructed NEW_CONNECTION_ID frame.
 /// </summary>
-public readonly ref struct QuicNewConnectionIdFrame
+internal readonly ref struct QuicNewConnectionIdFrame
 {
     private readonly ulong sequenceNumber;
     private readonly ulong retirePriorTo;
@@ -13,7 +13,7 @@ public readonly ref struct QuicNewConnectionIdFrame
     /// <summary>
     /// Initializes a NEW_CONNECTION_ID frame view.
     /// </summary>
-    public QuicNewConnectionIdFrame(
+    internal QuicNewConnectionIdFrame(
         ulong sequenceNumber,
         ulong retirePriorTo,
         ReadOnlySpan<byte> connectionId,
@@ -28,20 +28,21 @@ public readonly ref struct QuicNewConnectionIdFrame
     /// <summary>
     /// Gets the frame sequence number.
     /// </summary>
-    public ulong SequenceNumber => sequenceNumber;
+    internal ulong SequenceNumber => sequenceNumber;
 
     /// <summary>
     /// Gets the Retire Prior To value.
     /// </summary>
-    public ulong RetirePriorTo => retirePriorTo;
+    internal ulong RetirePriorTo => retirePriorTo;
 
     /// <summary>
     /// Gets the connection ID bytes.
     /// </summary>
-    public ReadOnlySpan<byte> ConnectionId => connectionId;
+    internal ReadOnlySpan<byte> ConnectionId => connectionId;
 
     /// <summary>
     /// Gets the stateless reset token bytes.
     /// </summary>
-    public ReadOnlySpan<byte> StatelessResetToken => statelessResetToken;
+    internal ReadOnlySpan<byte> StatelessResetToken => statelessResetToken;
 }
+

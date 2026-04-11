@@ -6,10 +6,10 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9002-S6P2P1-0002")]
 public sealed class REQ_QUIC_RFC9002_S6P2P1_0002
 {
-    public static TheoryData<EarlySpaceAckDelayCase> EarlySpaceAckDelayCases => new()
+    public static TheoryData<object> EarlySpaceAckDelayCases => new()
     {
-        new(QuicPacketNumberSpace.Initial, 0, 2_000),
-        new(QuicPacketNumberSpace.Handshake, 500, 2_000),
+        new EarlySpaceAckDelayCase(QuicPacketNumberSpace.Initial, 0, 2_000),
+        new EarlySpaceAckDelayCase(QuicPacketNumberSpace.Handshake, 500, 2_000),
     };
 
     [Fact]
@@ -32,8 +32,10 @@ public sealed class REQ_QUIC_RFC9002_S6P2P1_0002
     [MemberData(nameof(EarlySpaceAckDelayCases))]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]
-    public void TryComputeProbeTimeoutMicros_ZeroesMaxAckDelayInTheInitialAndHandshakeSpaces(EarlySpaceAckDelayCase scenario)
+    public void TryComputeProbeTimeoutMicros_ZeroesMaxAckDelayInTheInitialAndHandshakeSpaces(object scenarioValue)
     {
+        EarlySpaceAckDelayCase scenario = (EarlySpaceAckDelayCase)scenarioValue;
+
         Assert.True(QuicRecoveryTiming.TryComputeProbeTimeoutMicros(
             scenario.PacketNumberSpace,
             smoothedRttMicros: 1_000,
@@ -46,7 +48,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P1_0002
         Assert.Equal(scenario.ExpectedProbeTimeoutMicros, probeTimeoutMicros);
     }
 
-    public sealed record EarlySpaceAckDelayCase(
+    internal sealed record EarlySpaceAckDelayCase(
         QuicPacketNumberSpace PacketNumberSpace,
         ulong ProvidedMaxAckDelayMicros,
         ulong ExpectedProbeTimeoutMicros);

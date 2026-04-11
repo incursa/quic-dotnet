@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Identifies the endpoint role for transport-parameter parsing and formatting.
 /// </summary>
-public enum QuicTransportParameterRole
+internal enum QuicTransportParameterRole
 {
     /// <summary>
     /// The local endpoint is a client.
@@ -15,3 +15,4 @@ public enum QuicTransportParameterRole
     /// </summary>
     Server = 1,
 }
+

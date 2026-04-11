@@ -5,27 +5,27 @@ namespace Incursa.Quic;
 /// <summary>
 /// Parses and formats QUIC transport parameters as extension bytes.
 /// </summary>
-public static class QuicTransportParametersCodec
+internal static class QuicTransportParametersCodec
 {
     /// <summary>
     /// The TLS extension type codepoint for quic_transport_parameters.
     /// </summary>
-    public const ushort QuicTransportParametersExtensionType = 57;
+    internal const ushort QuicTransportParametersExtensionType = 57;
 
     /// <summary>
     /// Gets whether the registry marks quic_transport_parameters as recommended.
     /// </summary>
-    public const bool QuicTransportParametersRecommended = true;
+    internal const bool QuicTransportParametersRecommended = true;
 
     /// <summary>
     /// Gets whether the registry lists quic_transport_parameters for ClientHello.
     /// </summary>
-    public const bool QuicTransportParametersClientHello = true;
+    internal const bool QuicTransportParametersClientHello = true;
 
     /// <summary>
     /// Gets whether the registry lists quic_transport_parameters for EncryptedExtensions.
     /// </summary>
-    public const bool QuicTransportParametersEncryptedExtensions = true;
+    internal const bool QuicTransportParametersEncryptedExtensions = true;
 
     // RFC 9000 transport-parameter IDs handled by this codec.
     // 0x00 original_destination_connection_id, 0x01 max_idle_timeout, 0x02 stateless_reset_token,
@@ -104,7 +104,7 @@ public static class QuicTransportParametersCodec
     /// <summary>
     /// Parses a transport-parameter extension value into a structured view.
     /// </summary>
-    public static bool TryParseTransportParameters(
+    internal static bool TryParseTransportParameters(
         ReadOnlySpan<byte> encoded,
         QuicTransportParameterRole receiverRole,
         out QuicTransportParameters parameters)
@@ -149,7 +149,7 @@ public static class QuicTransportParametersCodec
     /// <summary>
     /// Formats a structured transport-parameter view into an extension value.
     /// </summary>
-    public static bool TryFormatTransportParameters(
+    internal static bool TryFormatTransportParameters(
         QuicTransportParameters parameters,
         QuicTransportParameterRole senderRole,
         Span<byte> destination,
@@ -264,7 +264,7 @@ public static class QuicTransportParametersCodec
     /// <summary>
     /// Validates that peer transport parameters match the connection IDs observed during handshake.
     /// </summary>
-    public static bool TryValidateConnectionIdBindings(
+    internal static bool TryValidateConnectionIdBindings(
         QuicTransportParameterRole receiverRole,
         ReadOnlySpan<byte> initialDestinationConnectionId,
         ReadOnlySpan<byte> initialSourceConnectionId,
@@ -729,3 +729,4 @@ public static class QuicTransportParametersCodec
         return true;
     }
 }
+

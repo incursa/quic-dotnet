@@ -30,7 +30,7 @@ public sealed class REQ_QUIC_RFC9000_S19P8_0018
             Assert.True(QuicStreamParser.TryParseStreamFrame(packet, out QuicStreamFrame frame));
             Assert.Equal(frameType, frame.FrameType);
             Assert.Equal(streamId, frame.StreamId.Value);
-            Assert.Equal((QuicStreamType)(streamId & 0x03), frame.StreamType);
+            Assert.Equal((streamId & 0x02) == 0 ? QuicStreamType.Bidirectional : QuicStreamType.Unidirectional, frame.StreamType);
             Assert.Equal((frameType & 0x04) != 0, frame.HasOffset);
             Assert.Equal((frameType & 0x04) != 0 ? offset : 0, frame.Offset);
             Assert.Equal((frameType & 0x02) != 0, frame.HasLength);
@@ -70,7 +70,7 @@ public sealed class REQ_QUIC_RFC9000_S19P8_0018
         Assert.True(QuicStreamParser.TryParseStreamFrame(packet, out QuicStreamFrame frame));
         Assert.Equal(scenario.FrameType, frame.FrameType);
         Assert.Equal(scenario.StreamId, frame.StreamId.Value);
-        Assert.Equal((QuicStreamType)(scenario.StreamId & 0x03), frame.StreamType);
+        Assert.Equal((scenario.StreamId & 0x02) == 0 ? QuicStreamType.Bidirectional : QuicStreamType.Unidirectional, frame.StreamType);
         Assert.Equal((scenario.FrameType & 0x04) != 0, frame.HasOffset);
         Assert.Equal((scenario.FrameType & 0x04) != 0 ? scenario.Offset : 0, frame.Offset);
         Assert.Equal((scenario.FrameType & 0x02) != 0, frame.HasLength);

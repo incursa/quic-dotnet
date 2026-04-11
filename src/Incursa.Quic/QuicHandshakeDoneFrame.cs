@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// A parsed or constructed HANDSHAKE_DONE frame.
 /// </summary>
-public readonly struct QuicHandshakeDoneFrame
+internal readonly struct QuicHandshakeDoneFrame
 {
     /// <summary>
     /// RFC 9000 HANDSHAKE_DONE frame type.
@@ -13,5 +13,6 @@ public readonly struct QuicHandshakeDoneFrame
     /// <summary>
     /// Gets the frame type carried on the wire.
     /// </summary>
-    public byte FrameType => FrameTypeValue;
+    internal byte FrameType => FrameTypeValue;
 }
+

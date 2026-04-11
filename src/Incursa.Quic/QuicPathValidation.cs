@@ -7,7 +7,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Provides helpers for RFC 9000 path-validation behavior that can be expressed without connection state.
 /// </summary>
-public static class QuicPathValidation
+internal static class QuicPathValidation
 {
     private static int pathChallengeSequence;
 
@@ -15,12 +15,12 @@ public static class QuicPathValidation
     /// The number of payload bytes used by PATH_CHALLENGE and PATH_RESPONSE frames.
     /// RFC 9000 fixes both payloads at 8 bytes.
     /// </summary>
-    public const int PathChallengeDataLength = 8;
+    internal const int PathChallengeDataLength = 8;
 
     /// <summary>
     /// Fills an 8-byte PATH_CHALLENGE payload using fresh entropy and a monotonic nonce so successive calls differ.
     /// </summary>
-    public static bool TryGeneratePathChallengeData(Span<byte> destination, out int bytesWritten)
+    internal static bool TryGeneratePathChallengeData(Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -40,7 +40,7 @@ public static class QuicPathValidation
     /// <summary>
     /// Computes the padding required to expand a path-validation datagram to the RFC 9000 minimum payload size.
     /// </summary>
-    public static bool TryGetPathValidationDatagramPaddingLength(int currentPayloadLength, out int paddingLength)
+    internal static bool TryGetPathValidationDatagramPaddingLength(int currentPayloadLength, out int paddingLength)
     {
         return QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(currentPayloadLength, out paddingLength);
     }
@@ -48,7 +48,7 @@ public static class QuicPathValidation
     /// <summary>
     /// Measures the elapsed time between sending PATH_CHALLENGE data and receiving PATH_RESPONSE data.
     /// </summary>
-    public static bool TryMeasurePathChallengeRoundTripMicros(
+    internal static bool TryMeasurePathChallengeRoundTripMicros(
         ulong pathChallengeSentAtMicros,
         ulong pathResponseReceivedAtMicros,
         out ulong roundTripMicros)
@@ -65,7 +65,7 @@ public static class QuicPathValidation
     /// <remarks>
     /// The caller must ensure the remaining anti-amplification budget permits the requested expansion.
     /// </remarks>
-    public static bool TryFormatPathValidationDatagramPadding(
+    internal static bool TryFormatPathValidationDatagramPadding(
         int currentPayloadLength,
         QuicAntiAmplificationBudget antiAmplificationBudget,
         Span<byte> destination,
@@ -95,3 +95,4 @@ public static class QuicPathValidation
             out bytesWritten);
     }
 }
+

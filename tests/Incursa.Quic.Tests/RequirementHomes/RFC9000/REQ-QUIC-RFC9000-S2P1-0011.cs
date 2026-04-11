@@ -7,10 +7,10 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S2P1_0011
 {
     [Theory]
-    [InlineData(0UL, QuicStreamType.ClientInitiatedBidirectional, true)]
-    [InlineData(1UL, QuicStreamType.ServerInitiatedBidirectional, true)]
-    [InlineData(2UL, QuicStreamType.ClientInitiatedUnidirectional, false)]
-    [InlineData(3UL, QuicStreamType.ServerInitiatedUnidirectional, false)]
+    [InlineData(0UL, QuicStreamType.Bidirectional, true)]
+    [InlineData(1UL, QuicStreamType.Bidirectional, true)]
+    [InlineData(2UL, QuicStreamType.Unidirectional, false)]
+    [InlineData(3UL, QuicStreamType.Unidirectional, false)]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryParseStreamIdentifier_UsesTheSecondLeastSignificantBitToDistinguishDirection(

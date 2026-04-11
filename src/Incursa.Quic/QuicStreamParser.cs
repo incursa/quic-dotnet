@@ -3,12 +3,12 @@ namespace Incursa.Quic;
 /// <summary>
 /// Parses QUIC stream identifiers and STREAM frames from byte spans.
 /// </summary>
-public static class QuicStreamParser
+internal static class QuicStreamParser
 {
     /// <summary>
     /// Parses a stream identifier from the start of a byte span.
     /// </summary>
-    public static bool TryParseStreamIdentifier(ReadOnlySpan<byte> encoded, out QuicStreamId streamId, out int bytesConsumed)
+    internal static bool TryParseStreamIdentifier(ReadOnlySpan<byte> encoded, out QuicStreamId streamId, out int bytesConsumed)
     {
         if (!QuicVariableLengthInteger.TryParse(encoded, out ulong value, out bytesConsumed))
         {
@@ -23,7 +23,7 @@ public static class QuicStreamParser
     /// <summary>
     /// Parses a STREAM frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseStreamFrame(ReadOnlySpan<byte> packetPayload, out QuicStreamFrame frame)
+    internal static bool TryParseStreamFrame(ReadOnlySpan<byte> packetPayload, out QuicStreamFrame frame)
     {
         frame = default;
 
@@ -113,3 +113,4 @@ public static class QuicStreamParser
         return true;
     }
 }
+

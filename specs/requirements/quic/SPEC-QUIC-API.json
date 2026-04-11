@@ -8,8 +8,8 @@
   "domain": "quic",
   "capability": "public-api",
   "purpose": "Define the intended public API surface for Incursa.Quic using the public surface of System.Net.Quic as the baseline for the initial consumer cut.",
-  "scope": "This specification defines the initial consumer-facing public API surface for Incursa.Quic. The slice includes listener, connection, stream, options, error, and callback types. It excludes helper-layer packet, frame, TLS, handshake, runtime, and recovery types unless a future specification explicitly promotes them.",
-  "context": "The reference surface in Microsoft System.Net.Quic is the strongest baseline for the initial cut. The target repository already contains a broad internal helper and runtime surface under src/Incursa.Quic, but that surface is not the consumer contract. This specification makes the public/internal boundary explicit so future implementation work can promote only the approved facade types.",
+  "scope": "This specification defines the initial consumer-facing public API surface for Incursa.Quic. The repository is implementing the surface in phases, and the first shipped slice is the connection-side facade over the existing runtime and stream machinery. The slice includes the approved facade types, but it defers listener/socket wiring, the client and server TLS-auth option wrappers, and the connect/listen/accept entry points to the next slice. Helper-layer packet, frame, TLS, handshake, runtime, recovery, and congestion types remain internal unless a future specification explicitly promotes them.",
+  "context": "The reference surface in Microsoft System.Net.Quic is the strongest baseline for the eventual API, but this repository is deliberately shipping that surface in smaller phases. The target repository already contains a broad internal helper and runtime surface under src/Incursa.Quic, and this specification makes the public/internal boundary explicit so the connection-first facade can land without exposing the implementation seams.",
   "related_artifacts": [
     "ARC-QUIC-API-0001",
     "WI-QUIC-API-0001",
@@ -28,8 +28,8 @@
         ]
       },
       "notes": [
-        "The approved public facade for the initial cut is QuicListener, QuicConnection, QuicStream, QuicConnectionOptions, QuicClientConnectionOptions, QuicServerConnectionOptions, QuicListenerOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicStreamType, and QuicStreamCapacityChangedArgs.",
-        "The initial cut should reuse existing framework types such as EndPoint, IPEndPoint, SslApplicationProtocol, SslClientAuthenticationOptions, SslServerAuthenticationOptions, and SslClientHelloInfo rather than invent new endpoint or TLS wrappers."
+        "The approved public facade for the current slice is QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, and the corrected QuicStreamType. Listener, client/server TLS wrappers, the callback args type, and the connect/listen/accept entry points remain deferred to the next slice.",
+        "The current slice reuses the existing runtime and stream-state machinery directly. The next slice can introduce EndPoint, IPEndPoint, SslApplicationProtocol, SslClientAuthenticationOptions, SslServerAuthenticationOptions, and SslClientHelloInfo plumbing when listener and connect work lands."
       ]
     },
     {
@@ -42,10 +42,8 @@
         ]
       },
       "notes": [
-        "Listener setup requires non-null ListenEndPoint and ApplicationProtocols values before ListenAsync can succeed.",
-        "The listener callback selects server connection options; it is not a middleware pipeline.",
-        "The server-side callback surface remains narrow and should not expose the internal handshake machinery.",
-        "The listener callback receives a cancellation token so the accept flow can stop when the handshake times out or the listener is disposed."
+        "Listener setup, accept flow, and the server-side callback are intentionally deferred from this slice.",
+        "This slice only establishes the connection-side facade and the public boundary trim; the next slice can add the listener shell and its server-option callback."
       ]
     },
     {
@@ -58,9 +56,9 @@
         ]
       },
       "notes": [
-        "The connection object is the consumer's lifecycle anchor and may be used only after a successful connect or server accept.",
+        "The connection object is the consumer's lifecycle anchor for this slice and may be created only by internal wiring for now.",
         "Transport internals should be accessed through the internal runtime, not through public connection properties.",
-        "Connection close and stream-open operations may pend, but they must surface documented terminal results rather than expose scheduler or transport state.",
+        "Connection close, dispose, and terminal-state projection are the only lifecycle behaviors this slice promises.",
         "The connection object is not a middleware or event-pipeline surface."
       ]
     },
@@ -74,11 +72,10 @@
         ]
       },
       "notes": [
-        "The public QuicStreamType enum MUST use the Microsoft-style direction-only model with Bidirectional and Unidirectional values.",
+        "The public QuicStreamType enum MUST use the direction-only model with Bidirectional and Unidirectional values.",
         "The richer internal stream-identity model may continue to track initiator detail separately, but it stays internal.",
-        "CanRead and CanWrite are structural direction properties, not live readiness indicators; a side that has been aborted still reports the same structural capability.",
-        "ReadsClosed and WritesClosed are terminal completion tasks: graceful EOF completes successfully, while abort and connection shutdown fault them with the public QuicError surface.",
-        "The Stream surface stays timeout-aware for consumers that rely on the standard Stream timeout properties."
+        "This slice only promises the read-side and terminal-state surface that is backed by QuicConnectionStreamState; write-heavy and abort-heavy stream behavior stays deferred until the stream-action pipeline exists.",
+        "The Stream surface stays internal to the facade for now, and the next slice can decide which timeout and write members are honest once stream action exists."
       ]
     },
     {
@@ -91,11 +88,10 @@
         ]
       },
       "notes": [
-        "No custom endpoint or handshake wrapper types are introduced for the initial cut; the public surface reuses EndPoint, IPEndPoint, SslApplicationProtocol, SslClientAuthenticationOptions, SslServerAuthenticationOptions, and SslClientHelloInfo directly.",
+        "No custom endpoint or handshake wrapper types are introduced for this slice; the public surface only reuses the internal runtime and stream-state seams.",
         "Public option objects are configuration bags, not live mutable protocol state.",
-        "Listener setup requires ApplicationProtocols and ListenEndPoint to be populated; client connect requires RemoteEndPoint, ClientAuthenticationOptions, DefaultCloseErrorCode, and DefaultStreamErrorCode to be populated before ConnectAsync begins.",
-        "The listener connection-options callback may narrow the negotiated ALPN list by returning a customized QuicServerConnectionOptions instance.",
-        "StreamCapacityCallback reports bidirectional and unidirectional increments and may fire repeatedly as capacity changes; it is a notification surface, not a general event pipeline."
+        "Listener setup, client connect, and the listener connection-options callback are deferred to the next slice.",
+        "StreamCapacityCallback is also deferred until the public stream-capacity path exists end to end."
       ]
     },
     {
@@ -112,7 +108,8 @@
         "The exception surface is the consumer-facing representation of terminal outcomes, not a protocol debug channel.",
         "CloseAsync validates the application error code and throws ArgumentOutOfRangeException for invalid values.",
         "CloseAsync is terminal and repeated close calls are ignored once the connection is already closed.",
-        "DisposeAsync is the consumer-facing cleanup path when no explicit close is issued; it uses the configured default close error code."
+        "DisposeAsync is the consumer-facing cleanup path when no explicit close is issued; it uses the configured default close error code.",
+        "Stream abort behavior is deferred until the write-side stream-action pipeline exists."
       ]
     },
     {
@@ -135,7 +132,7 @@
         ]
       },
       "notes": [
-        "This boundary keeps transcript progress, key schedule, bridge state, handshake coordination, packet-protection details, and runtime reducer details out of the consumer contract.",
+        "This boundary keeps transcript progress, key schedule, bridge state, handshake coordination, packet-protection details, runtime reducer details, stream-state helpers, packet helpers, and transport-parameter helpers out of the consumer contract.",
         "The public API must not expose the existing helper-layer runtime model by accident."
       ]
     },

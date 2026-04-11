@@ -21,7 +21,7 @@ public sealed class REQ_QUIC_RFC9000_S19P8_0001
         Assert.True(frame.HasOffset);
         Assert.Equal(0x11223344UL, frame.Offset);
         Assert.Equal((byte)0x0C, frame.FrameType);
-        Assert.Equal(QuicStreamType.ClientInitiatedBidirectional, frame.StreamType);
+        Assert.Equal(QuicStreamType.Bidirectional, frame.StreamType);
         Assert.True((frame.FrameType & 0x04) != 0);
 
         Span<byte> destination = stackalloc byte[64];
@@ -51,7 +51,7 @@ public sealed class REQ_QUIC_RFC9000_S19P8_0001
         Assert.True(QuicStreamParser.TryParseStreamFrame(packet, out QuicStreamFrame frame));
         Assert.Equal(frameType, frame.FrameType);
         Assert.Equal((ulong)0x06, frame.StreamId.Value);
-        Assert.Equal(QuicStreamType.ClientInitiatedUnidirectional, frame.StreamType);
+        Assert.Equal(QuicStreamType.Unidirectional, frame.StreamType);
         Assert.True(frame.HasOffset);
         Assert.Equal((ulong)0x11223344, frame.Offset);
         Assert.True(frame.HasLength);

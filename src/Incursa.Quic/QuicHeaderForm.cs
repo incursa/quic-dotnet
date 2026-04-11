@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Identifies the version-independent QUIC packet header form.
 /// </summary>
-public enum QuicHeaderForm
+internal enum QuicHeaderForm
 {
     /// <summary>
     /// A packet with the first byte high bit cleared.
@@ -15,3 +15,4 @@ public enum QuicHeaderForm
     /// </summary>
     Long = 1,
 }
+

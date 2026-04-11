@@ -7,8 +7,8 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S17P2_0010
 {
     [Theory]
-    [InlineData((byte)0x00, QuicPacketNumberSpace.Initial)]
-    [InlineData((byte)0x02, QuicPacketNumberSpace.Handshake)]
+    [InlineData((byte)0x00, 0)]
+    [InlineData((byte)0x02, 1)]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
@@ -17,8 +17,10 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0010
     [Requirement("REQ-QUIC-RFC9000-S17P2-0010")]
     public void TryParseLongHeader_MapsPre1RttPacketsToLongHeaderSpaces(
         byte longPacketTypeBits,
-        QuicPacketNumberSpace expectedPacketNumberSpace)
+        int expectedPacketNumberSpaceValue)
     {
+        QuicPacketNumberSpace expectedPacketNumberSpace = (QuicPacketNumberSpace)expectedPacketNumberSpaceValue;
+
         byte[] packet = BuildVersion1LongHeader(longPacketTypeBits);
 
         Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));

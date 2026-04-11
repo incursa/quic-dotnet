@@ -3,12 +3,12 @@ namespace Incursa.Quic;
 /// <summary>
 /// A parsed or constructed STOP_SENDING frame.
 /// </summary>
-public readonly struct QuicStopSendingFrame
+internal readonly struct QuicStopSendingFrame
 {
     /// <summary>
     /// Initializes a STOP_SENDING frame view.
     /// </summary>
-    public QuicStopSendingFrame(ulong streamId, ulong applicationProtocolErrorCode)
+    internal QuicStopSendingFrame(ulong streamId, ulong applicationProtocolErrorCode)
     {
         StreamId = streamId;
         ApplicationProtocolErrorCode = applicationProtocolErrorCode;
@@ -17,10 +17,11 @@ public readonly struct QuicStopSendingFrame
     /// <summary>
     /// Gets the stream identifier.
     /// </summary>
-    public ulong StreamId { get; }
+    internal ulong StreamId { get; }
 
     /// <summary>
     /// Gets the application protocol error code.
     /// </summary>
-    public ulong ApplicationProtocolErrorCode { get; }
+    internal ulong ApplicationProtocolErrorCode { get; }
 }
+

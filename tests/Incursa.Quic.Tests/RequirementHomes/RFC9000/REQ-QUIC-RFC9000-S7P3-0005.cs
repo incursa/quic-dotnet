@@ -13,13 +13,16 @@ public sealed class REQ_QUIC_RFC9000_S7P3_0005
     [Requirement("REQ-QUIC-RFC9000-S7P3-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindings(
-        QuicTransportParameterRole receiverRole,
+        object receiverRoleValue,
         byte[] initialDestinationConnectionId,
         byte[] initialSourceConnectionId,
         bool usedRetry,
         byte[] retrySourceConnectionId,
-        QuicTransportParameters peerParameters)
+        object peerParametersValue)
     {
+        QuicTransportParameterRole receiverRole = (QuicTransportParameterRole)receiverRoleValue;
+        QuicTransportParameters peerParameters = (QuicTransportParameters)peerParametersValue;
+
         Assert.True(QuicTransportParametersCodec.TryValidateConnectionIdBindings(
             receiverRole,
             initialDestinationConnectionId,

@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Identifies the QUIC packet number space for ACK generation and scheduling.
 /// </summary>
-public enum QuicPacketNumberSpace
+internal enum QuicPacketNumberSpace
 {
     /// <summary>
     /// The Initial packet number space.
@@ -20,3 +20,4 @@ public enum QuicPacketNumberSpace
     /// </summary>
     ApplicationData = 2,
 }
+

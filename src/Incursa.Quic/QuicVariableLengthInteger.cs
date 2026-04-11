@@ -5,7 +5,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Parses and formats QUIC variable-length integers.
 /// </summary>
-public static class QuicVariableLengthInteger
+internal static class QuicVariableLengthInteger
 {
     /// <summary>
     /// QUIC varints use the top two bits of the first byte to encode the length.
@@ -73,7 +73,7 @@ public static class QuicVariableLengthInteger
     /// The largest value representable by the QUIC variable-length integer encoding.
     /// RFC 9000 uses 62 payload bits after the length prefix.
     /// </summary>
-    public const ulong MaxValue = 0x3FFF_FFFF_FFFF_FFFFUL;
+    internal const ulong MaxValue = 0x3FFF_FFFF_FFFF_FFFFUL;
 
     /// <summary>
     /// The maximum encoded length of a QUIC variable-length integer.
@@ -83,7 +83,7 @@ public static class QuicVariableLengthInteger
     /// <summary>
     /// Parses a QUIC variable-length integer from the start of a byte span.
     /// </summary>
-    public static bool TryParse(ReadOnlySpan<byte> encoded, out ulong value, out int bytesConsumed)
+    internal static bool TryParse(ReadOnlySpan<byte> encoded, out ulong value, out int bytesConsumed)
     {
         value = default;
         bytesConsumed = default;
@@ -121,7 +121,7 @@ public static class QuicVariableLengthInteger
     /// <summary>
     /// Formats a QUIC variable-length integer using the shortest possible encoding.
     /// </summary>
-    public static bool TryFormat(ulong value, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormat(ulong value, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -185,3 +185,4 @@ public static class QuicVariableLengthInteger
         return false;
     }
 }
+

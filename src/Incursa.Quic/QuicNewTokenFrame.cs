@@ -3,14 +3,14 @@ namespace Incursa.Quic;
 /// <summary>
 /// A parsed or constructed NEW_TOKEN frame.
 /// </summary>
-public readonly ref struct QuicNewTokenFrame
+internal readonly ref struct QuicNewTokenFrame
 {
     private readonly ReadOnlySpan<byte> token;
 
     /// <summary>
     /// Initializes a NEW_TOKEN frame view.
     /// </summary>
-    public QuicNewTokenFrame(ReadOnlySpan<byte> token)
+    internal QuicNewTokenFrame(ReadOnlySpan<byte> token)
     {
         this.token = token;
     }
@@ -18,5 +18,6 @@ public readonly ref struct QuicNewTokenFrame
     /// <summary>
     /// Gets the token bytes.
     /// </summary>
-    public ReadOnlySpan<byte> Token => token;
+    internal ReadOnlySpan<byte> Token => token;
 }
+

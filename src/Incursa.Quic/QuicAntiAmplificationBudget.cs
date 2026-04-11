@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Tracks the RFC 9000 anti-amplification budget for an unvalidated peer address.
 /// </summary>
-public sealed class QuicAntiAmplificationBudget
+internal sealed class QuicAntiAmplificationBudget
 {
     /// <summary>
     /// RFC 9000 allows a server to send at most three times the bytes it has received before validation.
@@ -15,29 +15,29 @@ public sealed class QuicAntiAmplificationBudget
     /// <summary>
     /// Gets the total payload bytes received in datagrams uniquely attributable to a single connection.
     /// </summary>
-    public ulong ReceivedPayloadBytes => receivedPayloadBytes;
+    internal ulong ReceivedPayloadBytes => receivedPayloadBytes;
 
     /// <summary>
     /// Gets the total payload bytes sent while this budget has been in force.
     /// </summary>
-    public ulong SentPayloadBytes => sentPayloadBytes;
+    internal ulong SentPayloadBytes => sentPayloadBytes;
 
     /// <summary>
     /// Gets whether the peer address has been validated.
     /// </summary>
-    public bool IsAddressValidated { get; private set; }
+    internal bool IsAddressValidated { get; private set; }
 
     /// <summary>
     /// Gets the remaining bytes that may be sent before the amplification limit is reached.
     /// </summary>
-    public ulong RemainingSendBudget => IsAddressValidated
+    internal ulong RemainingSendBudget => IsAddressValidated
         ? ulong.MaxValue
         : GetRemainingSendBudget();
 
     /// <summary>
     /// Marks the peer address as validated, which removes the amplification cap.
     /// </summary>
-    public void MarkAddressValidated()
+    internal void MarkAddressValidated()
     {
         IsAddressValidated = true;
     }
@@ -48,7 +48,7 @@ public sealed class QuicAntiAmplificationBudget
     /// <remarks>
     /// Only payload bytes from datagrams uniquely attributable to a single connection are counted.
     /// </remarks>
-    public bool TryRegisterReceivedDatagramPayloadBytes(int payloadBytes, bool uniquelyAttributedToSingleConnection)
+    internal bool TryRegisterReceivedDatagramPayloadBytes(int payloadBytes, bool uniquelyAttributedToSingleConnection)
     {
         if (payloadBytes < 0)
         {
@@ -66,7 +66,7 @@ public sealed class QuicAntiAmplificationBudget
     /// <summary>
     /// Determines whether the requested payload bytes may be sent without exceeding the amplification limit.
     /// </summary>
-    public bool CanSend(int payloadBytes)
+    internal bool CanSend(int payloadBytes)
     {
         if (payloadBytes < 0)
         {
@@ -79,7 +79,7 @@ public sealed class QuicAntiAmplificationBudget
     /// <summary>
     /// Consumes send budget for the requested payload bytes.
     /// </summary>
-    public bool TryConsumeSendBudget(int payloadBytes)
+    internal bool TryConsumeSendBudget(int payloadBytes)
     {
         if (!CanSend(payloadBytes))
         {
@@ -112,3 +112,4 @@ public sealed class QuicAntiAmplificationBudget
         return value * multiplier;
     }
 }
+

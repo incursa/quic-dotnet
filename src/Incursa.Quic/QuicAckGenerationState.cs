@@ -5,7 +5,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Tracks processed packets and derives ACK frames plus ACK scheduling hints.
 /// </summary>
-public sealed class QuicAckGenerationState
+internal sealed class QuicAckGenerationState
 {
     /// <summary>
     /// RFC 9000 ACK frame type.
@@ -26,7 +26,7 @@ public sealed class QuicAckGenerationState
     /// </summary>
     /// <param name="maximumRetainedAckRanges">The maximum number of ACK ranges to retain and emit.</param>
     /// <param name="minimumAckElicitingPacketsBeforeDelayedAck">The number of ack-eliciting packets that should usually be observed before a delayed ACK is emitted.</param>
-    public QuicAckGenerationState(int maximumRetainedAckRanges = 32, int minimumAckElicitingPacketsBeforeDelayedAck = 2)
+    internal QuicAckGenerationState(int maximumRetainedAckRanges = 32, int minimumAckElicitingPacketsBeforeDelayedAck = 2)
     {
         if (maximumRetainedAckRanges < 1)
         {
@@ -45,17 +45,17 @@ public sealed class QuicAckGenerationState
     /// <summary>
     /// Gets the maximum number of ACK ranges to retain and emit.
     /// </summary>
-    public int MaximumRetainedAckRanges => maximumRetainedAckRanges;
+    internal int MaximumRetainedAckRanges => maximumRetainedAckRanges;
 
     /// <summary>
     /// Gets the number of ack-eliciting packets that should usually be observed before a delayed ACK is emitted.
     /// </summary>
-    public int MinimumAckElicitingPacketsBeforeDelayedAck => minimumAckElicitingPacketsBeforeDelayedAck;
+    internal int MinimumAckElicitingPacketsBeforeDelayedAck => minimumAckElicitingPacketsBeforeDelayedAck;
 
     /// <summary>
     /// Records a processed packet for later ACK generation.
     /// </summary>
-    public void RecordProcessedPacket(
+    internal void RecordProcessedPacket(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,
         bool ackEliciting,
@@ -92,7 +92,7 @@ public sealed class QuicAckGenerationState
     /// <summary>
     /// Determines whether the tracked packets require an immediate ACK.
     /// </summary>
-    public bool ShouldSendAckImmediately(QuicPacketNumberSpace packetNumberSpace)
+    internal bool ShouldSendAckImmediately(QuicPacketNumberSpace packetNumberSpace)
     {
         return TryGetSpaceState(packetNumberSpace, out SpaceState? state)
             && state.ImmediateAckRequired;
@@ -101,7 +101,7 @@ public sealed class QuicAckGenerationState
     /// <summary>
     /// Determines whether an ACK frame should be piggybacked on an outgoing packet.
     /// </summary>
-    public bool ShouldIncludeAckFrameWithOutgoingPacket(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros)
+    internal bool ShouldIncludeAckFrameWithOutgoingPacket(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros)
     {
         if (!TryGetSpaceState(packetNumberSpace, out SpaceState? state) || state.Receipts.Count == 0)
         {
@@ -131,7 +131,7 @@ public sealed class QuicAckGenerationState
     /// <summary>
     /// Determines whether the tracked packets justify an ACK-only packet.
     /// </summary>
-    public bool CanSendAckOnlyPacket(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros)
+    internal bool CanSendAckOnlyPacket(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros)
     {
         if (!TryGetSpaceState(packetNumberSpace, out SpaceState? state) || state.Receipts.Count == 0)
         {
@@ -160,7 +160,7 @@ public sealed class QuicAckGenerationState
     /// <summary>
     /// Builds an ACK frame for the specified packet number space.
     /// </summary>
-    public bool TryBuildAckFrame(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out QuicAckFrame frame)
+    internal bool TryBuildAckFrame(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out QuicAckFrame frame)
     {
         frame = new QuicAckFrame();
 
@@ -214,7 +214,7 @@ public sealed class QuicAckGenerationState
     /// <summary>
     /// Records the time at which an ACK frame was sent.
     /// </summary>
-    public void MarkAckFrameSent(QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket)
+    internal void MarkAckFrameSent(QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket)
     {
         SpaceState state = GetOrCreateSpaceState(packetNumberSpace);
         state.LastAckFrameSentAtMicros = sentAtMicros;
@@ -342,12 +342,13 @@ public sealed class QuicAckGenerationState
 
     private sealed class SpaceState
     {
-        public SortedDictionary<ulong, PacketReceipt> Receipts { get; } = new();
+        internal SortedDictionary<ulong, PacketReceipt> Receipts { get; } = new();
 
-        public bool ImmediateAckRequired { get; set; }
+        internal bool ImmediateAckRequired { get; set; }
 
-        public ulong? LastAckFrameSentAtMicros { get; set; }
+        internal ulong? LastAckFrameSentAtMicros { get; set; }
 
-        public ulong? LastAckOnlyTriggerPacketNumber { get; set; }
+        internal ulong? LastAckOnlyTriggerPacketNumber { get; set; }
     }
 }
+

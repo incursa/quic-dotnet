@@ -5,24 +5,24 @@ namespace Incursa.Quic;
 /// <summary>
 /// Provides stateless helpers for QUIC version negotiation decisions and packet formatting.
 /// </summary>
-public static class QuicVersionNegotiation
+internal static class QuicVersionNegotiation
 {
     /// <summary>
     /// The reserved version number that identifies a Version Negotiation packet.
     /// RFC 9000 uses version 0 as the version-negotiation sentinel.
     /// </summary>
-    public const uint VersionNegotiationVersion = 0x00000000;
+    internal const uint VersionNegotiationVersion = 0x00000000;
 
     /// <summary>
     /// The QUIC version number assigned to RFC 9000 version 1.
     /// </summary>
-    public const uint Version1 = 0x00000001;
+    internal const uint Version1 = 0x00000001;
 
     /// <summary>
     /// The minimum UDP payload size required for QUIC version 1 Initial datagrams.
     /// RFC 9000 requires a 1200-byte Initial payload to avoid fragmentation assumptions.
     /// </summary>
-    public const int Version1MinimumDatagramPayloadSize = 1200;
+    internal const int Version1MinimumDatagramPayloadSize = 1200;
 
     /// <summary>
     /// The first byte used when formatting a Version Negotiation packet.
@@ -47,7 +47,7 @@ public static class QuicVersionNegotiation
     /// <summary>
     /// Computes the largest known minimum datagram size across the supplied supported versions.
     /// </summary>
-    public static bool TryGetRequiredInitialDatagramPayloadSize(
+    internal static bool TryGetRequiredInitialDatagramPayloadSize(
         ReadOnlySpan<uint> supportedVersions,
         out int requiredPayloadSize)
     {
@@ -76,7 +76,7 @@ public static class QuicVersionNegotiation
     /// <summary>
     /// Determines whether a server should send a Version Negotiation packet for the client's selected version.
     /// </summary>
-    public static bool ShouldSendVersionNegotiation(uint clientSelectedVersion, ReadOnlySpan<uint> serverSupportedVersions)
+    internal static bool ShouldSendVersionNegotiation(uint clientSelectedVersion, ReadOnlySpan<uint> serverSupportedVersions)
     {
         if (clientSelectedVersion == VersionNegotiationVersion || serverSupportedVersions.IsEmpty)
         {
@@ -98,7 +98,7 @@ public static class QuicVersionNegotiation
     /// Determines whether a server should send a Version Negotiation packet for the client's selected version
     /// and the observed datagram payload size.
     /// </summary>
-    public static bool ShouldSendVersionNegotiation(
+    internal static bool ShouldSendVersionNegotiation(
         uint clientSelectedVersion,
         int datagramPayloadSize,
         ReadOnlySpan<uint> serverSupportedVersions)
@@ -116,7 +116,7 @@ public static class QuicVersionNegotiation
     /// Determines whether a server should send a Version Negotiation packet for the client's selected version
     /// when the server already sent Version Negotiation packets for this attempt.
     /// </summary>
-    public static bool ShouldSendVersionNegotiation(
+    internal static bool ShouldSendVersionNegotiation(
         uint clientSelectedVersion,
         ReadOnlySpan<uint> serverSupportedVersions,
         bool hasAlreadySentVersionNegotiation)
@@ -128,7 +128,7 @@ public static class QuicVersionNegotiation
     /// <summary>
     /// Formats a Version Negotiation response that echoes the client's connection IDs and advertises the server's accepted versions.
     /// </summary>
-    public static bool TryFormatVersionNegotiationResponse(
+    internal static bool TryFormatVersionNegotiationResponse(
         uint clientSelectedVersion,
         ReadOnlySpan<byte> clientDestinationConnectionId,
         ReadOnlySpan<byte> clientSourceConnectionId,
@@ -195,7 +195,7 @@ public static class QuicVersionNegotiation
     /// <summary>
     /// Determines whether a client must discard a Version Negotiation packet.
     /// </summary>
-    public static bool ShouldDiscardVersionNegotiation(
+    internal static bool ShouldDiscardVersionNegotiation(
         QuicVersionNegotiationPacket packet,
         uint selectedVersion,
         bool hasSuccessfullyProcessedAnotherPacket)
@@ -219,7 +219,7 @@ public static class QuicVersionNegotiation
     /// <summary>
     /// Determines whether a client must abandon the current connection attempt after receiving a Version Negotiation packet.
     /// </summary>
-    public static bool ShouldAbandonConnectionAttempt(
+    internal static bool ShouldAbandonConnectionAttempt(
         QuicVersionNegotiationPacket packet,
         uint selectedVersion,
         ReadOnlySpan<uint> clientSupportedVersions,
@@ -232,7 +232,7 @@ public static class QuicVersionNegotiation
     /// <summary>
     /// Gets whether the supplied version follows the reserved 0x?a?a?a?a pattern.
     /// </summary>
-    public static bool IsReservedVersion(uint version)
+    internal static bool IsReservedVersion(uint version)
     {
         return (version & ReservedVersionMask) == ReservedVersionPattern;
     }
@@ -240,7 +240,7 @@ public static class QuicVersionNegotiation
     /// <summary>
     /// Creates a reserved version number using the high nibbles from the template value.
     /// </summary>
-    public static uint CreateReservedVersion(uint template)
+    internal static uint CreateReservedVersion(uint template)
     {
         return (template & ReservedVersionTemplateMask) | ReservedVersionPattern;
     }
@@ -262,3 +262,4 @@ public static class QuicVersionNegotiation
         return false;
     }
 }
+

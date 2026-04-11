@@ -1,546 +1,79 @@
 #nullable enable
-Incursa.Quic.QuicHeaderForm
-Incursa.Quic.QuicHeaderForm.Short = 0 -> Incursa.Quic.QuicHeaderForm
-Incursa.Quic.QuicHeaderForm.Long = 1 -> Incursa.Quic.QuicHeaderForm
-Incursa.Quic.QuicPacketParser
-static Incursa.Quic.QuicPacketParser.TryClassifyHeaderForm(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicHeaderForm headerForm) -> bool
-static Incursa.Quic.QuicPacketParser.TryParseLongHeader(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicLongHeaderPacket header) -> bool
-static Incursa.Quic.QuicPacketParser.TryParseShortHeader(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicShortHeaderPacket header) -> bool
-static Incursa.Quic.QuicPacketParser.TryParseVersionNegotiation(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicVersionNegotiationPacket header) -> bool
-static Incursa.Quic.QuicPacketParser.TryGetPacketNumberSpace(System.ReadOnlySpan<byte> packet, out Incursa.Quic.QuicPacketNumberSpace packetNumberSpace) -> bool
-Incursa.Quic.QuicLongHeaderPacket
-Incursa.Quic.QuicLongHeaderPacket.QuicLongHeaderPacket() -> void
-Incursa.Quic.QuicLongHeaderPacket.HeaderForm.get -> Incursa.Quic.QuicHeaderForm
-Incursa.Quic.QuicLongHeaderPacket.HeaderControlBits.get -> byte
-Incursa.Quic.QuicLongHeaderPacket.FixedBit.get -> bool
-Incursa.Quic.QuicLongHeaderPacket.LongPacketTypeBits.get -> byte
-Incursa.Quic.QuicLongHeaderPacket.PacketNumberLengthBits.get -> byte
-Incursa.Quic.QuicLongHeaderPacket.TypeSpecificBits.get -> byte
-Incursa.Quic.QuicLongHeaderPacket.ReservedBits.get -> byte
-Incursa.Quic.QuicLongHeaderPacket.Version.get -> uint
-Incursa.Quic.QuicLongHeaderPacket.IsVersionNegotiation.get -> bool
-Incursa.Quic.QuicLongHeaderPacket.DestinationConnectionId.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicLongHeaderPacket.DestinationConnectionIdLength.get -> int
-Incursa.Quic.QuicLongHeaderPacket.SourceConnectionId.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicLongHeaderPacket.SourceConnectionIdLength.get -> int
-Incursa.Quic.QuicLongHeaderPacket.VersionSpecificData.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicShortHeaderPacket
-Incursa.Quic.QuicShortHeaderPacket.QuicShortHeaderPacket() -> void
-Incursa.Quic.QuicShortHeaderPacket.HeaderForm.get -> Incursa.Quic.QuicHeaderForm
-Incursa.Quic.QuicShortHeaderPacket.HeaderControlBits.get -> byte
-Incursa.Quic.QuicShortHeaderPacket.FixedBit.get -> bool
-Incursa.Quic.QuicShortHeaderPacket.SpinBit.get -> bool
-Incursa.Quic.QuicShortHeaderPacket.ReservedBits.get -> byte
-Incursa.Quic.QuicShortHeaderPacket.KeyPhase.get -> bool
-Incursa.Quic.QuicShortHeaderPacket.PacketNumberLengthBits.get -> byte
-Incursa.Quic.QuicShortHeaderPacket.Remainder.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicVersionNegotiationPacket
-Incursa.Quic.QuicVersionNegotiationPacket.QuicVersionNegotiationPacket() -> void
-Incursa.Quic.QuicVersionNegotiationPacket.HeaderForm.get -> Incursa.Quic.QuicHeaderForm
-Incursa.Quic.QuicVersionNegotiationPacket.HeaderControlBits.get -> byte
-Incursa.Quic.QuicVersionNegotiationPacket.Version.get -> uint
-Incursa.Quic.QuicVersionNegotiationPacket.IsVersionNegotiation.get -> bool
-Incursa.Quic.QuicVersionNegotiationPacket.DestinationConnectionId.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicVersionNegotiationPacket.DestinationConnectionIdLength.get -> int
-Incursa.Quic.QuicVersionNegotiationPacket.SourceConnectionId.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicVersionNegotiationPacket.SourceConnectionIdLength.get -> int
-Incursa.Quic.QuicVersionNegotiationPacket.SupportedVersionBytes.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicVersionNegotiationPacket.SupportedVersionCount.get -> int
-Incursa.Quic.QuicVersionNegotiationPacket.ContainsSupportedVersion(uint version) -> bool
-Incursa.Quic.QuicVersionNegotiationPacket.GetSupportedVersion(int index) -> uint
-Incursa.Quic.QuicVersionNegotiation
-const Incursa.Quic.QuicVersionNegotiation.VersionNegotiationVersion = 0 -> uint
-const Incursa.Quic.QuicVersionNegotiation.Version1 = 1 -> uint
-const Incursa.Quic.QuicVersionNegotiation.Version1MinimumDatagramPayloadSize = 1200 -> int
-static Incursa.Quic.QuicVersionNegotiation.TryGetRequiredInitialDatagramPayloadSize(System.ReadOnlySpan<uint> supportedVersions, out int requiredPayloadSize) -> bool
-static Incursa.Quic.QuicVersionNegotiation.ShouldSendVersionNegotiation(uint clientSelectedVersion, System.ReadOnlySpan<uint> serverSupportedVersions) -> bool
-static Incursa.Quic.QuicVersionNegotiation.ShouldSendVersionNegotiation(uint clientSelectedVersion, int datagramPayloadSize, System.ReadOnlySpan<uint> serverSupportedVersions) -> bool
-static Incursa.Quic.QuicVersionNegotiation.ShouldSendVersionNegotiation(uint clientSelectedVersion, System.ReadOnlySpan<uint> serverSupportedVersions, bool hasAlreadySentVersionNegotiation) -> bool
-static Incursa.Quic.QuicVersionNegotiation.TryFormatVersionNegotiationResponse(uint clientSelectedVersion, System.ReadOnlySpan<byte> clientDestinationConnectionId, System.ReadOnlySpan<byte> clientSourceConnectionId, System.ReadOnlySpan<uint> serverSupportedVersions, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicVersionNegotiation.ShouldDiscardVersionNegotiation(Incursa.Quic.QuicVersionNegotiationPacket packet, uint selectedVersion, bool hasSuccessfullyProcessedAnotherPacket) -> bool
-static Incursa.Quic.QuicVersionNegotiation.ShouldAbandonConnectionAttempt(Incursa.Quic.QuicVersionNegotiationPacket packet, uint selectedVersion, System.ReadOnlySpan<uint> clientSupportedVersions, bool hasSuccessfullyProcessedAnotherPacket) -> bool
-static Incursa.Quic.QuicVersionNegotiation.IsReservedVersion(uint version) -> bool
-static Incursa.Quic.QuicVersionNegotiation.CreateReservedVersion(uint template) -> uint
-Incursa.Quic.QuicAddressValidation
-static Incursa.Quic.QuicAddressValidation.CanConsiderPeerAddressValidated(System.ReadOnlySpan<byte> connectionId, bool chosenByEndpoint) -> bool
-static Incursa.Quic.QuicAddressValidation.PeerCompletedAddressValidation(bool isServer, bool handshakeAckReceived, bool handshakeConfirmed) -> bool
-static Incursa.Quic.QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(int currentPayloadLength, out int paddingLength) -> bool
-static Incursa.Quic.QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(int currentPayloadLength, System.Span<byte> destination, out int bytesWritten) -> bool
-Incursa.Quic.QuicAeadKeyUsageState
-Incursa.Quic.QuicAeadKeyUsageState.Pending = 0 -> Incursa.Quic.QuicAeadKeyUsageState
-Incursa.Quic.QuicAeadKeyUsageState.Available = 1 -> Incursa.Quic.QuicAeadKeyUsageState
-Incursa.Quic.QuicAeadKeyUsageState.Discarded = 2 -> Incursa.Quic.QuicAeadKeyUsageState
-Incursa.Quic.QuicAeadKeyLifecycle
-Incursa.Quic.QuicAeadKeyLifecycle.QuicAeadKeyLifecycle(Incursa.Quic.QuicAeadUsageLimits limits) -> void
-Incursa.Quic.QuicAeadKeyLifecycle.State.get -> Incursa.Quic.QuicAeadKeyUsageState
-Incursa.Quic.QuicAeadKeyLifecycle.IsAvailable.get -> bool
-Incursa.Quic.QuicAeadKeyLifecycle.CanProtect.get -> bool
-Incursa.Quic.QuicAeadKeyLifecycle.CanOpen.get -> bool
-Incursa.Quic.QuicAeadKeyLifecycle.IsDiscarded.get -> bool
-Incursa.Quic.QuicAeadKeyLifecycle.IsZeroRttRejected.get -> bool
-Incursa.Quic.QuicAeadKeyLifecycle.ProtectedPacketCount.get -> double
-Incursa.Quic.QuicAeadKeyLifecycle.OpenedPacketCount.get -> double
-Incursa.Quic.QuicAeadKeyLifecycle.TryActivate() -> bool
-Incursa.Quic.QuicAeadKeyLifecycle.Discard() -> void
-Incursa.Quic.QuicAeadKeyLifecycle.RejectZeroRtt() -> bool
-Incursa.Quic.QuicAeadKeyLifecycle.TryUseForProtection() -> bool
-Incursa.Quic.QuicAeadKeyLifecycle.TryUseForOpening() -> bool
-Incursa.Quic.QuicAntiAmplificationBudget
-Incursa.Quic.QuicAntiAmplificationBudget.QuicAntiAmplificationBudget() -> void
-Incursa.Quic.QuicAntiAmplificationBudget.ReceivedPayloadBytes.get -> ulong
-Incursa.Quic.QuicAntiAmplificationBudget.SentPayloadBytes.get -> ulong
-Incursa.Quic.QuicAntiAmplificationBudget.IsAddressValidated.get -> bool
-Incursa.Quic.QuicAntiAmplificationBudget.RemainingSendBudget.get -> ulong
-Incursa.Quic.QuicAntiAmplificationBudget.MarkAddressValidated() -> void
-Incursa.Quic.QuicAntiAmplificationBudget.TryRegisterReceivedDatagramPayloadBytes(int payloadBytes, bool uniquelyAttributedToSingleConnection) -> bool
-Incursa.Quic.QuicAntiAmplificationBudget.CanSend(int payloadBytes) -> bool
-Incursa.Quic.QuicAntiAmplificationBudget.TryConsumeSendBudget(int payloadBytes) -> bool
-Incursa.Quic.QuicIdleTimeoutState
-Incursa.Quic.QuicIdleTimeoutState.QuicIdleTimeoutState(ulong effectiveIdleTimeoutMicros) -> void
-Incursa.Quic.QuicIdleTimeoutState.EffectiveIdleTimeoutMicros.get -> ulong
-Incursa.Quic.QuicIdleTimeoutState.IdleTimerRestartAtMicros.get -> ulong
-Incursa.Quic.QuicIdleTimeoutState.IdleTimeoutDeadlineMicros.get -> ulong
-Incursa.Quic.QuicIdleTimeoutState.HasAckElicitingPacketBeenSentSinceLastPeerPacket.get -> bool
-static Incursa.Quic.QuicIdleTimeoutState.TryComputeEffectiveIdleTimeoutMicros(ulong? localMaxIdleTimeoutMicros, ulong? peerMaxIdleTimeoutMicros, ulong currentProbeTimeoutMicros, out ulong effectiveIdleTimeoutMicros) -> bool
-Incursa.Quic.QuicIdleTimeoutState.RecordPeerPacketProcessed(ulong receivedAtMicros) -> void
-Incursa.Quic.QuicIdleTimeoutState.RecordAckElicitingPacketSent(ulong sentAtMicros) -> void
-Incursa.Quic.QuicIdleTimeoutState.HasTimedOut(ulong nowMicros) -> bool
-Incursa.Quic.QuicVariableLengthInteger
-const Incursa.Quic.QuicVariableLengthInteger.MaxValue = 4611686018427387903 -> ulong
-static Incursa.Quic.QuicVariableLengthInteger.TryParse(System.ReadOnlySpan<byte> encoded, out ulong value, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicVariableLengthInteger.TryFormat(ulong value, System.Span<byte> destination, out int bytesWritten) -> bool
-Incursa.Quic.QuicAckRange
-Incursa.Quic.QuicAckRange.QuicAckRange() -> void
-Incursa.Quic.QuicAckRange.QuicAckRange(ulong gap, ulong ackRangeLength, ulong smallestAcknowledged, ulong largestAcknowledged) -> void
-Incursa.Quic.QuicAckRange.Gap.get -> ulong
-Incursa.Quic.QuicAckRange.AckRangeLength.get -> ulong
-Incursa.Quic.QuicAckRange.SmallestAcknowledged.get -> ulong
-Incursa.Quic.QuicAckRange.LargestAcknowledged.get -> ulong
-Incursa.Quic.QuicAckFrame
-Incursa.Quic.QuicAckFrame.QuicAckFrame() -> void
-Incursa.Quic.QuicAckFrame.FrameType.get -> byte
-Incursa.Quic.QuicAckFrame.FrameType.set -> void
-Incursa.Quic.QuicAckFrame.LargestAcknowledged.get -> ulong
-Incursa.Quic.QuicAckFrame.LargestAcknowledged.set -> void
-Incursa.Quic.QuicAckFrame.AckDelay.get -> ulong
-Incursa.Quic.QuicAckFrame.AckDelay.set -> void
-Incursa.Quic.QuicAckFrame.FirstAckRange.get -> ulong
-Incursa.Quic.QuicAckFrame.FirstAckRange.set -> void
-Incursa.Quic.QuicAckFrame.AdditionalRanges.get -> Incursa.Quic.QuicAckRange[]!
-Incursa.Quic.QuicAckFrame.AdditionalRanges.set -> void
-Incursa.Quic.QuicAckFrame.EcnCounts.get -> Incursa.Quic.QuicEcnCounts?
-Incursa.Quic.QuicAckFrame.EcnCounts.set -> void
-Incursa.Quic.QuicAckFrame.AckRangeCount.get -> ulong
-Incursa.Quic.QuicCongestionControlState
-const Incursa.Quic.QuicCongestionControlState.RecommendedPersistentCongestionThreshold = 3 -> int
-const Incursa.Quic.QuicCongestionControlState.RecommendedLossReductionNumerator = 1 -> ulong
-const Incursa.Quic.QuicCongestionControlState.RecommendedLossReductionDenominator = 2 -> ulong
-const Incursa.Quic.QuicCongestionControlState.RecommendedPacingGainNumerator = 5 -> ulong
-const Incursa.Quic.QuicCongestionControlState.RecommendedPacingGainDenominator = 4 -> ulong
-Incursa.Quic.QuicCongestionControlState.QuicCongestionControlState(ulong maxDatagramSizeBytes = 1200) -> void
-Incursa.Quic.QuicCongestionControlState.MaxDatagramSizeBytes.get -> ulong
-Incursa.Quic.QuicCongestionControlState.MinimumCongestionWindowBytes.get -> ulong
-Incursa.Quic.QuicCongestionControlState.CongestionWindowBytes.get -> ulong
-Incursa.Quic.QuicCongestionControlState.SlowStartThresholdBytes.get -> ulong
-Incursa.Quic.QuicCongestionControlState.BytesInFlightBytes.get -> ulong
-Incursa.Quic.QuicCongestionControlState.RecoveryStartTimeMicros.get -> ulong?
-Incursa.Quic.QuicCongestionControlState.HasRecoveryStartTime.get -> bool
-Incursa.Quic.QuicCongestionControlState.IsInSlowStart.get -> bool
-Incursa.Quic.QuicCongestionControlState.IsInCongestionAvoidance.get -> bool
-static Incursa.Quic.QuicCongestionControlState.ComputeInitialCongestionWindowBytes(ulong maxDatagramSizeBytes) -> ulong
-static Incursa.Quic.QuicCongestionControlState.ComputeMinimumCongestionWindowBytes(ulong maxDatagramSizeBytes) -> ulong
-static Incursa.Quic.QuicCongestionControlState.TryComputePacingIntervalMicros(ulong congestionWindowBytes, ulong smoothedRttMicros, ulong packetSizeBytes, bool ackOnlyPacket, out ulong pacingIntervalMicros, ulong pacingGainNumerator = 5, ulong pacingGainDenominator = 4) -> bool
-static Incursa.Quic.QuicCongestionControlState.TryGetBurstLimitBytes(ulong initialCongestionWindowBytes, bool pathCanAbsorbLargerBursts, out ulong burstLimitBytes, ulong? largerBurstLimitBytes = null) -> bool
-Incursa.Quic.QuicCongestionControlState.UpdateMaxDatagramSize(ulong maxDatagramSizeBytes, bool resetToInitialWindow) -> void
-Incursa.Quic.QuicCongestionControlState.CanSend(ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false) -> bool
-Incursa.Quic.QuicCongestionControlState.RegisterPacketSent(ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false) -> void
-Incursa.Quic.QuicCongestionControlState.TryRegisterAcknowledgedPacket(ulong sentBytes, ulong sentAtMicros, bool packetInFlight = true, bool applicationLimited = false, bool flowControlLimited = false, bool pacingLimited = false) -> bool
-Incursa.Quic.QuicCongestionControlState.TryRegisterLoss(ulong sentBytes, ulong sentAtMicros, bool packetInFlight, bool packetCanBeDecrypted = true, bool keysAvailable = true, bool sentAfterEarliestAcknowledgedPacket = true, bool isProbePacket = false, bool allowAckOnlyLossSignal = false) -> bool
-Incursa.Quic.QuicCongestionControlState.TryProcessEcn(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong reportedEcnCeCount, ulong largestAcknowledgedPacketSentAtMicros, bool pathValidated) -> bool
-static Incursa.Quic.QuicCongestionControlState.TryComputePersistentCongestionDurationMicros(ulong smoothedRttMicros, ulong rttVarMicros, ulong maxAckDelayMicros, out ulong persistentCongestionDurationMicros, int persistentCongestionThreshold = 3, ulong timerGranularityMicros = 1000) -> bool
-Incursa.Quic.QuicCongestionControlState.TryDetectPersistentCongestion(System.ReadOnlySpan<Incursa.Quic.QuicPersistentCongestionPacket> packets, ulong firstRttSampleMicros, ulong smoothedRttMicros, ulong rttVarMicros, ulong maxAckDelayMicros, out bool persistentCongestionDetected, bool applyReset = true) -> bool
-static Incursa.Quic.QuicCongestionControlState.ComputeReducedCongestionWindowBytes(ulong congestionWindowBytes, ulong reductionNumerator = 1, ulong reductionDenominator = 2, ulong minimumCongestionWindowBytes = 0) -> ulong
-Incursa.Quic.QuicPersistentCongestionPacket
-Incursa.Quic.QuicPersistentCongestionPacket.QuicPersistentCongestionPacket() -> void
-Incursa.Quic.QuicPersistentCongestionPacket.QuicPersistentCongestionPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, ulong sentBytes, bool ackEliciting, bool inFlight, bool acknowledged, bool lost, ulong packetNumber = 0) -> void
-Incursa.Quic.QuicPersistentCongestionPacket.PacketNumberSpace.get -> Incursa.Quic.QuicPacketNumberSpace
-Incursa.Quic.QuicPersistentCongestionPacket.PacketNumber.get -> ulong
-Incursa.Quic.QuicPersistentCongestionPacket.SentAtMicros.get -> ulong
-Incursa.Quic.QuicPersistentCongestionPacket.SentBytes.get -> ulong
-Incursa.Quic.QuicPersistentCongestionPacket.AckEliciting.get -> bool
-Incursa.Quic.QuicPersistentCongestionPacket.InFlight.get -> bool
-Incursa.Quic.QuicPersistentCongestionPacket.Acknowledged.get -> bool
-Incursa.Quic.QuicPersistentCongestionPacket.Lost.get -> bool
-Incursa.Quic.QuicEcnCounts
-Incursa.Quic.QuicEcnCounts.QuicEcnCounts() -> void
-Incursa.Quic.QuicEcnCounts.QuicEcnCounts(ulong ect0Count, ulong ect1Count, ulong ecnCeCount) -> void
-Incursa.Quic.QuicEcnCounts.Ect0Count.get -> ulong
-Incursa.Quic.QuicEcnCounts.Ect1Count.get -> ulong
-Incursa.Quic.QuicEcnCounts.EcnCeCount.get -> ulong
-Incursa.Quic.QuicEcnMarking
-Incursa.Quic.QuicEcnMarking.NotEct = 0 -> Incursa.Quic.QuicEcnMarking
-Incursa.Quic.QuicEcnMarking.Ect0 = 1 -> Incursa.Quic.QuicEcnMarking
-Incursa.Quic.QuicEcnMarking.Ect1 = 2 -> Incursa.Quic.QuicEcnMarking
-Incursa.Quic.QuicEcnValidationState
-Incursa.Quic.QuicEcnValidationState.QuicEcnValidationState() -> void
-Incursa.Quic.QuicEcnValidationState.IsEcnEnabled.get -> bool
-Incursa.Quic.QuicEcnValidationState.DisableEcn() -> void
-Incursa.Quic.QuicEcnValidationState.ReenableEcn() -> void
-Incursa.Quic.QuicEcnValidationState.RecordPacketSent(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, Incursa.Quic.QuicEcnMarking ecnMarking) -> void
-Incursa.Quic.QuicEcnValidationState.TryValidateAcknowledgedEcnCounts(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, Incursa.Quic.QuicEcnCounts? reportedCounts, ulong newlyAcknowledgedEct0Packets, ulong newlyAcknowledgedEct1Packets, bool largestAcknowledgedPacketNumberIncreased, out bool validationFailed) -> bool
-Incursa.Quic.QuicPacketNumberSpace
-Incursa.Quic.QuicPacketNumberSpace.Initial = 0 -> Incursa.Quic.QuicPacketNumberSpace
-Incursa.Quic.QuicPacketNumberSpace.Handshake = 1 -> Incursa.Quic.QuicPacketNumberSpace
-Incursa.Quic.QuicPacketNumberSpace.ApplicationData = 2 -> Incursa.Quic.QuicPacketNumberSpace
-Incursa.Quic.QuicAckGenerationState
-Incursa.Quic.QuicAckGenerationState.QuicAckGenerationState(int maximumRetainedAckRanges = 32, int minimumAckElicitingPacketsBeforeDelayedAck = 2) -> void
-Incursa.Quic.QuicAckGenerationState.MaximumRetainedAckRanges.get -> int
-Incursa.Quic.QuicAckGenerationState.MinimumAckElicitingPacketsBeforeDelayedAck.get -> int
-Incursa.Quic.QuicAckGenerationState.RecordProcessedPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, bool ackEliciting, ulong receivedAtMicros, bool congestionExperienced = false, Incursa.Quic.QuicEcnCounts? ecnCounts = null) -> void
-Incursa.Quic.QuicAckGenerationState.ShouldSendAckImmediately(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace) -> bool
-Incursa.Quic.QuicAckGenerationState.ShouldIncludeAckFrameWithOutgoingPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros) -> bool
-Incursa.Quic.QuicAckGenerationState.CanSendAckOnlyPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros) -> bool
-Incursa.Quic.QuicAckGenerationState.TryBuildAckFrame(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out Incursa.Quic.QuicAckFrame! frame) -> bool
-Incursa.Quic.QuicAckGenerationState.MarkAckFrameSent(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket) -> void
-Incursa.Quic.QuicSenderFlowController
-Incursa.Quic.QuicSenderFlowController.QuicSenderFlowController(ulong maxDatagramSizeBytes = 1200, int maximumRetainedAckRanges = 32, int minimumAckElicitingPacketsBeforeDelayedAck = 2) -> void
-Incursa.Quic.QuicSenderFlowController.CongestionControlState.get -> Incursa.Quic.QuicCongestionControlState!
-Incursa.Quic.QuicSenderFlowController.AckGenerationState.get -> Incursa.Quic.QuicAckGenerationState!
-Incursa.Quic.QuicSenderFlowController.CanSend(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false) -> bool
-Incursa.Quic.QuicSenderFlowController.RecordPacketSent(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, ulong sentBytes, ulong sentAtMicros, bool ackEliciting, bool isAckOnlyPacket = false, bool isProbePacket = false) -> void
-Incursa.Quic.QuicSenderFlowController.TryProcessAckFrame(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, Incursa.Quic.QuicAckFrame! ackFrame, ulong ackReceivedAtMicros, bool applicationLimited = false, bool flowControlLimited = false, bool pacingLimited = false, bool pathValidated = false) -> bool
-Incursa.Quic.QuicSenderFlowController.TryRegisterLoss(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, ulong sentAtMicros, bool packetCanBeDecrypted = true, bool keysAvailable = true, bool sentAfterEarliestAcknowledgedPacket = true, bool allowAckOnlyLossSignal = false) -> bool
-Incursa.Quic.QuicSenderFlowController.RecordIncomingPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, bool ackEliciting, ulong receivedAtMicros, bool congestionExperienced = false, Incursa.Quic.QuicEcnCounts? ecnCounts = null) -> void
-Incursa.Quic.QuicSenderFlowController.ShouldSendAckImmediately(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace) -> bool
-Incursa.Quic.QuicSenderFlowController.ShouldIncludeAckFrameWithOutgoingPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros) -> bool
-Incursa.Quic.QuicSenderFlowController.CanSendAckOnlyPacket(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, ulong maxAckDelayMicros) -> bool
-Incursa.Quic.QuicSenderFlowController.TryBuildAckFrame(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out Incursa.Quic.QuicAckFrame! frame) -> bool
-Incursa.Quic.QuicSenderFlowController.MarkAckFrameSent(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket) -> void
-Incursa.Quic.QuicResetStreamFrame
-Incursa.Quic.QuicResetStreamFrame.QuicResetStreamFrame() -> void
-Incursa.Quic.QuicResetStreamFrame.QuicResetStreamFrame(ulong streamId, ulong applicationProtocolErrorCode, ulong finalSize) -> void
-Incursa.Quic.QuicResetStreamFrame.StreamId.get -> ulong
-Incursa.Quic.QuicResetStreamFrame.ApplicationProtocolErrorCode.get -> ulong
-Incursa.Quic.QuicResetStreamFrame.FinalSize.get -> ulong
-Incursa.Quic.QuicStopSendingFrame
-Incursa.Quic.QuicStopSendingFrame.QuicStopSendingFrame() -> void
-Incursa.Quic.QuicStopSendingFrame.QuicStopSendingFrame(ulong streamId, ulong applicationProtocolErrorCode) -> void
-Incursa.Quic.QuicStopSendingFrame.StreamId.get -> ulong
-Incursa.Quic.QuicStopSendingFrame.ApplicationProtocolErrorCode.get -> ulong
-Incursa.Quic.QuicConnectionCloseFrame
-Incursa.Quic.QuicConnectionCloseFrame.QuicConnectionCloseFrame() -> void
-Incursa.Quic.QuicConnectionCloseFrame.QuicConnectionCloseFrame(ulong errorCode, System.ReadOnlySpan<byte> reasonPhrase) -> void
-Incursa.Quic.QuicConnectionCloseFrame.QuicConnectionCloseFrame(ulong errorCode, ulong triggeringFrameType, System.ReadOnlySpan<byte> reasonPhrase) -> void
-Incursa.Quic.QuicConnectionCloseFrame.QuicConnectionCloseFrame(Incursa.Quic.QuicTransportErrorCode errorCode, ulong triggeringFrameType, System.ReadOnlySpan<byte> reasonPhrase) -> void
-Incursa.Quic.QuicConnectionCloseFrame.IsApplicationError.get -> bool
-Incursa.Quic.QuicConnectionCloseFrame.FrameType.get -> byte
-Incursa.Quic.QuicConnectionCloseFrame.ErrorCode.get -> ulong
-Incursa.Quic.QuicConnectionCloseFrame.HasTriggeringFrameType.get -> bool
-Incursa.Quic.QuicConnectionCloseFrame.TriggeringFrameType.get -> ulong
-Incursa.Quic.QuicConnectionCloseFrame.ReasonPhrase.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicCryptoFrame
-Incursa.Quic.QuicCryptoFrame.QuicCryptoFrame() -> void
-Incursa.Quic.QuicCryptoFrame.QuicCryptoFrame(ulong offset, System.ReadOnlySpan<byte> cryptoData) -> void
-Incursa.Quic.QuicCryptoFrame.Offset.get -> ulong
-Incursa.Quic.QuicCryptoFrame.CryptoData.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicCryptoBufferResult
-Incursa.Quic.QuicCryptoBufferResult.Buffered = 0 -> Incursa.Quic.QuicCryptoBufferResult
-Incursa.Quic.QuicCryptoBufferResult.DiscardedAndAcknowledged = 1 -> Incursa.Quic.QuicCryptoBufferResult
-Incursa.Quic.QuicCryptoBufferResult.BufferExceeded = 2 -> Incursa.Quic.QuicCryptoBufferResult
-Incursa.Quic.QuicCryptoBuffer
-Incursa.Quic.QuicCryptoBuffer.QuicCryptoBuffer() -> void
-Incursa.Quic.QuicCryptoBuffer.QuicCryptoBuffer(int capacity) -> void
-Incursa.Quic.QuicCryptoBuffer.Capacity.get -> int
-Incursa.Quic.QuicCryptoBuffer.HandshakeComplete.get -> bool
-Incursa.Quic.QuicCryptoBuffer.HandshakeComplete.set -> void
-Incursa.Quic.QuicCryptoBuffer.DiscardOverflowFramesAfterHandshakeComplete.get -> bool
-Incursa.Quic.QuicCryptoBuffer.DiscardOverflowFramesAfterHandshakeComplete.set -> void
-Incursa.Quic.QuicCryptoBuffer.DiscardingFutureFrames.get -> bool
-Incursa.Quic.QuicCryptoBuffer.DiscardFutureFrames() -> void
-Incursa.Quic.QuicCryptoBuffer.RejectZeroRtt() -> void
-Incursa.Quic.QuicCryptoBuffer.BufferedBytes.get -> int
-Incursa.Quic.QuicCryptoBuffer.TryAddFrame(Incursa.Quic.QuicCryptoFrame frame, out Incursa.Quic.QuicCryptoBufferResult result) -> bool
-Incursa.Quic.QuicCryptoBuffer.TryDequeueContiguousData(System.Span<byte> destination, out int bytesWritten) -> bool
-Incursa.Quic.QuicNewTokenFrame
-Incursa.Quic.QuicNewTokenFrame.QuicNewTokenFrame() -> void
-Incursa.Quic.QuicNewTokenFrame.QuicNewTokenFrame(System.ReadOnlySpan<byte> token) -> void
-Incursa.Quic.QuicNewTokenFrame.Token.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicMaxDataFrame
-Incursa.Quic.QuicMaxDataFrame.QuicMaxDataFrame() -> void
-Incursa.Quic.QuicMaxDataFrame.QuicMaxDataFrame(ulong maximumData) -> void
-Incursa.Quic.QuicMaxDataFrame.MaximumData.get -> ulong
-Incursa.Quic.QuicMaxStreamDataFrame
-Incursa.Quic.QuicMaxStreamDataFrame.QuicMaxStreamDataFrame() -> void
-Incursa.Quic.QuicMaxStreamDataFrame.QuicMaxStreamDataFrame(ulong streamId, ulong maximumStreamData) -> void
-Incursa.Quic.QuicMaxStreamDataFrame.StreamId.get -> ulong
-Incursa.Quic.QuicMaxStreamDataFrame.MaximumStreamData.get -> ulong
-Incursa.Quic.QuicMaxStreamsFrame
-Incursa.Quic.QuicMaxStreamsFrame.QuicMaxStreamsFrame() -> void
-Incursa.Quic.QuicMaxStreamsFrame.QuicMaxStreamsFrame(bool isBidirectional, ulong maximumStreams) -> void
-Incursa.Quic.QuicMaxStreamsFrame.IsBidirectional.get -> bool
-Incursa.Quic.QuicMaxStreamsFrame.MaximumStreams.get -> ulong
-Incursa.Quic.QuicDataBlockedFrame
-Incursa.Quic.QuicDataBlockedFrame.QuicDataBlockedFrame() -> void
-Incursa.Quic.QuicDataBlockedFrame.QuicDataBlockedFrame(ulong maximumData) -> void
-Incursa.Quic.QuicDataBlockedFrame.MaximumData.get -> ulong
-Incursa.Quic.QuicStreamDataBlockedFrame
-Incursa.Quic.QuicStreamDataBlockedFrame.QuicStreamDataBlockedFrame() -> void
-Incursa.Quic.QuicStreamDataBlockedFrame.QuicStreamDataBlockedFrame(ulong streamId, ulong maximumStreamData) -> void
-Incursa.Quic.QuicStreamDataBlockedFrame.StreamId.get -> ulong
-Incursa.Quic.QuicStreamDataBlockedFrame.MaximumStreamData.get -> ulong
-Incursa.Quic.QuicStreamsBlockedFrame
-Incursa.Quic.QuicStreamsBlockedFrame.QuicStreamsBlockedFrame() -> void
-Incursa.Quic.QuicStreamsBlockedFrame.QuicStreamsBlockedFrame(bool isBidirectional, ulong maximumStreams) -> void
-Incursa.Quic.QuicStreamsBlockedFrame.IsBidirectional.get -> bool
-Incursa.Quic.QuicStreamsBlockedFrame.MaximumStreams.get -> ulong
-Incursa.Quic.QuicNewConnectionIdFrame
-Incursa.Quic.QuicNewConnectionIdFrame.QuicNewConnectionIdFrame() -> void
-Incursa.Quic.QuicNewConnectionIdFrame.QuicNewConnectionIdFrame(ulong sequenceNumber, ulong retirePriorTo, System.ReadOnlySpan<byte> connectionId, System.ReadOnlySpan<byte> statelessResetToken) -> void
-Incursa.Quic.QuicNewConnectionIdFrame.SequenceNumber.get -> ulong
-Incursa.Quic.QuicNewConnectionIdFrame.RetirePriorTo.get -> ulong
-Incursa.Quic.QuicNewConnectionIdFrame.ConnectionId.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicNewConnectionIdFrame.StatelessResetToken.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicRetireConnectionIdFrame
-Incursa.Quic.QuicRetireConnectionIdFrame.QuicRetireConnectionIdFrame() -> void
-Incursa.Quic.QuicRetireConnectionIdFrame.QuicRetireConnectionIdFrame(ulong sequenceNumber) -> void
-Incursa.Quic.QuicRetireConnectionIdFrame.SequenceNumber.get -> ulong
-Incursa.Quic.QuicHandshakeDoneFrame
-Incursa.Quic.QuicHandshakeDoneFrame.QuicHandshakeDoneFrame() -> void
-Incursa.Quic.QuicHandshakeDoneFrame.FrameType.get -> byte
-Incursa.Quic.QuicPathChallengeFrame
-Incursa.Quic.QuicPathChallengeFrame.QuicPathChallengeFrame() -> void
-Incursa.Quic.QuicPathChallengeFrame.QuicPathChallengeFrame(System.ReadOnlySpan<byte> data) -> void
-Incursa.Quic.QuicPathChallengeFrame.Data.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicPathResponseFrame
-Incursa.Quic.QuicPathResponseFrame.QuicPathResponseFrame() -> void
-Incursa.Quic.QuicPathResponseFrame.QuicPathResponseFrame(System.ReadOnlySpan<byte> data) -> void
-Incursa.Quic.QuicPathResponseFrame.Data.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicPathValidation
-const Incursa.Quic.QuicPathValidation.PathChallengeDataLength = 8 -> int
-static Incursa.Quic.QuicPathValidation.TryGeneratePathChallengeData(System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicPathValidation.TryGetPathValidationDatagramPaddingLength(int currentPayloadLength, out int paddingLength) -> bool
-static Incursa.Quic.QuicPathValidation.TryMeasurePathChallengeRoundTripMicros(ulong pathChallengeSentAtMicros, ulong pathResponseReceivedAtMicros, out ulong roundTripMicros) -> bool
-static Incursa.Quic.QuicPathValidation.TryFormatPathValidationDatagramPadding(int currentPayloadLength, Incursa.Quic.QuicAntiAmplificationBudget! antiAmplificationBudget, System.Span<byte> destination, out int bytesWritten) -> bool
-Incursa.Quic.QuicRecoveryTiming
-const Incursa.Quic.QuicRecoveryTiming.RecommendedPacketThreshold = 3 -> int
-const Incursa.Quic.QuicRecoveryTiming.RecommendedTimeThresholdNumerator = 9 -> ulong
-const Incursa.Quic.QuicRecoveryTiming.RecommendedTimeThresholdDenominator = 8 -> ulong
-const Incursa.Quic.QuicRecoveryTiming.RecommendedTimerGranularityMicros = 1000 -> ulong
-static Incursa.Quic.QuicRecoveryTiming.CanDeclarePacketLost(bool packetAcknowledged, bool packetInFlight, ulong packetNumber, ulong largestAcknowledgedPacketNumber) -> bool
-static Incursa.Quic.QuicRecoveryTiming.ShouldDeclarePacketLostByPacketThreshold(ulong packetNumber, ulong largestAcknowledgedPacketNumber, int packetThreshold = 3) -> bool
-static Incursa.Quic.QuicRecoveryTiming.ComputeLossDelayMicros(ulong latestRttMicros, ulong smoothedRttMicros, ulong timeThresholdNumerator = 9, ulong timeThresholdDenominator = 8, ulong timerGranularityMicros = 1000) -> ulong
-static Incursa.Quic.QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(ulong packetSentAtMicros, ulong nowMicros, ulong latestRttMicros, ulong smoothedRttMicros, out ulong remainingLossDelayMicros, ulong timeThresholdNumerator = 9, ulong timeThresholdDenominator = 8, ulong timerGranularityMicros = 1000) -> bool
-static Incursa.Quic.QuicRecoveryTiming.TryComputeProbeTimeoutMicros(Incursa.Quic.QuicPacketNumberSpace packetNumberSpace, ulong smoothedRttMicros, ulong rttVarMicros, ulong maxAckDelayMicros, bool handshakeConfirmed, out ulong probeTimeoutMicros, ulong timerGranularityMicros = 1000) -> bool
-static Incursa.Quic.QuicRecoveryTiming.ComputeProbeTimeoutWithBackoffMicros(ulong probeTimeoutMicros, int ptoCount) -> ulong
-static Incursa.Quic.QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(int ptoCount, bool ackElicitingPacketSent = false, bool acknowledgmentReceived = false, Incursa.Quic.QuicPacketNumberSpace acknowledgmentPacketNumberSpace = Incursa.Quic.QuicPacketNumberSpace.ApplicationData, bool handshakeConfirmed = false, bool initialOrHandshakeKeysDiscarded = false) -> int
-static Incursa.Quic.QuicRecoveryTiming.TrySelectInitialOrHandshakeProbeTimeoutMicros(ulong? initialProbeTimeoutMicros, ulong? handshakeProbeTimeoutMicros, out ulong selectedProbeTimeoutMicros) -> bool
-static Incursa.Quic.QuicRecoveryTiming.TrySelectLossTimeAndSpaceMicros(ulong? initialLossTimeMicros, ulong? handshakeLossTimeMicros, ulong? applicationDataLossTimeMicros, out ulong selectedLossTimeMicros, out Incursa.Quic.QuicPacketNumberSpace selectedPacketNumberSpace) -> bool
-static Incursa.Quic.QuicRecoveryTiming.TrySelectPtoTimeAndSpaceMicros(ulong nowMicros, ulong? initialProbeTimeoutMicros, ulong? handshakeProbeTimeoutMicros, bool handshakeKeysAvailable, out ulong selectedPtoTimeMicros, out Incursa.Quic.QuicPacketNumberSpace selectedPacketNumberSpace) -> bool
-static Incursa.Quic.QuicRecoveryTiming.TrySelectRecoveryTimerMicros(ulong? lossDetectionTimerMicros, ulong? probeTimeoutMicros, out ulong selectedTimerMicros) -> bool
-static Incursa.Quic.QuicRecoveryTiming.TrySelectLossDetectionTimerMicros(ulong? earliestPendingLossTimeMicros, ulong? probeTimeoutMicros, bool serverAtAntiAmplificationLimit, bool noAckElicitingPacketsInFlight, bool peerAddressValidationComplete, out ulong selectedTimerMicros) -> bool
-static Incursa.Quic.QuicRecoveryTiming.TryMeasurePathChallengeRoundTripMicros(ulong pathChallengeSentAtMicros, ulong pathResponseReceivedAtMicros, out ulong roundTripMicros) -> bool
-static Incursa.Quic.QuicRecoveryTiming.TryMeasureRetryRoundTripMicros(ulong firstInitialPacketSentAtMicros, ulong retryReceivedAtMicros, out ulong roundTripMicros) -> bool
-Incursa.Quic.QuicFrameCodec
-static Incursa.Quic.QuicFrameCodec.TryParsePaddingFrame(System.ReadOnlySpan<byte> packetPayload, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatPaddingFrame(System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParsePingFrame(System.ReadOnlySpan<byte> packetPayload, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatPingFrame(System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.IsAckElicitingFrameType(ulong frameType) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseAckFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicAckFrame! frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatAckFrame(Incursa.Quic.QuicAckFrame! frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseResetStreamFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicResetStreamFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatResetStreamFrame(Incursa.Quic.QuicResetStreamFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseStopSendingFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicStopSendingFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatStopSendingFrame(Incursa.Quic.QuicStopSendingFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseConnectionCloseFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicConnectionCloseFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatConnectionCloseFrame(Incursa.Quic.QuicConnectionCloseFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseHandshakeDoneFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicHandshakeDoneFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatHandshakeDoneFrame(Incursa.Quic.QuicHandshakeDoneFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseCryptoFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicCryptoFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatCryptoFrame(Incursa.Quic.QuicCryptoFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatStreamFrame(byte frameType, ulong streamId, ulong offset, System.ReadOnlySpan<byte> streamData, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseNewTokenFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicNewTokenFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatNewTokenFrame(Incursa.Quic.QuicNewTokenFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseMaxDataFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicMaxDataFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatMaxDataFrame(Incursa.Quic.QuicMaxDataFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseMaxStreamDataFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicMaxStreamDataFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatMaxStreamDataFrame(Incursa.Quic.QuicMaxStreamDataFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseMaxStreamsFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicMaxStreamsFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatMaxStreamsFrame(Incursa.Quic.QuicMaxStreamsFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseDataBlockedFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicDataBlockedFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatDataBlockedFrame(Incursa.Quic.QuicDataBlockedFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseStreamDataBlockedFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicStreamDataBlockedFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatStreamDataBlockedFrame(Incursa.Quic.QuicStreamDataBlockedFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseStreamsBlockedFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicStreamsBlockedFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatStreamsBlockedFrame(Incursa.Quic.QuicStreamsBlockedFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseNewConnectionIdFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicNewConnectionIdFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatNewConnectionIdFrame(Incursa.Quic.QuicNewConnectionIdFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParseRetireConnectionIdFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicRetireConnectionIdFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatRetireConnectionIdFrame(Incursa.Quic.QuicRetireConnectionIdFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParsePathChallengeFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicPathChallengeFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatPathChallengeFrame(Incursa.Quic.QuicPathChallengeFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicFrameCodec.TryParsePathResponseFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicPathResponseFrame frame, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicFrameCodec.TryFormatPathResponseFrame(Incursa.Quic.QuicPathResponseFrame frame, System.Span<byte> destination, out int bytesWritten) -> bool
+Incursa.Quic.QuicAbortDirection
+Incursa.Quic.QuicAbortDirection.Read = 1 -> Incursa.Quic.QuicAbortDirection
+Incursa.Quic.QuicAbortDirection.Write = 2 -> Incursa.Quic.QuicAbortDirection
+Incursa.Quic.QuicAbortDirection.Both = Incursa.Quic.QuicAbortDirection.Read | Incursa.Quic.QuicAbortDirection.Write -> Incursa.Quic.QuicAbortDirection
+Incursa.Quic.QuicConnection
+Incursa.Quic.QuicConnection.CloseAsync(long errorCode, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
+Incursa.Quic.QuicConnection.DisposeAsync() -> System.Threading.Tasks.ValueTask
+Incursa.Quic.QuicConnectionOptions
+Incursa.Quic.QuicConnectionOptions.DefaultCloseErrorCode.get -> long
+Incursa.Quic.QuicConnectionOptions.DefaultCloseErrorCode.set -> void
+Incursa.Quic.QuicConnectionOptions.DefaultStreamErrorCode.get -> long
+Incursa.Quic.QuicConnectionOptions.DefaultStreamErrorCode.set -> void
+Incursa.Quic.QuicConnectionOptions.HandshakeTimeout.get -> System.TimeSpan
+Incursa.Quic.QuicConnectionOptions.HandshakeTimeout.set -> void
+Incursa.Quic.QuicConnectionOptions.IdleTimeout.get -> System.TimeSpan
+Incursa.Quic.QuicConnectionOptions.IdleTimeout.set -> void
+Incursa.Quic.QuicConnectionOptions.InitialReceiveWindowSizes.get -> Incursa.Quic.QuicReceiveWindowSizes!
+Incursa.Quic.QuicConnectionOptions.InitialReceiveWindowSizes.set -> void
+Incursa.Quic.QuicConnectionOptions.KeepAliveInterval.get -> System.TimeSpan
+Incursa.Quic.QuicConnectionOptions.KeepAliveInterval.set -> void
+Incursa.Quic.QuicConnectionOptions.MaxInboundBidirectionalStreams.get -> int
+Incursa.Quic.QuicConnectionOptions.MaxInboundBidirectionalStreams.set -> void
+Incursa.Quic.QuicConnectionOptions.MaxInboundUnidirectionalStreams.get -> int
+Incursa.Quic.QuicConnectionOptions.MaxInboundUnidirectionalStreams.set -> void
+Incursa.Quic.QuicError
+Incursa.Quic.QuicError.Success = 0 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicError.InternalError = 1 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicError.ConnectionAborted = 2 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicError.StreamAborted = 3 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicError.ConnectionTimeout = 6 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicError.ConnectionRefused = 8 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicError.VersionNegotiationError = 9 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicError.ConnectionIdle = 10 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicError.OperationAborted = 12 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicError.AlpnInUse = 13 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicError.TransportError = 14 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicError.CallbackError = 15 -> Incursa.Quic.QuicError
+Incursa.Quic.QuicException
+Incursa.Quic.QuicException.QuicException(Incursa.Quic.QuicError error, long? applicationErrorCode, string! message) -> void
+Incursa.Quic.QuicException.QuicError.get -> Incursa.Quic.QuicError
+Incursa.Quic.QuicException.ApplicationErrorCode.get -> long?
+Incursa.Quic.QuicException.TransportErrorCode.get -> long?
+Incursa.Quic.QuicReceiveWindowSizes
+Incursa.Quic.QuicReceiveWindowSizes.QuicReceiveWindowSizes() -> void
+Incursa.Quic.QuicReceiveWindowSizes.Connection.get -> int
+Incursa.Quic.QuicReceiveWindowSizes.Connection.set -> void
+Incursa.Quic.QuicReceiveWindowSizes.LocallyInitiatedBidirectionalStream.get -> int
+Incursa.Quic.QuicReceiveWindowSizes.LocallyInitiatedBidirectionalStream.set -> void
+Incursa.Quic.QuicReceiveWindowSizes.RemotelyInitiatedBidirectionalStream.get -> int
+Incursa.Quic.QuicReceiveWindowSizes.RemotelyInitiatedBidirectionalStream.set -> void
+Incursa.Quic.QuicReceiveWindowSizes.UnidirectionalStream.get -> int
+Incursa.Quic.QuicReceiveWindowSizes.UnidirectionalStream.set -> void
+Incursa.Quic.QuicStream
+Incursa.Quic.QuicStream.Id.get -> long
+Incursa.Quic.QuicStream.Type.get -> Incursa.Quic.QuicStreamType
+Incursa.Quic.QuicStream.ReadsClosed.get -> System.Threading.Tasks.Task!
+override Incursa.Quic.QuicStream.CanRead.get -> bool
+override Incursa.Quic.QuicStream.CanSeek.get -> bool
+override Incursa.Quic.QuicStream.CanTimeout.get -> bool
+override Incursa.Quic.QuicStream.CanWrite.get -> bool
+override Incursa.Quic.QuicStream.Length.get -> long
+override Incursa.Quic.QuicStream.Position.get -> long
+override Incursa.Quic.QuicStream.Position.set -> void
+override Incursa.Quic.QuicStream.ReadTimeout.get -> int
+override Incursa.Quic.QuicStream.ReadTimeout.set -> void
+override Incursa.Quic.QuicStream.WriteTimeout.get -> int
+override Incursa.Quic.QuicStream.WriteTimeout.set -> void
+override Incursa.Quic.QuicStream.Flush() -> void
+override Incursa.Quic.QuicStream.Read(byte[]! buffer, int offset, int count) -> int
+override Incursa.Quic.QuicStream.ReadAsync(byte[]! buffer, int offset, int count, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<int>!
+override Incursa.Quic.QuicStream.Write(byte[]! buffer, int offset, int count) -> void
+override Incursa.Quic.QuicStream.WriteAsync(byte[]! buffer, int offset, int count, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+override Incursa.Quic.QuicStream.Seek(long offset, System.IO.SeekOrigin origin) -> long
+override Incursa.Quic.QuicStream.SetLength(long value) -> void
+override Incursa.Quic.QuicStream.DisposeAsync() -> System.Threading.Tasks.ValueTask
 Incursa.Quic.QuicStreamType
-Incursa.Quic.QuicStreamType.ClientInitiatedBidirectional = 0 -> Incursa.Quic.QuicStreamType
-Incursa.Quic.QuicStreamType.ServerInitiatedBidirectional = 1 -> Incursa.Quic.QuicStreamType
-Incursa.Quic.QuicStreamType.ClientInitiatedUnidirectional = 2 -> Incursa.Quic.QuicStreamType
-Incursa.Quic.QuicStreamType.ServerInitiatedUnidirectional = 3 -> Incursa.Quic.QuicStreamType
-Incursa.Quic.QuicStreamId
-Incursa.Quic.QuicStreamId.QuicStreamId() -> void
-Incursa.Quic.QuicStreamId.Value.get -> ulong
-Incursa.Quic.QuicStreamId.StreamType.get -> Incursa.Quic.QuicStreamType
-Incursa.Quic.QuicStreamId.IsClientInitiated.get -> bool
-Incursa.Quic.QuicStreamId.IsServerInitiated.get -> bool
-Incursa.Quic.QuicStreamId.IsBidirectional.get -> bool
-Incursa.Quic.QuicStreamId.IsUnidirectional.get -> bool
-Incursa.Quic.QuicStreamFrame
-Incursa.Quic.QuicStreamFrame.QuicStreamFrame() -> void
-Incursa.Quic.QuicStreamFrame.FrameType.get -> byte
-Incursa.Quic.QuicStreamFrame.StreamId.get -> Incursa.Quic.QuicStreamId
-Incursa.Quic.QuicStreamFrame.StreamType.get -> Incursa.Quic.QuicStreamType
-Incursa.Quic.QuicStreamFrame.HasOffset.get -> bool
-Incursa.Quic.QuicStreamFrame.Offset.get -> ulong
-Incursa.Quic.QuicStreamFrame.HasLength.get -> bool
-Incursa.Quic.QuicStreamFrame.Length.get -> ulong
-Incursa.Quic.QuicStreamFrame.IsFin.get -> bool
-Incursa.Quic.QuicStreamFrame.StreamData.get -> System.ReadOnlySpan<byte>
-Incursa.Quic.QuicStreamFrame.StreamDataLength.get -> int
-Incursa.Quic.QuicStreamFrame.ConsumedLength.get -> int
-Incursa.Quic.QuicStreamParser
-static Incursa.Quic.QuicStreamParser.TryParseStreamIdentifier(System.ReadOnlySpan<byte> encoded, out Incursa.Quic.QuicStreamId streamId, out int bytesConsumed) -> bool
-static Incursa.Quic.QuicStreamParser.TryParseStreamFrame(System.ReadOnlySpan<byte> packetPayload, out Incursa.Quic.QuicStreamFrame frame) -> bool
-Incursa.Quic.QuicTransportParameterRole
-Incursa.Quic.QuicTransportParameterRole.Client = 0 -> Incursa.Quic.QuicTransportParameterRole
-Incursa.Quic.QuicTransportParameterRole.Server = 1 -> Incursa.Quic.QuicTransportParameterRole
-Incursa.Quic.QuicConnectionIdBindingValidationError
-Incursa.Quic.QuicConnectionIdBindingValidationError.None = 0 -> Incursa.Quic.QuicConnectionIdBindingValidationError
-Incursa.Quic.QuicConnectionIdBindingValidationError.MissingOriginalDestinationConnectionId = 1 -> Incursa.Quic.QuicConnectionIdBindingValidationError
-Incursa.Quic.QuicConnectionIdBindingValidationError.MissingInitialSourceConnectionId = 2 -> Incursa.Quic.QuicConnectionIdBindingValidationError
-Incursa.Quic.QuicConnectionIdBindingValidationError.MissingRetrySourceConnectionId = 3 -> Incursa.Quic.QuicConnectionIdBindingValidationError
-Incursa.Quic.QuicConnectionIdBindingValidationError.OriginalDestinationConnectionIdMismatch = 4 -> Incursa.Quic.QuicConnectionIdBindingValidationError
-Incursa.Quic.QuicConnectionIdBindingValidationError.InitialSourceConnectionIdMismatch = 5 -> Incursa.Quic.QuicConnectionIdBindingValidationError
-Incursa.Quic.QuicConnectionIdBindingValidationError.RetrySourceConnectionIdMismatch = 6 -> Incursa.Quic.QuicConnectionIdBindingValidationError
-Incursa.Quic.QuicConnectionIdBindingValidationError.UnexpectedRetrySourceConnectionId = 7 -> Incursa.Quic.QuicConnectionIdBindingValidationError
-Incursa.Quic.QuicConnectionLifecycleState
-Incursa.Quic.QuicConnectionLifecycleState.QuicConnectionLifecycleState() -> void
-Incursa.Quic.QuicConnectionLifecycleState.IsClosing.get -> bool
-Incursa.Quic.QuicConnectionLifecycleState.IsDraining.get -> bool
-Incursa.Quic.QuicConnectionLifecycleState.CanSendPackets.get -> bool
-Incursa.Quic.QuicConnectionLifecycleState.TryEnterClosingState() -> bool
-Incursa.Quic.QuicConnectionLifecycleState.TryEnterDrainingState() -> bool
-Incursa.Quic.QuicConnectionLifecycleState.TryHandlePotentialStatelessReset(System.ReadOnlySpan<byte> datagram, System.ReadOnlySpan<byte> candidateTokens) -> bool
-Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.NoError = 0 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.InternalError = 1 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.ConnectionRefused = 2 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.FlowControlError = 3 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.StreamLimitError = 4 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.StreamStateError = 5 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.FinalSizeError = 6 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.FrameEncodingError = 7 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.TransportParameterError = 8 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.ConnectionIdLimitError = 9 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.ProtocolViolation = 10 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.InvalidToken = 11 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.ApplicationError = 12 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.CryptoBufferExceeded = 13 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.KeyUpdateError = 14 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.AeadLimitReached = 15 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicTransportErrorCode.NoViablePath = 16 -> Incursa.Quic.QuicTransportErrorCode
-Incursa.Quic.QuicPreferredAddress
-Incursa.Quic.QuicPreferredAddress.QuicPreferredAddress() -> void
-Incursa.Quic.QuicPreferredAddress.IPv4Address.get -> byte[]!
-Incursa.Quic.QuicPreferredAddress.IPv4Address.set -> void
-Incursa.Quic.QuicPreferredAddress.IPv4Port.get -> ushort
-Incursa.Quic.QuicPreferredAddress.IPv4Port.set -> void
-Incursa.Quic.QuicPreferredAddress.IPv6Address.get -> byte[]!
-Incursa.Quic.QuicPreferredAddress.IPv6Address.set -> void
-Incursa.Quic.QuicPreferredAddress.IPv6Port.get -> ushort
-Incursa.Quic.QuicPreferredAddress.IPv6Port.set -> void
-Incursa.Quic.QuicPreferredAddress.ConnectionId.get -> byte[]!
-Incursa.Quic.QuicPreferredAddress.ConnectionId.set -> void
-Incursa.Quic.QuicPreferredAddress.StatelessResetToken.get -> byte[]!
-Incursa.Quic.QuicPreferredAddress.StatelessResetToken.set -> void
-Incursa.Quic.QuicRttEstimator
-const Incursa.Quic.QuicRttEstimator.DefaultInitialRttMicros = 333000 -> ulong
-Incursa.Quic.QuicRttEstimator.QuicRttEstimator(ulong initialRttMicros = 333000) -> void
-Incursa.Quic.QuicRttEstimator.InitialRttMicros.get -> ulong
-Incursa.Quic.QuicRttEstimator.LatestRttMicros.get -> ulong
-Incursa.Quic.QuicRttEstimator.MinRttMicros.get -> ulong
-Incursa.Quic.QuicRttEstimator.SmoothedRttMicros.get -> ulong
-Incursa.Quic.QuicRttEstimator.RttVarMicros.get -> ulong
-Incursa.Quic.QuicRttEstimator.HasRttSample.get -> bool
-Incursa.Quic.QuicRttEstimator.Reset() -> void
-Incursa.Quic.QuicRttEstimator.RefreshMinRttFromLatestSample(ulong latestRttMicros) -> void
-Incursa.Quic.QuicRttEstimator.TryUpdateFromAck(ulong largestAcknowledgedPacketSentAtMicros, ulong ackReceivedAtMicros, bool largestAcknowledgedPacketNewlyAcknowledged, bool newlyAcknowledgedAckElicitingPacket, ulong ackDelayMicros = 0, bool handshakeConfirmed = false, ulong peerMaxAckDelayMicros = 0, ulong localProcessingDelayMicros = 0, bool isInitialPacket = false, bool ignoreAckDelayForInitialPacket = false) -> bool
-Incursa.Quic.QuicTransportParameters
-Incursa.Quic.QuicTransportParameters.QuicTransportParameters() -> void
-Incursa.Quic.QuicTransportParameters.OriginalDestinationConnectionId.get -> byte[]?
-Incursa.Quic.QuicTransportParameters.OriginalDestinationConnectionId.set -> void
-Incursa.Quic.QuicTransportParameters.MaxIdleTimeout.get -> ulong?
-Incursa.Quic.QuicTransportParameters.MaxIdleTimeout.set -> void
-Incursa.Quic.QuicTransportParameters.StatelessResetToken.get -> byte[]?
-Incursa.Quic.QuicTransportParameters.StatelessResetToken.set -> void
-Incursa.Quic.QuicTransportParameters.MaxUdpPayloadSize.get -> ulong?
-Incursa.Quic.QuicTransportParameters.MaxUdpPayloadSize.set -> void
-Incursa.Quic.QuicTransportParameters.InitialMaxData.get -> ulong?
-Incursa.Quic.QuicTransportParameters.InitialMaxData.set -> void
-Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataBidiLocal.get -> ulong?
-Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataBidiLocal.set -> void
-Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataBidiRemote.get -> ulong?
-Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataBidiRemote.set -> void
-Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataUni.get -> ulong?
-Incursa.Quic.QuicTransportParameters.InitialMaxStreamDataUni.set -> void
-Incursa.Quic.QuicTransportParameters.InitialMaxStreamsBidi.get -> ulong?
-Incursa.Quic.QuicTransportParameters.InitialMaxStreamsBidi.set -> void
-Incursa.Quic.QuicTransportParameters.InitialMaxStreamsUni.get -> ulong?
-Incursa.Quic.QuicTransportParameters.InitialMaxStreamsUni.set -> void
-Incursa.Quic.QuicTransportParameters.MaxAckDelay.get -> ulong?
-Incursa.Quic.QuicTransportParameters.MaxAckDelay.set -> void
-Incursa.Quic.QuicTransportParameters.DisableActiveMigration.get -> bool
-Incursa.Quic.QuicTransportParameters.DisableActiveMigration.set -> void
-Incursa.Quic.QuicTransportParameters.PreferredAddress.get -> Incursa.Quic.QuicPreferredAddress?
-Incursa.Quic.QuicTransportParameters.PreferredAddress.set -> void
-Incursa.Quic.QuicTransportParameters.ActiveConnectionIdLimit.get -> ulong?
-Incursa.Quic.QuicTransportParameters.ActiveConnectionIdLimit.set -> void
-Incursa.Quic.QuicTransportParameters.InitialSourceConnectionId.get -> byte[]?
-Incursa.Quic.QuicTransportParameters.InitialSourceConnectionId.set -> void
-Incursa.Quic.QuicTransportParameters.RetrySourceConnectionId.get -> byte[]?
-Incursa.Quic.QuicTransportParameters.RetrySourceConnectionId.set -> void
-Incursa.Quic.QuicTransportParametersCodec
-const Incursa.Quic.QuicTransportParametersCodec.QuicTransportParametersExtensionType = 57 -> ushort
-const Incursa.Quic.QuicTransportParametersCodec.QuicTransportParametersRecommended = true -> bool
-const Incursa.Quic.QuicTransportParametersCodec.QuicTransportParametersClientHello = true -> bool
-const Incursa.Quic.QuicTransportParametersCodec.QuicTransportParametersEncryptedExtensions = true -> bool
-static Incursa.Quic.QuicTransportParametersCodec.TryParseTransportParameters(System.ReadOnlySpan<byte> encoded, Incursa.Quic.QuicTransportParameterRole receiverRole, out Incursa.Quic.QuicTransportParameters! parameters) -> bool
-static Incursa.Quic.QuicTransportParametersCodec.TryFormatTransportParameters(Incursa.Quic.QuicTransportParameters! parameters, Incursa.Quic.QuicTransportParameterRole senderRole, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicTransportParametersCodec.TryValidateConnectionIdBindings(Incursa.Quic.QuicTransportParameterRole receiverRole, System.ReadOnlySpan<byte> initialDestinationConnectionId, System.ReadOnlySpan<byte> initialSourceConnectionId, bool usedRetry, System.ReadOnlySpan<byte> retrySourceConnectionId, Incursa.Quic.QuicTransportParameters! peerParameters, out Incursa.Quic.QuicConnectionIdBindingValidationError validationError) -> bool
-Incursa.Quic.QuicStatelessReset
-const Incursa.Quic.QuicStatelessReset.StatelessResetTokenLength = 16 -> int
-const Incursa.Quic.QuicStatelessReset.MinimumUnpredictableBits = 38 -> int
-const Incursa.Quic.QuicStatelessReset.MinimumUnpredictableBytes = 5 -> int
-const Incursa.Quic.QuicStatelessReset.MinimumDatagramLength = 21 -> int
-static Incursa.Quic.QuicStatelessReset.TryGenerateStatelessResetToken(System.ReadOnlySpan<byte> connectionId, System.ReadOnlySpan<byte> secretKey, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicStatelessReset.TryGetRecommendedDatagramLength(int triggeringPacketLength, out int datagramLength) -> bool
-static Incursa.Quic.QuicStatelessReset.TryGetMinimumPacketLengthForResetResistance(int minimumConnectionIdLength, out int minimumPacketLength) -> bool
-static Incursa.Quic.QuicStatelessReset.CanSendStatelessReset(int triggeringPacketLength, int datagramLength, bool hasLoopPreventionState) -> bool
-static Incursa.Quic.QuicStatelessReset.TryFormatStatelessResetDatagram(System.ReadOnlySpan<byte> statelessResetToken, int datagramLength, System.Span<byte> destination, out int bytesWritten) -> bool
-static Incursa.Quic.QuicStatelessReset.TryGetTrailingStatelessResetToken(System.ReadOnlySpan<byte> datagram, out System.ReadOnlySpan<byte> statelessResetToken) -> bool
-static Incursa.Quic.QuicStatelessReset.IsPotentialStatelessReset(System.ReadOnlySpan<byte> datagram) -> bool
-static Incursa.Quic.QuicStatelessReset.MatchesAnyStatelessResetToken(System.ReadOnlySpan<byte> datagram, System.ReadOnlySpan<byte> candidateTokens) -> bool
-Incursa.Quic.QuicAeadAlgorithm
-Incursa.Quic.QuicAeadAlgorithm.Aes128Gcm = 0 -> Incursa.Quic.QuicAeadAlgorithm
-Incursa.Quic.QuicAeadAlgorithm.Aes256Gcm = 1 -> Incursa.Quic.QuicAeadAlgorithm
-Incursa.Quic.QuicAeadAlgorithm.Aes128Ccm = 2 -> Incursa.Quic.QuicAeadAlgorithm
-Incursa.Quic.QuicAeadPacketSizeProfile
-Incursa.Quic.QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes = 0 -> Incursa.Quic.QuicAeadPacketSizeProfile
-Incursa.Quic.QuicAeadPacketSizeProfile.AllowsPacketsAsLargeAsTwoPow16Bytes = 1 -> Incursa.Quic.QuicAeadPacketSizeProfile
-Incursa.Quic.QuicAeadPacketSizeProfile.Unrestricted = 2 -> Incursa.Quic.QuicAeadPacketSizeProfile
-Incursa.Quic.QuicAeadUsageLimits
-Incursa.Quic.QuicAeadUsageLimits.QuicAeadUsageLimits() -> void
-Incursa.Quic.QuicAeadUsageLimits.QuicAeadUsageLimits(double confidentialityLimitPackets, double integrityLimitPackets) -> void
-Incursa.Quic.QuicAeadUsageLimits.ConfidentialityLimitPackets.get -> double
-Incursa.Quic.QuicAeadUsageLimits.IntegrityLimitPackets.get -> double
-Incursa.Quic.QuicAeadUsageLimitCalculator
-static Incursa.Quic.QuicAeadUsageLimitCalculator.TryGetUsageLimits(Incursa.Quic.QuicAeadAlgorithm algorithm, Incursa.Quic.QuicAeadPacketSizeProfile confidentialityPacketSizeProfile, Incursa.Quic.QuicAeadPacketSizeProfile integrityPacketSizeProfile, out Incursa.Quic.QuicAeadUsageLimits limits) -> bool
+Incursa.Quic.QuicStreamType.Unidirectional = 0 -> Incursa.Quic.QuicStreamType
+Incursa.Quic.QuicStreamType.Bidirectional = 1 -> Incursa.Quic.QuicStreamType

@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Describes the packet-size regimes used by the RFC 9001 Appendix B AEAD limit guidance.
 /// </summary>
-public enum QuicAeadPacketSizeProfile
+internal enum QuicAeadPacketSizeProfile
 {
     /// <summary>
     /// The endpoint strictly limits packet sizes to 2^11 bytes.
@@ -20,3 +20,4 @@ public enum QuicAeadPacketSizeProfile
     /// </summary>
     Unrestricted = 2,
 }
+

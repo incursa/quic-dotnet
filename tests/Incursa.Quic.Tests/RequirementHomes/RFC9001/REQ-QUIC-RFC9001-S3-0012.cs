@@ -21,7 +21,7 @@ public sealed class REQ_QUIC_RFC9001_S3_0012
         Assert.True(QuicStreamParser.TryParseStreamFrame(packet, out QuicStreamFrame frame));
         Assert.Equal(frameType, frame.FrameType);
         Assert.Equal(0x06UL, frame.StreamId.Value);
-        Assert.Equal(QuicStreamType.ClientInitiatedUnidirectional, frame.StreamType);
+        Assert.Equal(QuicStreamType.Unidirectional, frame.StreamType);
         Assert.True(frame.HasOffset);
         Assert.Equal(0x11223344UL, frame.Offset);
         Assert.True(frame.HasLength);

@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Parses and formats selected QUIC frame encodings from packet payload slices.
 /// </summary>
-public static class QuicFrameCodec
+internal static class QuicFrameCodec
 {
     // RFC 9000 frame types handled by this codec.
     // 0x00 PADDING, 0x01 PING, 0x02 ACK, 0x03 ACK_ECN,
@@ -69,7 +69,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a PADDING frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParsePaddingFrame(ReadOnlySpan<byte> packetPayload, out int bytesConsumed)
+    internal static bool TryParsePaddingFrame(ReadOnlySpan<byte> packetPayload, out int bytesConsumed)
     {
         bytesConsumed = default;
         return TryParseFixedType(packetPayload, PaddingFrameType, out bytesConsumed);
@@ -78,7 +78,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a PADDING frame.
     /// </summary>
-    public static bool TryFormatPaddingFrame(Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatPaddingFrame(Span<byte> destination, out int bytesWritten)
     {
         return TryWriteFixedType(PaddingFrameType, destination, out bytesWritten);
     }
@@ -86,7 +86,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a PING frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParsePingFrame(ReadOnlySpan<byte> packetPayload, out int bytesConsumed)
+    internal static bool TryParsePingFrame(ReadOnlySpan<byte> packetPayload, out int bytesConsumed)
     {
         bytesConsumed = default;
         return TryParseFixedType(packetPayload, PingFrameType, out bytesConsumed);
@@ -95,7 +95,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a PING frame.
     /// </summary>
-    public static bool TryFormatPingFrame(Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatPingFrame(Span<byte> destination, out int bytesWritten)
     {
         return TryWriteFixedType(PingFrameType, destination, out bytesWritten);
     }
@@ -103,7 +103,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Determines whether the specified frame type should elicit an acknowledgment.
     /// </summary>
-    public static bool IsAckElicitingFrameType(ulong frameType)
+    internal static bool IsAckElicitingFrameType(ulong frameType)
     {
         return frameType != PaddingFrameType
             && frameType != AckFrameType
@@ -115,7 +115,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses an ACK frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseAckFrame(ReadOnlySpan<byte> packetPayload, out QuicAckFrame frame, out int bytesConsumed)
+    internal static bool TryParseAckFrame(ReadOnlySpan<byte> packetPayload, out QuicAckFrame frame, out int bytesConsumed)
     {
         frame = new QuicAckFrame();
         bytesConsumed = default;
@@ -192,7 +192,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats an ACK frame.
     /// </summary>
-    public static bool TryFormatAckFrame(QuicAckFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatAckFrame(QuicAckFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -268,7 +268,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a RESET_STREAM frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseResetStreamFrame(ReadOnlySpan<byte> packetPayload, out QuicResetStreamFrame frame, out int bytesConsumed)
+    internal static bool TryParseResetStreamFrame(ReadOnlySpan<byte> packetPayload, out QuicResetStreamFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -293,7 +293,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a RESET_STREAM frame.
     /// </summary>
-    public static bool TryFormatResetStreamFrame(QuicResetStreamFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatResetStreamFrame(QuicResetStreamFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -313,7 +313,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a STOP_SENDING frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseStopSendingFrame(ReadOnlySpan<byte> packetPayload, out QuicStopSendingFrame frame, out int bytesConsumed)
+    internal static bool TryParseStopSendingFrame(ReadOnlySpan<byte> packetPayload, out QuicStopSendingFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -337,7 +337,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a STOP_SENDING frame.
     /// </summary>
-    public static bool TryFormatStopSendingFrame(QuicStopSendingFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatStopSendingFrame(QuicStopSendingFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -356,7 +356,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a CONNECTION_CLOSE frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseConnectionCloseFrame(ReadOnlySpan<byte> packetPayload, out QuicConnectionCloseFrame frame, out int bytesConsumed)
+    internal static bool TryParseConnectionCloseFrame(ReadOnlySpan<byte> packetPayload, out QuicConnectionCloseFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -414,7 +414,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a CONNECTION_CLOSE frame.
     /// </summary>
-    public static bool TryFormatConnectionCloseFrame(QuicConnectionCloseFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatConnectionCloseFrame(QuicConnectionCloseFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -451,7 +451,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a HANDSHAKE_DONE frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseHandshakeDoneFrame(ReadOnlySpan<byte> packetPayload, out QuicHandshakeDoneFrame frame, out int bytesConsumed)
+    internal static bool TryParseHandshakeDoneFrame(ReadOnlySpan<byte> packetPayload, out QuicHandshakeDoneFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -469,7 +469,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a HANDSHAKE_DONE frame.
     /// </summary>
-    public static bool TryFormatHandshakeDoneFrame(QuicHandshakeDoneFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatHandshakeDoneFrame(QuicHandshakeDoneFrame frame, Span<byte> destination, out int bytesWritten)
     {
         return TryWriteFixedType(HandshakeDoneFrameType, destination, out bytesWritten);
     }
@@ -477,7 +477,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a CRYPTO frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseCryptoFrame(ReadOnlySpan<byte> packetPayload, out QuicCryptoFrame frame, out int bytesConsumed)
+    internal static bool TryParseCryptoFrame(ReadOnlySpan<byte> packetPayload, out QuicCryptoFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -511,7 +511,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a CRYPTO frame.
     /// </summary>
-    public static bool TryFormatCryptoFrame(QuicCryptoFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatCryptoFrame(QuicCryptoFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -542,7 +542,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a STREAM frame.
     /// </summary>
-    public static bool TryFormatStreamFrame(
+    internal static bool TryFormatStreamFrame(
         byte frameType,
         ulong streamId,
         ulong offset,
@@ -600,7 +600,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a NEW_TOKEN frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseNewTokenFrame(ReadOnlySpan<byte> packetPayload, out QuicNewTokenFrame frame, out int bytesConsumed)
+    internal static bool TryParseNewTokenFrame(ReadOnlySpan<byte> packetPayload, out QuicNewTokenFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -628,7 +628,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a NEW_TOKEN frame.
     /// </summary>
-    public static bool TryFormatNewTokenFrame(QuicNewTokenFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatNewTokenFrame(QuicNewTokenFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -657,7 +657,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a MAX_DATA frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseMaxDataFrame(ReadOnlySpan<byte> packetPayload, out QuicMaxDataFrame frame, out int bytesConsumed)
+    internal static bool TryParseMaxDataFrame(ReadOnlySpan<byte> packetPayload, out QuicMaxDataFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -676,7 +676,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a MAX_DATA frame.
     /// </summary>
-    public static bool TryFormatMaxDataFrame(QuicMaxDataFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatMaxDataFrame(QuicMaxDataFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -694,7 +694,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a DATA_BLOCKED frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseDataBlockedFrame(ReadOnlySpan<byte> packetPayload, out QuicDataBlockedFrame frame, out int bytesConsumed)
+    internal static bool TryParseDataBlockedFrame(ReadOnlySpan<byte> packetPayload, out QuicDataBlockedFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -713,7 +713,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a DATA_BLOCKED frame.
     /// </summary>
-    public static bool TryFormatDataBlockedFrame(QuicDataBlockedFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatDataBlockedFrame(QuicDataBlockedFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -731,7 +731,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a STREAM_DATA_BLOCKED frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseStreamDataBlockedFrame(ReadOnlySpan<byte> packetPayload, out QuicStreamDataBlockedFrame frame, out int bytesConsumed)
+    internal static bool TryParseStreamDataBlockedFrame(ReadOnlySpan<byte> packetPayload, out QuicStreamDataBlockedFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -751,7 +751,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a STREAM_DATA_BLOCKED frame.
     /// </summary>
-    public static bool TryFormatStreamDataBlockedFrame(QuicStreamDataBlockedFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatStreamDataBlockedFrame(QuicStreamDataBlockedFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -770,7 +770,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a MAX_STREAM_DATA frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseMaxStreamDataFrame(ReadOnlySpan<byte> packetPayload, out QuicMaxStreamDataFrame frame, out int bytesConsumed)
+    internal static bool TryParseMaxStreamDataFrame(ReadOnlySpan<byte> packetPayload, out QuicMaxStreamDataFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -790,7 +790,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a MAX_STREAM_DATA frame.
     /// </summary>
-    public static bool TryFormatMaxStreamDataFrame(QuicMaxStreamDataFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatMaxStreamDataFrame(QuicMaxStreamDataFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -809,7 +809,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a MAX_STREAMS frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseMaxStreamsFrame(ReadOnlySpan<byte> packetPayload, out QuicMaxStreamsFrame frame, out int bytesConsumed)
+    internal static bool TryParseMaxStreamsFrame(ReadOnlySpan<byte> packetPayload, out QuicMaxStreamsFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -833,7 +833,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a MAX_STREAMS frame.
     /// </summary>
-    public static bool TryFormatMaxStreamsFrame(QuicMaxStreamsFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatMaxStreamsFrame(QuicMaxStreamsFrame frame, Span<byte> destination, out int bytesWritten)
     {
         return TryFormatStreamLimitFrame(
             frame.IsBidirectional,
@@ -847,7 +847,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a STREAMS_BLOCKED frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseStreamsBlockedFrame(ReadOnlySpan<byte> packetPayload, out QuicStreamsBlockedFrame frame, out int bytesConsumed)
+    internal static bool TryParseStreamsBlockedFrame(ReadOnlySpan<byte> packetPayload, out QuicStreamsBlockedFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -871,7 +871,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a STREAMS_BLOCKED frame.
     /// </summary>
-    public static bool TryFormatStreamsBlockedFrame(QuicStreamsBlockedFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatStreamsBlockedFrame(QuicStreamsBlockedFrame frame, Span<byte> destination, out int bytesWritten)
     {
         return TryFormatStreamLimitFrame(
             frame.IsBidirectional,
@@ -885,7 +885,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a NEW_CONNECTION_ID frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseNewConnectionIdFrame(ReadOnlySpan<byte> packetPayload, out QuicNewConnectionIdFrame frame, out int bytesConsumed)
+    internal static bool TryParseNewConnectionIdFrame(ReadOnlySpan<byte> packetPayload, out QuicNewConnectionIdFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -928,7 +928,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a NEW_CONNECTION_ID frame.
     /// </summary>
-    public static bool TryFormatNewConnectionIdFrame(QuicNewConnectionIdFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatNewConnectionIdFrame(QuicNewConnectionIdFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -965,7 +965,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a RETIRE_CONNECTION_ID frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParseRetireConnectionIdFrame(ReadOnlySpan<byte> packetPayload, out QuicRetireConnectionIdFrame frame, out int bytesConsumed)
+    internal static bool TryParseRetireConnectionIdFrame(ReadOnlySpan<byte> packetPayload, out QuicRetireConnectionIdFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -984,7 +984,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a RETIRE_CONNECTION_ID frame.
     /// </summary>
-    public static bool TryFormatRetireConnectionIdFrame(QuicRetireConnectionIdFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatRetireConnectionIdFrame(QuicRetireConnectionIdFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -1002,7 +1002,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a PATH_CHALLENGE frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParsePathChallengeFrame(ReadOnlySpan<byte> packetPayload, out QuicPathChallengeFrame frame, out int bytesConsumed)
+    internal static bool TryParsePathChallengeFrame(ReadOnlySpan<byte> packetPayload, out QuicPathChallengeFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -1025,7 +1025,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a PATH_CHALLENGE frame.
     /// </summary>
-    public static bool TryFormatPathChallengeFrame(QuicPathChallengeFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatPathChallengeFrame(QuicPathChallengeFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -1053,7 +1053,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Parses a PATH_RESPONSE frame from the start of a packet payload slice.
     /// </summary>
-    public static bool TryParsePathResponseFrame(ReadOnlySpan<byte> packetPayload, out QuicPathResponseFrame frame, out int bytesConsumed)
+    internal static bool TryParsePathResponseFrame(ReadOnlySpan<byte> packetPayload, out QuicPathResponseFrame frame, out int bytesConsumed)
     {
         frame = default;
         bytesConsumed = default;
@@ -1076,7 +1076,7 @@ public static class QuicFrameCodec
     /// <summary>
     /// Formats a PATH_RESPONSE frame.
     /// </summary>
-    public static bool TryFormatPathResponseFrame(QuicPathResponseFrame frame, Span<byte> destination, out int bytesWritten)
+    internal static bool TryFormatPathResponseFrame(QuicPathResponseFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -1228,3 +1228,4 @@ public static class QuicFrameCodec
         return true;
     }
 }
+

@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Describes the outcome of buffering a CRYPTO frame.
 /// </summary>
-public enum QuicCryptoBufferResult
+internal enum QuicCryptoBufferResult
 {
     /// <summary>
     /// The frame was buffered.
@@ -24,7 +24,7 @@ public enum QuicCryptoBufferResult
     /// <summary>
     /// Buffers CRYPTO frames in offset order for handshake processing.
     /// </summary>
-    public sealed class QuicCryptoBuffer
+    internal sealed class QuicCryptoBuffer
 {
     /// <summary>
     /// Local implementation floor chosen to keep the CRYPTO buffer comfortably above small handshake bursts.
@@ -38,7 +38,7 @@ public enum QuicCryptoBufferResult
     /// <summary>
     /// Initializes a CRYPTO buffer with the minimum RFC 9000 capacity.
     /// </summary>
-    public QuicCryptoBuffer()
+    internal QuicCryptoBuffer()
         : this(MinimumCapacity)
     {
     }
@@ -48,7 +48,7 @@ public enum QuicCryptoBufferResult
     /// </summary>
     /// <param name="capacity">The number of bytes the buffer may hold.</param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="capacity"/> is below 4096 bytes.</exception>
-    public QuicCryptoBuffer(int capacity)
+    internal QuicCryptoBuffer(int capacity)
     {
         if (capacity < MinimumCapacity)
         {
@@ -61,32 +61,32 @@ public enum QuicCryptoBufferResult
     /// <summary>
     /// Gets the configured buffer capacity.
     /// </summary>
-    public int Capacity { get; }
+    internal int Capacity { get; }
 
     /// <summary>
     /// Gets or sets whether the handshake has completed.
     /// </summary>
-    public bool HandshakeComplete { get; set; }
+    internal bool HandshakeComplete { get; set; }
 
     /// <summary>
     /// Gets whether future CRYPTO frames are being discarded after overflow or explicit key-transition.
     /// </summary>
-    public bool DiscardingFutureFrames => discardFutureFrames;
+    internal bool DiscardingFutureFrames => discardFutureFrames;
 
     /// <summary>
     /// Gets or sets whether overflow after handshake completion should discard future CRYPTO frames.
     /// </summary>
-    public bool DiscardOverflowFramesAfterHandshakeComplete { get; set; } = true;
+    internal bool DiscardOverflowFramesAfterHandshakeComplete { get; set; } = true;
 
     /// <summary>
     /// Gets the number of buffered bytes that have not yet been dequeued.
     /// </summary>
-    public int BufferedBytes => bufferedBytes;
+    internal int BufferedBytes => bufferedBytes;
 
     /// <summary>
     /// Discards all currently buffered CRYPTO data and marks future frames as acknowledged.
     /// </summary>
-    public void DiscardFutureFrames()
+    internal void DiscardFutureFrames()
     {
         discardFutureFrames = true;
         entries.Clear();
@@ -96,7 +96,7 @@ public enum QuicCryptoBufferResult
     /// <summary>
     /// Discards buffered CRYPTO frames when 0-RTT is rejected.
     /// </summary>
-    public void RejectZeroRtt()
+    internal void RejectZeroRtt()
     {
         DiscardFutureFrames();
     }
@@ -104,7 +104,7 @@ public enum QuicCryptoBufferResult
     /// <summary>
     /// Attempts to buffer a CRYPTO frame.
     /// </summary>
-    public bool TryAddFrame(QuicCryptoFrame frame, out QuicCryptoBufferResult result)
+    internal bool TryAddFrame(QuicCryptoFrame frame, out QuicCryptoBufferResult result)
     {
         result = QuicCryptoBufferResult.Buffered;
 
@@ -175,7 +175,7 @@ public enum QuicCryptoBufferResult
     /// <summary>
     /// Copies contiguous buffered CRYPTO data into <paramref name="destination"/>.
     /// </summary>
-    public bool TryDequeueContiguousData(Span<byte> destination, out int bytesWritten)
+    internal bool TryDequeueContiguousData(Span<byte> destination, out int bytesWritten)
     {
         return TryAccessContiguousData(destination, consume: true, out _, out bytesWritten);
     }
@@ -369,6 +369,7 @@ public enum QuicCryptoBufferResult
 
     private readonly record struct Entry(ulong Offset, byte[] Data)
     {
-        public ulong End => Offset + (ulong)Data.Length;
+        internal ulong End => Offset + (ulong)Data.Length;
     }
 }
+

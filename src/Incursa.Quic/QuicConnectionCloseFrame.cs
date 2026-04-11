@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// A parsed or constructed CONNECTION_CLOSE frame.
 /// </summary>
-public readonly ref struct QuicConnectionCloseFrame
+internal readonly ref struct QuicConnectionCloseFrame
 {
     /// <summary>
     /// RFC 9000 CONNECTION_CLOSE frame type for transport errors.
@@ -23,7 +23,7 @@ public readonly ref struct QuicConnectionCloseFrame
     /// <summary>
     /// Initializes an application CONNECTION_CLOSE frame view.
     /// </summary>
-    public QuicConnectionCloseFrame(ulong errorCode, ReadOnlySpan<byte> reasonPhrase)
+    internal QuicConnectionCloseFrame(ulong errorCode, ReadOnlySpan<byte> reasonPhrase)
         : this(isApplicationError: true, errorCode, triggeringFrameType: default, reasonPhrase)
     {
     }
@@ -31,7 +31,7 @@ public readonly ref struct QuicConnectionCloseFrame
     /// <summary>
     /// Initializes a transport CONNECTION_CLOSE frame view.
     /// </summary>
-    public QuicConnectionCloseFrame(ulong errorCode, ulong triggeringFrameType, ReadOnlySpan<byte> reasonPhrase)
+    internal QuicConnectionCloseFrame(ulong errorCode, ulong triggeringFrameType, ReadOnlySpan<byte> reasonPhrase)
         : this(isApplicationError: false, errorCode, triggeringFrameType, reasonPhrase)
     {
     }
@@ -39,7 +39,7 @@ public readonly ref struct QuicConnectionCloseFrame
     /// <summary>
     /// Initializes a transport CONNECTION_CLOSE frame view using a known QUIC transport error code.
     /// </summary>
-    public QuicConnectionCloseFrame(QuicTransportErrorCode errorCode, ulong triggeringFrameType, ReadOnlySpan<byte> reasonPhrase)
+    internal QuicConnectionCloseFrame(QuicTransportErrorCode errorCode, ulong triggeringFrameType, ReadOnlySpan<byte> reasonPhrase)
         : this(isApplicationError: false, (ulong)errorCode, triggeringFrameType, reasonPhrase)
     {
     }
@@ -62,30 +62,31 @@ public readonly ref struct QuicConnectionCloseFrame
     /// <summary>
     /// Gets whether the close frame is application-specific.
     /// </summary>
-    public bool IsApplicationError => isApplicationError;
+    internal bool IsApplicationError => isApplicationError;
 
     /// <summary>
     /// Gets the frame type carried on the wire.
     /// </summary>
-    public byte FrameType => isApplicationError ? ApplicationConnectionCloseFrameType : TransportConnectionCloseFrameType;
+    internal byte FrameType => isApplicationError ? ApplicationConnectionCloseFrameType : TransportConnectionCloseFrameType;
 
     /// <summary>
     /// Gets the error code.
     /// </summary>
-    public ulong ErrorCode => errorCode;
+    internal ulong ErrorCode => errorCode;
 
     /// <summary>
     /// Gets whether the transport close includes a triggering frame type.
     /// </summary>
-    public bool HasTriggeringFrameType => !isApplicationError;
+    internal bool HasTriggeringFrameType => !isApplicationError;
 
     /// <summary>
     /// Gets the triggering frame type for transport close frames.
     /// </summary>
-    public ulong TriggeringFrameType => triggeringFrameType;
+    internal ulong TriggeringFrameType => triggeringFrameType;
 
     /// <summary>
     /// Gets the UTF-8 reason phrase bytes.
     /// </summary>
-    public ReadOnlySpan<byte> ReasonPhrase => reasonPhrase;
+    internal ReadOnlySpan<byte> ReasonPhrase => reasonPhrase;
 }
+

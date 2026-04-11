@@ -3,12 +3,12 @@ namespace Incursa.Quic;
 /// <summary>
 /// A parsed or constructed RETIRE_CONNECTION_ID frame.
 /// </summary>
-public readonly struct QuicRetireConnectionIdFrame
+internal readonly struct QuicRetireConnectionIdFrame
 {
     /// <summary>
     /// Initializes a RETIRE_CONNECTION_ID frame view.
     /// </summary>
-    public QuicRetireConnectionIdFrame(ulong sequenceNumber)
+    internal QuicRetireConnectionIdFrame(ulong sequenceNumber)
     {
         SequenceNumber = sequenceNumber;
     }
@@ -16,5 +16,6 @@ public readonly struct QuicRetireConnectionIdFrame
     /// <summary>
     /// Gets the retired connection ID sequence number.
     /// </summary>
-    public ulong SequenceNumber { get; }
+    internal ulong SequenceNumber { get; }
 }
+

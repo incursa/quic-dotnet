@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Provides helpers for the RFC 9000 address-validation rules that can be expressed without a connection state machine.
 /// </summary>
-public static class QuicAddressValidation
+internal static class QuicAddressValidation
 {
     /// <summary>
     /// RFC 9000's address-validation helper requires at least 64 bits of connection-ID entropy.
@@ -21,7 +21,7 @@ public static class QuicAddressValidation
     /// <remarks>
     /// This helper only checks the structural 64-bit minimum and whether the connection ID was chosen by the endpoint.
     /// </remarks>
-    public static bool CanConsiderPeerAddressValidated(ReadOnlySpan<byte> connectionId, bool chosenByEndpoint)
+    internal static bool CanConsiderPeerAddressValidated(ReadOnlySpan<byte> connectionId, bool chosenByEndpoint)
     {
         return chosenByEndpoint && connectionId.Length >= MinimumEntropyBytes;
     }
@@ -29,7 +29,7 @@ public static class QuicAddressValidation
     /// <summary>
     /// Determines whether the peer address validation is complete for the current endpoint role.
     /// </summary>
-    public static bool PeerCompletedAddressValidation(
+    internal static bool PeerCompletedAddressValidation(
         bool isServer,
         bool handshakeAckReceived,
         bool handshakeConfirmed)
@@ -40,7 +40,7 @@ public static class QuicAddressValidation
     /// <summary>
     /// Computes the number of bytes needed to pad an Initial datagram payload to the RFC 9000 minimum.
     /// </summary>
-    public static bool TryGetVersion1InitialDatagramPaddingLength(int currentPayloadLength, out int paddingLength)
+    internal static bool TryGetVersion1InitialDatagramPaddingLength(int currentPayloadLength, out int paddingLength)
     {
         paddingLength = default;
 
@@ -61,7 +61,7 @@ public static class QuicAddressValidation
     /// <summary>
     /// Formats the padding bytes needed to bring an Initial datagram payload up to the RFC 9000 minimum.
     /// </summary>
-    public static bool TryFormatVersion1InitialDatagramPadding(
+    internal static bool TryFormatVersion1InitialDatagramPadding(
         int currentPayloadLength,
         Span<byte> destination,
         out int bytesWritten)
@@ -90,3 +90,4 @@ public static class QuicAddressValidation
         return true;
     }
 }
+

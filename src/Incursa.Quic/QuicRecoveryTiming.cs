@@ -4,27 +4,27 @@ namespace Incursa.Quic;
 /// Provides helper methods for RFC 9002 loss-detection and PTO timing calculations that do not require
 /// a full sender state machine.
 /// </summary>
-public static class QuicRecoveryTiming
+internal static class QuicRecoveryTiming
 {
     /// <summary>
     /// The recommended packet reordering threshold from RFC 9002.
     /// </summary>
-    public const int RecommendedPacketThreshold = 3;
+    internal const int RecommendedPacketThreshold = 3;
 
     /// <summary>
     /// The recommended time-threshold numerator from RFC 9002's loss-delay formula.
     /// </summary>
-    public const ulong RecommendedTimeThresholdNumerator = 9;
+    internal const ulong RecommendedTimeThresholdNumerator = 9;
 
     /// <summary>
     /// The recommended time-threshold denominator from RFC 9002's loss-delay formula.
     /// </summary>
-    public const ulong RecommendedTimeThresholdDenominator = 8;
+    internal const ulong RecommendedTimeThresholdDenominator = 8;
 
     /// <summary>
     /// The recommended timer granularity, in microseconds.
     /// </summary>
-    public const ulong RecommendedTimerGranularityMicros = 1_000;
+    internal const ulong RecommendedTimerGranularityMicros = 1_000;
 
     /// <summary>
     /// RFC 9002 computes PTO variance with a multiplier of 4.
@@ -39,7 +39,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Determines whether a packet satisfies the basic RFC 9002 loss-declaration preconditions.
     /// </summary>
-    public static bool CanDeclarePacketLost(
+    internal static bool CanDeclarePacketLost(
         bool packetAcknowledged,
         bool packetInFlight,
         ulong packetNumber,
@@ -53,7 +53,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Determines whether a packet is old enough to be declared lost by packet-threshold logic.
     /// </summary>
-    public static bool ShouldDeclarePacketLostByPacketThreshold(
+    internal static bool ShouldDeclarePacketLostByPacketThreshold(
         ulong packetNumber,
         ulong largestAcknowledgedPacketNumber,
         int packetThreshold = RecommendedPacketThreshold)
@@ -71,7 +71,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Computes the loss delay from the larger of the latest RTT and smoothed RTT, bounded by timer granularity.
     /// </summary>
-    public static ulong ComputeLossDelayMicros(
+    internal static ulong ComputeLossDelayMicros(
         ulong latestRttMicros,
         ulong smoothedRttMicros,
         ulong timeThresholdNumerator = RecommendedTimeThresholdNumerator,
@@ -101,7 +101,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Computes the remaining time before a packet can be declared lost.
     /// </summary>
-    public static bool TryComputeRemainingLossDelayMicros(
+    internal static bool TryComputeRemainingLossDelayMicros(
         ulong packetSentAtMicros,
         ulong nowMicros,
         ulong latestRttMicros,
@@ -126,7 +126,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Computes the PTO delay for a packet number space using RFC 9002's base formula.
     /// </summary>
-    public static bool TryComputeProbeTimeoutMicros(
+    internal static bool TryComputeProbeTimeoutMicros(
         QuicPacketNumberSpace packetNumberSpace,
         ulong smoothedRttMicros,
         ulong rttVarMicros,
@@ -164,7 +164,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Applies PTO backoff by doubling the base PTO once per timeout.
     /// </summary>
-    public static ulong ComputeProbeTimeoutWithBackoffMicros(ulong probeTimeoutMicros, int ptoCount)
+    internal static ulong ComputeProbeTimeoutWithBackoffMicros(ulong probeTimeoutMicros, int ptoCount)
     {
         if (ptoCount < 0)
         {
@@ -191,7 +191,7 @@ public static class QuicRecoveryTiming
     /// A validated acknowledgment, ack-eliciting send, or Initial/Handshake key discard restarts PTO.
     /// Unvalidated Initial acknowledgments keep the current backoff in place.
     /// </remarks>
-    public static int ResetProbeTimeoutBackoffCount(
+    internal static int ResetProbeTimeoutBackoffCount(
         int ptoCount,
         bool ackElicitingPacketSent = false,
         bool acknowledgmentReceived = false,
@@ -221,7 +221,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Chooses the earlier PTO deadline from the Initial and Handshake packet number spaces.
     /// </summary>
-    public static bool TrySelectInitialOrHandshakeProbeTimeoutMicros(
+    internal static bool TrySelectInitialOrHandshakeProbeTimeoutMicros(
         ulong? initialProbeTimeoutMicros,
         ulong? handshakeProbeTimeoutMicros,
         out ulong selectedProbeTimeoutMicros)
@@ -252,7 +252,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Selects the earliest nonzero loss time across the packet number spaces and returns the corresponding space.
     /// </summary>
-    public static bool TrySelectLossTimeAndSpaceMicros(
+    internal static bool TrySelectLossTimeAndSpaceMicros(
         ulong? initialLossTimeMicros,
         ulong? handshakeLossTimeMicros,
         ulong? applicationDataLossTimeMicros,
@@ -291,7 +291,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Selects the PTO deadline and packet number space when no ack-eliciting packets are in flight.
     /// </summary>
-    public static bool TrySelectPtoTimeAndSpaceMicros(
+    internal static bool TrySelectPtoTimeAndSpaceMicros(
         ulong nowMicros,
         ulong? initialProbeTimeoutMicros,
         ulong? handshakeProbeTimeoutMicros,
@@ -322,7 +322,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Chooses a timer deadline, preferring time-threshold loss detection over PTO when both exist.
     /// </summary>
-    public static bool TrySelectRecoveryTimerMicros(
+    internal static bool TrySelectRecoveryTimerMicros(
         ulong? lossDetectionTimerMicros,
         ulong? probeTimeoutMicros,
         out ulong selectedTimerMicros)
@@ -347,7 +347,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Selects the loss-detection timer according to the presence of loss and PTO deadlines.
     /// </summary>
-    public static bool TrySelectLossDetectionTimerMicros(
+    internal static bool TrySelectLossDetectionTimerMicros(
         ulong? earliestPendingLossTimeMicros,
         ulong? probeTimeoutMicros,
         bool serverAtAntiAmplificationLimit,
@@ -381,7 +381,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Measures the elapsed time between sending PATH_CHALLENGE data and receiving PATH_RESPONSE data.
     /// </summary>
-    public static bool TryMeasurePathChallengeRoundTripMicros(
+    internal static bool TryMeasurePathChallengeRoundTripMicros(
         ulong pathChallengeSentAtMicros,
         ulong pathResponseReceivedAtMicros,
         out ulong roundTripMicros)
@@ -400,7 +400,7 @@ public static class QuicRecoveryTiming
     /// <summary>
     /// Measures the elapsed time between the first Initial packet and a Retry packet.
     /// </summary>
-    public static bool TryMeasureRetryRoundTripMicros(
+    internal static bool TryMeasureRetryRoundTripMicros(
         ulong firstInitialPacketSentAtMicros,
         ulong retryReceivedAtMicros,
         out ulong roundTripMicros)
@@ -459,7 +459,7 @@ internal readonly struct QuicLostPacket
     /// <summary>
     /// Initializes a lost packet marker.
     /// </summary>
-    public QuicLostPacket(
+    internal QuicLostPacket(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber)
     {
@@ -470,12 +470,12 @@ internal readonly struct QuicLostPacket
     /// <summary>
     /// Gets the packet number space for the lost packet.
     /// </summary>
-    public QuicPacketNumberSpace PacketNumberSpace { get; }
+    internal QuicPacketNumberSpace PacketNumberSpace { get; }
 
     /// <summary>
     /// Gets the lost packet number.
     /// </summary>
-    public ulong PacketNumber { get; }
+    internal ulong PacketNumber { get; }
 }
 
 /// <summary>
@@ -489,7 +489,7 @@ internal sealed class QuicRecoveryController
     /// Initializes a new RFC 9002 recovery controller with a single estimator seed for each packet number space.
     /// </summary>
     /// <param name="initialRttMicros">Initial RTT seed used by each packet number space.</param>
-    public QuicRecoveryController(ulong initialRttMicros = QuicRttEstimator.DefaultInitialRttMicros)
+    internal QuicRecoveryController(ulong initialRttMicros = QuicRttEstimator.DefaultInitialRttMicros)
     {
         states = new Dictionary<QuicPacketNumberSpace, QuicRecoveryPacketNumberSpaceState>(3);
         states[QuicPacketNumberSpace.Initial] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.Initial, initialRttMicros);
@@ -500,23 +500,23 @@ internal sealed class QuicRecoveryController
     /// <summary>
     /// Gets the PTO backoff counter used by all packet number spaces.
     /// </summary>
-    public int ProbeTimeoutBackoffCount { get; private set; }
+    internal int ProbeTimeoutBackoffCount { get; private set; }
 
     /// <summary>
     /// Gets the loss estimator for a packet number space.
     /// </summary>
-    public QuicRttEstimator GetRttEstimator(QuicPacketNumberSpace packetNumberSpace) => StateFor(packetNumberSpace).RttEstimator;
+    internal QuicRttEstimator GetRttEstimator(QuicPacketNumberSpace packetNumberSpace) => StateFor(packetNumberSpace).RttEstimator;
 
     /// <summary>
     /// Gets whether a packet number space currently has ack-eliciting packets in flight.
     /// </summary>
-    public bool HasAckElicitingPacketsInFlight(QuicPacketNumberSpace packetNumberSpace) =>
+    internal bool HasAckElicitingPacketsInFlight(QuicPacketNumberSpace packetNumberSpace) =>
         StateFor(packetNumberSpace).HasAckElicitingPacketsInFlight;
 
     /// <summary>
     /// Gets whether any packet number space has ack-eliciting packets in flight.
     /// </summary>
-    public bool HasAnyAckElicitingPacketsInFlight
+    internal bool HasAnyAckElicitingPacketsInFlight
     {
         get
         {
@@ -535,7 +535,7 @@ internal sealed class QuicRecoveryController
     /// <summary>
     /// Records a sent packet for loss and PTO decisions.
     /// </summary>
-    public void RecordPacketSent(
+    internal void RecordPacketSent(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,
         ulong sentAtMicros,
@@ -554,7 +554,7 @@ internal sealed class QuicRecoveryController
     /// <summary>
     /// Records an ACK event and refreshes RTT state when applicable.
     /// </summary>
-    public bool RecordAcknowledgment(
+    internal bool RecordAcknowledgment(
         QuicPacketNumberSpace packetNumberSpace,
         ulong largestAcknowledgedPacketNumber,
         ulong ackReceivedAtMicros,
@@ -595,7 +595,7 @@ internal sealed class QuicRecoveryController
     /// Detects lost packets at <paramref name="nowMicros" /> using packet threshold and time threshold
     /// logic for each packet number space.
     /// </summary>
-    public IReadOnlyList<QuicLostPacket> DetectLostPackets(
+    internal IReadOnlyList<QuicLostPacket> DetectLostPackets(
         ulong nowMicros,
         out ulong? earliestLossDetectionTimeMicros,
         out QuicPacketNumberSpace earliestLossPacketNumberSpace)
@@ -630,7 +630,7 @@ internal sealed class QuicRecoveryController
     /// <summary>
     /// Computes the next PTO timer and packet number space across all packet number spaces.
     /// </summary>
-    public bool TrySelectPtoTimeAndSpace(
+    internal bool TrySelectPtoTimeAndSpace(
         ulong nowMicros,
         ulong maxAckDelayMicros,
         bool handshakeConfirmed,
@@ -669,7 +669,7 @@ internal sealed class QuicRecoveryController
     /// <summary>
     /// Computes the next recovery timer considering loss and PTO timers for all packet number spaces.
     /// </summary>
-    public bool TrySelectLossDetectionTimer(
+    internal bool TrySelectLossDetectionTimer(
         ulong nowMicros,
         ulong maxAckDelayMicros,
         bool handshakeConfirmed,
@@ -713,7 +713,7 @@ internal sealed class QuicRecoveryController
     /// <summary>
     /// Increases the PTO backoff counter after a PTO event.
     /// </summary>
-    public void RecordProbeTimeoutExpired()
+    internal void RecordProbeTimeoutExpired()
     {
         if (ProbeTimeoutBackoffCount < int.MaxValue)
         {
@@ -735,7 +735,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     /// <summary>
     /// Initializes a new per-space recovery state.
     /// </summary>
-    public QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace packetNumberSpace, ulong initialRttMicros)
+    internal QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace packetNumberSpace, ulong initialRttMicros)
     {
         PacketNumberSpace = packetNumberSpace;
         RttEstimator = new QuicRttEstimator(initialRttMicros);
@@ -746,27 +746,27 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     /// <summary>
     /// Gets the packet number space for this state.
     /// </summary>
-    public QuicPacketNumberSpace PacketNumberSpace { get; }
+    internal QuicPacketNumberSpace PacketNumberSpace { get; }
 
     /// <summary>
     /// Gets the RTT estimator for this packet number space.
     /// </summary>
-    public QuicRttEstimator RttEstimator { get; }
+    internal QuicRttEstimator RttEstimator { get; }
 
     /// <summary>
     /// Gets the largest packet number known acknowledged in this space.
     /// </summary>
-    public ulong LargestAcknowledgedPacketNumber { get; private set; }
+    internal ulong LargestAcknowledgedPacketNumber { get; private set; }
 
     /// <summary>
     /// Gets whether this space has ack-eliciting packets still in flight.
     /// </summary>
-    public bool HasAckElicitingPacketsInFlight => ackElicitingPacketsInFlight.Count > 0;
+    internal bool HasAckElicitingPacketsInFlight => ackElicitingPacketsInFlight.Count > 0;
 
     /// <summary>
     /// Records a sent packet for loss accounting.
     /// </summary>
-    public void RecordPacketSent(ulong packetNumber, ulong sentAtMicros, bool isAckElicitingPacket)
+    internal void RecordPacketSent(ulong packetNumber, ulong sentAtMicros, bool isAckElicitingPacket)
     {
         if (!isAckElicitingPacket)
         {
@@ -779,7 +779,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     /// <summary>
     /// Records newly acknowledged packets, updates RTT state, and removes acknowledged packets from flight.
     /// </summary>
-    public bool RecordAcknowledgment(
+    internal bool RecordAcknowledgment(
         ulong largestAcknowledgedPacketNumber,
         ulong ackReceivedAtMicros,
         ReadOnlySpan<ulong> newlyAcknowledgedAckElicitingPacketNumbers,
@@ -835,7 +835,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     /// <summary>
     /// Detects lost packets from this packet number space and returns packet numbers that should be removed from flight.
     /// </summary>
-    public IReadOnlyList<ulong> DetectLostPackets(
+    internal IReadOnlyList<ulong> DetectLostPackets(
         ulong nowMicros,
         out ulong? nextLossDetectionTimeMicros)
     {
@@ -896,7 +896,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     /// <summary>
     /// Computes the PTO deadline for this space.
     /// </summary>
-    public bool TryComputeProbeTimeout(
+    internal bool TryComputeProbeTimeout(
         ulong nowMicros,
         ulong maxAckDelayMicros,
         bool handshakeConfirmed,
@@ -944,3 +944,4 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         return left + right;
     }
 }
+

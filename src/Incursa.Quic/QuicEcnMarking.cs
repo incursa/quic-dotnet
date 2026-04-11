@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Describes the ECN codepoint an endpoint applied when sending a QUIC packet.
 /// </summary>
-public enum QuicEcnMarking
+internal enum QuicEcnMarking
 {
     /// <summary>
     /// The packet was sent without an ECN marking.
@@ -20,3 +20,4 @@ public enum QuicEcnMarking
     /// </summary>
     Ect1 = 2,
 }
+

@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Provides helpers for RFC 9000 idle-timeout behavior that can be expressed without a connection state machine.
 /// </summary>
-public sealed class QuicIdleTimeoutState
+internal sealed class QuicIdleTimeoutState
 {
     private bool hasAckElicitingPacketBeenSentSinceLastPeerPacket;
 
@@ -11,7 +11,7 @@ public sealed class QuicIdleTimeoutState
     /// Initializes a new idle-timeout tracker for an effective timeout value.
     /// </summary>
     /// <param name="effectiveIdleTimeoutMicros">The effective idle timeout, in microseconds.</param>
-    public QuicIdleTimeoutState(ulong effectiveIdleTimeoutMicros)
+    internal QuicIdleTimeoutState(ulong effectiveIdleTimeoutMicros)
     {
         if (effectiveIdleTimeoutMicros == 0)
         {
@@ -26,22 +26,22 @@ public sealed class QuicIdleTimeoutState
     /// <summary>
     /// Gets the effective idle timeout, in microseconds.
     /// </summary>
-    public ulong EffectiveIdleTimeoutMicros { get; }
+    internal ulong EffectiveIdleTimeoutMicros { get; }
 
     /// <summary>
     /// Gets the timestamp at which the idle timer was most recently restarted.
     /// </summary>
-    public ulong IdleTimerRestartAtMicros { get; private set; }
+    internal ulong IdleTimerRestartAtMicros { get; private set; }
 
     /// <summary>
     /// Gets the current idle-timeout deadline.
     /// </summary>
-    public ulong IdleTimeoutDeadlineMicros { get; private set; }
+    internal ulong IdleTimeoutDeadlineMicros { get; private set; }
 
     /// <summary>
     /// Gets whether an ack-eliciting packet has been sent since the most recent peer packet was processed.
     /// </summary>
-    public bool HasAckElicitingPacketBeenSentSinceLastPeerPacket => hasAckElicitingPacketBeenSentSinceLastPeerPacket;
+    internal bool HasAckElicitingPacketBeenSentSinceLastPeerPacket => hasAckElicitingPacketBeenSentSinceLastPeerPacket;
 
     /// <summary>
     /// Computes the effective idle timeout from both endpoints' transport parameters and the current PTO floor.
@@ -49,7 +49,7 @@ public sealed class QuicIdleTimeoutState
     /// <remarks>
     /// A zero or missing advertised timeout is treated as disabled. The returned timeout is floored to three times PTO.
     /// </remarks>
-    public static bool TryComputeEffectiveIdleTimeoutMicros(
+    internal static bool TryComputeEffectiveIdleTimeoutMicros(
         ulong? localMaxIdleTimeoutMicros,
         ulong? peerMaxIdleTimeoutMicros,
         ulong currentProbeTimeoutMicros,
@@ -75,7 +75,7 @@ public sealed class QuicIdleTimeoutState
     /// <summary>
     /// Records that a peer packet was processed successfully and restarts the idle timer.
     /// </summary>
-    public void RecordPeerPacketProcessed(ulong receivedAtMicros)
+    internal void RecordPeerPacketProcessed(ulong receivedAtMicros)
     {
         IdleTimerRestartAtMicros = receivedAtMicros;
         IdleTimeoutDeadlineMicros = SaturatingAdd(receivedAtMicros, EffectiveIdleTimeoutMicros);
@@ -86,7 +86,7 @@ public sealed class QuicIdleTimeoutState
     /// Records that an ack-eliciting packet was sent and restarts the idle timer on the first such packet
     /// after the last peer packet.
     /// </summary>
-    public void RecordAckElicitingPacketSent(ulong sentAtMicros)
+    internal void RecordAckElicitingPacketSent(ulong sentAtMicros)
     {
         if (hasAckElicitingPacketBeenSentSinceLastPeerPacket)
         {
@@ -101,7 +101,7 @@ public sealed class QuicIdleTimeoutState
     /// <summary>
     /// Determines whether the idle deadline has passed.
     /// </summary>
-    public bool HasTimedOut(ulong nowMicros)
+    internal bool HasTimedOut(ulong nowMicros)
     {
         return nowMicros > IdleTimeoutDeadlineMicros;
     }
@@ -162,3 +162,4 @@ public sealed class QuicIdleTimeoutState
         return left + right;
     }
 }
+

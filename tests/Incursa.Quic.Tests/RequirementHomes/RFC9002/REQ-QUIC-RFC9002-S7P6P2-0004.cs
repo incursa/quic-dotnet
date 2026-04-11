@@ -6,14 +6,14 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9002-S7P6P2-0004")]
 public sealed class REQ_QUIC_RFC9002_S7P6P2_0004
 {
-    public static TheoryData<PersistentCongestionAcrossSpacesCase> PersistentCongestionAcrossSpacesCases => new()
+    public static TheoryData<object> PersistentCongestionAcrossSpacesCases => new()
     {
-        new(
+        new PersistentCongestionAcrossSpacesCase(
             [
                 new(QuicPacketNumberSpace.Initial, 2_000, 1_200, true, true, acknowledged: false, lost: true),
                 new(QuicPacketNumberSpace.ApplicationData, 9_000, 1_200, true, true, acknowledged: false, lost: true),
             ]),
-        new(
+        new PersistentCongestionAcrossSpacesCase(
             [
                 new(QuicPacketNumberSpace.ApplicationData, 2_000, 1_200, true, true, acknowledged: false, lost: true),
                 new(QuicPacketNumberSpace.Initial, 9_000, 1_200, true, true, acknowledged: false, lost: true),
@@ -25,8 +25,10 @@ public sealed class REQ_QUIC_RFC9002_S7P6P2_0004
     [CoverageType(RequirementCoverageType.Positive)]
     [CoverageType(RequirementCoverageType.Edge)]
     public void TryDetectPersistentCongestion_ConsidersPacketsAcrossPacketNumberSpaces(
-        PersistentCongestionAcrossSpacesCase scenario)
+        object scenarioValue)
     {
+        PersistentCongestionAcrossSpacesCase scenario = (PersistentCongestionAcrossSpacesCase)scenarioValue;
+
         QuicCongestionControlState state = new();
         state.RegisterPacketSent(12_000);
 
@@ -41,6 +43,6 @@ public sealed class REQ_QUIC_RFC9002_S7P6P2_0004
         Assert.True(persistentCongestionDetected);
     }
 
-    public sealed record PersistentCongestionAcrossSpacesCase(
+    internal sealed record PersistentCongestionAcrossSpacesCase(
         QuicPersistentCongestionPacket[] Packets);
 }

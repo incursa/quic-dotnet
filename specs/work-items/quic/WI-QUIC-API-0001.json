@@ -6,14 +6,16 @@
   "title": "Incursa.Quic Public API Surface Promotion Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "summary": "Promote the approved consumer-facing Incursa.Quic API surface, refine its lifecycle semantics from Microsoft test evidence, and hide the helper-layer implementation seams.",
-  "planned_changes": "- Add the public listener, connection, stream, options, error, and callback types named in the specification.\n- Keep the packet, frame, TLS, handshake, runtime, recovery, congestion, and stream-identity helpers internal.\n- Reconcile the public API analyzer files with the approved consumer surface.\n- Preserve the client/server split and avoid broadening the public contract into middleware.\n- Encode the async cancellation, option-validation, stream-completion, and close/error semantics reflected by the Microsoft reference tests.",
+  "summary": "Promote the connection-first Incursa.Quic consumer facade, refine its lifecycle semantics from Microsoft test evidence, and hide the helper-layer implementation seams.",
+  "planned_changes": "- Add the public connection, stream, options, error, and abort/direction types named in the slice.\n- Correct `QuicStreamType` to the approved direction-only public model.\n- Keep the packet, frame, TLS, handshake, runtime, recovery, congestion, stream-identity, and lifecycle helper surfaces internal.\n- Reconcile the public API analyzer files with the approved smaller public boundary.\n- Preserve the listener/TLS-auth work for the next slice and avoid broadening the public contract into middleware.\n- Encode the close/dispose, error projection, read-side, and option-shape semantics reflected by the Microsoft reference tests and the existing runtime/stream-state seams.",
   "out_of_scope": [
     "Changing protocol wire behavior.",
     "Introducing a general middleware model.",
+    "Adding listener/socket wiring in this pass.",
+    "Adding the full TLS-auth contract in this pass.",
     "Adding new transport features beyond the approved facade."
   ],
-  "verification_plan": "Use API-diff and reflection-based surface checks, plus compile-time access tests, to prove the approved public types are visible and the listed seam types are not. Add focused consumer-behavior tests for mandatory option validation, cancellation on pending lifecycle operations, stream completion tasks, and close/error propagation. Keep the proof focused on surface shape rather than wire behavior; this slice does not require fuzzing or benchmarks.",
+  "verification_plan": "Use API-diff and reflection-based surface checks, plus compile-time access tests, to prove the approved public types are visible and the listed seam types are not. Add focused consumer-behavior tests for `QuicStreamType` shape, close/dispose/error projection, read-side terminal behavior, and the connection/stream facade mapping to `QuicConnectionRuntime` and `QuicConnectionStreamState`. Keep the proof focused on surface shape rather than wire behavior; this slice does not require listener, connect/listen, TLS-auth, fuzzing, or benchmarks.",
   "completion_notes": "This item exists to promote the consumer facade only. The internal transport engine stays intact.",
   "design_links": [
     "ARC-QUIC-API-0001"
@@ -27,7 +29,7 @@
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
-      "content": "- `src/Incursa.Quic/PublicAPI.Unshipped.txt`\n- `src/Incursa.Quic/PublicAPI.Shipped.txt`\n- `src/Incursa.Quic/QuicConnectionRuntime.cs`\n- `src/Incursa.Quic/QuicConnectionRuntimeHost.cs`\n- `src/Incursa.Quic/QuicConnectionRuntimeShard.cs`\n- `src/Incursa.Quic/QuicConnectionSendRuntime.cs`\n- `src/Incursa.Quic/QuicTransportTlsBridgeState.cs`\n- `src/Incursa.Quic/QuicTlsKeySchedule.cs`\n- `src/Incursa.Quic/QuicTlsTranscriptProgress.cs`\n- `src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`"
+      "content": "- `src/Incursa.Quic/PublicAPI.Unshipped.txt`\n- `src/Incursa.Quic/PublicAPI.Shipped.txt`\n- `src/Incursa.Quic/QuicConnectionRuntime.cs`\n- `src/Incursa.Quic/QuicConnectionStreamState.cs`\n- `src/Incursa.Quic/QuicConnectionRuntimeHost.cs`\n- `src/Incursa.Quic/QuicConnectionRuntimeShard.cs`\n- `src/Incursa.Quic/QuicConnectionSendRuntime.cs`\n- `src/Incursa.Quic/QuicTransportTlsBridgeState.cs`\n- `src/Incursa.Quic/QuicTlsKeySchedule.cs`\n- `src/Incursa.Quic/QuicTlsTranscriptProgress.cs`\n- `src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`"
     },
     {
       "heading": "Reference Behavioral Evidence",

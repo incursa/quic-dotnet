@@ -3,7 +3,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Describes why a peer transport-parameter connection-ID binding check failed.
 /// </summary>
-public enum QuicConnectionIdBindingValidationError
+internal enum QuicConnectionIdBindingValidationError
 {
     /// <summary>
     /// The peer transport parameters matched the observed connection IDs.
@@ -45,3 +45,4 @@ public enum QuicConnectionIdBindingValidationError
     /// </summary>
     UnexpectedRetrySourceConnectionId = 7,
 }
+

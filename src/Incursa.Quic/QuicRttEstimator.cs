@@ -3,12 +3,12 @@ namespace Incursa.Quic;
 /// <summary>
 /// Tracks RTT estimates for a single QUIC path.
 /// </summary>
-public sealed class QuicRttEstimator
+internal sealed class QuicRttEstimator
 {
     /// <summary>
     /// The RFC 9002 default initial RTT, in microseconds.
     /// </summary>
-    public const ulong DefaultInitialRttMicros = 333_000;
+    internal const ulong DefaultInitialRttMicros = 333_000;
 
     /// <summary>
     /// RFC 9002 initializes RTTVAR to half of the initial RTT.
@@ -41,7 +41,7 @@ public sealed class QuicRttEstimator
     /// Initializes a new RTT estimator using the RFC 9002 initial RTT.
     /// </summary>
     /// <param name="initialRttMicros">The initial RTT to use before any path samples are available.</param>
-    public QuicRttEstimator(ulong initialRttMicros = DefaultInitialRttMicros)
+    internal QuicRttEstimator(ulong initialRttMicros = DefaultInitialRttMicros)
     {
         if (initialRttMicros == 0)
         {
@@ -55,37 +55,37 @@ public sealed class QuicRttEstimator
     /// <summary>
     /// Gets the initial RTT configured for this estimator.
     /// </summary>
-    public ulong InitialRttMicros => initialRttMicros;
+    internal ulong InitialRttMicros => initialRttMicros;
 
     /// <summary>
     /// Gets the latest raw RTT sample.
     /// </summary>
-    public ulong LatestRttMicros { get; private set; }
+    internal ulong LatestRttMicros { get; private set; }
 
     /// <summary>
     /// Gets the current minimum RTT estimate.
     /// </summary>
-    public ulong MinRttMicros { get; private set; }
+    internal ulong MinRttMicros { get; private set; }
 
     /// <summary>
     /// Gets the current smoothed RTT estimate.
     /// </summary>
-    public ulong SmoothedRttMicros { get; private set; }
+    internal ulong SmoothedRttMicros { get; private set; }
 
     /// <summary>
     /// Gets the current RTT variance estimate.
     /// </summary>
-    public ulong RttVarMicros { get; private set; }
+    internal ulong RttVarMicros { get; private set; }
 
     /// <summary>
     /// Gets whether the estimator has processed at least one RTT sample.
     /// </summary>
-    public bool HasRttSample { get; private set; }
+    internal bool HasRttSample { get; private set; }
 
     /// <summary>
     /// Reinitializes the estimator to the configured initial RTT.
     /// </summary>
-    public void Reset()
+    internal void Reset()
     {
         LatestRttMicros = 0;
         MinRttMicros = 0;
@@ -97,7 +97,7 @@ public sealed class QuicRttEstimator
     /// <summary>
     /// Reestablishes <see cref="MinRttMicros"/> from the newest RTT sample.
     /// </summary>
-    public void RefreshMinRttFromLatestSample(ulong latestRttMicros)
+    internal void RefreshMinRttFromLatestSample(ulong latestRttMicros)
     {
         MinRttMicros = latestRttMicros;
     }
@@ -110,7 +110,7 @@ public sealed class QuicRttEstimator
     /// one newly acknowledged ack-eliciting packet.
     /// </remarks>
     /// <returns><see langword="true"/> when the sample was accepted and the estimator state was updated.</returns>
-    public bool TryUpdateFromAck(
+    internal bool TryUpdateFromAck(
         ulong largestAcknowledgedPacketSentAtMicros,
         ulong ackReceivedAtMicros,
         bool largestAcknowledgedPacketNewlyAcknowledged,
@@ -191,3 +191,4 @@ public sealed class QuicRttEstimator
         return value >= amount ? value - amount : 0;
     }
 }
+

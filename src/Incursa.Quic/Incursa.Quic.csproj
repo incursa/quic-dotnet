@@ -8,7 +8,7 @@
     <Description>Core QUIC library for Incursa.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>quic;transport;networking;http3</PackageTags>
-    <NoWarn>$(NoWarn);RS0026;RS0027;RS0059;RS0060</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;RS0026;RS0027;RS0059;RS0060;S3442</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

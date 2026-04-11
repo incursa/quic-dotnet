@@ -3,12 +3,12 @@ namespace Incursa.Quic;
 /// <summary>
 /// Parses version-independent QUIC packet headers from byte spans.
 /// </summary>
-public static class QuicPacketParser
+internal static class QuicPacketParser
 {
     /// <summary>
     /// Classifies a packet by the high bit of the first byte.
     /// </summary>
-    public static bool TryClassifyHeaderForm(ReadOnlySpan<byte> packet, out QuicHeaderForm headerForm)
+    internal static bool TryClassifyHeaderForm(ReadOnlySpan<byte> packet, out QuicHeaderForm headerForm)
     {
         if (packet.IsEmpty)
         {
@@ -23,7 +23,7 @@ public static class QuicPacketParser
     /// <summary>
     /// Parses a long-header-form packet into a span-backed view.
     /// </summary>
-    public static bool TryParseLongHeader(ReadOnlySpan<byte> packet, out QuicLongHeaderPacket header)
+    internal static bool TryParseLongHeader(ReadOnlySpan<byte> packet, out QuicLongHeaderPacket header)
     {
         if (!QuicPacketParsing.TryParseLongHeaderFields(
             packet,
@@ -66,7 +66,7 @@ public static class QuicPacketParser
     /// <summary>
     /// Parses a short-header-form packet into an opaque remainder view.
     /// </summary>
-    public static bool TryParseShortHeader(ReadOnlySpan<byte> packet, out QuicShortHeaderPacket header)
+    internal static bool TryParseShortHeader(ReadOnlySpan<byte> packet, out QuicShortHeaderPacket header)
     {
         if (packet.IsEmpty
             || (packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) != 0
@@ -84,7 +84,7 @@ public static class QuicPacketParser
     /// <summary>
     /// Parses a Version Negotiation packet.
     /// </summary>
-    public static bool TryParseVersionNegotiation(ReadOnlySpan<byte> packet, out QuicVersionNegotiationPacket header)
+    internal static bool TryParseVersionNegotiation(ReadOnlySpan<byte> packet, out QuicVersionNegotiationPacket header)
     {
         if (!QuicPacketParsing.TryParseLongHeaderFields(
             packet,
@@ -117,7 +117,7 @@ public static class QuicPacketParser
     /// <summary>
     /// Maps a packet header to its packet number space when the packet uses a supported QUIC packet type.
     /// </summary>
-    public static bool TryGetPacketNumberSpace(ReadOnlySpan<byte> packet, out QuicPacketNumberSpace packetNumberSpace)
+    internal static bool TryGetPacketNumberSpace(ReadOnlySpan<byte> packet, out QuicPacketNumberSpace packetNumberSpace)
     {
         packetNumberSpace = default;
 
@@ -166,3 +166,4 @@ public static class QuicPacketParser
         }
     }
 }
+

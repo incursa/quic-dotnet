@@ -5,7 +5,7 @@ namespace Incursa.Quic;
 /// <summary>
 /// Identifies the defined QUIC transport error codes that may be carried in a CONNECTION_CLOSE frame of type 0x1c.
 /// </summary>
-public enum QuicTransportErrorCode : ulong
+internal enum QuicTransportErrorCode : ulong
 {
     /// <summary>
     /// The connection closed without an error.
@@ -109,3 +109,4 @@ public enum QuicTransportErrorCode : ulong
     [Description("The endpoint has no viable path to its peer.")]
     NoViablePath = 0x10,
 }
+
