@@ -107,7 +107,7 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
             return false;
         }
 
-        if (route.Runtime.IsDisposed || route.Runtime.IsInboxConsumerRunning)
+        if (route.Runtime.IsDisposed)
         {
             return false;
         }

@@ -92,8 +92,7 @@ The listener entry points are now part of this slice.
 
 - The connection/listener/client slice reuses `QuicConnectionRuntime`, `QuicConnectionStreamState`, `QuicListenerHost`, `QuicConnectionRuntimeEndpoint`, `QuicConnectionEndpointHost`, and `QuicClientConnectionHost` directly.
 - Listener startup and listener acceptance are honest and backed by the internal listener host.
-- Client connect now starts a real client host/runtime shell and stays pending until the runtime reaches the existing peer-handshake-complete boundary.
-- Client connect does not yet claim a real loopback success path because Initial/DCID bootstrap, inbound Initial handling, and listener-side datagram admission remain outside this slice.
+- Client connect now starts a real client host/runtime shell and completes on the supported positive loopback boundary through the existing host seams, with Initial/DCID bootstrap, inbound Initial handling, and listener-side datagram admission already in place.
 - The supported `SslClientAuthenticationOptions` subset is intentionally narrow: non-empty ALPN, TLS 1.3 or the default protocol selection, no target host or SNI/hostname validation, no client certificates, no chain policy, and an explicit `RemoteCertificateValidationCallback` gate over the parsed peer leaf certificate. Unsupported settings are rejected deterministically instead of being ignored.
 - The capacity callback surface remains deferred until the stream-capacity path exists end to end.
 

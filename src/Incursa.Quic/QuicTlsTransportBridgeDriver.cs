@@ -18,8 +18,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private readonly QuicTlsKeySchedule? keySchedule;
     private readonly byte[]? pinnedPeerLeafCertificateSha256;
     private readonly RemoteCertificateValidationCallback? remoteCertificateValidationCallback;
-    private readonly ReadOnlyMemory<byte> localServerLeafCertificateDer;
-    private readonly ReadOnlyMemory<byte> localServerLeafSigningPrivateKey;
+    private ReadOnlyMemory<byte> localServerLeafCertificateDer;
+    private ReadOnlyMemory<byte> localServerLeafSigningPrivateKey;
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> nextIngressOffsets = [];
 
     public QuicTlsTransportBridgeDriver(
@@ -77,7 +77,47 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
         AppendPublishedUpdates(updates, PublishLocalTransportParameters(localTransportParameters));
 
+        if (Role == QuicTlsRole.Client
+            && keySchedule is not null
+            && keySchedule.TryCreateClientHello(localTransportParameters, out byte[] clientHelloBytes))
+        {
+            keySchedule.AppendLocalHandshakeMessage(clientHelloBytes);
+            updates.Add(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.CryptoDataAvailable,
+                QuicTlsEncryptionLevel.Initial,
+                CryptoDataOffset: 0,
+                CryptoData: clientHelloBytes));
+        }
+
         return updates;
+    }
+
+    internal bool TryConfigureServerAuthenticationMaterial(
+        ReadOnlyMemory<byte> certificateDer,
+        ReadOnlyMemory<byte> signingPrivateKey)
+    {
+        if (Role != QuicTlsRole.Server
+            || certificateDer.IsEmpty
+            || signingPrivateKey.IsEmpty)
+        {
+            return false;
+        }
+
+        if (!localServerLeafCertificateDer.IsEmpty
+            && !localServerLeafCertificateDer.Span.SequenceEqual(certificateDer.Span))
+        {
+            return false;
+        }
+
+        if (!localServerLeafSigningPrivateKey.IsEmpty
+            && !localServerLeafSigningPrivateKey.Span.SequenceEqual(signingPrivateKey.Span))
+        {
+            return false;
+        }
+
+        localServerLeafCertificateDer = certificateDer.ToArray();
+        localServerLeafSigningPrivateKey = signingPrivateKey.ToArray();
+        return true;
     }
 
     /// <inheritdoc />
@@ -112,7 +152,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <returns>The state updates produced by the transcript step.</returns>
     public IReadOnlyList<QuicTlsStateUpdate> AdvanceHandshakeTranscript(QuicTlsEncryptionLevel encryptionLevel)
     {
-        if (encryptionLevel != QuicTlsEncryptionLevel.Handshake)
+        if (encryptionLevel is not (QuicTlsEncryptionLevel.Initial or QuicTlsEncryptionLevel.Handshake))
         {
             return Array.Empty<QuicTlsStateUpdate>();
         }
@@ -122,8 +162,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             return Array.Empty<QuicTlsStateUpdate>();
         }
 
-        int bufferedBytes = bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes;
-        if (bufferedBytes <= 0)
+        if (bridgeState.InitialIngressCryptoBuffer.BufferedBytes <= 0
+            && bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes <= 0)
         {
             return Array.Empty<QuicTlsStateUpdate>();
         }
@@ -134,8 +174,25 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
 
         List<QuicTlsStateUpdate> updates = [];
-        DrainBufferedHandshakeCryptoIntoTranscript();
-        DriveTranscriptProgress(updates);
+        if (DrainBufferedCryptoIntoTranscript(QuicTlsEncryptionLevel.Initial, 0))
+        {
+            DriveTranscriptProgress(updates);
+            if (bridgeState.IsTerminal)
+            {
+                return updates;
+            }
+        }
+
+        if (bridgeState.InitialIngressCryptoBuffer.BufferedBytes == 0
+            && handshakeTranscriptProgress.HandshakeMessageType.HasValue)
+        {
+            ulong transcriptOffsetBase = handshakeTranscriptProgress.IngressCursor;
+            if (DrainBufferedCryptoIntoTranscript(QuicTlsEncryptionLevel.Handshake, transcriptOffsetBase))
+            {
+                DriveTranscriptProgress(updates);
+            }
+        }
+
         return updates;
     }
 
@@ -325,18 +382,30 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
     }
 
-    private void DrainBufferedHandshakeCryptoIntoTranscript()
+    private bool DrainBufferedCryptoIntoTranscript(
+        QuicTlsEncryptionLevel encryptionLevel,
+        ulong transcriptOffsetBase)
     {
         Span<byte> cryptoBytes = stackalloc byte[HandshakeIngressDrainChunkBytes];
+        bool drainedAny = false;
 
-        while (bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes > 0)
+        while (true)
         {
+            int bufferedBytes = encryptionLevel == QuicTlsEncryptionLevel.Initial
+                ? bridgeState.InitialIngressCryptoBuffer.BufferedBytes
+                : bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes;
+
+            if (bufferedBytes <= 0)
+            {
+                break;
+            }
+
             int bytesToRead = Math.Min(
                 cryptoBytes.Length,
-                bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes);
+                bufferedBytes);
 
             if (!bridgeState.TryDequeueIncomingCryptoData(
-                QuicTlsEncryptionLevel.Handshake,
+                encryptionLevel,
                 cryptoBytes[..bytesToRead],
                 out ulong offset,
                 out int bytesWritten)
@@ -345,12 +414,17 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                 break;
             }
 
-            handshakeTranscriptProgress.AppendCryptoBytes(offset, cryptoBytes[..bytesWritten]);
+            handshakeTranscriptProgress.AppendCryptoBytes(
+                SaturatingAdd(transcriptOffsetBase, offset),
+                cryptoBytes[..bytesWritten]);
+            drainedAny = true;
             if (handshakeTranscriptProgress.TerminalAlertDescription.HasValue)
             {
                 break;
             }
         }
+
+        return drainedAny;
     }
 
     private IReadOnlyList<QuicTlsStateUpdate> PublishPeerHandshakeTranscriptCompleted()

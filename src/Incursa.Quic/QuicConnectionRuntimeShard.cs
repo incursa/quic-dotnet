@@ -44,7 +44,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             return false;
         }
 
-        if (runtime.IsDisposed || runtime.IsInboxConsumerRunning)
+        if (runtime.IsDisposed)
         {
             return false;
         }

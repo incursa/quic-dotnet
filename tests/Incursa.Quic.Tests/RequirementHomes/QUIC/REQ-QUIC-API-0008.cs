@@ -94,7 +94,11 @@ public sealed class REQ_QUIC_API_0008
             RemoteEndPoint = remoteEndPoint,
             ClientAuthenticationOptions = new SslClientAuthenticationOptions
             {
+                AllowRenegotiation = false,
+                AllowTlsResume = true,
                 ApplicationProtocols = [SslApplicationProtocol.Http3],
+                EnabledSslProtocols = SslProtocols.Tls13,
+                EncryptionPolicy = EncryptionPolicy.RequireEncryption,
                 RemoteCertificateValidationCallback = (_, _, _, errors) => errors == SslPolicyErrors.RemoteCertificateChainErrors,
             },
         };

@@ -20,6 +20,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
     private readonly QuicConnectionEndpointHost endpointHost;
     private readonly QuicConnection connection;
     private readonly QuicConnectionHandle handle;
+    private readonly byte[] initialDestinationConnectionId;
     private readonly byte[] routeConnectionId;
 
     private int started;
@@ -29,7 +30,9 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
     {
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
+        initialDestinationConnectionId = new byte[RouteConnectionIdLength];
         routeConnectionId = new byte[RouteConnectionIdLength];
+        RandomNumberGenerator.Fill(initialDestinationConnectionId);
         RandomNumberGenerator.Fill(routeConnectionId);
 
         Socket socket = CreateSocket(settings);
@@ -46,6 +49,13 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         runtime = CreateRuntime(settings.Options);
         connection = new QuicConnection(runtime, settings.Options, this);
         handle = endpoint.AllocateConnectionHandle();
+
+        if (!runtime.TryConfigureInitialPacketProtection(initialDestinationConnectionId)
+            || !runtime.TrySetBootstrapOutboundPath(pathIdentity)
+            || !runtime.TrySetHandshakeSourceConnectionId(routeConnectionId))
+        {
+            throw new InvalidOperationException("The client runtime could not configure its initial bootstrap state.");
+        }
 
         if (!endpoint.TryRegisterConnection(handle, runtime)
             || !endpoint.TryRegisterConnectionId(handle, routeConnectionId)

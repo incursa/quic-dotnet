@@ -1,18 +1,28 @@
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Runtime.ExceptionServices;
+using System.Security.Authentication;
+using System.Security.Cryptography;
 using System.Threading.Channels;
 
 namespace Incursa.Quic;
 
 internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 {
+    private const int RouteConnectionIdLength = 8;
+    private const ulong MinimumActiveConnectionIdLimit = 2;
+    private const ulong TicksPerMicrosecond = (ulong)TimeSpan.TicksPerSecond / 1_000_000UL;
+
     private readonly Socket socket;
     private readonly CancellationTokenSource shutdown = new();
     private readonly Channel<object> acceptQueue;
+    private readonly List<SslApplicationProtocol> applicationProtocols;
     private readonly Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>> connectionOptionsCallback;
+    private readonly QuicConnectionRuntimeEndpoint endpoint;
+    private readonly ConcurrentDictionary<QuicConnectionHandle, PendingConnectionState> connections = new();
 
     private CancellationTokenSource? listenerCancellationSource;
     private Task? runningTask;
@@ -34,7 +44,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             throw new ArgumentOutOfRangeException(nameof(listenBacklog));
         }
 
+        this.applicationProtocols = [.. applicationProtocols];
         this.connectionOptionsCallback = connectionOptionsCallback;
+        endpoint = new QuicConnectionRuntimeEndpoint(1);
         acceptQueue = Channel.CreateBounded<object>(new BoundedChannelOptions(listenBacklog)
         {
             SingleReader = false,
@@ -64,42 +76,15 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         listenerCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, shutdown.Token);
         CancellationToken hostCancellation = listenerCancellationSource.Token;
-        runningTask = ReceiveLoopAsync(hostCancellation);
+
+        Task endpointTask = endpoint.RunAsync(
+            ObserveTransition,
+            ObserveEffect,
+            hostCancellation);
+
+        Task receiveTask = ReceiveLoopAsync(hostCancellation);
+        runningTask = Task.WhenAll(endpointTask, receiveTask);
         return runningTask;
-    }
-
-    public async ValueTask<QuicConnection> EnqueueIncomingConnectionAsync(
-        SslClientHelloInfo clientHello,
-        CancellationToken cancellationToken = default)
-    {
-        ThrowIfDisposed();
-
-        QuicServerConnectionOptions selectedOptions = new();
-        QuicConnectionRuntime runtime = CreateRuntime(selectedOptions);
-        QuicConnection connection = new(runtime, selectedOptions);
-
-        try
-        {
-            using CancellationTokenSource acceptCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, shutdown.Token);
-            QuicServerConnectionOptions returnedOptions = await connectionOptionsCallback(
-                connection,
-                clientHello,
-                acceptCancellationSource.Token).ConfigureAwait(false);
-
-            if (returnedOptions is null)
-            {
-                throw new InvalidOperationException("The connection-options callback returned null.");
-            }
-
-            ApplyReturnedOptions(selectedOptions, returnedOptions);
-            await acceptQueue.Writer.WriteAsync(connection, acceptCancellationSource.Token).ConfigureAwait(false);
-            return connection;
-        }
-        catch
-        {
-            await connection.DisposeAsync().ConfigureAwait(false);
-            throw;
-        }
     }
 
     public async ValueTask<QuicConnection> AcceptConnectionAsync(CancellationToken cancellationToken = default)
@@ -148,6 +133,15 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         acceptQueue.Writer.TryComplete(ExceptionDispatchInfo.SetCurrentStackTrace(new ObjectDisposedException(nameof(QuicListenerHost))));
 
+        try
+        {
+            await endpoint.DisposeAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+            // Best-effort shutdown only.
+        }
+
         Task? task = runningTask;
         if (task is not null)
         {
@@ -158,6 +152,18 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             catch (OperationCanceledException) when (shutdown.IsCancellationRequested)
             {
                 // Expected during shutdown.
+            }
+        }
+
+        foreach (PendingConnectionState state in connections.Values)
+        {
+            try
+            {
+                await state.Connection.DisposeAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                // Best-effort cleanup only.
             }
         }
 
@@ -190,12 +196,20 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         byte[] buffer = ArrayPool<byte>.Shared.Rent(4096);
         try
         {
+            EndPoint remoteEndPoint = socket.AddressFamily == AddressFamily.InterNetworkV6
+                ? new IPEndPoint(IPAddress.IPv6Any, 0)
+                : new IPEndPoint(IPAddress.Any, 0);
+
             while (!cancellationToken.IsCancellationRequested)
             {
-                int bytesReceived;
+                SocketReceiveFromResult receiveResult;
                 try
                 {
-                    bytesReceived = await socket.ReceiveAsync(buffer.AsMemory(), SocketFlags.None, cancellationToken).ConfigureAwait(false);
+                    receiveResult = await socket.ReceiveFromAsync(
+                        buffer.AsMemory(),
+                        SocketFlags.None,
+                        remoteEndPoint,
+                        cancellationToken).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
@@ -210,15 +224,386 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     break;
                 }
 
-                if (bytesReceived > 0)
+                if (receiveResult.ReceivedBytes <= 0)
                 {
-                    // In this slice we only keep the socket honest; connection admission is fed through the narrow callback seam.
+                    continue;
+                }
+
+                IPEndPoint receivedFrom = (IPEndPoint)receiveResult.RemoteEndPoint;
+                IPEndPoint localEndPoint = (IPEndPoint)socket.LocalEndPoint!;
+                QuicConnectionPathIdentity pathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
+
+                byte[] datagram = buffer.AsSpan(0, receiveResult.ReceivedBytes).ToArray();
+                QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, pathIdentity);
+                if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection
+                    || ingressResult.Disposition == QuicConnectionIngressDisposition.EndpointHandling)
+                {
+                    continue;
+                }
+
+                if (TryParseInitialDatagram(datagram, out QuicLongHeaderPacket initialHeader))
+                {
+                    try
+                    {
+                        if (await TryAdmitIncomingInitialConnectionAsync(
+                            datagram,
+                            pathIdentity,
+                            initialHeader.DestinationConnectionId.ToArray(),
+                            initialHeader.SourceConnectionId.ToArray(),
+                            cancellationToken).ConfigureAwait(false))
+                        {
+                            _ = endpoint.ReceiveDatagram(datagram, pathIdentity);
+                        }
+                    }
+                    catch
+                    {
+                        // Admission failures remain local to the listener shell.
+                    }
                 }
             }
         }
         finally
         {
             ArrayPool<byte>.Shared.Return(buffer);
+        }
+    }
+
+    private void ObserveTransition(QuicConnectionHandle handle, int shardIndex, QuicConnectionTransitionResult transition)
+    {
+        _ = shardIndex;
+
+        if (!connections.TryGetValue(handle, out PendingConnectionState? state))
+        {
+            return;
+        }
+
+        if (state.Runtime.TerminalState is QuicConnectionTerminalState terminalState
+            && state.TryMarkFailed())
+        {
+            connections.TryRemove(handle, out _);
+            _ = QueueConnectionFailureAsync(state.Connection, MapTerminalState(terminalState));
+            return;
+        }
+
+        if (transition.CurrentPhase == QuicConnectionPhase.Active
+            && state.Runtime.PeerHandshakeTranscriptCompleted
+            && state.TryMarkAccepted())
+        {
+            connections.TryRemove(handle, out _);
+            _ = QueueAcceptedConnectionAsync(state.Connection);
+        }
+    }
+
+    private void ObserveEffect(QuicConnectionHandle handle, int shardIndex, QuicConnectionEffect effect)
+    {
+        _ = handle;
+        _ = shardIndex;
+
+        if (effect is QuicConnectionSendDatagramEffect sendDatagramEffect)
+        {
+            SendDatagram(sendDatagramEffect);
+        }
+    }
+
+    private void SendDatagram(QuicConnectionSendDatagramEffect sendDatagramEffect)
+    {
+        try
+        {
+            EndPoint remoteEndPoint = new IPEndPoint(
+                IPAddress.Parse(sendDatagramEffect.PathIdentity.RemoteAddress),
+                sendDatagramEffect.PathIdentity.RemotePort ?? throw new InvalidOperationException("The listener connection path is missing a remote port."));
+
+            int bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
+            if (bytesSent != sendDatagramEffect.Datagram.Length)
+            {
+                throw new IOException("Failed to send the complete QUIC datagram.");
+            }
+        }
+        catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
+        {
+            // Expected during shutdown.
+        }
+        catch (SocketException) when (shutdown.IsCancellationRequested)
+        {
+            // Expected during shutdown.
+        }
+    }
+
+    private static bool TryParseInitialDatagram(ReadOnlySpan<byte> datagram, out QuicLongHeaderPacket longHeader)
+    {
+        if (!QuicPacketParser.TryParseLongHeader(datagram, out longHeader)
+            || longHeader.Version != 1
+            || longHeader.LongPacketTypeBits != QuicLongPacketTypeBits.Initial)
+        {
+            longHeader = default;
+            return false;
+        }
+
+        return true;
+    }
+
+    private async ValueTask<bool> TryAdmitIncomingInitialConnectionAsync(
+        ReadOnlyMemory<byte> datagram,
+        QuicConnectionPathIdentity pathIdentity,
+        byte[] initialDestinationConnectionId,
+        byte[] clientSourceConnectionId,
+        CancellationToken cancellationToken)
+    {
+        QuicServerConnectionOptions selectedOptions = new();
+        QuicConnectionRuntime? runtime = null;
+        QuicConnection? connection = null;
+        QuicConnectionHandle handle = default;
+        bool admitted = false;
+
+        try
+        {
+            if (!QuicInitialPacketProtection.TryCreate(
+                QuicTlsRole.Server,
+                initialDestinationConnectionId,
+                out QuicInitialPacketProtection initialProtection))
+            {
+                return false;
+            }
+
+            QuicHandshakeFlowCoordinator initialPacketCoordinator = new();
+            if (!initialPacketCoordinator.TryOpenInitialPacket(
+                datagram.Span,
+                initialProtection,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength)
+                || !TryValidateInitialCryptoPayload(openedPacket.AsSpan(payloadOffset, payloadLength)))
+            {
+                return false;
+            }
+
+            byte[] serverSourceConnectionId = GenerateServerSourceConnectionId();
+            runtime = CreateRuntime(selectedOptions);
+            handle = endpoint.AllocateConnectionHandle();
+            QuicServerConnectionLifetime lifetimeOwner = new(endpoint, handle, runtime);
+            connection = new QuicConnection(runtime, selectedOptions, lifetimeOwner);
+
+            if (!endpoint.TryRegisterConnection(handle, runtime)
+                || !endpoint.TryRegisterConnectionId(handle, initialDestinationConnectionId)
+                || !endpoint.TryRegisterConnectionId(handle, serverSourceConnectionId)
+                || !endpoint.TryUpdateEndpointBinding(handle, pathIdentity))
+            {
+                return false;
+            }
+
+            if (!connections.TryAdd(handle, new PendingConnectionState(handle, runtime, connection)))
+            {
+                return false;
+            }
+
+            using CancellationTokenSource acceptCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, shutdown.Token);
+            QuicServerConnectionOptions returnedOptions = await connectionOptionsCallback(
+                connection,
+                new SslClientHelloInfo(string.Empty, SslProtocols.Tls13),
+                acceptCancellationSource.Token).ConfigureAwait(false);
+
+            if (returnedOptions is null)
+            {
+                return false;
+            }
+
+            QuicServerConnectionSettings validatedOptions = QuicServerConnectionOptionsValidator.Capture(
+                returnedOptions,
+                "returnedOptions",
+                applicationProtocols);
+
+            ApplyReturnedOptions(selectedOptions, returnedOptions);
+
+            if (!runtime.TryConfigureInitialPacketProtection(initialDestinationConnectionId)
+                || !runtime.TrySetHandshakeDestinationConnectionId(clientSourceConnectionId)
+                || !runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId)
+                || !runtime.TryConfigureServerAuthenticationMaterial(
+                    validatedOptions.ServerLeafCertificateDer,
+                    validatedOptions.ServerLeafSigningPrivateKey))
+            {
+                return false;
+            }
+
+            if (!endpoint.Host.TryPostEvent(
+                handle,
+                new QuicConnectionHandshakeBootstrapRequestedEvent(
+                    runtime.Clock.Ticks,
+                    CreateLocalTransportParameters(selectedOptions, serverSourceConnectionId))))
+            {
+                return false;
+            }
+
+            admitted = true;
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+        finally
+        {
+            if (!admitted)
+            {
+                if (!EqualityComparer<QuicConnectionHandle>.Default.Equals(handle, default))
+                {
+                    connections.TryRemove(handle, out _);
+                }
+
+                try
+                {
+                    if (connection is not null)
+                    {
+                        await connection.DisposeAsync().ConfigureAwait(false);
+                    }
+                    else if (runtime is not null)
+                    {
+                        await runtime.DisposeAsync().ConfigureAwait(false);
+                    }
+                }
+                catch
+                {
+                    // Best-effort cleanup only.
+                }
+            }
+        }
+    }
+
+    private static bool TryValidateInitialCryptoPayload(ReadOnlySpan<byte> payload)
+    {
+        bool sawCryptoFrame = false;
+        int payloadOffset = 0;
+
+        while (payloadOffset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[payloadOffset..];
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                if (paddingBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                payloadOffset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (!QuicFrameCodec.TryParseCryptoFrame(remaining, out _, out int bytesConsumed)
+                || bytesConsumed <= 0)
+            {
+                return false;
+            }
+
+            sawCryptoFrame = true;
+            payloadOffset += bytesConsumed;
+        }
+
+        return sawCryptoFrame;
+    }
+
+    private static QuicConnectionPathIdentity CreatePathIdentity(IPEndPoint remoteEndPoint, IPEndPoint localEndPoint)
+    {
+        return new QuicConnectionPathIdentity(
+            remoteEndPoint.Address.ToString(),
+            localEndPoint.Address.ToString(),
+            remoteEndPoint.Port,
+            localEndPoint.Port);
+    }
+
+    private static byte[] GenerateServerSourceConnectionId()
+    {
+        byte[] connectionId = new byte[RouteConnectionIdLength];
+        RandomNumberGenerator.Fill(connectionId);
+        return connectionId;
+    }
+
+    private static QuicTransportParameters CreateLocalTransportParameters(
+        QuicServerConnectionOptions options,
+        ReadOnlySpan<byte> sourceConnectionId)
+    {
+        QuicReceiveWindowSizes receiveWindowSizes = options.InitialReceiveWindowSizes;
+
+        return new QuicTransportParameters
+        {
+            MaxIdleTimeout = options.IdleTimeout > TimeSpan.Zero
+                ? checked((ulong)options.IdleTimeout.Ticks / TicksPerMicrosecond)
+                : 0,
+            InitialMaxData = (ulong)Math.Max(0, receiveWindowSizes.Connection),
+            InitialMaxStreamDataBidiLocal = (ulong)Math.Max(0, receiveWindowSizes.LocallyInitiatedBidirectionalStream),
+            InitialMaxStreamDataBidiRemote = (ulong)Math.Max(0, receiveWindowSizes.RemotelyInitiatedBidirectionalStream),
+            InitialMaxStreamDataUni = (ulong)Math.Max(0, receiveWindowSizes.UnidirectionalStream),
+            InitialMaxStreamsBidi = (ulong)Math.Max(0, options.MaxInboundBidirectionalStreams),
+            InitialMaxStreamsUni = (ulong)Math.Max(0, options.MaxInboundUnidirectionalStreams),
+            ActiveConnectionIdLimit = MinimumActiveConnectionIdLimit,
+            InitialSourceConnectionId = sourceConnectionId.ToArray(),
+        };
+    }
+
+    private static Exception MapTerminalState(QuicConnectionTerminalState terminalState)
+    {
+        if (terminalState.Close.TransportErrorCode.HasValue)
+        {
+            return new QuicException(
+                QuicError.TransportError,
+                null,
+                (long)terminalState.Close.TransportErrorCode.Value,
+                terminalState.Close.ReasonPhrase ?? "The listener connection terminated during establishment.");
+        }
+
+        if (terminalState.Origin == QuicConnectionCloseOrigin.IdleTimeout)
+        {
+            return new QuicException(
+                QuicError.ConnectionIdle,
+                null,
+                terminalState.Close.ReasonPhrase ?? "The listener connection idled before establishment completed.");
+        }
+
+        long? applicationErrorCode = terminalState.Close.ApplicationErrorCode.HasValue
+            ? checked((long)terminalState.Close.ApplicationErrorCode.Value)
+            : null;
+
+        return new QuicException(
+            QuicError.ConnectionAborted,
+            applicationErrorCode,
+            terminalState.Close.ReasonPhrase ?? "The listener connection terminated during establishment.");
+    }
+
+    private async Task QueueAcceptedConnectionAsync(QuicConnection connection)
+    {
+        try
+        {
+            await acceptQueue.Writer.WriteAsync(connection, shutdown.Token).ConfigureAwait(false);
+        }
+        catch
+        {
+            try
+            {
+                await connection.DisposeAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                // Best-effort cleanup only.
+            }
+        }
+    }
+
+    private async Task QueueConnectionFailureAsync(QuicConnection connection, Exception exception)
+    {
+        try
+        {
+            await connection.DisposeAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+            // Best-effort cleanup only.
+        }
+
+        try
+        {
+            await acceptQueue.Writer.WriteAsync(exception, shutdown.Token).ConfigureAwait(false);
+        }
+        catch
+        {
+            // The listener is shutting down or the queue is closed.
         }
     }
 
@@ -256,6 +641,68 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             InitialPeerBidirectionalSendLimit: 0));
 
         return new QuicConnectionRuntime(bookkeeping, tlsRole: QuicTlsRole.Server);
+    }
+
+    private sealed class PendingConnectionState
+    {
+        private const int AcceptedStatus = 1;
+        private const int FailedStatus = 2;
+        private int status;
+
+        public PendingConnectionState(
+            QuicConnectionHandle handle,
+            QuicConnectionRuntime runtime,
+            QuicConnection connection)
+        {
+            Handle = handle;
+            Runtime = runtime;
+            Connection = connection;
+        }
+
+        public QuicConnectionHandle Handle { get; }
+
+        public QuicConnectionRuntime Runtime { get; }
+
+        public QuicConnection Connection { get; }
+
+        public bool TryMarkAccepted()
+        {
+            return Interlocked.CompareExchange(ref status, AcceptedStatus, 0) == 0;
+        }
+
+        public bool TryMarkFailed()
+        {
+            return Interlocked.CompareExchange(ref status, FailedStatus, 0) == 0;
+        }
+    }
+
+    private sealed class QuicServerConnectionLifetime : IAsyncDisposable
+    {
+        private readonly QuicConnectionRuntimeEndpoint endpoint;
+        private readonly QuicConnectionHandle handle;
+        private readonly QuicConnectionRuntime runtime;
+        private int disposed;
+
+        public QuicServerConnectionLifetime(
+            QuicConnectionRuntimeEndpoint endpoint,
+            QuicConnectionHandle handle,
+            QuicConnectionRuntime runtime)
+        {
+            this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            this.handle = handle;
+            this.runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (Interlocked.Exchange(ref disposed, 1) != 0)
+            {
+                return;
+            }
+
+            endpoint.TryUnregisterConnection(handle);
+            await runtime.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     private static void ApplyReturnedOptions(QuicServerConnectionOptions selectedOptions, QuicServerConnectionOptions returnedOptions)

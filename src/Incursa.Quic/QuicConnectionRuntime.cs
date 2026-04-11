@@ -27,6 +27,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly QuicHandshakeFlowCoordinator handshakeFlowCoordinator;
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
+    private QuicInitialPacketProtection? initialPacketProtection;
+    private QuicConnectionPathIdentity? bootstrapOutboundPathIdentity;
 
     private int consumerStarted;
     private int disposed;
@@ -183,6 +185,58 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     internal QuicConnectionSendRuntime SendRuntime => sendRuntime;
 
     internal QuicTransportTlsBridgeState TlsState => tlsState;
+
+    internal bool TryConfigureInitialPacketProtection(ReadOnlySpan<byte> clientInitialDestinationConnectionId)
+    {
+        if (initialPacketProtection is not null)
+        {
+            return true;
+        }
+
+        if (!QuicInitialPacketProtection.TryCreate(
+            tlsState.Role,
+            clientInitialDestinationConnectionId,
+            out QuicInitialPacketProtection protection))
+        {
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TrySetInitialDestinationConnectionId(clientInitialDestinationConnectionId))
+        {
+            return false;
+        }
+
+        initialPacketProtection = protection;
+        return true;
+    }
+
+    internal bool TrySetBootstrapOutboundPath(QuicConnectionPathIdentity pathIdentity)
+    {
+        if (bootstrapOutboundPathIdentity.HasValue)
+        {
+            return EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(bootstrapOutboundPathIdentity.Value, pathIdentity);
+        }
+
+        bootstrapOutboundPathIdentity = pathIdentity;
+        return true;
+    }
+
+    internal bool TrySetHandshakeDestinationConnectionId(ReadOnlySpan<byte> connectionId)
+    {
+        return handshakeFlowCoordinator.TrySetHandshakeDestinationConnectionId(connectionId);
+    }
+
+    internal bool TrySetHandshakeSourceConnectionId(ReadOnlySpan<byte> connectionId)
+    {
+        return handshakeFlowCoordinator.TrySetSourceConnectionId(connectionId);
+    }
+
+    internal bool TryConfigureServerAuthenticationMaterial(
+        ReadOnlyMemory<byte> certificateDer,
+        ReadOnlyMemory<byte> signingPrivateKey)
+    {
+        return tlsBridgeDriver.TryConfigureServerAuthenticationMaterial(certificateDer, signingPrivateKey);
+    }
 
     /// <summary>
     /// Posts a network-originated event to the connection inbox.
@@ -423,6 +477,20 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 ref effects);
         }
 
+        IReadOnlyList<QuicTlsStateUpdate> replayedHandshakeUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.Handshake);
+        if (replayedHandshakeUpdates.Count > 0)
+        {
+            stateChanged = true;
+
+            foreach (QuicTlsStateUpdate replayedHandshakeUpdate in replayedHandshakeUpdates)
+            {
+                stateChanged |= HandleTlsStateUpdated(
+                    new QuicConnectionTlsStateUpdatedEvent(handshakeBootstrapRequestedEvent.ObservedAtTicks, replayedHandshakeUpdate),
+                    nowTicks,
+                    ref effects);
+            }
+        }
+
         return stateChanged;
     }
 
@@ -484,6 +552,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             case QuicTlsUpdateKind.PacketProtectionMaterialAvailable:
             case QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable:
             case QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable:
+                stateChanged |= TryFlushInitialPackets(ref effects);
                 stateChanged |= TryFlushHandshakePackets(ref effects);
                 break;
         }
@@ -504,6 +573,44 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             cryptoFrameReceivedEvent.Offset,
             cryptoFrameReceivedEvent.CryptoData,
             out _);
+    }
+
+    private bool TryHandleInitialPacketReceived(
+        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        ReadOnlySpan<byte> datagram = packetReceivedEvent.Datagram.Span;
+        if (!QuicPacketParser.TryGetPacketNumberSpace(datagram, out QuicPacketNumberSpace packetNumberSpace)
+            || packetNumberSpace != QuicPacketNumberSpace.Initial
+            || initialPacketProtection is null
+            || !handshakeFlowCoordinator.TryOpenInitialPacket(
+                datagram,
+                initialPacketProtection,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength))
+        {
+            return false;
+        }
+
+        if (tlsState.Role == QuicTlsRole.Client
+            && QuicPacketParsing.TryParseLongHeaderFields(
+                openedPacket,
+                out _,
+                out _,
+                out _,
+                out ReadOnlySpan<byte> initialSourceConnectionId,
+                out _))
+        {
+            _ = TrySetHandshakeDestinationConnectionId(initialSourceConnectionId);
+        }
+
+        return TryProcessHandshakePacketPayload(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            QuicTlsEncryptionLevel.Initial,
+            nowTicks,
+            ref effects);
     }
 
     private bool TryHandleHandshakePacketReceived(
@@ -527,12 +634,14 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         return TryProcessHandshakePacketPayload(
             openedPacket.AsSpan(payloadOffset, payloadLength),
+            QuicTlsEncryptionLevel.Handshake,
             nowTicks,
             ref effects);
     }
 
     private bool TryProcessHandshakePacketPayload(
         ReadOnlySpan<byte> payload,
+        QuicTlsEncryptionLevel encryptionLevel,
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
@@ -562,7 +671,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
             processedCryptoFrame = true;
             if (!tlsBridgeDriver.TryBufferIncomingCryptoData(
-                QuicTlsEncryptionLevel.Handshake,
+                encryptionLevel,
                 cryptoFrame.Offset,
                 cryptoFrame.CryptoData.ToArray(),
                 out _))
@@ -571,7 +680,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             }
 
             IReadOnlyList<QuicTlsStateUpdate> transcriptUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(
-                QuicTlsEncryptionLevel.Handshake);
+                encryptionLevel);
             if (transcriptUpdates.Count == 0)
             {
                 payloadOffset += bytesConsumed;
@@ -581,12 +690,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             bool sawFatalAlert = false;
             foreach (QuicTlsStateUpdate transcriptUpdate in transcriptUpdates)
             {
+                stateChanged |= HandleTlsStateUpdated(
+                    new QuicConnectionTlsStateUpdatedEvent(nowTicks, transcriptUpdate),
+                    nowTicks,
+                    ref effects);
+
                 if (transcriptUpdate.Kind == QuicTlsUpdateKind.FatalAlert)
                 {
-                    stateChanged |= HandleTlsStateUpdated(
-                        new QuicConnectionTlsStateUpdatedEvent(nowTicks, transcriptUpdate),
-                        nowTicks,
-                        ref effects);
                     sawFatalAlert = true;
                     break;
                 }
@@ -594,21 +704,15 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
             if (!sawFatalAlert)
             {
-                foreach (QuicTlsStateUpdate transcriptUpdate in transcriptUpdates)
-                {
-                    if (transcriptUpdate.Kind is QuicTlsUpdateKind.PeerFinishedVerified
-                        or QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted)
-                    {
-                        stateChanged |= HandleTlsStateUpdated(
-                            new QuicConnectionTlsStateUpdatedEvent(nowTicks, transcriptUpdate),
-                            nowTicks,
-                            ref effects);
-                    }
-                }
+                // All non-fatal transcript updates are surfaced through the runtime so newly available
+                // crypto material and handshake state can flush immediately.
             }
 
             payloadOffset += bytesConsumed;
         }
+
+        stateChanged |= TryFlushInitialPackets(ref effects);
+        stateChanged |= TryFlushHandshakePackets(ref effects);
 
         if (!processedCryptoFrame)
         {
@@ -618,9 +722,86 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return stateChanged || processedCryptoFrame;
     }
 
-    private bool TryFlushHandshakePackets(ref List<QuicConnectionEffect>? effects)
+    private bool TryFlushInitialPackets(ref List<QuicConnectionEffect>? effects)
     {
         if (phase != QuicConnectionPhase.Establishing
+            || tlsState.InitialEgressCryptoBuffer.BufferedBytes <= 0
+            || initialPacketProtection is null
+            || !TryGetInitialOutboundPath(out QuicConnectionPathIdentity pathIdentity))
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        Span<byte> cryptoBuffer = stackalloc byte[HandshakeEgressChunkBytes];
+
+        while (tlsState.InitialEgressCryptoBuffer.BufferedBytes > 0)
+        {
+            int requestedBytes = Math.Min(cryptoBuffer.Length, tlsState.InitialEgressCryptoBuffer.BufferedBytes);
+            if (requestedBytes <= 0)
+            {
+                break;
+            }
+
+            Span<byte> cryptoChunk = cryptoBuffer[..requestedBytes];
+            if (!tlsBridgeDriver.TryPeekOutgoingCryptoData(
+                QuicTlsEncryptionLevel.Initial,
+                cryptoChunk,
+                out ulong cryptoOffset,
+                out int cryptoBytesWritten)
+                || cryptoBytesWritten <= 0)
+            {
+                break;
+            }
+
+            byte[] protectedPacket;
+            bool builtProtectedPacket;
+            if (tlsState.Role == QuicTlsRole.Client)
+            {
+                builtProtectedPacket = handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
+                    cryptoChunk[..cryptoBytesWritten],
+                    cryptoOffset,
+                    initialPacketProtection,
+                    out protectedPacket);
+            }
+            else
+            {
+                builtProtectedPacket = handshakeFlowCoordinator.TryBuildProtectedInitialPacketForHandshakeDestination(
+                    cryptoChunk[..cryptoBytesWritten],
+                    cryptoOffset,
+                    initialPacketProtection,
+                    out protectedPacket);
+            }
+
+            if (!builtProtectedPacket)
+            {
+                break;
+            }
+
+            if (!tlsBridgeDriver.TryDequeueOutgoingCryptoData(
+                QuicTlsEncryptionLevel.Initial,
+                cryptoChunk[..cryptoBytesWritten],
+                out ulong dequeuedOffset,
+                out int dequeuedBytesWritten)
+                || dequeuedOffset != cryptoOffset
+                || dequeuedBytesWritten != cryptoBytesWritten)
+            {
+                break;
+            }
+
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
+            tlsState.InitialEgressCryptoBuffer.DiscardFutureFrames();
+            stateChanged = true;
+        }
+
+        return stateChanged;
+    }
+
+    private bool TryFlushHandshakePackets(ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase is QuicConnectionPhase.Closing
+            or QuicConnectionPhase.Draining
+            or QuicConnectionPhase.Discarded
             || activePath is null
             || tlsState.HandshakeEgressCryptoBuffer.BufferedBytes <= 0
             || !tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial packetProtectionMaterial))
@@ -690,6 +871,25 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         return stateChanged;
+    }
+
+    private bool TryGetInitialOutboundPath(out QuicConnectionPathIdentity pathIdentity)
+    {
+        if (activePath is not null)
+        {
+            pathIdentity = activePath.Value.Identity;
+            return true;
+        }
+
+        if (tlsState.Role == QuicTlsRole.Client
+            && bootstrapOutboundPathIdentity.HasValue)
+        {
+            pathIdentity = bootstrapOutboundPathIdentity.Value;
+            return true;
+        }
+
+        pathIdentity = default;
+        return false;
     }
 
     private bool TryCommitLocalTransportParametersFromTlsBridgeState(
@@ -890,6 +1090,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (phase == QuicConnectionPhase.Establishing)
         {
+            stateChanged |= TryHandleInitialPacketReceived(packetReceivedEvent, nowTicks, ref effects);
             stateChanged |= TryHandleHandshakePacketReceived(packetReceivedEvent, nowTicks, ref effects);
         }
 

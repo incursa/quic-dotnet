@@ -42,4 +42,23 @@ public sealed class REQ_QUIC_RFC9000_S7P5_0001
             Assert.Equal(0, buffer.BufferedBytes);
         }
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDequeueContiguousData_ConsumesASingleContiguousFrame()
+    {
+        QuicCryptoBuffer buffer = new();
+        byte[] payload = [0x01, 0x02, 0x03, 0x04];
+
+        Assert.True(buffer.TryAddFrame(new QuicCryptoFrame(0, payload), out QuicCryptoBufferResult addResult));
+        Assert.Equal(QuicCryptoBufferResult.Buffered, addResult);
+
+        Span<byte> reconstructed = stackalloc byte[payload.Length];
+        Assert.True(buffer.TryDequeueContiguousData(reconstructed, out ulong offset, out int bytesWritten));
+        Assert.Equal(0UL, offset);
+        Assert.Equal(payload.Length, bytesWritten);
+        Assert.True(payload.AsSpan().SequenceEqual(reconstructed[..bytesWritten]));
+        Assert.Equal(0, buffer.BufferedBytes);
+    }
 }

@@ -1,5 +1,3 @@
-using System.Net.Security;
-
 namespace Incursa.Quic;
 
 /// <summary>
@@ -64,11 +62,4 @@ public sealed class QuicListener : IAsyncDisposable
         await host.DisposeAsync().ConfigureAwait(false);
     }
 
-    internal ValueTask<QuicConnection> EnqueueIncomingConnectionAsync(
-        SslClientHelloInfo clientHello,
-        CancellationToken cancellationToken = default)
-    {
-        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
-        return host.EnqueueIncomingConnectionAsync(clientHello, cancellationToken);
-    }
 }

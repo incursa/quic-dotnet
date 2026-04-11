@@ -85,7 +85,7 @@ internal static class QuicClientConnectionOptionsValidator
             throw new NotSupportedException("Only TLS 1.3 is supported by this slice.");
         }
 
-        if (!authenticationOptions.AllowRenegotiation)
+        if (authenticationOptions.AllowRenegotiation)
         {
             throw new NotSupportedException("Renegotiation settings are not supported by this slice.");
         }

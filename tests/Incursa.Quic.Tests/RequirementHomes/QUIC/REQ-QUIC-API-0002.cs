@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Incursa.Quic.Tests;
 
@@ -64,15 +66,70 @@ public sealed class REQ_QUIC_API_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task ListenAsync_ReturnsARealListenerAndDisposesCleanly()
+    public async Task ConnectAsync_And_AcceptConnectionAsync_CompleteARealLoopbackEstablishment()
     {
-        QuicListener listener = await QuicListener.ListenAsync(CreateListenerOptions());
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        TaskCompletionSource<bool> callbackEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<bool> callbackRelease = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        QuicConnection? observedConnection = null;
+        string? observedServerName = null;
+        SslProtocols observedProtocols = default;
 
-        Assert.IsType<QuicListener>(listener);
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = async (connection, clientHello, cancellationToken) =>
+            {
+                observedConnection = connection;
+                observedServerName = clientHello.ServerName;
+                observedProtocols = clientHello.SslProtocols;
+                callbackEntered.TrySetResult(true);
+                await callbackRelease.Task.WaitAsync(cancellationToken);
+                return QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+            },
+        };
 
-        await listener.DisposeAsync();
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
+        Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port))).AsTask();
 
-        Assert.Throws<ObjectDisposedException>(() => listener.AcceptConnectionAsync());
+        await callbackEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.False(connectTask.IsCompleted);
+        Assert.False(acceptTask.IsCompleted);
+
+        callbackRelease.TrySetResult(true);
+
+        Task completionTask = Task.WhenAll(connectTask, acceptTask);
+        Task completedTask = await Task.WhenAny(completionTask, Task.Delay(TimeSpan.FromSeconds(5)));
+        if (completedTask != completionTask)
+        {
+            throw new TimeoutException(
+                $"Loopback establishment did not complete. Server runtime: {QuicLoopbackEstablishmentTestSupport.DescribeConnection(observedConnection)}");
+        }
+
+        await completionTask;
+
+        QuicConnection clientConnection = await connectTask;
+        QuicConnection serverConnection = await acceptTask;
+
+        try
+        {
+            Assert.IsType<QuicConnection>(clientConnection);
+            Assert.IsType<QuicConnection>(serverConnection);
+            Assert.NotSame(clientConnection, serverConnection);
+            Assert.Same(serverConnection, observedConnection);
+            Assert.True(string.IsNullOrEmpty(observedServerName));
+            Assert.Equal(SslProtocols.Tls13, observedProtocols);
+        }
+        finally
+        {
+            await serverConnection.DisposeAsync();
+            await clientConnection.DisposeAsync();
+        }
     }
 
     [Fact]
@@ -116,15 +173,14 @@ public sealed class REQ_QUIC_API_0002
         Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(options));
     }
 
-    private static QuicListenerOptions CreateListenerOptions(
-        Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>>? connectionOptionsCallback = null)
+    private static QuicListenerOptions CreateListenerOptions()
     {
         return new QuicListenerOptions
         {
             ListenEndPoint = new IPEndPoint(IPAddress.Loopback, 0),
             ApplicationProtocols = [SslApplicationProtocol.Http3],
             ListenBacklog = 1,
-            ConnectionOptionsCallback = connectionOptionsCallback ?? ((connection, clientHello, cancellationToken) => ValueTask.FromResult(new QuicServerConnectionOptions())),
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(new QuicServerConnectionOptions()),
         };
     }
 
@@ -135,7 +191,11 @@ public sealed class REQ_QUIC_API_0002
             RemoteEndPoint = new IPEndPoint(IPAddress.Loopback, 443),
             ClientAuthenticationOptions = new SslClientAuthenticationOptions
             {
+                AllowRenegotiation = false,
+                AllowTlsResume = true,
                 ApplicationProtocols = [SslApplicationProtocol.Http3],
+                EnabledSslProtocols = SslProtocols.Tls13,
+                EncryptionPolicy = EncryptionPolicy.RequireEncryption,
                 RemoteCertificateValidationCallback = (_, _, _, errors) => errors == SslPolicyErrors.RemoteCertificateChainErrors,
             },
         };

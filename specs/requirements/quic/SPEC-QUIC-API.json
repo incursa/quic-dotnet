@@ -8,7 +8,7 @@
   "domain": "quic",
   "capability": "public-api",
   "purpose": "Define the intended public API surface for Incursa.Quic using the public surface of System.Net.Quic as the baseline for the initial consumer cut, the first honest server-entry slice, and the first honest client-entry slice.",
-  "scope": "This specification defines the initial consumer-facing public API surface for Incursa.Quic. The repository is implementing the surface in phases, and the current slice promotes the connection-side facade, the first server-side entry surface (`QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `ListenAsync`, and `AcceptConnectionAsync`), and the first client-side entry surface (`QuicClientConnectionOptions` and `QuicConnection.ConnectAsync(...)`) over the existing runtime and host machinery. Full TLS trust-store and hostname validation, stream entry points, `QuicStreamCapacityChangedArgs`, `IsSupported`, Initial/DCID bootstrap, and the data path remain deferred. Helper-layer packet, frame, TLS, handshake, runtime, recovery, and congestion types remain internal unless a future specification explicitly promotes them.",
+  "scope": "This specification defines the initial consumer-facing public API surface for Incursa.Quic. The repository is implementing the surface in phases, and the current slice promotes the connection-side facade, the first server-side entry surface (`QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `ListenAsync`, and `AcceptConnectionAsync`), and the first client-side entry surface (`QuicClientConnectionOptions` and `QuicConnection.ConnectAsync(...)`) over the existing runtime and host machinery. The supported positive client/server loopback boundary is now present on that narrow listener/client path. Full TLS trust-store and hostname validation, stream entry points, `QuicStreamCapacityChangedArgs`, `IsSupported`, and the data path remain deferred. Helper-layer packet, frame, TLS, handshake, runtime, recovery, and congestion types remain internal unless a future specification explicitly promotes them.",
   "context": "The reference surface in Microsoft System.Net.Quic is the strongest baseline for the eventual API, but this repository is deliberately shipping that surface in smaller phases. The target repository already contains a broad internal helper and runtime surface under src/Incursa.Quic, and this specification makes the public/internal boundary explicit so the connection-first facade can land without exposing the implementation seams. The client-entry slice is intentionally honest: it promotes the public option bag and connect entry point now, but it does not claim positive connection establishment beyond what the existing runtime and TLS seam can really prove.",
   "related_artifacts": [
     "ARC-QUIC-API-0001",
@@ -44,7 +44,7 @@
       "notes": [
         "The listener shell is honest and is backed by the internal listener host.",
         "The client shell is honest and is backed by the existing runtime-endpoint and endpoint-host seams over a connected UDP socket.",
-        "This slice does not promise a positive client/server loopback path because Initial/DCID bootstrap and listener-side datagram admission are still outside the approved boundary."
+        "This slice now includes the supported positive client/server loopback boundary on the existing listener/client path, including Initial/DCID bootstrap, inbound Initial handling, and listener-side datagram admission."
       ]
     },
     {
