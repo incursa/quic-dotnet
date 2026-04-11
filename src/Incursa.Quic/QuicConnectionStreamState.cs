@@ -22,8 +22,8 @@ internal sealed class QuicConnectionStreamState
 
     private ulong nextLocalBidirectionalStreamIndex;
     private ulong nextLocalUnidirectionalStreamIndex;
-    private readonly ulong incomingBidirectionalStreamLimit;
-    private readonly ulong incomingUnidirectionalStreamLimit;
+    private ulong incomingBidirectionalStreamLimit;
+    private ulong incomingUnidirectionalStreamLimit;
     private ulong peerBidirectionalStreamLimit;
     private ulong peerUnidirectionalStreamLimit;
     private ulong connectionAccountedBytesReceived;
@@ -127,6 +127,68 @@ internal sealed class QuicConnectionStreamState
         }
 
         peerUnidirectionalStreamLimit = frame.MaximumStreams;
+        return true;
+    }
+
+    public bool TryPeekPeerStreamCapacityRelease(ulong streamIdValue, out QuicMaxStreamsFrame frame)
+    {
+        frame = default;
+
+        QuicStreamId streamId = new(streamIdValue);
+        if (!streamId.IsUnidirectional
+            || !IsPeerInitiated(streamId)
+            || !streams.TryGetValue(streamIdValue, out StreamState? state)
+            || state.PeerCapacityReleaseReported
+            || !IsPeerStreamFullyClosed(state))
+        {
+            return false;
+        }
+
+        ulong currentLimit = streamId.IsBidirectional
+            ? incomingBidirectionalStreamLimit
+            : incomingUnidirectionalStreamLimit;
+        if (currentLimit == MaximumStreamCount)
+        {
+            return false;
+        }
+
+        frame = new QuicMaxStreamsFrame(streamId.IsBidirectional, currentLimit + 1);
+        return true;
+    }
+
+    public bool TryCommitPeerStreamCapacityRelease(ulong streamIdValue, QuicMaxStreamsFrame frame)
+    {
+        QuicStreamId streamId = new(streamIdValue);
+        if (!streamId.IsUnidirectional
+            || !IsPeerInitiated(streamId)
+            || frame.IsBidirectional != streamId.IsBidirectional
+            || !streams.TryGetValue(streamIdValue, out StreamState? state)
+            || state.PeerCapacityReleaseReported
+            || !IsPeerStreamFullyClosed(state))
+        {
+            return false;
+        }
+
+        if (streamId.IsBidirectional)
+        {
+            if (frame.MaximumStreams <= incomingBidirectionalStreamLimit)
+            {
+                return false;
+            }
+
+            incomingBidirectionalStreamLimit = frame.MaximumStreams;
+        }
+        else
+        {
+            if (frame.MaximumStreams <= incomingUnidirectionalStreamLimit)
+            {
+                return false;
+            }
+
+            incomingUnidirectionalStreamLimit = frame.MaximumStreams;
+        }
+
+        state.PeerCapacityReleaseReported = true;
         return true;
     }
 
@@ -765,6 +827,29 @@ internal sealed class QuicConnectionStreamState
         return isServer ? streamId.IsClientInitiated : streamId.IsServerInitiated;
     }
 
+    private static bool IsStreamReceiveClosed(QuicStreamReceiveState receiveState)
+        => receiveState is QuicStreamReceiveState.DataRead or QuicStreamReceiveState.ResetRead;
+
+    private static bool IsStreamSendClosed(QuicStreamSendState sendState)
+    {
+        return sendState is QuicStreamSendState.DataSent or QuicStreamSendState.ResetSent;
+    }
+
+    private static bool IsPeerStreamFullyClosed(StreamState state)
+    {
+        if (state.HasReceivePart && !IsStreamReceiveClosed(state.ReceiveState))
+        {
+            return false;
+        }
+
+        if (state.HasSendPart && !IsStreamSendClosed(state.SendState))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private ulong BuildLocalStreamIdValue(bool bidirectional, ulong streamIndex)
     {
         ulong initiatorBit = isServer ? 1UL : 0UL;
@@ -886,6 +971,7 @@ internal sealed class QuicConnectionStreamState
         public bool HasReceiveAbortErrorCode { get; set; }
         public ulong SendAbortErrorCode { get; set; }
         public bool HasSendAbortErrorCode { get; set; }
+        public bool PeerCapacityReleaseReported { get; set; }
         public QuicByteRangeSet SentRanges { get; } = new();
         public QuicByteRangeSet ReceivedRanges { get; } = new();
         public List<BufferedSegment> BufferedSegments { get; } = [];

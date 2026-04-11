@@ -29,18 +29,19 @@
     "src/Incursa.Quic/QuicListenerHost.cs",
     "src/Incursa.Quic/QuicStreamCapacityChangedArgs.cs"
   ],
-  "design_summary": "The callback surface is exposed through QuicConnectionOptions.StreamCapacityCallback and QuicStreamCapacityChangedArgs. QuicConnection captures the callback from options, QuicListenerHost updates accepted connections from returned server options, and QuicConnectionRuntime publishes the initial peer stream-capacity delta when peer transport parameters commit and later real peer stream-capacity growth when supported 1-RTT MAX_STREAMS frames arrive on the active loopback path. Publication happens on the supported loopback boundary only, remains silent before commit, and does not promise stream-close-driven capacity release or write-heavy stream behavior. The runtime stays internal, and callback failures remain local to the consumer callback boundary.",
+  "design_summary": "The callback surface is exposed through QuicConnectionOptions.StreamCapacityCallback and QuicStreamCapacityChangedArgs. QuicConnection captures the callback from options, QuicListenerHost updates accepted connections from returned server options, and QuicConnectionRuntime publishes the initial peer stream-capacity delta when peer transport parameters commit, later real peer stream-capacity growth when supported 1-RTT MAX_STREAMS frames arrive on the active loopback path, and real peer stream-close-driven capacity release when a supported active-loopback peer stream closes and the runtime can re-advertise a real `MAX_STREAMS` increment. Publication happens on the supported loopback boundary only, remains silent before commit, and stays a narrow callback hook rather than a general event pipeline. The runtime stays internal, and callback failures remain local to the consumer callback boundary.",
   "edge_cases_and_constraints": [
     "The callback must stay silent when the supported boundary is not reached.",
     "The callback must stay silent when the peer transport parameters do not increase capacity.",
     "The callback must stay silent when the connection is canceled or disposed before peer limits commit.",
     "Later MAX_STREAMS growth must be backed by real supported active-loopback packets rather than inferred from unrelated stream activity.",
-    "The callback must not imply stream-close-driven capacity release or broader write-completion parity."
+    "Real stream-close-driven capacity release must come from an actual supported active-loopback peer stream close and a real release commit, not from unrelated stream activity or local disposal.",
+    "The callback must remain a narrow consumer-visible projection rather than a general event pipeline."
   ],
-  "data_and_state_considerations": "Connection options are captured into the connection facade or listener-accepted options snapshot before the runtime publishes the first peer delta. The listener host updates the accepted connection with the returned callback after the server options callback completes. The runtime emits the initial peer capacity delta from its existing transport-parameter commit seam and later peer capacity growth from its supported active-loopback MAX_STREAMS parsing seam.",
+  "data_and_state_considerations": "Connection options are captured into the connection facade or listener-accepted options snapshot before the runtime publishes the first peer delta. The listener host updates the accepted connection with the returned callback after the server options callback completes. The runtime emits the initial peer capacity delta from its existing transport-parameter commit seam, later peer capacity growth from its supported active-loopback MAX_STREAMS parsing seam, and real peer stream-close-driven capacity release from the same supported active-loopback release bookkeeping.",
   "risks": [
     "If the callback were widened into a general event pipeline, the consumer contract would stop being narrow.",
-    "If later stream-capacity growth were implied without a real active-loopback MAX_STREAMS path, the callback would become dishonest.",
+    "If later stream-capacity growth or close-driven release were implied without a real active-loopback path, the callback would become dishonest.",
     "The async callback boundary must not leak runtime exceptions back into the transport engine."
   ]
 }

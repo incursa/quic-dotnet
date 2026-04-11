@@ -42,6 +42,7 @@ internal enum QuicConnectionStreamActionKind
     StopSending = 3,
     Reset = 4,
     Abort = 5,
+    ReleaseCapacity = 6,
 }
 
 internal abstract record QuicConnectionEvent(QuicConnectionEventKind Kind, long ObservedAtTicks);

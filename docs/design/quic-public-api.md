@@ -43,7 +43,6 @@ This pass promotes the consumer-lifetime facade that is already backed by the ex
 The following remain intentionally out of scope for this pass:
 
 - combined `Abort(Both, ...)`
-- stream-close-driven capacity release
 - `0-RTT`
 - key update
 - interop-runner enablement
@@ -64,9 +63,9 @@ They imply these public-behavior expectations:
 
 - Listener setup is validation-heavy: `ListenEndPoint`, `ApplicationProtocols`, and the narrow server callback are required, and the callback sees a cancellation token that is canceled on timeout or listener disposal.
 - Listener accept, blocked stream open, and close operations must honor cancellation while the operation is still pending.
-- `QuicStream` is a consumer-facing `Stream` abstraction, and this repo now supports a narrow read-side plus write/completion subset honestly on send-capable streams, plus a narrow `RESET_STREAM` / `STOP_SENDING`-backed `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` pair and matching `ReadsClosed` / `WritesClosed` outcomes on that same path; `Flush` stays a narrow no-op, and combined `Abort(Both, ...)` plus broader abort-heavy behavior remains deferred.
+- `QuicStream` is a consumer-facing `Stream` abstraction, and this repo now supports a narrow read-side plus write/completion subset honestly on send-capable streams, plus a narrow `RESET_STREAM` / `STOP_SENDING`-backed `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` pair and matching `ReadsClosed` / `WritesClosed` outcomes on that same path; `Flush` stays a narrow no-op, and combined `Abort(Both, ...)` plus broader abort-heavy behavior remains out of scope.
 - Stream entry points are only honest on an active connection that already has the minimal 1-RTT application-data lane; the supported loopback path opens and accepts a real QUIC stream facade and can now publish bytes, EOF, and the supported abort pair without exposing the broader abort-heavy contract.
-- The stream-capacity callback is only honest for the initial peer stream-capacity increment committed from peer transport parameters on the supported loopback path plus later real peer `MAX_STREAMS` growth on the supported active loopback path.
+- The stream-capacity callback is only honest for the initial peer stream-capacity increment committed from peer transport parameters on the supported loopback path, later real peer `MAX_STREAMS` growth on the supported active loopback path, and the narrow close-driven release subset where a peer-initiated stream reaches the supported locally closed state and the runtime emits one real `MAX_STREAMS` increment on that same path.
 - `IsSupported` is only honest as a narrow runtime capability marker, not as a full native-QUIC or feature-completeness flag.
 - Stream abort, connection close, and dispose must map to the public `QuicError` surface and preserve the configured application error codes.
 - The public API should reuse the BCL TLS options objects directly where that slice needs them, including the listener endpoint and server authentication options.
@@ -83,7 +82,7 @@ This pass promotes the connection/stream facade, the listener/server entry surfa
 - `REQ-QUIC-API-0005` covers the shared connection options, listener options, receive-window settings, the supported stream-capacity callback subset, and the narrow supported subset of `SslClientAuthenticationOptions`.
 - `REQ-QUIC-API-0006` records the public close/error projection through `QuicError`, `QuicException`, and the currently supported `QuicAbortDirection.Read` / `QuicAbortDirection.Write` subset.
 - `REQ-QUIC-API-0008` covers the cancellation and terminal-state behavior for listener accept, pending client connect, stream open, stream accept, supported write, close, and stream-capacity callback dispatch honesty.
-- `REQ-QUIC-API-0009` covers the supported stream-capacity callback deltas on the supported loopback and active-loopback paths.
+- `REQ-QUIC-API-0009` covers the supported stream-capacity callback deltas on the supported loopback and active-loopback paths, including real peer stream-close-driven release on the supported active-loopback path.
 - `REQ-QUIC-API-0010` covers the narrow runtime-backed stream write, completion, and write-abort lane on send-capable streams.
 - `REQ-QUIC-API-0011` covers the shared runtime capability marker on `QuicConnection` and `QuicListener`.
 
@@ -113,9 +112,9 @@ The listener entry points are now part of this slice.
 - Client connect now starts a real client host/runtime shell and completes on the supported positive loopback boundary through the existing host seams, with Initial/DCID bootstrap, inbound Initial handling, and listener-side datagram admission already in place.
 - The shared `IsSupported` marker is backed by one cached internal capability probe that checks the runtime prerequisites the supported managed slice already needs.
 - Stream entry now reuses the same runtime and stream-state seams, plus a minimal 1-RTT short-header stream-control path, so the supported loopback connection can open and accept a real `QuicStream` facade and publish bytes plus EOF on the supported writable side while honoring the narrow read/write abort pair without surfacing the broader abort-heavy pipeline.
-- The stream-capacity callback now reuses the same runtime and stream-state seams by projecting the initial peer stream-limit increments committed from transport parameters and later real peer `MAX_STREAMS` growth on the supported active loopback path.
+- The stream-capacity callback now reuses the same runtime and stream-state seams by projecting the initial peer stream-limit increments committed from transport parameters, later real peer `MAX_STREAMS` growth on the supported active loopback path, and the narrow close-driven release path where the runtime emits one real `MAX_STREAMS` increment only after a peer-initiated stream reaches the supported locally closed state.
 - The supported `SslClientAuthenticationOptions` subset is intentionally narrow: non-empty ALPN, TLS 1.3 or the default protocol selection, no target host or SNI/hostname validation, no client certificates, no chain policy, and an explicit `RemoteCertificateValidationCallback` gate over the parsed peer leaf certificate. Unsupported settings are rejected deterministically instead of being ignored.
-- Stream-close-driven capacity release remains deferred until the fuller stream-capacity path exists end to end.
+- Broader stream-management parity and any close-driven release behavior outside that supported locally closed subset remain deferred until the fuller stream-capacity path exists end to end.
 
 ## Internal-Only Boundary
 

@@ -252,6 +252,7 @@ public sealed class QuicStream : Stream
                     {
                         await runtime.CompleteStreamWritesAsync(streamId).ConfigureAwait(false);
                         writesClosed.TrySetResult(null);
+                        runtime.TryQueueStreamCapacityRelease(streamId);
                     }
                 }
                 catch
@@ -314,6 +315,7 @@ public sealed class QuicStream : Stream
                 if (completed)
                 {
                     readsClosed.TrySetResult(null);
+                    runtime?.TryQueueStreamCapacityRelease(streamId);
                 }
 
                 return bytesWritten;
@@ -322,11 +324,13 @@ public sealed class QuicStream : Stream
             if (completed)
             {
                 readsClosed.TrySetResult(null);
+                runtime?.TryQueueStreamCapacityRelease(streamId);
                 return 0;
             }
 
             if (TryCreateReadAbortException(out Exception? readAbortException))
             {
+                runtime?.TryQueueStreamCapacityRelease(streamId);
                 throw readAbortException!;
             }
 
@@ -407,10 +411,12 @@ public sealed class QuicStream : Stream
             case QuicStreamNotificationKind.ReadAborted:
                 readTerminalException ??= notification.Exception;
                 readsClosed.TrySetException(notification.Exception);
+                runtime?.TryQueueStreamCapacityRelease(streamId);
                 break;
             case QuicStreamNotificationKind.WriteAborted:
                 writeTerminalException ??= notification.Exception;
                 writesClosed.TrySetException(notification.Exception);
+                runtime?.TryQueueStreamCapacityRelease(streamId);
                 break;
             case QuicStreamNotificationKind.ConnectionTerminated:
                 if (canRead && !readsClosed.Task.IsCompleted)

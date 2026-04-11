@@ -292,6 +292,20 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         streamCapacityObserver = observer;
     }
 
+    internal void TryQueueStreamCapacityRelease(ulong streamId)
+    {
+        if (IsDisposed || terminalState is not null)
+        {
+            return;
+        }
+
+        _ = TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+            clock.Ticks,
+            RequestId: 0,
+            QuicConnectionStreamActionKind.ReleaseCapacity,
+            StreamId: streamId));
+    }
+
     internal long RegisterStreamObserver(ulong streamId, Action<QuicStreamNotification> observer)
     {
         ArgumentNullException.ThrowIfNull(observer);
@@ -1032,6 +1046,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                     streamActionEvent.StreamId.Value,
                     streamActionEvent.ApplicationErrorCode.Value,
                     ref effects),
+            QuicConnectionStreamActionKind.ReleaseCapacity
+                when streamActionEvent.StreamId.HasValue
+                => HandleReleaseCapacityStreamAction(
+                    streamActionEvent.StreamId.Value,
+                    ref effects),
             _ => false,
         };
     }
@@ -1200,6 +1219,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             currentPath.Identity,
             protectedPacket));
 
+        if (finishWrites)
+        {
+            TryReleasePeerStreamCapacity(streamId, ref effects);
+        }
+
         completion.TrySetResult(null);
         return true;
     }
@@ -1264,6 +1288,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             currentPath.Identity,
             protectedPacket));
 
+        TryReleasePeerStreamCapacity(streamId, ref effects);
         NotifyStreamObservers(
             streamId,
             new QuicStreamNotification(
@@ -1319,6 +1344,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             currentPath.Identity,
             protectedPacket));
 
+        TryReleasePeerStreamCapacity(streamId, ref effects);
         NotifyStreamObservers(
             streamId,
             new QuicStreamNotification(
@@ -1327,6 +1353,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         completion.TrySetResult(null);
         return true;
+    }
+
+    private bool HandleReleaseCapacityStreamAction(
+        ulong streamId,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        return TryReleasePeerStreamCapacity(streamId, ref effects);
     }
 
     private bool TryHandleInitialPacketReceived(
@@ -1565,10 +1598,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                     return false;
                 }
 
-                if (!TryHandleResetStreamFrame(resetStreamFrame))
-                {
-                    return false;
-                }
+            if (!TryHandleResetStreamFrame(resetStreamFrame, ref effects))
+            {
+                return false;
+            }
 
                 stateChanged = true;
                 offset += resetBytesConsumed;
@@ -1821,6 +1854,53 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return true;
     }
 
+    private bool TryReleasePeerStreamCapacity(ulong streamId, ref List<QuicConnectionEffect>? effects)
+    {
+        if (!TryValidateStreamSendBoundary(out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        if (!streamRegistry.Bookkeeping.TryPeekPeerStreamCapacityRelease(streamId, out QuicMaxStreamsFrame maxStreamsFrame))
+        {
+            return false;
+        }
+
+        if (!TryBuildOutboundMaxStreamsPayload(maxStreamsFrame, out byte[] streamPayload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            streamPayload,
+            "The connection runtime could not protect the stream capacity release packet.",
+            "The connection cannot send the stream capacity release packet.",
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out exception))
+        {
+            return false;
+        }
+
+        if (!streamRegistry.Bookkeeping.TryCommitPeerStreamCapacityRelease(streamId, maxStreamsFrame))
+        {
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+
+        return true;
+    }
+
     private bool TryProtectAndAccountApplicationPayload(
         ReadOnlySpan<byte> payload,
         string protectFailureMessage,
@@ -1964,7 +2044,31 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return true;
     }
 
-    private bool TryHandleResetStreamFrame(QuicResetStreamFrame resetStreamFrame)
+    private bool TryBuildOutboundMaxStreamsPayload(QuicMaxStreamsFrame frame, out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
+        if (!QuicFrameCodec.TryFormatMaxStreamsFrame(frame, buffer, out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
+    private bool TryHandleResetStreamFrame(QuicResetStreamFrame resetStreamFrame, ref List<QuicConnectionEffect>? effects)
     {
         if (!streamRegistry.Bookkeeping.TryReceiveResetStreamFrame(
             resetStreamFrame,
@@ -1981,6 +2085,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 QuicStreamNotificationKind.ReadAborted,
                 CreateStreamReadAbortedException(resetStreamFrame.ApplicationProtocolErrorCode)));
 
+        TryReleasePeerStreamCapacity(resetStreamFrame.StreamId, ref effects);
         return true;
     }
 
@@ -2032,6 +2137,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 QuicStreamNotificationKind.WriteAborted,
                 CreateStreamWriteAbortedException(stopSendingFrame.ApplicationProtocolErrorCode)));
 
+        TryReleasePeerStreamCapacity(stopSendingFrame.StreamId, ref effects);
         return true;
     }
 
