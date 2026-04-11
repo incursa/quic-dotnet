@@ -110,3 +110,5 @@ The smallest high-value slice after this one is the richer stream-behavior follo
 ### Recommended Next Slice
 
 Promote the combined `Abort(Both, ...)` and any remaining broader stream-management follow-ons next, backed by the existing runtime, TLS bridge, and narrow stream-entry plus stream-capacity boundaries, so they can build on a real connection instead of a pending shell.
+
+For the broader cleanup / interop-prep sequence beyond this public-surface matrix, see `docs/design/quic-interop-prep-plan.md`. This matrix stays limited to the public boundary and the nearest follow-on gaps.
