@@ -27,8 +27,6 @@ This note scopes the narrow managed handshake-floor slice under active work. It 
 
 ## Out Of Scope
 
-- `REQ-QUIC-CRT-0109`
-- `REQ-QUIC-CRT-0111`
 - `REQ-QUIC-CRT-0117`
 - `REQ-QUIC-CRT-0119`
 - `Abort(Both, ...)`
@@ -42,6 +40,15 @@ This note scopes the narrow managed handshake-floor slice under active work. It 
 - Interop-runner testcase support
 - Any wider claim that `handshake`, `transfer`, or `retry` is enabled in the interop harness
 - Any broader public-promise widening beyond the current narrow loopback subset
+
+## Client Policy / Commit Lane
+
+The client-side policy / commit slice is intentionally narrow and remains separate from the server-floor work:
+
+- `REQ-QUIC-CRT-0109`
+- `REQ-QUIC-CRT-0111`
+
+The final client seam must keep the local `ClientHello` published to transport without counting it in the managed proof transcript. The proof transcript for this slice begins at the peer `ServerHello`, which keeps the client `CertificateVerify` and `Finished` proof hashes aligned with the requirement-home tests.
 
 ## Final Seam To Change
 

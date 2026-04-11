@@ -82,7 +82,6 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             && keySchedule is not null
             && keySchedule.TryCreateClientHello(localTransportParameters, out byte[] clientHelloBytes))
         {
-            keySchedule.AppendLocalHandshakeMessage(clientHelloBytes);
             updates.Add(new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.CryptoDataAvailable,
                 QuicTlsEncryptionLevel.Initial,
