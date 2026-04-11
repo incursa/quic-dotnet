@@ -3,7 +3,7 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0001">The approved public facade for the current slice is QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, and the corrected QuicStreamType. Listener, client/server TLS wrappers, the callback args type, and the connect/listen/accept entry points remain deferred to the next slice.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0001">The approved public facade now includes QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicServerConnectionOptions, and the corrected QuicStreamType. Client connect, the remaining TLS-auth wrappers, and any broader middleware-style surface remain deferred.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0001")]
 public sealed class REQ_QUIC_API_0001
@@ -26,7 +26,10 @@ public sealed class REQ_QUIC_API_0001
             "Incursa.Quic.QuicConnectionOptions",
             "Incursa.Quic.QuicError",
             "Incursa.Quic.QuicException",
+            "Incursa.Quic.QuicListener",
+            "Incursa.Quic.QuicListenerOptions",
             "Incursa.Quic.QuicReceiveWindowSizes",
+            "Incursa.Quic.QuicServerConnectionOptions",
             "Incursa.Quic.QuicStream",
             "Incursa.Quic.QuicStreamType",
         ];
@@ -43,6 +46,7 @@ public sealed class REQ_QUIC_API_0001
         [
             typeof(QuicConnectionCloseFrame),
             typeof(QuicConnectionLifecycleState),
+            typeof(QuicListenerHost),
             typeof(QuicConnectionRuntime),
             typeof(QuicConnectionStreamRegistry),
             typeof(QuicConnectionStreamState),

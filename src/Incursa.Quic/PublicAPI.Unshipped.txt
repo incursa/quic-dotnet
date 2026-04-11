@@ -41,6 +41,24 @@ Incursa.Quic.QuicException.QuicException(Incursa.Quic.QuicError error, long? app
 Incursa.Quic.QuicException.QuicError.get -> Incursa.Quic.QuicError
 Incursa.Quic.QuicException.ApplicationErrorCode.get -> long?
 Incursa.Quic.QuicException.TransportErrorCode.get -> long?
+Incursa.Quic.QuicServerConnectionOptions
+Incursa.Quic.QuicServerConnectionOptions.QuicServerConnectionOptions() -> void
+Incursa.Quic.QuicServerConnectionOptions.ServerAuthenticationOptions.get -> System.Net.Security.SslServerAuthenticationOptions!
+Incursa.Quic.QuicServerConnectionOptions.ServerAuthenticationOptions.set -> void
+Incursa.Quic.QuicListenerOptions
+Incursa.Quic.QuicListenerOptions.QuicListenerOptions() -> void
+Incursa.Quic.QuicListenerOptions.ApplicationProtocols.get -> System.Collections.Generic.List<System.Net.Security.SslApplicationProtocol>!
+Incursa.Quic.QuicListenerOptions.ApplicationProtocols.set -> void
+Incursa.Quic.QuicListenerOptions.ConnectionOptionsCallback.get -> System.Func<Incursa.Quic.QuicConnection!, System.Net.Security.SslClientHelloInfo, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<Incursa.Quic.QuicServerConnectionOptions!>>!
+Incursa.Quic.QuicListenerOptions.ConnectionOptionsCallback.set -> void
+Incursa.Quic.QuicListenerOptions.ListenBacklog.get -> int
+Incursa.Quic.QuicListenerOptions.ListenBacklog.set -> void
+Incursa.Quic.QuicListenerOptions.ListenEndPoint.get -> System.Net.IPEndPoint!
+Incursa.Quic.QuicListenerOptions.ListenEndPoint.set -> void
+Incursa.Quic.QuicListener
+Incursa.Quic.QuicListener.AcceptConnectionAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicConnection!>
+Incursa.Quic.QuicListener.DisposeAsync() -> System.Threading.Tasks.ValueTask
+Incursa.Quic.QuicListener.ListenAsync(Incursa.Quic.QuicListenerOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicListener!>
 Incursa.Quic.QuicReceiveWindowSizes
 Incursa.Quic.QuicReceiveWindowSizes.QuicReceiveWindowSizes() -> void
 Incursa.Quic.QuicReceiveWindowSizes.Connection.get -> int

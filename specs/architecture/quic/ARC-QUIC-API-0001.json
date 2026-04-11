@@ -6,7 +6,7 @@
   "title": "Incursa.Quic Public API Boundary Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Describe how the connection-first public facade stays thin while the existing internal protocol runtime and stream-state machinery remain hidden behind a consumer-facing boundary.",
+  "purpose": "Describe how the connection- and listener-facing public facades stay thin while the existing internal protocol runtime, stream-state, and listener-host machinery remain hidden behind a consumer-facing boundary.",
   "related_artifacts": [
     "SPEC-QUIC-API",
     "WI-QUIC-API-0001",
@@ -29,6 +29,10 @@
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeHost.cs",
+    "src/Incursa.Quic/QuicListener.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicListenerOptions.cs",
+    "src/Incursa.Quic/QuicServerConnectionOptions.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
     "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
     "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
@@ -36,7 +40,7 @@
     "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs"
   ],
-  "design_summary": "The consumer API is a thin facade over the existing internal protocol engine, but this slice only promotes the connection-side surface first. Public connection, stream, option, and exception types own lifetime and configuration capture, while the packet parser, TLS bridge, handshake coordinator, key schedule, transport helpers, and runtime reducers remain internal. The listener shell, connect/listen/accept entry points, and client/server TLS-auth wrappers stay deferred so the facade can land without exposing scheduler or transport state. The stream wrapper is backed by the internal stream-state seam for identity, EOF, and read-side projection; write-heavy behavior waits for the stream-action pipeline.",
+  "design_summary": "The consumer API is a thin facade over the existing internal protocol engine, and this slice promotes the connection-side surface plus the first server-side listener surface. Public connection, stream, listener, and option types own lifetime and configuration capture, while the packet parser, TLS bridge, handshake coordinator, key schedule, transport helpers, and runtime reducers remain internal. The listener shell is implemented by a small internal host that binds a UDP socket, queues accepts, and feeds a narrow server-option callback into provisional connections. Client connect and the fuller client-auth wrapper remain deferred so the facade can land without exposing scheduler or transport state. The stream wrapper is backed by the internal stream-state seam for identity, EOF, and read-side projection; write-heavy behavior waits for the stream-action pipeline.",
   "alternatives_considered": [
     "Expose the existing helper-layer packet, TLS, and runtime types directly. Rejected because it would turn implementation seams into the consumer contract.",
     "Introduce a general middleware or event-pipeline surface. Rejected because the repo already uses a fixed-order transport runtime and the public API should stay consumer-facing.",
@@ -45,14 +49,17 @@
   "edge_cases_and_constraints": [
     "Options must be treated as configuration bags that are consumed by future connect and listen operations, not as live mutable protocol state.",
     "Pending close and stream-read terminal transitions may cancel before commitment; once they commit, the facade must surface the documented terminal outcome instead of retroactively reviving the request.",
-    "Public endpoint and address metadata stay deferred in this slice; no custom endpoint abstraction is introduced yet.",
-    "Listener and connect setup must fail fast on missing mandatory endpoint or TLS inputs when that slice lands, rather than deferring validation into the transport engine.",
+    "Listener setup must fail fast on missing mandatory endpoint, ALPN, backlog, or callback inputs.",
+    "Pending listener accept may cancel before commitment; once it commits or the listener is disposed, the facade must surface OperationCanceledException or ObjectDisposedException.",
+    "The listener connection-options callback remains a narrow server-option selector and must not become a middleware pipeline.",
+    "Client connect remains deferred to a later slice; no custom endpoint abstraction is introduced yet.",
     "The public QuicStreamType stays direction-only, even if the internal stream model tracks initiator separately.",
     "All TLS transcript, packet-protection, and runtime reducer details remain internal and are mapped to the public facade rather than exposed directly."
   ],
-  "data_and_state_considerations": "The public options objects are copied into internal connection or listener state when the operation begins. The internal runtime continues to own mutable protocol state, timers, stream accounting, and handshake progress.",
+  "data_and_state_considerations": "The public options objects are copied into internal connection or listener state when the operation begins. The internal listener host owns the socket, accept queue, and shutdown path, while the internal runtime continues to own mutable protocol state, timers, stream accounting, and handshake progress.",
   "risks": [
     "If the public API analyzer files are not trimmed in lockstep, helper-layer types could leak into the shipping surface.",
+    "If the listener host grows into a general callback pipeline, the consumer contract stops being narrow.",
     "The connection and stream facade types must not grow a middleware-style callback surface by accident.",
     "Any future deviation from the Microsoft ref surface should be documented in the design note before implementation."
   ]
