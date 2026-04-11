@@ -2,15 +2,40 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
+using System.Reflection;
 
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0008">Pending accept and connect operations honor cancellation, and listener or client-host disposal unblocks pending work with terminal outcomes instead of pretending handshake completion.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0008">Pending accept, connect, and open-stream operations honor cancellation, listener or client-host disposal unblocks pending work with terminal outcomes instead of pretending handshake completion, and stream-capacity callbacks do not revive a disposed connection facade.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0008")]
 public sealed class REQ_QUIC_API_0008
 {
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task DisposeAsync_SuppressesStreamCapacityCallback()
+    {
+        int callbackCount = 0;
+        TestQuicConnectionOptions options = new()
+        {
+            StreamCapacityCallback = (_, _) => Interlocked.Increment(ref callbackCount),
+        };
+
+        QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnection connection = new(runtime, options);
+
+        Action<int, int> observer = GetStreamCapacityObserver(runtime);
+        observer(4, 0);
+
+        await connection.DisposeAsync();
+        await Task.Delay(200);
+
+        Assert.Equal(0, Volatile.Read(ref callbackCount));
+    }
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -76,6 +101,125 @@ public sealed class REQ_QUIC_API_0008
         await Assert.ThrowsAsync<ObjectDisposedException>(() => connectTask);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task AcceptInboundStreamAsync_HonorsCancellationWhilePending()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+        };
+
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        Task<QuicConnection> acceptConnectionTask = listener.AcceptConnectionAsync().AsTask();
+        Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port))).AsTask();
+
+        await Task.WhenAll(acceptConnectionTask, connectTask);
+
+        QuicConnection serverConnection = await acceptConnectionTask;
+        QuicConnection clientConnection = await connectTask;
+
+        try
+        {
+            using CancellationTokenSource cancellationSource = new();
+            Task<QuicStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync(cancellationSource.Token).AsTask();
+
+            await Task.Yield();
+            cancellationSource.Cancel();
+
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => acceptStreamTask);
+        }
+        finally
+        {
+            await serverConnection.DisposeAsync();
+            await clientConnection.DisposeAsync();
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task OpenOutboundStreamAsync_HonorsCancellationWhilePending()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+        };
+
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        Task<QuicConnection> acceptConnectionTask = listener.AcceptConnectionAsync().AsTask();
+        Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port))).AsTask();
+
+        await Task.WhenAll(acceptConnectionTask, connectTask);
+
+        QuicConnection serverConnection = await acceptConnectionTask;
+        QuicConnection clientConnection = await connectTask;
+
+        try
+        {
+            QuicConnectionRuntime runtime = GetRuntime(clientConnection);
+            Func<QuicConnectionEvent, bool> originalDispatcher = GetLocalApiEventDispatcher(runtime);
+            TaskCompletionSource<bool> dispatcherEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<bool> dispatcherRelease = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            runtime.SetLocalApiEventDispatcher(connectionEvent =>
+            {
+                dispatcherEntered.TrySetResult(true);
+                dispatcherRelease.Task.GetAwaiter().GetResult();
+                return originalDispatcher(connectionEvent);
+            });
+
+            using CancellationTokenSource cancellationSource = new();
+            Task<QuicStream> openStreamTask = Task.Run(
+                async () => await clientConnection.OpenOutboundStreamAsync(
+                    QuicStreamType.Bidirectional,
+                    cancellationSource.Token));
+
+            await dispatcherEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            cancellationSource.Cancel();
+            dispatcherRelease.TrySetResult(true);
+
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => openStreamTask);
+        }
+        finally
+        {
+            await serverConnection.DisposeAsync();
+            await clientConnection.DisposeAsync();
+        }
+    }
+
+    private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
+    {
+        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(runtimeField);
+        return Assert.IsType<QuicConnectionRuntime>(runtimeField!.GetValue(connection));
+    }
+
+    private static Func<QuicConnectionEvent, bool> GetLocalApiEventDispatcher(QuicConnectionRuntime runtime)
+    {
+        FieldInfo? dispatcherField = typeof(QuicConnectionRuntime).GetField(
+            "localApiEventDispatcher",
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(dispatcherField);
+        return Assert.IsType<Func<QuicConnectionEvent, bool>>(dispatcherField!.GetValue(runtime));
+    }
+
     private static QuicListenerOptions CreateListenerOptions()
     {
         return new QuicListenerOptions
@@ -109,5 +253,18 @@ public sealed class REQ_QUIC_API_0008
         using Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         socket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
         return (IPEndPoint)socket.LocalEndPoint!;
+    }
+
+    private static Action<int, int> GetStreamCapacityObserver(QuicConnectionRuntime runtime)
+    {
+        FieldInfo? observerField = typeof(QuicConnectionRuntime).GetField(
+            "streamCapacityObserver",
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(observerField);
+        return Assert.IsType<Action<int, int>>(observerField!.GetValue(runtime));
+    }
+
+    private sealed class TestQuicConnectionOptions : QuicConnectionOptions
+    {
     }
 }

@@ -5,6 +5,8 @@ Incursa.Quic.QuicAbortDirection.Write = 2 -> Incursa.Quic.QuicAbortDirection
 Incursa.Quic.QuicAbortDirection.Both = Incursa.Quic.QuicAbortDirection.Read | Incursa.Quic.QuicAbortDirection.Write -> Incursa.Quic.QuicAbortDirection
 Incursa.Quic.QuicConnection
 Incursa.Quic.QuicConnection.ConnectAsync(Incursa.Quic.QuicClientConnectionOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicConnection!>
+Incursa.Quic.QuicConnection.AcceptInboundStreamAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicStream!>
+Incursa.Quic.QuicConnection.OpenOutboundStreamAsync(Incursa.Quic.QuicStreamType streamType, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicStream!>
 Incursa.Quic.QuicConnection.CloseAsync(long errorCode, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
 Incursa.Quic.QuicConnection.DisposeAsync() -> System.Threading.Tasks.ValueTask
 Incursa.Quic.QuicClientConnectionOptions
@@ -32,6 +34,8 @@ Incursa.Quic.QuicConnectionOptions.MaxInboundBidirectionalStreams.get -> int
 Incursa.Quic.QuicConnectionOptions.MaxInboundBidirectionalStreams.set -> void
 Incursa.Quic.QuicConnectionOptions.MaxInboundUnidirectionalStreams.get -> int
 Incursa.Quic.QuicConnectionOptions.MaxInboundUnidirectionalStreams.set -> void
+Incursa.Quic.QuicConnectionOptions.StreamCapacityCallback.get -> System.Action<Incursa.Quic.QuicConnection!, Incursa.Quic.QuicStreamCapacityChangedArgs>?
+Incursa.Quic.QuicConnectionOptions.StreamCapacityCallback.set -> void
 Incursa.Quic.QuicError
 Incursa.Quic.QuicError.Success = 0 -> Incursa.Quic.QuicError
 Incursa.Quic.QuicError.InternalError = 1 -> Incursa.Quic.QuicError
@@ -101,6 +105,11 @@ override Incursa.Quic.QuicStream.WriteAsync(byte[]! buffer, int offset, int coun
 override Incursa.Quic.QuicStream.Seek(long offset, System.IO.SeekOrigin origin) -> long
 override Incursa.Quic.QuicStream.SetLength(long value) -> void
 override Incursa.Quic.QuicStream.DisposeAsync() -> System.Threading.Tasks.ValueTask
+Incursa.Quic.QuicStreamCapacityChangedArgs
+Incursa.Quic.QuicStreamCapacityChangedArgs.BidirectionalIncrement.get -> int
+Incursa.Quic.QuicStreamCapacityChangedArgs.BidirectionalIncrement.init -> void
+Incursa.Quic.QuicStreamCapacityChangedArgs.UnidirectionalIncrement.get -> int
+Incursa.Quic.QuicStreamCapacityChangedArgs.UnidirectionalIncrement.init -> void
 Incursa.Quic.QuicStreamType
 Incursa.Quic.QuicStreamType.Unidirectional = 0 -> Incursa.Quic.QuicStreamType
 Incursa.Quic.QuicStreamType.Bidirectional = 1 -> Incursa.Quic.QuicStreamType

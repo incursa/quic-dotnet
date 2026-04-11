@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-API-0002",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "Incursa.Quic Initial Stream Capacity Callback Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Promote the initial stream-capacity callback slice on top of the real connection/runtime seam while keeping the public stream surface honest.",
+  "related_artifacts": [
+    "SPEC-QUIC-API"
+  ],
+  "design_links": [
+    "ARC-QUIC-API-0002"
+  ],
+  "verification_links": [
+    "VER-QUIC-API-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-API-0001",
+    "REQ-QUIC-API-0005",
+    "REQ-QUIC-API-0008",
+    "REQ-QUIC-API-0009"
+  ],
+  "planned_changes": "- Add the public `QuicStreamCapacityChangedArgs` type.\n- Add `QuicConnectionOptions.StreamCapacityCallback`.\n- Wire the initial peer stream-capacity delta from `QuicConnectionRuntime` into `QuicConnection` and listener-accepted connections.\n- Keep the callback silent when the supported boundary is not reached or the connection is canceled or disposed before peer limits commit.\n- Keep `QuicStream` write/completion behavior unchanged unless a truthful minimum expansion becomes necessary.\n- Reconcile the public API analyzer file, trace artifacts, and requirement-home tests with the approved subset.",
+  "verification_plan": "Use API-diff, reflection, and focused requirement-home tests to prove the callback surface exists, the initial peer delta is observed once on the supported loopback path, zero-delta and pre-commit cases remain silent, cancellation/disposal stay honest, and the public boundary remains narrow. No write-side expansion is expected for this slice.",
+  "completion_notes": "This item keeps the stream-capacity callback narrow and initial-delta only. Later MAX_STREAMS evolution, reset/stop-sending parity, and broader write-heavy stream behavior remain separate slices.",
+  "out_of_scope": [
+    "Full MAX_STREAMS parity.",
+    "Write-heavy stream-action pipeline.",
+    "Reset and stop-sending parity.",
+    "0-RTT.",
+    "Key update.",
+    "Interop-runner enablement."
+  ]
+}

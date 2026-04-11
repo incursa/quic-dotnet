@@ -223,6 +223,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 {
                     break;
                 }
+                catch (SocketException ex) when (ex.SocketErrorCode is SocketError.ConnectionReset or SocketError.ConnectionAborted or SocketError.ConnectionRefused)
+                {
+                    // Best-effort listener shell: peer resets during cancel/dispose are not actionable.
+                    break;
+                }
 
                 if (receiveResult.ReceivedBytes <= 0)
                 {
@@ -391,6 +396,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 return false;
             }
 
+            runtime.SetLocalApiEventDispatcher(connectionEvent => endpoint.Host.TryPostEvent(handle, connectionEvent));
+
             if (!connections.TryAdd(handle, new PendingConnectionState(handle, runtime, connection)))
             {
                 return false;
@@ -413,6 +420,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 applicationProtocols);
 
             ApplyReturnedOptions(selectedOptions, returnedOptions);
+            connection.UpdateStreamCapacityCallback(selectedOptions.StreamCapacityCallback);
 
             if (!runtime.TryConfigureInitialPacketProtection(initialDestinationConnectionId)
                 || !runtime.TrySetHandshakeDestinationConnectionId(clientSourceConnectionId)
@@ -714,6 +722,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         selectedOptions.KeepAliveInterval = returnedOptions.KeepAliveInterval;
         selectedOptions.MaxInboundBidirectionalStreams = returnedOptions.MaxInboundBidirectionalStreams;
         selectedOptions.MaxInboundUnidirectionalStreams = returnedOptions.MaxInboundUnidirectionalStreams;
+        selectedOptions.StreamCapacityCallback = returnedOptions.StreamCapacityCallback;
         selectedOptions.ServerAuthenticationOptions = returnedOptions.ServerAuthenticationOptions;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;

@@ -464,9 +464,18 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         QuicConnectionPathIdentity pathIdentity,
         ReadOnlySpan<byte> packet)
     {
-        if (QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket shortHeader))
+        if (packet.IsEmpty)
         {
-            if (TryLookupRouteByPrefix(shortHeader.Remainder, out QuicConnectionHandle routedHandle))
+            return new QuicConnectionIngressResult(
+                QuicConnectionIngressDisposition.Malformed,
+                QuicConnectionEndpointHandlingKind.None,
+                null);
+        }
+
+        if ((packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) == 0
+            && (packet[0] & QuicPacketHeaderBits.FixedBitMask) != 0)
+        {
+            if (TryLookupRouteByPrefix(packet[1..], out QuicConnectionHandle routedHandle))
             {
                 if (TryPostPacketReceived(routedHandle, datagram, pathIdentity))
                 {

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net.Security;
 using System.Text;
@@ -15,11 +16,16 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private const ulong MicrosecondsPerSecond = 1_000_000UL;
     private const int DefaultCloseFrameOverheadBytes = 32;
     private const int HandshakeEgressChunkBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
+    private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
+    private const int ApplicationMinimumProtectedPayloadLength =
+        QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
 
     private readonly IMonotonicClock clock;
     private readonly QuicConnectionSendRuntime sendRuntime;
     private readonly QuicConnectionStreamRegistry streamRegistry;
+    private readonly Channel<ulong> inboundStreamIds;
     private readonly Channel<QuicConnectionEvent> inbox;
+    private readonly ConcurrentDictionary<long, TaskCompletionSource<ulong>> pendingStreamOpenRequests = new();
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
     private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
@@ -47,6 +53,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private long? terminalEndTicks;
     private long lastTransitionTicks;
     private ulong transitionSequence;
+    private long nextStreamOpenRequestId;
+    private Exception? inboundStreamQueueCompletionException;
+    private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
+    private Action<int, int>? streamCapacityObserver;
 
     public QuicConnectionRuntime(
         QuicConnectionStreamState bookkeeping,
@@ -78,6 +88,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
             SingleReader = true,
+            SingleWriter = false,
+            AllowSynchronousContinuations = false,
+        });
+        inboundStreamIds = Channel.CreateUnbounded<ulong>(new UnboundedChannelOptions
+        {
+            SingleReader = false,
             SingleWriter = false,
             AllowSynchronousContinuations = false,
         });
@@ -259,7 +275,127 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     /// </summary>
     public bool TryPostLocalApiEvent(QuicConnectionEvent localApiEvent)
     {
-        return TryPostEvent(localApiEvent);
+        ArgumentNullException.ThrowIfNull(localApiEvent);
+        return localApiEventDispatcher?.Invoke(localApiEvent) ?? TryPostEvent(localApiEvent);
+    }
+
+    internal void SetLocalApiEventDispatcher(Func<QuicConnectionEvent, bool> dispatcher)
+    {
+        localApiEventDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+    }
+
+    internal void SetStreamCapacityObserver(Action<int, int>? observer)
+    {
+        streamCapacityObserver = observer;
+    }
+
+    internal async ValueTask<QuicStream> AcceptInboundStreamAsync(CancellationToken cancellationToken = default)
+    {
+        ThrowIfDisposed();
+
+        if (terminalState is QuicConnectionTerminalState terminalStateValue)
+        {
+            throw CreateTerminalException(terminalStateValue);
+        }
+
+        if (phase != QuicConnectionPhase.Active)
+        {
+            throw new InvalidOperationException("The connection is not established.");
+        }
+
+        try
+        {
+            ulong streamId = await inboundStreamIds.Reader.ReadAsync(cancellationToken).ConfigureAwait(false);
+            if (terminalState is QuicConnectionTerminalState completedTerminalState)
+            {
+                throw CreateTerminalException(completedTerminalState);
+            }
+
+            return new QuicStream(streamRegistry.Bookkeeping, streamId);
+        }
+        catch (ChannelClosedException) when (inboundStreamQueueCompletionException is not null)
+        {
+            throw inboundStreamQueueCompletionException;
+        }
+        catch (ChannelClosedException) when (terminalState is QuicConnectionTerminalState completedTerminalState)
+        {
+            throw CreateTerminalException(completedTerminalState);
+        }
+        catch (ChannelClosedException ex) when (IsDisposed)
+        {
+            throw new ObjectDisposedException(nameof(QuicConnectionRuntime), ex);
+        }
+    }
+
+    internal async ValueTask<QuicStream> OpenOutboundStreamAsync(
+        QuicStreamType streamType,
+        CancellationToken cancellationToken = default)
+    {
+        ThrowIfDisposed();
+
+        if (terminalState is QuicConnectionTerminalState terminalStateValue)
+        {
+            throw CreateTerminalException(terminalStateValue);
+        }
+
+        if (phase != QuicConnectionPhase.Active || activePath is null)
+        {
+            throw new InvalidOperationException("The connection is not established.");
+        }
+
+        if (streamType is not QuicStreamType.Unidirectional and not QuicStreamType.Bidirectional)
+        {
+            throw new ArgumentOutOfRangeException(nameof(streamType));
+        }
+
+        if (!tlsState.OneRttKeysAvailable
+            || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            throw new InvalidOperationException("The connection is not ready to open application streams.");
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        long requestId = Interlocked.Increment(ref nextStreamOpenRequestId);
+        TaskCompletionSource<ulong> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        if (!pendingStreamOpenRequests.TryAdd(requestId, completion))
+        {
+            throw new InvalidOperationException("The connection runtime could not queue the stream open request.");
+        }
+
+        using CancellationTokenRegistration cancellationRegistration = cancellationToken.CanBeCanceled
+            ? cancellationToken.Register(static state =>
+            {
+                (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
+                    ((QuicConnectionRuntime, long, CancellationToken))state!;
+
+                if (runtime.pendingStreamOpenRequests.TryRemove(requestId, out TaskCompletionSource<ulong>? pendingCompletion))
+                {
+                    pendingCompletion.TrySetCanceled(token);
+                }
+            }, (this, requestId, cancellationToken))
+            : default;
+
+        if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+            clock.Ticks,
+            requestId,
+            QuicConnectionStreamActionKind.Open,
+            StreamType: streamType)))
+        {
+            pendingStreamOpenRequests.TryRemove(requestId, out _);
+            throw IsDisposed
+                ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
+                : new InvalidOperationException("The connection runtime could not queue the stream open request.");
+        }
+
+        ulong streamId = await completion.Task.ConfigureAwait(false);
+
+        if (!streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out _))
+        {
+            throw new InvalidOperationException("The stream open completed without a committed stream state.");
+        }
+
+        return new QuicStream(streamRegistry.Bookkeeping, streamId);
     }
 
     /// <summary>
@@ -309,6 +445,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 => HandleTlsStateUpdated(tlsStateUpdatedEvent, nowTicks, ref effects),
             QuicConnectionCryptoFrameReceivedEvent cryptoFrameReceivedEvent
                 => HandleCryptoFrameReceived(cryptoFrameReceivedEvent, nowTicks, ref effects),
+            QuicConnectionStreamActionEvent streamActionEvent
+                => HandleStreamAction(streamActionEvent, nowTicks, ref effects),
             QuicConnectionPacketReceivedEvent packetReceivedEvent
                 => HandlePacketReceived(packetReceivedEvent, nowTicks, ref effects),
             QuicConnectionPathValidationSucceededEvent pathValidationSucceededEvent
@@ -349,6 +487,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return;
         }
 
+        Exception completionException = terminalState is QuicConnectionTerminalState terminalStateValue
+            ? CreateTerminalException(terminalStateValue)
+            : new ObjectDisposedException(nameof(QuicConnectionRuntime));
+
+        CompletePendingStreamOperations(completionException);
         inbox.Writer.TryComplete();
 
         Task? processing = processingTask;
@@ -575,6 +718,107 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             out _);
     }
 
+    private bool HandleStreamAction(
+        QuicConnectionStreamActionEvent streamActionEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        _ = nowTicks;
+
+        if (streamActionEvent.ActionKind != QuicConnectionStreamActionKind.Open
+            || streamActionEvent.StreamType is not QuicStreamType streamType)
+        {
+            return false;
+        }
+
+        if (!pendingStreamOpenRequests.TryRemove(streamActionEvent.RequestId, out TaskCompletionSource<ulong>? completion))
+        {
+            return false;
+        }
+
+        if (terminalState is QuicConnectionTerminalState terminalStateValue)
+        {
+            completion.TrySetException(CreateTerminalException(terminalStateValue));
+            return false;
+        }
+
+        if (IsDisposed)
+        {
+            completion.TrySetException(new ObjectDisposedException(nameof(QuicConnectionRuntime)));
+            return false;
+        }
+
+        if (phase != QuicConnectionPhase.Active || activePath is null)
+        {
+            completion.TrySetException(new InvalidOperationException("The connection is not established."));
+            return false;
+        }
+
+        if (!tlsState.OneRttKeysAvailable
+            || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            completion.TrySetException(new InvalidOperationException("The connection is not ready to open application streams."));
+            return false;
+        }
+
+        bool bidirectional = streamType == QuicStreamType.Bidirectional;
+        if (!streamRegistry.Bookkeeping.TryPeekLocalStream(bidirectional, out QuicStreamId streamId, out QuicStreamsBlockedFrame blockedFrame))
+        {
+            _ = blockedFrame;
+            completion.TrySetException(new InvalidOperationException("The connection cannot open another outbound stream."));
+            return false;
+        }
+
+        if (!TryBuildOutboundStreamControlPayload(streamId, out byte[] streamPayload))
+        {
+            completion.TrySetException(new InvalidOperationException("The connection runtime could not build the stream open payload."));
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
+            streamPayload,
+            tlsState.OneRttProtectPacketProtectionMaterial.Value,
+            out byte[] protectedPacket))
+        {
+            completion.TrySetException(new InvalidOperationException("The connection runtime could not protect the stream open packet."));
+            return false;
+        }
+
+        QuicConnectionActivePathRecord currentPath = activePath.Value;
+        if (!currentPath.AmplificationState.TryConsumeSendBudget(
+            protectedPacket.Length,
+            out QuicConnectionPathAmplificationState updatedAmplificationState))
+        {
+            completion.TrySetException(new InvalidOperationException("The connection cannot send the stream open packet."));
+            return false;
+        }
+
+        if (!streamRegistry.Bookkeeping.TryOpenLocalStream(bidirectional, out QuicStreamId committedStreamId, out QuicStreamsBlockedFrame committedBlockedFrame))
+        {
+            _ = committedBlockedFrame;
+            completion.TrySetException(new InvalidOperationException("The connection runtime could not commit the stream open."));
+            return false;
+        }
+
+        if (committedStreamId.Value != streamId.Value)
+        {
+            completion.TrySetException(new InvalidOperationException("The connection runtime committed an unexpected outbound stream identifier."));
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+
+        completion.TrySetResult(committedStreamId.Value);
+        return true;
+    }
+
     private bool TryHandleInitialPacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
@@ -720,6 +964,81 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         return stateChanged || processedCryptoFrame;
+    }
+
+    private bool TryHandleApplicationPacketReceived(
+        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        _ = nowTicks;
+        _ = effects;
+
+        if (phase != QuicConnectionPhase.Active
+            || activePath is null
+            || !tlsState.OneRttKeysAvailable
+            || !tlsState.OneRttOpenPacketProtectionMaterial.HasValue)
+        {
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
+            packetReceivedEvent.Datagram.Span,
+            tlsState.OneRttOpenPacketProtectionMaterial.Value,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength))
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        bool processedStreamFrame = false;
+        int payloadEnd = payloadOffset + payloadLength;
+        int offset = payloadOffset;
+
+        while (offset < payloadEnd)
+        {
+            ReadOnlySpan<byte> remaining = openedPacket.AsSpan(offset, payloadEnd - offset);
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                if (paddingBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (!QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
+            {
+                return false;
+            }
+
+            if (streamFrame.ConsumedLength <= 0)
+            {
+                return false;
+            }
+
+            processedStreamFrame = true;
+            bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamFrame.StreamId.Value, out _);
+            if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode))
+            {
+                _ = errorCode;
+                return false;
+            }
+
+            if (!streamPreviouslyKnown)
+            {
+                TryQueueInboundStreamId(streamFrame.StreamId.Value);
+            }
+
+            stateChanged = true;
+            offset += streamFrame.ConsumedLength;
+        }
+
+        return processedStreamFrame || stateChanged;
     }
 
     private bool TryFlushInitialPackets(ref List<QuicConnectionEffect>? effects)
@@ -892,6 +1211,104 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return false;
     }
 
+    private bool TryBuildOutboundStreamControlPayload(QuicStreamId streamId, out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[ApplicationMinimumProtectedPayloadLength];
+        if (!QuicFrameCodec.TryFormatStreamFrame(
+            OutboundStreamControlFrameType,
+            streamId.Value,
+            0,
+            ReadOnlySpan<byte>.Empty,
+            buffer,
+            out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
+    private void TryQueueInboundStreamId(ulong streamId)
+    {
+        _ = inboundStreamIds.Writer.TryWrite(streamId);
+    }
+
+    private void CompletePendingStreamOperations(Exception completionException)
+    {
+        CompleteInboundStreamQueue(completionException);
+        CompletePendingStreamOpenRequests(completionException);
+    }
+
+    private void CompleteInboundStreamQueue(Exception completionException)
+    {
+        inboundStreamQueueCompletionException ??= completionException;
+
+        while (inboundStreamIds.Reader.TryRead(out _))
+        {
+            // Drain queued stream identifiers so pending accepts observe terminal completion.
+        }
+
+        inboundStreamIds.Writer.TryComplete(completionException);
+    }
+
+    private void CompletePendingStreamOpenRequests(Exception completionException)
+    {
+        if (pendingStreamOpenRequests.IsEmpty)
+        {
+            return;
+        }
+
+        foreach (KeyValuePair<long, TaskCompletionSource<ulong>> entry in pendingStreamOpenRequests.ToArray())
+        {
+            if (pendingStreamOpenRequests.TryRemove(entry.Key, out TaskCompletionSource<ulong>? completion))
+            {
+                completion.TrySetException(completionException);
+            }
+        }
+    }
+
+    private static Exception CreateTerminalException(QuicConnectionTerminalState terminalState)
+    {
+        if (terminalState.Close.TransportErrorCode.HasValue)
+        {
+            return new QuicException(
+                QuicError.TransportError,
+                null,
+                (long)terminalState.Close.TransportErrorCode.Value,
+                terminalState.Close.ReasonPhrase ?? "The connection terminated.");
+        }
+
+        if (terminalState.Origin == QuicConnectionCloseOrigin.IdleTimeout)
+        {
+            return new QuicException(
+                QuicError.ConnectionIdle,
+                null,
+                terminalState.Close.ReasonPhrase ?? "The connection idled.");
+        }
+
+        long? applicationErrorCode = terminalState.Close.ApplicationErrorCode.HasValue
+            ? checked((long)terminalState.Close.ApplicationErrorCode.Value)
+            : null;
+
+        return new QuicException(
+            QuicError.ConnectionAborted,
+            applicationErrorCode,
+            terminalState.Close.ReasonPhrase ?? "The connection terminated.");
+    }
+
     private bool TryCommitLocalTransportParametersFromTlsBridgeState(
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
@@ -955,19 +1372,30 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
+        bool stateChanged = TryCommitPeerStreamLimits(
+            peerTransportParameters,
+            out int bidirectionalIncrement,
+            out int unidirectionalIncrement);
+
+        if (bidirectionalIncrement != 0 || unidirectionalIncrement != 0)
+        {
+            streamCapacityObserver?.Invoke(bidirectionalIncrement, unidirectionalIncrement);
+        }
+
         QuicConnectionTransportState committedTransportFlags = QuicConnectionTransportState.PeerTransportParametersCommitted;
         if (peerTransportParameters.DisableActiveMigration)
         {
             committedTransportFlags |= QuicConnectionTransportState.DisableActiveMigration;
         }
 
-        return ApplyTransportParameters(
+        stateChanged |= ApplyTransportParameters(
             new QuicConnectionTransportParametersCommittedEvent(
                 ObservedAtTicks: nowTicks,
                 TransportFlags: committedTransportFlags,
                 PeerMaxIdleTimeoutMicros: peerTransportParameters.MaxIdleTimeout),
             nowTicks,
             ref effects);
+        return stateChanged;
     }
 
     private bool HandleTlsKeyDiscard(QuicTlsEncryptionLevel encryptionLevel, ref List<QuicConnectionEffect>? effects)
@@ -1056,6 +1484,47 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return stateChanged;
     }
 
+    private bool TryCommitPeerStreamLimits(
+        QuicTransportParameters peerTransportParameters,
+        out int bidirectionalIncrement,
+        out int unidirectionalIncrement)
+    {
+        bidirectionalIncrement = 0;
+        unidirectionalIncrement = 0;
+        bool stateChanged = false;
+        ulong originalBidirectionalLimit = streamRegistry.Bookkeeping.PeerBidirectionalStreamLimit;
+        ulong originalUnidirectionalLimit = streamRegistry.Bookkeeping.PeerUnidirectionalStreamLimit;
+
+        if (peerTransportParameters.InitialMaxStreamsBidi is ulong initialMaxStreamsBidi)
+        {
+            stateChanged |= streamRegistry.Bookkeeping.TryApplyMaxStreamsFrame(new QuicMaxStreamsFrame(true, initialMaxStreamsBidi));
+        }
+
+        if (peerTransportParameters.InitialMaxStreamsUni is ulong initialMaxStreamsUni)
+        {
+            stateChanged |= streamRegistry.Bookkeeping.TryApplyMaxStreamsFrame(new QuicMaxStreamsFrame(false, initialMaxStreamsUni));
+        }
+
+        bidirectionalIncrement = GetPositiveIncrement(
+            originalBidirectionalLimit,
+            streamRegistry.Bookkeeping.PeerBidirectionalStreamLimit);
+        unidirectionalIncrement = GetPositiveIncrement(
+            originalUnidirectionalLimit,
+            streamRegistry.Bookkeeping.PeerUnidirectionalStreamLimit);
+
+        return stateChanged;
+    }
+
+    private static int GetPositiveIncrement(ulong originalValue, ulong updatedValue)
+    {
+        if (updatedValue <= originalValue)
+        {
+            return 0;
+        }
+
+        return checked((int)(updatedValue - originalValue));
+    }
+
     private bool HandlePacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
@@ -1092,6 +1561,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             stateChanged |= TryHandleInitialPacketReceived(packetReceivedEvent, nowTicks, ref effects);
             stateChanged |= TryHandleHandshakePacketReceived(packetReceivedEvent, nowTicks, ref effects);
+        }
+        else if (phase == QuicConnectionPhase.Active)
+        {
+            stateChanged |= TryHandleApplicationPacketReceived(packetReceivedEvent, nowTicks, ref effects);
         }
 
         stateChanged |= TryFlushHandshakePackets(ref effects);
@@ -1478,6 +1951,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             closeMetadata,
             nowTicks);
 
+        CompletePendingStreamOperations(CreateTerminalException(terminalState.Value));
         AppendEffect(ref effects, new QuicConnectionNotifyStreamsOfTerminalStateEffect(terminalState.Value));
         AppendEffect(ref effects, new QuicConnectionDiscardConnectionStateEffect(terminalState));
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
@@ -2163,6 +2637,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             origin,
             closeMetadata,
             nowTicks);
+
+        CompletePendingStreamOperations(CreateTerminalException(terminalState.Value));
     }
 
     private void AppendTerminalEffects(ref List<QuicConnectionEffect>? effects, bool emitClosePacket)

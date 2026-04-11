@@ -124,6 +124,7 @@ internal static class QuicClientConnectionOptionsValidator
             KeepAliveInterval = source.KeepAliveInterval,
             MaxInboundBidirectionalStreams = source.MaxInboundBidirectionalStreams,
             MaxInboundUnidirectionalStreams = source.MaxInboundUnidirectionalStreams,
+            StreamCapacityCallback = source.StreamCapacityCallback,
             InitialReceiveWindowSizes = new QuicReceiveWindowSizes
             {
                 Connection = windows.Connection,

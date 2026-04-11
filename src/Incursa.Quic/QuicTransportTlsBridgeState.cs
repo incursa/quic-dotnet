@@ -992,7 +992,6 @@ internal sealed class QuicTransportTlsBridgeState
         QuicTlsPacketProtectionMaterial material)
     {
         if (IsTerminal
-            || role != QuicTlsRole.Server
             || !PeerFinishedVerified
             || material.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt
             || target.HasValue)

@@ -151,6 +151,14 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 {
                     break;
                 }
+                catch (ObjectDisposedException)
+                {
+                    break;
+                }
+                catch (SocketException)
+                {
+                    break;
+                }
 
                 if (bytesReceived <= 0)
                 {

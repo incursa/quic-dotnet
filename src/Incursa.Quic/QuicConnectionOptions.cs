@@ -64,6 +64,11 @@ public abstract class QuicConnectionOptions
     }
 
     /// <summary>
+    /// Gets or sets the callback invoked when the supported peer stream-capacity delta becomes available.
+    /// </summary>
+    public Action<QuicConnection, QuicStreamCapacityChangedArgs>? StreamCapacityCallback { get; set; }
+
+    /// <summary>
     /// Gets or sets the keep-alive interval.
     /// </summary>
     public TimeSpan KeepAliveInterval { get; set; }
@@ -78,4 +83,3 @@ public abstract class QuicConnectionOptions
     /// </summary>
     public int MaxInboundUnidirectionalStreams { get; set; }
 }
-

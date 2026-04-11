@@ -12,6 +12,7 @@ public sealed class QuicConnection : IAsyncDisposable
     private readonly QuicConnectionRuntime runtime;
     private readonly QuicConnectionOptions options;
     private readonly IAsyncDisposable? lifetimeOwner;
+    private Action<QuicConnection, QuicStreamCapacityChangedArgs>? streamCapacityCallback;
     private int disposed;
 
     internal QuicConnection(QuicConnectionRuntime runtime, QuicConnectionOptions options, IAsyncDisposable? lifetimeOwner = null)
@@ -19,6 +20,8 @@ public sealed class QuicConnection : IAsyncDisposable
         this.runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
         this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.lifetimeOwner = lifetimeOwner;
+        streamCapacityCallback = options.StreamCapacityCallback;
+        runtime.SetStreamCapacityObserver(OnRuntimeStreamCapacityIncreased);
     }
 
     /// <summary>
@@ -29,6 +32,24 @@ public sealed class QuicConnection : IAsyncDisposable
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(options, nameof(options));
         cancellationToken.ThrowIfCancellationRequested();
         return new QuicClientConnectionHost(settings).ConnectAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Accepts the next inbound stream exposed by the supported active connection path.
+    /// </summary>
+    public ValueTask<QuicStream> AcceptInboundStreamAsync(CancellationToken cancellationToken = default)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+        return runtime.AcceptInboundStreamAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Opens a new outbound stream on the supported active connection path.
+    /// </summary>
+    public ValueTask<QuicStream> OpenOutboundStreamAsync(QuicStreamType streamType, CancellationToken cancellationToken = default)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+        return runtime.OpenOutboundStreamAsync(streamType, cancellationToken);
     }
 
     /// <summary>
@@ -92,6 +113,42 @@ public sealed class QuicConnection : IAsyncDisposable
         if (errorCode < 0 || errorCode > MaximumErrorCodeValue)
         {
             throw new ArgumentOutOfRangeException(nameof(errorCode));
+        }
+    }
+
+    internal void UpdateStreamCapacityCallback(Action<QuicConnection, QuicStreamCapacityChangedArgs>? callback)
+    {
+        streamCapacityCallback = callback;
+    }
+
+    private async void OnRuntimeStreamCapacityIncreased(int bidirectionalIncrement, int unidirectionalIncrement)
+    {
+        Action<QuicConnection, QuicStreamCapacityChangedArgs>? callback = streamCapacityCallback;
+        if (callback is null || (bidirectionalIncrement == 0 && unidirectionalIncrement == 0))
+        {
+            return;
+        }
+
+        await Task.Yield();
+
+        if (Volatile.Read(ref disposed) != 0)
+        {
+            return;
+        }
+
+        try
+        {
+            callback(
+                this,
+                new QuicStreamCapacityChangedArgs
+                {
+                    BidirectionalIncrement = bidirectionalIncrement,
+                    UnidirectionalIncrement = unidirectionalIncrement,
+                });
+        }
+        catch
+        {
+            // Callback failures remain local to the consumer callback boundary.
         }
     }
 }

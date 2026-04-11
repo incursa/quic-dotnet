@@ -64,6 +64,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             throw new InvalidOperationException("The client runtime shell could not register its connection state.");
         }
 
+        runtime.SetLocalApiEventDispatcher(connectionEvent => endpoint.Host.TryPostEvent(handle, connectionEvent));
+
         endpointHost = new QuicConnectionEndpointHost(
             endpoint,
             socket,

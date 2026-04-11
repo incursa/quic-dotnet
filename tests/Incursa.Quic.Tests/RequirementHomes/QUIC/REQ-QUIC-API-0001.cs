@@ -3,7 +3,7 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0001">The approved public facade now includes QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicClientConnectionOptions, QuicServerConnectionOptions, and the corrected QuicStreamType. The client entry point is now public, while broader middleware-style surface and stream-capacity callbacks remain deferred.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0001">The approved public facade now includes QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicClientConnectionOptions, QuicServerConnectionOptions, QuicStreamCapacityChangedArgs, and the corrected QuicStreamType. The client entry point is now public, while broader middleware-style surface remains deferred.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0001")]
 public sealed class REQ_QUIC_API_0001
@@ -32,6 +32,7 @@ public sealed class REQ_QUIC_API_0001
             "Incursa.Quic.QuicReceiveWindowSizes",
             "Incursa.Quic.QuicServerConnectionOptions",
             "Incursa.Quic.QuicStream",
+            "Incursa.Quic.QuicStreamCapacityChangedArgs",
             "Incursa.Quic.QuicStreamType",
         ];
 
@@ -119,6 +120,7 @@ public sealed class REQ_QUIC_API_0001
         Assert.Equal(Timeout.InfiniteTimeSpan, options.KeepAliveInterval);
         Assert.Equal(0, options.MaxInboundBidirectionalStreams);
         Assert.Equal(0, options.MaxInboundUnidirectionalStreams);
+        Assert.Null(options.StreamCapacityCallback);
         Assert.NotNull(options.InitialReceiveWindowSizes);
         Assert.Equal(16 * 1024 * 1024, options.InitialReceiveWindowSizes.Connection);
         Assert.Equal(64 * 1024, options.InitialReceiveWindowSizes.LocallyInitiatedBidirectionalStream);
@@ -141,10 +143,14 @@ public sealed class REQ_QUIC_API_0001
             "KeepAliveInterval",
             "MaxInboundBidirectionalStreams",
             "MaxInboundUnidirectionalStreams",
+            "StreamCapacityCallback",
         ];
 
         Assert.Equal(expectedPropertyNames, propertyNames);
-        Assert.DoesNotContain(propertyNames, name => name == "StreamCapacityCallback");
+
+        PropertyInfo? callbackProperty = typeof(QuicConnectionOptions).GetProperty(nameof(QuicConnectionOptions.StreamCapacityCallback));
+        Assert.NotNull(callbackProperty);
+        Assert.Equal(typeof(Action<QuicConnection, QuicStreamCapacityChangedArgs>), callbackProperty!.PropertyType);
     }
 
     [Fact]
@@ -195,6 +201,34 @@ public sealed class REQ_QUIC_API_0001
             "LocallyInitiatedBidirectionalStream",
             "RemotelyInitiatedBidirectionalStream",
             "UnidirectionalStream",
+        }, propertyNames);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void QuicStreamCapacityChangedArgsExposeTheApprovedDeltaShape()
+    {
+        QuicStreamCapacityChangedArgs args = new()
+        {
+            BidirectionalIncrement = 7,
+            UnidirectionalIncrement = 11,
+        };
+
+        Assert.Equal(7, args.BidirectionalIncrement);
+        Assert.Equal(11, args.UnidirectionalIncrement);
+        Assert.True(typeof(QuicStreamCapacityChangedArgs).IsValueType);
+
+        string[] propertyNames = typeof(QuicStreamCapacityChangedArgs)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+            .Select(property => property.Name)
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.Equal(new[]
+        {
+            "BidirectionalIncrement",
+            "UnidirectionalIncrement",
         }, propertyNames);
     }
 

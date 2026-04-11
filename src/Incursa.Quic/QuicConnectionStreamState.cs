@@ -59,7 +59,7 @@ internal sealed class QuicConnectionStreamState
     public ulong IncomingBidirectionalStreamLimit => incomingBidirectionalStreamLimit;
     public ulong IncomingUnidirectionalStreamLimit => incomingUnidirectionalStreamLimit;
 
-    public bool TryOpenLocalStream(bool bidirectional, out QuicStreamId streamId, out QuicStreamsBlockedFrame blockedFrame)
+    public bool TryPeekLocalStream(bool bidirectional, out QuicStreamId streamId, out QuicStreamsBlockedFrame blockedFrame)
     {
         ulong nextIndex = bidirectional ? nextLocalBidirectionalStreamIndex : nextLocalUnidirectionalStreamIndex;
         ulong limit = bidirectional ? peerBidirectionalStreamLimit : peerUnidirectionalStreamLimit;
@@ -73,6 +73,16 @@ internal sealed class QuicConnectionStreamState
 
         streamId = new QuicStreamId(BuildLocalStreamIdValue(bidirectional, nextIndex));
         blockedFrame = default;
+        return true;
+    }
+
+    public bool TryOpenLocalStream(bool bidirectional, out QuicStreamId streamId, out QuicStreamsBlockedFrame blockedFrame)
+    {
+        if (!TryPeekLocalStream(bidirectional, out streamId, out blockedFrame))
+        {
+            return false;
+        }
+
         streams.Add(streamId.Value, CreateLocalStreamState(streamId));
 
         if (bidirectional)

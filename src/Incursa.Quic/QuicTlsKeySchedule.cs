@@ -608,18 +608,21 @@ internal sealed class QuicTlsKeySchedule
             return BuildFatalAlert(HandshakeTranscriptVerificationFailureAlertDescription);
         }
 
-        List<QuicTlsStateUpdate> updates = [];
+        byte[] applicationTrafficTranscriptHash = role == QuicTlsRole.Client
+            ? HashTranscriptWithAppendedMessage(step.HandshakeMessageBytes.Span)
+            : transcriptHash.ToArray();
 
         QuicTlsPacketProtectionMaterial oneRttOpenMaterial = default;
         QuicTlsPacketProtectionMaterial oneRttProtectMaterial = default;
-        if (role == QuicTlsRole.Server
-            && !TryDeriveApplicationPacketProtectionMaterial(
-                transcriptHash,
-                out oneRttOpenMaterial,
-                out oneRttProtectMaterial))
+        if (!TryDeriveApplicationPacketProtectionMaterial(
+            applicationTrafficTranscriptHash,
+            out oneRttOpenMaterial,
+            out oneRttProtectMaterial))
         {
             return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
         }
+
+        List<QuicTlsStateUpdate> updates = [];
 
         AppendTranscriptMessage(step.HandshakeMessageBytes.Span);
 
@@ -643,15 +646,15 @@ internal sealed class QuicTlsKeySchedule
         peerFinishedVerified = true;
         updates.Add(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerFinishedVerified));
 
-        if (role == QuicTlsRole.Server)
-        {
-            updates.Add(new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable,
-                PacketProtectionMaterial: oneRttOpenMaterial));
-            updates.Add(new QuicTlsStateUpdate(
-                QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable,
-                PacketProtectionMaterial: oneRttProtectMaterial));
-        }
+        updates.Add(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable,
+            PacketProtectionMaterial: oneRttOpenMaterial));
+        updates.Add(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable,
+            PacketProtectionMaterial: oneRttProtectMaterial));
+        updates.Add(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.KeysAvailable,
+            QuicTlsEncryptionLevel.OneRtt));
 
         return updates;
     }
@@ -729,7 +732,7 @@ internal sealed class QuicTlsKeySchedule
         openMaterial = default;
         protectMaterial = default;
 
-        if (role != QuicTlsRole.Server || handshakeSecret is null)
+        if (handshakeSecret is null)
         {
             return false;
         }
@@ -750,13 +753,20 @@ internal sealed class QuicTlsKeySchedule
                 transcriptHash,
                 HashLength);
 
+            ReadOnlySpan<byte> openTrafficSecret = role == QuicTlsRole.Client
+                ? serverApplicationTrafficSecret
+                : clientApplicationTrafficSecret;
+            ReadOnlySpan<byte> protectTrafficSecret = role == QuicTlsRole.Client
+                ? clientApplicationTrafficSecret
+                : serverApplicationTrafficSecret;
+
             return TryCreatePacketProtectionMaterial(
                 QuicTlsEncryptionLevel.OneRtt,
-                clientApplicationTrafficSecret,
+                openTrafficSecret,
                 out openMaterial)
                 && TryCreatePacketProtectionMaterial(
                     QuicTlsEncryptionLevel.OneRtt,
-                    serverApplicationTrafficSecret,
+                    protectTrafficSecret,
                     out protectMaterial);
         }
         finally
@@ -1259,6 +1269,19 @@ internal sealed class QuicTlsKeySchedule
     private byte[] HashTranscript()
     {
         return SHA256.HashData(transcriptBytes.WrittenSpan);
+    }
+
+    private byte[] HashTranscriptWithAppendedMessage(ReadOnlySpan<byte> handshakeMessageBytes)
+    {
+        if (handshakeMessageBytes.IsEmpty)
+        {
+            return HashTranscript();
+        }
+
+        byte[] transcriptBuffer = new byte[transcriptBytes.WrittenCount + handshakeMessageBytes.Length];
+        transcriptBytes.WrittenSpan.CopyTo(transcriptBuffer);
+        handshakeMessageBytes.CopyTo(transcriptBuffer.AsSpan(transcriptBytes.WrittenCount));
+        return SHA256.HashData(transcriptBuffer);
     }
 
     private static byte[] DeriveFinishedVerifyData(ReadOnlySpan<byte> trafficSecret, ReadOnlySpan<byte> transcriptHash)

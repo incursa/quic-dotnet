@@ -95,8 +95,10 @@ internal sealed record QuicConnectionPathValidationFailedEvent(
 
 internal sealed record QuicConnectionStreamActionEvent(
     long ObservedAtTicks,
-    ulong StreamId,
-    QuicConnectionStreamActionKind ActionKind)
+    long RequestId,
+    QuicConnectionStreamActionKind ActionKind,
+    QuicStreamType? StreamType = null,
+    ulong? StreamId = null)
     : QuicConnectionEvent(QuicConnectionEventKind.StreamAction, ObservedAtTicks);
 
 internal sealed record QuicConnectionTransportParametersCommittedEvent(
