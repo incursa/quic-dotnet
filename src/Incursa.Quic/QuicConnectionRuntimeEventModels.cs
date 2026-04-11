@@ -98,7 +98,8 @@ internal sealed record QuicConnectionStreamActionEvent(
     long RequestId,
     QuicConnectionStreamActionKind ActionKind,
     QuicStreamType? StreamType = null,
-    ulong? StreamId = null)
+    ulong? StreamId = null,
+    ReadOnlyMemory<byte> StreamData = default)
     : QuicConnectionEvent(QuicConnectionEventKind.StreamAction, ObservedAtTicks);
 
 internal sealed record QuicConnectionTransportParametersCommittedEvent(

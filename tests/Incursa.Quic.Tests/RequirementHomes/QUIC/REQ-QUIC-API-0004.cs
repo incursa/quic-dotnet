@@ -5,7 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0004">The QuicStream type MUST derive from Stream and expose the stream identifier, stream direction, the current read-side closed-completion task, and the standard capability and read-side members used by the currently supported consumer slice.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0004">The QuicStream type MUST derive from Stream and expose the stream identifier, stream direction, the current read-side closed-completion task, and the standard capability members used by the currently supported consumer slice, including a truthful writable-side flag only on send-capable streams.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0004")]
 public sealed class REQ_QUIC_API_0004
@@ -67,8 +67,8 @@ public sealed class REQ_QUIC_API_0004
                 Assert.Equal(0, clientStream.Id);
                 Assert.True(clientStream.CanRead);
                 Assert.True(serverStream.CanRead);
-                Assert.False(clientStream.CanWrite);
-                Assert.False(serverStream.CanWrite);
+                Assert.True(clientStream.CanWrite);
+                Assert.True(serverStream.CanWrite);
             }
             finally
             {

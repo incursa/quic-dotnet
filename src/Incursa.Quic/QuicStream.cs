@@ -7,16 +7,22 @@ namespace Incursa.Quic;
 /// </summary>
 public sealed class QuicStream : Stream
 {
+    private static readonly TimeSpan PendingReadPollInterval = TimeSpan.FromMilliseconds(10);
+
     private readonly QuicConnectionStreamState bookkeeping;
+    private readonly QuicConnectionRuntime? runtime;
     private readonly ulong streamId;
     private readonly QuicStreamType type;
     private readonly bool canRead;
+    private readonly bool canWrite;
     private readonly TaskCompletionSource<object?> readsClosed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private readonly SemaphoreSlim writeGate = new(1, 1);
     private int disposed;
 
-    internal QuicStream(QuicConnectionStreamState bookkeeping, ulong streamId)
+    internal QuicStream(QuicConnectionStreamState bookkeeping, ulong streamId, QuicConnectionRuntime? runtime = null)
     {
         this.bookkeeping = bookkeeping ?? throw new ArgumentNullException(nameof(bookkeeping));
+        this.runtime = runtime;
         this.streamId = streamId;
 
         if (!bookkeeping.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot))
@@ -26,6 +32,7 @@ public sealed class QuicStream : Stream
 
         type = snapshot.StreamType;
         canRead = snapshot.ReceiveState != QuicStreamReceiveState.None;
+        canWrite = snapshot.SendState != QuicStreamSendState.None;
 
         if (!canRead || snapshot.ReceiveState == QuicStreamReceiveState.DataRead)
         {
@@ -54,7 +61,7 @@ public sealed class QuicStream : Stream
 
     public override bool CanTimeout => false;
 
-    public override bool CanWrite => false;
+    public override bool CanWrite => Volatile.Read(ref disposed) == 0 && canWrite;
 
     public override long Length => throw new NotSupportedException();
 
@@ -78,30 +85,35 @@ public sealed class QuicStream : Stream
 
     public override void Flush()
     {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
     }
 
     public override int Read(byte[] buffer, int offset, int count)
     {
         ArgumentNullException.ThrowIfNull(buffer);
         ValidateRange(buffer.Length, offset, count);
-        return ReadCore(buffer.AsSpan(offset, count));
+        return ReadCoreAsync(buffer.AsMemory(offset, count), CancellationToken.None, useAsyncWait: false).GetAwaiter().GetResult();
     }
 
-    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(buffer);
         ValidateRange(buffer.Length, offset, count);
-        return Task.FromResult(ReadCore(buffer.AsSpan(offset, count), cancellationToken));
+        return await ReadCoreAsync(buffer.AsMemory(offset, count), cancellationToken, useAsyncWait: true).ConfigureAwait(false);
     }
 
     public override void Write(byte[] buffer, int offset, int count)
     {
-        throw new NotSupportedException("Writing is not supported by this slice.");
+        ArgumentNullException.ThrowIfNull(buffer);
+        ValidateRange(buffer.Length, offset, count);
+        WriteCoreAsync(buffer.AsMemory(offset, count), CancellationToken.None).GetAwaiter().GetResult();
     }
 
-    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
-        return Task.FromException(new NotSupportedException("Writing is not supported by this slice."));
+        ArgumentNullException.ThrowIfNull(buffer);
+        ValidateRange(buffer.Length, offset, count);
+        await WriteCoreAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
     }
 
     public override long Seek(long offset, SeekOrigin origin)
@@ -116,46 +128,108 @@ public sealed class QuicStream : Stream
 
     public override ValueTask DisposeAsync()
     {
-        Dispose(disposing: true);
-        return ValueTask.CompletedTask;
+        return DisposeCoreAsync(useAsyncWait: true);
     }
 
     protected override void Dispose(bool disposing)
+    {
+        if (!disposing)
+        {
+            base.Dispose(disposing);
+            return;
+        }
+
+        DisposeCoreAsync(useAsyncWait: false).GetAwaiter().GetResult();
+    }
+
+    private async ValueTask DisposeCoreAsync(bool useAsyncWait)
     {
         if (Interlocked.Exchange(ref disposed, 1) != 0)
         {
             return;
         }
 
-        readsClosed.TrySetResult(null);
-        base.Dispose(disposing);
+        try
+        {
+            if (canWrite && runtime is not null)
+            {
+                if (useAsyncWait)
+                {
+                    await writeGate.WaitAsync().ConfigureAwait(false);
+                }
+                else
+                {
+                    writeGate.WaitAsync().GetAwaiter().GetResult();
+                }
+
+                try
+                {
+                    if (runtime.GetStreamOperationException() is null
+                        && bookkeeping.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot)
+                        && snapshot.SendState is QuicStreamSendState.Ready or QuicStreamSendState.Send)
+                    {
+                        await runtime.CompleteStreamWritesAsync(streamId).ConfigureAwait(false);
+                    }
+                }
+                catch
+                {
+                    // Disposal is best-effort cleanup for this narrow slice.
+                }
+                finally
+                {
+                    writeGate.Release();
+                }
+            }
+        }
+        finally
+        {
+            readsClosed.TrySetResult(null);
+            writeGate.Dispose();
+            base.Dispose(disposing: true);
+        }
     }
 
-    private int ReadCore(Span<byte> buffer, CancellationToken cancellationToken = default)
+    private async ValueTask<int> ReadCoreAsync(Memory<byte> buffer, CancellationToken cancellationToken, bool useAsyncWait)
     {
-        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
-
-        if (!canRead)
+        while (true)
         {
-            throw new InvalidOperationException("This stream does not have a readable side.");
-        }
+            ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
 
-        cancellationToken.ThrowIfCancellationRequested();
+            if (!canRead)
+            {
+                throw new InvalidOperationException("This stream does not have a readable side.");
+            }
 
-        if (buffer.IsEmpty)
-        {
-            return 0;
-        }
+            cancellationToken.ThrowIfCancellationRequested();
 
-        if (!bookkeeping.TryReadStreamData(
-            streamId,
-            buffer,
-            out int bytesWritten,
-            out bool completed,
-            out _,
-            out _,
-            out QuicTransportErrorCode errorCode))
-        {
+            Exception? runtimeException = runtime?.GetStreamOperationException();
+            if (runtimeException is not null)
+            {
+                throw runtimeException;
+            }
+
+            if (buffer.IsEmpty)
+            {
+                return 0;
+            }
+
+            if (bookkeeping.TryReadStreamData(
+                streamId,
+                buffer.Span,
+                out int bytesWritten,
+                out bool completed,
+                out _,
+                out _,
+                out QuicTransportErrorCode errorCode))
+            {
+                if (completed)
+                {
+                    readsClosed.TrySetResult(null);
+                }
+
+                return bytesWritten;
+            }
+
             if (completed)
             {
                 readsClosed.TrySetResult(null);
@@ -167,15 +241,59 @@ public sealed class QuicStream : Stream
                 throw new QuicException(QuicError.TransportError, null, (long)errorCode, "The stream could not be read.");
             }
 
-            throw new NotSupportedException("Blocking reads are not yet supported by this slice.");
+            if (useAsyncWait)
+            {
+                await Task.Delay(PendingReadPollInterval, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                cancellationToken.WaitHandle.WaitOne(PendingReadPollInterval);
+            }
         }
+    }
 
-        if (completed)
+    private async ValueTask WriteCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+
+        if (!canWrite)
         {
-            readsClosed.TrySetResult(null);
+            throw new InvalidOperationException("This stream does not have a writable side.");
         }
 
-        return bytesWritten;
+        if (runtime is null)
+        {
+            throw new NotSupportedException("Writing requires the supported connection runtime path.");
+        }
+
+        Exception? runtimeException = runtime.GetStreamOperationException();
+        if (runtimeException is not null)
+        {
+            throw runtimeException;
+        }
+
+        if (buffer.IsEmpty)
+        {
+            return;
+        }
+
+        await writeGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+
+            runtimeException = runtime.GetStreamOperationException();
+            if (runtimeException is not null)
+            {
+                throw runtimeException;
+            }
+
+            await runtime.WriteStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            writeGate.Release();
+        }
     }
 
     private static void ValidateRange(int bufferLength, int offset, int count)
@@ -196,4 +314,3 @@ public sealed class QuicStream : Stream
         }
     }
 }
-

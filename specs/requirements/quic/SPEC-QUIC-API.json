@@ -7,9 +7,9 @@
   "owner": "quic-maintainers",
   "domain": "quic",
   "capability": "public-api",
-  "purpose": "Define the intended public API surface for Incursa.Quic using the public surface of System.Net.Quic as the baseline for the initial consumer cut, the first honest server-entry slice, the first honest client-entry slice, the first honest stream-entry slice, and the first honest initial stream-capacity callback slice.",
-  "scope": "This specification defines the initial consumer-facing public API surface for Incursa.Quic. The repository is implementing the surface in phases, and the current slice promotes the connection-side facade, the first server-side entry surface (`QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `ListenAsync`, and `AcceptConnectionAsync`), the first client-side entry surface (`QuicClientConnectionOptions` and `QuicConnection.ConnectAsync(...)`), the first stream-entry surface (`QuicConnection.AcceptInboundStreamAsync(...)` and `QuicConnection.OpenOutboundStreamAsync(...)`), and the first honest initial stream-capacity callback subset over the existing runtime and host machinery. The supported positive client/server loopback boundary is now present on that narrow listener/client path, the supported positive stream open/accept boundary is now present on that same active loopback path through a minimal 1-RTT short-header stream-control lane, and the supported stream-capacity callback subset now reports non-zero initial peer stream-capacity increments committed from peer transport parameters. Full TLS trust-store and hostname validation, `IsSupported`, later `MAX_STREAMS`-driven capacity updates, and the broader write-heavy data path remain deferred. Helper-layer packet, frame, TLS, handshake, runtime, recovery, and congestion types remain internal unless a future specification explicitly promotes them.",
-  "context": "The reference surface in Microsoft System.Net.Quic is the strongest baseline for the eventual API, but this repository is deliberately shipping that surface in smaller phases. The target repository already contains a broad internal helper and runtime surface under src/Incursa.Quic, and this specification makes the public/internal boundary explicit so the connection-first facade, the narrow stream-entry follow-on, and the initial stream-capacity callback can land without exposing the implementation seams. The client-entry, stream-entry, and stream-capacity slices are intentionally honest: they promote the public option bag, connect entry point, stream entry points, and one truthful callback subset now, but they do not claim broader data-path success or later stream-capacity evolution beyond what the existing runtime, TLS seam, and minimal 1-RTT application-data lane can really prove.",
+  "purpose": "Define the intended public API surface for Incursa.Quic using the public surface of System.Net.Quic as the baseline for the initial consumer cut, the first honest server-entry slice, the first honest client-entry slice, the first honest stream-entry slice, the narrow supported write/completion slice, and the first honest initial stream-capacity callback slice.",
+  "scope": "This specification defines the initial consumer-facing public API surface for Incursa.Quic. The repository is implementing the surface in phases, and the current slice promotes the connection-side facade, the first server-side entry surface (`QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `ListenAsync`, and `AcceptConnectionAsync`), the first client-side entry surface (`QuicClientConnectionOptions` and `QuicConnection.ConnectAsync(...)`), the first stream-entry surface (`QuicConnection.AcceptInboundStreamAsync(...)` and `QuicConnection.OpenOutboundStreamAsync(...)`), the narrow runtime-backed stream write/completion slice on send-capable streams, and the first honest initial stream-capacity callback subset over the existing runtime and host machinery. The supported positive client/server loopback boundary is now present on that narrow listener/client path, the supported positive stream open/accept boundary is now present on that same active loopback path through a minimal 1-RTT short-header stream-control lane, the supported stream write/completion boundary is now present on that same path, and the supported stream-capacity callback subset now reports non-zero initial peer stream-capacity increments committed from peer transport parameters. Full TLS trust-store and hostname validation, `IsSupported`, later `MAX_STREAMS`-driven capacity updates, and the broader abort-heavy stream-management follow-ons remain deferred. Helper-layer packet, frame, TLS, handshake, runtime, recovery, and congestion types remain internal unless a future specification explicitly promotes them.",
+  "context": "The reference surface in Microsoft System.Net.Quic is the strongest baseline for the eventual API, but this repository is deliberately shipping that surface in smaller phases. The target repository already contains a broad internal helper and runtime surface under src/Incursa.Quic, and this specification makes the public/internal boundary explicit so the connection-first facade, the narrow stream-entry follow-on, the narrow write/completion slice, and the initial stream-capacity callback can land without exposing the implementation seams. The client-entry, stream-entry, write/completion, and stream-capacity slices are intentionally honest: they promote the public option bag, connect entry point, stream entry points, the narrow runtime-backed write/completion subset, and one truthful callback subset now, but they do not claim broader data-path success or later stream-capacity evolution beyond what the existing runtime, TLS seam, and minimal 1-RTT application-data lane can really prove.",
   "related_artifacts": [
     "ARC-QUIC-API-0001",
     "ARC-QUIC-API-0002",
@@ -70,7 +70,7 @@
     {
       "id": "REQ-QUIC-API-0004",
       "title": "Keep the stream model aligned with standard .NET stream consumers",
-      "statement": "The QuicStream type MUST derive from Stream and expose the stream identifier, stream direction, the read-side closed-completion task, and the standard synchronous, asynchronous, span-based, capability, and timeout overrides used by the currently supported consumer slice.",
+      "statement": "The QuicStream type MUST derive from Stream and expose the stream identifier, stream direction, the read-side closed-completion task, a truthful writable-side capability on send-capable streams, and the standard synchronous, asynchronous, span-based, capability, and timeout overrides used by the currently supported consumer slice.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs"
@@ -79,9 +79,9 @@
       "notes": [
         "The public QuicStreamType enum MUST use the direction-only model with Bidirectional and Unidirectional values.",
         "The richer internal stream-identity model may continue to track initiator detail separately, but it stays internal.",
-        "This slice now makes the stream-entry surface and the read-side/terminal-state surface backed by QuicConnectionStreamState truthful on the supported loopback path.",
-        "The current public write-side contract remains intentionally narrow: the callback slice does not add broad data writes, graceful write completion, or abort-heavy behavior before the stream-action pipeline exists.",
-        "The Stream surface stays internal to the facade for now, and a future slice can decide which timeout and write members are honest once stream action exists."
+        "This slice now makes the stream-entry surface, the read-side/terminal-state surface, and the send-capable writable-side flag backed by QuicConnectionStreamState truthful on the supported loopback path.",
+        "The narrow runtime-backed write/completion behavior itself is specified in `REQ-QUIC-API-0010`.",
+        "The Stream surface stays internal to the facade for now, and a future slice can decide which timeout and write members are honest once the broader abort-heavy follow-on exists."
       ]
     },
     {
@@ -97,7 +97,7 @@
         "No custom endpoint or handshake wrapper types are introduced for this slice; the listener and client surfaces reuse EndPoint, IPEndPoint, SslApplicationProtocol, SslClientAuthenticationOptions, SslClientHelloInfo, and SslServerAuthenticationOptions directly.",
         "Public option objects are configuration bags, not live mutable protocol state.",
         "Listener setup, client connect setup, and the server callback are now live.",
-        "The supported stream-capacity callback subset is intentionally narrow: it reports only non-zero initial peer stream-capacity increments committed from peer transport parameters on the supported loopback path.",
+        "The supported initial stream-capacity callback subset is intentionally narrow: it reports only non-zero initial peer stream-capacity increments committed from peer transport parameters on the supported loopback path, and the detailed behavior is specified in `REQ-QUIC-API-0009`.",
         "The supported client TLS/auth subset is intentionally narrow: non-empty ALPN, TLS 1.3 or the default protocol selection, no target host / hostname validation, no client certificates or chain policy, an explicit RemoteCertificateValidationCallback gate, and no custom trust, cipher-suite, or renegotiation/resumption overrides. Unsupported SslClientAuthenticationOptions settings MUST be rejected deterministically instead of being silently ignored.",
         "Unsupported SslClientAuthenticationOptions settings MUST be rejected deterministically instead of being silently ignored.",
         "Later `MAX_STREAMS`-driven capacity updates and capacity release after stream close remain deferred to follow-on slices."
@@ -118,7 +118,7 @@
         "CloseAsync validates the application error code and throws ArgumentOutOfRangeException for invalid values.",
         "CloseAsync is terminal and repeated close calls are ignored once the connection is already closed.",
         "DisposeAsync is the consumer-facing cleanup path when no explicit close is issued; it uses the configured default close error code.",
-        "Stream abort behavior is deferred until the write-side stream-action pipeline exists."
+        "Stream abort behavior is deferred until the broader abort-heavy follow-on exists."
       ]
     },
     {
@@ -153,7 +153,7 @@
     {
       "id": "REQ-QUIC-API-0008",
       "title": "Honor async lifecycle cancellation and terminal-state transitions",
-      "statement": "The library MUST honor cancellation tokens on pending listen, accept, connect, open-stream, and close operations, and the server connection-options callback MUST observe the cancellation token supplied by the listener accept flow. A pre-canceled or later-canceled token MUST complete the still-pending operation with OperationCanceledException, but once a listener accept, connection, or stream has committed or reached a terminal state the public API MUST complete with the documented QuicError or ObjectDisposedException outcome instead of silently reviving or hiding the operation.",
+      "statement": "The library MUST honor cancellation tokens on pending listen, accept, connect, open-stream, supported write, and close operations, and the server connection-options callback MUST observe the cancellation token supplied by the listener accept flow. A pre-canceled or later-canceled token MUST complete the still-pending operation with OperationCanceledException, but once a listener accept, connection, or stream has committed or reached a terminal state the public API MUST complete with the documented QuicError or ObjectDisposedException outcome instead of silently reviving or hiding the operation.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicListenerTests.cs",
@@ -163,11 +163,41 @@
         ]
       },
       "notes": [
-        "The Microsoft tests directly prove cancellation for listener accept, connect, the listener callback, blocked outbound stream opens, and the stream-capacity callback shape; this slice applies that evidence to the listener path, the still-pending client connect path, the stream-entry open/accept path on active loopback connections, and the supported initial stream-capacity callback subset.",
+        "The Microsoft tests directly prove cancellation for listener accept, connect, the listener callback, blocked outbound stream opens, and the stream-capacity callback shape; this slice applies that evidence to the listener path, the still-pending client connect path, the stream-entry open/accept path on active loopback connections, the supported write cancellation path, and the supported initial stream-capacity callback subset.",
         "Cancellation does not retroactively undo a committed connection, accepted stream, or completed close.",
         "Pending connect cancellation and disposal must not fabricate handshake completion.",
         "Stream-capacity callback dispatch must not revive a disposed public connection facade.",
         "Idempotent close and dispose semantics are consumer-facing terminal behavior, not a hidden runtime optimization."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-API-0009",
+      "title": "Expose the supported initial stream-capacity callback delta",
+      "statement": "The library MUST surface the initial peer stream-capacity delta through QuicConnectionOptions.StreamCapacityCallback on the supported loopback establishment path, and it MUST remain silent when the supported boundary is never reached.",
+      "trace": {
+        "upstream_refs": [
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicConnectionTests.cs"
+        ]
+      },
+      "notes": [
+        "The callback is a narrow consumer-visible projection of the existing runtime stream-limit commit bookkeeping and is not a general stream-capacity event pipeline.",
+        "The supported subset reports only the initial non-zero peer-advertised outbound stream-open increment committed from peer transport parameters on the supported loopback path.",
+        "Later `MAX_STREAMS`-driven updates and stream-close-driven capacity release remain deferred."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-API-0010",
+      "title": "Support the narrow runtime-backed stream write and completion lane",
+      "statement": "On the supported active loopback path, send-capable QuicStream facades MUST support immediate 1-RTT writes, best-effort graceful write completion through stream disposal, peer read-side byte delivery, and matching EOF observation without implying broader stream parity.",
+      "trace": {
+        "upstream_refs": [
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicStreamTests.cs"
+        ]
+      },
+      "notes": [
+        "The supported subset is limited to send-capable streams on the active loopback path and is backed by the existing runtime and stream-state seams.",
+        "Disposal is best-effort for graceful write completion and does not promise reset/stop-sending parity.",
+        "The standard `Stream` flush members remain narrow no-ops on this slice and do not imply extra transport work."
       ]
     }
   ],
@@ -178,7 +208,7 @@
     },
     {
       "heading": "Behavioral Evidence From Microsoft Tests",
-      "content": "The following Microsoft library-focused tests were the behavioral baseline for this slice:\n\n- `tests/FunctionalTests/QuicListenerTests.cs`: listener setup validation, callback exception and timeout behavior, cancellation, backlog, ALPN, and listener-disposal behavior.\n- `tests/FunctionalTests/QuicConnectionTests.cs`: connect validation, close/dispose terminal-state behavior, stream-capacity callback deltas, peer-certificate lifetime, peer-abort propagation, and stream-entry open/accept behavior.\n- `tests/FunctionalTests/QuicStreamTests.cs`: direction-based capabilities, EOF and graceful completion, abort mapping, completion-task behavior, cancellation, stream-dispose behavior, and the shape of accepted/created stream facades.\n- `tests/FunctionalTests/QuicStreamConnectedStreamConformanceTests.cs`: `QuicStream` participates in the standard timeout-aware `Stream` contract.\n- `tests/FunctionalTests/MsQuicCipherSuitesPolicyTests.cs`: the API reuses BCL TLS options directly and surfaces invalid cipher-suite combinations through public exceptions.\n- `tests/FunctionalTests/MsQuicTests.cs`: idle timeout, blocked outbound stream open cancellation, and idempotent close behavior.\n\nThese tests justified the listener validation, accept cancellation/disposal, and callback-token language in `REQ-QUIC-API-0002`, `REQ-QUIC-API-0005`, and `REQ-QUIC-API-0008`, while also continuing to justify the lifecycle, stream-entry, and cancellation language in `REQ-QUIC-API-0003`, `REQ-QUIC-API-0004`, and `REQ-QUIC-API-0006`."
+      "content": "The following Microsoft library-focused tests were the behavioral baseline for this slice:\n\n- `tests/FunctionalTests/QuicListenerTests.cs`: listener setup validation, callback exception and timeout behavior, cancellation, backlog, ALPN, and listener-disposal behavior.\n- `tests/FunctionalTests/QuicConnectionTests.cs`: connect validation, close/dispose terminal-state behavior, stream-capacity callback deltas, peer-certificate lifetime, peer-abort propagation, and stream-entry open/accept behavior.\n- `tests/FunctionalTests/QuicStreamTests.cs`: direction-based capabilities, EOF and graceful completion, abort mapping, completion-task behavior, cancellation, stream-dispose behavior, and the shape of accepted/created stream facades.\n- `tests/FunctionalTests/QuicStreamConnectedStreamConformanceTests.cs`: `QuicStream` participates in the standard timeout-aware `Stream` contract.\n- `tests/FunctionalTests/MsQuicCipherSuitesPolicyTests.cs`: the API reuses BCL TLS options directly and surfaces invalid cipher-suite combinations through public exceptions.\n- `tests/FunctionalTests/MsQuicTests.cs`: idle timeout, blocked outbound stream open cancellation, and idempotent close behavior.\n\nThese tests justified the listener validation, accept cancellation/disposal, and callback-token language in `REQ-QUIC-API-0002`, `REQ-QUIC-API-0005`, `REQ-QUIC-API-0008`, and `REQ-QUIC-API-0009`, while also continuing to justify the lifecycle, stream-entry, write/completion, and cancellation language in `REQ-QUIC-API-0003`, `REQ-QUIC-API-0004`, `REQ-QUIC-API-0006`, and `REQ-QUIC-API-0010`."
     },
     {
       "heading": "Internal-Only Surface",

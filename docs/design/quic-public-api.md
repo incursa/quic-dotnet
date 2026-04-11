@@ -44,6 +44,7 @@ The following remain intentionally out of scope for this pass:
 - `QuicListener.IsSupported`
 - later `MAX_STREAMS`-driven capacity updates
 - stream-close-driven capacity release
+- abort-heavy reset / stop-sending follow-ons
 
 ## Behavioral Evidence
 
@@ -60,8 +61,8 @@ They imply these public-behavior expectations:
 
 - Listener setup is validation-heavy: `ListenEndPoint`, `ApplicationProtocols`, and the narrow server callback are required, and the callback sees a cancellation token that is canceled on timeout or listener disposal.
 - Listener accept, blocked stream open, and close operations must honor cancellation while the operation is still pending.
-- `QuicStream` is a consumer-facing `Stream` abstraction, but this repo still supports only the current narrow read-side subset honestly; write-heavy and graceful-completion behavior remain deferred.
-- Stream entry points are only honest on an active connection that already has the minimal 1-RTT application-data lane; the supported loopback path opens and accepts a real QUIC stream facade without exposing the broader write-heavy contract.
+- `QuicStream` is a consumer-facing `Stream` abstraction, and this repo now supports a narrow read-side plus write/completion subset honestly on send-capable streams; `Flush` stays a narrow no-op, and broader abort-heavy behavior remains deferred.
+- Stream entry points are only honest on an active connection that already has the minimal 1-RTT application-data lane; the supported loopback path opens and accepts a real QUIC stream facade and can now publish bytes and EOF without exposing the broader abort-heavy contract.
 - The stream-capacity callback is only honest for non-zero initial peer stream-capacity increments committed from peer transport parameters on the supported loopback path.
 - Stream abort, connection close, and dispose must map to the public `QuicError` surface and preserve the configured application error codes.
 - The public API should reuse the BCL TLS options objects directly where that slice needs them, including the listener endpoint and server authentication options.
@@ -77,7 +78,9 @@ This pass promotes the connection/stream facade, the listener/server entry surfa
 - `REQ-QUIC-API-0004` only promises the stream identity, lifetime, EOF, stream-entry, and read-side behavior that is backed by `QuicConnectionStreamState`.
 - `REQ-QUIC-API-0005` covers the shared connection options, listener options, receive-window settings, the supported initial stream-capacity callback subset, and the narrow supported subset of `SslClientAuthenticationOptions`.
 - `REQ-QUIC-API-0006` records the public close/error projection through `QuicError`, `QuicException`, and `QuicAbortDirection`.
-- `REQ-QUIC-API-0008` covers the cancellation and terminal-state behavior for listener accept, pending client connect, stream open, stream accept, close, and deferred callback dispatch.
+- `REQ-QUIC-API-0008` covers the cancellation and terminal-state behavior for listener accept, pending client connect, stream open, stream accept, supported write, close, and deferred callback dispatch.
+- `REQ-QUIC-API-0009` covers the initial peer stream-capacity callback subset on the supported loopback path.
+- `REQ-QUIC-API-0010` covers the narrow runtime-backed stream write and completion lane on send-capable streams.
 
 ## Public Member Shape
 
@@ -86,6 +89,7 @@ The first slice keeps the consumer contract intentionally narrow:
 - `QuicConnection` is the connection-lifetime facade over the runtime seam and exposes the client connect entry point.
 - `QuicConnection` now also exposes the narrow inbound-stream accept and outbound-stream open entry points on the established loopback path.
 - `QuicStream` is the stream-lifetime facade over the stream-state seam.
+- `QuicStream` now exposes a narrow writable-side capability and the corresponding write/completion behavior on send-capable streams.
 - `QuicConnectionOptions` is the shared bag for connection close/error defaults, timeouts, and receive-window knobs.
 - `QuicConnectionOptions.StreamCapacityCallback` is the narrow initial outbound stream-capacity callback seam.
 - `QuicReceiveWindowSizes` carries the configured receive-window values.
@@ -101,7 +105,7 @@ The listener entry points are now part of this slice.
 - The connection/listener/client slice reuses `QuicConnectionRuntime`, `QuicConnectionStreamState`, `QuicListenerHost`, `QuicConnectionRuntimeEndpoint`, `QuicConnectionEndpointHost`, and `QuicClientConnectionHost` directly.
 - Listener startup and listener acceptance are honest and backed by the internal listener host.
 - Client connect now starts a real client host/runtime shell and completes on the supported positive loopback boundary through the existing host seams, with Initial/DCID bootstrap, inbound Initial handling, and listener-side datagram admission already in place.
-- Stream entry now reuses the same runtime and stream-state seams, plus a minimal 1-RTT short-header stream-control path, so the supported loopback connection can open and accept a real `QuicStream` facade without surfacing the broader write-heavy pipeline.
+- Stream entry now reuses the same runtime and stream-state seams, plus a minimal 1-RTT short-header stream-control path, so the supported loopback connection can open and accept a real `QuicStream` facade and publish bytes plus EOF on the supported writable side without surfacing the broader abort-heavy pipeline.
 - The initial stream-capacity callback now reuses the same runtime and stream-state seams by projecting only non-zero initial peer stream-limit increments committed from transport parameters.
 - The supported `SslClientAuthenticationOptions` subset is intentionally narrow: non-empty ALPN, TLS 1.3 or the default protocol selection, no target host or SNI/hostname validation, no client certificates, no chain policy, and an explicit `RemoteCertificateValidationCallback` gate over the parsed peer leaf certificate. Unsupported settings are rejected deterministically instead of being ignored.
 - Later `MAX_STREAMS`-driven capacity updates and stream-close-driven capacity release remain deferred until the fuller stream-capacity path exists end to end.

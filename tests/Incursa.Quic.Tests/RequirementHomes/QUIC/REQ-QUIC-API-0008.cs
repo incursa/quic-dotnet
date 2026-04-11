@@ -204,6 +204,68 @@ public sealed class REQ_QUIC_API_0008
         }
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ReadAsync_HonorsCancellationWhilePendingOnASupportedLoopbackStream()
+    {
+        await using LoopbackStreamPair pair = await LoopbackStreamPair.CreateAsync();
+
+        byte[] buffer = new byte[16];
+        using CancellationTokenSource cancellationSource = new();
+        Task<int> readTask = pair.ServerStream.ReadAsync(buffer, 0, buffer.Length, cancellationSource.Token);
+
+        await Task.Yield();
+        cancellationSource.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => readTask);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task WriteAsync_HonorsCancellationWhilePendingOnASupportedLoopbackStream()
+    {
+        await using LoopbackStreamPair pair = await LoopbackStreamPair.CreateAsync();
+
+        QuicConnectionRuntime runtime = GetRuntime(pair.ClientConnection);
+        Func<QuicConnectionEvent, bool> originalDispatcher = GetLocalApiEventDispatcher(runtime);
+        TaskCompletionSource<bool> dispatcherEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<bool> dispatcherRelease = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent { ActionKind: QuicConnectionStreamActionKind.Write })
+            {
+                dispatcherEntered.TrySetResult(true);
+                dispatcherRelease.Task.GetAwaiter().GetResult();
+            }
+
+            return originalDispatcher(connectionEvent);
+        });
+
+        using CancellationTokenSource cancellationSource = new();
+        Task writeTask = Task.Run(
+            async () => await pair.ClientStream.WriteAsync(
+                new byte[] { 0x01, 0x02, 0x03 },
+                0,
+                3,
+                cancellationSource.Token));
+
+        try
+        {
+            await dispatcherEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            cancellationSource.Cancel();
+            dispatcherRelease.TrySetResult(true);
+
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => writeTask.WaitAsync(TimeSpan.FromSeconds(5)));
+        }
+        finally
+        {
+            dispatcherRelease.TrySetResult(true);
+        }
+    }
+
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
     {
         FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -262,6 +324,113 @@ public sealed class REQ_QUIC_API_0008
             BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(observerField);
         return Assert.IsType<Action<int, int>>(observerField!.GetValue(runtime));
+    }
+
+    private sealed class LoopbackStreamPair : IAsyncDisposable
+    {
+        private LoopbackStreamPair(
+            QuicListener listener,
+            QuicConnection serverConnection,
+            QuicConnection clientConnection,
+            QuicStream serverStream,
+            QuicStream clientStream)
+        {
+            Listener = listener;
+            ServerConnection = serverConnection;
+            ClientConnection = clientConnection;
+            ServerStream = serverStream;
+            ClientStream = clientStream;
+        }
+
+        public QuicListener Listener { get; }
+
+        public QuicConnection ServerConnection { get; }
+
+        public QuicConnection ClientConnection { get; }
+
+        public QuicStream ServerStream { get; }
+
+        public QuicStream ClientStream { get; }
+
+        public static async Task<LoopbackStreamPair> CreateAsync()
+        {
+            using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+
+            QuicListenerOptions listenerOptions = new()
+            {
+                ListenEndPoint = listenEndPoint,
+                ApplicationProtocols = [SslApplicationProtocol.Http3],
+                ListenBacklog = 1,
+                ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(
+                    QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+            };
+
+            QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+            Task<QuicConnection> acceptConnectionTask = listener.AcceptConnectionAsync().AsTask();
+            Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port))).AsTask();
+
+            await Task.WhenAll(acceptConnectionTask, connectTask);
+
+            QuicConnection serverConnection = await acceptConnectionTask;
+            QuicConnection clientConnection = await connectTask;
+
+            Task<QuicStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync().AsTask();
+            await Task.Yield();
+            Task<QuicStream> openStreamTask = clientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask();
+            await Task.WhenAll(acceptStreamTask, openStreamTask);
+
+            return new LoopbackStreamPair(
+                listener,
+                serverConnection,
+                clientConnection,
+                await acceptStreamTask,
+                await openStreamTask);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            try
+            {
+                await ServerStream.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(1));
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                await ClientStream.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(1));
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                await ServerConnection.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(1));
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                await ClientConnection.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(1));
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                await Listener.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(1));
+            }
+            catch
+            {
+            }
+        }
     }
 
     private sealed class TestQuicConnectionOptions : QuicConnectionOptions
