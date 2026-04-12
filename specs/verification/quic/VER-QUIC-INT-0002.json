@@ -11,7 +11,7 @@
     "ARC-QUIC-INT-0002",
     "WI-QUIC-INT-0002"
   ],
-  "scope": "Verify the endpoint-host shell, the managed client/listener Initial bootstrap seam, handshake-only harness dispatch into that seam, the connected-UDP bridge into the library-owned runtime endpoint, the outbound datagram handoff, and the honesty of route-miss handling.",
+  "scope": "Verify the endpoint-host shell, the managed client/listener Initial bootstrap seam, handshake-only harness dispatch into that seam, the connected-UDP bridge into the library-owned runtime endpoint, the outbound datagram handoff, the honesty of route-miss handling, and the real child-process completion / exit-0 proof for the handshake testcase.",
   "preconditions": [
     "The solution builds successfully with the shell and test-support files included.",
     "The INT requirement-home tests can be discovered and executed locally.",
@@ -36,12 +36,12 @@
     "specs/requirements/quic/REQUIREMENT-GAPS.md"
   ],
   "procedure": [
-    "Run the positive and negative endpoint-host requirement-home tests to confirm client Initial/DCID ownership, server Initial-response emission, routed ingress, outbound datagram emission, handshake dispatch entry, and unroutable route misses.",
+    "Run the positive and negative endpoint-host requirement-home tests to confirm client Initial/DCID ownership, server Initial-response emission, routed ingress, outbound datagram emission, handshake dispatch entry, real child-process completion, exit-0 behavior on both sides, and unroutable route misses.",
     "Build the solution and confirm the harness shell participates in the normal build graph without moving protocol ownership out of the library.",
     "Inspect the README and gap ledger to confirm handshake dispatch is routed through the real managed bootstrap path while `transfer` and `retry` remain honest `127` cases."
   ],
-  "expected_result": "A real connected UDP socket boundary can now drive one library-owned runtime connection, the managed client/listener host path owns honest Initial/DCID bootstrap and server Initial-response emission, the harness `handshake` testcase dispatch reaches that managed path, the runtime can surface an outbound handshake datagram back to the socket layer, and route misses stay unroutable. Unsupported harness testcase dispatch for `transfer` and `retry` remains `127`.",
-  "status_summary": "This verification slice proves the shell boundary plus the managed Initial/bootstrap seam and handshake-only harness dispatch entry. `transfer` and `retry` remain intentionally deferred.",
+  "expected_result": "A real connected UDP socket boundary can now drive one library-owned runtime connection, the managed client/listener host path owns honest Initial/DCID bootstrap and server Initial-response emission, the harness `handshake` testcase dispatch reaches that managed path, both child processes complete and exit `0`, the runtime can surface an outbound handshake datagram back to the socket layer, and route misses stay unroutable. Unsupported harness testcase dispatch for `transfer` and `retry` remains `127`.",
+  "status_summary": "This verification slice proves the shell boundary plus the managed Initial/bootstrap seam, handshake-only harness dispatch entry, and real client/server child-process completion with exit `0` on both sides. `transfer` and `retry` remain intentionally deferred.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
