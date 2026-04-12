@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0018",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC CRT trim and Native AOT compatibility verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Build, publish, and warning-inspection evidence.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0018",
+    "WI-QUIC-CRT-0018"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0120"
+  ],
+  "scope": "Verify that the shipped Incursa.Quic package remains trimmable and Native AOT compatible when consumed through PackageReference on the supported net10.0 target. The verification covers the package boundary, not only direct project references.",
+  "expected_result": "- A downstream PackageReference consumer publishes successfully with `PublishTrimmed=true`.\n- The same downstream consumer publishes successfully with `PublishAot=true`.\n- No trim or AOT analyzer warnings such as IL2125 or IL3058 are introduced on the supported slice.\n- The supported public QUIC surface remains usable from the consumer app after trimming or AOT publishing.\n- Unsupported plugin, reflection-extension, or multi-target scenarios remain out of scope.",
+  "procedure": [
+    "Pack the library on the supported net10.0 target.",
+    "Create or refresh a minimal downstream consumer that references the packed NuGet package through PackageReference.",
+    "Publish the downstream consumer with `PublishTrimmed=true` and inspect the build for trim warnings.",
+    "Publish the downstream consumer with `PublishAot=true` and inspect the build for AOT warnings.",
+    "Run the consumer smoke path to confirm the supported QUIC surface still loads and executes after trimming or AOT publishing.",
+    "Re-run the repo-local SpecTrace validation checks and markdown rendering checks after the artifact updates."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/Incursa.Quic.csproj",
+    "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+    "src/Incursa.Quic/PublicAPI.Shipped.txt",
+    "docs/packaging.md",
+    "tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj"
+  ],
+  "preconditions": [
+    "The Incursa.Quic library builds successfully on net10.0.",
+    "The installed SDK supports Native AOT publishing on the current platform.",
+    "The consumer smoke path can restore the packed package through PackageReference."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- [`src/Incursa.Quic/Incursa.Quic.csproj`](../../../src/Incursa.Quic/Incursa.Quic.csproj)\n- [`src/Incursa.Quic/PublicAPI.Unshipped.txt`](../../../src/Incursa.Quic/PublicAPI.Unshipped.txt)\n- [`src/Incursa.Quic/PublicAPI.Shipped.txt`](../../../src/Incursa.Quic/PublicAPI.Shipped.txt)\n- [`docs/packaging.md`](../../../docs/packaging.md)\n- [`tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj`](../../../tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj)"
+    }
+  ]
+}

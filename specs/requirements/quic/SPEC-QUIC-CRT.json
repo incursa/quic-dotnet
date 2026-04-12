@@ -17,11 +17,14 @@
     "handshake",
     "tls-bridge",
     "tls13",
-    "handshake-crypto"
+    "handshake-crypto",
+    "trimming",
+    "aot",
+    "packaging"
   ],
-  "purpose": "Define the architecture and implementation requirements for the connection-owned QUIC runtime that arbitrates packet receive events, timer expirations, path changes, stateless reset handling, handshake packet flow, close and drain transitions, and live stream orchestration.",
-  "scope": "This specification covers endpoint ingress classification, routing tables, connection ownership, execution profiles, event and effect modeling, timer scheduling, lifecycle phases, migration and path state, handshake packet open/protect coordination, stateless reset handling, stream ownership, performance posture for high connection density, and reducer-oriented testability.",
-  "context": "The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, and live-stream blockers can be implemented against one clear architecture.",
+  "purpose": "Define the architecture and implementation requirements for the connection-owned QUIC runtime that arbitrates packet receive events, timer expirations, path changes, stateless reset handling, handshake packet flow, close and drain transitions, live stream orchestration, and the trim and Native AOT compatibility posture of the shipped package.",
+  "scope": "This specification covers endpoint ingress classification, routing tables, connection ownership, execution profiles, event and effect modeling, timer scheduling, lifecycle phases, migration and path state, handshake packet open/protect coordination, stateless reset handling, stream ownership, performance posture for high connection density, packaged-library trimming and Native AOT compatibility, and reducer-oriented testability.",
+  "context": "The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, and package-compatibility work can be implemented against one clear architecture.",
   "supplemental_sections": [
     {
       "heading": "Decision Summary",
@@ -53,7 +56,7 @@
     },
     {
       "heading": "Backlog This Specification Unlocks",
-      "content": "This specification is intended to unlock the architecture blockers called out for:\n\n- 9000-11-migration-core\n- 9000-13-idle-and-close\n- 9000-14-stateless-reset\n- the live-stream remainder of 9000-02-stream-state\n"
+      "content": "This specification is intended to unlock the architecture blockers called out for:\n\n- 9000-11-migration-core\n- 9000-13-idle-and-close\n- 9000-14-stateless-reset\n- the live-stream remainder of 9000-02-stream-state\n- the library-wide trim and Native AOT package-compatibility slice\n"
     }
   ],
   "requirements": [
@@ -1156,6 +1159,25 @@
         "This slice is intentionally server-role only and narrow. It does not add 1-RTT stream or application-data processing, key update, peer transport-parameter commit, endpoint-host wiring, or interop-runner handshake support.",
         "The publication boundary is `PeerFinishedVerified`; it does not depend on server-role peer transport-parameter commit.",
         "The bridge-visible state is directional packet-protection material only; it does not imply `OneRttKeysAvailable` or any application-data path."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0120",
+      "title": "Keep the shipped package trimmable and Native AOT compatible",
+      "statement": "The library MUST remain trimmable and Native AOT compatible when it is consumed through `PackageReference` as the shipped NuGet package on the supported `net10.0` target, and the package MUST not require unsupported reflection, runtime code generation, or other trim or AOT incompatible behavior on the supported public and internal QUIC slices.",
+      "trace": {
+        "upstream_refs": [
+          "docs/packaging.md",
+          "src/Incursa.Quic/Incursa.Quic.csproj",
+          "https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/",
+          "https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/warnings/il3058",
+          "https://learn.microsoft.com/en-us/dotnet/core/deploying/trimming/trim-warnings/il2125"
+        ]
+      },
+      "notes": [
+        "This requirement applies to the shipped NuGet package assembly, not just direct project references. PackageReference consumers are in scope because trimming and AOT analysis operate on referenced assemblies.",
+        "The expected implementation mechanism is `IsTrimmable=true` and `IsAotCompatible=true` on the supported target, with reference-verification enabled where the slice needs it, but the requirement is about observable package compatibility rather than a specific project-file spelling.",
+        "Unsupported dynamic-extension patterns remain out of scope until separately specified."
       ]
     }
   ]
