@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Net.Security;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
@@ -203,6 +204,67 @@ public sealed class REQ_QUIC_INT_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task ListenerHostStillEmitsTheHandshakeResponseAfterAnAsyncConnectionCallbackDelay()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        clientSocket.Connect(listenEndPoint);
+
+        byte[] clientInitialDestinationConnectionId =
+        [
+            0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+        ];
+
+        byte[] clientSourceConnectionId =
+        [
+            0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
+        ];
+
+        byte[] clientInitialPacket = InteropEndpointHostTestSupport.BuildProtectedInitialPacket(
+            clientInitialDestinationConnectionId,
+            clientSourceConnectionId);
+
+        TaskCompletionSource<bool> callbackEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<bool> callbackRelease = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        await using QuicListenerHost listenerHost = new(
+            listenEndPoint,
+            [SslApplicationProtocol.Http3],
+            async (_, _, cancellationToken) =>
+            {
+                callbackEntered.TrySetResult(true);
+                await callbackRelease.Task.WaitAsync(cancellationToken);
+                return QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+            },
+            listenBacklog: 1);
+
+        _ = listenerHost.RunAsync();
+        await Task.Yield();
+
+        int bytesSent = clientSocket.Send(clientInitialPacket);
+        Assert.Equal(clientInitialPacket.Length, bytesSent);
+
+        await callbackEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        callbackRelease.TrySetResult(true);
+
+        byte[] responseBuffer = new byte[4096];
+        using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
+        int bytesReceived = await clientSocket.ReceiveAsync(responseBuffer.AsMemory(), SocketFlags.None, receiveTimeout.Token);
+        Assert.True(bytesReceived > 0);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(
+            responseBuffer.AsSpan(0, bytesReceived),
+            out QuicLongHeaderPacket responseHeader));
+        Assert.Equal(1u, responseHeader.Version);
+        Assert.Equal(clientSourceConnectionId, responseHeader.DestinationConnectionId.ToArray());
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task HarnessHandshakeTestcaseDispatchesIntoTheManagedBootstrapPath()
     {
         IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
@@ -224,6 +286,179 @@ public sealed class REQ_QUIC_INT_0008
         Assert.DoesNotContain("unsupported", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("unsupported", serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("unsupported", clientProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task RealClientBootstrapPacketCanDriveTheServerRuntimeWhenReplayedDirectly()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        using Socket captureSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        captureSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+
+        IPEndPoint listenEndPoint = (IPEndPoint)captureSocket.LocalEndPoint!;
+        QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(listenEndPoint),
+            "options");
+
+        await using QuicClientConnectionHost clientHost = new(settings);
+        Task<QuicConnection> connectTask = clientHost.ConnectAsync().AsTask();
+
+        byte[] datagramBuffer = new byte[4096];
+        EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+        using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
+        SocketReceiveFromResult receiveResult = await captureSocket.ReceiveFromAsync(
+            datagramBuffer.AsMemory(),
+            SocketFlags.None,
+            remoteEndPoint,
+            receiveTimeout.Token);
+
+        byte[] capturedDatagram = datagramBuffer[..receiveResult.ReceivedBytes];
+        IPEndPoint clientEndPoint = (IPEndPoint)receiveResult.RemoteEndPoint;
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(capturedDatagram, out QuicLongHeaderPacket longHeader));
+        Assert.Equal(QuicLongPacketTypeBits.Initial, longHeader.LongPacketTypeBits);
+
+        QuicServerConnectionSettings serverSettings = QuicServerConnectionOptionsValidator.Capture(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate),
+            "options",
+            [SslApplicationProtocol.Http3]);
+
+        byte[] serverSourceConnectionId =
+        [
+            0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+        ];
+
+        using QuicConnectionRuntime serverRuntime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            tlsRole: QuicTlsRole.Server);
+
+        Assert.True(serverRuntime.TryConfigureInitialPacketProtection(longHeader.DestinationConnectionId.ToArray()));
+        Assert.True(serverRuntime.TrySetHandshakeDestinationConnectionId(longHeader.SourceConnectionId.ToArray()));
+        Assert.True(serverRuntime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId));
+        Assert.True(serverRuntime.TryConfigureServerAuthenticationMaterial(
+            serverSettings.ServerLeafCertificateDer,
+            serverSettings.ServerLeafSigningPrivateKey));
+
+        QuicTransportParameters serverTransportParameters = QuicLoopbackEstablishmentTestSupport.CreateSupportedTransportParameters(
+            serverSourceConnectionId);
+
+        Assert.True(serverRuntime.Transition(
+            new QuicConnectionHandshakeBootstrapRequestedEvent(
+                ObservedAtTicks: 1,
+                LocalTransportParameters: serverTransportParameters),
+            nowTicks: 1).StateChanged);
+
+        QuicConnectionPathIdentity clientPath = new(
+            clientEndPoint.Address.ToString(),
+            listenEndPoint.Address.ToString(),
+            clientEndPoint.Port,
+            listenEndPoint.Port);
+
+        QuicConnectionTransitionResult initialResult = serverRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 2,
+                clientPath,
+                capturedDatagram),
+            nowTicks: 2);
+
+        await clientHost.DisposeAsync();
+        await Assert.ThrowsAsync<ObjectDisposedException>(() => connectTask);
+
+        Assert.True(
+            initialResult.Effects.Any(effect => effect is QuicConnectionSendDatagramEffect),
+            $"Captured client Initial did not drive the server runtime. Runtime={QuicLoopbackEstablishmentTestSupport.DescribeConnection(new QuicConnection(serverRuntime, new QuicClientConnectionOptions(), null))}");
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task PemLoadedServerCertificateDiagnosticCapturesTheFirstMissingHandshakeCompletionGate()
+    {
+        using TempDirectoryFixture fixture = new("incursa-quic-int-diagnostics");
+        using X509Certificate2 sourceCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        string certificatePemPath = fixture.CreateFile("cert.pem", sourceCertificate.ExportCertificatePem());
+
+        using ECDsa sourcePrivateKey = sourceCertificate.GetECDsaPrivateKey()!;
+        string privateKeyPemPath = fixture.CreateFile("priv.key", sourcePrivateKey.ExportPkcs8PrivateKeyPem());
+
+        Assert.True(
+            InteropTlsMaterials.TryLoad(certificatePemPath, privateKeyPemPath, out InteropTlsMaterials? materials, out string? errorMessage),
+            errorMessage ?? "PEM materials failed to load.");
+        Assert.NotNull(materials);
+        Assert.True(
+            materials!.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out errorMessage),
+            errorMessage ?? "PEM-backed server certificate failed to load.");
+        Assert.NotNull(serverCertificate);
+        TaskCompletionSource<bool> callbackEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<bool> callbackRelease = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        QuicConnection? observedServerConnection = null;
+
+        await using QuicListener listener = await QuicListener.ListenAsync(new QuicListenerOptions
+        {
+            ListenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint(),
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = async (connection, _, cancellationToken) =>
+            {
+                observedServerConnection = connection;
+                callbackEntered.TrySetResult(true);
+                await callbackRelease.Task.WaitAsync(cancellationToken);
+                return QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate!);
+            },
+        });
+
+        IPEndPoint listenEndPoint = GetPrivateField<QuicListenerHost>(listener, "host")
+            .GetType()
+            .GetField("socket", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .GetValue(GetPrivateField<QuicListenerHost>(listener, "host")) is Socket socket
+            ? (IPEndPoint)socket.LocalEndPoint!
+            : throw new InvalidOperationException("Listener socket unavailable.");
+
+        QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(listenEndPoint),
+            "options");
+
+        await using QuicClientConnectionHost clientHost = new(settings);
+        Task<QuicConnection> connectTask = clientHost.ConnectAsync().AsTask();
+        Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
+
+        await callbackEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        callbackRelease.TrySetResult(true);
+
+        Task completed = await Task.WhenAny(
+            Task.WhenAll(connectTask, acceptTask),
+            Task.Delay(TimeSpan.FromSeconds(3)));
+
+        if (completed == connectTask || completed == acceptTask || (connectTask.IsCompleted && acceptTask.IsCompleted))
+        {
+            await using QuicConnection clientConnection = await connectTask;
+            await using QuicConnection serverConnection = await acceptTask;
+            throw new Xunit.Sdk.XunitException(
+                $"Diagnostic expected the PEM-backed path to stall, but both sides completed. Client={QuicLoopbackEstablishmentTestSupport.DescribeConnection(clientConnection)}; Server={QuicLoopbackEstablishmentTestSupport.DescribeConnection(serverConnection)}");
+        }
+
+        QuicListenerHost listenerHost = GetPrivateField<QuicListenerHost>(listener, "host");
+        string clientDescription = QuicLoopbackEstablishmentTestSupport.DescribeClientHost(clientHost);
+        string serverDescription = observedServerConnection is null
+            ? DescribeFirstPendingServerConnection(listenerHost)
+            : QuicLoopbackEstablishmentTestSupport.DescribeConnection(observedServerConnection);
+
+        Assert.False(connectTask.IsCompleted, $"Client unexpectedly completed. Client={clientDescription}; Server={serverDescription}");
+        Assert.False(acceptTask.IsCompleted, $"Server unexpectedly completed. Client={clientDescription}; Server={serverDescription}");
+        Assert.Contains("PeerHandshakeTranscriptCompleted=False", clientDescription, StringComparison.Ordinal);
+        Assert.Contains("PeerTP=<null>", clientDescription, StringComparison.Ordinal);
+        Assert.Contains("InitialIngress=0", clientDescription, StringComparison.Ordinal);
+        Assert.Contains("HandshakeIngress=0", clientDescription, StringComparison.Ordinal);
+        Assert.Contains("InitialEgress=0", clientDescription, StringComparison.Ordinal);
+        Assert.Contains("HandshakeEgress=0", clientDescription, StringComparison.Ordinal);
+        Assert.Contains("PeerHandshakeTranscriptCompleted=False", serverDescription, StringComparison.Ordinal);
+        Assert.Contains("PeerTP=<null>", serverDescription, StringComparison.Ordinal);
+        Assert.Contains("InitialIngress=0", serverDescription, StringComparison.Ordinal);
+        Assert.Contains("HandshakeIngress=0", serverDescription, StringComparison.Ordinal);
+        Assert.Contains("InitialEgress=0", serverDescription, StringComparison.Ordinal);
+        Assert.Contains("HandshakeEgress=0", serverDescription, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -294,6 +529,39 @@ public sealed class REQ_QUIC_INT_0008
         FieldInfo? field = target.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(field);
         return Assert.IsType<T>(field!.GetValue(target));
+    }
+
+    private static string DescribeFirstPendingServerConnection(QuicListenerHost listenerHost)
+    {
+        FieldInfo? connectionsField = typeof(QuicListenerHost).GetField("connections", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(connectionsField);
+
+        object? connectionsObject = connectionsField!.GetValue(listenerHost);
+        Assert.NotNull(connectionsObject);
+
+        System.Collections.IEnumerable connections = Assert.IsAssignableFrom<System.Collections.IEnumerable>(connectionsObject);
+        foreach (object? entry in connections)
+        {
+            if (entry is null)
+            {
+                continue;
+            }
+
+            PropertyInfo? valueProperty = entry.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
+            object? pendingState = valueProperty?.GetValue(entry);
+            if (pendingState is null)
+            {
+                continue;
+            }
+
+            FieldInfo? connectionField = pendingState.GetType().GetField("Connection", BindingFlags.Public | BindingFlags.Instance);
+            if (connectionField?.GetValue(pendingState) is QuicConnection connection)
+            {
+                return QuicLoopbackEstablishmentTestSupport.DescribeConnection(connection);
+            }
+        }
+
+        return "<no pending server connection>";
     }
 
     private static QuicConnectionTransitionResult GetPacketReceivedTransitionResult(ConcurrentQueue<QuicConnectionTransitionResult> transitionResults)
