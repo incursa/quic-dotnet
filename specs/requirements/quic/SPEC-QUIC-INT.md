@@ -8,15 +8,14 @@ Define the interop-runner-facing companion harness contract that hosts Incursa.Q
 
 ## Scope
 
-This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, unsupported testcase exit behavior, placeholder diagnostics hooks, Docker packaging, and CI participation.
+This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, unsupported testcase exit behavior, the transfer-owned child-process completion contract, placeholder diagnostics hooks, Docker packaging, and CI participation.
 
 ## Context
 
-Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam.
+Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The remaining transfer slice is specified separately as a narrow child-process completion contract on the existing active-phase path, while `transfer` and `retry` still return exit code `127` until runner-side enablement exists.
 
 ## Open Questions
 
-- Which application protocol and ALPN should the eventual file-transfer endpoint use once Incursa.Quic can drive real end-to-end interop behavior?
 - When a real TLS provider is selected, what is the practical path for optional SSLKEYLOGFILE support without leaking provider-specific details into the harness?
 
 ## Current Support Posture
@@ -136,3 +135,35 @@ Trace:
 Notes:
 - The shell remains adapter-only: it owns socket/process lifecycle and observers, not protocol behavior.
 - The harness handshake testcase now routes through this seam; transfer and retry still return `127`.
+
+## REQ-QUIC-INT-0010 Define the first transfer slice as narrow and proof-gated
+The interop harness MUST define a child-process-only transfer slice on the existing Active-phase managed path in which the client and server each participate in exactly one application stream, the first `REQUESTS` URL selects the transfer target, the fixed `/www` and `/downloads` mount-path contract remains in force, the existing `Http3` ALPN remains in force, and exit code `0` is considered honest only after byte delivery and EOF have completed on both sides. This slice MUST NOT widen retry, multi-stream generalization, broader 1-RTT claims, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-INT-0003
+- Implemented By:
+  - WI-QUIC-INT-0003
+- Verified By:
+  - VER-QUIC-INT-0003
+- Code Refs:
+  - src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs
+  - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
+  - src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs
+  - src/Incursa.Quic/QuicConnection.cs
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - src/Incursa.Quic/QuicStream.cs
+  - src/Incursa.Quic/QuicClientConnectionHost.cs
+  - src/Incursa.Quic/QuicListenerHost.cs
+  - src/Incursa.Quic/QuicTlsKeySchedule.cs
+- Related:
+  - REQ-QUIC-INT-0003
+  - REQ-QUIC-INT-0008
+  - REQ-QUIC-API-0002
+  - REQ-QUIC-API-0010
+  - REQ-QUIC-CRT-0121
+  - SPEC-QUIC-CRT
+
+Notes:
+- This requirement owns only the managed child-process transfer boundary on the existing active path. It does not widen the public promise, `IsSupported`, or broader interop compatibility claims.
+- The current runtime already owns the narrow stream open, write, read, and EOF mechanics on the supported active-loopback path; the remaining transfer blocker is the harness-owned completion contract and proof.

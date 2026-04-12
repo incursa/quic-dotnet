@@ -1,0 +1,47 @@
+{
+  "title": "QUIC Interop Transfer Completion Verification",
+  "preconditions": [
+    "The active-phase loopback stream lane and client-role 1-RTT readiness proof remain green.",
+    "The harness can still build and run the existing handshake path without widening retry support.",
+    "A transfer requirement-home test exists for the one-stream child-process contract."
+  ],
+  "verification_method": "Focused requirement-home tests, solution build execution, and artifact inspection of the README and gap ledger.",
+  "owner": "quic-maintainers",
+  "artifact_type": "verification",
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "status": "planned",
+  "domain": "quic",
+  "verifies": [
+    "REQ-QUIC-INT-0010"
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs",
+    "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicStream.cs",
+    "src/Incursa.Quic.InteropHarness/README.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Deferred Coverage",
+      "content": "Retry enablement, multi-stream transfer, broader 1-RTT claims, trust-store policy widening, 0-RTT, and key update remain intentionally deferred."
+    }
+  ],
+  "status_summary": "This verification slice is planned; it records the proof contract for the narrow transfer-owned child-process completion boundary without claiming transfer support yet.",
+  "scope": "Verify the narrow child-process transfer contract on the existing active-phase managed path: one application stream, first `REQUESTS` URL selection, fixed `/www` and `/downloads` mount-path contract, `Http3` ALPN, EOF-based completion, and honest exit `0` only after byte delivery is complete on both sides.",
+  "procedure": [
+    "Run the transfer requirement-home test once implementation exists.",
+    "Run the existing handshake/public guard tests and the client 1-RTT readiness tests to keep the prerequisites green.",
+    "Inspect the README and gap ledger to confirm transfer remains unsupported until the contract is actually wired into runner dispatch."
+  ],
+  "expected_result": "The child-process transfer slice only reports success after the single-stream byte exchange completes, EOF is observed on both sides, and the harness stays honest about unsupported retry and broader 1-RTT behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0003",
+    "WI-QUIC-INT-0003"
+  ],
+  "artifact_id": "VER-QUIC-INT-0003"
+}

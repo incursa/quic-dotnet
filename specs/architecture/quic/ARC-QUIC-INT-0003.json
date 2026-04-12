@@ -1,0 +1,64 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0003",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC Interop Transfer Completion Contract Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the narrow child-process transfer contract that sits on the already-supported active-phase managed path without widening retry or broader stream ownership.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-INT-0003",
+    "VER-QUIC-INT-0003"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0010"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+    "src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs",
+    "src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs",
+    "src/Incursa.Quic/QuicConnection.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicStream.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs"
+  ],
+  "design_summary": "The existing runtime already owns the active-phase stream open/accept/read/write/EOF mechanics and the client-role post-Finished 1-RTT readiness boundary. The transfer slice therefore stays in the harness and proof contract: the runner must decide which side opens or accepts the single stream, how the first REQUESTS URL maps into the fixed /www and /downloads mount contract, when EOF is complete enough for exit 0, and how to keep the supported boundary honest when the contract is not yet implemented.\n\nThis architecture deliberately does not add retry enablement, multi-stream generalization, broader 1-RTT claims, or TLS policy widening. It simply records the smallest honest transfer-owned boundary on top of the already-proven active-phase path.",
+  "alternatives_considered": [
+    "Treat transfer as a broad HTTP-like file-serving feature. Rejected because it would widen the slice into protocol semantics and multi-request behavior that are not needed for the narrow child-process proof.",
+    "Keep transfer as a 127-only placeholder with no canonical contract. Rejected because the repository already has enough active-phase stream support to specify the missing boundary honestly."
+  ],
+  "edge_cases_and_constraints": [
+    "The slice remains child-process only and single-stream only.",
+    "Retry stays unsupported and out of scope.",
+    "Combined abort parity and broader stream-management parity remain separate concerns.",
+    "No trust-store, hostname, certificate-path, revocation, 0-RTT, or key-update widening is introduced here."
+  ],
+  "data_and_state_considerations": "The transfer contract reuses the current active-phase connection runtime, stream registry, and packet-protection readiness state. The harness remains responsible only for process orchestration and request/response framing; the library remains responsible for the actual stream and 1-RTT mechanics.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice captures the narrowest honest transfer contract that can sit on the existing active-phase managed path: one child-process pair, one stream, one transfer selector derived from the first `REQUESTS` URL, and EOF-based completion. It does not claim the broader interop runner transfer feature set."
+    },
+    {
+      "heading": "Boundary Split",
+      "content": "Harness-owned code stays limited to testcase dispatch, request parsing, child-process lifecycle, and transfer completion checks.\nLibrary-owned code keeps `QuicConnectionRuntime`, `QuicStream`, the active-phase 1-RTT readiness seam, and the packet open/protect helpers."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`InteropHarnessRunner.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs)\n- [`InteropHarnessEnvironment.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs)\n- [`InteropEndpointHost.cs`](../../../src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs)\n- [`QuicConnection.cs`](../../../src/Incursa.Quic/QuicConnection.cs)\n- [`QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`QuicStream.cs`](../../../src/Incursa.Quic/QuicStream.cs)\n- [`QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`REQ-QUIC-CRT-0121.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs)\n- [`REQ-QUIC-API-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs)\n- [`REQ-QUIC-INT-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs)"
+    }
+  ],
+  "risks": [
+    "A later implementation could accidentally widen the contract into multi-stream or HTTP-specific behavior if the single-stream boundary is not kept explicit.",
+    "The runner could still claim success too early unless EOF and byte-delivery completion are treated as the exit-0 gate.",
+    "The supported boundary must remain honest if the transfer contract is still not wired into runner dispatch."
+  ]
+}

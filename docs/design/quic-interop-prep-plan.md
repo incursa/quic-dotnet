@@ -152,9 +152,10 @@ Notes on dependency:
 ## Next Concrete Slices
 
 1. `Transfer-owned completion contract`
-   - Goal: define the smallest honest interop-owned `transfer` slice now that the client 1-RTT readiness prerequisite is proven.
-   - Focus: which side opens or accepts the application stream, how the first `REQUESTS` URL maps to `/www` and `/downloads`, which application protocol behavior and ALPN remain in scope, when byte delivery plus EOF are considered complete enough for exit `0` on both sides, and which verification artifact owns that proof.
-   - Depends on: the client-role 1-RTT readiness seam, the broader stream-management parity slice, and the current narrow stream slice staying stable.
+   - Goal: keep the first honest `transfer` slice traceable under `REQ-QUIC-INT-0010`, `ARC-QUIC-INT-0003`, `WI-QUIC-INT-0003`, and `VER-QUIC-INT-0003`.
+   - Focus: the transfer-owned child-process completion rule, including one stream, one `REQUESTS` URL, one `/www` to `/downloads` mapping, and byte-delivery-plus-EOF proof on the existing managed Active-phase path.
+   - Current blocker: the runtime primitives are already present on the managed active path; the missing piece is one explicit application-protocol and ALPN pairing plus matching child-process proof.
+   - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
 2. `Initial/DCID bootstrap and endpoint-host cleanup`
    - Goal: make the interop-facing bootstrap path honest enough to drive a real testcase entry instead of a shell-only path, building on the already-proven managed client/listener bootstrap seam.
@@ -173,8 +174,8 @@ Notes on dependency:
 
 5. `Interop runner dispatch`
    - Goal: route `transfer` and `retry` into the real endpoint-host path instead of returning `127`.
-   - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch. `handshake` is already wired into the managed bootstrap path.
-   - Depends on: the transfer-owned completion contract slice, the client-role 1-RTT readiness seam, the TLS trust/policy slice, and the broader stream-management slice.
+   - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch after the transfer-owned application pairing and proof are fixed. `handshake` is already wired into the managed bootstrap path.
+   - Depends on: the transfer-owned completion contract slice, the client-role 1-RTT readiness seam, the TLS trust/policy slice, and any stream follow-ons that prove inseparable from the chosen transfer pairing.
 
 ## Do-Not-Widen Boundaries
 

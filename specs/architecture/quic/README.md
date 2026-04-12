@@ -16,6 +16,7 @@ Each canonical artifact is authored in `.json`.
 
 - [`ARC-QUIC-INT-0001.json`](ARC-QUIC-INT-0001.json): canonical interop harness boundary design source
 - [`ARC-QUIC-INT-0002.json`](ARC-QUIC-INT-0002.json): canonical interop endpoint-host shell design source
+- [`ARC-QUIC-INT-0003.json`](ARC-QUIC-INT-0003.json): canonical interop one-stream transfer boundary design source
 - [`ARC-QUIC-RFC8999-0001.json`](ARC-QUIC-RFC8999-0001.json): canonical RFC 8999 design source
 - [`ARC-QUIC-RFC9000-0001.json`](ARC-QUIC-RFC9000-0001.json): canonical RFC 9000 design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
