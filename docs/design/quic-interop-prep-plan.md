@@ -151,28 +151,34 @@ Notes on dependency:
 
 ## Next Concrete Slices
 
-1. `Transfer-owned completion contract`
+1. `Post-handshake stream open/accept prerequisite`
+   - Goal: keep the smaller post-handshake stream open/accept prerequisite traceable under `REQ-QUIC-INT-0011`, `ARC-QUIC-INT-0004`, `WI-QUIC-INT-0004`, and `VER-QUIC-INT-0004`.
+   - Focus: the child-process-only `post-handshake-stream` testcase, the first application-stream open after handshake completion, and peer accept on the same managed harness path.
+   - Current blocker: the managed client/listener handshake floor is already proven, but the server receive path still lacks the narrow 1-RTT admission state needed to accept the first application packet, so this slice cannot yet be claimed as landed.
+   - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
+
+2. `Transfer-owned completion contract`
    - Goal: keep the first honest `transfer` slice traceable under `REQ-QUIC-INT-0010`, `ARC-QUIC-INT-0003`, `WI-QUIC-INT-0003`, and `VER-QUIC-INT-0003`.
    - Focus: the transfer-owned child-process completion rule, including one stream, one `REQUESTS` URL, one `/www` to `/downloads` mapping, and byte-delivery-plus-EOF proof on the existing managed Active-phase path.
    - Current blocker: the runtime primitives are already present on the managed active path; the missing piece is one explicit application-protocol and ALPN pairing plus matching child-process proof.
    - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
-2. `Initial/DCID bootstrap and endpoint-host cleanup`
+3. `Initial/DCID bootstrap and endpoint-host cleanup`
    - Goal: make the interop-facing bootstrap path honest enough to drive a real testcase entry instead of a shell-only path, building on the already-proven managed client/listener bootstrap seam.
    - Focus: runner-facing Initial/DCID handoff, endpoint-host integration, and any remaining runtime bootstrap cleanup that blocks runner entry.
    - Depends on: the current handshake/runtime proof floor and the client-role 1-RTT readiness seam.
 
-3. `TLS trust/policy/validation`
+4. `TLS trust/policy/validation`
    - Goal: decide and implement the next honest trust-policy step without claiming a broader client-auth story than exists.
    - Focus: trust-store policy, hostname/identity validation, certificate-path validation, and the boundaries around the current reject-first client options.
    - Depends on: the current handshake/runtime proof floor and the client-role 1-RTT readiness seam.
 
-4. `Broader stream-management parity`
+5. `Broader stream-management parity`
    - Goal: close the remaining stream lifecycle gap so transfer-oriented work has a truthful contract.
    - Focus: `Abort(Both, ...)`, broader abort-heavy behavior, and remaining close-driven capacity-release parity.
    - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
-5. `Interop runner dispatch`
+6. `Interop runner dispatch`
    - Goal: route `transfer` and `retry` into the real endpoint-host path instead of returning `127`.
    - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch after the transfer-owned application pairing and proof are fixed. `handshake` is already wired into the managed bootstrap path.
    - Depends on: the transfer-owned completion contract slice, the client-role 1-RTT readiness seam, the TLS trust/policy slice, and any stream follow-ons that prove inseparable from the chosen transfer pairing.

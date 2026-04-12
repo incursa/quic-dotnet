@@ -12,23 +12,26 @@
     "ARC-QUIC-INT-0001",
     "ARC-QUIC-INT-0002",
     "ARC-QUIC-INT-0003",
+    "ARC-QUIC-INT-0004",
     "WI-QUIC-INT-0001",
     "WI-QUIC-INT-0002",
     "WI-QUIC-INT-0003",
+    "WI-QUIC-INT-0004",
     "VER-QUIC-INT-0001",
     "VER-QUIC-INT-0002",
-    "VER-QUIC-INT-0003"
+    "VER-QUIC-INT-0003",
+    "VER-QUIC-INT-0004"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
-  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, unsupported testcase exit behavior, the transfer-owned child-process completion contract, placeholder diagnostics hooks, Docker packaging, and CI participation.",
-  "context": "Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The remaining transfer slice is specified separately as a narrow child-process completion contract on the existing active-phase path, while `transfer` and `retry` still return exit code `127` until runner-side enablement exists.",
+  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process prerequisite, unsupported testcase exit behavior, the transfer-owned child-process completion contract, placeholder diagnostics hooks, Docker packaging, and CI participation.",
+  "context": "Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` prerequisite is tracked separately as a child-process-only open/accept contract on the existing managed path, while the remaining transfer slice is still specified separately as a narrow child-process completion contract on the existing active-phase path and `transfer` and `retry` still return exit code `127` until runner-side enablement exists.",
   "open_questions": [
     "When a real TLS provider is selected, what is the practical path for optional SSLKEYLOGFILE support without leaking provider-specific details into the harness?"
   ],
   "supplemental_sections": [
     {
       "heading": "Current Support Posture",
-      "content": "The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap and server Initial-response emission. The harness `handshake` testcase now dispatches into that managed path, while `transfer` and `retry` still return exit code `127` until runner-side enablement exists."
+      "content": "The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap and server Initial-response emission. The harness `handshake` testcase now dispatches into that managed path, the smaller `post-handshake-stream` prerequisite remains tracked separately and is still blocked by the server-side 1-RTT admission state needed to accept the first application packet, and `transfer` and `retry` still return exit code `127` until runner-side enablement exists."
     },
     {
       "heading": "Boundary Split",
@@ -222,6 +225,43 @@
       "notes": [
         "This requirement owns only the managed child-process transfer boundary on the existing active path. It does not widen the public promise, `IsSupported`, or broader interop compatibility claims.",
         "The current runtime already owns the narrow stream open, write, read, and EOF mechanics on the supported active-loopback path; the remaining transfer blocker is the harness-owned completion contract and proof."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0011",
+      "title": "Sequence the first application stream open and accept after handshake",
+      "statement": "The interop harness MUST define a child-process-only `post-handshake-stream` testcase on the managed child-process harness path in which, after the existing handshake completes, the client opens the first application stream and the server accepts that first application stream. This requirement MUST remain limited to the managed child-process path and MUST NOT claim byte delivery, EOF completion, transfer enablement, retry enablement, multi-stream behavior, broader 1-RTT data-path readiness, trust-store policy widening, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0004"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0004"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0004"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0003",
+          "REQ-QUIC-INT-0008",
+          "REQ-QUIC-API-0002",
+          "REQ-QUIC-API-0004",
+          "REQ-QUIC-CRT-0121",
+          "SPEC-QUIC-CRT"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+          "src/Incursa.Quic/QuicConnection.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicClientConnectionHost.cs",
+          "src/Incursa.Quic/QuicListenerHost.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs"
+        ]
+      },
+      "notes": [
+        "The supported boundary remains unchanged; this slice proves only the first post-handshake application-stream open/accept sequence and does not claim file delivery, EOF, or transfer enablement.",
+        "The harness owns only the child-process sequencing proof. The runtime already owns the open and accept primitives, and the client opener path depends on the existing client-role 1-RTT readiness gate while the server accepter path depends on the existing active-phase accept gate."
       ]
     }
   ]

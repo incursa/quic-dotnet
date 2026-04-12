@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0004",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC Interop Post-Handshake Stream Open/Accept Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Define and land the smallest child-process prerequisite that proves the managed client opens the first application stream after handshake completion and the server accepts it on the same real harness path without claiming transfer support.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0004",
+    "VER-QUIC-INT-0004"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0004"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0011"
+  ],
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "out_of_scope": [
+    "transfer enablement",
+    "retry enablement",
+    "byte-delivery or EOF claims",
+    "multi-stream support",
+    "broader 1-RTT data-path ownership",
+    "trust-store policy",
+    "hostname validation",
+    "certificate-path validation",
+    "revocation",
+    "0-RTT",
+    "key update"
+  ],
+  "verification_plan": "Run the new INT requirement-home test, the existing handshake/public guards, the client 1-RTT readiness proof, and the full `REQ_QUIC_CRT_` sweep; then inspect the harness README, plan doc, and gap ledger to confirm the slice stays smaller than transfer and transfer/retry remain `127`.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`InteropHarnessRunner.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs)\n- [`InteropHarnessEnvironment.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs)\n- [`QuicConnection.cs`](../../../src/Incursa.Quic/QuicConnection.cs)\n- [`QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`REQ-QUIC-API-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs)\n- [`REQ-QUIC-CRT-0121.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs)"
+    }
+  ],
+  "planned_changes": "- Add the `post-handshake-stream` testcase branch in `InteropHarnessRunner` and keep it on the managed child-process path.\n- Sequence the client to open the first outbound application stream after connect completes, and sequence the server to accept the first inbound application stream after accept completes.\n- Add requirement-home coverage for the first post-handshake open/accept pair on the real harness path and keep `transfer` and `retry` honest.\n- Keep the supported public boundary unchanged and do not add byte-delivery or EOF claims."
+}

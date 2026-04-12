@@ -8,6 +8,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-INT-0001.json`](WI-QUIC-INT-0001.json): canonical interop harness foundation work item
 - [`WI-QUIC-INT-0002.json`](WI-QUIC-INT-0002.json): canonical interop endpoint-host shell work item
 - [`WI-QUIC-INT-0003.json`](WI-QUIC-INT-0003.json): canonical interop one-stream transfer boundary work item
+- [`WI-QUIC-INT-0004.json`](WI-QUIC-INT-0004.json): canonical interop post-handshake stream open/accept work item
 - [`WI-QUIC-RFC8999-0001.json`](WI-QUIC-RFC8999-0001.json): canonical RFC 8999 work-item source
 - [`WI-QUIC-RFC9000-0001.json`](WI-QUIC-RFC9000-0001.json): canonical RFC 9000 work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
