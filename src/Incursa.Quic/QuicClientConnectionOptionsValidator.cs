@@ -7,7 +7,10 @@ namespace Incursa.Quic;
 
 internal static class QuicClientConnectionOptionsValidator
 {
-    public static QuicClientConnectionSettings Capture(QuicClientConnectionOptions options, string parameterName)
+    public static QuicClientConnectionSettings Capture(
+        QuicClientConnectionOptions options,
+        string parameterName,
+        QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot = null)
     {
         ArgumentNullException.ThrowIfNull(options);
 
@@ -103,7 +106,8 @@ internal static class QuicClientConnectionOptionsValidator
         return new QuicClientConnectionSettings(
             CaptureOptions(options, authenticationOptions),
             CloneEndPoint(remoteEndPoint),
-            options.LocalEndPoint is null ? null : CloneEndPoint(options.LocalEndPoint));
+            options.LocalEndPoint is null ? null : CloneEndPoint(options.LocalEndPoint),
+            clientCertificatePolicySnapshot);
     }
 
     private static QuicClientConnectionOptions CaptureOptions(
@@ -157,4 +161,5 @@ internal static class QuicClientConnectionOptionsValidator
 internal sealed record QuicClientConnectionSettings(
     QuicClientConnectionOptions Options,
     IPEndPoint RemoteEndPoint,
-    IPEndPoint? LocalEndPoint);
+    IPEndPoint? LocalEndPoint,
+    QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot = null);

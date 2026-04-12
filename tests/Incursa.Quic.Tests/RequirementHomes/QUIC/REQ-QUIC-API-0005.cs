@@ -114,6 +114,10 @@ public sealed class REQ_QUIC_API_0005
         missingCallbackOptions.ClientAuthenticationOptions.RemoteCertificateValidationCallback = null;
         Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(missingCallbackOptions));
 
+        QuicClientConnectionOptions chainPolicyOptions = CreateClientOptions();
+        chainPolicyOptions.ClientAuthenticationOptions.CertificateChainPolicy = new X509ChainPolicy();
+        Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(chainPolicyOptions));
+
         QuicClientConnectionOptions protocolOptions = CreateClientOptions();
         protocolOptions.ClientAuthenticationOptions.EnabledSslProtocols = SslProtocols.Tls12;
         Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(protocolOptions));

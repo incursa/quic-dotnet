@@ -16,6 +16,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private readonly QuicTransportTlsBridgeState bridgeState;
     private readonly QuicTlsTranscriptProgress handshakeTranscriptProgress;
     private readonly QuicTlsKeySchedule? keySchedule;
+    private readonly QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot;
     private readonly byte[]? pinnedPeerLeafCertificateSha256;
     private readonly RemoteCertificateValidationCallback? remoteCertificateValidationCallback;
     private ReadOnlyMemory<byte> localServerLeafCertificateDer;
@@ -30,12 +31,14 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default,
         ReadOnlyMemory<byte> localServerLeafCertificateDer = default,
         ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default,
+        QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot = null,
         RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState(role);
         handshakeTranscriptProgress = new QuicTlsTranscriptProgress(Role);
         keySchedule = new QuicTlsKeySchedule(Role, localHandshakePrivateKey);
+        this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
 
         if (!pinnedPeerLeafCertificateSha256.IsEmpty)
         {
@@ -48,6 +51,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             {
                 throw new ArgumentException("The pinned peer leaf certificate fingerprint must be exactly 32 bytes.", nameof(pinnedPeerLeafCertificateSha256));
             }
+        }
+
+        if (clientCertificatePolicySnapshot is not null && Role != QuicTlsRole.Client)
+        {
+            throw new ArgumentException("The client certificate-policy snapshot is only supported for the client role.", nameof(clientCertificatePolicySnapshot));
         }
 
         this.pinnedPeerLeafCertificateSha256 = pinnedPeerLeafCertificateSha256.ToArray();
@@ -480,6 +488,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             return Array.Empty<QuicTlsStateUpdate>();
         }
 
+        if (clientCertificatePolicySnapshot is not null)
+        {
+            return PublishSnapshotAcceptedPeerCertificatePolicy();
+        }
+
         if (remoteCertificateValidationCallback is not null)
         {
             return PublishCallbackAcceptedPeerCertificatePolicy();
@@ -507,6 +520,55 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         finally
         {
             CryptographicOperations.ZeroMemory(peerLeafCertificateSha256);
+        }
+    }
+
+    private IReadOnlyList<QuicTlsStateUpdate> PublishSnapshotAcceptedPeerCertificatePolicy()
+    {
+        if (keySchedule is null
+            || clientCertificatePolicySnapshot is null
+            || !bridgeState.CanEmitPeerCertificatePolicyAccepted())
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        if (!clientCertificatePolicySnapshot.IsComplete)
+        {
+            return PublishFatalAlert(PeerCertificatePolicyMismatchAlertDescription);
+        }
+
+        if (!keySchedule.TryCreatePeerLeafCertificate(out X509Certificate2? peerCertificate)
+            || peerCertificate is null)
+        {
+            return PublishFatalAlert(PeerCertificatePolicyMismatchAlertDescription);
+        }
+
+        using (peerCertificate)
+        {
+            byte[] computedTrustMaterial = [];
+            try
+            {
+                if (!CryptographicOperations.FixedTimeEquals(
+                    clientCertificatePolicySnapshot.ExactPeerLeafCertificateDer.Span,
+                    peerCertificate.RawData))
+                {
+                    return PublishFatalAlert(PeerCertificatePolicyMismatchAlertDescription);
+                }
+
+                computedTrustMaterial = SHA256.HashData(peerCertificate.RawData);
+                if (!CryptographicOperations.FixedTimeEquals(
+                    clientCertificatePolicySnapshot.ExplicitTrustMaterialSha256.Span,
+                    computedTrustMaterial))
+                {
+                    return PublishFatalAlert(PeerCertificatePolicyMismatchAlertDescription);
+                }
+
+                return PublishUpdate(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted));
+            }
+            finally
+            {
+                CryptographicOperations.ZeroMemory(computedTrustMaterial);
+            }
         }
     }
 

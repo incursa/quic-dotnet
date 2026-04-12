@@ -94,6 +94,7 @@ Supported today:
 Partially implemented but not yet promised:
 
 - The managed proof and commit gates that already separate transcript progression from local policy acceptance and peer transport-parameter commit.
+- The internal exact peer-identity and explicit trust-material snapshot seam that supports the next client trust floor.
 - The current server-role proof floor, including the local handshake-flight pieces already recorded in the CRT requirement homes.
 
 Still missing:
@@ -207,7 +208,7 @@ Notes on dependency:
 - The smaller post-handshake stream open/accept prerequisite under `REQ-QUIC-INT-0011`, `ARC-QUIC-INT-0004`, `WI-QUIC-INT-0004`, and `VER-QUIC-INT-0004` is now closed by the managed child-process harness path.
 - The narrow child-process `retry` contract under `REQ-QUIC-INT-0012`, `ARC-QUIC-INT-0005`, `WI-QUIC-INT-0005`, and `VER-QUIC-INT-0005` is now closed.
 - The managed client/listener bootstrap seam is already proven.
-- The current client trust story is still pinned-leaf only; it is not yet a broader trust-store or hostname-validation story.
+- The current client trust story now has an internal exact peer-identity and explicit trust-material snapshot seam, but it is not yet a broader trust-store or hostname-validation story.
 
 ## Trace Links
 

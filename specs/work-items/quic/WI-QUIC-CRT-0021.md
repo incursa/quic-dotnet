@@ -33,6 +33,7 @@ Add the smallest honest managed-client validation seam so explicit trust materia
 
 ## Planned Changes
 
+- Introduce an internal immutable client certificate-policy snapshot that carries exact peer identity and explicit trust material.
 - Thread a narrow internal peer-identity carrier through the current managed client settings capture and runtime bridge path.
 - Preserve the existing public client surface and reject-first option validation while adding the smallest honest trust-material decision point.
 - Make the client acceptance decision fail closed when the trust material does not match or the exact peer identity does not match.
@@ -79,7 +80,9 @@ Verified By:
 - [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)
 - [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)
 - [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)
+- [`src/Incursa.Quic/QuicClientCertificatePolicySnapshot.cs`](../../../src/Incursa.Quic/QuicClientCertificatePolicySnapshot.cs)
 - [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)
 - [`src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs)

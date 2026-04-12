@@ -59,7 +59,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             localEndPoint.Port);
 
         endpoint = new QuicConnectionRuntimeEndpoint(1);
-        runtime = CreateRuntime(settings.Options);
+        runtime = CreateRuntime(settings);
         connection = new QuicConnection(runtime, settings.Options, this);
         handle = endpoint.AllocateConnectionHandle();
 
@@ -284,8 +284,9 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         }
     }
 
-    private static QuicConnectionRuntime CreateRuntime(QuicClientConnectionOptions options)
+    private static QuicConnectionRuntime CreateRuntime(QuicClientConnectionSettings settings)
     {
+        QuicClientConnectionOptions options = settings.Options;
         QuicReceiveWindowSizes receiveWindowSizes = options.InitialReceiveWindowSizes;
         QuicConnectionStreamState bookkeeping = new(new QuicConnectionStreamStateOptions(
             IsServer: false,
@@ -305,6 +306,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         return new QuicConnectionRuntime(
             bookkeeping,
             tlsRole: QuicTlsRole.Client,
+            clientCertificatePolicySnapshot: settings.ClientCertificatePolicySnapshot,
             remoteCertificateValidationCallback: options.ClientAuthenticationOptions.RemoteCertificateValidationCallback);
     }
 

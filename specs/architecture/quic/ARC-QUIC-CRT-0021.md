@@ -20,9 +20,11 @@ The narrowest honest managed-client validation seam is still inside the existing
 - src/Incursa.Quic/QuicClientConnectionHost.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs
 - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
+- src/Incursa.Quic/QuicClientCertificatePolicySnapshot.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
 - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs
 
 ## Risks
@@ -37,7 +39,9 @@ The narrowest honest managed-client validation seam is still inside the existing
 - [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)
 - [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)
 - [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)
+- [`src/Incursa.Quic/QuicClientCertificatePolicySnapshot.cs`](../../../src/Incursa.Quic/QuicClientCertificatePolicySnapshot.cs)
 - [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)
 - [`src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs)

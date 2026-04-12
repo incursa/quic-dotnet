@@ -33,6 +33,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
     private readonly long timeOriginTicks;
     private readonly QuicHandshakeFlowCoordinator handshakeFlowCoordinator;
+    private readonly QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot;
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private QuicInitialPacketProtection? initialPacketProtection;
@@ -75,6 +76,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ReadOnlyMemory<byte> pinnedPeerLeafCertificateSha256 = default,
         ReadOnlyMemory<byte> localServerLeafCertificateDer = default,
         ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default,
+        QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot = null,
         RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null,
         QuicTlsRole tlsRole = QuicTlsRole.Client)
     {
@@ -83,6 +85,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         sendRuntime = new QuicConnectionSendRuntime();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         handshakeFlowCoordinator = new QuicHandshakeFlowCoordinator();
+        this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
         tlsState = new QuicTransportTlsBridgeState(tlsRole);
         tlsBridgeDriver = new QuicTlsTransportBridgeDriver(
             tlsRole,
@@ -91,6 +94,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             pinnedPeerLeafCertificateSha256,
             localServerLeafCertificateDer,
             localServerLeafSigningPrivateKey,
+            clientCertificatePolicySnapshot,
             remoteCertificateValidationCallback);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
@@ -208,6 +212,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     internal QuicConnectionSendRuntime SendRuntime => sendRuntime;
 
     internal QuicTransportTlsBridgeState TlsState => tlsState;
+
+    internal QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot => clientCertificatePolicySnapshot;
 
     internal bool TryConfigureInitialPacketProtection(ReadOnlySpan<byte> clientInitialDestinationConnectionId)
     {
