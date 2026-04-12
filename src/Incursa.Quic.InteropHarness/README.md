@@ -19,6 +19,7 @@
 - Preserves TLS material and diagnostics placeholder hooks without claiming end-to-end transport support yet.
 - Exercises the library-owned runtime through a real connected UDP socket in requirement-home coverage.
 - Routes `handshake` into the managed client/listener bootstrap path and returns `0` when that path completes.
+- Routes `post-handshake-stream` into the managed child-process path and returns `0` after the client opens and the server accepts the first application stream.
 - Returns `127` for unsupported interop test cases instead of faking success.
 - Returns `1` for invalid process configuration.
 
@@ -27,6 +28,7 @@
 Supported:
 
 - `handshake`
+- `post-handshake-stream`
 
 Unsupported:
 
@@ -56,7 +58,7 @@ docker run --rm \
   incursa-quic-interop-harness
 ```
 
-The `handshake` testcase now dispatches into the managed bootstrap path. `transfer` and `retry` still return `127`.
+The `handshake` and `post-handshake-stream` testcases now dispatch into the managed bootstrap path. `transfer` and `retry` still return `127`.
 
 ## Stubbed today
 

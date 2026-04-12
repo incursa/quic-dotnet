@@ -154,7 +154,7 @@ Notes on dependency:
 1. `Post-handshake stream open/accept prerequisite`
    - Goal: keep the smaller post-handshake stream open/accept prerequisite traceable under `REQ-QUIC-INT-0011`, `ARC-QUIC-INT-0004`, `WI-QUIC-INT-0004`, and `VER-QUIC-INT-0004`.
    - Focus: the child-process-only `post-handshake-stream` testcase, the first application-stream open after handshake completion, and peer accept on the same managed harness path.
-   - Current blocker: the managed client/listener handshake floor is already proven, but the server receive path still lacks the narrow 1-RTT admission state needed to accept the first application packet, so this slice cannot yet be claimed as landed.
+   - Status: landed. The managed client/listener handshake floor and the server receive-path 1-RTT admission seam are now sufficient for the first application-stream open and peer accept on the same harness path.
    - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
 2. `Transfer-owned completion contract`
@@ -197,6 +197,7 @@ Notes on dependency:
 
 - The handshake-floor tail slice for `REQ-QUIC-CRT-0117` and `REQ-QUIC-CRT-0119` is now closed.
 - The client-role 1-RTT readiness prerequisite under `REQ-QUIC-CRT-0121` is now closed.
+- The smaller post-handshake stream open/accept prerequisite under `REQ-QUIC-INT-0011`, `ARC-QUIC-INT-0004`, `WI-QUIC-INT-0004`, and `VER-QUIC-INT-0004` is now closed by the managed child-process harness path.
 - The interop harness still returns `127` for `transfer` and `retry`.
 - The managed client/listener bootstrap seam is already proven.
 - The current client trust story is still pinned-leaf only; it is not yet a broader trust-store or hostname-validation story.

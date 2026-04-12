@@ -663,6 +663,9 @@ internal sealed class QuicTlsKeySchedule
             }
 
             updates.Add(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.KeysAvailable,
+                QuicTlsEncryptionLevel.OneRtt));
+            updates.Add(new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable,
                 PacketProtectionMaterial: oneRttOpenMaterial));
             updates.Add(new QuicTlsStateUpdate(

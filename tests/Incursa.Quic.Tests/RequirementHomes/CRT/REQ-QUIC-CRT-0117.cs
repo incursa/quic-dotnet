@@ -62,20 +62,22 @@ public sealed class REQ_QUIC_CRT_0117
             CreateFinishedTranscript(expectedFinishedVerifyData));
 
         Assert.Equal(
-            $"{QuicTlsUpdateKind.TranscriptProgressed},{QuicTlsUpdateKind.PeerFinishedVerified},{QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable},{QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable},{QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted}",
+            $"{QuicTlsUpdateKind.TranscriptProgressed},{QuicTlsUpdateKind.PeerFinishedVerified},{QuicTlsUpdateKind.KeysAvailable},{QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable},{QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable},{QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted}",
             string.Join(",", finishedUpdates.Select(update => update.Kind)));
         Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, finishedUpdates[0].Kind);
         Assert.Equal(QuicTlsHandshakeMessageType.Finished, finishedUpdates[0].HandshakeMessageType);
         Assert.Equal(QuicTlsTranscriptPhase.Completed, finishedUpdates[0].TranscriptPhase);
         Assert.Equal(QuicTlsUpdateKind.PeerFinishedVerified, finishedUpdates[1].Kind);
-        Assert.Equal(QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable, finishedUpdates[2].Kind);
-        Assert.Equal(QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable, finishedUpdates[3].Kind);
-        Assert.Equal(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted, finishedUpdates[4].Kind);
+        Assert.Equal(QuicTlsUpdateKind.KeysAvailable, finishedUpdates[2].Kind);
+        Assert.Equal(QuicTlsEncryptionLevel.OneRtt, finishedUpdates[2].EncryptionLevel);
+        Assert.Equal(QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable, finishedUpdates[3].Kind);
+        Assert.Equal(QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable, finishedUpdates[4].Kind);
+        Assert.Equal(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted, finishedUpdates[5].Kind);
         Assert.True(driver.State.PeerFinishedVerified);
         Assert.True(driver.State.PeerHandshakeTranscriptCompleted);
         Assert.NotNull(driver.State.OneRttOpenPacketProtectionMaterial);
         Assert.NotNull(driver.State.OneRttProtectPacketProtectionMaterial);
-        Assert.False(driver.State.OneRttKeysAvailable);
+        Assert.True(driver.State.OneRttKeysAvailable);
         Assert.False(driver.State.PeerCertificateVerifyVerified);
         Assert.False(driver.State.PeerCertificatePolicyAccepted);
         Assert.Equal(QuicTlsTranscriptPhase.Completed, driver.State.HandshakeTranscriptPhase);
@@ -363,7 +365,7 @@ public sealed class REQ_QUIC_CRT_0117
         QuicTlsKeySchedule repeatedDriverKeySchedule = (QuicTlsKeySchedule)repeatedKeyScheduleField.GetValue(repeatedDriver)!;
         Assert.True(repeatedDriverKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] repeatedFinishedVerifyData));
         byte[] finishedTranscript = CreateFinishedTranscript(repeatedFinishedVerifyData);
-        Assert.Equal(5, repeatedDriver.ProcessCryptoFrame(
+        Assert.Equal(6, repeatedDriver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
             finishedTranscript).Count);
 
@@ -392,7 +394,7 @@ public sealed class REQ_QUIC_CRT_0117
         QuicTlsKeySchedule conflictingDriverKeySchedule = (QuicTlsKeySchedule)conflictingKeyScheduleField.GetValue(conflictingDriver)!;
         Assert.True(conflictingDriverKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] conflictingFinishedVerifyData));
         byte[] conflictingFinishedTranscript = CreateFinishedTranscript(conflictingFinishedVerifyData);
-        Assert.Equal(5, conflictingDriver.ProcessCryptoFrame(
+        Assert.Equal(6, conflictingDriver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
             conflictingFinishedTranscript).Count);
 

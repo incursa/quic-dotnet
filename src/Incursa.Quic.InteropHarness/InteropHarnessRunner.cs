@@ -60,6 +60,7 @@ internal static class InteropHarnessRunner
         return settings.TestCase switch
         {
             "handshake" => RunHandshakeClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "post-handshake-stream" => RunPostHandshakeStreamClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             _ => ReturnUnsupported(settings, stdout, "client"),
         };
     }
@@ -74,6 +75,7 @@ internal static class InteropHarnessRunner
         return settings.TestCase switch
         {
             "handshake" => RunHandshakeServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "post-handshake-stream" => RunPostHandshakeStreamServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             _ => ReturnUnsupported(settings, stdout, "server"),
         };
     }
@@ -131,6 +133,48 @@ internal static class InteropHarnessRunner
         catch (Exception ex)
         {
             WriteLineAndFlush(stderr, $"interop harness: role=client, testcase=handshake failed: {ex.Message}");
+            return 1;
+        }
+    }
+
+    private static async Task<int> RunPostHandshakeStreamClientAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr)
+    {
+        try
+        {
+            if (!QuicConnection.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC client bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            if (!TryGetHandshakeRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
+                requestUri is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            IPEndPoint remoteEndPoint = await ResolveHandshakeRemoteEndPointAsync(requestUri).ConfigureAwait(false);
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase=post-handshake-stream, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}.");
+
+            QuicClientConnectionOptions clientOptions = CreateSupportedClientOptions(stdout, settings, remoteEndPoint);
+
+            await using QuicConnection connection = await QuicConnection.ConnectAsync(clientOptions).ConfigureAwait(false);
+            QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).ConfigureAwait(false);
+
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase=post-handshake-stream, requestCount={settings.Requests.Count} opened stream {stream.Id}.");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            WriteLineAndFlush(stderr, $"interop harness: role=client, testcase=post-handshake-stream failed: {ex.Message}");
             return 1;
         }
     }
@@ -199,6 +243,76 @@ internal static class InteropHarnessRunner
         catch (Exception ex)
         {
             WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=handshake failed: {ex.Message}");
+            return 1;
+        }
+    }
+
+    private static async Task<int> RunPostHandshakeStreamServerAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr,
+        string certificatePath,
+        string privateKeyPath)
+    {
+        try
+        {
+            if (!QuicListener.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC listener bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            if (!TryGetHandshakeRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
+                requestUri is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out errorMessage) ||
+                materials is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out errorMessage) ||
+                serverCertificate is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            using (serverCertificate)
+            {
+                IPEndPoint listenEndPoint = await ResolveHandshakeListenEndPointAsync(requestUri).ConfigureAwait(false);
+                QuicListenerOptions listenerOptions = new()
+                {
+                    ListenEndPoint = listenEndPoint,
+                    ApplicationProtocols = [SslApplicationProtocol.Http3],
+                    ListenBacklog = 1,
+                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(CreateSupportedServerOptions(serverCertificate)),
+                };
+
+                await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions).ConfigureAwait(false);
+                Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
+                await Task.Yield();
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase=post-handshake-stream, requestCount={settings.Requests.Count} listening on {listenEndPoint}.");
+
+                await using QuicConnection connection = await acceptTask.ConfigureAwait(false);
+                QuicStream stream = await connection.AcceptInboundStreamAsync().ConfigureAwait(false);
+
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase=post-handshake-stream, requestCount={settings.Requests.Count} accepted stream {stream.Id}.");
+                return 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=post-handshake-stream failed: {ex.Message}");
             return 1;
         }
     }
@@ -297,6 +411,30 @@ internal static class InteropHarnessRunner
                 ServerCertificate = serverCertificate,
                 EnabledSslProtocols = SslProtocols.Tls13,
                 EncryptionPolicy = EncryptionPolicy.RequireEncryption,
+            },
+        };
+    }
+
+    private static QuicClientConnectionOptions CreateSupportedClientOptions(
+        TextWriter stdout,
+        InteropHarnessEnvironment settings,
+        IPEndPoint remoteEndPoint)
+    {
+        return new QuicClientConnectionOptions
+        {
+            RemoteEndPoint = remoteEndPoint,
+            ClientAuthenticationOptions = new SslClientAuthenticationOptions
+            {
+                AllowRenegotiation = false,
+                AllowTlsResume = true,
+                ApplicationProtocols = [SslApplicationProtocol.Http3],
+                EnabledSslProtocols = SslProtocols.Tls13,
+                EncryptionPolicy = EncryptionPolicy.RequireEncryption,
+                RemoteCertificateValidationCallback = (_, _, _, errors) =>
+                {
+                    WriteLineAndFlush(stdout, $"interop harness: role=client, testcase={settings.TestCase}, certificate errors={errors}.");
+                    return errors == SslPolicyErrors.RemoteCertificateChainErrors;
+                },
             },
         };
     }
