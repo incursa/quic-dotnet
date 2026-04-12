@@ -13,10 +13,13 @@
   "related_artifacts": [
     "ARC-QUIC-API-0001",
     "ARC-QUIC-API-0002",
+    "ARC-QUIC-API-0003",
     "WI-QUIC-API-0001",
     "WI-QUIC-API-0002",
+    "WI-QUIC-API-0003",
     "VER-QUIC-API-0001",
-    "VER-QUIC-API-0002"
+    "VER-QUIC-API-0002",
+    "VER-QUIC-API-0003"
   ],
   "requirements": [
     {
@@ -218,6 +221,29 @@
       "notes": [
         "The current implementation uses one cached internal capability probe so both properties stay aligned.",
         "The probe is intentionally narrower than feature completeness and only answers whether the current runtime can execute the managed listener/client slice the repo has already implemented."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-API-0012",
+      "title": "Expose explicit pinned peer identity and explicit trust material as the client policy carrier",
+      "statement": "The library MUST expose a public client-connect policy carrier for an exact pinned peer leaf certificate DER value and an explicit trust-material SHA-256 value, and it MUST feed those values unchanged into the existing internal client certificate-policy snapshot so the managed client bridge can fail closed on identity or trust mismatch. This slice MUST stay separate from `TargetHost`, `CertificateChainPolicy`, trust-store policy, revocation, broader client-auth, hostname-validation, `0-RTT`, key update, transfer, and retry behavior.",
+      "trace": {
+        "upstream_refs": [
+          "docs/design/quic-public-api.md",
+          "docs/design/quic-public-api-gap-matrix.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "src/Incursa.Quic/QuicClientCertificatePolicySnapshot.cs",
+          "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs",
+          "src/Incursa.Quic/QuicClientConnectionHost.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+          "src/Incursa.Quic/QuicTransportTlsBridgeState.cs"
+        ]
+      },
+      "notes": [
+        "The intended public carrier is a future client option or policy object; this requirement deliberately does not reuse `TargetHost` or `CertificateChainPolicy`.",
+        "The current managed client path remains reject-first until a later implementation slice wires this carrier into the public surface.",
+        "The existing internal snapshot seam already carries the exact peer leaf DER and explicit trust-material hash values, so the public contract should match those values exactly rather than infer broader trust-store semantics."
       ]
     }
   ],

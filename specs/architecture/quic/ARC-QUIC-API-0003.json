@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-API-0003",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "Incursa.Quic Explicit Pinned Identity and Trust-Material Client Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the future public client-policy carrier for exact pinned peer identity and explicit trust material feeds the existing internal client certificate-policy snapshot without widening the public TLS/auth promise.",
+  "related_artifacts": [
+    "SPEC-QUIC-API",
+    "WI-QUIC-API-0003",
+    "VER-QUIC-API-0003"
+  ],
+  "satisfies": [
+    "REQ-QUIC-API-0012"
+  ],
+  "key_components": [
+    "docs/design/quic-public-api.md",
+    "docs/design/quic-public-api-gap-matrix.md",
+    "docs/design/quic-interop-prep-plan.md",
+    "src/Incursa.Quic/QuicClientConnectionOptions.cs",
+    "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicClientCertificatePolicySnapshot.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs"
+  ],
+  "design_summary": "The future public client policy carrier should live on the client-connect option surface and carry two exact bytes-oriented values: the peer leaf certificate DER and the explicit trust-material SHA-256. The capture path should remain inside the client options validator and client host, and the bridge should continue to evaluate the snapshot fail closed. This architecture does not introduce trust-store integration, revocation, hostname validation, or any broader client-auth semantics; it only defines the narrow public-input contract that matches the already-landed internal snapshot model.",
+  "edge_cases_and_constraints": [
+    "Both inputs must be present together; missing either input stays reject-first.",
+    "The carrier must not be modeled as `TargetHost` or `CertificateChainPolicy`, because those names import unsupported SNI, hostname-validation, and chain-policy semantics.",
+    "The exact values must survive capture unchanged so the internal snapshot can compare the peer leaf DER and trust-material hash byte-for-byte.",
+    "The public carrier stays separate from trust-store integration, revocation, broader client-auth, `0-RTT`, key update, transfer, and retry."
+  ],
+  "risks": [
+    "If the carrier is split across unrelated public knobs, the fail-closed validation path becomes ambiguous.",
+    "If the carrier is widened to trust-store or hostname-validation semantics, the slice overclaims support.",
+    "If the carrier is attached to `SslClientAuthenticationOptions`, the design imports BCL semantics this repo still rejects."
+  ]
+}

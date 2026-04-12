@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-API-0003",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "Incursa.Quic Explicit Pinned Identity and Trust-Material Client Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Define the public client-policy carrier for exact pinned peer identity and explicit trust material, and align the public API specification and companion docs with the existing internal snapshot seam without changing runtime behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-API"
+  ],
+  "design_links": [
+    "ARC-QUIC-API-0003"
+  ],
+  "verification_links": [
+    "VER-QUIC-API-0003"
+  ],
+  "addresses": [
+    "REQ-QUIC-API-0012"
+  ],
+  "planned_changes": "- Add the new public client-policy carrier shape to the API specification as a future public-input contract.\n- Update the public API companion docs and gap ledger to call out the exact pinned identity/trust-material pair and its internal snapshot mapping.\n- Keep the validator, runtime, and bridge implementation unchanged in this slice.\n- Preserve the reject-first client behavior and the unsupported `TargetHost` / `CertificateChainPolicy` boundary until a later implementation slice.\n- Do not add OS trust-store, revocation, broader client-auth, hostname-validation, transfer, or retry work.",
+  "out_of_scope": [
+    "Runtime code changes.",
+    "Validator changes.",
+    "Bridge changes.",
+    "Implementation of the new public inputs.",
+    "OS trust-store integration.",
+    "Revocation.",
+    "Broader client-auth.",
+    "Hostname validation.",
+    "Transfer enablement.",
+    "Retry enablement."
+  ],
+  "verification_plan": "Run the repo-local SpecTrace render/check flow and repository validation after the canonical JSON updates, then review the public API companion docs to ensure the new carrier is named consistently and the current reject-first boundary remains explicit.",
+  "completion_notes": "This work item is a design trace only. The actual public-input implementation remains a later slice.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Docs",
+      "content": "- `docs/design/quic-public-api.md`\n- `docs/design/quic-public-api-gap-matrix.md`\n- `docs/design/quic-interop-prep-plan.md`\n- `specs/requirements/quic/REQUIREMENT-GAPS.md`\n- `src/Incursa.Quic/QuicClientCertificatePolicySnapshot.cs`\n- `src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs`\n- `src/Incursa.Quic/QuicClientConnectionHost.cs`\n- `src/Incursa.Quic/QuicConnectionRuntime.cs`\n- `src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`\n- `src/Incursa.Quic/QuicTransportTlsBridgeState.cs`"
+    }
+  ]
+}

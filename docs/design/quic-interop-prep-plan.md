@@ -99,6 +99,7 @@ Partially implemented but not yet promised:
 
 Still missing:
 
+- The public carrier for explicit pinned peer identity and explicit trust material.
 - Trust-store policy.
 - Hostname and identity validation.
 - Certificate-path validation.
@@ -177,8 +178,8 @@ Notes on dependency:
    - Depends on: the current handshake/runtime proof floor and the client-role 1-RTT readiness seam.
 
 5. `TLS trust/policy/validation`
-   - Goal: decide and implement the next honest trust-policy step without claiming a broader client-auth story than exists.
-   - Focus: trust-store policy, hostname/identity validation, certificate-path validation, and the boundaries around the current reject-first client options.
+   - Goal: define the next honest client-input step without claiming a broader trust-policy story than exists.
+   - Focus: the public carrier shape for explicit pinned peer identity and explicit trust material, the exact snapshot handoff, and the boundaries around the current reject-first client options.
    - Depends on: the current handshake/runtime proof floor and the client-role 1-RTT readiness seam.
 
 6. `Broader stream-management parity`
@@ -208,7 +209,7 @@ Notes on dependency:
 - The smaller post-handshake stream open/accept prerequisite under `REQ-QUIC-INT-0011`, `ARC-QUIC-INT-0004`, `WI-QUIC-INT-0004`, and `VER-QUIC-INT-0004` is now closed by the managed child-process harness path.
 - The narrow child-process `retry` contract under `REQ-QUIC-INT-0012`, `ARC-QUIC-INT-0005`, `WI-QUIC-INT-0005`, and `VER-QUIC-INT-0005` is now closed.
 - The managed client/listener bootstrap seam is already proven.
-- The current client trust story now has an internal exact peer-identity and explicit trust-material snapshot seam, but it is not yet a broader trust-store or hostname-validation story.
+- The current client trust story now has an internal exact peer-identity and explicit trust-material snapshot seam, and the next public-design slice exposes that pair explicitly without turning it into a broader trust-store or hostname-validation story.
 
 ## Trace Links
 
