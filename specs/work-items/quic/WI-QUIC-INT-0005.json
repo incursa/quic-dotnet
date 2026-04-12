@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0005",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC Interop Retry Child-Process Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Define and land the smallest child-process Retry contract that proves the server issues one valid Retry, the client replays exactly once, and the managed handshake completes on the real harness path.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0005",
+    "VER-QUIC-INT-0005"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0005"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0005"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0012"
+  ],
+  "completion_notes": "Keep the work item narrow: it exists to make the child-process retry contract honest, not to claim broader retry support or the child-process harness contract itself.",
+  "out_of_scope": [
+    "public API widening",
+    "IsSupported widening",
+    "transfer enablement",
+    "multi-Retry behavior",
+    "broad token-lifecycle work",
+    "trust-store policy",
+    "hostname validation",
+    "certificate-path validation",
+    "revocation",
+    "0-RTT",
+    "key update"
+  ],
+  "verification_plan": "Run the new retry requirement-home test, the current guards, the library-owned retry bootstrap tests, and the full `REQ_QUIC_CRT_` sweep; then render and validate the SpecTrace markdown views after the canonical JSON artifacts change.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`InteropHarnessRunner.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs)\n- [`InteropHarnessEnvironment.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs)\n- [`InteropEndpointHost.cs`](../../../src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs)\n- [`QuicConnection.cs`](../../../src/Incursa.Quic/QuicConnection.cs)\n- [`QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`QuicRetryIntegrity.cs`](../../../src/Incursa.Quic/QuicRetryIntegrity.cs)\n- [`QuicTransportParametersCodec.cs`](../../../src/Incursa.Quic/QuicTransportParametersCodec.cs)\n- [`QuicPacketParser.cs`](../../../src/Incursa.Quic/QuicPacketParser.cs)\n- [`QuicVariableLengthInteger.cs`](../../../src/Incursa.Quic/QuicVariableLengthInteger.cs)\n- [`REQ-QUIC-CRT-0122.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs)\n- [`REQ-QUIC-INT-0012.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0012.cs)"
+    }
+  ],
+  "planned_changes": "- Add a one-shot Retry emission seam to `QuicListenerHost` that uses the library-owned Retry integrity helper and keeps the retry bootstrap state narrow.\n- Route the `retry` testcase through `InteropHarnessRunner` on the child-process path and return `0` only after the post-Retry handshake completes.\n- Thread the original destination connection ID and Retry source connection ID into the server transport parameters so the existing binding checks can validate the replayed path.\n- Keep the replay handoff, transfer path, and broader TLS-policy behavior isolated from this work item."
+}

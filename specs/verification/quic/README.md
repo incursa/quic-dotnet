@@ -18,6 +18,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-INT-0002.json`](VER-QUIC-INT-0002.json): canonical interop endpoint-host shell verification source
 - [`VER-QUIC-INT-0003.json`](VER-QUIC-INT-0003.json): canonical interop one-stream transfer boundary verification source
 - [`VER-QUIC-INT-0004.json`](VER-QUIC-INT-0004.json): canonical interop post-handshake stream open/accept verification source
+- [`VER-QUIC-INT-0005.json`](VER-QUIC-INT-0005.json): canonical interop retry child-process verification source
 - [`VER-QUIC-RFC8999-0001.json`](VER-QUIC-RFC8999-0001.json): canonical RFC 8999 verification source
 - [`VER-QUIC-RFC9000-0001.json`](VER-QUIC-RFC9000-0001.json): canonical RFC 9000 verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source

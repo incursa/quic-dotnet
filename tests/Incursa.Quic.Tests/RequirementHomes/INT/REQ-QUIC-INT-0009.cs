@@ -15,7 +15,7 @@ public sealed class REQ_QUIC_INT_0009
         int exitCode = InteropHarnessRunner.Run(
             InteropHarnessTestSupport.CreateEnvironment(
                 role: "client",
-                testcase: "retry",
+                testcase: "multipath",
                 qlogDir: qlogDirectory,
                 sslKeyLogFile: sslKeyLogFile),
             TextWriter.Null,

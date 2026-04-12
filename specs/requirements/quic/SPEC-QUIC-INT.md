@@ -8,11 +8,11 @@ Define the interop-runner-facing companion harness contract that hosts Incursa.Q
 
 ## Scope
 
-This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process prerequisite, unsupported testcase exit behavior, the transfer-owned child-process completion contract, placeholder diagnostics hooks, Docker packaging, and CI participation.
+This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process prerequisite, the narrow retry child-process contract, unsupported testcase exit behavior, the transfer-owned child-process completion contract, placeholder diagnostics hooks, Docker packaging, and CI participation.
 
 ## Context
 
-Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` prerequisite is tracked separately as a child-process-only open/accept contract on the existing managed path, while the narrow transfer slice is now wired as a child-process completion contract on the existing active-phase path and only `retry` still returns exit code `127` until runner-side enablement exists. The next smaller prerequisite is the library-owned retry bootstrap seam tracked under `REQ-QUIC-CRT-0122`, `ARC-QUIC-CRT-0020`, `WI-QUIC-CRT-0020`, and `VER-QUIC-CRT-0020`.
+Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` prerequisite is tracked separately as a child-process-only open/accept contract on the existing managed path, the narrow transfer slice is now wired as a child-process completion contract on the existing active-phase path, and the narrow `retry` slice now dispatches into the managed one-Retry replay path instead of falling through to `127`. The one-Retry bootstrap handoff itself remains library-owned under `REQ-QUIC-CRT-0122`, while this spec owns the child-process dispatch and proof under `REQ-QUIC-INT-0012`.
 
 ## Open Questions
 
@@ -20,7 +20,7 @@ Incursa.Quic remains the owner of reusable transport/runtime behavior. The inter
 
 ## Current Support Posture
 
-The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap and server Initial-response emission. The harness `handshake` testcase now dispatches into that managed path, the smaller `post-handshake-stream` prerequisite remains tracked separately and is still blocked by the server-side 1-RTT admission state needed to accept the first application packet, and the narrow transfer testcase now dispatches into its managed active-phase path while `retry` still returns exit code `127` until runner-side enablement exists. The next smaller prerequisite is the library-owned retry bootstrap seam tracked under `REQ-QUIC-CRT-0122`, `ARC-QUIC-CRT-0020`, `WI-QUIC-CRT-0020`, and `VER-QUIC-CRT-0020`.
+The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap, server Initial-response emission, and one-Retry replay handoff. The harness `handshake` testcase now dispatches into that managed path, the smaller `post-handshake-stream` prerequisite remains tracked separately and is still blocked by the server-side 1-RTT admission state needed to accept the first application packet, the narrow transfer testcase now dispatches into its managed active-phase path, and the narrow `retry` testcase now dispatches into its managed one-Retry replay path. Unsupported testcases still return exit code `127`.
 
 ## Boundary Split
 
@@ -65,7 +65,7 @@ Notes:
 - These concerns exist because of the interop runner contract and would not belong in the library.
 
 ## REQ-QUIC-INT-0003 Return unsupported testcases honestly
-The interop harness MUST return exit code `127` for any unsupported or not-yet-implemented interop testcase, including `retry` until `Incursa.Quic` can execute those cases end to end for real.
+The interop harness MUST return exit code `127` for any unsupported or not-yet-implemented interop testcase.
 
 Trace:
 - Satisfied By:
@@ -134,7 +134,7 @@ Trace:
 
 Notes:
 - The shell remains adapter-only: it owns socket/process lifecycle and observers, not protocol behavior.
-- The harness handshake testcase now routes through this seam; the narrow transfer slice now has its own managed active-phase path and `retry` still returns `127`.
+- The harness handshake testcase now routes through this seam; the narrow transfer slice now has its own managed active-phase path and the narrow retry slice now has its own managed one-Retry path.
 
 ## REQ-QUIC-INT-0010 Define the first transfer slice as narrow and proof-gated
 The interop harness MUST define a child-process-only transfer slice on the existing Active-phase managed path in which the client and server each participate in exactly one application stream, the first `REQUESTS` URL selects the transfer target, the fixed `/www` and `/downloads` mount-path contract remains in force, the existing `Http3` ALPN remains in force, and exit code `0` is considered honest only after byte delivery and EOF have completed on both sides. This slice MUST NOT widen retry, multi-stream generalization, broader 1-RTT claims, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.
@@ -199,3 +199,33 @@ Trace:
 Notes:
 - The supported boundary remains unchanged; this slice proves only the first post-handshake application-stream open/accept sequence and does not claim file delivery, EOF, or transfer enablement.
 - The harness owns only the child-process sequencing proof. The runtime already owns the open and accept primitives, and the client opener path depends on the existing client-role 1-RTT readiness gate while the server accepter path depends on the existing active-phase accept gate.
+
+## REQ-QUIC-INT-0012 Dispatch a single valid Retry through the child-process harness path
+The interop harness MUST define a child-process-only `retry` testcase in which the server emits exactly one valid Retry, the client observes that Retry and reissues the next Initial through the already-landed managed replay handoff, the server accepts the replayed Initial on the real managed path, and exit code `0` is considered honest only after the post-Retry handshake completes. This requirement MUST remain limited to the child-process path and MUST NOT claim public API widening, `IsSupported` widening, transfer generalization, multi-Retry behavior, broad token-lifecycle behavior, trust-store policy, hostname validation, certificate-path validation, revocation, broader client-auth, `0-RTT`, or key update.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-INT-0005
+- Implemented By:
+  - WI-QUIC-INT-0005
+- Verified By:
+  - VER-QUIC-INT-0005
+- Code Refs:
+  - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
+  - src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs
+  - src/Incursa.Quic.InteropHarness/InteropTlsMaterials.cs
+  - src/Incursa.Quic/QuicClientConnectionHost.cs
+  - src/Incursa.Quic/QuicListenerHost.cs
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - src/Incursa.Quic/QuicPacketParser.cs
+  - src/Incursa.Quic/QuicRetryIntegrity.cs
+  - src/Incursa.Quic/QuicTransportParametersCodec.cs
+  - src/Incursa.Quic/QuicVariableLengthInteger.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0012.cs
+- Related:
+  - REQ-QUIC-CRT-0122
+  - SPEC-QUIC-CRT
+
+Notes:
+- This slice proves the managed one-Retry child-process contract only. It does not widen the public surface, `IsSupported`, transfer, or broader TLS policy.
+- The client replay side is already owned by the library bootstrap seam in REQ-QUIC-CRT-0122; this requirement owns the child-process dispatch and proof.

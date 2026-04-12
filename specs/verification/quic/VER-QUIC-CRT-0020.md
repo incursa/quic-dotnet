@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify that the library-owned bootstrap path retains one valid Retry across a single replay, preserves the original destination connection ID and `retry_source_connection_id` binding state, rejects invalid Retry inputs, and leaves the interop harness unsupported until runner dispatch is separately proven.
+Verify that the library-owned bootstrap path retains one valid Retry across a single replay, preserves the original destination connection ID and `retry_source_connection_id` binding state, rejects invalid Retry inputs, and keeps the child-process retry contract in a separate INT verification slice.
 
 ## Requirements Verified
 
@@ -22,8 +22,8 @@ Execution, inspection, and regression evidence.
 
 ## Procedure or Approach
 
-- Run the existing Retry integrity helper tests and the current unsupported interop guard.
-- Add and run the retry-bootstrap requirement-home tests once the library seam exists.
+- Run the existing Retry integrity helper tests and the library-owned retry bootstrap requirement-home tests.
+- Verify the separate child-process retry contract under REQ-QUIC-INT-0012.
 - Run the full `REQ_QUIC_CRT_` sweep.
 - Re-render the canonical SpecTrace Markdown views for the changed JSON artifacts and run the repository-level SpecTrace validation checks.
 
@@ -31,7 +31,7 @@ Execution, inspection, and regression evidence.
 
 - One valid Retry can be replayed through the library-owned bootstrap seam.
 - Tampered Retry integrity, zero-length Retry tokens, duplicate Retry packets, and mismatched `retry_source_connection_id` values fail deterministically.
-- The current interop harness still returns `127` for retry.
+- The child-process retry contract is proven separately by REQ-QUIC-INT-0012.
 - Transfer remains limited to the exact narrow child-process contract already proven elsewhere.
 
 ## Evidence

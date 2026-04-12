@@ -14,7 +14,15 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 {
     private const int RouteConnectionIdLength = 8;
     private const ulong MinimumActiveConnectionIdLimit = 2;
+    private const int RetryBootstrapTokenLength = 16;
     private const ulong TicksPerMicrosecond = (ulong)TimeSpan.TicksPerSecond / 1_000_000UL;
+    private const int RetryBootstrapReplayValidationFailureParseHeader = 2;
+    private const int RetryBootstrapReplayValidationFailureVersionOrType = 3;
+    private const int RetryBootstrapReplayValidationFailureDestinationConnectionIdMismatch = 4;
+    private const int RetryBootstrapReplayValidationFailureTokenParse = 5;
+    private const int RetryBootstrapReplayValidationFailureTokenMismatch = 6;
+    private const int RetryBootstrapReplayValidationFailureOpen = 7;
+    private const int RetryBootstrapReplayValidationFailurePayload = 8;
 
     private readonly Socket socket;
     private readonly CancellationTokenSource shutdown = new();
@@ -23,17 +31,28 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>> connectionOptionsCallback;
     private readonly QuicConnectionRuntimeEndpoint endpoint;
     private readonly ConcurrentDictionary<QuicConnectionHandle, PendingConnectionState> connections = new();
+    private readonly bool retryBootstrapEnabled;
 
     private CancellationTokenSource? listenerCancellationSource;
     private Task? runningTask;
     private int started;
     private int disposed;
+    private int retryBootstrapIssued;
+    private int retryBootstrapReplayValidated;
+    private int retryBootstrapReplayAdmitted;
+    private int retryBootstrapReplayValidationFailureCode;
+    private byte[]? retryBootstrapOriginalDestinationConnectionId;
+    private byte[]? retryBootstrapSourceConnectionId;
+    private byte[]? retryBootstrapToken;
+    private string? retryBootstrapTokenHex;
+    private string? retryBootstrapReplayTokenHex;
 
     public QuicListenerHost(
         IPEndPoint listenEndPoint,
         List<SslApplicationProtocol> applicationProtocols,
         Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>> connectionOptionsCallback,
-        int listenBacklog)
+        int listenBacklog,
+        bool retryBootstrapEnabled = false)
     {
         ArgumentNullException.ThrowIfNull(listenEndPoint);
         ArgumentNullException.ThrowIfNull(applicationProtocols);
@@ -46,6 +65,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         this.applicationProtocols = [.. applicationProtocols];
         this.connectionOptionsCallback = connectionOptionsCallback;
+        this.retryBootstrapEnabled = retryBootstrapEnabled;
         endpoint = new QuicConnectionRuntimeEndpoint(1);
         acceptQueue = Channel.CreateBounded<object>(new BoundedChannelOptions(listenBacklog)
         {
@@ -64,6 +84,18 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         socket.Bind(boundEndPoint);
     }
+
+    internal bool RetryBootstrapIssued => Volatile.Read(ref retryBootstrapIssued) != 0;
+
+    internal bool RetryBootstrapReplayValidated => Volatile.Read(ref retryBootstrapReplayValidated) != 0;
+
+    internal bool RetryBootstrapReplayAdmitted => Volatile.Read(ref retryBootstrapReplayAdmitted) != 0;
+
+    internal int RetryBootstrapReplayValidationFailureCode => Volatile.Read(ref retryBootstrapReplayValidationFailureCode);
+
+    internal string? RetryBootstrapTokenHex => retryBootstrapTokenHex;
+
+    internal string? RetryBootstrapReplayTokenHex => retryBootstrapReplayTokenHex;
 
     public Task RunAsync(CancellationToken cancellationToken = default)
     {
@@ -364,9 +396,17 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         try
         {
+            ReadOnlySpan<byte> protectionConnectionId = initialDestinationConnectionId;
+            if (retryBootstrapEnabled
+                && Volatile.Read(ref retryBootstrapIssued) != 0
+                && retryBootstrapOriginalDestinationConnectionId is not null)
+            {
+                protectionConnectionId = retryBootstrapOriginalDestinationConnectionId;
+            }
+
             if (!QuicInitialPacketProtection.TryCreate(
                 QuicTlsRole.Server,
-                initialDestinationConnectionId,
+                protectionConnectionId,
                 out QuicInitialPacketProtection initialProtection))
             {
                 return false;
@@ -378,10 +418,47 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 initialProtection,
                 out byte[] openedPacket,
                 out int payloadOffset,
-                out int payloadLength)
-                || !TryValidateInitialCryptoPayload(openedPacket.AsSpan(payloadOffset, payloadLength)))
+                out int payloadLength))
             {
+                if (retryBootstrapEnabled && Volatile.Read(ref retryBootstrapIssued) != 0)
+                {
+                    Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailureOpen);
+                }
+
                 return false;
+            }
+
+            if (!TryValidateInitialCryptoPayload(openedPacket.AsSpan(payloadOffset, payloadLength)))
+            {
+                if (retryBootstrapEnabled && Volatile.Read(ref retryBootstrapIssued) != 0)
+                {
+                    Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailurePayload);
+                }
+
+                return false;
+            }
+
+            if (retryBootstrapEnabled)
+            {
+                if (Volatile.Read(ref retryBootstrapIssued) == 0)
+                {
+                    if (!TryIssueRetryBootstrapResponse(
+                        pathIdentity,
+                        initialDestinationConnectionId,
+                        clientSourceConnectionId))
+                    {
+                        return false;
+                    }
+
+                    return false;
+                }
+
+                if (!TryValidateRetryBootstrapReplay(datagram.Span))
+                {
+                    return false;
+                }
+
+                Interlocked.Exchange(ref retryBootstrapReplayValidated, 1);
             }
 
             byte[] serverSourceConnectionId = GenerateServerSourceConnectionId();
@@ -424,7 +501,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             ApplyReturnedOptions(selectedOptions, returnedOptions);
             connection.UpdateStreamCapacityCallback(selectedOptions.StreamCapacityCallback);
 
-            if (!runtime.TryConfigureInitialPacketProtection(initialDestinationConnectionId)
+            ReadOnlySpan<byte> initialPacketProtectionConnectionId = retryBootstrapOriginalDestinationConnectionId is null
+                ? initialDestinationConnectionId
+                : retryBootstrapOriginalDestinationConnectionId;
+
+            if (!runtime.TryConfigureInitialPacketProtection(initialPacketProtectionConnectionId)
                 || !runtime.TrySetHandshakeDestinationConnectionId(clientSourceConnectionId)
                 || !runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId)
                 || !runtime.TryConfigureServerAuthenticationMaterial(
@@ -438,12 +519,20 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 handle,
                 new QuicConnectionHandshakeBootstrapRequestedEvent(
                     runtime.Clock.Ticks,
-                    CreateLocalTransportParameters(selectedOptions, serverSourceConnectionId))))
+                    CreateLocalTransportParameters(
+                        selectedOptions,
+                        serverSourceConnectionId,
+                        retryBootstrapOriginalDestinationConnectionId is null ? ReadOnlySpan<byte>.Empty : retryBootstrapOriginalDestinationConnectionId,
+                        retryBootstrapSourceConnectionId is null ? ReadOnlySpan<byte>.Empty : retryBootstrapSourceConnectionId))))
             {
                 return false;
             }
 
             admitted = true;
+            if (retryBootstrapEnabled && Volatile.Read(ref retryBootstrapIssued) != 0)
+            {
+                Interlocked.Exchange(ref retryBootstrapReplayAdmitted, 1);
+            }
             return true;
         }
         catch
@@ -526,9 +615,129 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         return connectionId;
     }
 
+    private bool TryIssueRetryBootstrapResponse(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        ReadOnlySpan<byte> clientSourceConnectionId)
+    {
+        if (Volatile.Read(ref retryBootstrapIssued) != 0)
+        {
+            return false;
+        }
+
+        byte[] retrySourceConnectionId = GenerateServerSourceConnectionId();
+        byte[] retryToken = new byte[RetryBootstrapTokenLength];
+        RandomNumberGenerator.Fill(retryToken);
+
+        if (!QuicRetryIntegrity.TryBuildRetryPacket(
+            originalDestinationConnectionId,
+            clientSourceConnectionId,
+            retrySourceConnectionId,
+            retryToken,
+            out byte[] retryPacket))
+        {
+            return false;
+        }
+
+        try
+        {
+            EndPoint remoteEndPoint = new IPEndPoint(
+                IPAddress.Parse(pathIdentity.RemoteAddress),
+                pathIdentity.RemotePort ?? throw new InvalidOperationException("The listener connection path is missing a remote port."));
+
+            int bytesSent = socket.SendTo(retryPacket.AsSpan(), SocketFlags.None, remoteEndPoint);
+            if (bytesSent != retryPacket.Length)
+            {
+                return false;
+            }
+        }
+        catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
+        {
+            return false;
+        }
+        catch (SocketException) when (shutdown.IsCancellationRequested)
+        {
+            return false;
+        }
+        catch (SocketException)
+        {
+            return false;
+        }
+
+        retryBootstrapOriginalDestinationConnectionId = originalDestinationConnectionId.ToArray();
+        retryBootstrapSourceConnectionId = retrySourceConnectionId;
+        retryBootstrapToken = retryToken;
+        retryBootstrapTokenHex = Convert.ToHexString(retryToken);
+        Interlocked.Exchange(ref retryBootstrapIssued, 1);
+        return true;
+    }
+
+    private bool TryValidateRetryBootstrapReplay(ReadOnlySpan<byte> datagram)
+    {
+        if (retryBootstrapOriginalDestinationConnectionId is null
+            || retryBootstrapSourceConnectionId is null
+            || retryBootstrapToken is null)
+        {
+            Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, 1);
+            return false;
+        }
+
+        if (!QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket retryHeader))
+        {
+            Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailureParseHeader);
+            return false;
+        }
+
+        if (retryHeader.Version != 1
+            || retryHeader.LongPacketTypeBits != QuicLongPacketTypeBits.Initial)
+        {
+            Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailureVersionOrType);
+            return false;
+        }
+
+        if (!retryHeader.DestinationConnectionId.SequenceEqual(retryBootstrapSourceConnectionId))
+        {
+            Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailureDestinationConnectionIdMismatch);
+            return false;
+        }
+
+        if (!TryParseInitialRetryToken(retryHeader.VersionSpecificData, out byte[] retryToken))
+        {
+            Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailureTokenParse);
+            return false;
+        }
+
+        retryBootstrapReplayTokenHex = Convert.ToHexString(retryToken);
+
+        if (!retryToken.SequenceEqual(retryBootstrapToken))
+        {
+            Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailureTokenMismatch);
+            return false;
+        }
+
+        Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, 0);
+        return true;
+    }
+
+    private static bool TryParseInitialRetryToken(ReadOnlySpan<byte> versionSpecificData, out byte[] retryToken)
+    {
+        retryToken = [];
+
+        if (!QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong tokenLength, out int tokenLengthBytes)
+            || tokenLength > (ulong)(versionSpecificData.Length - tokenLengthBytes))
+        {
+            return false;
+        }
+
+        retryToken = versionSpecificData.Slice(tokenLengthBytes, (int)tokenLength).ToArray();
+        return true;
+    }
+
     private static QuicTransportParameters CreateLocalTransportParameters(
         QuicServerConnectionOptions options,
-        ReadOnlySpan<byte> sourceConnectionId)
+        ReadOnlySpan<byte> sourceConnectionId,
+        ReadOnlySpan<byte> originalDestinationConnectionId = default,
+        ReadOnlySpan<byte> retrySourceConnectionId = default)
     {
         QuicReceiveWindowSizes receiveWindowSizes = options.InitialReceiveWindowSizes;
 
@@ -544,7 +753,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             InitialMaxStreamsBidi = (ulong)Math.Max(0, options.MaxInboundBidirectionalStreams),
             InitialMaxStreamsUni = (ulong)Math.Max(0, options.MaxInboundUnidirectionalStreams),
             ActiveConnectionIdLimit = MinimumActiveConnectionIdLimit,
+            OriginalDestinationConnectionId = originalDestinationConnectionId.IsEmpty ? null : originalDestinationConnectionId.ToArray(),
             InitialSourceConnectionId = sourceConnectionId.ToArray(),
+            RetrySourceConnectionId = retrySourceConnectionId.IsEmpty ? null : retrySourceConnectionId.ToArray(),
         };
     }
 

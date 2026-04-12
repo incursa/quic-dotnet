@@ -242,21 +242,12 @@ public sealed class REQ_QUIC_CRT_0122
         ReadOnlySpan<byte> retrySourceConnectionId,
         ReadOnlySpan<byte> retryToken)
     {
-        byte[] retryPacket = QuicRetryPacketRequirementTestData.BuildRetryPacket(
-            retryPacketDestinationConnectionId.ToArray(),
-            retrySourceConnectionId.ToArray(),
-            retryToken.ToArray());
-
-        Span<byte> integrityTag = retryPacket.AsSpan(
-            retryPacket.Length - QuicRetryIntegrity.RetryIntegrityTagLength,
-            QuicRetryIntegrity.RetryIntegrityTagLength);
-        Assert.True(QuicRetryIntegrity.TryGenerateRetryIntegrityTag(
+        Assert.True(QuicRetryIntegrity.TryBuildRetryPacket(
             originalDestinationConnectionId,
-            retryPacket.AsSpan(0, retryPacket.Length - QuicRetryIntegrity.RetryIntegrityTagLength),
-            integrityTag,
-            out int integrityTagBytesWritten));
-        Assert.Equal(QuicRetryIntegrity.RetryIntegrityTagLength, integrityTagBytesWritten);
-
+            retryPacketDestinationConnectionId,
+            retrySourceConnectionId,
+            retryToken,
+            out byte[] retryPacket));
         return retryPacket;
     }
 

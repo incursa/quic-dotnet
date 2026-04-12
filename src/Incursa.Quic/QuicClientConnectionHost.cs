@@ -13,6 +13,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
     private const int RouteConnectionIdLength = 8;
     private const ulong MinimumActiveConnectionIdLimit = 2;
     private const ulong TicksPerMicrosecond = (ulong)TimeSpan.TicksPerSecond / 1_000_000UL;
+    private const int ReplayPacketValidationFailureMissingFieldsOrHeader = 1;
+    private const int ReplayPacketValidationFailureTokenMismatch = 2;
 
     private readonly QuicClientConnectionSettings settings;
     private readonly TaskCompletionSource<QuicConnection> establishedConnection = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -28,6 +30,14 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
     private int started;
     private int disposed;
+    private int retryReceivedObserved;
+    private int retryBootstrapReplayDatagramSent;
+    private int retryBootstrapReplayPacketValidated;
+    private int retryBootstrapReplayPacketValidationFailureCode;
+    private byte[]? retrySourceConnectionIdFromRetry;
+    private byte[]? retryTokenFromRetry;
+    private string? retryTokenFromRetryHex;
+    private string? retryBootstrapReplayPacketTokenHex;
 
     public QuicClientConnectionHost(QuicClientConnectionSettings settings)
     {
@@ -102,6 +112,16 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         return AwaitConnectionAsync(cancellationToken);
     }
 
+    internal bool RetryBootstrapReplayDatagramSent => Volatile.Read(ref retryBootstrapReplayDatagramSent) != 0;
+
+    internal bool RetryBootstrapReplayPacketValidated => Volatile.Read(ref retryBootstrapReplayPacketValidated) != 0;
+
+    internal int RetryBootstrapReplayPacketValidationFailureCode => Volatile.Read(ref retryBootstrapReplayPacketValidationFailureCode);
+
+    internal string? RetryTokenFromRetryHex => retryTokenFromRetryHex;
+
+    internal string? RetryBootstrapReplayPacketTokenHex => retryBootstrapReplayPacketTokenHex;
+
     public async ValueTask DisposeAsync()
     {
         if (Interlocked.Exchange(ref disposed, 1) != 0)
@@ -155,6 +175,17 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
     {
         TransitionHistory.Enqueue(transition);
 
+        if (transition.EventKind == QuicConnectionEventKind.RetryReceived)
+        {
+            Interlocked.Exchange(ref retryReceivedObserved, 1);
+            if (transition.HasEffects && transition.Effects.Any(effect =>
+                effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+                && IsReplayInitialPacket(sendDatagramEffect.Datagram.Span)))
+            {
+                Interlocked.Exchange(ref retryBootstrapReplayDatagramSent, 1);
+            }
+        }
+
         if (runtime.TerminalState is QuicConnectionTerminalState terminalState)
         {
             establishedConnection.TrySetException(MapTerminalState(terminalState));
@@ -180,12 +211,56 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             return;
         }
 
+        retrySourceConnectionIdFromRetry = retryMetadata.RetrySourceConnectionId.ToArray();
+        retryTokenFromRetry = retryMetadata.RetryToken.ToArray();
+        retryTokenFromRetryHex = Convert.ToHexString(retryMetadata.RetryToken);
+
         _ = endpoint.Host.TryPostEvent(
             handle,
             new QuicConnectionRetryReceivedEvent(
                 runtime.Clock.Ticks,
                 retryMetadata.RetrySourceConnectionId,
                 retryMetadata.RetryToken));
+    }
+
+    private bool IsReplayInitialPacket(ReadOnlySpan<byte> datagram)
+    {
+        if (retrySourceConnectionIdFromRetry is null
+            || retryTokenFromRetry is null
+            || !QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket sentPacket)
+            || sentPacket.Version != 1
+            || sentPacket.LongPacketTypeBits != QuicLongPacketTypeBits.Initial
+            || !sentPacket.DestinationConnectionId.SequenceEqual(retrySourceConnectionIdFromRetry)
+            || !TryParseInitialRetryToken(sentPacket.VersionSpecificData, out byte[] replayToken))
+        {
+            Interlocked.Exchange(ref retryBootstrapReplayPacketValidationFailureCode, ReplayPacketValidationFailureMissingFieldsOrHeader);
+            return false;
+        }
+
+        if (!replayToken.SequenceEqual(retryTokenFromRetry))
+        {
+            Interlocked.Exchange(ref retryBootstrapReplayPacketValidationFailureCode, ReplayPacketValidationFailureTokenMismatch);
+            return false;
+        }
+
+        retryBootstrapReplayPacketTokenHex = Convert.ToHexString(replayToken);
+        Interlocked.Exchange(ref retryBootstrapReplayPacketValidationFailureCode, 0);
+        Interlocked.Exchange(ref retryBootstrapReplayPacketValidated, 1);
+        return true;
+    }
+
+    private static bool TryParseInitialRetryToken(ReadOnlySpan<byte> versionSpecificData, out byte[] retryToken)
+    {
+        retryToken = [];
+
+        if (!QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong tokenLength, out int tokenLengthBytes)
+            || tokenLength > (ulong)(versionSpecificData.Length - tokenLengthBytes))
+        {
+            return false;
+        }
+
+        retryToken = versionSpecificData.Slice(tokenLengthBytes, (int)tokenLength).ToArray();
+        return true;
     }
 
     private static Socket CreateSocket(QuicClientConnectionSettings settings)

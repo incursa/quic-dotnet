@@ -12,7 +12,7 @@ Describe how the library-owned bootstrap path retains one valid Retry across a s
 
 ## Design Summary
 
-The retry prerequisite stays inside the library-owned bootstrap path. The client host retains the original destination connection ID and the single Retry token for exactly one replay, while the server-side binding checks continue to use the existing helper-backed integrity and `retry_source_connection_id` validation instead of duplicating packet math. The endpoint runtime still classifies Retry as endpoint-handled metadata today, and the interop harness still returns `127` for retry until a later runner-dispatch slice is added.
+The retry prerequisite stays inside the library-owned bootstrap path. The client host retains the original destination connection ID and the single Retry token for exactly one replay, while the server-side binding checks continue to use the existing helper-backed integrity and `retry_source_connection_id` validation instead of duplicating packet math. The endpoint runtime still classifies Retry as endpoint-handled metadata today, and the child-process retry contract is traced separately under `REQ-QUIC-INT-0012` so the bootstrap handoff stays library-owned.
 
 ## Key Components
 

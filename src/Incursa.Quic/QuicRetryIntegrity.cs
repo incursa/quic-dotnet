@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Buffers.Binary;
 using System.Security.Cryptography;
 
 namespace Incursa.Quic;
@@ -8,6 +9,11 @@ namespace Incursa.Quic;
 /// </summary>
 internal static class QuicRetryIntegrity
 {
+    private const int LongHeaderFormLength = 1;
+    private const int LongHeaderVersionLength = sizeof(uint);
+    private const int DestinationConnectionIdLengthOffset = LongHeaderFormLength + LongHeaderVersionLength;
+    private const int DestinationConnectionIdOffset = DestinationConnectionIdLengthOffset + 1;
+
     /// <summary>
     /// Retry integrity tags are 16 bytes long.
     /// </summary>
@@ -34,6 +40,71 @@ internal static class QuicRetryIntegrity
     /// Gets the fixed Retry integrity nonce from RFC 9001 Section 5.8.
     /// </summary>
     internal static ReadOnlySpan<byte> RetryIntegrityNonce => RetryIntegrityNonceBytes;
+
+    /// <summary>
+    /// Builds a full Retry packet with a valid integrity tag from the supplied connection IDs and token.
+    /// </summary>
+    internal static bool TryBuildRetryPacket(
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        ReadOnlySpan<byte> retryPacketDestinationConnectionId,
+        ReadOnlySpan<byte> retrySourceConnectionId,
+        ReadOnlySpan<byte> retryToken,
+        out byte[] retryPacket)
+    {
+        retryPacket = [];
+
+        if (retryPacketDestinationConnectionId.Length > byte.MaxValue
+            || retrySourceConnectionId.Length > byte.MaxValue)
+        {
+            return false;
+        }
+
+        long packetLengthLong =
+            1L
+            + sizeof(uint)
+            + 1L
+            + retryPacketDestinationConnectionId.Length
+            + 1L
+            + retrySourceConnectionId.Length
+            + retryToken.Length
+            + RetryIntegrityTagLength;
+        if (packetLengthLong > int.MaxValue)
+        {
+            return false;
+        }
+
+        int packetLength = (int)packetLengthLong;
+        byte[] packet = new byte[packetLength];
+        packet[0] = (byte)(
+            QuicPacketHeaderBits.HeaderFormBitMask
+            | QuicPacketHeaderBits.FixedBitMask
+            | (QuicLongPacketTypeBits.Retry << QuicPacketHeaderBits.LongPacketTypeBitsShift));
+
+        BinaryPrimitives.WriteUInt32BigEndian(packet.AsSpan(LongHeaderFormLength, sizeof(uint)), QuicVersionNegotiation.Version1);
+
+        packet[DestinationConnectionIdLengthOffset] = (byte)retryPacketDestinationConnectionId.Length;
+        retryPacketDestinationConnectionId.CopyTo(packet.AsSpan(DestinationConnectionIdOffset));
+
+        int sourceConnectionIdLengthOffset = DestinationConnectionIdOffset + retryPacketDestinationConnectionId.Length;
+        packet[sourceConnectionIdLengthOffset] = (byte)retrySourceConnectionId.Length;
+        retrySourceConnectionId.CopyTo(packet.AsSpan(sourceConnectionIdLengthOffset + 1));
+
+        int versionSpecificDataOffset = sourceConnectionIdLengthOffset + 1 + retrySourceConnectionId.Length;
+        retryToken.CopyTo(packet.AsSpan(versionSpecificDataOffset));
+
+        if (!TryGenerateRetryIntegrityTag(
+            originalDestinationConnectionId,
+            packet.AsSpan(0, packet.Length - RetryIntegrityTagLength),
+            packet.AsSpan(packet.Length - RetryIntegrityTagLength),
+            out int integrityTagBytesWritten)
+            || integrityTagBytesWritten != RetryIntegrityTagLength)
+        {
+            return false;
+        }
+
+        retryPacket = packet;
+        return true;
+    }
 
     /// <summary>
     /// Generates the Retry integrity tag for a Retry packet without its trailing tag field.

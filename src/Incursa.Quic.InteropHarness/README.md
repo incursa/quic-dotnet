@@ -5,7 +5,7 @@
 ## Boundary
 
 - Library-owned: connection runtime, sender and recovery ownership, TLS-facing transport contracts, packet protection lifecycle state, handshake confirmation, timers, path validation, retransmission planning, transport-visible diagnostics, `QuicConnectionEndpointHost`, and the packet open/protect helpers.
-- Harness-owned: `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE` parsing; fixed mount-path mapping; handshake dispatch; exit codes; Docker packaging; the startup script; and the thin `InteropEndpointHost` wrapper.
+- Harness-owned: `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE` parsing; fixed mount-path mapping; handshake and retry dispatch; exit codes; Docker packaging; the startup script; and the thin `InteropEndpointHost` wrapper.
 
 ## Endpoint Host Shell
 
@@ -20,6 +20,7 @@
 - Exercises the library-owned runtime through a real connected UDP socket in requirement-home coverage.
 - Routes `handshake` into the managed client/listener bootstrap path and returns `0` when that path completes.
 - Routes `post-handshake-stream` into the managed child-process path and returns `0` after the client opens and the server accepts the first application stream.
+- Routes `retry` into the narrow one-Retry managed child-process path and returns `0` only after the replayed handshake completes.
 - Routes `transfer` into the narrow one-stream `/www` -> `/downloads` child-process path and returns `0` only after byte delivery plus EOF on both sides.
 - Returns `127` for unsupported interop test cases instead of faking success.
 - Returns `1` for invalid process configuration.
@@ -30,11 +31,11 @@ Supported:
 
 - `handshake`
 - `post-handshake-stream`
+- `retry` on the narrow one-Retry child-process contract
 - `transfer` on the narrow one-stream `/www` -> `/downloads` child-process contract
 
 Unsupported:
 
-- `retry`
 - any other testcase not explicitly implemented
 
 ## Build locally
@@ -59,11 +60,10 @@ docker run --rm \
   incursa-quic-interop-harness
 ```
 
-The `handshake` and `post-handshake-stream` testcases now dispatch into the managed bootstrap path. `transfer` now dispatches into the narrow managed active-phase transfer path. `retry` still returns `127`.
+The `handshake` and `post-handshake-stream` testcases now dispatch into the managed bootstrap path. `retry` now dispatches into the narrow managed one-Retry child-process path. `transfer` now dispatches into the narrow managed active-phase transfer path.
 
 ## Stubbed today
 
-- `retry` is still unsupported.
 - `InteropEndpointHost` is a real shell around the library-owned endpoint host, but it is exercised by requirement-home tests rather than runner-dispatched testcases.
 - `QLOGDIR` currently selects a placeholder diagnostics sink rather than real qlog output.
 - `SSLKEYLOGFILE` is recorded as future TLS-provider work and does not emit key logs yet.

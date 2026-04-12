@@ -21,7 +21,7 @@ related_artifacts:
 
 ## Summary
 
-Add the library-owned one-Retry bootstrap handoff so the retry token and binding state stay coherent across a single replay without claiming interop-runner dispatch yet.
+Add the library-owned one-Retry bootstrap handoff so the retry token and binding state stay coherent across a single replay while the child-process dispatch and proof remain isolated in REQ-QUIC-INT-0012.
 
 ## Requirements Addressed
 
@@ -35,7 +35,7 @@ Add the library-owned one-Retry bootstrap handoff so the retry token and binding
 
 - Thread one Retry token and the original destination connection ID through the client bootstrap path so a single valid Retry can be replayed honestly.
 - Keep the existing helper-backed Retry integrity and `retry_source_connection_id` validation as the source of truth instead of duplicating packet math.
-- Preserve the current `retry` exit-code `127` behavior in the interop harness until runner dispatch is separately approved.
+- Leave retry testcase dispatch and child-process proof to REQ-QUIC-INT-0012 so this work item remains library-owned.
 - Add positive and negative tests for one valid Retry replay, tampered Retry integrity, zero-length Retry token rejection, duplicate Retry discard, and mismatched `retry_source_connection_id` binding.
 - Keep transfer, multi-stream, and broader TLS-policy behavior unchanged.
 
@@ -55,11 +55,11 @@ Add the library-owned one-Retry bootstrap handoff so the retry token and binding
 
 ## Verification Plan
 
-Run the existing Retry helper tests and the current unsupported harness guard, then add the new retry-bootstrap requirement-home tests and run the full `REQ_QUIC_CRT_` sweep once the seam is implemented. Re-render and check the SpecTrace markdown views after the canonical JSON artifacts change.
+Run the existing Retry helper tests, the library-owned retry bootstrap requirement-home tests, and the full `REQ_QUIC_CRT_` sweep. Verify the separate child-process retry contract under REQ-QUIC-INT-0012, then re-render and check the SpecTrace markdown views after the canonical JSON artifacts change.
 
 ## Completion Notes
 
-Keep the work item narrow: it exists to make the retry bootstrap prerequisite honest, not to claim the testcase is already enabled.
+Keep the work item narrow: it exists to make the retry bootstrap prerequisite honest, not to claim broader retry support or the child-process harness contract itself.
 
 ## Trace Links
 

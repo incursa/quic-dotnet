@@ -12,7 +12,7 @@ This specification covers endpoint ingress classification, routing tables, conne
 
 ## Context
 
-The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, and package-compatibility work can be implemented against one clear architecture.
+The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, and package-compatibility work can be implemented against one clear architecture, while the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.
 
 ## Decision Summary
 
@@ -975,5 +975,5 @@ Trace:
 
 Notes:
 - The helper-backed Retry integrity and `retry_source_connection_id` checks already exist; the missing seam is bootstrap state ownership across one replay.
-- This slice keeps retry testcase dispatch out of scope. `retry` stays at `127` until the later interop-runner slice exists.
+- This slice keeps retry testcase dispatch out of scope. The narrow child-process retry contract is traced separately under `REQ-QUIC-INT-0012`.
 - The work is intentionally smaller than broader token-lifecycle or NEW_TOKEN support.

@@ -116,7 +116,8 @@ Supported today:
 
 - The thin endpoint-host shell around the library runtime.
 - The narrow child-process transfer slice on the managed active-phase path.
-- Honest unsupported testcase behavior that returns `127` for `retry` and any other unsupported testcase.
+- The narrow child-process `retry` slice on the managed one-Retry replay path.
+- Honest unsupported testcase behavior that returns `127` for any other unsupported testcase.
 - The shell-level requirement-home coverage for the connected UDP boundary.
 - The managed client/listener host path already owns honest Initial/DCID bootstrap and server Initial-response emission.
 - The harness `handshake` testcase already routes into that managed bootstrap path.
@@ -128,13 +129,12 @@ Partially implemented but not yet promised:
 
 Still missing:
 
-- Testcase enablement for `retry`.
 - Runner-side testcase dispatch.
-- Honest end-to-end interop-visible `retry` execution.
+- Honest end-to-end interop-visible dispatch for the remaining unsupported interop testcases.
 
 Why this stays separate:
 
-- The harness should keep returning `127` for unsupported testcases until it can dispatch into the real endpoint-host path; the managed bootstrap path is already proven for handshake, post-handshake stream open/accept, and the narrow transfer slice.
+- The harness should keep returning `127` for unsupported testcases other than the narrow supported `retry` contract until it can dispatch into the real endpoint-host path; the managed bootstrap path is already proven for handshake, post-handshake stream open/accept, the narrow transfer slice, and the child-process retry slice.
 
 ## Recommended Execution Order
 
@@ -167,7 +167,7 @@ Notes on dependency:
 3. `Retry bootstrap ownership`
    - Goal: keep the library-owned one-Retry replay seam honest before any interop dispatch attempt.
    - Focus: original destination connection ID retention, Retry token replay, `retry_source_connection_id` binding validation, and the current client/listener bootstrap path.
-   - Status: not yet landed. The runtime already classifies Retry and carries the helper math, but the one-Retry bootstrap handoff is still missing.
+   - Status: landed. The runtime already classifies Retry and carries the helper math, and the one-Retry bootstrap handoff now retains the original destination connection ID, retains the Retry token, validates `retry_source_connection_id`, and reissues the next Initial through the real managed path.
    - Depends on: the client-role 1-RTT readiness seam and the current Initial/DCID bootstrap path staying stable.
 
 4. `Initial/DCID bootstrap and endpoint-host cleanup`
@@ -186,9 +186,9 @@ Notes on dependency:
    - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
 7. `Interop runner dispatch`
-   - Goal: route `retry` into the real endpoint-host path instead of returning `127`.
-   - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch after the retry bootstrap seam and the current proof floor are fixed. `handshake` is already wired into the managed bootstrap path.
-   - Depends on: the retry bootstrap ownership slice, the client-role 1-RTT readiness seam, the TLS trust/policy slice, the current narrow stream slice staying stable, and any stream follow-ons that prove inseparable from the chosen retry path.
+   - Goal: route the remaining unsupported interop testcases into the real endpoint-host path instead of returning `127`.
+   - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch after the current proof floor is fixed. `handshake` is already wired into the managed bootstrap path, and the narrow child-process `retry` path is now handled separately.
+   - Depends on: the client-role 1-RTT readiness seam, the TLS trust/policy slice, the current narrow stream slice staying stable, and any stream follow-ons that prove inseparable from the remaining cases.
 
 ## Do-Not-Widen Boundaries
 
@@ -198,14 +198,14 @@ Notes on dependency:
 - Keep `0-RTT` and key update out of the public promise.
 - Keep broader stream-management parity out of the public promise until the stream bucket is actually closed.
 - Keep hostname validation, trust-store validation, and certificate-path validation out of the public client promise until they are implemented and proven.
-- Keep interop runner testcase support at `127` for unsupported `retry` and any other unsupported cases until the retry bootstrap seam and dispatch path are real.
+- Keep interop runner testcase support at `127` for unsupported cases other than the narrow supported `retry` child-process contract.
 
 ## Current Unstable Areas Before Interop Continues
 
 - The handshake-floor tail slice for `REQ-QUIC-CRT-0117` and `REQ-QUIC-CRT-0119` is now closed.
 - The client-role 1-RTT readiness prerequisite under `REQ-QUIC-CRT-0121` is now closed.
 - The smaller post-handshake stream open/accept prerequisite under `REQ-QUIC-INT-0011`, `ARC-QUIC-INT-0004`, `WI-QUIC-INT-0004`, and `VER-QUIC-INT-0004` is now closed by the managed child-process harness path.
-- The interop harness still returns `127` for `retry`, and the smaller library-owned retry bootstrap prerequisite is still unproven.
+- The narrow child-process `retry` contract under `REQ-QUIC-INT-0012`, `ARC-QUIC-INT-0005`, `WI-QUIC-INT-0005`, and `VER-QUIC-INT-0005` is now closed.
 - The managed client/listener bootstrap seam is already proven.
 - The current client trust story is still pinned-leaf only; it is not yet a broader trust-store or hostname-validation story.
 

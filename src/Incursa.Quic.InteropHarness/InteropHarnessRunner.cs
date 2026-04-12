@@ -61,6 +61,7 @@ internal static class InteropHarnessRunner
         {
             "handshake" => RunHandshakeClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "post-handshake-stream" => RunPostHandshakeStreamClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "retry" => RunRetryClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "transfer" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             _ => ReturnUnsupported(settings, stdout, "client"),
         };
@@ -77,6 +78,7 @@ internal static class InteropHarnessRunner
         {
             "handshake" => RunHandshakeServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "post-handshake-stream" => RunPostHandshakeStreamServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "retry" => RunRetryServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "transfer" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             _ => ReturnUnsupported(settings, stdout, "server"),
         };
@@ -315,6 +317,226 @@ internal static class InteropHarnessRunner
         catch (Exception ex)
         {
             WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=post-handshake-stream failed: {ex.Message}");
+            return 1;
+        }
+    }
+
+    private static async Task<int> RunRetryClientAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr)
+    {
+        try
+        {
+            if (!QuicConnection.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC client bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
+                requestUri is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            IPEndPoint remoteEndPoint = await ResolveHandshakeRemoteEndPointAsync(requestUri).ConfigureAwait(false);
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}.");
+
+            QuicClientConnectionOptions clientOptions = CreateSupportedClientOptions(stdout, settings, remoteEndPoint);
+            QuicClientConnectionSettings clientSettings = QuicClientConnectionOptionsValidator.Capture(clientOptions, nameof(clientOptions));
+
+            await using QuicClientConnectionHost host = new(clientSettings);
+            Task<QuicConnection> connectTask = host.ConnectAsync().AsTask();
+            bool retryObserved = false;
+            bool replayDatagramSent = false;
+            bool replayPacketValidated = false;
+            bool replayPacketValidationFailed = false;
+
+            while (!connectTask.IsCompleted)
+            {
+                if (!retryObserved
+                    && host.TransitionHistory.Any(transition => transition.EventKind == QuicConnectionEventKind.RetryReceived))
+                {
+                    retryObserved = true;
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} observed exactly one Retry transition (token={host.RetryTokenFromRetryHex}) and is waiting for managed client bootstrap completion.");
+                }
+
+                int replayPacketValidationFailureCode = host.RetryBootstrapReplayPacketValidationFailureCode;
+                if (!replayPacketValidationFailed
+                    && !replayPacketValidated
+                    && replayPacketValidationFailureCode != 0)
+                {
+                    replayPacketValidationFailed = true;
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} replay packet validation failed with code {replayPacketValidationFailureCode}.");
+                }
+
+                if (!replayDatagramSent && host.RetryBootstrapReplayDatagramSent)
+                {
+                    replayDatagramSent = true;
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} reissued the next Initial after Retry and is waiting for managed client bootstrap completion.");
+                }
+
+                if (!replayPacketValidated && host.RetryBootstrapReplayPacketValidated)
+                {
+                    replayPacketValidated = true;
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} validated the replayed Initial packet (retryToken={host.RetryTokenFromRetryHex}, replayToken={host.RetryBootstrapReplayPacketTokenHex}) and is waiting for managed client bootstrap completion.");
+                }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(50)).ConfigureAwait(false);
+            }
+
+            await using QuicConnection connection = await connectTask.ConfigureAwait(false);
+
+            int retryTransitionCount = host.TransitionHistory.Count(transition => transition.EventKind == QuicConnectionEventKind.RetryReceived);
+            if (retryTransitionCount != 1)
+            {
+                WriteLineAndFlush(
+                    stderr,
+                    $"interop harness: role=client, testcase=retry expected exactly one Retry transition but observed {retryTransitionCount}.");
+                return 1;
+            }
+
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} observed exactly one Retry transition and completed managed client bootstrap.");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            WriteLineAndFlush(stderr, $"interop harness: role=client, testcase=retry failed: {ex.Message}");
+            return 1;
+        }
+    }
+
+    private static async Task<int> RunRetryServerAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr,
+        string certificatePath,
+        string privateKeyPath)
+    {
+        try
+        {
+            if (!QuicListener.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC listener bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
+                requestUri is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out errorMessage) ||
+                materials is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out errorMessage) ||
+                serverCertificate is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            using (serverCertificate)
+            {
+                IPEndPoint listenEndPoint = await ResolveHandshakeListenEndPointAsync(requestUri).ConfigureAwait(false);
+                QuicListenerHost listenerHost = new(
+                    listenEndPoint,
+                    [SslApplicationProtocol.Http3],
+                    (_, _, _) => ValueTask.FromResult(CreateSupportedServerOptions(serverCertificate)),
+                    listenBacklog: 1,
+                    retryBootstrapEnabled: true);
+
+                await using (listenerHost)
+                {
+                    _ = listenerHost.RunAsync();
+                    Task<QuicConnection> acceptTask = listenerHost.AcceptConnectionAsync().AsTask();
+                    await Task.Yield();
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=server, testcase=retry, requestCount={settings.Requests.Count} listening on {listenEndPoint}, retry contract enabled.");
+
+                    bool retryEmitted = false;
+                    bool retryReplayValidated = false;
+                    bool retryReplayAdmitted = false;
+                    bool retryReplayValidationFailed = false;
+                    while (!acceptTask.IsCompleted)
+                    {
+                        if (!retryEmitted && listenerHost.RetryBootstrapIssued)
+                        {
+                            retryEmitted = true;
+                            WriteLineAndFlush(
+                                stdout,
+                                $"interop harness: role=server, testcase=retry, requestCount={settings.Requests.Count} issued exactly one Retry (token={listenerHost.RetryBootstrapTokenHex}) and is waiting for managed listener bootstrap completion.");
+                        }
+
+                        int retryReplayValidationFailureCode = listenerHost.RetryBootstrapReplayValidationFailureCode;
+                        if (!retryReplayValidationFailed
+                            && !retryReplayValidated
+                            && retryReplayValidationFailureCode != 0)
+                        {
+                            retryReplayValidationFailed = true;
+                            WriteLineAndFlush(
+                                stdout,
+                                $"interop harness: role=server, testcase=retry, requestCount={settings.Requests.Count} replay validation failed with code {retryReplayValidationFailureCode} (issuedToken={listenerHost.RetryBootstrapTokenHex}, replayToken={listenerHost.RetryBootstrapReplayTokenHex}).");
+                        }
+
+                        if (!retryReplayValidated && listenerHost.RetryBootstrapReplayValidated)
+                        {
+                            retryReplayValidated = true;
+                            WriteLineAndFlush(
+                                stdout,
+                                $"interop harness: role=server, testcase=retry, requestCount={settings.Requests.Count} validated the replayed Initial and is waiting for managed listener bootstrap completion.");
+                        }
+
+                        if (!retryReplayAdmitted && listenerHost.RetryBootstrapReplayAdmitted)
+                        {
+                            retryReplayAdmitted = true;
+                            WriteLineAndFlush(
+                                stdout,
+                                $"interop harness: role=server, testcase=retry, requestCount={settings.Requests.Count} admitted the replayed Initial and is waiting for managed listener bootstrap completion.");
+                        }
+
+                        await Task.Delay(TimeSpan.FromMilliseconds(50)).ConfigureAwait(false);
+                    }
+
+                    await using QuicConnection connection = await acceptTask.ConfigureAwait(false);
+
+                    if (!listenerHost.RetryBootstrapIssued)
+                    {
+                        WriteLineAndFlush(stderr, "interop harness: role=server, testcase=retry expected a Retry emission but none was observed.");
+                        return 1;
+                    }
+
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=server, testcase=retry, requestCount={settings.Requests.Count} issued exactly one Retry and completed managed listener bootstrap.");
+                    return 0;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=retry failed: {ex.Message}");
             return 1;
         }
     }
