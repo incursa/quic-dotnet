@@ -13,9 +13,12 @@ public sealed class REQ_QUIC_CRT_0108
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTlsKeySchedule schedule = new(localHandshakePrivateKey);
         QuicTransportTlsBridgeState bridge = new();
+        QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
         QuicTransportParameters peerTransportParameters = CreateServerTransportParameters();
         using ECDsa leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
         byte[] leafCertificateDer = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(leafKey);
+        Assert.True(schedule.TryCreateClientHello(localTransportParameters, out byte[] clientHelloTranscript));
+        schedule.AppendLocalHandshakeMessage(clientHelloTranscript);
         byte[] serverKeyShare = CreateServerKeyShare(0x02);
         byte[] serverHelloTranscript = CreateServerHelloTranscript(
             QuicTlsCipherSuite.TlsAes128GcmSha256,
@@ -23,6 +26,7 @@ public sealed class REQ_QUIC_CRT_0108
         byte[] encryptedExtensionsTranscript = CreateEncryptedExtensionsTranscript(peerTransportParameters);
         byte[] certificateTranscript = QuicTlsCertificateVerifyTestSupport.CreateCertificateTranscript(leafCertificateDer);
         byte[] certificateVerifyTranscriptHash = SHA256.HashData([
+            .. clientHelloTranscript,
             .. serverHelloTranscript,
             .. encryptedExtensionsTranscript,
             .. certificateTranscript,
@@ -72,8 +76,10 @@ public sealed class REQ_QUIC_CRT_0108
         QuicTlsTranscriptStep finishedStep = CreateFinishedStep(finishedVerifyData);
         IReadOnlyList<QuicTlsStateUpdate> finishedUpdates = schedule.ProcessTranscriptStep(finishedStep);
 
-        Assert.Single(finishedUpdates);
+        Assert.Equal(2, finishedUpdates.Count);
         Assert.Equal(QuicTlsUpdateKind.PeerFinishedVerified, finishedUpdates[0].Kind);
+        Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, finishedUpdates[1].Kind);
+        Assert.Equal(QuicTlsEncryptionLevel.Handshake, finishedUpdates[1].EncryptionLevel);
         Assert.True(schedule.PeerFinishedVerified);
     }
 
@@ -123,9 +129,12 @@ public sealed class REQ_QUIC_CRT_0108
     public void TranscriptHashDrivenSecretDerivationIsDeterministic()
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
+        QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
         QuicTransportParameters peerTransportParameters = CreateServerTransportParameters();
         using ECDsa leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
         byte[] leafCertificateDer = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(leafKey);
+        QuicTlsKeySchedule transcriptSeedSchedule = new(localHandshakePrivateKey);
+        Assert.True(transcriptSeedSchedule.TryCreateClientHello(localTransportParameters, out byte[] clientHelloTranscript));
         byte[] serverKeyShare = CreateServerKeyShare(0x02);
         byte[] serverHelloTranscript = CreateServerHelloTranscript(
             QuicTlsCipherSuite.TlsAes128GcmSha256,
@@ -133,6 +142,7 @@ public sealed class REQ_QUIC_CRT_0108
         byte[] encryptedExtensionsTranscript = CreateEncryptedExtensionsTranscript(peerTransportParameters);
         byte[] certificateTranscript = QuicTlsCertificateVerifyTestSupport.CreateCertificateTranscript(leafCertificateDer);
         byte[] certificateVerifyTranscriptHash = SHA256.HashData([
+            .. clientHelloTranscript,
             .. serverHelloTranscript,
             .. encryptedExtensionsTranscript,
             .. certificateTranscript,
@@ -140,6 +150,8 @@ public sealed class REQ_QUIC_CRT_0108
 
         QuicTlsKeySchedule firstSchedule = new(localHandshakePrivateKey);
         QuicTlsKeySchedule secondSchedule = new(localHandshakePrivateKey);
+        firstSchedule.AppendLocalHandshakeMessage(clientHelloTranscript);
+        secondSchedule.AppendLocalHandshakeMessage(clientHelloTranscript);
         QuicTransportTlsBridgeState firstBridge = new();
         QuicTransportTlsBridgeState secondBridge = new();
 
@@ -189,6 +201,15 @@ public sealed class REQ_QUIC_CRT_0108
         Assert.True(firstSchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] firstFinishedVerifyData));
         Assert.True(secondSchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] secondFinishedVerifyData));
         Assert.True(firstFinishedVerifyData.SequenceEqual(secondFinishedVerifyData));
+    }
+
+    private static QuicTransportParameters CreateBootstrapLocalTransportParameters()
+    {
+        return new QuicTransportParameters
+        {
+            MaxIdleTimeout = 15,
+            InitialSourceConnectionId = [0x01, 0x02, 0x03],
+        };
     }
 
     private static QuicTlsTranscriptStep CreateServerHelloStep(

@@ -46,14 +46,13 @@ public sealed class REQ_QUIC_CRT_0115
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[7].Kind);
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[8].Kind);
         Assert.Equal(0UL, updates[1].CryptoDataOffset);
-        Assert.Equal((ulong)updates[1].CryptoData.Length, updates[5].CryptoDataOffset);
-        Assert.Equal((ulong)updates[1].CryptoData.Length + (ulong)updates[5].CryptoData.Length, updates[6].CryptoDataOffset);
+        Assert.Equal(0UL, updates[5].CryptoDataOffset);
+        Assert.Equal((ulong)updates[5].CryptoData.Length, updates[6].CryptoDataOffset);
         Assert.Equal(
-            (ulong)updates[1].CryptoData.Length + (ulong)updates[5].CryptoData.Length + (ulong)updates[6].CryptoData.Length,
+            (ulong)updates[5].CryptoData.Length + (ulong)updates[6].CryptoData.Length,
             updates[7].CryptoDataOffset);
         Assert.Equal(
-            (ulong)updates[1].CryptoData.Length
-            + (ulong)updates[5].CryptoData.Length
+            (ulong)updates[5].CryptoData.Length
             + (ulong)updates[6].CryptoData.Length
             + (ulong)updates[7].CryptoData.Length,
             updates[8].CryptoDataOffset);
@@ -81,8 +80,7 @@ public sealed class REQ_QUIC_CRT_0115
             DSASignatureFormat.Rfc3279DerSequence));
 
         Span<byte> surfacedHandshakeBytes = stackalloc byte[
-            updates[1].CryptoData.Length
-            + updates[5].CryptoData.Length
+            updates[5].CryptoData.Length
             + updates[6].CryptoData.Length
             + updates[7].CryptoData.Length
             + updates[8].CryptoData.Length];
@@ -96,7 +94,6 @@ public sealed class REQ_QUIC_CRT_0115
 
         byte[] expectedHandshakeBytes =
         [
-            .. updates[1].CryptoData.ToArray(),
             .. updates[5].CryptoData.ToArray(),
             .. updates[6].CryptoData.ToArray(),
             .. updates[7].CryptoData.ToArray(),

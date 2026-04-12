@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using System.Reflection;
 
 namespace Incursa.Quic.Tests;
 
@@ -107,8 +108,10 @@ public sealed class REQ_QUIC_API_0002
         Task completedTask = await Task.WhenAny(completionTask, Task.Delay(TimeSpan.FromSeconds(5)));
         if (completedTask != completionTask)
         {
+            string listenerHostTaskDescription = DescribeListenerHostTask(listener);
+            string listenerTransitionDescription = DescribeFirstPendingConnectionTransition(listener);
             throw new TimeoutException(
-                $"Loopback establishment did not complete. Server runtime: {QuicLoopbackEstablishmentTestSupport.DescribeConnection(observedConnection)}");
+                $"Loopback establishment did not complete. Server runtime: {QuicLoopbackEstablishmentTestSupport.DescribeConnection(observedConnection)}; {listenerHostTaskDescription}; {listenerTransitionDescription}");
         }
 
         await completionTask;
@@ -124,6 +127,8 @@ public sealed class REQ_QUIC_API_0002
             Assert.Same(serverConnection, observedConnection);
             Assert.True(string.IsNullOrEmpty(observedServerName));
             Assert.Equal(SslProtocols.Tls13, observedProtocols);
+            Assert.NotNull(GetRuntime(clientConnection).TlsState.PeerTransportParameters);
+            Assert.NotNull(GetRuntime(serverConnection).TlsState.PeerTransportParameters);
         }
         finally
         {
@@ -199,5 +204,108 @@ public sealed class REQ_QUIC_API_0002
                 RemoteCertificateValidationCallback = (_, _, _, errors) => errors == SslPolicyErrors.RemoteCertificateChainErrors,
             },
         };
+    }
+
+    private static string DescribeListenerHostTask(QuicListener listener)
+    {
+        FieldInfo? hostField = typeof(QuicListener).GetField("host", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (hostField?.GetValue(listener) is not QuicListenerHost listenerHost)
+        {
+            return "ListenerHost=<unavailable>";
+        }
+
+        FieldInfo? runningTaskField = typeof(QuicListenerHost).GetField("runningTask", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (runningTaskField?.GetValue(listenerHost) is not Task runningTask)
+        {
+            return "ListenerTask=<unavailable>";
+        }
+
+        string exceptionDescription = runningTask.Exception?.GetBaseException() is Exception exception
+            ? $"{exception.GetType().Name}: {exception.Message}"
+            : "<none>";
+        return $"ListenerTaskStatus={runningTask.Status}; Faulted={runningTask.IsFaulted}; Canceled={runningTask.IsCanceled}; Exception={exceptionDescription}";
+    }
+
+    private static string DescribeFirstPendingConnectionTransition(QuicListener listener)
+    {
+        FieldInfo? hostField = typeof(QuicListener).GetField("host", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (hostField?.GetValue(listener) is not QuicListenerHost listenerHost)
+        {
+            return "ListenerTransitions=<host unavailable>";
+        }
+
+        FieldInfo? connectionsField = typeof(QuicListenerHost).GetField("connections", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (connectionsField?.GetValue(listenerHost) is not System.Collections.IEnumerable connections)
+        {
+            return "ListenerTransitions=<connections unavailable>";
+        }
+
+        foreach (object? entry in connections)
+        {
+            if (entry is null)
+            {
+                continue;
+            }
+
+            PropertyInfo? valueProperty = entry.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
+            object? pendingState = valueProperty?.GetValue(entry);
+            if (pendingState is null)
+            {
+                continue;
+            }
+
+            PropertyInfo? historyProperty = pendingState.GetType().GetProperty("TransitionHistory", BindingFlags.Public | BindingFlags.Instance);
+            if (historyProperty?.GetValue(pendingState) is not System.Collections.IEnumerable transitionHistory)
+            {
+                return "ListenerTransitions=<history unavailable>";
+            }
+
+            foreach (object? transitionObject in transitionHistory)
+            {
+                if (transitionObject is not QuicConnectionTransitionResult transition
+                    || transition.EventKind != QuicConnectionEventKind.PacketReceived)
+                {
+                    continue;
+                }
+
+                string effectSummary = string.Join(
+                    ", ",
+                    transition.Effects.Select(effect => effect switch
+                    {
+                        QuicConnectionEmitDiagnosticEffect diagnosticEffect
+                            => $"diag:{diagnosticEffect.Diagnostic.Name}",
+                        QuicConnectionSendDatagramEffect
+                            => $"send:{DescribePacketNumberSpace(effect)}",
+                        _ => effect.GetType().Name,
+                    }));
+
+                return $"ListenerPacketTransition=Prev:{transition.PreviousPhase}; Curr:{transition.CurrentPhase}; StateChanged:{transition.StateChanged}; Effects:[{effectSummary}]";
+            }
+
+            return "ListenerTransitions=<no packet transition observed>";
+        }
+
+        return "ListenerTransitions=<no pending connection>";
+    }
+
+    private static string DescribePacketNumberSpace(QuicConnectionEffect effect)
+    {
+        if (effect is not QuicConnectionSendDatagramEffect sendEffect)
+        {
+            return effect.GetType().Name;
+        }
+
+        if (QuicPacketParser.TryGetPacketNumberSpace(sendEffect.Datagram.Span, out QuicPacketNumberSpace packetNumberSpace))
+        {
+            return packetNumberSpace.ToString();
+        }
+
+        return "Unclassified";
+    }
+
+    private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
+    {
+        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.Instance | BindingFlags.NonPublic);
+        return Assert.IsType<QuicConnectionRuntime>(runtimeField?.GetValue(connection));
     }
 }

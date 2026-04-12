@@ -1367,6 +1367,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
+        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+            "connection.runtime.handshake",
+            "initial-packet-received",
+            $"Initial packet reached the runtime on {packetReceivedEvent.PathIdentity.RemoteAddress}:{packetReceivedEvent.PathIdentity.RemotePort}.",
+            QuicDiagnosticSeverity.Trace)));
+
         ReadOnlySpan<byte> datagram = packetReceivedEvent.Datagram.Span;
         if (!QuicPacketParser.TryGetPacketNumberSpace(datagram, out QuicPacketNumberSpace packetNumberSpace)
             || packetNumberSpace != QuicPacketNumberSpace.Initial
@@ -1378,6 +1384,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 out int payloadOffset,
                 out int payloadLength))
         {
+            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+                "connection.runtime.handshake",
+                "initial-packet-open-failed",
+                "Initial packet could not be opened or parsed by the runtime.",
+                QuicDiagnosticSeverity.Warning)));
             return false;
         }
 
@@ -1393,11 +1404,21 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             _ = TrySetHandshakeDestinationConnectionId(initialSourceConnectionId);
         }
 
-        return TryProcessHandshakePacketPayload(
+        bool processed = TryProcessHandshakePacketPayload(
             openedPacket.AsSpan(payloadOffset, payloadLength),
             QuicTlsEncryptionLevel.Initial,
             nowTicks,
             ref effects);
+
+        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+            "connection.runtime.handshake",
+            processed ? "initial-packet-advanced" : "initial-packet-not-advanced",
+            processed
+                ? "Initial packet payload advanced the TLS bridge."
+                : "Initial packet payload did not advance the TLS bridge.",
+            processed ? QuicDiagnosticSeverity.Info : QuicDiagnosticSeverity.Warning)));
+
+        return processed;
     }
 
     private bool TryHandleHandshakePacketReceived(
@@ -1407,15 +1428,33 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     {
         ReadOnlySpan<byte> datagram = packetReceivedEvent.Datagram.Span;
         if (!QuicPacketParser.TryGetPacketNumberSpace(datagram, out QuicPacketNumberSpace packetNumberSpace)
-            || packetNumberSpace != QuicPacketNumberSpace.Handshake
-            || !tlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial packetProtectionMaterial)
-            || !handshakeFlowCoordinator.TryOpenHandshakePacket(
+            || packetNumberSpace != QuicPacketNumberSpace.Handshake)
+        {
+            return false;
+        }
+
+        if (!tlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial packetProtectionMaterial))
+        {
+            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+                "connection.runtime.handshake",
+                "handshake-packet-open-failed",
+                "Handshake packet could not be opened because handshake packet protection was unavailable.",
+                QuicDiagnosticSeverity.Warning)));
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TryOpenHandshakePacket(
                 datagram,
                 packetProtectionMaterial,
                 out byte[] openedPacket,
                 out int payloadOffset,
                 out int payloadLength))
         {
+            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+                "connection.runtime.handshake",
+                "handshake-packet-open-failed",
+                "Handshake packet could not be opened or parsed by the runtime.",
+                QuicDiagnosticSeverity.Warning)));
             return false;
         }
 
@@ -1468,6 +1507,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
             IReadOnlyList<QuicTlsStateUpdate> transcriptUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(
                 encryptionLevel);
+            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
+                "connection.runtime.handshake",
+                encryptionLevel == QuicTlsEncryptionLevel.Initial
+                    ? "initial-transcript-advanced"
+                    : "handshake-transcript-advanced",
+                $"Handshake transcript advancement for {encryptionLevel} produced {transcriptUpdates.Count} TLS updates.",
+                QuicDiagnosticSeverity.Trace)));
             if (transcriptUpdates.Count == 0)
             {
                 payloadOffset += bytesConsumed;

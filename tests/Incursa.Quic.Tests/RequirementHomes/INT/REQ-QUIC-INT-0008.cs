@@ -150,7 +150,7 @@ public sealed class REQ_QUIC_INT_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task ListenerHostEmitsTheRealServerHandshakeResponseAfterInitialAdmission()
+    public async Task ListenerHostEmitsTheRealServerInitialResponseAfterInitialAdmission()
     {
         using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
         using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -194,7 +194,7 @@ public sealed class REQ_QUIC_INT_0008
             responseBuffer.AsSpan(0, bytesReceived),
             out QuicLongHeaderPacket responseHeader));
         Assert.Equal(1u, responseHeader.Version);
-        Assert.Equal(QuicLongPacketTypeBits.Handshake, responseHeader.LongPacketTypeBits);
+        Assert.Equal(QuicLongPacketTypeBits.Initial, responseHeader.LongPacketTypeBits);
         Assert.Equal(clientSourceConnectionId, responseHeader.DestinationConnectionId.ToArray());
         Assert.Equal(8, responseHeader.SourceConnectionId.Length);
         Assert.NotEqual(clientSourceConnectionId, responseHeader.SourceConnectionId.ToArray());
@@ -265,7 +265,7 @@ public sealed class REQ_QUIC_INT_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task HarnessHandshakeTestcaseDispatchesIntoTheManagedBootstrapPath()
+    public async Task HarnessHandshakeTestcaseCompletesTheManagedBootstrapPath()
     {
         IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
         string requests = $"https://127.0.0.1:{listenEndPoint.Port}/handshake";
@@ -276,12 +276,16 @@ public sealed class REQ_QUIC_INT_0008
 
         await using HarnessProcess clientProcess = HarnessProcess.Start("client", "handshake", requests, harnessDll);
         await clientProcess.WaitForStdoutContainsAsync("connecting to", TimeSpan.FromSeconds(10));
-        await Task.Delay(TimeSpan.FromMilliseconds(250));
+        await WaitForHandshakeExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(10));
 
         Assert.Contains("role=server, testcase=handshake", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("role=client, testcase=handshake", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("listening on", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connecting to", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("completed managed listener bootstrap", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("completed managed client bootstrap", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(0, serverProcess.Process.ExitCode);
+        Assert.Equal(0, clientProcess.Process.ExitCode);
         Assert.DoesNotContain("unsupported", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("unsupported", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("unsupported", serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
@@ -374,7 +378,7 @@ public sealed class REQ_QUIC_INT_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task PemLoadedServerCertificateDiagnosticCapturesTheFirstMissingHandshakeCompletionGate()
+    public async Task PemLoadedServerCertificateCompletesTheLivePublicHandshakePathAndStagesPeerTransportParameters()
     {
         using TempDirectoryFixture fixture = new("incursa-quic-int-diagnostics");
         using X509Certificate2 sourceCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
@@ -427,38 +431,31 @@ public sealed class REQ_QUIC_INT_0008
         await callbackEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
         callbackRelease.TrySetResult(true);
 
-        Task completed = await Task.WhenAny(
-            Task.WhenAll(connectTask, acceptTask),
-            Task.Delay(TimeSpan.FromSeconds(3)));
-
-        if (completed == connectTask || completed == acceptTask || (connectTask.IsCompleted && acceptTask.IsCompleted))
+        Task completionTask = Task.WhenAll(connectTask, acceptTask);
+        Task completed = await Task.WhenAny(completionTask, Task.Delay(TimeSpan.FromSeconds(5)));
+        if (completed != completionTask)
         {
-            await using QuicConnection clientConnection = await connectTask;
-            await using QuicConnection serverConnection = await acceptTask;
+            QuicListenerHost listenerHost = GetPrivateField<QuicListenerHost>(listener, "host");
+            string clientDescription = QuicLoopbackEstablishmentTestSupport.DescribeClientHost(clientHost);
+            string clientTransitionDescription = DescribeClientTransitionHistory(clientHost);
+            string handshakeReplayDescription = DescribeFirstPendingServerHandshakeReplay(observedServerConnection, clientHost, listenerHost);
+            string serverDescription = observedServerConnection is null
+                ? DescribeFirstPendingServerConnection(listenerHost)
+                : QuicLoopbackEstablishmentTestSupport.DescribeConnection(observedServerConnection);
+
             throw new Xunit.Sdk.XunitException(
-                $"Diagnostic expected the PEM-backed path to stall, but both sides completed. Client={QuicLoopbackEstablishmentTestSupport.DescribeConnection(clientConnection)}; Server={QuicLoopbackEstablishmentTestSupport.DescribeConnection(serverConnection)}");
+                $"PEM-backed live public handshake did not complete within the timeout. ClientCompleted={connectTask.IsCompleted}; ServerCompleted={acceptTask.IsCompleted}; Client={clientDescription}; Server={serverDescription}; ClientTransitions={clientTransitionDescription}; HandshakeReplay={handshakeReplayDescription}");
         }
 
-        QuicListenerHost listenerHost = GetPrivateField<QuicListenerHost>(listener, "host");
-        string clientDescription = QuicLoopbackEstablishmentTestSupport.DescribeClientHost(clientHost);
-        string serverDescription = observedServerConnection is null
-            ? DescribeFirstPendingServerConnection(listenerHost)
-            : QuicLoopbackEstablishmentTestSupport.DescribeConnection(observedServerConnection);
+        await completionTask;
 
-        Assert.False(connectTask.IsCompleted, $"Client unexpectedly completed. Client={clientDescription}; Server={serverDescription}");
-        Assert.False(acceptTask.IsCompleted, $"Server unexpectedly completed. Client={clientDescription}; Server={serverDescription}");
-        Assert.Contains("PeerHandshakeTranscriptCompleted=False", clientDescription, StringComparison.Ordinal);
-        Assert.Contains("PeerTP=<null>", clientDescription, StringComparison.Ordinal);
-        Assert.Contains("InitialIngress=0", clientDescription, StringComparison.Ordinal);
-        Assert.Contains("HandshakeIngress=0", clientDescription, StringComparison.Ordinal);
-        Assert.Contains("InitialEgress=0", clientDescription, StringComparison.Ordinal);
-        Assert.Contains("HandshakeEgress=0", clientDescription, StringComparison.Ordinal);
-        Assert.Contains("PeerHandshakeTranscriptCompleted=False", serverDescription, StringComparison.Ordinal);
-        Assert.Contains("PeerTP=<null>", serverDescription, StringComparison.Ordinal);
-        Assert.Contains("InitialIngress=0", serverDescription, StringComparison.Ordinal);
-        Assert.Contains("HandshakeIngress=0", serverDescription, StringComparison.Ordinal);
-        Assert.Contains("InitialEgress=0", serverDescription, StringComparison.Ordinal);
-        Assert.Contains("HandshakeEgress=0", serverDescription, StringComparison.Ordinal);
+        await using QuicConnection clientConnection = await connectTask;
+        await using QuicConnection serverConnection = await acceptTask;
+
+        Assert.Same(serverConnection, observedServerConnection);
+        Assert.NotNull(GetPrivateField<QuicConnectionRuntime>(clientConnection, "runtime").TlsState.PeerTransportParameters);
+        Assert.NotNull(GetPrivateField<QuicConnectionRuntime>(serverConnection, "runtime").TlsState.PeerTransportParameters);
+        Assert.Contains("diag:initial-packet-received", DescribeClientTransitionHistory(clientHost), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -564,6 +561,249 @@ public sealed class REQ_QUIC_INT_0008
         return "<no pending server connection>";
     }
 
+    private static string DescribeClientTransitionHistory(QuicClientConnectionHost clientHost)
+    {
+        List<string> packetSummaries = [];
+        int packetIndex = 0;
+
+        foreach (QuicConnectionTransitionResult transition in clientHost.TransitionHistory)
+        {
+            if (transition.EventKind != QuicConnectionEventKind.PacketReceived)
+            {
+                continue;
+            }
+
+            packetIndex++;
+            string[] effectNames = transition.Effects
+                .Select(effect => effect switch
+                {
+                    QuicConnectionEmitDiagnosticEffect diagnosticEffect
+                        => $"diag:{diagnosticEffect.Diagnostic.Name}",
+                    QuicConnectionSendDatagramEffect
+                        => $"send:{DescribePacketNumberSpace(effect)}",
+                    _ => effect.GetType().Name,
+                })
+                .ToArray();
+
+            packetSummaries.Add($"{packetIndex}:{string.Join("|", effectNames)}");
+        }
+
+        return packetSummaries.Count > 0
+            ? $"ClientPacketTransitionEffects=[{string.Join("; ", packetSummaries)}]"
+            : "ClientPacketTransitionEffects=<none>";
+    }
+
+    private static string DescribePacketNumberSpace(QuicConnectionEffect effect)
+    {
+        if (effect is not QuicConnectionSendDatagramEffect sendEffect)
+        {
+            return effect.GetType().Name;
+        }
+
+        if (QuicPacketParser.TryGetPacketNumberSpace(sendEffect.Datagram.Span, out QuicPacketNumberSpace packetNumberSpace))
+        {
+            return packetNumberSpace.ToString();
+        }
+
+        return "Unclassified";
+    }
+
+    private static string DescribeFirstPendingServerHandshakeReplay(
+        QuicConnection? serverConnection,
+        QuicClientConnectionHost clientHost,
+        QuicListenerHost listenerHost)
+    {
+        byte[]? handshakeDatagram = TryGetFirstPendingServerHandshakeDatagram(listenerHost);
+        if (handshakeDatagram is null)
+        {
+            return "<no handshake send effect found>";
+        }
+
+        if (serverConnection is null)
+        {
+            return "<server connection unavailable>";
+        }
+
+        FieldInfo? connectionField = typeof(QuicClientConnectionHost).GetField("connection", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (connectionField?.GetValue(clientHost) is not QuicConnection connection)
+        {
+            return "<client connection unavailable>";
+        }
+
+        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (runtimeField?.GetValue(connection) is not QuicConnectionRuntime runtime)
+        {
+            return "<client runtime unavailable>";
+        }
+
+        FieldInfo? serverRuntimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (serverRuntimeField?.GetValue(serverConnection) is not QuicConnectionRuntime serverRuntime)
+        {
+            return "<server runtime unavailable>";
+        }
+
+        if (!runtime.TlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial openMaterial))
+        {
+            return "<client handshake open material unavailable>";
+        }
+
+        QuicTlsPacketProtectionMaterial? serverProtectMaterial = serverRuntime.TlsState.HandshakeProtectPacketProtectionMaterial;
+        if (!serverProtectMaterial.HasValue)
+        {
+            return "<server handshake protect material unavailable>";
+        }
+
+        string materialMatch = MaterialsMatch(serverProtectMaterial.Value, openMaterial)
+            ? "MaterialMatch=True"
+            : "MaterialMatch=False";
+
+        if (!QuicHandshakePacketProtection.TryCreate(openMaterial, out QuicHandshakePacketProtection protection))
+        {
+            return $"{materialMatch}; ProtectorCreateFailed";
+        }
+
+        byte[] openedPacket = new byte[handshakeDatagram.Length];
+        if (!protection.TryOpen(handshakeDatagram, openedPacket, out int openedBytesWritten))
+        {
+            return $"{materialMatch}; DecryptFailed";
+        }
+
+        return TryDescribeOpenedHandshakePacket(openedPacket.AsSpan(0, openedBytesWritten), out string description)
+            ? $"{materialMatch}; DecryptOK; {description}"
+            : $"{materialMatch}; DecryptOK; LayoutInvalid";
+    }
+
+    private static byte[]? TryGetFirstPendingServerHandshakeDatagram(QuicListenerHost listenerHost)
+    {
+        FieldInfo? connectionsField = typeof(QuicListenerHost).GetField("connections", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (connectionsField?.GetValue(listenerHost) is not System.Collections.IEnumerable connections)
+        {
+            return null;
+        }
+
+        foreach (object? entry in connections)
+        {
+            if (entry is null)
+            {
+                continue;
+            }
+
+            PropertyInfo? valueProperty = entry.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
+            object? pendingState = valueProperty?.GetValue(entry);
+            if (pendingState is null)
+            {
+                continue;
+            }
+
+            PropertyInfo? historyProperty = pendingState.GetType().GetProperty("TransitionHistory", BindingFlags.Public | BindingFlags.Instance);
+            if (historyProperty?.GetValue(pendingState) is not System.Collections.IEnumerable transitionHistory)
+            {
+                continue;
+            }
+
+            foreach (object? transitionObject in transitionHistory)
+            {
+                if (transitionObject is not QuicConnectionTransitionResult transition
+                    || transition.EventKind != QuicConnectionEventKind.PacketReceived)
+                {
+                    continue;
+                }
+
+                foreach (QuicConnectionEffect effect in transition.Effects)
+                {
+                    if (effect is not QuicConnectionSendDatagramEffect sendEffect)
+                    {
+                        continue;
+                    }
+
+                    if (QuicPacketParser.TryGetPacketNumberSpace(sendEffect.Datagram.Span, out QuicPacketNumberSpace packetNumberSpace)
+                        && packetNumberSpace == QuicPacketNumberSpace.Handshake)
+                    {
+                        return sendEffect.Datagram.ToArray();
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static QuicConnection? TryGetFirstPendingServerConnection(QuicListenerHost listenerHost)
+    {
+        FieldInfo? connectionsField = typeof(QuicListenerHost).GetField("connections", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (connectionsField?.GetValue(listenerHost) is not System.Collections.IEnumerable connections)
+        {
+            return null;
+        }
+
+        foreach (object? entry in connections)
+        {
+            if (entry is null)
+            {
+                continue;
+            }
+
+            PropertyInfo? valueProperty = entry.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
+            object? pendingState = valueProperty?.GetValue(entry);
+            if (pendingState is null)
+            {
+                continue;
+            }
+
+            FieldInfo? connectionField = pendingState.GetType().GetField("Connection", BindingFlags.Public | BindingFlags.Instance);
+            if (connectionField?.GetValue(pendingState) is QuicConnection connection)
+            {
+                return connection;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool TryDescribeOpenedHandshakePacket(ReadOnlySpan<byte> openedPacket, out string description)
+    {
+        description = string.Empty;
+
+        if (!QuicPacketParsing.TryParseLongHeaderFields(
+            openedPacket,
+            out byte headerControlBits,
+            out uint version,
+            out _,
+            out _,
+            out ReadOnlySpan<byte> versionSpecificData)
+            || version != 1
+            || ((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.Handshake
+            || !QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong lengthFieldValue, out int lengthBytes))
+        {
+            description = "OpenedButHeaderParseFailed";
+            return false;
+        }
+
+        int packetNumberLength = (headerControlBits & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1;
+        int remainingAfterLength = versionSpecificData.Length - lengthBytes;
+        ulong availableBytesIncludingTag = (ulong)remainingAfterLength + QuicInitialPacketProtection.AuthenticationTagLength;
+        if (lengthFieldValue < (ulong)(packetNumberLength + QuicInitialPacketProtection.AuthenticationTagLength)
+            || lengthFieldValue > availableBytesIncludingTag)
+        {
+            description = "OpenedButLayoutInvalid";
+            return false;
+        }
+
+        description = "OpenedButLayoutValid";
+        return true;
+    }
+
+    private static bool MaterialsMatch(in QuicTlsPacketProtectionMaterial left, in QuicTlsPacketProtectionMaterial right)
+    {
+        return left.EncryptionLevel == right.EncryptionLevel
+            && left.Algorithm == right.Algorithm
+            && BitConverter.DoubleToInt64Bits(left.UsageLimits.ConfidentialityLimitPackets) == BitConverter.DoubleToInt64Bits(right.UsageLimits.ConfidentialityLimitPackets)
+            && BitConverter.DoubleToInt64Bits(left.UsageLimits.IntegrityLimitPackets) == BitConverter.DoubleToInt64Bits(right.UsageLimits.IntegrityLimitPackets)
+            && left.AeadKey.SequenceEqual(right.AeadKey)
+            && left.AeadIv.SequenceEqual(right.AeadIv)
+            && left.HeaderProtectionKey.SequenceEqual(right.HeaderProtectionKey);
+    }
+
     private static QuicConnectionTransitionResult GetPacketReceivedTransitionResult(ConcurrentQueue<QuicConnectionTransitionResult> transitionResults)
     {
         foreach (QuicConnectionTransitionResult result in transitionResults)
@@ -575,6 +815,26 @@ public sealed class REQ_QUIC_INT_0008
         }
 
         throw new InvalidOperationException("PacketReceived transition was not observed.");
+    }
+
+    private static async Task WaitForHandshakeExitAsync(
+        HarnessProcess serverProcess,
+        HarnessProcess clientProcess,
+        TimeSpan timeout)
+    {
+        Task completionTask = Task.WhenAll(
+            serverProcess.Process.WaitForExitAsync(),
+            clientProcess.Process.WaitForExitAsync());
+
+        Task completed = await Task.WhenAny(completionTask, Task.Delay(timeout)).ConfigureAwait(false);
+        if (completed == completionTask)
+        {
+            await completionTask.ConfigureAwait(false);
+            return;
+        }
+
+        throw new TimeoutException(
+            $"Harness handshake did not complete within {timeout}.\nSERVER STDOUT:\n{serverProcess.Stdout}\nSERVER STDERR:\n{serverProcess.Stderr}\nCLIENT STDOUT:\n{clientProcess.Stdout}\nCLIENT STDERR:\n{clientProcess.Stderr}");
     }
 
     private sealed class RecordingTextWriter : TextWriter

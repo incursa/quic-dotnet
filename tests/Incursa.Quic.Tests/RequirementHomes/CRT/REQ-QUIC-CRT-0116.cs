@@ -46,14 +46,13 @@ public sealed class REQ_QUIC_CRT_0116
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[6].Kind);
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[7].Kind);
         Assert.Equal(0UL, updates[0].CryptoDataOffset);
-        Assert.Equal((ulong)updates[0].CryptoData.Length, updates[4].CryptoDataOffset);
-        Assert.Equal((ulong)updates[0].CryptoData.Length + (ulong)updates[4].CryptoData.Length, updates[5].CryptoDataOffset);
+        Assert.Equal(0UL, updates[4].CryptoDataOffset);
+        Assert.Equal((ulong)updates[4].CryptoData.Length, updates[5].CryptoDataOffset);
         Assert.Equal(
-            (ulong)updates[0].CryptoData.Length + (ulong)updates[4].CryptoData.Length + (ulong)updates[5].CryptoData.Length,
+            (ulong)updates[4].CryptoData.Length + (ulong)updates[5].CryptoData.Length,
             updates[6].CryptoDataOffset);
         Assert.Equal(
-            (ulong)updates[0].CryptoData.Length
-            + (ulong)updates[4].CryptoData.Length
+            (ulong)updates[4].CryptoData.Length
             + (ulong)updates[5].CryptoData.Length
             + (ulong)updates[6].CryptoData.Length,
             updates[7].CryptoDataOffset);
@@ -137,8 +136,7 @@ public sealed class REQ_QUIC_CRT_0116
         Assert.Equal(QuicTlsHandshakeMessageType.Certificate, ParseHandshakeMessageType(updates[^1].CryptoData.Span));
 
         Span<byte> surfacedHandshakeBytes = stackalloc byte[
-            updates[1].CryptoData.Length
-            + updates[5].CryptoData.Length
+            updates[5].CryptoData.Length
             + updates[6].CryptoData.Length];
         Assert.True(driver.TryPeekOutgoingCryptoData(
             QuicTlsEncryptionLevel.Handshake,
@@ -150,7 +148,6 @@ public sealed class REQ_QUIC_CRT_0116
 
         byte[] expectedHandshakeBytes =
         [
-            .. updates[1].CryptoData.ToArray(),
             .. updates[5].CryptoData.ToArray(),
             .. updates[6].CryptoData.ToArray(),
         ];

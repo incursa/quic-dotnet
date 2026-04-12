@@ -421,13 +421,13 @@ internal sealed class QuicTlsKeySchedule
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
             }
 
-            ulong encryptedExtensionsOffset = (ulong)serverHelloBytes.Length;
             AppendTranscriptMessage(encryptedExtensionsBytes);
             List<QuicTlsStateUpdate> updates =
             [
                 new QuicTlsStateUpdate(
                     QuicTlsUpdateKind.CryptoDataAvailable,
-                    QuicTlsEncryptionLevel.Handshake,
+                    // ServerHello is the server's first Initial-flight CRYPTO payload.
+                    QuicTlsEncryptionLevel.Initial,
                     CryptoDataOffset: 0,
                     CryptoData: serverHelloBytes),
                 new QuicTlsStateUpdate(
@@ -442,11 +442,11 @@ internal sealed class QuicTlsKeySchedule
                 new QuicTlsStateUpdate(
                     QuicTlsUpdateKind.CryptoDataAvailable,
                     QuicTlsEncryptionLevel.Handshake,
-                    CryptoDataOffset: encryptedExtensionsOffset,
+                    CryptoDataOffset: 0,
                     CryptoData: encryptedExtensionsBytes),
             ];
 
-            ulong certificateOffset = encryptedExtensionsOffset + (ulong)encryptedExtensionsBytes.Length;
+            ulong certificateOffset = (ulong)encryptedExtensionsBytes.Length;
             if (certificateBytes is not null)
             {
                 AppendTranscriptMessage(certificateBytes);
@@ -614,6 +614,20 @@ internal sealed class QuicTlsKeySchedule
 
         peerFinishedVerified = true;
         updates.Add(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerFinishedVerified));
+
+        if (role == QuicTlsRole.Client)
+        {
+            if (!TryCreateFinished(clientHandshakeTrafficSecret ?? [], HashTranscript(), out byte[] finishedBytes))
+            {
+                return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+            }
+
+            updates.Add(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.CryptoDataAvailable,
+                QuicTlsEncryptionLevel.Handshake,
+                CryptoDataOffset: 0,
+                CryptoData: finishedBytes));
+        }
 
         if (role == QuicTlsRole.Server)
         {

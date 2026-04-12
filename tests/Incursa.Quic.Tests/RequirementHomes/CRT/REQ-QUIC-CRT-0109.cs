@@ -13,21 +13,22 @@ public sealed class REQ_QUIC_CRT_0109
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
         QuicTransportParameters peerTransportParameters = CreateServerTransportParameters();
+        QuicTlsTransportBridgeDriver driver = new(
+            QuicTlsRole.Client,
+            localHandshakePrivateKey: localHandshakePrivateKey,
+            remoteCertificateValidationCallback: static (_, _, _, _) => true);
+        IReadOnlyList<QuicTlsStateUpdate> bootstrapUpdates = driver.StartHandshake(localTransportParameters);
+        Assert.Equal(2, bootstrapUpdates.Count);
         (
             byte[] serverHelloTranscript,
             byte[] encryptedExtensionsTranscript,
             byte[] certificateTranscript,
             byte[] certificateVerifyTranscript,
             byte[] finishedTranscript,
-            byte[] pinnedPeerLeafCertificateSha256) = CreateClientHandshakeTranscriptParts(
+            _) = CreateClientHandshakeTranscriptParts(
+            bootstrapUpdates[1].CryptoData,
             localHandshakePrivateKey,
             peerTransportParameters);
-        QuicTlsTransportBridgeDriver driver = new(
-            QuicTlsRole.Client,
-            localHandshakePrivateKey: localHandshakePrivateKey,
-            pinnedPeerLeafCertificateSha256: pinnedPeerLeafCertificateSha256);
-
-        Assert.NotEmpty(driver.StartHandshake(localTransportParameters));
 
         IReadOnlyList<QuicTlsStateUpdate> serverHelloUpdates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
@@ -67,11 +68,12 @@ public sealed class REQ_QUIC_CRT_0109
             QuicTlsEncryptionLevel.Handshake,
             finishedTranscript);
 
-        Assert.Equal(3, finishedUpdates.Count);
+        Assert.Equal(4, finishedUpdates.Count);
         Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, finishedUpdates[0].Kind);
         Assert.Equal(QuicTlsHandshakeMessageType.Finished, finishedUpdates[0].HandshakeMessageType);
         Assert.Equal(QuicTlsUpdateKind.PeerFinishedVerified, finishedUpdates[1].Kind);
-        Assert.Equal(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted, finishedUpdates[2].Kind);
+        Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, finishedUpdates[2].Kind);
+        Assert.Equal(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted, finishedUpdates[3].Kind);
         Assert.True(driver.State.PeerFinishedVerified);
         Assert.True(driver.State.PeerHandshakeTranscriptCompleted);
         Assert.True(driver.State.CanCommitPeerTransportParameters(peerTransportParameters));
@@ -91,21 +93,22 @@ public sealed class REQ_QUIC_CRT_0109
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
         QuicTransportParameters peerTransportParameters = CreateServerTransportParameters();
+        QuicTlsTransportBridgeDriver driver = new(
+            QuicTlsRole.Client,
+            localHandshakePrivateKey: localHandshakePrivateKey,
+            remoteCertificateValidationCallback: static (_, _, _, _) => true);
+        IReadOnlyList<QuicTlsStateUpdate> bootstrapUpdates = driver.StartHandshake(localTransportParameters);
+        Assert.Equal(2, bootstrapUpdates.Count);
         (
             byte[] serverHelloTranscript,
             byte[] encryptedExtensionsTranscript,
             byte[] certificateTranscript,
             byte[] certificateVerifyTranscript,
             byte[] finishedTranscript,
-            byte[] pinnedPeerLeafCertificateSha256) = CreateClientHandshakeTranscriptParts(
+            _) = CreateClientHandshakeTranscriptParts(
+            bootstrapUpdates[1].CryptoData,
             localHandshakePrivateKey,
             peerTransportParameters);
-        QuicTlsTransportBridgeDriver driver = new(
-            QuicTlsRole.Client,
-            localHandshakePrivateKey: localHandshakePrivateKey,
-            pinnedPeerLeafCertificateSha256: pinnedPeerLeafCertificateSha256);
-
-        Assert.NotEmpty(driver.StartHandshake(localTransportParameters));
 
         IReadOnlyList<QuicTlsStateUpdate> serverHelloUpdates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
@@ -156,6 +159,7 @@ public sealed class REQ_QUIC_CRT_0109
         byte[] CertificateVerifyTranscript,
         byte[] FinishedTranscript,
         byte[] PinnedPeerLeafCertificateSha256) CreateClientHandshakeTranscriptParts(
+        ReadOnlyMemory<byte> clientHelloTranscript,
         ReadOnlyMemory<byte> localHandshakePrivateKey,
         QuicTransportParameters peerTransportParameters)
     {
@@ -163,6 +167,7 @@ public sealed class REQ_QUIC_CRT_0109
         using ECDsa leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
         byte[] leafCertificateDer = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(leafKey);
         byte[] leafCertificateSha256 = SHA256.HashData(leafCertificateDer);
+        schedule.AppendLocalHandshakeMessage(clientHelloTranscript.Span);
 
         byte[] serverHello = CreateServerHelloTranscript(
             QuicTlsCipherSuite.TlsAes128GcmSha256,
@@ -170,6 +175,7 @@ public sealed class REQ_QUIC_CRT_0109
         byte[] encryptedExtensions = CreateEncryptedExtensionsTranscript(peerTransportParameters);
         byte[] certificate = QuicTlsCertificateVerifyTestSupport.CreateCertificateTranscript(leafCertificateDer);
         byte[] certificateVerifyTranscriptHash = SHA256.HashData([
+            .. clientHelloTranscript.Span,
             .. serverHello,
             .. encryptedExtensions,
             .. certificate,

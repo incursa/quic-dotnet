@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Collections.Concurrent;
 
 namespace Incursa.Quic;
 
@@ -22,6 +23,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
     private readonly QuicConnectionHandle handle;
     private readonly byte[] initialDestinationConnectionId;
     private readonly byte[] routeConnectionId;
+
+    public ConcurrentQueue<QuicConnectionTransitionResult> TransitionHistory { get; } = new();
 
     private int started;
     private int disposed;
@@ -149,6 +152,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
     private void ObserveTransition(QuicConnectionTransitionResult transition)
     {
+        TransitionHistory.Enqueue(transition);
+
         if (runtime.TerminalState is QuicConnectionTerminalState terminalState)
         {
             establishedConnection.TrySetException(MapTerminalState(terminalState));

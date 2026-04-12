@@ -28,7 +28,7 @@ public sealed class REQ_QUIC_CRT_0113
         Assert.Equal(QuicTlsUpdateKind.KeysAvailable, updates[4].Kind);
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[5].Kind);
         Assert.Equal(0UL, updates[1].CryptoDataOffset);
-        Assert.Equal((ulong)updates[1].CryptoData.Length, updates[5].CryptoDataOffset);
+        Assert.Equal(0UL, updates[5].CryptoDataOffset);
 
         QuicTlsTranscriptProgress clientProgress = new(QuicTlsRole.Client);
         clientProgress.AppendCryptoBytes(0, updates[1].CryptoData.Span);
@@ -62,7 +62,7 @@ public sealed class REQ_QUIC_CRT_0113
         Assert.Empty(updates);
         Assert.False(driver.State.HandshakeKeysAvailable);
         Assert.False(driver.TryPeekOutgoingCryptoData(
-            QuicTlsEncryptionLevel.Handshake,
+            QuicTlsEncryptionLevel.Initial,
             stackalloc byte[1],
             out _,
             out _));

@@ -282,6 +282,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return;
         }
 
+        state.TransitionHistory.Enqueue(transition);
+
         if (state.Runtime.TerminalState is QuicConnectionTerminalState terminalState
             && state.TryMarkFailed())
         {
@@ -672,6 +674,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         public QuicConnectionRuntime Runtime { get; }
 
         public QuicConnection Connection { get; }
+
+        public ConcurrentQueue<QuicConnectionTransitionResult> TransitionHistory { get; } = new();
 
         public bool TryMarkAccepted()
         {

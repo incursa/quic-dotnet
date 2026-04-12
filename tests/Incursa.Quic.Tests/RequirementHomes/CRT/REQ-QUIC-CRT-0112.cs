@@ -26,7 +26,7 @@ public sealed class REQ_QUIC_CRT_0112
 
         Assert.True(updates.Count >= 4);
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[0].Kind);
-        Assert.Equal(QuicTlsEncryptionLevel.Handshake, updates[0].EncryptionLevel);
+        Assert.Equal(QuicTlsEncryptionLevel.Initial, updates[0].EncryptionLevel);
         Assert.Equal(0UL, updates[0].CryptoDataOffset);
         Assert.Equal(QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable, updates[1].Kind);
         Assert.Equal(QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable, updates[2].Kind);
@@ -74,7 +74,7 @@ public sealed class REQ_QUIC_CRT_0112
         Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, updates[0].TranscriptHashAlgorithm);
         Assert.NotNull(updates[0].TransportParameters);
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[1].Kind);
-        Assert.Equal(QuicTlsEncryptionLevel.Handshake, updates[1].EncryptionLevel);
+        Assert.Equal(QuicTlsEncryptionLevel.Initial, updates[1].EncryptionLevel);
         Assert.Equal(0UL, updates[1].CryptoDataOffset);
         Assert.Equal(QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable, updates[2].Kind);
         Assert.Equal(QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable, updates[3].Kind);
@@ -82,7 +82,7 @@ public sealed class REQ_QUIC_CRT_0112
 
         Span<byte> surfacedServerHello = stackalloc byte[updates[1].CryptoData.Length];
         Assert.True(driver.TryPeekOutgoingCryptoData(
-            QuicTlsEncryptionLevel.Handshake,
+            QuicTlsEncryptionLevel.Initial,
             surfacedServerHello,
             out ulong offset,
             out int bytesWritten));
