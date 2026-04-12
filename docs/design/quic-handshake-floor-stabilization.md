@@ -11,7 +11,9 @@ This note scopes the narrow managed handshake-floor slice under active work. It 
 - `REQ-QUIC-CRT-0114`
 - `REQ-QUIC-CRT-0115`
 - `REQ-QUIC-CRT-0116`
+- `REQ-QUIC-CRT-0117`
 - `REQ-QUIC-CRT-0118`
+- `REQ-QUIC-CRT-0119`
 
 ## Supported Boundary
 
@@ -27,8 +29,6 @@ This note scopes the narrow managed handshake-floor slice under active work. It 
 
 ## Out Of Scope
 
-- `REQ-QUIC-CRT-0117`
-- `REQ-QUIC-CRT-0119`
 - `Abort(Both, ...)`
 - Hostname validation
 - Trust-store validation
@@ -52,13 +52,17 @@ The final client seam must keep the local `ClientHello` published to transport w
 
 ## Final Seam To Change
 
-The current stabilization seam is the bridge-driver transcript drain path plus the server/client key-schedule publication edges:
+The current stabilization seam is the bridge-driver transcript drain path plus the server proof-tail publication edge:
 
 - `QuicTlsTransportBridgeDriver.AdvanceHandshakeTranscript(...)`
-- `QuicTlsKeySchedule.ProcessClientHello(...)`
 - `QuicTlsKeySchedule.ProcessFinished(...)`
+- `QuicTransportTlsBridgeState.TryMarkPeerFinishedVerified(...)`
+- `QuicTransportTlsBridgeState.TryStoreOneRttOpenPacketProtectionMaterial(...)`
+- `QuicTransportTlsBridgeState.TryStoreOneRttProtectPacketProtectionMaterial(...)`
 
 Those seams feed the transcript-progress owner, the key schedule, and the bridge-state gates. If they are wrong, the handshake-floor cluster looks red even when the downstream proof and policy gates are already present.
+
+For the server tail slice, the proof boundary stops at `PeerFinishedVerified` plus the narrow transcript-completed milestone. It must not widen to generic `OneRttKeysAvailable` publication because 1-RTT data-path support is still out of scope.
 
 ## Proof Expected
 

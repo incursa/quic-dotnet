@@ -152,7 +152,7 @@ Notes on dependency:
 
 1. `Handshake-floor stabilization`
    - Goal: reduce the current red API+CRT area to a stable narrow handshake floor without widening the public surface.
-   - Focus: the CRT requirements that currently show up red in the broader run, especially `REQ-QUIC-CRT-0106`, `REQ-QUIC-CRT-0108`, `REQ-QUIC-CRT-0109`, `REQ-QUIC-CRT-0111`, and `REQ-QUIC-CRT-0112` through `REQ-QUIC-CRT-0119`.
+   - Focus: the CRT requirements that were part of the handshake-floor tail, especially `REQ-QUIC-CRT-0117` and `REQ-QUIC-CRT-0119`, while keeping the already-green floor slices intact.
    - Depends on: nothing new; it is the first stabilization slice after this plan.
 
 2. `Initial/DCID bootstrap and endpoint-host cleanup`
@@ -187,8 +187,7 @@ Notes on dependency:
 
 ## Current Unstable Areas Before Interop Continues
 
-- The broader API+CRT requirement-home pass is still red in the handshake floor.
-- The current red areas reported by the broader run are concentrated in `REQ-QUIC-CRT-0106`, `REQ-QUIC-CRT-0108`, `REQ-QUIC-CRT-0109`, `REQ-QUIC-CRT-0111`, and `REQ-QUIC-CRT-0112` through `REQ-QUIC-CRT-0119`.
+- The handshake-floor tail slice for `REQ-QUIC-CRT-0117` and `REQ-QUIC-CRT-0119` is now closed.
 - The interop harness still returns `127` for `handshake`, `transfer`, and `retry`.
 - The current client trust story is still pinned-leaf only; it is not yet a broader trust-store or hostname-validation story.
 

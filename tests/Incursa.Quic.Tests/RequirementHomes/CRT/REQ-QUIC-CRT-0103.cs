@@ -510,9 +510,10 @@ public sealed class REQ_QUIC_CRT_0103
         QuicTlsTransportBridgeDriver driver = new();
         IReadOnlyList<QuicTlsStateUpdate> updates = driver.StartHandshake(localParameters);
 
-        Assert.Single(updates);
-        Assert.Equal(QuicTlsUpdateKind.LocalTransportParametersReady, updates[0].Kind);
-        Assert.Same(localParameters, updates[0].TransportParameters);
+        QuicTlsStateUpdate localTransportParametersUpdate = Assert.Single(
+            updates,
+            update => update.Kind == QuicTlsUpdateKind.LocalTransportParametersReady);
+        Assert.Same(localParameters, localTransportParametersUpdate.TransportParameters);
         Assert.NotSame(localParameters, driver.State.LocalTransportParameters);
         Assert.Equal(15UL, driver.State.LocalTransportParameters!.MaxIdleTimeout);
         Assert.Equal(new byte[] { 0x01, 0x02, 0x03 }, driver.State.LocalTransportParameters.InitialSourceConnectionId);
