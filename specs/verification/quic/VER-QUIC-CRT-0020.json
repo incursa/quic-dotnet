@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0020",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC CRT retry bootstrap verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Execution, inspection, and regression evidence.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0020",
+    "WI-QUIC-CRT-0020"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0122"
+  ],
+  "scope": "Verify that the library-owned bootstrap path retains one valid Retry across a single replay, preserves the original destination connection ID and `retry_source_connection_id` binding state, rejects invalid Retry inputs, and leaves the interop harness unsupported until runner dispatch is separately proven.",
+  "expected_result": "- One valid Retry can be replayed through the library-owned bootstrap seam.\n- Tampered Retry integrity, zero-length Retry tokens, duplicate Retry packets, and mismatched `retry_source_connection_id` values fail deterministically.\n- The current interop harness still returns `127` for retry.\n- Transfer remains limited to the exact narrow child-process contract already proven elsewhere.",
+  "procedure": [
+    "Run the existing Retry integrity helper tests and the current unsupported interop guard.",
+    "Add and run the retry-bootstrap requirement-home tests once the library seam exists.",
+    "Run the full `REQ_QUIC_CRT_` sweep.",
+    "Re-render the canonical SpecTrace Markdown views for the changed JSON artifacts and run the repository-level SpecTrace validation checks."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicRetryIntegrity.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs",
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
+  ],
+  "preconditions": [
+    "The Incursa.Quic library builds successfully on net10.0.",
+    "The retry bootstrap seam has been implemented in the library-owned client/server path.",
+    "The supported child-process transfer slice remains stable."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs)\n- [`src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`src/Incursa.Quic/QuicRetryIntegrity.cs`](../../../src/Incursa.Quic/QuicRetryIntegrity.cs)\n- [`src/Incursa.Quic/QuicTransportParametersCodec.cs`](../../../src/Incursa.Quic/QuicTransportParametersCodec.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs)\n- [`scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1`](../../../scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1)"
+    }
+  ]
+}

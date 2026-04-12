@@ -15,6 +15,7 @@
     "REQ-QUIC-INT-0010"
   ],
   "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs",
@@ -30,12 +31,12 @@
       "content": "Retry enablement, multi-stream transfer, broader 1-RTT claims, trust-store policy widening, 0-RTT, and key update remain intentionally deferred."
     }
   ],
-  "status_summary": "This verification slice is planned; it records the proof contract for the narrow transfer-owned child-process completion boundary without claiming transfer support yet.",
+  "status_summary": "This verification slice records the proof contract for the narrow transfer-owned child-process completion boundary.",
   "scope": "Verify the narrow child-process transfer contract on the existing active-phase managed path: one application stream, first `REQUESTS` URL selection, fixed `/www` and `/downloads` mount-path contract, `Http3` ALPN, EOF-based completion, and honest exit `0` only after byte delivery is complete on both sides.",
   "procedure": [
     "Run the transfer requirement-home test once implementation exists.",
     "Run the existing handshake/public guard tests and the client 1-RTT readiness tests to keep the prerequisites green.",
-    "Inspect the README and gap ledger to confirm transfer remains unsupported until the contract is actually wired into runner dispatch."
+    "Inspect the README and gap ledger to confirm the transfer contract is wired into runner dispatch and that retry remains unsupported."
   ],
   "expected_result": "The child-process transfer slice only reports success after the single-stream byte exchange completes, EOF is observed on both sides, and the harness stays honest about unsupported retry and broader 1-RTT behavior.",
   "related_artifacts": [

@@ -44,13 +44,13 @@ Add the smallest honest endpoint-host shell around the library runtime and use i
 
 ## Out of Scope
 
-- Enabling `transfer` or `retry` in the QUIC interop runner.
+- Enabling `retry` in the QUIC interop runner.
 - Moving packet open/protect or TLS ownership into the harness.
 - Adding 0-RTT, 1-RTT data-path ownership, key update, or native TLS fallback.
 
 ## Verification Plan
 
-Build the solution, run the new endpoint-host and handshake-dispatch requirement-home tests, confirm the managed client/listener host path owns Initial/DCID bootstrap and server Initial-response emission, confirm the handshake testcase reaches the real managed dispatch path, confirm the runtime emits a real outbound datagram through the socket boundary, and confirm route misses stay unroutable while unsupported harness testcase dispatch for `transfer` and `retry` still returns `127`.
+Build the solution, run the new endpoint-host and handshake-dispatch requirement-home tests, confirm the managed client/listener host path owns Initial/DCID bootstrap and server Initial-response emission, confirm the handshake testcase reaches the real managed dispatch path, confirm the runtime emits a real outbound datagram through the socket boundary, and confirm route misses stay unroutable while unsupported harness testcase dispatch for `retry` still returns `127`.
 
 ## Completion Notes
 

@@ -115,7 +115,8 @@ Why this stays separate:
 Supported today:
 
 - The thin endpoint-host shell around the library runtime.
-- Honest unsupported testcase behavior that returns `127` for `transfer` and `retry`.
+- The narrow child-process transfer slice on the managed active-phase path.
+- Honest unsupported testcase behavior that returns `127` for `retry` and any other unsupported testcase.
 - The shell-level requirement-home coverage for the connected UDP boundary.
 - The managed client/listener host path already owns honest Initial/DCID bootstrap and server Initial-response emission.
 - The harness `handshake` testcase already routes into that managed bootstrap path.
@@ -127,13 +128,13 @@ Partially implemented but not yet promised:
 
 Still missing:
 
-- Testcase enablement for `transfer` and `retry`.
+- Testcase enablement for `retry`.
 - Runner-side testcase dispatch.
-- Honest end-to-end interop-visible `transfer` and `retry` execution.
+- Honest end-to-end interop-visible `retry` execution.
 
 Why this stays separate:
 
-- The harness should keep returning `127` for unsupported testcases until it can dispatch into the real endpoint-host path; the managed bootstrap path is already proven for handshake.
+- The harness should keep returning `127` for unsupported testcases until it can dispatch into the real endpoint-host path; the managed bootstrap path is already proven for handshake, post-handshake stream open/accept, and the narrow transfer slice.
 
 ## Recommended Execution Order
 
@@ -160,28 +161,34 @@ Notes on dependency:
 2. `Transfer-owned completion contract`
    - Goal: keep the first honest `transfer` slice traceable under `REQ-QUIC-INT-0010`, `ARC-QUIC-INT-0003`, `WI-QUIC-INT-0003`, and `VER-QUIC-INT-0003`.
    - Focus: the transfer-owned child-process completion rule, including one stream, one `REQUESTS` URL, one `/www` to `/downloads` mapping, and byte-delivery-plus-EOF proof on the existing managed Active-phase path.
-   - Current blocker: the runtime primitives are already present on the managed active path; the missing piece is one explicit application-protocol and ALPN pairing plus matching child-process proof.
+   - Status: landed. The runtime primitives were already present on the managed active path, the explicit application-protocol and ALPN pairing is now wired, and the child-process proof closes the narrow file-pump contract.
    - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
-3. `Initial/DCID bootstrap and endpoint-host cleanup`
+3. `Retry bootstrap ownership`
+   - Goal: keep the library-owned one-Retry replay seam honest before any interop dispatch attempt.
+   - Focus: original destination connection ID retention, Retry token replay, `retry_source_connection_id` binding validation, and the current client/listener bootstrap path.
+   - Status: not yet landed. The runtime already classifies Retry and carries the helper math, but the one-Retry bootstrap handoff is still missing.
+   - Depends on: the client-role 1-RTT readiness seam and the current Initial/DCID bootstrap path staying stable.
+
+4. `Initial/DCID bootstrap and endpoint-host cleanup`
    - Goal: make the interop-facing bootstrap path honest enough to drive a real testcase entry instead of a shell-only path, building on the already-proven managed client/listener bootstrap seam.
    - Focus: runner-facing Initial/DCID handoff, endpoint-host integration, and any remaining runtime bootstrap cleanup that blocks runner entry.
    - Depends on: the current handshake/runtime proof floor and the client-role 1-RTT readiness seam.
 
-4. `TLS trust/policy/validation`
+5. `TLS trust/policy/validation`
    - Goal: decide and implement the next honest trust-policy step without claiming a broader client-auth story than exists.
    - Focus: trust-store policy, hostname/identity validation, certificate-path validation, and the boundaries around the current reject-first client options.
    - Depends on: the current handshake/runtime proof floor and the client-role 1-RTT readiness seam.
 
-5. `Broader stream-management parity`
+6. `Broader stream-management parity`
    - Goal: close the remaining stream lifecycle gap so transfer-oriented work has a truthful contract.
    - Focus: `Abort(Both, ...)`, broader abort-heavy behavior, and remaining close-driven capacity-release parity.
    - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
-6. `Interop runner dispatch`
-   - Goal: route `transfer` and `retry` into the real endpoint-host path instead of returning `127`.
-   - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch after the transfer-owned application pairing and proof are fixed. `handshake` is already wired into the managed bootstrap path.
-   - Depends on: the transfer-owned completion contract slice, the client-role 1-RTT readiness seam, the TLS trust/policy slice, and any stream follow-ons that prove inseparable from the chosen transfer pairing.
+7. `Interop runner dispatch`
+   - Goal: route `retry` into the real endpoint-host path instead of returning `127`.
+   - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch after the retry bootstrap seam and the current proof floor are fixed. `handshake` is already wired into the managed bootstrap path.
+   - Depends on: the retry bootstrap ownership slice, the client-role 1-RTT readiness seam, the TLS trust/policy slice, the current narrow stream slice staying stable, and any stream follow-ons that prove inseparable from the chosen retry path.
 
 ## Do-Not-Widen Boundaries
 
@@ -191,14 +198,14 @@ Notes on dependency:
 - Keep `0-RTT` and key update out of the public promise.
 - Keep broader stream-management parity out of the public promise until the stream bucket is actually closed.
 - Keep hostname validation, trust-store validation, and certificate-path validation out of the public client promise until they are implemented and proven.
-- Keep interop runner testcase support at `127` for unsupported cases until the dispatch and bootstrap path is real.
+- Keep interop runner testcase support at `127` for unsupported `retry` and any other unsupported cases until the retry bootstrap seam and dispatch path are real.
 
 ## Current Unstable Areas Before Interop Continues
 
 - The handshake-floor tail slice for `REQ-QUIC-CRT-0117` and `REQ-QUIC-CRT-0119` is now closed.
 - The client-role 1-RTT readiness prerequisite under `REQ-QUIC-CRT-0121` is now closed.
 - The smaller post-handshake stream open/accept prerequisite under `REQ-QUIC-INT-0011`, `ARC-QUIC-INT-0004`, `WI-QUIC-INT-0004`, and `VER-QUIC-INT-0004` is now closed by the managed child-process harness path.
-- The interop harness still returns `127` for `transfer` and `retry`.
+- The interop harness still returns `127` for `retry`, and the smaller library-owned retry bootstrap prerequisite is still unproven.
 - The managed client/listener bootstrap seam is already proven.
 - The current client trust story is still pinned-leaf only; it is not yet a broader trust-store or hostname-validation story.
 

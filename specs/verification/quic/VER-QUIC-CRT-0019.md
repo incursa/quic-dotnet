@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify that client-role Finished processing publishes the first 1-RTT packet-protection material only after peer Finished verification and that the supported active-loopback stream boundary remains reachable without widening transfer or retry support.
+Verify that client-role Finished processing publishes the first 1-RTT packet-protection material only after peer Finished verification and that the supported active-loopback stream boundary remains reachable without widening retry support.
 
 ## Requirements Verified
 
@@ -35,7 +35,7 @@ Execution, inspection, and benchmark evidence.
 - Premature `OneRtt` key publication is rejected before `PeerFinishedVerified`.
 - The supported loopback stream-open and stream-capacity guards remain green after the readiness seam lands.
 - The permanent client Finished benchmark exists and can be run locally.
-- Transfer and retry remain unsupported.
+- Retry remains unsupported.
 
 ## Evidence
 

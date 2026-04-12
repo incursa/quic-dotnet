@@ -73,7 +73,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             endpoint,
             socket,
             pathIdentity,
-            transitionObserver: ObserveTransition);
+            transitionObserver: ObserveTransition,
+            ingressDatagramObserver: ObserveIngressDatagram);
     }
 
     public ValueTask<QuicConnection> ConnectAsync(CancellationToken cancellationToken = default)
@@ -165,6 +166,26 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         {
             establishedConnection.TrySetResult(connection);
         }
+    }
+
+    private void ObserveIngressDatagram(ReadOnlyMemory<byte> datagram, QuicConnectionIngressResult ingressResult)
+    {
+        if (ingressResult.Disposition != QuicConnectionIngressDisposition.EndpointHandling
+            || ingressResult.HandlingKind != QuicConnectionEndpointHandlingKind.Retry
+            || !QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+                initialDestinationConnectionId,
+                datagram.Span,
+                out QuicRetryBootstrapMetadata retryMetadata))
+        {
+            return;
+        }
+
+        _ = endpoint.Host.TryPostEvent(
+            handle,
+            new QuicConnectionRetryReceivedEvent(
+                runtime.Clock.Ticks,
+                retryMetadata.RetrySourceConnectionId,
+                retryMetadata.RetryToken));
     }
 
     private static Socket CreateSocket(QuicClientConnectionSettings settings)

@@ -12,7 +12,7 @@ This slice covers the harness project shape, runner environment parsing, mounted
 
 ## Context
 
-Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` prerequisite is tracked separately as a child-process-only open/accept contract on the existing managed path, while the remaining transfer slice is still specified separately as a narrow child-process completion contract on the existing active-phase path and `transfer` and `retry` still return exit code `127` until runner-side enablement exists.
+Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` prerequisite is tracked separately as a child-process-only open/accept contract on the existing managed path, while the narrow transfer slice is now wired as a child-process completion contract on the existing active-phase path and only `retry` still returns exit code `127` until runner-side enablement exists. The next smaller prerequisite is the library-owned retry bootstrap seam tracked under `REQ-QUIC-CRT-0122`, `ARC-QUIC-CRT-0020`, `WI-QUIC-CRT-0020`, and `VER-QUIC-CRT-0020`.
 
 ## Open Questions
 
@@ -20,7 +20,7 @@ Incursa.Quic remains the owner of reusable transport/runtime behavior. The inter
 
 ## Current Support Posture
 
-The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap and server Initial-response emission. The harness `handshake` testcase now dispatches into that managed path, the smaller `post-handshake-stream` prerequisite remains tracked separately and is still blocked by the server-side 1-RTT admission state needed to accept the first application packet, and `transfer` and `retry` still return exit code `127` until runner-side enablement exists.
+The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap and server Initial-response emission. The harness `handshake` testcase now dispatches into that managed path, the smaller `post-handshake-stream` prerequisite remains tracked separately and is still blocked by the server-side 1-RTT admission state needed to accept the first application packet, and the narrow transfer testcase now dispatches into its managed active-phase path while `retry` still returns exit code `127` until runner-side enablement exists. The next smaller prerequisite is the library-owned retry bootstrap seam tracked under `REQ-QUIC-CRT-0122`, `ARC-QUIC-CRT-0020`, `WI-QUIC-CRT-0020`, and `VER-QUIC-CRT-0020`.
 
 ## Boundary Split
 
@@ -65,7 +65,7 @@ Notes:
 - These concerns exist because of the interop runner contract and would not belong in the library.
 
 ## REQ-QUIC-INT-0003 Return unsupported testcases honestly
-The interop harness MUST return exit code `127` for any unsupported or not-yet-implemented interop testcase, including `transfer` and `retry` until `Incursa.Quic` can execute those cases end to end for real.
+The interop harness MUST return exit code `127` for any unsupported or not-yet-implemented interop testcase, including `retry` until `Incursa.Quic` can execute those cases end to end for real.
 
 Trace:
 - Satisfied By:
@@ -76,7 +76,7 @@ Trace:
   - VER-QUIC-INT-0001
 - Code Refs:
   - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
-  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0002.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs
 
 ## REQ-QUIC-INT-0004 Keep qlog and keylog hooks honest
 When `QLOGDIR` is provided, the harness MUST wire that setting into a diagnostics placeholder hook without hardwiring the library to qlog JSON, and when `SSLKEYLOGFILE` is not yet practical it MUST remain a clear TODO rather than fake behavior.
@@ -134,7 +134,7 @@ Trace:
 
 Notes:
 - The shell remains adapter-only: it owns socket/process lifecycle and observers, not protocol behavior.
-- The harness handshake testcase now routes through this seam; transfer and retry still return `127`.
+- The harness handshake testcase now routes through this seam; the narrow transfer slice now has its own managed active-phase path and `retry` still returns `127`.
 
 ## REQ-QUIC-INT-0010 Define the first transfer slice as narrow and proof-gated
 The interop harness MUST define a child-process-only transfer slice on the existing Active-phase managed path in which the client and server each participate in exactly one application stream, the first `REQUESTS` URL selects the transfer target, the fixed `/www` and `/downloads` mount-path contract remains in force, the existing `Http3` ALPN remains in force, and exit code `0` is considered honest only after byte delivery and EOF have completed on both sides. This slice MUST NOT widen retry, multi-stream generalization, broader 1-RTT claims, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.
@@ -156,6 +156,7 @@ Trace:
   - src/Incursa.Quic/QuicClientConnectionHost.cs
   - src/Incursa.Quic/QuicListenerHost.cs
   - src/Incursa.Quic/QuicTlsKeySchedule.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0010.cs
 - Related:
   - REQ-QUIC-INT-0003
   - REQ-QUIC-INT-0008
@@ -166,7 +167,7 @@ Trace:
 
 Notes:
 - This requirement owns only the managed child-process transfer boundary on the existing active path. It does not widen the public promise, `IsSupported`, or broader interop compatibility claims.
-- The current runtime already owns the narrow stream open, write, read, and EOF mechanics on the supported active-loopback path; the remaining transfer blocker is the harness-owned completion contract and proof.
+- The current runtime already owns the narrow stream open, write, read, and EOF mechanics on the supported active-loopback path; this requirement closes the harness-owned file-pump completion contract and proof.
 
 ## REQ-QUIC-INT-0011 Sequence the first application stream open and accept after handshake
 The interop harness MUST define a child-process-only `post-handshake-stream` testcase on the managed child-process harness path in which, after the existing handshake completes, the client opens the first application stream and the server accepts that first application stream. This requirement MUST remain limited to the managed child-process path and MUST NOT claim byte delivery, EOF completion, transfer enablement, retry enablement, multi-stream behavior, broader 1-RTT data-path readiness, trust-store policy widening, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.
@@ -184,6 +185,7 @@ Trace:
   - src/Incursa.Quic/QuicConnectionRuntime.cs
   - src/Incursa.Quic/QuicClientConnectionHost.cs
   - src/Incursa.Quic/QuicListenerHost.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0011.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs
 - Related:

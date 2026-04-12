@@ -175,4 +175,40 @@ internal static class QuicRetryIntegrity
         CryptographicOperations.ZeroMemory(associatedDataBuffer.AsSpan(0, associatedDataLength));
         ArrayPool<byte>.Shared.Return(associatedDataBuffer);
     }
+
+    /// <summary>
+    /// Parses the Retry metadata needed for the library-owned one-replay bootstrap handoff.
+    /// </summary>
+    internal static bool TryParseRetryBootstrapMetadata(
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        ReadOnlySpan<byte> retryPacket,
+        out QuicRetryBootstrapMetadata metadata)
+    {
+        metadata = default;
+
+        if (!TryValidateRetryPacketIntegrity(originalDestinationConnectionId, retryPacket)
+            || !QuicPacketParser.TryParseLongHeader(retryPacket, out QuicLongHeaderPacket retryHeader)
+            || retryHeader.Version != 1
+            || retryHeader.LongPacketTypeBits != QuicLongPacketTypeBits.Retry
+            || retryHeader.VersionSpecificData.Length <= RetryIntegrityTagLength
+            || retryHeader.SourceConnectionId.IsEmpty)
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> retryToken = retryHeader.VersionSpecificData[..^RetryIntegrityTagLength];
+        if (retryToken.IsEmpty)
+        {
+            return false;
+        }
+
+        metadata = new QuicRetryBootstrapMetadata(
+            retryHeader.SourceConnectionId.ToArray(),
+            retryToken.ToArray());
+        return true;
+    }
 }
+
+internal readonly record struct QuicRetryBootstrapMetadata(
+    byte[] RetrySourceConnectionId,
+    byte[] RetryToken);

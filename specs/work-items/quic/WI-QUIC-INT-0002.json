@@ -23,9 +23,9 @@
   ],
   "summary": "Add the smallest honest endpoint-host shell around the library runtime and use it to route the harness handshake testcase into the managed bootstrap path without taking protocol ownership away from Incursa.Quic.",
   "planned_changes": "- Add a harness-owned `InteropEndpointHost` wrapper around the library-owned endpoint host.\n- Add harness-side handshake dispatch that derives the target endpoint from runner requests and drives the managed client/listener bootstrap path.\n- Add test support for a connected UDP socket pair plus deterministic Initial and handshake packet construction.\n- Add requirement-home coverage for client Initial/DCID ownership, server Initial-response emission, routed ingress, outbound datagram emission, handshake testcase dispatch, and unroutable route misses.\n- Update the INT spec, gap ledger, harness README, and test-intent surface so the new shell and handshake dispatch remain traceable and unsupported cases stay honest.",
-  "verification_plan": "Build the solution, run the new endpoint-host and handshake-dispatch requirement-home tests, confirm the managed client/listener host path owns Initial/DCID bootstrap and server Initial-response emission, confirm the handshake testcase reaches the real managed dispatch path, confirm the runtime emits a real outbound datagram through the socket boundary, and confirm route misses stay unroutable while unsupported harness testcase dispatch for `transfer` and `retry` still returns `127`.",
+  "verification_plan": "Build the solution, run the new endpoint-host and handshake-dispatch requirement-home tests, confirm the managed client/listener host path owns Initial/DCID bootstrap and server Initial-response emission, confirm the handshake testcase reaches the real managed dispatch path, confirm the runtime emits a real outbound datagram through the socket boundary, and confirm route misses stay unroutable while unsupported harness testcase dispatch for `retry` still returns `127`.",
   "out_of_scope": [
-    "Enabling `transfer` or `retry` in the QUIC interop runner.",
+    "Enabling `retry` in the QUIC interop runner.",
     "Moving packet open/protect or TLS ownership into the harness.",
     "Adding 0-RTT, 1-RTT data-path ownership, key update, or native TLS fallback."
   ],

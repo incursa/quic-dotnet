@@ -61,6 +61,7 @@ internal static class InteropHarnessRunner
         {
             "handshake" => RunHandshakeClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "post-handshake-stream" => RunPostHandshakeStreamClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "transfer" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             _ => ReturnUnsupported(settings, stdout, "client"),
         };
     }
@@ -76,6 +77,7 @@ internal static class InteropHarnessRunner
         {
             "handshake" => RunHandshakeServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "post-handshake-stream" => RunPostHandshakeStreamServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "transfer" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             _ => ReturnUnsupported(settings, stdout, "server"),
         };
     }
@@ -93,7 +95,7 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetHandshakeRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
                 requestUri is null)
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
@@ -150,7 +152,7 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetHandshakeRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
                 requestUri is null)
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
@@ -194,7 +196,7 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetHandshakeRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
                 requestUri is null)
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
@@ -262,7 +264,7 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetHandshakeRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
                 requestUri is null)
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
@@ -317,6 +319,170 @@ internal static class InteropHarnessRunner
         }
     }
 
+    private static async Task<int> RunTransferClientAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr)
+    {
+        try
+        {
+            if (!QuicConnection.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC client bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
+                requestUri is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!TryGetTransferPaths(requestUri, out string? relativePath, out string? sourcePath, out string? destinationPath, out errorMessage) ||
+                relativePath is null ||
+                sourcePath is null ||
+                destinationPath is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            IPEndPoint remoteEndPoint = await ResolveHandshakeRemoteEndPointAsync(requestUri).ConfigureAwait(false);
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase=transfer, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}, target={relativePath}.");
+
+            QuicClientConnectionOptions clientOptions = CreateSupportedClientOptions(stdout, settings, remoteEndPoint);
+
+            await using QuicConnection connection = await QuicConnection.ConnectAsync(clientOptions).ConfigureAwait(false);
+            await using QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).ConfigureAwait(false);
+
+            await using FileStream sourceStream = new(
+                sourcePath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read,
+                bufferSize: 4096,
+                useAsync: true);
+
+            await sourceStream.CopyToAsync(stream).ConfigureAwait(false);
+            await stream.DisposeAsync().ConfigureAwait(false);
+
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase=transfer, requestCount={settings.Requests.Count} completed managed transfer to {destinationPath} from {sourcePath}.");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            WriteLineAndFlush(stderr, $"interop harness: role=client, testcase=transfer failed: {ex.Message}");
+            return 1;
+        }
+    }
+
+    private static async Task<int> RunTransferServerAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr,
+        string certificatePath,
+        string privateKeyPath)
+    {
+        try
+        {
+            if (!QuicListener.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC listener bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
+                requestUri is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!TryGetTransferPaths(requestUri, out string? relativePath, out string? sourcePath, out string? destinationPath, out errorMessage) ||
+                relativePath is null ||
+                sourcePath is null ||
+                destinationPath is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out errorMessage) ||
+                materials is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out errorMessage) ||
+                serverCertificate is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            using (serverCertificate)
+            {
+                IPEndPoint listenEndPoint = await ResolveHandshakeListenEndPointAsync(requestUri).ConfigureAwait(false);
+                QuicListenerOptions listenerOptions = new()
+                {
+                    ListenEndPoint = listenEndPoint,
+                    ApplicationProtocols = [SslApplicationProtocol.Http3],
+                    ListenBacklog = 1,
+                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(CreateSupportedServerOptions(serverCertificate)),
+                };
+
+                await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions).ConfigureAwait(false);
+                Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
+                await Task.Yield();
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase=transfer, requestCount={settings.Requests.Count} listening on {listenEndPoint}, target={relativePath}.");
+
+            await using QuicConnection connection = await acceptTask.ConfigureAwait(false);
+            await using QuicStream stream = await connection.AcceptInboundStreamAsync().ConfigureAwait(false);
+            FileInfo sourceInfo = new(sourcePath);
+            if (!sourceInfo.Exists)
+            {
+                WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=transfer missing source file '{sourcePath}'.");
+                return 1;
+                }
+
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase=transfer, requestCount={settings.Requests.Count} transferring {sourceInfo.Length} bytes from {sourcePath} to {destinationPath}.");
+
+                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
+                await using FileStream destinationStream = new(
+                    destinationPath,
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.None,
+                    bufferSize: 4096,
+                    useAsync: true);
+
+                await stream.CopyToAsync(destinationStream).ConfigureAwait(false);
+                await destinationStream.FlushAsync().ConfigureAwait(false);
+                await stream.DisposeAsync().ConfigureAwait(false);
+
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase=transfer, requestCount={settings.Requests.Count} completed managed transfer from {sourcePath} to {destinationPath}.");
+                return 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=transfer failed: {ex.Message}");
+            return 1;
+        }
+    }
+
     private static int ReturnUnsupported(InteropHarnessEnvironment settings, TextWriter stdout, string roleName)
     {
         stdout.WriteLine(
@@ -330,7 +496,7 @@ internal static class InteropHarnessRunner
         writer.Flush();
     }
 
-    private static bool TryGetHandshakeRequestUri(
+    private static bool TryGetDispatchRequestUri(
         InteropHarnessEnvironment settings,
         out Uri? requestUri,
         out string? errorMessage)
@@ -338,7 +504,7 @@ internal static class InteropHarnessRunner
         if (settings.Requests.Count == 0)
         {
             requestUri = null;
-            errorMessage = "REQUESTS must contain at least one URL for handshake dispatch.";
+            errorMessage = "REQUESTS must contain at least one URL for testcase dispatch.";
             return false;
         }
 
@@ -351,13 +517,95 @@ internal static class InteropHarnessRunner
 
         if (!string.Equals(requestUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
         {
-            errorMessage = $"REQUESTS entry '{request}' must use https for handshake dispatch.";
+            errorMessage = $"REQUESTS entry '{request}' must use https for testcase dispatch.";
             requestUri = null;
             return false;
         }
 
         errorMessage = null;
         return true;
+    }
+
+    private static bool TryGetTransferPaths(
+        Uri requestUri,
+        out string? relativePath,
+        out string? sourcePath,
+        out string? destinationPath,
+        out string? errorMessage)
+    {
+        relativePath = null;
+        sourcePath = null;
+        destinationPath = null;
+
+        if (!TryGetTransferRelativePath(requestUri, out relativePath, out errorMessage) ||
+            relativePath is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            sourcePath = ResolveMountedPath(InteropHarnessEnvironment.WwwDirectory, relativePath);
+            destinationPath = ResolveMountedPath(InteropHarnessEnvironment.DownloadsDirectory, relativePath);
+            errorMessage = null;
+            return true;
+        }
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException or NotSupportedException or PathTooLongException)
+        {
+            errorMessage = $"Unable to resolve transfer paths for '{requestUri}': {ex.Message}";
+            return false;
+        }
+    }
+
+    private static bool TryGetTransferRelativePath(
+        Uri requestUri,
+        out string? relativePath,
+        out string? errorMessage)
+    {
+        string requestPath = Uri.UnescapeDataString(requestUri.AbsolutePath).Replace('\\', '/');
+        string[] pathSegments = requestPath.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (pathSegments.Length == 0)
+        {
+            relativePath = null;
+            errorMessage = $"REQUESTS entry '{requestUri}' must include a non-root path for transfer dispatch.";
+            return false;
+        }
+
+        foreach (string segment in pathSegments)
+        {
+            if (segment is "." or "..")
+            {
+                relativePath = null;
+                errorMessage = $"REQUESTS entry '{requestUri}' must not escape the transfer mount roots.";
+                return false;
+            }
+
+            if (segment.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            {
+                relativePath = null;
+                errorMessage = $"REQUESTS entry '{requestUri}' contains an invalid transfer path segment '{segment}'.";
+                return false;
+            }
+        }
+
+        relativePath = Path.Combine(pathSegments);
+        errorMessage = null;
+        return true;
+    }
+
+    private static string ResolveMountedPath(string rootDirectory, string relativePath)
+    {
+        string rootFullPath = Path.GetFullPath(rootDirectory);
+        string candidatePath = Path.GetFullPath(Path.Combine(rootFullPath, relativePath));
+        string relativeToRoot = Path.GetRelativePath(rootFullPath, candidatePath);
+        if (relativeToRoot is "." or ".." ||
+            relativeToRoot.StartsWith(".." + Path.DirectorySeparatorChar, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"Transfer target '{relativePath}' escapes the mounted root '{rootDirectory}'.");
+        }
+
+        return candidatePath;
     }
 
     private static async ValueTask<IPEndPoint> ResolveHandshakeRemoteEndPointAsync(Uri requestUri)

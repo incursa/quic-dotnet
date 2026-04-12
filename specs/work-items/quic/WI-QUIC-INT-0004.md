@@ -36,9 +36,9 @@ Define and land the smallest child-process prerequisite that proves the managed 
 
 ## Planned Changes
 
-- Add the `post-handshake-stream` testcase branch in `InteropHarnessRunner` and keep it on the managed child-process path.
+- Keep the `post-handshake-stream` testcase branch in `InteropHarnessRunner` on the managed child-process path.
 - Sequence the client to open the first outbound application stream after connect completes, and sequence the server to accept the first inbound application stream after accept completes.
-- Add requirement-home coverage for the first post-handshake open/accept pair on the real harness path and keep `transfer` and `retry` honest.
+- Add requirement-home coverage for the first post-handshake open/accept pair on the real harness path and keep `retry` honest.
 - Keep the supported public boundary unchanged and do not add byte-delivery or EOF claims.
 
 ## Out of Scope
@@ -57,7 +57,7 @@ Define and land the smallest child-process prerequisite that proves the managed 
 
 ## Verification Plan
 
-Run the new INT requirement-home test, the existing handshake/public guards, the client 1-RTT readiness proof, and the full `REQ_QUIC_CRT_` sweep; then inspect the harness README, plan doc, and gap ledger to confirm the slice stays smaller than transfer and transfer/retry remain `127`.
+Run the new INT requirement-home test, the existing handshake/public guards, the client 1-RTT readiness proof, and the full `REQ_QUIC_CRT_` sweep; then inspect the harness README, plan doc, and gap ledger to confirm the slice stays smaller than the transfer-owned contract and retry remains `127`.
 
 ## Completion Notes
 
@@ -89,3 +89,4 @@ Verified By:
 - [`QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)
 - [`REQ-QUIC-API-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs)
 - [`REQ-QUIC-CRT-0121.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs)
+- [`REQ-QUIC-INT-0011.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0011.cs)

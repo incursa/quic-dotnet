@@ -12,6 +12,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private readonly Socket socket;
     private readonly QuicConnectionPathIdentity peerPathIdentity;
     private readonly Action<QuicConnectionIngressResult>? ingressObserver;
+    private readonly Action<ReadOnlyMemory<byte>, QuicConnectionIngressResult>? ingressDatagramObserver;
     private readonly Action<QuicConnectionTransitionResult>? transitionObserver;
     private readonly Action<QuicConnectionEffect>? effectObserver;
     private readonly int receiveBufferBytes;
@@ -28,7 +29,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         Action<QuicConnectionIngressResult>? ingressObserver = null,
         Action<QuicConnectionTransitionResult>? transitionObserver = null,
         Action<QuicConnectionEffect>? effectObserver = null,
-        int receiveBufferBytes = 4096)
+        int receiveBufferBytes = 4096,
+        Action<ReadOnlyMemory<byte>, QuicConnectionIngressResult>? ingressDatagramObserver = null)
     {
         ArgumentNullException.ThrowIfNull(endpoint);
         ArgumentNullException.ThrowIfNull(socket);
@@ -42,6 +44,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         this.socket = socket;
         this.peerPathIdentity = peerPathIdentity;
         this.ingressObserver = ingressObserver;
+        this.ingressDatagramObserver = ingressDatagramObserver;
         this.transitionObserver = transitionObserver;
         this.effectObserver = effectObserver;
         this.receiveBufferBytes = receiveBufferBytes;
@@ -167,6 +170,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
                 byte[] datagram = buffer.AsSpan(0, bytesReceived).ToArray();
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, peerPathIdentity);
+                ingressDatagramObserver?.Invoke(datagram, ingressResult);
                 ingressObserver?.Invoke(ingressResult);
             }
         }

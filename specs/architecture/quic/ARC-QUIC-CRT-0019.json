@@ -6,7 +6,7 @@
   "title": "QUIC CRT client-role 1-RTT readiness architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Describe how the client-role Finished path publishes the first application packet-protection material only after peer Finished verification, so the supported active-loopback data-path can open honestly without claiming transfer support.",
+  "purpose": "Describe how the client-role Finished path publishes the first application packet-protection material only after peer Finished verification, so the supported active-loopback data-path can open honestly without widening the supported surface.",
   "related_artifacts": [
     "SPEC-QUIC-CRT",
     "WI-QUIC-CRT-0019",

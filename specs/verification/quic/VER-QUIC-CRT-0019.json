@@ -15,8 +15,8 @@
   "verifies": [
     "REQ-QUIC-CRT-0121"
   ],
-  "scope": "Verify that client-role Finished processing publishes the first 1-RTT packet-protection material only after peer Finished verification and that the supported active-loopback stream boundary remains reachable without widening transfer or retry support.",
-  "expected_result": "- The client Finished path publishes `PeerFinishedVerified`, `KeysAvailable(OneRtt)`, and directional 1-RTT packet-protection material in the supported order.\n- Premature `OneRtt` key publication is rejected before `PeerFinishedVerified`.\n- The supported loopback stream-open and stream-capacity guards remain green after the readiness seam lands.\n- The permanent client Finished benchmark exists and can be run locally.\n- Transfer and retry remain unsupported.",
+  "scope": "Verify that client-role Finished processing publishes the first 1-RTT packet-protection material only after peer Finished verification and that the supported active-loopback stream boundary remains reachable without widening retry support.",
+  "expected_result": "- The client Finished path publishes `PeerFinishedVerified`, `KeysAvailable(OneRtt)`, and directional 1-RTT packet-protection material in the supported order.\n- Premature `OneRtt` key publication is rejected before `PeerFinishedVerified`.\n- The supported loopback stream-open and stream-capacity guards remain green after the readiness seam lands.\n- The permanent client Finished benchmark exists and can be run locally.\n- Retry remains unsupported.",
   "procedure": [
     "Run the new client-role 1-RTT readiness requirement-home test.",
     "Run the affected CRT requirement-home tests that exercise the client Finished path and the bridge gate.",

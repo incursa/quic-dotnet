@@ -37,6 +37,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private QuicInitialPacketProtection? initialPacketProtection;
     private QuicConnectionPathIdentity? bootstrapOutboundPathIdentity;
+    private byte[]? initialBootstrapClientHelloBytes;
+    private byte[]? retrySourceConnectionId;
+    private byte[]? retryToken;
+    private bool retryBootstrapPendingReplay;
 
     private int consumerStarted;
     private int disposed;
@@ -711,6 +715,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             QuicConnectionPeerHandshakeTranscriptCompletedEvent peerHandshakeTranscriptCompletedEvent
                 => HandlePeerHandshakeTranscriptCompleted(peerHandshakeTranscriptCompletedEvent, nowTicks, ref effects),
+            QuicConnectionRetryReceivedEvent retryReceivedEvent
+                => HandleRetryReceived(retryReceivedEvent, nowTicks, ref effects),
             QuicConnectionHandshakeBootstrapRequestedEvent handshakeBootstrapRequestedEvent
                 => HandleHandshakeBootstrapRequested(handshakeBootstrapRequestedEvent, nowTicks, ref effects),
             QuicConnectionTransportParametersCommittedEvent transportParametersCommittedEvent
@@ -923,6 +929,33 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return stateChanged;
     }
 
+    private bool HandleRetryReceived(
+        QuicConnectionRetryReceivedEvent retryReceivedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        _ = nowTicks;
+        _ = effects;
+
+        if (phase != QuicConnectionPhase.Establishing
+            || tlsState.IsTerminal
+            || retryBootstrapPendingReplay
+            || retrySourceConnectionId is not null
+            || retryReceivedEvent.RetrySourceConnectionId.IsEmpty
+            || retryReceivedEvent.RetryToken.IsEmpty)
+        {
+            return false;
+        }
+
+        retrySourceConnectionId = retryReceivedEvent.RetrySourceConnectionId.ToArray();
+        retryToken = retryReceivedEvent.RetryToken.ToArray();
+        retryBootstrapPendingReplay = true;
+
+        bool stateChanged = true;
+        stateChanged |= TryFlushInitialPackets(ref effects);
+        return stateChanged;
+    }
+
     private bool HandleTlsStateUpdated(
         QuicConnectionTlsStateUpdatedEvent tlsStateUpdatedEvent,
         long nowTicks,
@@ -981,6 +1014,14 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             case QuicTlsUpdateKind.PacketProtectionMaterialAvailable:
             case QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable:
             case QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable:
+                if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.CryptoDataAvailable
+                    && tlsState.Role == QuicTlsRole.Client
+                    && initialBootstrapClientHelloBytes is null
+                    && !tlsStateUpdatedEvent.Update.CryptoData.IsEmpty)
+                {
+                    initialBootstrapClientHelloBytes = tlsStateUpdatedEvent.Update.CryptoData.ToArray();
+                }
+
                 stateChanged |= TryFlushInitialPackets(ref effects);
                 stateChanged |= TryFlushHandshakePackets(ref effects);
                 break;
@@ -1702,9 +1743,39 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private bool TryFlushInitialPackets(ref List<QuicConnectionEffect>? effects)
     {
         if (phase != QuicConnectionPhase.Establishing
-            || tlsState.InitialEgressCryptoBuffer.BufferedBytes <= 0
             || initialPacketProtection is null
             || !TryGetInitialOutboundPath(out QuicConnectionPathIdentity pathIdentity))
+        {
+            return false;
+        }
+
+        if (retryBootstrapPendingReplay)
+        {
+            if (retrySourceConnectionId is null
+                || retryToken is null
+                || initialBootstrapClientHelloBytes is null
+                || initialBootstrapClientHelloBytes.Length == 0)
+            {
+                return false;
+            }
+
+            bool replayed = TryFlushRetriedInitialPackets(
+                pathIdentity,
+                initialBootstrapClientHelloBytes,
+                retrySourceConnectionId,
+                retryToken,
+                initialPacketProtection,
+                ref effects);
+
+            if (replayed)
+            {
+                retryBootstrapPendingReplay = false;
+            }
+
+            return replayed;
+        }
+
+        if (tlsState.InitialEgressCryptoBuffer.BufferedBytes <= 0)
         {
             return false;
         }
@@ -1768,6 +1839,51 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
             tlsState.InitialEgressCryptoBuffer.DiscardFutureFrames();
+            stateChanged = true;
+        }
+
+        return stateChanged;
+    }
+
+    private bool TryFlushRetriedInitialPackets(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> initialClientHelloBytes,
+        ReadOnlySpan<byte> retrySourceConnectionId,
+        ReadOnlySpan<byte> retryToken,
+        QuicInitialPacketProtection protection,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (initialClientHelloBytes.IsEmpty)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        Span<byte> cryptoBuffer = stackalloc byte[HandshakeEgressChunkBytes];
+        int replayOffset = 0;
+
+        while (replayOffset < initialClientHelloBytes.Length)
+        {
+            int requestedBytes = Math.Min(cryptoBuffer.Length, initialClientHelloBytes.Length - replayOffset);
+            if (requestedBytes <= 0)
+            {
+                break;
+            }
+
+            ReadOnlySpan<byte> cryptoChunk = initialClientHelloBytes.Slice(replayOffset, requestedBytes);
+            if (!handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
+                cryptoChunk,
+                (ulong)replayOffset,
+                retrySourceConnectionId,
+                retryToken,
+                protection,
+                out byte[] protectedPacket))
+            {
+                break;
+            }
+
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
+            replayOffset += requestedBytes;
             stateChanged = true;
         }
 
@@ -2404,6 +2520,33 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         if (peerTransportParameters is null)
         {
             return false;
+        }
+
+        QuicTransportParameterRole receiverRole = tlsState.Role == QuicTlsRole.Client
+            ? QuicTransportParameterRole.Client
+            : QuicTransportParameterRole.Server;
+
+        ReadOnlySpan<byte> retrySourceConnectionIdSpan = this.retrySourceConnectionId is null
+            ? ReadOnlySpan<byte>.Empty
+            : this.retrySourceConnectionId;
+
+        ReadOnlySpan<byte> handshakeDestinationConnectionId = handshakeFlowCoordinator.DestinationConnectionId.Span;
+        if (!handshakeFlowCoordinator.InitialDestinationConnectionId.IsEmpty
+            && !handshakeDestinationConnectionId.IsEmpty
+            && !QuicTransportParametersCodec.TryValidateConnectionIdBindings(
+                receiverRole,
+                handshakeFlowCoordinator.InitialDestinationConnectionId.Span,
+                handshakeDestinationConnectionId,
+                retrySourceConnectionIdSpan.Length > 0,
+                retrySourceConnectionIdSpan,
+                peerTransportParameters,
+                out QuicConnectionIdBindingValidationError validationError))
+        {
+            return HandleFatalTlsSignal(
+                nowTicks,
+                QuicTransportErrorCode.TransportParameterError,
+                $"The peer transport parameters failed connection ID binding validation: {validationError}.",
+                ref effects);
         }
 
         bool stateChanged = TryCommitPeerStreamLimits(

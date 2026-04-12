@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify the managed child-process `post-handshake-stream` testcase, the handshake-completion gate, the client-side first-stream open, the server-side first-stream accept, and the honesty of unsupported transfer and retry cases.
+Verify the managed child-process `post-handshake-stream` testcase, the handshake-completion gate, the client-side first-stream open, the server-side first-stream accept, and the honesty of unsupported retry cases.
 
 ## Requirements Verified
 
@@ -29,10 +29,11 @@ Focused requirement-home tests, build execution, and artifact inspection.
 
 ## Expected Result
 
-The child-process harness proves the first application-stream open/accept pair after handshake completion while transfer and retry remain `127`.
+The child-process harness proves the first application-stream open/accept pair after handshake completion while retry remains `127`.
 
 ## Evidence
 
+- tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0011.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0002.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs
@@ -59,4 +60,4 @@ Planned; this verification slice records the proof contract for the smaller prer
 
 ## Deferred Coverage
 
-Byte delivery, EOF, transfer enablement, retry enablement, multi-stream generalization, broader 1-RTT data-path ownership, trust-store policy widening, 0-RTT, and key update remain intentionally deferred.
+Byte delivery, EOF, retry enablement, multi-stream generalization, broader 1-RTT data-path ownership, trust-store policy widening, 0-RTT, and key update remain intentionally deferred.

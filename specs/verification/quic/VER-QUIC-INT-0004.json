@@ -20,15 +20,16 @@
     "The harness can dispatch `post-handshake-stream` through the managed child-process path.",
     "Loopback UDP sockets are available in the test environment."
   ],
-  "scope": "Verify the managed child-process `post-handshake-stream` testcase, the handshake-completion gate, the client-side first-stream open, the server-side first-stream accept, and the honesty of unsupported transfer and retry cases.",
+  "scope": "Verify the managed child-process `post-handshake-stream` testcase, the handshake-completion gate, the client-side first-stream open, the server-side first-stream accept, and the honesty of unsupported retry cases.",
   "procedure": [
     "Run the new post-handshake-stream requirement-home test and confirm the client opens the first application stream after connect completion while the server accepts it after accept completion.",
     "Run the existing handshake/public guard tests and the CRT client 1-RTT readiness proof to keep the prerequisite floor green.",
     "Run the full `REQ_QUIC_CRT_` sweep.",
     "Render and validate the SpecTrace JSON and Markdown artifacts after any canonical JSON updates."
   ],
-  "expected_result": "The child-process harness proves the first application-stream open/accept pair after handshake completion while transfer and retry remain `127`.",
+  "expected_result": "The child-process harness proves the first application-stream open/accept pair after handshake completion while retry remains `127`.",
   "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0011.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs",
@@ -47,7 +48,7 @@
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "Byte delivery, EOF, transfer enablement, retry enablement, multi-stream generalization, broader 1-RTT data-path ownership, trust-store policy widening, 0-RTT, and key update remain intentionally deferred."
+      "content": "Byte delivery, EOF, retry enablement, multi-stream generalization, broader 1-RTT data-path ownership, trust-store policy widening, 0-RTT, and key update remain intentionally deferred."
     }
   ]
 }

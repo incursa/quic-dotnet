@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0020",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC CRT retry bootstrap ownership work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the library-owned one-Retry bootstrap handoff so the retry token and binding state stay coherent across a single replay without claiming interop-runner dispatch yet.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0020"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0020"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0122"
+  ],
+  "planned_changes": "- Thread one Retry token and the original destination connection ID through the client bootstrap path so a single valid Retry can be replayed honestly.\n- Keep the existing helper-backed Retry integrity and `retry_source_connection_id` validation as the source of truth instead of duplicating packet math.\n- Preserve the current `retry` exit-code `127` behavior in the interop harness until runner dispatch is separately approved.\n- Add positive and negative tests for one valid Retry replay, tampered Retry integrity, zero-length Retry token rejection, duplicate Retry discard, and mismatched `retry_source_connection_id` binding.\n- Keep transfer, multi-stream, and broader TLS-policy behavior unchanged.",
+  "verification_plan": "Run the existing Retry helper tests and the current unsupported harness guard, then add the new retry-bootstrap requirement-home tests and run the full `REQ_QUIC_CRT_` sweep once the seam is implemented. Re-render and check the SpecTrace markdown views after the canonical JSON artifacts change.",
+  "out_of_scope": [
+    "interop-runner retry dispatch",
+    "transfer enablement",
+    "multi-stream behavior",
+    "public API widening",
+    "trust-store policy",
+    "hostname validation",
+    "certificate-path validation",
+    "revocation",
+    "0-RTT",
+    "key update",
+    "broad token-lifecycle work"
+  ],
+  "completion_notes": "Keep the work item narrow: it exists to make the retry bootstrap prerequisite honest, not to claim the testcase is already enabled.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs)\n- [`src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`src/Incursa.Quic/QuicRetryIntegrity.cs`](../../../src/Incursa.Quic/QuicRetryIntegrity.cs)\n- [`src/Incursa.Quic/QuicTransportParametersCodec.cs`](../../../src/Incursa.Quic/QuicTransportParametersCodec.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs)"
+    }
+  ]
+}

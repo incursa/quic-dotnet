@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Describe how the client-role Finished path publishes the first application packet-protection material only after peer Finished verification, so the supported active-loopback data-path can open honestly without claiming transfer support.
+Describe how the client-role Finished path publishes the first application packet-protection material only after peer Finished verification, so the supported active-loopback data-path can open honestly without widening the supported surface.
 
 ## Requirements Satisfied
 

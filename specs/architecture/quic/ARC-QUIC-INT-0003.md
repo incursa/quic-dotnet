@@ -16,7 +16,7 @@ This slice captures the narrowest honest transfer contract that can sit on the e
 
 ## Design Summary
 
-The existing runtime already owns the active-phase stream open/accept/read/write/EOF mechanics and the client-role post-Finished 1-RTT readiness boundary. The transfer slice therefore stays in the harness and proof contract: the runner must decide which side opens or accepts the single stream, how the first REQUESTS URL maps into the fixed /www and /downloads mount contract, when EOF is complete enough for exit 0, and how to keep the supported boundary honest when the contract is not yet implemented.
+The existing runtime already owns the active-phase stream open/accept/read/write/EOF mechanics and the client-role post-Finished 1-RTT readiness boundary. The transfer slice therefore stays in the harness and proof contract: the runner decides which side opens or accepts the single stream, how the first REQUESTS URL maps into the fixed /www and /downloads mount contract, and when EOF is complete enough for exit 0.
 
 This architecture deliberately does not add retry enablement, multi-stream generalization, broader 1-RTT claims, or TLS policy widening. It simply records the smallest honest transfer-owned boundary on top of the already-proven active-phase path.
 
@@ -34,6 +34,7 @@ This architecture deliberately does not add retry enablement, multi-stream gener
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0010.cs
 
 ## Data and State Considerations
 
@@ -55,7 +56,7 @@ The transfer contract reuses the current active-phase connection runtime, stream
 
 - A later implementation could accidentally widen the contract into multi-stream or HTTP-specific behavior if the single-stream boundary is not kept explicit.
 - The runner could still claim success too early unless EOF and byte-delivery completion are treated as the exit-0 gate.
-- The supported boundary must remain honest if the transfer contract is still not wired into runner dispatch.
+- The supported boundary must remain honest if a later change widens the transfer contract beyond the narrow one-stream, EOF-gated slice.
 
 ## Boundary Split
 

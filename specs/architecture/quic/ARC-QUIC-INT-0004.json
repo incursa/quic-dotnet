@@ -26,7 +26,8 @@
     "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
     "src/Incursa.Quic/QuicTlsKeySchedule.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0011.cs"
   ],
   "design_summary": "The managed client/listener hosts already own the honest handshake completion boundary. This architecture does not widen that boundary. Instead, it records the child-process sequencing that happens after it: the new `post-handshake-stream` testcase reuses the real managed bootstrap path, the client opens one outbound application stream only after connect completes, and the server accepts one inbound application stream only after accept completes.\n\nThe runtime already owns the active-phase stream-open and inbound-accept mechanics, so the harness only has to drive the real path and prove the first open/accept pair happened after handshake completion. No byte delivery, EOF, transfer, retry, or broader 1-RTT/TLS policy claim is added.",
   "alternatives_considered": [
@@ -37,7 +38,7 @@
     "Handshake completion must precede the first stream open and accept.",
     "The slice remains child-process only and single-stream only.",
     "The harness must not claim file delivery, EOF, multi-stream, retry, 0-RTT, key update, or broader 1-RTT readiness.",
-    "transfer and retry stay unsupported outside this slice."
+    "transfer enablement is outside this slice; retry stays unsupported outside this slice."
   ],
   "data_and_state_considerations": "The harness only coordinates process lifecycle, testcase dispatch, and post-handshake sequencing. The library remains responsible for connection state, stream registry, and 1-RTT readiness. The client opener path depends on the existing client-role 1-RTT readiness gate, and the server accepter path depends on the existing active-phase accept gate.",
   "supplemental_sections": [

@@ -282,18 +282,6 @@ internal static class QuicTransportParametersCodec
 
         if (receiverRole == QuicTransportParameterRole.Client)
         {
-            if (peerParameters.OriginalDestinationConnectionId is null)
-            {
-                validationError = QuicConnectionIdBindingValidationError.MissingOriginalDestinationConnectionId;
-                return false;
-            }
-
-            if (!peerParameters.OriginalDestinationConnectionId.AsSpan().SequenceEqual(initialDestinationConnectionId))
-            {
-                validationError = QuicConnectionIdBindingValidationError.OriginalDestinationConnectionIdMismatch;
-                return false;
-            }
-
             if (peerParameters.InitialSourceConnectionId is null)
             {
                 validationError = QuicConnectionIdBindingValidationError.MissingInitialSourceConnectionId;
@@ -325,6 +313,21 @@ internal static class QuicTransportParametersCodec
                 if (!peerParameters.RetrySourceConnectionId.AsSpan().SequenceEqual(retrySourceConnectionId))
                 {
                     validationError = QuicConnectionIdBindingValidationError.RetrySourceConnectionIdMismatch;
+                    return false;
+                }
+            }
+
+            if (usedRetry)
+            {
+                if (peerParameters.OriginalDestinationConnectionId is null)
+                {
+                    validationError = QuicConnectionIdBindingValidationError.MissingOriginalDestinationConnectionId;
+                    return false;
+                }
+
+                if (!peerParameters.OriginalDestinationConnectionId.AsSpan().SequenceEqual(initialDestinationConnectionId))
+                {
+                    validationError = QuicConnectionIdBindingValidationError.OriginalDestinationConnectionIdMismatch;
                     return false;
                 }
             }
@@ -729,4 +732,3 @@ internal static class QuicTransportParametersCodec
         return true;
     }
 }
-

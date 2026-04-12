@@ -20,6 +20,7 @@
 - Exercises the library-owned runtime through a real connected UDP socket in requirement-home coverage.
 - Routes `handshake` into the managed client/listener bootstrap path and returns `0` when that path completes.
 - Routes `post-handshake-stream` into the managed child-process path and returns `0` after the client opens and the server accepts the first application stream.
+- Routes `transfer` into the narrow one-stream `/www` -> `/downloads` child-process path and returns `0` only after byte delivery plus EOF on both sides.
 - Returns `127` for unsupported interop test cases instead of faking success.
 - Returns `1` for invalid process configuration.
 
@@ -29,10 +30,10 @@ Supported:
 
 - `handshake`
 - `post-handshake-stream`
+- `transfer` on the narrow one-stream `/www` -> `/downloads` child-process contract
 
 Unsupported:
 
-- `transfer`
 - `retry`
 - any other testcase not explicitly implemented
 
@@ -58,11 +59,11 @@ docker run --rm \
   incursa-quic-interop-harness
 ```
 
-The `handshake` and `post-handshake-stream` testcases now dispatch into the managed bootstrap path. `transfer` and `retry` still return `127`.
+The `handshake` and `post-handshake-stream` testcases now dispatch into the managed bootstrap path. `transfer` now dispatches into the narrow managed active-phase transfer path. `retry` still returns `127`.
 
 ## Stubbed today
 
-- `transfer` and `retry` are recognized interop targets but still unsupported.
+- `retry` is still unsupported.
 - `InteropEndpointHost` is a real shell around the library-owned endpoint host, but it is exercised by requirement-home tests rather than runner-dispatched testcases.
 - `QLOGDIR` currently selects a placeholder diagnostics sink rather than real qlog output.
 - `SSLKEYLOGFILE` is recorded as future TLS-provider work and does not emit key logs yet.

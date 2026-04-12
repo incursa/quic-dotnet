@@ -18,6 +18,7 @@ internal enum QuicConnectionEventKind
     TlsStateUpdated = 13,
     CryptoFrameReceived = 14,
     HandshakeBootstrapRequested = 15,
+    RetryReceived = 16,
 }
 
 internal enum QuicConnectionEffectKind
@@ -66,6 +67,12 @@ internal sealed record QuicConnectionHandshakeBootstrapRequestedEvent(
     long ObservedAtTicks,
     QuicTransportParameters? LocalTransportParameters)
     : QuicConnectionEvent(QuicConnectionEventKind.HandshakeBootstrapRequested, ObservedAtTicks);
+
+internal sealed record QuicConnectionRetryReceivedEvent(
+    long ObservedAtTicks,
+    ReadOnlyMemory<byte> RetrySourceConnectionId,
+    ReadOnlyMemory<byte> RetryToken)
+    : QuicConnectionEvent(QuicConnectionEventKind.RetryReceived, ObservedAtTicks);
 
 internal sealed record QuicConnectionLocalCloseRequestedEvent(
     long ObservedAtTicks,

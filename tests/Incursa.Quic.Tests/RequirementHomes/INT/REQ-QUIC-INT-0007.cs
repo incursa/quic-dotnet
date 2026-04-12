@@ -4,7 +4,6 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_INT_0007
 {
     [Theory]
-    [InlineData("transfer")]
     [InlineData("retry")]
     [InlineData("multipath")]
     [CoverageType(RequirementCoverageType.Positive)]

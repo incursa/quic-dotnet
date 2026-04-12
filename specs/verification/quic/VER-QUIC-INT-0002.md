@@ -24,11 +24,11 @@ Focused requirement-home tests plus build execution and artifact inspection of t
 
 - Run the positive and negative endpoint-host requirement-home tests to confirm client Initial/DCID ownership, server Initial-response emission, routed ingress, outbound datagram emission, handshake dispatch entry, real child-process completion, exit-0 behavior on both sides, and unroutable route misses.
 - Build the solution and confirm the harness shell participates in the normal build graph without moving protocol ownership out of the library.
-- Inspect the README and gap ledger to confirm handshake dispatch is routed through the real managed bootstrap path while `transfer` and `retry` remain honest `127` cases.
+- Inspect the README and gap ledger to confirm handshake dispatch is routed through the real managed bootstrap path while `retry` remains honest `127`.
 
 ## Expected Result
 
-A real connected UDP socket boundary can now drive one library-owned runtime connection, the managed client/listener host path owns honest Initial/DCID bootstrap and server Initial-response emission, the harness `handshake` testcase dispatch reaches that managed path, both child processes complete and exit `0`, the runtime can surface an outbound handshake datagram back to the socket layer, and route misses stay unroutable. Unsupported harness testcase dispatch for `transfer` and `retry` remains `127`.
+A real connected UDP socket boundary can now drive one library-owned runtime connection, the managed client/listener host path owns honest Initial/DCID bootstrap and server Initial-response emission, the harness `handshake` testcase dispatch reaches that managed path, both child processes complete and exit `0`, the runtime can surface an outbound handshake datagram back to the socket layer, and route misses stay unroutable. `retry` remains `127`.
 
 ## Evidence
 
@@ -47,7 +47,7 @@ A real connected UDP socket boundary can now drive one library-owned runtime con
 
 ## Status
 
-This verification slice proves the shell boundary plus the managed Initial/bootstrap seam, handshake-only harness dispatch entry, and real client/server child-process completion with exit `0` on both sides. `transfer` and `retry` remain intentionally deferred.
+This verification slice proves the shell boundary plus the managed Initial/bootstrap seam, handshake-only harness dispatch entry, and real client/server child-process completion with exit `0` on both sides. `retry` remains intentionally deferred.
 
 ## Related Artifacts
 
@@ -57,4 +57,4 @@ This verification slice proves the shell boundary plus the managed Initial/boots
 
 ## Deferred Coverage
 
-Actual interop-runner `transfer` and `retry` enablement, 0-RTT, 1-RTT data-path ownership, and key update are intentionally deferred. This artifact only proves the shell and the honest handshake-dispatch path.
+Actual interop-runner `retry` enablement, 0-RTT, 1-RTT data-path ownership, and key update are intentionally deferred. This artifact only proves the shell and the honest handshake-dispatch path.

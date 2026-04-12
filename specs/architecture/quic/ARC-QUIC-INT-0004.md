@@ -32,6 +32,7 @@ The runtime already owns the active-phase stream-open and inbound-accept mechani
 - src/Incursa.Quic/QuicTlsKeySchedule.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0011.cs
 
 ## Data and State Considerations
 
@@ -42,7 +43,7 @@ The harness only coordinates process lifecycle, testcase dispatch, and post-hand
 - Handshake completion must precede the first stream open and accept.
 - The slice remains child-process only and single-stream only.
 - The harness must not claim file delivery, EOF, multi-stream, retry, 0-RTT, key update, or broader 1-RTT readiness.
-- transfer and retry stay unsupported outside this slice.
+- transfer enablement is outside this slice; retry stays unsupported outside this slice.
 
 ## Alternatives Considered
 

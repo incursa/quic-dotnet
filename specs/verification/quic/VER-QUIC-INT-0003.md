@@ -24,7 +24,7 @@ Focused requirement-home tests, solution build execution, and artifact inspectio
 
 - Run the transfer requirement-home test once implementation exists.
 - Run the existing handshake/public guard tests and the client 1-RTT readiness tests to keep the prerequisites green.
-- Inspect the README and gap ledger to confirm transfer remains unsupported until the contract is actually wired into runner dispatch.
+- Inspect the README and gap ledger to confirm the transfer contract is wired into runner dispatch and that retry remains unsupported.
 
 ## Expected Result
 
@@ -32,6 +32,7 @@ The child-process transfer slice only reports success after the single-stream by
 
 ## Evidence
 
+- tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0010.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs
@@ -43,7 +44,7 @@ The child-process transfer slice only reports success after the single-stream by
 
 ## Status
 
-This verification slice is planned; it records the proof contract for the narrow transfer-owned child-process completion boundary without claiming transfer support yet.
+This verification slice records the proof contract for the narrow transfer-owned child-process completion boundary.
 
 ## Related Artifacts
 

@@ -21,7 +21,7 @@ related_artifacts:
 
 ## Summary
 
-Add the client-role post-Finished 1-RTT readiness seam so the supported active-loopback data-path can open after Finished proof without claiming transfer support.
+Add the client-role post-Finished 1-RTT readiness seam so the supported active-loopback data-path can open after Finished proof without widening the supported surface.
 
 ## Requirements Addressed
 
@@ -37,7 +37,7 @@ Add the client-role post-Finished 1-RTT readiness seam so the supported active-l
 - Tighten `QuicTransportTlsBridgeState.TryMarkOneRttKeysAvailable()` so it rejects premature `OneRtt` key publication before `PeerFinishedVerified`.
 - Add or update CRT requirement-home coverage for the client Finished 1-RTT readiness boundary and the premature-publication rejection path.
 - Add a permanent benchmark for the client Finished publication path.
-- Keep transfer and retry unsupported; do not widen the public boundary or `IsSupported`.
+- Keep retry unsupported; do not widen the public boundary or `IsSupported`.
 
 ## Out of Scope
 

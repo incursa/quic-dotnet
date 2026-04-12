@@ -24,7 +24,7 @@ related_artifacts:
 
 ## Summary
 
-Define and, when implementation follows, land the narrow child-process transfer contract on the existing active-phase managed path without widening the public or unsupported boundary.
+Implement the narrow child-process transfer contract on the existing active-phase managed path without widening the public or unsupported boundary.
 
 ## Requirements Addressed
 
@@ -36,10 +36,10 @@ Define and, when implementation follows, land the narrow child-process transfer 
 
 ## Planned Changes
 
-- Add a transfer testcase dispatch branch in `InteropHarnessRunner` only when the contract is implemented.
-- Use the existing active-phase managed path to open or accept one application stream and gate exit 0 on byte delivery plus EOF.
+- Wire a transfer testcase dispatch branch in `InteropHarnessRunner` to the existing active-phase managed path.
+- Open or accept one application stream and gate exit 0 on byte delivery plus EOF.
 - Preserve the fixed `/www` and `/downloads` mount-path contract without widening retry, multi-stream behavior, or TLS policy.
-- Add requirement-home coverage for the new transfer contract and keep the unsupported-testcase guards honest.
+- Add requirement-home coverage for the narrow transfer contract and keep the unsupported-testcase guards honest.
 
 ## Out of Scope
 
@@ -49,7 +49,7 @@ Define and, when implementation follows, land the narrow child-process transfer 
 
 ## Verification Plan
 
-Run the existing handshake/public guards and CRT readiness proofs, add a focused transfer requirement-home test that exercises one bidirectional stream on the child-process harness path, and confirm the harness only reports exit 0 after byte delivery and EOF on both sides. Keep `transfer` and `retry` returning `127` until that proof exists.
+Run the existing handshake/public guards and CRT readiness proofs, run the focused transfer requirement-home test on the child-process harness path, and confirm the harness only reports exit 0 after byte delivery and EOF on both sides. Keep `retry` returning `127` until its own proof exists.
 
 ## Completion Notes
 
@@ -82,3 +82,4 @@ Verified By:
 - [`REQ-QUIC-CRT-0121.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs)
 - [`REQ-QUIC-API-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs)
 - [`REQ-QUIC-INT-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs)
+- [`REQ-QUIC-INT-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0010.cs)

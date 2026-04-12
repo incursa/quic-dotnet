@@ -24,7 +24,7 @@
   ],
   "purpose": "Define the architecture and implementation requirements for the connection-owned QUIC runtime that arbitrates packet receive events, timer expirations, path changes, stateless reset handling, handshake packet flow, close and drain transitions, live stream orchestration, and the trim and Native AOT compatibility posture of the shipped package.",
   "scope": "This specification covers endpoint ingress classification, routing tables, connection ownership, execution profiles, event and effect modeling, timer scheduling, lifecycle phases, migration and path state, handshake packet open/protect coordination, stateless reset handling, stream ownership, performance posture for high connection density, packaged-library trimming and Native AOT compatibility, and reducer-oriented testability.",
-  "context": "The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, and package-compatibility work can be implemented against one clear architecture.",
+  "context": "The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, and package-compatibility work can be implemented against one clear architecture.",
   "supplemental_sections": [
     {
       "heading": "Decision Summary",
@@ -56,7 +56,7 @@
     },
     {
       "heading": "Backlog This Specification Unlocks",
-      "content": "This specification is intended to unlock the architecture blockers called out for:\n\n- 9000-11-migration-core\n- 9000-13-idle-and-close\n- 9000-14-stateless-reset\n- the live-stream remainder of 9000-02-stream-state\n- the library-wide trim and Native AOT package-compatibility slice\n"
+      "content": "This specification is intended to unlock the architecture blockers called out for:\n\n- 9000-11-migration-core\n- 9000-13-idle-and-close\n- 9000-14-stateless-reset\n- the live-stream remainder of 9000-02-stream-state\n- the library-owned retry bootstrap seam and eventual interop-runner retry enablement\n- the library-wide trim and Native AOT package-compatibility slice\n"
     }
   ],
   "requirements": [
@@ -1195,6 +1195,24 @@
         "This slice is intentionally client-role only and permanent. It does not add transfer or retry enablement, 0-RTT, key update, or server-role handshake crypto.",
         "The client role publishes the 1-RTT readiness material from the post-Finished transcript boundary, but the runtime still requires the existing Active-phase transition before any application stream open or application packet receive.",
         "This slice is the client counterpart to server-role 1-RTT packet-protection publication in REQ-QUIC-CRT-0119."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0122",
+      "title": "Retain one retry bootstrap handoff across a single replay",
+      "statement": "The library bootstrap path MUST retain the original destination connection ID, the server-provided Retry source connection ID, and the Retry token across exactly one valid Retry so the next client Initial can be reissued with the echoed token and the eventual `retry_source_connection_id` binding check can validate the attempt; this slice MUST NOT add interop-runner retry dispatch, public API widening, transfer generalization, broader TLS-policy work, 0-RTT, key update, or broad token-lifecycle behavior.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Sections 7.2, 8.1, and 17.2.5",
+          "RFC 9001 Section 5.8",
+          "RFC 9002 Section 6.3",
+          "connection-runtime-state-machine.md"
+        ]
+      },
+      "notes": [
+        "The helper-backed Retry integrity and `retry_source_connection_id` checks already exist; the missing seam is bootstrap state ownership across one replay.",
+        "This slice keeps retry testcase dispatch out of scope. `retry` stays at `127` until the later interop-runner slice exists.",
+        "The work is intentionally smaller than broader token-lifecycle or NEW_TOKEN support."
       ]
     }
   ]
