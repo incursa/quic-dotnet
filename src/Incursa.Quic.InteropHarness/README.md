@@ -5,7 +5,7 @@
 ## Boundary
 
 - Library-owned: connection runtime, sender and recovery ownership, TLS-facing transport contracts, packet protection lifecycle state, handshake confirmation, timers, path validation, retransmission planning, transport-visible diagnostics, `QuicConnectionEndpointHost`, and the packet open/protect helpers.
-- Harness-owned: `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE` parsing; fixed mount-path mapping; client or server dispatch; exit codes; Docker packaging; the startup script; and the thin `InteropEndpointHost` wrapper.
+- Harness-owned: `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE` parsing; fixed mount-path mapping; handshake dispatch; exit codes; Docker packaging; the startup script; and the thin `InteropEndpointHost` wrapper.
 
 ## Endpoint Host Shell
 
@@ -14,9 +14,11 @@
 ## What it does
 
 - Reads `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE` from the runner environment.
+- Uses the first `REQUESTS` URL to seed the handshake endpoint that the client connects to and the server listens on.
 - Maps the fixed container paths used by the runner: `/www`, `/downloads`, and `/certs/cert.pem` plus `/certs/priv.key`.
 - Preserves TLS material and diagnostics placeholder hooks without claiming end-to-end transport support yet.
 - Exercises the library-owned runtime through a real connected UDP socket in requirement-home coverage.
+- Routes `handshake` into the managed client/listener bootstrap path and returns `0` when that path completes.
 - Returns `127` for unsupported interop test cases instead of faking success.
 - Returns `1` for invalid process configuration.
 
@@ -24,11 +26,10 @@
 
 Supported:
 
-- none yet
+- `handshake`
 
 Unsupported:
 
-- `handshake`
 - `transfer`
 - `retry`
 - any other testcase not explicitly implemented
@@ -48,17 +49,18 @@ The image expects the QUIC interop runner mount layout and environment variables
 docker run --rm \
   -e ROLE=server \
   -e TESTCASE=handshake \
+  -e REQUESTS=https://127.0.0.1:443/ \
   -v "$(pwd)/www:/www" \
   -v "$(pwd)/downloads:/downloads" \
   -v "$(pwd)/certs:/certs" \
   incursa-quic-interop-harness
 ```
 
-The current build still returns `127` for the QUIC test cases above because the runner does not yet dispatch into the endpoint-host shell and the harness remains honest about unsupported testcase execution.
+The `handshake` testcase now dispatches into the managed bootstrap path. `transfer` and `retry` still return `127`.
 
 ## Stubbed today
 
-- `handshake`, `transfer`, and `retry` are recognized interop targets but still unsupported.
+- `transfer` and `retry` are recognized interop targets but still unsupported.
 - `InteropEndpointHost` is a real shell around the library-owned endpoint host, but it is exercised by requirement-home tests rather than runner-dispatched testcases.
 - `QLOGDIR` currently selects a placeholder diagnostics sink rather than real qlog output.
 - `SSLKEYLOGFILE` is recorded as future TLS-provider work and does not emit key logs yet.

@@ -99,6 +99,32 @@ internal static class InteropEndpointHostTestSupport
         return protectedPacket;
     }
 
+    public static byte[] BuildProtectedInitialPacket(
+        ReadOnlySpan<byte> destinationConnectionId,
+        ReadOnlySpan<byte> sourceConnectionId,
+        QuicTransportParameters? transportParameters = null)
+    {
+        QuicTransportParameters clientTransportParameters = transportParameters ?? CreateBootstrapLocalTransportParameters();
+        clientTransportParameters.InitialSourceConnectionId = sourceConnectionId.ToArray();
+
+        QuicTlsKeySchedule clientKeySchedule = new(QuicTlsRole.Client);
+        Assert.True(clientKeySchedule.TryCreateClientHello(clientTransportParameters, out byte[] clientHello));
+
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            destinationConnectionId,
+            out QuicInitialPacketProtection initialProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = new(destinationConnectionId.ToArray(), sourceConnectionId.ToArray());
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            clientHello,
+            cryptoPayloadOffset: 0,
+            initialProtection,
+            out byte[] protectedPacket));
+
+        return protectedPacket;
+    }
+
     public static byte[] CreateClientHandshakeTranscript(QuicTransportParameters transportParameters)
     {
         byte[] serverHello = CreateServerHelloTranscript();

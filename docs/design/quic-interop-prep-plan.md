@@ -116,8 +116,10 @@ Why this stays separate:
 Supported today:
 
 - The thin endpoint-host shell around the library runtime.
-- Honest unsupported testcase behavior that returns `127`.
+- Honest unsupported testcase behavior that returns `127` for `transfer` and `retry`.
 - The shell-level requirement-home coverage for the connected UDP boundary.
+- The managed client/listener host path already owns honest Initial/DCID bootstrap and server Initial-response emission.
+- The harness `handshake` testcase already routes into that managed bootstrap path.
 
 Partially implemented but not yet promised:
 
@@ -126,13 +128,13 @@ Partially implemented but not yet promised:
 
 Still missing:
 
-- Testcase enablement for `handshake`, `transfer`, and `retry`.
-- Runner-side Initial/DCID bootstrap.
-- Honest end-to-end interop-visible handshake execution.
+- Testcase enablement for `transfer` and `retry`.
+- Runner-side testcase dispatch.
+- Honest end-to-end interop-visible `transfer` and `retry` execution.
 
 Why this stays separate:
 
-- The harness should keep returning `127` for unsupported testcases until it can dispatch into the real endpoint-host path and the bootstrap path is honest.
+- The harness should keep returning `127` for unsupported testcases until it can dispatch into the real endpoint-host path; the managed bootstrap path is already proven for handshake.
 
 ## Recommended Execution Order
 
@@ -156,8 +158,8 @@ Notes on dependency:
    - Depends on: nothing new; it is the first stabilization slice after this plan.
 
 2. `Initial/DCID bootstrap and endpoint-host cleanup`
-   - Goal: make the interop-facing bootstrap path honest enough to drive a real testcase entry instead of a shell-only path.
-   - Focus: Initial/DCID handling, endpoint-host handoff, and any remaining runtime bootstrap cleanup that blocks runner entry.
+   - Goal: make the interop-facing bootstrap path honest enough to drive a real testcase entry instead of a shell-only path, building on the already-proven managed client/listener bootstrap seam.
+   - Focus: runner-facing Initial/DCID handoff, endpoint-host integration, and any remaining runtime bootstrap cleanup that blocks runner entry.
    - Depends on: the handshake-floor stabilization slice.
 
 3. `TLS trust/policy/validation`
@@ -171,8 +173,8 @@ Notes on dependency:
    - Depends on: the handshake-floor stabilization slice and the current narrow stream slice staying stable.
 
 5. `Interop runner dispatch`
-   - Goal: route `handshake`, then `transfer`, then `retry` into the real endpoint-host path instead of returning `127`.
-   - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch.
+   - Goal: route `transfer` and `retry` into the real endpoint-host path instead of returning `127`.
+   - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch. `handshake` is already wired into the managed bootstrap path.
    - Depends on: the Initial/DCID bootstrap slice, the TLS trust/policy slice, and the broader stream-management slice.
 
 ## Do-Not-Widen Boundaries
@@ -188,7 +190,8 @@ Notes on dependency:
 ## Current Unstable Areas Before Interop Continues
 
 - The handshake-floor tail slice for `REQ-QUIC-CRT-0117` and `REQ-QUIC-CRT-0119` is now closed.
-- The interop harness still returns `127` for `handshake`, `transfer`, and `retry`.
+- The interop harness still returns `127` for `transfer` and `retry`.
+- The managed client/listener bootstrap seam is already proven.
 - The current client trust story is still pinned-leaf only; it is not yet a broader trust-store or hostname-validation story.
 
 ## Trace Links

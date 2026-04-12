@@ -8,7 +8,7 @@ Describe the thin endpoint-host shell that bridges the library-owned runtime end
 
 ## Scope
 
-This slice establishes the smallest process/socket boundary needed to drive a single connection through the library-owned runtime. It does not claim full handshake enablement or general-purpose server/client hosting.
+This slice establishes the smallest process/socket boundary needed to drive a single connection through the library-owned runtime and to support handshake-only harness dispatch through that seam. It does not claim `transfer`, `retry`, or general-purpose server/client hosting.
 
 ## Requirements Satisfied
 
@@ -20,9 +20,13 @@ The endpoint-host shell keeps the harness on the adapter side of the boundary. I
 
 The library keeps the actual runtime ownership. `QuicConnectionRuntimeEndpoint` owns route registration and ingress dispatch, `QuicConnectionEndpointHost` bridges the connected socket to the runtime, `QuicConnectionRuntime` owns handshake and send/recovery behavior, and `QuicHandshakeFlowCoordinator` keeps packet open/protect helpers inside the library.
 
+The harness runner now uses that seam to dispatch `handshake` into the managed client/listener bootstrap path, while `transfer` and `retry` remain unsupported.
+
 ## Key Components
 
 - src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs
+- src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
+- src/Incursa.Quic.InteropHarness/InteropTlsMaterials.cs
 - src/Incursa.Quic/QuicConnectionEndpointHost.cs
 - src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs
@@ -36,8 +40,8 @@ The shell keeps only connected-socket state, cancellation, and the observers nee
 ## Edge Cases and Constraints
 
 - Route misses must be reported as unroutable and must not reach the runtime consumer.
-- Unsupported interop testcases must remain honest and keep returning `127` until the runner is enabled.
-- The shell must not claim handshake completion, 1-RTT data support, or key update support.
+- Unsupported interop testcases such as `transfer` and `retry` must remain honest and keep returning `127` until the runner is enabled.
+- The shell must not claim `transfer`, `retry`, 1-RTT data support, or key update support.
 
 ## Alternatives Considered
 
@@ -47,8 +51,8 @@ The shell keeps only connected-socket state, cancellation, and the observers nee
 ## Risks
 
 - A later runner integration could accidentally move protocol ownership back into the harness if the boundary is not kept narrow.
-- Handshake testcase enablement still needs runner-side wiring plus the remaining Initial/DCID bootstrap work.
-- The shell proves socket bridging, not a completed QUIC handshake.
+- A later change could accidentally widen the shell into transfer/retry or broader 1-RTT data-path ownership.
+- The shell proves socket bridging and handshake dispatch, not completed transfer/retry support.
 
 ## Boundary Split
 
@@ -58,6 +62,8 @@ Library-owned code keeps `QuicConnectionEndpointHost`, `QuicConnectionRuntimeEnd
 ## Related Code And Tests
 
 - [`InteropEndpointHost.cs`](../../../src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs)
+- [`InteropHarnessRunner.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs)
+- [`InteropTlsMaterials.cs`](../../../src/Incursa.Quic.InteropHarness/InteropTlsMaterials.cs)
 - [`QuicConnectionEndpointHost.cs`](../../../src/Incursa.Quic/QuicConnectionEndpointHost.cs)
 - [`QuicConnectionRuntimeEndpoint.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs)
 - [`QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)

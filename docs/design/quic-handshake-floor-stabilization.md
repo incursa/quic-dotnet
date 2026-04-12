@@ -38,7 +38,7 @@ This note scopes the narrow managed handshake-floor slice under active work. It 
 - `0-RTT`
 - Key update
 - Interop-runner testcase support
-- Any wider claim that `handshake`, `transfer`, or `retry` is enabled in the interop harness
+- Any wider claim that `transfer` or `retry` is enabled in the interop harness
 - Any broader public-promise widening beyond the current narrow loopback subset
 
 ## Client Policy / Commit Lane

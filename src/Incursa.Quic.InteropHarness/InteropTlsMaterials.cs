@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+
 namespace Incursa.Quic.InteropHarness;
 
 internal sealed record InteropTlsMaterials(string CertificatePem, string PrivateKeyPem)
@@ -42,6 +45,31 @@ internal sealed record InteropTlsMaterials(string CertificatePem, string Private
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
         {
             errorMessage = $"Unable to load TLS materials: {ex.Message}";
+            return false;
+        }
+    }
+
+    public bool TryCreateServerCertificate(out X509Certificate2? certificate, out string? errorMessage)
+    {
+        certificate = null;
+        errorMessage = null;
+
+        try
+        {
+            using X509Certificate2 certificateWithoutKey = X509Certificate2.CreateFromPem(CertificatePem);
+            using ECDsa privateKey = ECDsa.Create();
+            privateKey.ImportFromPem(PrivateKeyPem);
+            using X509Certificate2 certificateWithKey = certificateWithoutKey.CopyWithPrivateKey(privateKey);
+            byte[] pfxBytes = certificateWithKey.Export(X509ContentType.Pkcs12);
+            certificate = X509CertificateLoader.LoadPkcs12(
+                pfxBytes,
+                (string?)null,
+                X509KeyStorageFlags.Exportable);
+            return true;
+        }
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException or CryptographicException)
+        {
+            errorMessage = $"Unable to create TLS server certificate: {ex.Message}";
             return false;
         }
     }

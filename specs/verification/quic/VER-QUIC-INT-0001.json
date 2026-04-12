@@ -41,7 +41,7 @@
     "Inspect the README, Dockerfile, and startup script to confirm the runner contract stays in the harness and that unsupported cases are documented honestly."
   ],
   "expected_result": "The harness parses runner-facing configuration without owning protocol behavior, unsupported testcases return `127`, invalid runner configuration returns `1`, and the repository can build the harness project and its Docker image without polluting the library boundary.",
-  "status_summary": "The expected first-pass outcome is a traceable harness foundation, not successful end-to-end interop. `handshake`, `transfer`, and `retry` remain unsupported until later transport work lands.",
+  "status_summary": "The expected first-pass outcome is a traceable harness foundation, not successful end-to-end interop. `transfer` and `retry` remain unsupported until later transport work lands.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",

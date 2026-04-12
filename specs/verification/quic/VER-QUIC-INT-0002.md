@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify the endpoint-host shell, the connected-UDP bridge into the library-owned runtime endpoint, the outbound datagram handoff, and the honesty of route-miss handling.
+Verify the endpoint-host shell, the managed client/listener Initial bootstrap seam, handshake-only harness dispatch into that seam, the connected-UDP bridge into the library-owned runtime endpoint, the outbound datagram handoff, and the honesty of route-miss handling.
 
 ## Requirements Verified
 
@@ -22,18 +22,19 @@ Focused requirement-home tests plus build execution and artifact inspection of t
 
 ## Procedure or Approach
 
-- Run the positive and negative endpoint-host requirement-home tests to confirm routed ingress, outbound datagram emission, and unroutable route misses.
+- Run the positive and negative endpoint-host requirement-home tests to confirm client Initial/DCID ownership, server Initial-response emission, routed ingress, outbound datagram emission, handshake dispatch entry, and unroutable route misses.
 - Build the solution and confirm the harness shell participates in the normal build graph without moving protocol ownership out of the library.
-- Inspect the README and gap ledger to confirm unsupported harness testcases remain honest and the new shell does not claim completed handshake support.
+- Inspect the README and gap ledger to confirm handshake dispatch is routed through the real managed bootstrap path while `transfer` and `retry` remain honest `127` cases.
 
 ## Expected Result
 
-A real connected UDP socket boundary can now drive one library-owned runtime connection, the runtime can surface an outbound handshake datagram back to the socket layer, and route misses stay unroutable. Unsupported harness testcase dispatch remains `127`.
+A real connected UDP socket boundary can now drive one library-owned runtime connection, the managed client/listener host path owns honest Initial/DCID bootstrap and server Initial-response emission, the harness `handshake` testcase dispatch reaches that managed path, the runtime can surface an outbound handshake datagram back to the socket layer, and route misses stay unroutable. Unsupported harness testcase dispatch for `transfer` and `retry` remains `127`.
 
 ## Evidence
 
 - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/INT/InteropEndpointHostTestSupport.cs
+- src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
 - src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs
 - src/Incursa.Quic/QuicConnectionEndpointHost.cs
 - src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
@@ -44,7 +45,7 @@ A real connected UDP socket boundary can now drive one library-owned runtime con
 
 ## Status
 
-This verification slice proves the shell boundary only. Full handshake testcase enablement still depends on runner-side wiring and the remaining Initial/DCID bootstrap work.
+This verification slice proves the shell boundary plus the managed Initial/bootstrap seam and handshake-only harness dispatch entry. `transfer` and `retry` remain intentionally deferred.
 
 ## Related Artifacts
 
@@ -54,4 +55,4 @@ This verification slice proves the shell boundary only. Full handshake testcase 
 
 ## Deferred Coverage
 
-Actual interop-runner handshake enablement, 0-RTT, 1-RTT data-path ownership, and key update are intentionally deferred. This artifact only proves the shell and its honest failure mode.
+Actual interop-runner `transfer` and `retry` enablement, 0-RTT, 1-RTT data-path ownership, and key update are intentionally deferred. This artifact only proves the shell and the honest handshake-dispatch path.

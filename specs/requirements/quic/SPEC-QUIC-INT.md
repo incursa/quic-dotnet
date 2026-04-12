@@ -8,11 +8,11 @@ Define the interop-runner-facing companion harness contract that hosts Incursa.Q
 
 ## Scope
 
-This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, unsupported testcase exit behavior, placeholder diagnostics hooks, Docker packaging, and CI participation.
+This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, unsupported testcase exit behavior, placeholder diagnostics hooks, Docker packaging, and CI participation.
 
 ## Context
 
-Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing when a future testcase is ready to use it.
+Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam.
 
 ## Open Questions
 
@@ -21,7 +21,7 @@ Incursa.Quic remains the owner of reusable transport/runtime behavior. The inter
 
 ## Current Support Posture
 
-No end-to-end interop testcases are currently supported. The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, but the harness must still return exit code `127` for `handshake`, `transfer`, and `retry` until Initial/DCID bootstrap and runner-side testcase enablement exist.
+The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap and server Initial-response emission. The harness `handshake` testcase now dispatches into that managed path, while `transfer` and `retry` still return exit code `127` until runner-side enablement exists.
 
 ## Boundary Split
 
@@ -66,7 +66,7 @@ Notes:
 - These concerns exist because of the interop runner contract and would not belong in the library.
 
 ## REQ-QUIC-INT-0003 Return unsupported testcases honestly
-The interop harness MUST return exit code `127` for any unsupported or not-yet-implemented interop testcase, including `handshake`, `transfer`, and `retry` until `Incursa.Quic` can execute those cases end to end for real.
+The interop harness MUST return exit code `127` for any unsupported or not-yet-implemented interop testcase, including `transfer` and `retry` until `Incursa.Quic` can execute those cases end to end for real.
 
 Trace:
 - Satisfied By:
@@ -123,14 +123,16 @@ Trace:
 - Verified By:
   - VER-QUIC-INT-0002
 - Code Refs:
-  - src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs
-  - src/Incursa.Quic/QuicConnectionEndpointHost.cs
-  - src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
-  - src/Incursa.Quic/QuicConnectionRuntime.cs
+- src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs
+- src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
+- src/Incursa.Quic.InteropHarness/InteropTlsMaterials.cs
+- src/Incursa.Quic/QuicConnectionEndpointHost.cs
+- src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
+- src/Incursa.Quic/QuicConnectionRuntime.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs
 - Related:
   - SPEC-QUIC-CRT
 
 Notes:
-- The shell remains adapter-only: it owns socket/process lifecycle and observers, not protocol behavior.
-- The harness still returns `127` for unsupported testcase dispatch until runner-side enablement exists.
+  - The shell remains adapter-only: it owns socket/process lifecycle and observers, not protocol behavior.
+  - The harness handshake testcase now routes through this seam; transfer and retry still return `127`.

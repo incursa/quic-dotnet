@@ -47,7 +47,7 @@ The harness parses runner-facing configuration without owning protocol behavior,
 
 ## Status
 
-The expected first-pass outcome is a traceable harness foundation, not successful end-to-end interop. `handshake`, `transfer`, and `retry` remain unsupported until later transport work lands.
+The expected first-pass outcome is a traceable harness foundation, not successful end-to-end interop. `transfer` and `retry` remain unsupported until later transport work lands.
 
 ## Related Artifacts
 

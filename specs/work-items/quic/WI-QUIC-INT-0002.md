@@ -24,7 +24,7 @@ related_artifacts:
 
 ## Summary
 
-Add the smallest honest endpoint-host shell around the library runtime so the interop harness can drive a real connected UDP socket boundary without taking protocol ownership away from Incursa.Quic.
+Add the smallest honest endpoint-host shell around the library runtime and use it to route the harness handshake testcase into the managed bootstrap path without taking protocol ownership away from Incursa.Quic.
 
 ## Requirements Addressed
 
@@ -37,19 +37,20 @@ Add the smallest honest endpoint-host shell around the library runtime so the in
 ## Planned Changes
 
 - Add a harness-owned `InteropEndpointHost` wrapper around the library-owned endpoint host.
-- Add test support for a connected UDP socket pair and deterministic handshake packet construction.
-- Add positive and negative requirement-home coverage for routed ingress, outbound datagram emission, and unroutable route misses.
-- Update the INT spec, gap ledger, harness README, and test-intent surface so the new shell remains traceable and unsupported cases stay honest.
+- Add harness-side handshake dispatch that derives the target endpoint from runner requests and drives the managed client/listener bootstrap path.
+- Add test support for a connected UDP socket pair plus deterministic Initial and handshake packet construction.
+- Add requirement-home coverage for client Initial/DCID ownership, server Initial-response emission, routed ingress, outbound datagram emission, handshake testcase dispatch, and unroutable route misses.
+- Update the INT spec, gap ledger, harness README, and test-intent surface so the new shell and handshake dispatch remain traceable and unsupported cases stay honest.
 
 ## Out of Scope
 
-- Enabling the QUIC interop runner handshake testcase.
+- Enabling `transfer` or `retry` in the QUIC interop runner.
 - Moving packet open/protect or TLS ownership into the harness.
 - Adding 0-RTT, 1-RTT data-path ownership, key update, or native TLS fallback.
 
 ## Verification Plan
 
-Build the solution, run the new endpoint-host requirement-home tests, confirm the runtime emits a real outbound datagram through the socket boundary, and confirm route misses stay unroutable while unsupported harness testcase dispatch still returns `127`.
+Build the solution, run the new endpoint-host and handshake-dispatch requirement-home tests, confirm the managed client/listener host path owns Initial/DCID bootstrap and server Initial-response emission, confirm the handshake testcase reaches the real managed dispatch path, confirm the runtime emits a real outbound datagram through the socket boundary, and confirm route misses stay unroutable while unsupported harness testcase dispatch for `transfer` and `retry` still returns `127`.
 
 ## Completion Notes
 
@@ -72,6 +73,8 @@ Verified By:
 ## Related Code And Tests
 
 - [`InteropEndpointHost.cs`](../../../src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs)
+- [`InteropHarnessRunner.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs)
+- [`InteropTlsMaterials.cs`](../../../src/Incursa.Quic.InteropHarness/InteropTlsMaterials.cs)
 - [`QuicConnectionEndpointHost.cs`](../../../src/Incursa.Quic/QuicConnectionEndpointHost.cs)
 - [`QuicConnectionRuntimeEndpoint.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs)
 - [`QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)
