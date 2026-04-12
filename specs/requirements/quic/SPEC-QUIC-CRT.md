@@ -977,3 +977,22 @@ Notes:
 - The helper-backed Retry integrity and `retry_source_connection_id` checks already exist; the missing seam is bootstrap state ownership across one replay.
 - This slice keeps retry testcase dispatch out of scope. The narrow child-process retry contract is traced separately under `REQ-QUIC-INT-0012`.
 - The work is intentionally smaller than broader token-lifecycle or NEW_TOKEN support.
+
+## REQ-QUIC-CRT-0123 Accept peer certificates only with explicit trust material and exact peer identity
+In the client role, the library MUST extend the local certificate-acceptance seam so that `PeerCertificatePolicyAccepted` is surfaced only when one explicit trust-material input and one exact peer-identity input are both present and match the presented peer certificate; missing trust material, missing peer identity, trust mismatch, and identity mismatch MUST fail deterministically through the existing fatal/update path. This slice MUST NOT add OS trust-store integration, generalized certificate-path building, revocation, broader client-auth, 0-RTT, key update, or public API widening.
+
+Trace:
+- Source Refs:
+  - docs/design/quic-interop-prep-plan.md
+  - docs/design/quic-public-api-gap-matrix.md
+  - src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs
+  - src/Incursa.Quic/QuicClientConnectionHost.cs
+  - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
+  - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs
+
+Notes:
+- This slice is intentionally narrower than broad TLS policy or full PKI support.
+- The trust-material input is explicit and single-valued; it does not imply OS trust-store integration or generalized chain building.
+- The peer-identity match is exact and single-valued; wildcard or broader SAN policy remains out of scope.

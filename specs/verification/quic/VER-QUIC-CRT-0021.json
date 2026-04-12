@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0021",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC CRT client trust-material and peer-identity validation verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Execution, inspection, and regression evidence.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0021",
+    "WI-QUIC-CRT-0021"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0123"
+  ],
+  "scope": "Verify that the managed client path only accepts when explicit trust material and exact peer identity both match, and that it fails closed for trust mismatch, identity mismatch, missing trust material, or missing identity without widening the public client promise.",
+  "expected_result": "- A matching trust-material and exact peer-identity pairing is accepted on the supported managed client path.\n- Trust-material mismatch fails closed through the existing fatal/update path.\n- Exact peer-identity mismatch fails closed through the existing fatal/update path.\n- The current callback/pinned-leaf boundary stays honest while the new seam is traced.\n- The public API, `IsSupported`, transfer, retry, 0-RTT, key update, and OS trust-store behavior remain unchanged.",
+  "procedure": [
+    "Run the new client-validation requirement-home tests once the seam exists.",
+    "Run the current CRT and API guards that cover the managed client path and the callback-driven acceptance boundary.",
+    "Run the full `REQ_QUIC_CRT_` sweep.",
+    "Re-run the repo-local SpecTrace validation checks and markdown rendering checks after the canonical JSON updates."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs",
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
+  ],
+  "preconditions": [
+    "The Incursa.Quic library builds successfully on net10.0.",
+    "The managed client path exposes the narrow trust-material and peer-identity seam described by ARC-QUIC-CRT-0021.",
+    "The current callback-driven acceptance path remains available for regression comparison."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- [`src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs`](../../../src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs)\n- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs)\n- [`scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1`](../../../scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1)"
+    }
+  ]
+}

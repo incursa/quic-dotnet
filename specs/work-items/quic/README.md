@@ -31,6 +31,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0018.json`](WI-QUIC-CRT-0018.json): canonical CRT trim and Native AOT compatibility work item
 - [`WI-QUIC-CRT-0019.json`](WI-QUIC-CRT-0019.json): canonical CRT client-role 1-RTT readiness work item
 - [`WI-QUIC-CRT-0020.json`](WI-QUIC-CRT-0020.json): canonical CRT retry bootstrap ownership work item
+- [`WI-QUIC-CRT-0021.json`](WI-QUIC-CRT-0021.json): canonical CRT client trust-material and peer-identity validation work item
 - [`WI-QUIC-API-0001.json`](WI-QUIC-API-0001.json): canonical public API surface promotion work item
 - [`WI-QUIC-API-0002.json`](WI-QUIC-API-0002.json): canonical initial stream-capacity callback work item
 

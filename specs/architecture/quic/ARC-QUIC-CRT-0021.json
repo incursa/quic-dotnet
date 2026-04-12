@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0021",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC CRT client trust-material and peer-identity validation architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the smallest honest managed-client seam for explicit trust-material handling and exact peer-identity matching without widening the public API, OS trust-store behavior, or the existing callback/pinned-leaf boundaries.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0021",
+    "VER-QUIC-CRT-0021"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0123"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs"
+  ],
+  "risks": [
+    "If the client host continues to reject any peer-identity carrier, the validation floor cannot be exercised honestly.",
+    "If the trust decision stays callback-only with a synthetic error state, the slice will keep looking green without proving real trust or identity checks.",
+    "If the implementation pulls in OS trust-store behavior, the boundary will widen beyond the slice that is currently being traced."
+  ],
+  "design_summary": "The narrowest honest managed-client validation seam is still inside the existing client capture and TLS bridge path. The validator owns the public client option gating, the client host owns the connection settings snapshot, and the TLS bridge driver owns the actual acceptance decision. That seam needs one explicit trust-material input and one exact peer-identity input so the existing callback/pinned-leaf acceptance path can fail closed on mismatch. The design intentionally stops short of platform trust-store integration, generalized certificate-path building, revocation, or a broader client-auth story, and it keeps the public API boundary unchanged while the current managed path is still being traced.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs`](../../../src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs)\n- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs)"
+    }
+  ]
+}
