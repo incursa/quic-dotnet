@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0019",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC CRT client-role 1-RTT readiness verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Execution, inspection, and benchmark evidence.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0019",
+    "WI-QUIC-CRT-0019"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0121"
+  ],
+  "scope": "Verify that client-role Finished processing publishes the first 1-RTT packet-protection material only after peer Finished verification and that the supported active-loopback stream boundary remains reachable without widening transfer or retry support.",
+  "expected_result": "- The client Finished path publishes `PeerFinishedVerified`, `KeysAvailable(OneRtt)`, and directional 1-RTT packet-protection material in the supported order.\n- Premature `OneRtt` key publication is rejected before `PeerFinishedVerified`.\n- The supported loopback stream-open and stream-capacity guards remain green after the readiness seam lands.\n- The permanent client Finished benchmark exists and can be run locally.\n- Transfer and retry remain unsupported.",
+  "procedure": [
+    "Run the new client-role 1-RTT readiness requirement-home test.",
+    "Run the affected CRT requirement-home tests that exercise the client Finished path and the bridge gate.",
+    "Run the supported interop/API guards that cover the loopback stream-open boundary.",
+    "Run the full `REQ_QUIC_CRT_` sweep.",
+    "Run the permanent benchmark suite for the client Finished publication path.",
+    "Re-run the repo-local SpecTrace validation checks and markdown rendering checks after the artifact updates."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0010.cs",
+    "benchmarks/QuicTlsClientFinishedPublicationBenchmarks.cs",
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
+  ],
+  "preconditions": [
+    "The Incursa.Quic library builds successfully on net10.0.",
+    "The benchmark project restores successfully.",
+    "The supported client loopback path can be exercised locally."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0009.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0009.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0010.cs)\n- [`benchmarks/QuicTlsClientFinishedPublicationBenchmarks.cs`](../../../benchmarks/QuicTlsClientFinishedPublicationBenchmarks.cs)"
+    }
+  ]
+}

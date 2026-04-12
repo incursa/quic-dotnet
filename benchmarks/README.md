@@ -13,6 +13,7 @@ This directory contains permanent BenchmarkDotNet suites for the QUIC parser hot
 - `QuicHandshakePacketProtectionBenchmarks`: Handshake packet protection protect and open with TLS-derived material
 - `QuicRetryIntegrityBenchmarks`: Retry integrity tag generation and validation
 - `QuicTlsServerFinishedPublicationBenchmarks`: server Finished publication and 1-RTT packet-protection material derivation
+- `QuicTlsClientFinishedPublicationBenchmarks`: client Finished publication and 1-RTT readiness derivation
 
 ## Run
 
@@ -29,6 +30,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicHandshakePacketProtectionBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRetryIntegrityBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsServerFinishedPublicationBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsClientFinishedPublicationBenchmarks*"
 ```
 
 Use `--filter` to narrow to a subset of benchmarks when iterating locally.

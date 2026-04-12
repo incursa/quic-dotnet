@@ -36,6 +36,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0015.json`](ARC-QUIC-CRT-0015.json): canonical CRT server-role inbound client Finished proof design source
 - [`ARC-QUIC-CRT-0017.json`](ARC-QUIC-CRT-0017.json): canonical CRT server-role 1-RTT publication design source
 - [`ARC-QUIC-CRT-0018.json`](ARC-QUIC-CRT-0018.json): canonical CRT trim and Native AOT compatibility design source
+- [`ARC-QUIC-CRT-0019.json`](ARC-QUIC-CRT-0019.json): canonical CRT client-role 1-RTT readiness design source
 - [`ARC-QUIC-API-0001.json`](ARC-QUIC-API-0001.json): canonical public API boundary design source
 - [`ARC-QUIC-API-0002.json`](ARC-QUIC-API-0002.json): canonical initial stream-capacity callback design source
 

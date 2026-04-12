@@ -67,11 +67,10 @@ Supported today:
 
 - The connection runtime already owns phase, close/drain, timers, stream registry coordination, send/recovery ownership, and the current supported loopback handshake path.
 - The handshake-flow and TLS bridge seams already exist internally and are test-backed.
+- The server-role 1-RTT publication floor and the client-role post-Finished 1-RTT readiness seam are now proven internally.
 
 Partially implemented but not yet promised:
 
-- Server-role handshake flight handling.
-- 1-RTT packet-protection publication.
 - Endpoint-host and runtime bootstrap plumbing that can already be exercised by the shell tests, but not yet by a fully honest interop runner path.
 
 Still missing:
@@ -152,30 +151,30 @@ Notes on dependency:
 
 ## Next Concrete Slices
 
-1. `Handshake-floor stabilization`
-   - Goal: reduce the current red API+CRT area to a stable narrow handshake floor without widening the public surface.
-   - Focus: the CRT requirements that were part of the handshake-floor tail, especially `REQ-QUIC-CRT-0117` and `REQ-QUIC-CRT-0119`, while keeping the already-green floor slices intact.
-   - Depends on: nothing new; it is the first stabilization slice after this plan.
+1. `Transfer-owned completion contract`
+   - Goal: define the smallest honest interop-owned `transfer` slice now that the client 1-RTT readiness prerequisite is proven.
+   - Focus: which side opens or accepts the application stream, how the first `REQUESTS` URL maps to `/www` and `/downloads`, which application protocol behavior and ALPN remain in scope, when byte delivery plus EOF are considered complete enough for exit `0` on both sides, and which verification artifact owns that proof.
+   - Depends on: the client-role 1-RTT readiness seam, the broader stream-management parity slice, and the current narrow stream slice staying stable.
 
 2. `Initial/DCID bootstrap and endpoint-host cleanup`
    - Goal: make the interop-facing bootstrap path honest enough to drive a real testcase entry instead of a shell-only path, building on the already-proven managed client/listener bootstrap seam.
    - Focus: runner-facing Initial/DCID handoff, endpoint-host integration, and any remaining runtime bootstrap cleanup that blocks runner entry.
-   - Depends on: the handshake-floor stabilization slice.
+   - Depends on: the current handshake/runtime proof floor and the client-role 1-RTT readiness seam.
 
 3. `TLS trust/policy/validation`
    - Goal: decide and implement the next honest trust-policy step without claiming a broader client-auth story than exists.
    - Focus: trust-store policy, hostname/identity validation, certificate-path validation, and the boundaries around the current reject-first client options.
-   - Depends on: the handshake-floor stabilization slice.
+   - Depends on: the current handshake/runtime proof floor and the client-role 1-RTT readiness seam.
 
 4. `Broader stream-management parity`
    - Goal: close the remaining stream lifecycle gap so transfer-oriented work has a truthful contract.
    - Focus: `Abort(Both, ...)`, broader abort-heavy behavior, and remaining close-driven capacity-release parity.
-   - Depends on: the handshake-floor stabilization slice and the current narrow stream slice staying stable.
+   - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
 5. `Interop runner dispatch`
    - Goal: route `transfer` and `retry` into the real endpoint-host path instead of returning `127`.
    - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch. `handshake` is already wired into the managed bootstrap path.
-   - Depends on: the Initial/DCID bootstrap slice, the TLS trust/policy slice, and the broader stream-management slice.
+   - Depends on: the transfer-owned completion contract slice, the client-role 1-RTT readiness seam, the TLS trust/policy slice, and the broader stream-management slice.
 
 ## Do-Not-Widen Boundaries
 
@@ -190,6 +189,7 @@ Notes on dependency:
 ## Current Unstable Areas Before Interop Continues
 
 - The handshake-floor tail slice for `REQ-QUIC-CRT-0117` and `REQ-QUIC-CRT-0119` is now closed.
+- The client-role 1-RTT readiness prerequisite under `REQ-QUIC-CRT-0121` is now closed.
 - The interop harness still returns `127` for `transfer` and `retry`.
 - The managed client/listener bootstrap seam is already proven.
 - The current client trust story is still pinned-leaf only; it is not yet a broader trust-store or hostname-validation story.

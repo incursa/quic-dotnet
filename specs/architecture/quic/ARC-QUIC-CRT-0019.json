@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0019",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC CRT client-role 1-RTT readiness architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the client-role Finished path publishes the first application packet-protection material only after peer Finished verification, so the supported active-loopback data-path can open honestly without claiming transfer support.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0019",
+    "VER-QUIC-CRT-0019"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0121"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0010.cs",
+    "benchmarks/QuicTlsClientFinishedPublicationBenchmarks.cs"
+  ],
+  "risks": [
+    "If OneRtt keys are published before PeerFinishedVerified, the supported data-path would appear usable before the Finished proof boundary.",
+    "If the bridge gate remains open to premature direct updates, future callers could fabricate client 1-RTT readiness without the peer proof.",
+    "If the benchmark and requirement-home tests do not exercise the client path after certificate-policy acceptance, regressions in the active-loopback seam can be missed."
+  ],
+  "design_summary": "The client Finished path now has a narrow, proof-gated 1-RTT readiness seam. After the managed key schedule verifies the peer Finished, it surfaces the local Finished bytes, publishes `KeysAvailable` for `OneRtt`, and publishes directional 1-RTT packet-protection material in that order. The bridge state rejects premature `OneRtt` key publication unless `PeerFinishedVerified` is already set, which keeps the active application-data seam honest while leaving the supported public boundary unchanged. The runtime still requires the existing Active-phase transition before application streams or application packets can flow.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0009.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0009.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0010.cs)\n- [`benchmarks/QuicTlsClientFinishedPublicationBenchmarks.cs`](../../../benchmarks/QuicTlsClientFinishedPublicationBenchmarks.cs)"
+    }
+  ]
+}

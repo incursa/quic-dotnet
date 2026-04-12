@@ -76,10 +76,14 @@ public sealed class REQ_QUIC_CRT_0108
         QuicTlsTranscriptStep finishedStep = CreateFinishedStep(finishedVerifyData);
         IReadOnlyList<QuicTlsStateUpdate> finishedUpdates = schedule.ProcessTranscriptStep(finishedStep);
 
-        Assert.Equal(2, finishedUpdates.Count);
+        Assert.Equal(5, finishedUpdates.Count);
         Assert.Equal(QuicTlsUpdateKind.PeerFinishedVerified, finishedUpdates[0].Kind);
         Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, finishedUpdates[1].Kind);
         Assert.Equal(QuicTlsEncryptionLevel.Handshake, finishedUpdates[1].EncryptionLevel);
+        Assert.Equal(QuicTlsUpdateKind.KeysAvailable, finishedUpdates[2].Kind);
+        Assert.Equal(QuicTlsEncryptionLevel.OneRtt, finishedUpdates[2].EncryptionLevel);
+        Assert.Equal(QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable, finishedUpdates[3].Kind);
+        Assert.Equal(QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable, finishedUpdates[4].Kind);
         Assert.True(schedule.PeerFinishedVerified);
     }
 

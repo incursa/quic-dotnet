@@ -627,6 +627,26 @@ internal sealed class QuicTlsKeySchedule
                 QuicTlsEncryptionLevel.Handshake,
                 CryptoDataOffset: 0,
                 CryptoData: finishedBytes));
+
+            QuicTlsPacketProtectionMaterial oneRttOpenMaterial = default;
+            QuicTlsPacketProtectionMaterial oneRttProtectMaterial = default;
+            if (!TryDeriveApplicationPacketProtectionMaterial(
+                    HashTranscript(),
+                    out oneRttOpenMaterial,
+                    out oneRttProtectMaterial))
+            {
+                return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+            }
+
+            updates.Add(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.KeysAvailable,
+                QuicTlsEncryptionLevel.OneRtt));
+            updates.Add(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable,
+                PacketProtectionMaterial: oneRttOpenMaterial));
+            updates.Add(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable,
+                PacketProtectionMaterial: oneRttProtectMaterial));
         }
 
         if (role == QuicTlsRole.Server)

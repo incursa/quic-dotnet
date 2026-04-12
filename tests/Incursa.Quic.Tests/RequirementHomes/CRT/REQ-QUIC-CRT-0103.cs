@@ -152,9 +152,6 @@ public sealed class REQ_QUIC_CRT_0103
     {
         QuicTransportTlsBridgeState bridge = new();
 
-        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
-            QuicTlsUpdateKind.KeysAvailable,
-            QuicTlsEncryptionLevel.OneRtt)));
         Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.ProhibitedKeyUpdateViolation)));
 
         Assert.True(bridge.IsTerminal);

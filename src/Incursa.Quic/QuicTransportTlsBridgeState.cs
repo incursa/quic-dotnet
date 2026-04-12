@@ -657,7 +657,7 @@ internal sealed class QuicTransportTlsBridgeState
 
     public bool TryMarkOneRttKeysAvailable()
     {
-        if (IsTerminal || OneRttKeysAvailable)
+        if (IsTerminal || OneRttKeysAvailable || !PeerFinishedVerified)
         {
             return false;
         }

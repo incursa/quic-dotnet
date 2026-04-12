@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0019",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC CRT client-role 1-RTT readiness work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the client-role post-Finished 1-RTT readiness seam so the supported active-loopback data-path can open after Finished proof without claiming transfer support.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0019"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0019"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0121"
+  ],
+  "planned_changes": "- Update `QuicTlsKeySchedule.ProcessFinished(...)` so the client role publishes `KeysAvailable` for `OneRtt` plus directional 1-RTT packet-protection material after peer Finished verification.\n- Tighten `QuicTransportTlsBridgeState.TryMarkOneRttKeysAvailable()` so it rejects premature `OneRtt` key publication before `PeerFinishedVerified`.\n- Add or update CRT requirement-home coverage for the client Finished 1-RTT readiness boundary and the premature-publication rejection path.\n- Add a permanent benchmark for the client Finished publication path.\n- Keep transfer and retry unsupported; do not widen the public boundary or `IsSupported`.",
+  "verification_plan": "Run the new CRT requirement-home tests, the affected API loopback guards, and the full `REQ_QUIC_CRT_` sweep. Run the permanent benchmark suite for the client Finished publication path and validate the spec-trace artifacts after rendering.",
+  "out_of_scope": [
+    "transfer enablement",
+    "retry enablement",
+    "public API widening",
+    "trust-store policy",
+    "hostname validation",
+    "certificate-path validation",
+    "revocation",
+    "0-RTT",
+    "key update",
+    "broader 1-RTT data-path ownership",
+    "interop harness dispatch"
+  ],
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0009.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0009.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0010.cs)\n- [`benchmarks/QuicTlsClientFinishedPublicationBenchmarks.cs`](../../../benchmarks/QuicTlsClientFinishedPublicationBenchmarks.cs)"
+    }
+  ]
+}

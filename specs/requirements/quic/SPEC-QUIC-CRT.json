@@ -1179,6 +1179,23 @@
         "The expected implementation mechanism is `IsTrimmable=true` and `IsAotCompatible=true` on the supported target, with reference-verification enabled where the slice needs it, but the requirement is about observable package compatibility rather than a specific project-file spelling.",
         "Unsupported dynamic-extension patterns remain out of scope until separately specified."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0121",
+      "title": "Publish client-role 1-RTT readiness after Finished verification",
+      "statement": "In the client role, the library MUST publish `OneRttKeysAvailable` and the first TLS 1.3 application packet-protection material only after the peer Finished has been cryptographically verified by the managed TLS 1.3 key schedule for the supported `TLS_AES_128_GCM_SHA256` over `secp256r1` subset. After that proof boundary, the library MUST surface `KeysAvailable` for `QuicTlsEncryptionLevel.OneRtt` together with `OneRttOpenPacketProtectionMaterialAvailable` and `OneRttProtectPacketProtectionMaterialAvailable`; malformed, unsupported, premature, repeated, conflicting, terminal-state, or mismatched 1-RTT publication MUST fail deterministically through the existing fatal/update path. This slice does not add 1-RTT data-path processing, key update, trust-store policy, hostname validation, certificate-path validation, revocation, or transfer enablement.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 8446 Sections 4.4.4 and 7.1",
+          "RFC 9001 Sections 4.1.2 and 4.1.4",
+          "connection-runtime-state-machine.md"
+        ]
+      },
+      "notes": [
+        "This slice is intentionally client-role only and permanent. It does not add transfer or retry enablement, 0-RTT, key update, or server-role handshake crypto.",
+        "The client role publishes the 1-RTT readiness material from the post-Finished transcript boundary, but the runtime still requires the existing Active-phase transition before any application stream open or application packet receive.",
+        "This slice is the client counterpart to server-role 1-RTT packet-protection publication in REQ-QUIC-CRT-0119."
+      ]
     }
   ]
 }
