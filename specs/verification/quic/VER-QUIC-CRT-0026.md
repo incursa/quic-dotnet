@@ -41,16 +41,17 @@ Execution, inspection, and regression evidence.
 - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0128.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0001.cs
 - docs/design/quic-interop-prep-plan.md
 - specs/requirements/quic/REQUIREMENT-GAPS.md
-- scripts/Test-SpecTraceRepository.ps1
+- scripts/Validate-SpecTraceJson.ps1
 - scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1
 
 ## Status
 
-This verification artifact records the first post-handshake ticket-bearing update seam as a planned slice; implementation evidence does not exist yet.
+This verification artifact records the landed internal post-handshake ticket-bearing update seam and points at the requirement-home and runtime evidence in the working tree.
 
 ## Related Artifacts
 

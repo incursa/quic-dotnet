@@ -7,6 +7,7 @@ internal sealed class QuicTransportTlsBridgeState
 {
     private readonly QuicCryptoBuffer initialIngressCryptoBuffer = new();
     private readonly QuicCryptoBuffer handshakeIngressCryptoBuffer = new();
+    private readonly QuicCryptoBuffer oneRttIngressCryptoBuffer = new();
     private readonly QuicCryptoBuffer initialEgressCryptoBuffer = new();
     private readonly QuicCryptoBuffer handshakeEgressCryptoBuffer = new();
     private readonly Dictionary<QuicTlsEncryptionLevel, QuicTlsPacketProtectionMaterial> packetProtectionMaterials = new();
@@ -167,6 +168,8 @@ internal sealed class QuicTransportTlsBridgeState
     internal QuicCryptoBuffer InitialIngressCryptoBuffer => initialIngressCryptoBuffer;
 
     internal QuicCryptoBuffer HandshakeIngressCryptoBuffer => handshakeIngressCryptoBuffer;
+
+    internal QuicCryptoBuffer OneRttIngressCryptoBuffer => oneRttIngressCryptoBuffer;
 
     internal QuicCryptoBuffer InitialEgressCryptoBuffer => initialEgressCryptoBuffer;
 
@@ -728,6 +731,7 @@ internal sealed class QuicTransportTlsBridgeState
         handshakeProtectPacketProtectionMaterial = null;
         oneRttOpenPacketProtectionMaterial = null;
         oneRttProtectPacketProtectionMaterial = null;
+        oneRttIngressCryptoBuffer.DiscardFutureFrames();
         postHandshakeTicketBytes = null;
         packetProtectionMaterials.Clear();
         return true;
@@ -790,6 +794,7 @@ internal sealed class QuicTransportTlsBridgeState
         {
             QuicTlsEncryptionLevel.Initial => initialIngressCryptoBuffer,
             QuicTlsEncryptionLevel.Handshake => handshakeIngressCryptoBuffer,
+            QuicTlsEncryptionLevel.OneRtt => oneRttIngressCryptoBuffer,
             _ => null,
         };
     }

@@ -40,6 +40,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0024.json`](WI-QUIC-CRT-0024.json): canonical CRT server revocation callback path work item
 - [`WI-QUIC-CRT-0025.json`](WI-QUIC-CRT-0025.json): canonical CRT resumption-ticket ownership and early-data gate work item
 - [`WI-QUIC-CRT-0026.json`](WI-QUIC-CRT-0026.json): canonical CRT post-handshake ticket-bearing TLS update seam work item
+- [`WI-QUIC-CRT-0027.json`](WI-QUIC-CRT-0027.json): canonical CRT client-side 1-RTT post-handshake ticket ingress work item
 
 ## Notes
 

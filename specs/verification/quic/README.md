@@ -50,6 +50,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-API-0004.json`](VER-QUIC-API-0004.json): canonical hostname-based peer identity and trust-anchor verification source
 - [`VER-QUIC-CRT-0025.json`](VER-QUIC-CRT-0025.json): canonical CRT resumption-ticket ownership and early-data gate verification source
 - [`VER-QUIC-CRT-0026.json`](VER-QUIC-CRT-0026.json): canonical CRT post-handshake ticket-bearing TLS update seam verification source
+- [`VER-QUIC-CRT-0027.json`](VER-QUIC-CRT-0027.json): canonical CRT client-side 1-RTT post-handshake ticket ingress verification source
 
 ## Notes
 

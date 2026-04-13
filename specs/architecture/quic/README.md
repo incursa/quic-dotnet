@@ -50,6 +50,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0024.json`](ARC-QUIC-CRT-0024.json): canonical CRT server revocation callback path design source
 - [`ARC-QUIC-CRT-0025.json`](ARC-QUIC-CRT-0025.json): canonical CRT resumption-ticket ownership and early-data gate design source
 - [`ARC-QUIC-CRT-0026.json`](ARC-QUIC-CRT-0026.json): canonical CRT post-handshake ticket-bearing TLS update seam design source
+- [`ARC-QUIC-CRT-0027.json`](ARC-QUIC-CRT-0027.json): canonical CRT client-side 1-RTT post-handshake ticket ingress design source
 
 ## Notes
 

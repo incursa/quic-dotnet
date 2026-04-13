@@ -26,6 +26,7 @@ internal enum QuicTlsHandshakeMessageType : byte
 {
     ClientHello = 0x01,
     ServerHello = 0x02,
+    NewSessionTicket = 0x04,
     EncryptedExtensions = 0x08,
     Certificate = 0x0B,
     CertificateRequest = 0x0D,

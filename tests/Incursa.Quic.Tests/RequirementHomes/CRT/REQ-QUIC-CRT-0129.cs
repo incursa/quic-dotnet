@@ -1,12 +1,14 @@
+using System.Reflection;
+
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-CRT-0128")]
-public sealed class REQ_QUIC_CRT_0128
+[Requirement("REQ-QUIC-CRT-0129")]
+public sealed class REQ_QUIC_CRT_0129
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ClientRoleDriverSurfacesOpaquePostHandshakeTicketBytesAfterFinishedThroughTheInternalTranscriptSeam()
+    public void ClientRoleDriverConsumesRealOneRttCryptoTicketIngressAndRetainsOpaqueTicketBytesAfterFinished()
     {
         QuicTlsTransportBridgeDriver driver = QuicPostHandshakeTicketTestSupport.CreateFinishedClientDriver();
         byte[] expectedTicketBytes = [0xDE, 0xAD, 0xBE, 0xEF];
@@ -14,14 +16,9 @@ public sealed class REQ_QUIC_CRT_0128
             expectedTicketBytes,
             [0x01, 0x02]);
 
-        Assert.True(driver.TryBufferIncomingCryptoData(
+        IReadOnlyList<QuicTlsStateUpdate> ticketUpdates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.OneRtt,
-            offset: 0,
-            ticketMessage,
-            out QuicCryptoBufferResult result));
-        Assert.Equal(QuicCryptoBufferResult.Buffered, result);
-
-        IReadOnlyList<QuicTlsStateUpdate> ticketUpdates = driver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.OneRtt);
+            ticketMessage);
 
         Assert.Single(ticketUpdates);
         Assert.Equal(QuicTlsUpdateKind.PostHandshakeTicketAvailable, ticketUpdates[0].Kind);
@@ -41,17 +38,11 @@ public sealed class REQ_QUIC_CRT_0128
     public void ClientRoleDriverRejectsPostHandshakeTicketsBeforeFinishedAndKeepsEarlyDataClosed()
     {
         QuicTlsTransportBridgeDriver driver = QuicPostHandshakeTicketTestSupport.CreateStartedClientDriver();
-        byte[] ticketBytes = QuicPostHandshakeTicketTestSupport.CreatePostHandshakeTicketMessage(
+        byte[] ticketMessage = QuicPostHandshakeTicketTestSupport.CreatePostHandshakeTicketMessage(
             [0x01, 0x02, 0x03],
             [0x09]);
 
-        Assert.True(driver.TryBufferIncomingCryptoData(
-            QuicTlsEncryptionLevel.OneRtt,
-            offset: 0,
-            ticketBytes,
-            out _));
-        Assert.Empty(driver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.OneRtt));
-
+        Assert.Empty(driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.OneRtt, ticketMessage));
         Assert.False(driver.State.HasPostHandshakeTicket);
         Assert.True(driver.State.PostHandshakeTicketBytes.IsEmpty);
         Assert.False(driver.State.PeerFinishedVerified);
@@ -76,38 +67,26 @@ public sealed class REQ_QUIC_CRT_0128
             duplicateTicketBytes,
             [0x02]);
 
-        Assert.True(driver.TryBufferIncomingCryptoData(
+        Assert.Single(driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.OneRtt,
-            offset: 0,
-            firstTicketMessage,
-            out _));
-        Assert.Single(driver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.OneRtt));
-
-        Assert.True(driver.TryBufferIncomingCryptoData(
+            firstTicketMessage));
+        Assert.Empty(driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.OneRtt,
-            offset: (ulong)firstTicketMessage.Length,
-            duplicateTicketMessage,
-            out _));
-        Assert.Empty(driver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.OneRtt));
+            duplicateTicketMessage));
         Assert.Equal(firstTicketBytes, driver.State.PostHandshakeTicketBytes.ToArray());
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void ServerRoleDriverRejectsPostHandshakeTicketPublication()
+    public void ServerRoleDriverRejectsPostHandshakeTicketIngress()
     {
         QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
-        byte[] ticketBytes = QuicPostHandshakeTicketTestSupport.CreatePostHandshakeTicketMessage(
+        byte[] ticketMessage = QuicPostHandshakeTicketTestSupport.CreatePostHandshakeTicketMessage(
             [0x01, 0x02, 0x03],
             [0x04]);
 
-        Assert.True(driver.TryBufferIncomingCryptoData(
-            QuicTlsEncryptionLevel.OneRtt,
-            offset: 0,
-            ticketBytes,
-            out _));
-        Assert.Empty(driver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.OneRtt));
+        Assert.Empty(driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.OneRtt, ticketMessage));
         Assert.False(driver.State.HasPostHandshakeTicket);
         Assert.True(driver.State.PostHandshakeTicketBytes.IsEmpty);
     }
@@ -119,18 +98,36 @@ public sealed class REQ_QUIC_CRT_0128
     {
         QuicTlsTransportBridgeDriver driver = QuicPostHandshakeTicketTestSupport.CreateFinishedClientDriver();
 
-        Assert.True(driver.TryBufferIncomingCryptoData(
+        IReadOnlyList<QuicTlsStateUpdate> unsupportedPostHandshakeUpdates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.OneRtt,
-            offset: 0,
-            QuicPostHandshakeTicketTestSupport.CreateUnsupportedPostHandshakeMessage(),
-            out _));
+            QuicPostHandshakeTicketTestSupport.CreateUnsupportedPostHandshakeMessage());
 
-        Assert.Empty(driver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.OneRtt));
+        Assert.Empty(unsupportedPostHandshakeUpdates);
         Assert.False(driver.State.HasPostHandshakeTicket);
         Assert.True(driver.State.PeerFinishedVerified);
         Assert.True(driver.State.PeerHandshakeTranscriptCompleted);
         Assert.True(driver.State.OneRttKeysAvailable);
         Assert.True(driver.State.OneRttOpenPacketProtectionMaterial.HasValue);
         Assert.True(driver.State.OneRttProtectPacketProtectionMaterial.HasValue);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void PublicSurfaceDoesNotExposeResumptionTicketOrEarlyDataPromises()
+    {
+        string[] forbiddenFragments = ["Resum", "Ticket", "EarlyData"];
+
+        string[] publicMembers = typeof(QuicConnection).Assembly
+            .GetExportedTypes()
+            .SelectMany(type => type.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
+                .Select(member => $"{type.FullName}.{member.Name}"))
+            .Concat(
+                typeof(QuicConnection).Assembly.GetExportedTypes()
+                    .Select(type => type.FullName ?? type.Name))
+            .ToArray();
+
+        Assert.DoesNotContain(publicMembers, member =>
+            forbiddenFragments.Any(fragment => member.Contains(fragment, StringComparison.OrdinalIgnoreCase)));
     }
 }

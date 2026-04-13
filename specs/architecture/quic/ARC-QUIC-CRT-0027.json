@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0027",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC CRT client-side 1-RTT post-handshake ticket ingress architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the smallest honest 1-RTT ingress seam: a client-role OneRtt CRYPTO path can recognize a TLS 1.3 NewSessionTicket message after Finished, extract opaque ticket bytes, and surface them through the existing internal update seam without claiming resumption, replay, or 0-RTT behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0027",
+    "VER-QUIC-CRT-0027"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0129"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs"
+  ],
+  "risks": [
+    "If the ingress path starts recognizing arbitrary post-handshake TLS messages, the slice will overgrow into a general TLS engine that the repository has not proven.",
+    "If the ingress path starts implying ticket persistence, replay ownership, PSK derivation, or 0-RTT behavior, the repository will overclaim capability it still does not own.",
+    "If pre-Finished or server-role ingress is allowed to survive into the retained ticket state, the slice will stop being a truthful client-only boundary."
+  ],
+  "design_summary": "The managed bridge already owns the post-Finished opaque ticket seam through REQ-QUIC-CRT-0128. This slice adds the narrow OneRtt ingress path that can consume a real TLS 1.3 NewSessionTicket message after Finished, extract the opaque ticket bytes, and hand them to the same internal ticket update seam without changing handshake completion, application-data readiness, or the public surface. Unsupported 1-RTT post-handshake TLS messages are intentionally ignored rather than generalized into a broader post-handshake parser.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice covers only client-role 1-RTT CRYPTO ingress for a valid TLS 1.3 NewSessionTicket message after Finished. It does not add a general post-handshake TLS parser, a replay cache, a resumption story, or a public API expansion, and pre-Finished or server-role ingress remains rejected."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0128.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0128.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0129.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0129.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0001.cs)\n- [`docs/design/quic-interop-prep-plan.md`](../../../docs/design/quic-interop-prep-plan.md)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)"
+    }
+  ]
+}

@@ -34,12 +34,13 @@ internal sealed class QuicTlsTranscriptProgress
 
     private readonly QuicTlsRole role;
     private readonly ArrayBufferWriter<byte> partialTranscript = new();
+    private readonly ArrayBufferWriter<byte> postHandshakeTranscript = new();
 
     private ulong ingressCursor;
+    private ulong postHandshakeIngressCursor;
     private HandshakeProgressState progressState;
     private QuicTlsTranscriptPhase phase = QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage;
     private QuicTransportParameters? stagedPeerTransportParameters;
-    private byte[]? stagedPostHandshakeTicketBytes;
     private QuicTlsHandshakeMessageType? handshakeMessageType;
     private uint? handshakeMessageLength;
     private QuicTlsCipherSuite? selectedCipherSuite;
@@ -91,21 +92,6 @@ internal sealed class QuicTlsTranscriptProgress
 
     internal bool HasPendingBytes => partialTranscript.WrittenCount > 0;
 
-    internal bool TryStagePostHandshakeTicket(ReadOnlyMemory<byte> ticketBytes)
-    {
-        if (terminalAlertDescription.HasValue
-            || role != QuicTlsRole.Client
-            || phase != QuicTlsTranscriptPhase.Completed
-            || ticketBytes.IsEmpty
-            || stagedPostHandshakeTicketBytes is not null)
-        {
-            return false;
-        }
-
-        stagedPostHandshakeTicketBytes = ticketBytes.ToArray();
-        return true;
-    }
-
     internal void AppendCryptoBytes(ulong offset, ReadOnlySpan<byte> cryptoBytes)
     {
         if (terminalAlertDescription.HasValue || cryptoBytes.IsEmpty)
@@ -131,6 +117,29 @@ internal sealed class QuicTlsTranscriptProgress
         ingressCursor = SaturatingAdd(ingressCursor, (ulong)cryptoBytes.Length);
     }
 
+    internal void AppendPostHandshakeCryptoBytes(ulong offset, ReadOnlySpan<byte> cryptoBytes)
+    {
+        if (terminalAlertDescription.HasValue
+            || role != QuicTlsRole.Client
+            || phase != QuicTlsTranscriptPhase.Completed
+            || cryptoBytes.IsEmpty)
+        {
+            return;
+        }
+
+        if (offset != postHandshakeIngressCursor)
+        {
+            postHandshakeTranscript.Clear();
+            postHandshakeIngressCursor = 0;
+            return;
+        }
+
+        Span<byte> destination = postHandshakeTranscript.GetSpan(cryptoBytes.Length);
+        cryptoBytes.CopyTo(destination);
+        postHandshakeTranscript.Advance(cryptoBytes.Length);
+        postHandshakeIngressCursor = SaturatingAdd(postHandshakeIngressCursor, (ulong)cryptoBytes.Length);
+    }
+
     internal QuicTlsTranscriptStep Advance(QuicTlsRole role)
     {
         if (role != this.role)
@@ -152,17 +161,13 @@ internal sealed class QuicTlsTranscriptProgress
                 return BuildFatalStep();
             }
 
-            if (stagedPostHandshakeTicketBytes is not null)
+            return TryAdvancePostHandshakeTranscript(out QuicTlsTranscriptStep postHandshakeStep) switch
             {
-                byte[] ticketBytes = stagedPostHandshakeTicketBytes;
-                stagedPostHandshakeTicketBytes = null;
-                return new QuicTlsTranscriptStep(
-                    QuicTlsTranscriptStepKind.PostHandshakeTicketAvailable,
-                    QuicTlsTranscriptPhase.Completed,
-                    TicketBytes: ticketBytes);
-            }
-
-            return new QuicTlsTranscriptStep(QuicTlsTranscriptStepKind.None);
+                TranscriptAdvanceResult.NeedMore => new QuicTlsTranscriptStep(QuicTlsTranscriptStepKind.None),
+                TranscriptAdvanceResult.Progressed => postHandshakeStep,
+                TranscriptAdvanceResult.Failed => BuildFatalStep(),
+                _ => new QuicTlsTranscriptStep(QuicTlsTranscriptStepKind.None),
+            };
         }
 
         if (phase == QuicTlsTranscriptPhase.Failed)
@@ -289,6 +294,64 @@ internal sealed class QuicTlsTranscriptProgress
             parsedMessage.KeyShare,
             handshakeMessageBytes);
         return TranscriptAdvanceResult.Progressed;
+    }
+
+    private TranscriptAdvanceResult TryAdvancePostHandshakeTranscript(out QuicTlsTranscriptStep step)
+    {
+        step = new QuicTlsTranscriptStep(QuicTlsTranscriptStepKind.None);
+
+        while (true)
+        {
+            ReadOnlySpan<byte> transcriptBytes = postHandshakeTranscript.WrittenSpan;
+            if (transcriptBytes.Length == 0)
+            {
+                return TranscriptAdvanceResult.NeedMore;
+            }
+
+            if (transcriptBytes.Length < HandshakeHeaderLength)
+            {
+                return TranscriptAdvanceResult.NeedMore;
+            }
+
+            uint handshakeMessageBodyLength = ReadUInt24(transcriptBytes.Slice(1, UInt24Length));
+            if (!TryGetTotalMessageLength(handshakeMessageBodyLength, out int totalMessageLength))
+            {
+                postHandshakeTranscript.Clear();
+                postHandshakeIngressCursor = 0;
+                return TranscriptAdvanceResult.NeedMore;
+            }
+
+            if (transcriptBytes.Length < totalMessageLength)
+            {
+                return TranscriptAdvanceResult.NeedMore;
+            }
+
+            ReadOnlySpan<byte> handshakeMessageBody = transcriptBytes.Slice(
+                HandshakeHeaderLength,
+                checked((int)handshakeMessageBodyLength));
+            QuicTlsHandshakeMessageType messageType = (QuicTlsHandshakeMessageType)transcriptBytes[0];
+
+            if (messageType != QuicTlsHandshakeMessageType.NewSessionTicket)
+            {
+                ConsumePostHandshakeBytes(totalMessageLength);
+                continue;
+            }
+
+            if (!TryParseNewSessionTicket(
+                handshakeMessageBody,
+                out ReadOnlyMemory<byte> ticketBytes))
+            {
+                ConsumePostHandshakeBytes(totalMessageLength);
+                continue;
+            }
+
+            ConsumePostHandshakeBytes(totalMessageLength);
+            step = new QuicTlsTranscriptStep(
+                QuicTlsTranscriptStepKind.PostHandshakeTicketAvailable,
+                QuicTlsTranscriptPhase.Completed,
+                TicketBytes: ticketBytes);
+            return TranscriptAdvanceResult.Progressed;
+        }
     }
 
     private bool TryParseCurrentMessage(
@@ -550,6 +613,39 @@ internal sealed class QuicTlsTranscriptProgress
             HandshakeProgressState.Completed,
             QuicTlsHandshakeMessageType.Finished,
             handshakeMessageLengthValue);
+        return true;
+    }
+
+    private static bool TryParseNewSessionTicket(
+        ReadOnlySpan<byte> handshakeMessageBody,
+        out ReadOnlyMemory<byte> ticketBytes)
+    {
+        ticketBytes = default;
+
+        int index = 0;
+        if (!TrySkipBytes(handshakeMessageBody, ref index, sizeof(uint) + sizeof(uint))
+            || !TryReadUInt8(handshakeMessageBody, ref index, out int ticketNonceLength)
+            || !TrySkipBytes(handshakeMessageBody, ref index, ticketNonceLength)
+            || !TryReadUInt16(handshakeMessageBody, ref index, out ushort ticketLength)
+            || ticketLength == 0)
+        {
+            return false;
+        }
+
+        int ticketBytesOffset = index;
+        if (!TrySkipBytes(handshakeMessageBody, ref index, ticketLength)
+            || !TryReadUInt16(handshakeMessageBody, ref index, out ushort extensionsLength)
+            || !TrySkipBytes(handshakeMessageBody, ref index, extensionsLength))
+        {
+            return false;
+        }
+
+        if (index != handshakeMessageBody.Length)
+        {
+            return false;
+        }
+
+        ticketBytes = handshakeMessageBody.Slice(ticketBytesOffset, ticketLength).ToArray();
         return true;
     }
 
@@ -914,6 +1010,26 @@ internal sealed class QuicTlsTranscriptProgress
         partialTranscript.Advance(remaining.Length);
     }
 
+    private void ConsumePostHandshakeBytes(int bytesConsumed)
+    {
+        if (bytesConsumed <= 0)
+        {
+            return;
+        }
+
+        ReadOnlySpan<byte> written = postHandshakeTranscript.WrittenSpan;
+        if (bytesConsumed >= written.Length)
+        {
+            postHandshakeTranscript.Clear();
+            return;
+        }
+
+        byte[] remaining = written[bytesConsumed..].ToArray();
+        postHandshakeTranscript.Clear();
+        remaining.CopyTo(postHandshakeTranscript.GetSpan(remaining.Length));
+        postHandshakeTranscript.Advance(remaining.Length);
+    }
+
     private QuicTransportParameterRole GetTransportParameterRoleForCurrentEndpoint()
     {
         return role == QuicTlsRole.Client
@@ -926,6 +1042,7 @@ internal sealed class QuicTlsTranscriptProgress
         messageType = (QuicTlsHandshakeMessageType)value;
         return messageType is QuicTlsHandshakeMessageType.ClientHello
             or QuicTlsHandshakeMessageType.ServerHello
+            or QuicTlsHandshakeMessageType.NewSessionTicket
             or QuicTlsHandshakeMessageType.EncryptedExtensions
             or QuicTlsHandshakeMessageType.Certificate
             or QuicTlsHandshakeMessageType.CertificateVerify

@@ -20,11 +20,12 @@
     "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
     "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0128.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0001.cs",
     "docs/design/quic-interop-prep-plan.md",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
-    "scripts/Test-SpecTraceRepository.ps1",
+    "scripts/Validate-SpecTraceJson.ps1",
     "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
   ],
   "supplemental_sections": [
@@ -33,7 +34,7 @@
       "content": "- The managed client/runtime path can surface an opaque ticket-bearing update after Finished.\n- Handshake completion and 1-RTT readiness remain unchanged by the ticket seam.\n- The slice does not claim ticket persistence, replay ownership, PSK derivation, 0-RTT packet support, or any public API widening."
     }
   ],
-  "status_summary": "This verification artifact records the first post-handshake ticket-bearing update seam as a planned slice; implementation evidence does not exist yet.",
+  "status_summary": "This verification artifact records the landed internal post-handshake ticket-bearing update seam and points at the requirement-home and runtime evidence in the working tree.",
   "scope": "Verify an opaque post-handshake ticket-bearing update after Finished without claiming any resumption or 0-RTT packet path.",
   "procedure": [
     "Inspect the transcript-progress, bridge-driver, bridge-state, and runtime seams for opaque post-Finished ticket surfacing.",

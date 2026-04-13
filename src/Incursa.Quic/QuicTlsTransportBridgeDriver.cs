@@ -210,7 +210,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <returns>The state updates produced by the transcript step.</returns>
     public IReadOnlyList<QuicTlsStateUpdate> AdvanceHandshakeTranscript(QuicTlsEncryptionLevel encryptionLevel)
     {
-        if (encryptionLevel is not (QuicTlsEncryptionLevel.Initial or QuicTlsEncryptionLevel.Handshake))
+        if (encryptionLevel is not (QuicTlsEncryptionLevel.Initial or QuicTlsEncryptionLevel.Handshake or QuicTlsEncryptionLevel.OneRtt))
         {
             return Array.Empty<QuicTlsStateUpdate>();
         }
@@ -221,9 +221,26 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
 
         if (bridgeState.InitialIngressCryptoBuffer.BufferedBytes <= 0
-            && bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes <= 0)
+            && bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes <= 0
+            && bridgeState.OneRttIngressCryptoBuffer.BufferedBytes <= 0)
         {
             return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        if (encryptionLevel == QuicTlsEncryptionLevel.OneRtt)
+        {
+            if (bridgeState.OneRttIngressCryptoBuffer.BufferedBytes == 0)
+            {
+                return Array.Empty<QuicTlsStateUpdate>();
+            }
+
+            List<QuicTlsStateUpdate> oneRttUpdates = [];
+            if (DrainBufferedCryptoIntoTranscript(QuicTlsEncryptionLevel.OneRtt))
+            {
+                DriveTranscriptProgress(oneRttUpdates);
+            }
+
+            return oneRttUpdates;
         }
 
         if (bridgeState.LocalTransportParameters is null)
@@ -343,26 +360,6 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     }
 
     /// <summary>
-    /// Publishes an opaque post-handshake ticket update to the bridge state.
-    /// </summary>
-    internal IReadOnlyList<QuicTlsStateUpdate> PublishPostHandshakeTicket(ReadOnlyMemory<byte> ticketBytes)
-    {
-        if (Role != QuicTlsRole.Client || bridgeState.IsTerminal)
-        {
-            return Array.Empty<QuicTlsStateUpdate>();
-        }
-
-        if (!handshakeTranscriptProgress.TryStagePostHandshakeTicket(ticketBytes))
-        {
-            return Array.Empty<QuicTlsStateUpdate>();
-        }
-
-        List<QuicTlsStateUpdate> updates = [];
-        DriveTranscriptProgress(updates);
-        return updates;
-    }
-
-    /// <summary>
     /// Buffers inbound CRYPTO bytes into the runtime-owned bridge state.
     /// </summary>
     public bool TryBufferIncomingCryptoData(
@@ -466,9 +463,13 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
         while (true)
         {
-            int bufferedBytes = encryptionLevel == QuicTlsEncryptionLevel.Initial
-                ? bridgeState.InitialIngressCryptoBuffer.BufferedBytes
-                : bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes;
+            int bufferedBytes = encryptionLevel switch
+            {
+                QuicTlsEncryptionLevel.Initial => bridgeState.InitialIngressCryptoBuffer.BufferedBytes,
+                QuicTlsEncryptionLevel.Handshake => bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes,
+                QuicTlsEncryptionLevel.OneRtt => bridgeState.OneRttIngressCryptoBuffer.BufferedBytes,
+                _ => 0,
+            };
 
             if (bufferedBytes <= 0)
             {
@@ -489,9 +490,19 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                 break;
             }
 
-            handshakeTranscriptProgress.AppendCryptoBytes(
-                TranslateIngressOffset(encryptionLevel, offset),
-                cryptoBytes[..bytesWritten]);
+            if (encryptionLevel == QuicTlsEncryptionLevel.OneRtt)
+            {
+                handshakeTranscriptProgress.AppendPostHandshakeCryptoBytes(
+                    offset,
+                    cryptoBytes[..bytesWritten]);
+            }
+            else
+            {
+                handshakeTranscriptProgress.AppendCryptoBytes(
+                    TranslateIngressOffset(encryptionLevel, offset),
+                    cryptoBytes[..bytesWritten]);
+            }
+
             drainedAny = true;
             if (handshakeTranscriptProgress.TerminalAlertDescription.HasValue)
             {

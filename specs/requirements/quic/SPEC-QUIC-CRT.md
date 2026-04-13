@@ -1119,3 +1119,24 @@ Notes:
 - This is a narrow internal seam only; it does not claim ticket ownership, replay logic, or any 0-RTT support.
 - The update is intentionally opaque and exists only so later ticket-handling work can observe a truthful post-Finished boundary.
 - REQ-QUIC-CRT-0127 remains the separate opaque resumption-ticket and early-data gate prerequisite.
+
+## REQ-QUIC-CRT-0129 Ingress opaque post-handshake ticket bytes through 1-RTT CRYPTO after Finished
+In the client role, the transport-facing TLS bridge MUST be able to consume a TLS 1.3 NewSessionTicket message carried in QuicTlsEncryptionLevel.OneRtt CRYPTO data after the supported Finished proof boundary, extract the opaque ticket bytes from that message, and surface them through the existing internal PostHandshakeTicketAvailable update seam. The slice MUST keep handshake completion and 1-RTT application-data behavior unchanged, MUST keep the ticket bytes opaque, MUST reject pre-Finished and server-role ingress, MUST preserve the first retained ticket on duplicate ingress, and MUST NOT imply ticket persistence, replay ownership, PSK derivation, resumed-handshake support, 0-RTT packet support, anti-replay behavior, key update, transfer, retry, or any public API widening. Unsupported 1-RTT post-handshake TLS messages MUST remain outside the supported boundary and be ignored rather than broadening the parser into a general post-handshake engine.
+
+Trace:
+- Source Refs:
+  - docs/design/quic-interop-prep-plan.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicTlsTransport.cs
+  - src/Incursa.Quic/QuicTransportTlsBridgeDriver.cs
+  - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+  - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0128.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0129.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0001.cs
+
+Notes:
+- This is the wire-ingress follow-on to REQ-QUIC-CRT-0128 and remains client-role only.
+- Only the NewSessionTicket message is recognized. Other 1-RTT post-handshake TLS messages remain unsupported and are ignored so the slice does not broaden into a general post-handshake engine.
+- The extracted ticket bytes stay opaque and do not imply resumption, replay ownership, or early data.

@@ -1621,9 +1621,6 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        _ = nowTicks;
-        _ = effects;
-
         if (phase != QuicConnectionPhase.Active
             || activePath is null
             || !tlsState.OneRttKeysAvailable
@@ -1643,6 +1640,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         bool stateChanged = false;
+        bool processedCryptoFrame = false;
         bool processedStreamFrame = false;
         bool processedMaxStreamsFrame = false;
         ulong originalBidirectionalLimit = streamRegistry.Bookkeeping.PeerBidirectionalStreamLimit;
@@ -1695,6 +1693,37 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 }
 
                 offset += maxStreamsBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseCryptoFrame(remaining, out QuicCryptoFrame cryptoFrame, out int cryptoBytesConsumed))
+            {
+                if (cryptoBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                processedCryptoFrame = true;
+                if (!tlsBridgeDriver.TryBufferIncomingCryptoData(
+                    QuicTlsEncryptionLevel.OneRtt,
+                    cryptoFrame.Offset,
+                    cryptoFrame.CryptoData.ToArray(),
+                    out _))
+                {
+                    return false;
+                }
+
+                IReadOnlyList<QuicTlsStateUpdate> transcriptUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(
+                    QuicTlsEncryptionLevel.OneRtt);
+                foreach (QuicTlsStateUpdate transcriptUpdate in transcriptUpdates)
+                {
+                    stateChanged |= HandleTlsStateUpdated(
+                        new QuicConnectionTlsStateUpdatedEvent(nowTicks, transcriptUpdate),
+                        nowTicks,
+                        ref effects);
+                }
+
+                offset += cryptoBytesConsumed;
                 continue;
             }
 
@@ -1757,7 +1786,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             }
         }
 
-        return processedStreamFrame || stateChanged;
+        return processedStreamFrame || processedCryptoFrame || stateChanged;
     }
 
     private bool TryFlushInitialPackets(ref List<QuicConnectionEffect>? effects)
