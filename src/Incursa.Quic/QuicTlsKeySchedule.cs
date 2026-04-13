@@ -59,6 +59,7 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] ClientApplicationTrafficLabel = Encoding.ASCII.GetBytes("c ap traffic");
     private static readonly byte[] ServerApplicationTrafficLabel = Encoding.ASCII.GetBytes("s ap traffic");
     private static readonly byte[] FinishedLabel = Encoding.ASCII.GetBytes("finished");
+    private static readonly byte[] ResumptionMasterLabel = Encoding.ASCII.GetBytes("res master");
     private static readonly byte[] ServerCertificateVerifyContext = Encoding.ASCII.GetBytes("TLS 1.3, server CertificateVerify");
     private static readonly byte[] ClientCertificateVerifyContext = Encoding.ASCII.GetBytes("TLS 1.3, client CertificateVerify");
     private static readonly byte[] QuicKeyLabel = Encoding.ASCII.GetBytes("quic key");
@@ -76,6 +77,7 @@ internal sealed class QuicTlsKeySchedule
     private byte[]? handshakeSecret;
     private byte[]? clientHandshakeTrafficSecret;
     private byte[]? serverHandshakeTrafficSecret;
+    private byte[]? resumptionMasterSecret;
     private byte[]? peerLeafCertificateDer;
     private bool handshakeSecretsDerived;
     private bool localServerFlightCompleted;
@@ -131,6 +133,11 @@ internal sealed class QuicTlsKeySchedule
     /// Gets the public local ephemeral key share associated with the current role's key pair.
     /// </summary>
     public ReadOnlyMemory<byte> LocalKeyShare => localKeyShare;
+
+    /// <summary>
+    /// Gets the derived resumption master secret, if the handshake has reached the point where it is available.
+    /// </summary>
+    internal ReadOnlyMemory<byte> ResumptionMasterSecret => resumptionMasterSecret ?? ReadOnlyMemory<byte>.Empty;
 
     /// <summary>
     /// Configures whether the server role should emit a CertificateRequest and accept a client certificate response.
@@ -665,7 +672,8 @@ internal sealed class QuicTlsKeySchedule
 
         if (role == QuicTlsRole.Client)
         {
-            if (!TryCreateFinished(clientHandshakeTrafficSecret ?? [], HashTranscript(), out byte[] finishedBytes))
+            byte[] applicationTrafficTranscriptHash = HashTranscript();
+            if (!TryCreateFinished(clientHandshakeTrafficSecret ?? [], applicationTrafficTranscriptHash, out byte[] finishedBytes))
             {
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
             }
@@ -678,13 +686,18 @@ internal sealed class QuicTlsKeySchedule
 
             QuicTlsPacketProtectionMaterial oneRttOpenMaterial = default;
             QuicTlsPacketProtectionMaterial oneRttProtectMaterial = default;
+            byte[] resumptionTranscriptHash = HashTranscriptWithAppended(finishedBytes);
             if (!TryDeriveApplicationPacketProtectionMaterial(
-                    HashTranscript(),
+                    applicationTrafficTranscriptHash,
+                    resumptionTranscriptHash,
                     out oneRttOpenMaterial,
-                    out oneRttProtectMaterial))
+                    out oneRttProtectMaterial,
+                    out byte[] derivedResumptionMasterSecret))
             {
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
             }
+
+            this.resumptionMasterSecret = derivedResumptionMasterSecret;
 
             updates.Add(new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.KeysAvailable,
@@ -695,6 +708,9 @@ internal sealed class QuicTlsKeySchedule
             updates.Add(new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable,
                 PacketProtectionMaterial: oneRttProtectMaterial));
+            updates.Add(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.ResumptionMasterSecretAvailable,
+                ResumptionMasterSecret: derivedResumptionMasterSecret));
         }
 
         if (role == QuicTlsRole.Server)
@@ -704,8 +720,10 @@ internal sealed class QuicTlsKeySchedule
             QuicTlsPacketProtectionMaterial oneRttProtectMaterial = default;
             if (!TryDeriveApplicationPacketProtectionMaterial(
                 applicationTrafficTranscriptHash,
+                applicationTrafficTranscriptHash,
                 out oneRttOpenMaterial,
-                out oneRttProtectMaterial))
+                out oneRttProtectMaterial,
+                out _))
             {
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
             }
@@ -795,12 +813,15 @@ internal sealed class QuicTlsKeySchedule
     }
 
     private bool TryDeriveApplicationPacketProtectionMaterial(
-        ReadOnlySpan<byte> transcriptHash,
+        ReadOnlySpan<byte> applicationTrafficTranscriptHash,
+        ReadOnlySpan<byte> resumptionTranscriptHash,
         out QuicTlsPacketProtectionMaterial openMaterial,
-        out QuicTlsPacketProtectionMaterial protectMaterial)
+        out QuicTlsPacketProtectionMaterial protectMaterial,
+        out byte[] resumptionMasterSecret)
     {
         openMaterial = default;
         protectMaterial = default;
+        resumptionMasterSecret = Array.Empty<byte>();
 
         if (handshakeSecret is null)
         {
@@ -812,15 +833,16 @@ internal sealed class QuicTlsKeySchedule
         {
             byte[] derivedSecret = HkdfExpandLabel(localHandshakeSecret, DerivedLabel, EmptyTranscriptHash, HashLength);
             byte[] masterSecret = HkdfExtract(derivedSecret, []);
+            resumptionMasterSecret = HkdfExpandLabel(masterSecret, ResumptionMasterLabel, resumptionTranscriptHash, HashLength);
             byte[] clientApplicationTrafficSecret = HkdfExpandLabel(
                 masterSecret,
                 ClientApplicationTrafficLabel,
-                transcriptHash,
+                applicationTrafficTranscriptHash,
                 HashLength);
             byte[] serverApplicationTrafficSecret = HkdfExpandLabel(
                 masterSecret,
                 ServerApplicationTrafficLabel,
-                transcriptHash,
+                applicationTrafficTranscriptHash,
                 HashLength);
 
             ReadOnlySpan<byte> openTrafficSecret = role == QuicTlsRole.Client
@@ -1374,6 +1396,11 @@ internal sealed class QuicTlsKeySchedule
         return SHA256.HashData(transcriptBytes.WrittenSpan);
     }
 
+    private byte[] HashTranscriptWithAppended(ReadOnlySpan<byte> handshakeMessageBytes)
+    {
+        return SHA256.HashData([.. transcriptBytes.WrittenSpan, .. handshakeMessageBytes]);
+    }
+
     private static byte[] DeriveFinishedVerifyData(ReadOnlySpan<byte> trafficSecret, ReadOnlySpan<byte> transcriptHash)
     {
         byte[] finishedKey = HkdfExpandLabel(trafficSecret, FinishedLabel, [], HashLength);
@@ -1438,6 +1465,11 @@ internal sealed class QuicTlsKeySchedule
         {
             CryptographicOperations.ZeroMemory(handshakeSecret);
             handshakeSecret = null;
+        }
+        if (resumptionMasterSecret is not null)
+        {
+            CryptographicOperations.ZeroMemory(resumptionMasterSecret);
+            resumptionMasterSecret = null;
         }
         peerLeafCertificateDer = null;
         peerCertificateVerifyVerified = false;

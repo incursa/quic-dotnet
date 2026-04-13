@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0029",
+  "artifact_type": "architecture",
+  "status": "landed",
+  "title": "QUIC CRT detached resumption-credential material capture architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the smallest honest detached credential-capture seam: the managed client/runtime path retains opaque ticket bytes, ticket metadata, and a handshake-derived resumption master secret so a later client setup can store the richer carrier as dormant internal state without claiming a resumed handshake yet.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0029",
+    "VER-QUIC-CRT-0029"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0131"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0131.cs"
+  ],
+  "risks": [
+    "If ticket metadata or the handshake-derived resumption secret is omitted, a later client cannot honestly attempt resumption even if the carrier remains detached.",
+    "If the richer carrier is repurposed for ClientHello replay or binder emission, the slice will overclaim resumption capability that the repository has not yet proven.",
+    "If the carrier leaks into public API or becomes part of the supported IsSupported promise, the slice will widen beyond the narrow proof floor."
+  ],
+  "design_summary": "The managed client/runtime path already owns opaque ticket ingress, a runtime-local ticket snapshot, and a detached carrier handoff. This slice extends that carrier with the minimum internal material needed for a later honest resumption attempt: opaque ticket bytes, ticket nonce, ticket lifetime seconds, ticket age add, capture timestamp, and the resumption master secret derived from the supported handshake. The carrier stays immutable and dormant, and it does not participate in ClientHello reuse, PSK derivation, 0-RTT, or any public surface change.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice covers only detached export and dormant import of opaque resumption-credential material across client connection lifetimes. It does not add PSK derivation, a ClientHello replay path, 0-RTT packet support, anti-replay, key update, or a public API expansion."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs`](../../../src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs)\n- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0131.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0131.cs)\n- [`docs/design/quic-interop-prep-plan.md`](../../../docs/design/quic-interop-prep-plan.md)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)"
+    }
+  ]
+}

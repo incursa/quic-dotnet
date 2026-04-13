@@ -104,6 +104,7 @@ internal enum QuicTlsUpdateKind
     OneRttOpenPacketProtectionMaterialAvailable = 16,
     OneRttProtectPacketProtectionMaterialAvailable = 17,
     PostHandshakeTicketAvailable = 18,
+    ResumptionMasterSecretAvailable = 19,
 }
 
 /// <summary>
@@ -123,6 +124,10 @@ internal readonly record struct QuicTlsStateUpdate(
     ReadOnlyMemory<byte> CryptoData = default,
     QuicTlsPacketProtectionMaterial? PacketProtectionMaterial = null,
     QuicTlsTranscriptPhase? TranscriptPhase = null,
+    ReadOnlyMemory<byte> TicketNonce = default,
+    uint? TicketLifetimeSeconds = null,
+    uint? TicketAgeAdd = null,
+    ReadOnlyMemory<byte> ResumptionMasterSecret = default,
     ReadOnlyMemory<byte> TicketBytes = default);
 
 /// <summary>

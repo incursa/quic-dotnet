@@ -339,6 +339,9 @@ internal sealed class QuicTlsTranscriptProgress
 
             if (!TryParseNewSessionTicket(
                 handshakeMessageBody,
+                out uint ticketLifetimeSeconds,
+                out uint ticketAgeAdd,
+                out ReadOnlyMemory<byte> ticketNonce,
                 out ReadOnlyMemory<byte> ticketBytes))
             {
                 ConsumePostHandshakeBytes(totalMessageLength);
@@ -349,6 +352,9 @@ internal sealed class QuicTlsTranscriptProgress
             step = new QuicTlsTranscriptStep(
                 QuicTlsTranscriptStepKind.PostHandshakeTicketAvailable,
                 QuicTlsTranscriptPhase.Completed,
+                TicketNonce: ticketNonce,
+                TicketLifetimeSeconds: ticketLifetimeSeconds,
+                TicketAgeAdd: ticketAgeAdd,
                 TicketBytes: ticketBytes);
             return TranscriptAdvanceResult.Progressed;
         }
@@ -618,12 +624,19 @@ internal sealed class QuicTlsTranscriptProgress
 
     private static bool TryParseNewSessionTicket(
         ReadOnlySpan<byte> handshakeMessageBody,
+        out uint ticketLifetimeSeconds,
+        out uint ticketAgeAdd,
+        out ReadOnlyMemory<byte> ticketNonce,
         out ReadOnlyMemory<byte> ticketBytes)
     {
+        ticketLifetimeSeconds = 0;
+        ticketAgeAdd = 0;
+        ticketNonce = default;
         ticketBytes = default;
 
         int index = 0;
-        if (!TrySkipBytes(handshakeMessageBody, ref index, sizeof(uint) + sizeof(uint))
+        if (!TryReadUInt32(handshakeMessageBody, ref index, out ticketLifetimeSeconds)
+            || !TryReadUInt32(handshakeMessageBody, ref index, out ticketAgeAdd)
             || !TryReadUInt8(handshakeMessageBody, ref index, out int ticketNonceLength)
             || !TrySkipBytes(handshakeMessageBody, ref index, ticketNonceLength)
             || !TryReadUInt16(handshakeMessageBody, ref index, out ushort ticketLength)
@@ -632,6 +645,7 @@ internal sealed class QuicTlsTranscriptProgress
             return false;
         }
 
+        int ticketNonceOffset = index - ticketNonceLength - UInt16Length;
         int ticketBytesOffset = index;
         if (!TrySkipBytes(handshakeMessageBody, ref index, ticketLength)
             || !TryReadUInt16(handshakeMessageBody, ref index, out ushort extensionsLength)
@@ -645,6 +659,7 @@ internal sealed class QuicTlsTranscriptProgress
             return false;
         }
 
+        ticketNonce = handshakeMessageBody.Slice(ticketNonceOffset, ticketNonceLength).ToArray();
         ticketBytes = handshakeMessageBody.Slice(ticketBytesOffset, ticketLength).ToArray();
         return true;
     }
@@ -1124,6 +1139,19 @@ internal sealed class QuicTlsTranscriptProgress
         return true;
     }
 
+    private static bool TryReadUInt32(ReadOnlySpan<byte> source, ref int index, out uint value)
+    {
+        if (index > source.Length - sizeof(uint))
+        {
+            value = 0;
+            return false;
+        }
+
+        value = BinaryPrimitives.ReadUInt32BigEndian(source.Slice(index, sizeof(uint)));
+        index += sizeof(uint);
+        return true;
+    }
+
     private static bool TryReadUInt24(ReadOnlySpan<byte> source, ref int index, out uint value)
     {
         if (index > source.Length - UInt24Length)
@@ -1224,6 +1252,9 @@ internal readonly record struct QuicTlsTranscriptStep(
     QuicTlsNamedGroup? NamedGroup = null,
     ReadOnlyMemory<byte> KeyShare = default,
     ReadOnlyMemory<byte> HandshakeMessageBytes = default,
+    ReadOnlyMemory<byte> TicketNonce = default,
+    uint? TicketLifetimeSeconds = null,
+    uint? TicketAgeAdd = null,
     ReadOnlyMemory<byte> TicketBytes = default,
     ushort? AlertDescription = null);
 

@@ -17,6 +17,10 @@ internal sealed class QuicTransportTlsBridgeState
     private QuicTlsPacketProtectionMaterial? oneRttOpenPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial? oneRttProtectPacketProtectionMaterial;
     private byte[]? postHandshakeTicketBytes;
+    private byte[]? postHandshakeTicketNonce;
+    private uint? postHandshakeTicketLifetimeSeconds;
+    private uint? postHandshakeTicketAgeAdd;
+    private byte[]? resumptionMasterSecret;
 
     internal QuicTransportTlsBridgeState()
         : this(QuicTlsRole.Client)
@@ -75,6 +79,16 @@ internal sealed class QuicTransportTlsBridgeState
     public ReadOnlyMemory<byte> PostHandshakeTicketBytes => postHandshakeTicketBytes ?? ReadOnlyMemory<byte>.Empty;
 
     public bool HasPostHandshakeTicket => postHandshakeTicketBytes is not null;
+
+    public ReadOnlyMemory<byte> PostHandshakeTicketNonce => postHandshakeTicketNonce ?? ReadOnlyMemory<byte>.Empty;
+
+    public uint? PostHandshakeTicketLifetimeSeconds => postHandshakeTicketLifetimeSeconds;
+
+    public uint? PostHandshakeTicketAgeAdd => postHandshakeTicketAgeAdd;
+
+    public ReadOnlyMemory<byte> ResumptionMasterSecret => resumptionMasterSecret ?? ReadOnlyMemory<byte>.Empty;
+
+    public bool HasResumptionMasterSecret => resumptionMasterSecret is not null;
 
     public uint CurrentOneRttKeyPhase { get; private set; }
 
@@ -272,10 +286,18 @@ internal sealed class QuicTransportTlsBridgeState
                 return update.PacketProtectionMaterial.HasValue
                     && TryStoreOneRttProtectPacketProtectionMaterial(update.PacketProtectionMaterial.Value);
 
+            case QuicTlsUpdateKind.ResumptionMasterSecretAvailable:
+                return !update.ResumptionMasterSecret.IsEmpty
+                    && TryStoreResumptionMasterSecret(update.ResumptionMasterSecret);
+
             case QuicTlsUpdateKind.PostHandshakeTicketAvailable:
                 return update.TranscriptPhase == QuicTlsTranscriptPhase.Completed
                     && !update.TicketBytes.IsEmpty
-                    && TryStorePostHandshakeTicket(update.TicketBytes);
+                    && TryStorePostHandshakeTicket(
+                        update.TicketBytes,
+                        update.TicketNonce,
+                        update.TicketLifetimeSeconds,
+                        update.TicketAgeAdd);
 
             case QuicTlsUpdateKind.TranscriptProgressed:
                 return TryApplyTranscriptProgress(update);
@@ -733,6 +755,10 @@ internal sealed class QuicTransportTlsBridgeState
         oneRttProtectPacketProtectionMaterial = null;
         oneRttIngressCryptoBuffer.DiscardFutureFrames();
         postHandshakeTicketBytes = null;
+        postHandshakeTicketNonce = null;
+        postHandshakeTicketLifetimeSeconds = null;
+        postHandshakeTicketAgeAdd = null;
+        resumptionMasterSecret = null;
         packetProtectionMaterials.Clear();
         return true;
     }
@@ -849,23 +875,52 @@ internal sealed class QuicTransportTlsBridgeState
         return TryStoreOneRttPacketProtectionMaterial(ref oneRttProtectPacketProtectionMaterial, material);
     }
 
-    private bool TryStorePostHandshakeTicket(ReadOnlyMemory<byte> ticketBytes)
+    internal bool TryStoreResumptionMasterSecret(ReadOnlyMemory<byte> masterSecret)
+    {
+        if (IsTerminal || role != QuicTlsRole.Client || masterSecret.IsEmpty)
+        {
+            return false;
+        }
+
+        if (resumptionMasterSecret is not null)
+        {
+            return false;
+        }
+
+        resumptionMasterSecret = masterSecret.ToArray();
+        return true;
+    }
+
+    private bool TryStorePostHandshakeTicket(
+        ReadOnlyMemory<byte> ticketBytes,
+        ReadOnlyMemory<byte> ticketNonce,
+        uint? ticketLifetimeSeconds,
+        uint? ticketAgeAdd)
     {
         if (IsTerminal
             || role != QuicTlsRole.Client
             || ticketBytes.IsEmpty
-            || postHandshakeTicketBytes is not null
             || !PeerFinishedVerified
             || HandshakeTranscriptPhase != QuicTlsTranscriptPhase.Completed
             || HandshakeMessageType != QuicTlsHandshakeMessageType.Finished
             || !HandshakeMessageLength.HasValue
             || !SelectedCipherSuite.HasValue
-            || !TranscriptHashAlgorithm.HasValue)
+            || !TranscriptHashAlgorithm.HasValue
+            || !ticketLifetimeSeconds.HasValue
+            || !ticketAgeAdd.HasValue)
+        {
+            return false;
+        }
+
+        if (postHandshakeTicketBytes is not null)
         {
             return false;
         }
 
         postHandshakeTicketBytes = ticketBytes.ToArray();
+        postHandshakeTicketNonce = ticketNonce.ToArray();
+        postHandshakeTicketLifetimeSeconds = ticketLifetimeSeconds;
+        postHandshakeTicketAgeAdd = ticketAgeAdd;
         return true;
     }
 

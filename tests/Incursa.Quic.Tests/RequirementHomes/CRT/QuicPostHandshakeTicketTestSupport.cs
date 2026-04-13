@@ -79,9 +79,10 @@ internal static class QuicPostHandshakeTicketTestSupport
         Assert.Equal(3, driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
             certificateVerifyTranscript).Count);
-        Assert.Equal(7, driver.ProcessCryptoFrame(
+        Assert.Equal(8, driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
             finishedTranscript).Count);
+        Assert.True(driver.State.HasResumptionMasterSecret);
 
         return driver;
     }
@@ -147,6 +148,7 @@ internal static class QuicPostHandshakeTicketTestSupport
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
+        Assert.True(runtime.HasResumptionMasterSecret);
 
         return runtime;
     }
@@ -196,7 +198,11 @@ internal static class QuicPostHandshakeTicketTestSupport
             CreateFinishedTranscript(finishedVerifyData));
     }
 
-    internal static byte[] CreatePostHandshakeTicketMessage(ReadOnlySpan<byte> ticket, ReadOnlySpan<byte> ticketNonce)
+    internal static byte[] CreatePostHandshakeTicketMessage(
+        ReadOnlySpan<byte> ticket,
+        ReadOnlySpan<byte> ticketNonce,
+        uint ticketLifetimeSeconds = 0,
+        uint ticketAgeAdd = 0)
     {
         if (ticket.IsEmpty)
         {
@@ -216,9 +222,9 @@ internal static class QuicPostHandshakeTicketTestSupport
         WriteUInt24(transcript.AsSpan(index, UInt24Length), bodyLength);
         index += UInt24Length;
 
-        BinaryPrimitives.WriteUInt32BigEndian(transcript.AsSpan(index, 4), 0);
+        BinaryPrimitives.WriteUInt32BigEndian(transcript.AsSpan(index, 4), ticketLifetimeSeconds);
         index += 4;
-        BinaryPrimitives.WriteUInt32BigEndian(transcript.AsSpan(index, 4), 0);
+        BinaryPrimitives.WriteUInt32BigEndian(transcript.AsSpan(index, 4), ticketAgeAdd);
         index += 4;
 
         transcript[index++] = (byte)ticketNonce.Length;

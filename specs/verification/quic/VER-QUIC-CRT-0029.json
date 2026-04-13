@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0029",
+  "artifact_type": "verification",
+  "status": "landed",
+  "title": "QUIC CRT detached resumption-credential material capture verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verifies": [
+    "REQ-QUIC-CRT-0131"
+  ],
+  "verification_method": "Execution, inspection, and regression evidence.",
+  "scope": "Verify detached export of opaque resumption-credential material and dormant import into a later managed client setup without claiming any resumption or 0-RTT packet path.",
+  "preconditions": [
+    "The repository builds successfully on net10.0.",
+    "The current client TLS, server client-auth, transfer, retry, and narrow CRT guard sets remain green.",
+    "REQ-QUIC-CRT-0127, REQ-QUIC-CRT-0128, REQ-QUIC-CRT-0129, and REQ-QUIC-CRT-0130 remain the landed ticket prerequisites, and REQ-QUIC-CRT-0131 remains a narrow detached credential-capture slice rather than a claimed resumption or 0-RTT implementation."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0130.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0131.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0001.cs",
+    "docs/design/quic-interop-prep-plan.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "scripts/Validate-SpecTraceJson.ps1",
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- The managed client/runtime path exports a detached opaque carrier only after real ticket ingress and the captured resumption secret are both available.\n- A later managed client setup accepts that carrier and stores it as separate dormant internal state.\n- The slice does not claim PSK derivation, replay ownership, 0-RTT packet support, or any public API widening."
+    }
+  ],
+  "status_summary": "This verification artifact records the landed detached credential-capture slice and points at the requirement-home and runtime evidence that proves the richer dormant carrier. The bridge-state ingress seam, the internal post-Finished seam, the client-side OneRtt ingress follow-on, and the detached handoff slice remain traced separately under REQ-QUIC-CRT-0128, REQ-QUIC-CRT-0129, and REQ-QUIC-CRT-0130.",
+  "procedure": [
+    "Inspect the detached carrier, client-options capture, client host, connection, runtime, bridge-driver, and transcript seams for exported carrier handoff distinct from the transient bridge-state ingress store and the current-lifetime owned snapshot.",
+    "Verify that the carrier is not exported before a real ticket and the resumption secret are captured and that duplicate ticket updates do not replace the detached carrier once it has been handed off.",
+    "Verify that a later managed client setup stores the carrier as dormant internal state and that handshake/bootstrap behavior remains unchanged when dormant state is present.",
+    "Verify that server-role use does not participate in the detached handoff path.",
+    "Verify that early-data admission remains explicitly closed before and after handoff.",
+    "Run the focused REQ_QUIC_CRT_0131 requirement-home tests for richer detached carrier export, pre-capture rejection, dormant import, duplicate-update non-replacement, server-role rejection, explicit early-data closure before and after handoff, the public no-hand-off/no-resumption/no-early-data guard, and unchanged handshake/bootstrap behavior with dormant state present.",
+    "Run the current CRT/API/INT guard set and the full `REQ_QUIC_CRT_` sweep.",
+    "Run repo-local SpecTrace validation and markdown render checks after the canonical JSON updates."
+  ],
+  "expected_result": "- The managed client/runtime path exports a detached opaque carrier only after real ticket ingress and the resumption secret are both available, and the exported carrier is distinct from the current-lifetime owned bytes.\n- A later managed client setup accepts that carrier and stores it as dormant internal state without changing handshake/bootstrap behavior or opening early data.\n- The slice does not claim PSK derivation, ClientHello replay, resumed-handshake support, 0-RTT packet support, anti-replay, key update, transfer, retry, or any public API widening.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0029",
+    "WI-QUIC-CRT-0029"
+  ]
+}

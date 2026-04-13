@@ -137,11 +137,12 @@ public sealed class REQ_QUIC_CRT_0123
             QuicTlsEncryptionLevel.Handshake,
             finishedTranscript);
 
-        Assert.Equal(7, finishedUpdates.Count);
+        Assert.Equal(8, finishedUpdates.Count);
         Assert.Equal(QuicTlsUpdateKind.PeerFinishedVerified, finishedUpdates[1].Kind);
         Assert.Equal(QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable, finishedUpdates[4].Kind);
         Assert.Equal(QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable, finishedUpdates[5].Kind);
-        Assert.Equal(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted, finishedUpdates[6].Kind);
+        Assert.Equal(QuicTlsUpdateKind.ResumptionMasterSecretAvailable, finishedUpdates[6].Kind);
+        Assert.Equal(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted, finishedUpdates[7].Kind);
         Assert.True(driver.State.PeerFinishedVerified);
         Assert.True(driver.State.OneRttKeysAvailable);
         Assert.True(driver.State.PeerHandshakeTranscriptCompleted);

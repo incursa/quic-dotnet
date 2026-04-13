@@ -1143,3 +1143,49 @@ Notes:
 - This is the wire-ingress follow-on to REQ-QUIC-CRT-0128 and remains client-role only.
 - Only the NewSessionTicket message is recognized. Other 1-RTT post-handshake TLS messages remain unsupported and are ignored so the slice does not broaden into a general post-handshake engine.
 - The extracted ticket bytes stay opaque and do not imply resumption, replay ownership, or early data.
+
+## REQ-QUIC-CRT-0130 Export and hand off a detached opaque resumption-ticket carrier across client connection lifetimes
+In the client role, the library MUST be able to export an opaque detached resumption-ticket carrier from the current-lifetime owned resumption-ticket snapshot after REQ-QUIC-CRT-0127 has captured real ticket bytes, and a later managed client setup MUST be able to accept that carrier and store it as separate dormant internal state. The detached carrier MUST remain distinct from transient bridge-state ticket bytes and the current runtime-owned snapshot bytes, MUST keep handshake/bootstrap behavior unchanged when dormant state is present, MUST keep early-data admission explicitly closed before and after handoff, MUST keep the carrier opaque, MUST NOT derive PSKs, MUST NOT place the handed-off ticket into ClientHello, MUST NOT imply resumed-handshake or 0-RTT support, MUST NOT add anti-replay, MUST NOT widen public API or IsSupported, and MUST remain client-role only.
+
+Trace:
+- Source Refs:
+  - docs/design/quic-interop-prep-plan.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs
+  - src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs
+  - src/Incursa.Quic/QuicClientConnectionHost.cs
+  - src/Incursa.Quic/QuicConnection.cs
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0130.cs
+
+Notes:
+- This is the smallest honest cross-lifetime handoff slice and remains narrower than any resumption or 0-RTT implementation.
+- The exported carrier is a detached copy of the owned snapshot; the later client setup stores it as dormant internal state and does not consume it during handshake.
+- Server-role use remains out of scope for this slice.
+
+## REQ-QUIC-CRT-0131 Capture the minimum detached resumption-credential material needed for a later resumption attempt
+In the client role, the library MUST expand the detached resumption-ticket carrier established by REQ-QUIC-CRT-0130 so that, after real post-Finished ticket ingress has been accepted, the originating managed client/runtime path retains the opaque ticket bytes, ticket nonce, ticket lifetime seconds, ticket age add, capture timestamp, and the handshake-derived resumption master secret. A later managed client setup MUST be able to accept that richer carrier and store it as separate dormant internal state without changing handshake/bootstrap behavior. The carrier MUST remain immutable and opaque, MUST remain distinct from transient bridge-state storage and the current runtime-owned snapshot, MUST keep early-data admission explicitly closed before and after capture and handoff, MUST remain client-role only, and MUST NOT derive or use a PSK in ClientHello, MUST NOT emit a binder or claim resumed-handshake or 0-RTT support, MUST NOT add anti-replay, MUST NOT widen public API or IsSupported, and MUST NOT alter transfer or retry contracts.
+
+Trace:
+- Source Refs:
+  - RFC 8446 Section 4.6.1
+  - RFC 8446 Section 7.1
+  - docs/design/quic-interop-prep-plan.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs
+  - src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs
+  - src/Incursa.Quic/QuicClientConnectionHost.cs
+  - src/Incursa.Quic/QuicConnection.cs
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - src/Incursa.Quic/QuicTlsKeySchedule.cs
+  - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
+  - src/Incursa.Quic/QuicTlsTransport.cs
+  - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
+  - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0131.cs
+
+Notes:
+- This slice is the narrow prerequisite for a later honest resumption attempt. It is not a resumed-handshake implementation.
+- The resumption master secret is carried only as internal material that a later client can use to derive the PSK; it is not consumed in the current handshake.
+- Server-role use remains out of scope for this slice.

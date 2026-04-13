@@ -1,0 +1,46 @@
+{
+  "title": "QUIC CRT detached resumption-ticket carrier handoff work item",
+  "verification_links": [
+    "VER-QUIC-CRT-0028"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_type": "work_item",
+  "completion_notes": "This is a landed narrow cross-lifetime handoff slice. It exports an opaque detached resumption-ticket carrier from the managed client/runtime path and stores it as dormant internal state in a later client setup; it does not claim PSK derivation, replay handling, 0-RTT support, or any public ticket/early-data promise.",
+  "out_of_scope": [
+    "public API widening",
+    "ticket replay into ClientHello",
+    "PSK derivation",
+    "resumed handshake support",
+    "0-RTT packet send/receive support",
+    "anti-replay behavior",
+    "broad support for arbitrary post-handshake TLS messages",
+    "fake replay or fake resumption success paths",
+    "transfer enablement",
+    "retry enablement",
+    "key update",
+    "broader session-management infrastructure",
+    "opportunistic refactors unrelated to detached handoff or dormant import"
+  ],
+  "status": "landed",
+  "domain": "quic",
+  "summary": "Export an opaque detached resumption-ticket carrier from the managed client/runtime path and store it as dormant internal state in a later client setup without widening the supported promise.",
+  "verification_plan": "Run focused requirement-home tests for detached carrier export, absence before capture, dormant import into later client setup, duplicate-update non-replacement, server-role rejection, explicit early-data closure before and after handoff, the public no-hand-off/no-resumption/no-early-data guard, and unchanged handshake/bootstrap behavior with dormant state present; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs`](../../../src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs)\n- [`src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs`](../../../src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs)\n- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicConnection.cs`](../../../src/Incursa.Quic/QuicConnection.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0130.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0130.cs)\n- [`docs/design/quic-interop-prep-plan.md`](../../../docs/design/quic-interop-prep-plan.md)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)"
+    }
+  ],
+  "planned_changes": "- A new internal immutable detached ticket carrier is exported from the runtime-owned snapshot after real ticket ingress.\n- The carrier threads through the later managed client setup path and is stored as separate dormant internal state.\n- The dormant state remains distinct from transient bridge-state storage and the current-lifetime runtime-owned snapshot.\n- Focused requirement-home tests cover export, absence before capture, dormant import, duplicate-update non-replacement, server-role rejection, explicit early-data closure before and after handoff, unchanged handshake/bootstrap behavior, and the public no-hand-off/no-resumption/no-early-data guard.\n- PSK derivation, 0-RTT packet processing, ClientHello replay, replay ownership, transfer, retry, key update, and any public API widening remain out of scope.",
+  "design_links": [
+    "ARC-QUIC-CRT-0028"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0130"
+  ],
+  "artifact_id": "WI-QUIC-CRT-0028"
+}

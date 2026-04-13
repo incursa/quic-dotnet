@@ -68,7 +68,7 @@ public sealed class REQ_QUIC_CRT_0109
             QuicTlsEncryptionLevel.Handshake,
             finishedTranscript);
 
-        Assert.Equal(7, finishedUpdates.Count);
+        Assert.Equal(8, finishedUpdates.Count);
         Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, finishedUpdates[0].Kind);
         Assert.Equal(QuicTlsHandshakeMessageType.Finished, finishedUpdates[0].HandshakeMessageType);
         Assert.Equal(QuicTlsUpdateKind.PeerFinishedVerified, finishedUpdates[1].Kind);
@@ -77,12 +77,14 @@ public sealed class REQ_QUIC_CRT_0109
         Assert.Equal(QuicTlsEncryptionLevel.OneRtt, finishedUpdates[3].EncryptionLevel);
         Assert.Equal(QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable, finishedUpdates[4].Kind);
         Assert.Equal(QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable, finishedUpdates[5].Kind);
-        Assert.Equal(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted, finishedUpdates[6].Kind);
+        Assert.Equal(QuicTlsUpdateKind.ResumptionMasterSecretAvailable, finishedUpdates[6].Kind);
+        Assert.Equal(QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted, finishedUpdates[7].Kind);
         Assert.True(driver.State.PeerFinishedVerified);
         Assert.True(driver.State.PeerHandshakeTranscriptCompleted);
         Assert.True(driver.State.OneRttKeysAvailable);
         Assert.True(driver.State.OneRttOpenPacketProtectionMaterial.HasValue);
         Assert.True(driver.State.OneRttProtectPacketProtectionMaterial.HasValue);
+        Assert.True(driver.State.HasResumptionMasterSecret);
         Assert.True(driver.State.CanCommitPeerTransportParameters(peerTransportParameters));
 
         IReadOnlyList<QuicTlsStateUpdate> commitUpdates = driver.CommitPeerTransportParameters(peerTransportParameters);

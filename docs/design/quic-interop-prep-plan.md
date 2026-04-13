@@ -94,6 +94,7 @@ Supported today:
 - The public `QuicClientConnectionOptions.PeerCertificatePolicy` plus `QuicPeerCertificatePolicy` carrier for exact peer leaf DER and explicit trust-material SHA-256, feeding the existing internal exact-match snapshot.
 - The reject-first supported subset of client TLS options already described in the public API docs, including the still-unsupported broader client-auth knobs.
 - The narrow internal post-Finished ticket seam under `REQ-QUIC-CRT-0128`, `ARC-QUIC-CRT-0026`, `WI-QUIC-CRT-0026`, and `VER-QUIC-CRT-0026`, plus the separate client-side 1-RTT post-handshake ticket-ingress slice under `REQ-QUIC-CRT-0129`, `ARC-QUIC-CRT-0027`, `WI-QUIC-CRT-0027`, and `VER-QUIC-CRT-0027`, are now landed internal/runtime slices. They surface opaque ticket bytes after Finished, consume only a valid `NewSessionTicket` message on `OneRtt` CRYPTO, and ignore unsupported 1-RTT post-handshake TLS messages instead of broadening the parser.
+- The detached resumption-ticket handoff slice under `REQ-QUIC-CRT-0130`, `ARC-QUIC-CRT-0028`, `WI-QUIC-CRT-0028`, and `VER-QUIC-CRT-0028` is now landed as a cross-lifetime internal carrier slice. The originating client/runtime path can export a detached opaque carrier from the owned ticket snapshot, and a later managed client setup can accept that carrier as dormant internal state without changing handshake or early-data behavior.
 
 Partially implemented but not yet promised:
 
@@ -213,6 +214,18 @@ Notes on dependency:
    - Focus: opaque resumption-ticket capture on the managed client/runtime path, with an explicit early-data gate that remains closed and no replay or 0-RTT claim.
    - Status: landed. The runtime now owns opaque resumption-ticket state on the managed client/runtime path and keeps the early-data gate explicitly closed.
    - Depends on: the client-role 1-RTT readiness seam and the current handshake/runtime proof floor.
+
+11. `Detached resumption-ticket handoff across connection lifetimes`
+   - Goal: keep the cross-lifetime detached carrier traceable under `REQ-QUIC-CRT-0130`, `ARC-QUIC-CRT-0028`, `WI-QUIC-CRT-0028`, and `VER-QUIC-CRT-0028`.
+   - Focus: export of a detached opaque ticket carrier from the owned snapshot, later client setup import into dormant internal state, unchanged handshake/bootstrap behavior, and an explicitly closed early-data gate across the handoff boundary.
+   - Status: landed. The managed client/runtime path can now export a detached carrier after the owned snapshot exists and can accept that carrier later as dormant internal state without claiming resumption or 0-RTT behavior.
+   - Depends on: the client-role 1-RTT readiness seam and the current handshake/runtime proof floor.
+
+12. `Detached resumption-credential material capture`
+   - Goal: keep the minimum credential-capture prerequisite traceable under `REQ-QUIC-CRT-0131`, `ARC-QUIC-CRT-0029`, `WI-QUIC-CRT-0029`, and `VER-QUIC-CRT-0029`.
+   - Focus: retention of the opaque ticket bytes together with the ticket nonce, ticket lifetime, ticket age add, capture timestamp, and handshake-derived resumption master secret so a later client can honestly attempt resumption without claiming the attempt yet.
+   - Status: landed. The detached carrier now carries the minimum honest resumption-credential material as dormant internal state on the managed client/runtime path, but it still does not claim a resumption attempt.
+   - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, and the detached handoff slice staying stable.
 
 ## Do-Not-Widen Boundaries
 

@@ -308,7 +308,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             tlsRole: QuicTlsRole.Client,
             clientCertificatePolicySnapshot: settings.ClientCertificatePolicySnapshot,
             remoteCertificateValidationCallback: options.ClientAuthenticationOptions.RemoteCertificateValidationCallback,
-            clientAuthenticationOptions: options.ClientAuthenticationOptions);
+            clientAuthenticationOptions: options.ClientAuthenticationOptions,
+            detachedResumptionTicketSnapshot: settings.DetachedResumptionTicketSnapshot);
     }
 
     private static QuicTransportParameters CreateLocalTransportParameters(

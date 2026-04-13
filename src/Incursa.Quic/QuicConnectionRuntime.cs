@@ -35,12 +35,18 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly long timeOriginTicks;
     private readonly QuicHandshakeFlowCoordinator handshakeFlowCoordinator;
     private readonly QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot;
+    private readonly QuicDetachedResumptionTicketSnapshot? dormantDetachedResumptionTicketSnapshot;
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private QuicInitialPacketProtection? initialPacketProtection;
     private QuicConnectionPathIdentity? bootstrapOutboundPathIdentity;
     private byte[]? initialBootstrapClientHelloBytes;
     private byte[]? ownedResumptionTicketBytes;
+    private byte[]? ownedResumptionTicketNonce;
+    private uint? ownedResumptionTicketLifetimeSeconds;
+    private uint? ownedResumptionTicketAgeAdd;
+    private long? ownedResumptionTicketCapturedAtTicks;
+    private byte[]? resumptionMasterSecret;
     private byte[]? retrySourceConnectionId;
     private byte[]? retryToken;
     private bool retryBootstrapPendingReplay;
@@ -81,7 +87,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot = null,
         RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null,
         SslClientAuthenticationOptions? clientAuthenticationOptions = null,
-        QuicTlsRole tlsRole = QuicTlsRole.Client)
+        QuicTlsRole tlsRole = QuicTlsRole.Client,
+        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -89,6 +96,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         handshakeFlowCoordinator = new QuicHandshakeFlowCoordinator();
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
+        if (detachedResumptionTicketSnapshot is not null && tlsRole != QuicTlsRole.Client)
+        {
+            throw new ArgumentException("Detached resumption ticket snapshots are only supported for the client role.", nameof(detachedResumptionTicketSnapshot));
+        }
+
+        dormantDetachedResumptionTicketSnapshot = detachedResumptionTicketSnapshot;
         tlsState = new QuicTransportTlsBridgeState(tlsRole);
         tlsBridgeDriver = new QuicTlsTransportBridgeDriver(
             tlsRole,
@@ -221,9 +234,25 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     internal bool HasOwnedResumptionTicket => ownedResumptionTicketBytes is not null;
 
+    internal ReadOnlyMemory<byte> OwnedResumptionTicketNonce => ownedResumptionTicketNonce ?? ReadOnlyMemory<byte>.Empty;
+
+    internal uint? OwnedResumptionTicketLifetimeSeconds => ownedResumptionTicketLifetimeSeconds;
+
+    internal uint? OwnedResumptionTicketAgeAdd => ownedResumptionTicketAgeAdd;
+
+    internal long? OwnedResumptionTicketCapturedAtTicks => ownedResumptionTicketCapturedAtTicks;
+
+    internal ReadOnlyMemory<byte> ResumptionMasterSecret => resumptionMasterSecret ?? tlsState.ResumptionMasterSecret;
+
+    internal bool HasResumptionMasterSecret => resumptionMasterSecret is not null || tlsState.HasResumptionMasterSecret;
+
     internal bool IsEarlyDataAdmissionOpen => false;
 
     internal QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot => clientCertificatePolicySnapshot;
+
+    internal QuicDetachedResumptionTicketSnapshot? DormantDetachedResumptionTicketSnapshot => dormantDetachedResumptionTicketSnapshot;
+
+    internal bool HasDormantDetachedResumptionTicketSnapshot => dormantDetachedResumptionTicketSnapshot is not null;
 
     internal bool TryConfigureInitialPacketProtection(ReadOnlySpan<byte> clientInitialDestinationConnectionId)
     {
@@ -246,6 +275,32 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         initialPacketProtection = protection;
+        return true;
+    }
+
+    internal bool TryExportDetachedResumptionTicketSnapshot(out QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot)
+    {
+        _ = TryCaptureResumptionMasterSecret();
+
+        if (tlsState.Role != QuicTlsRole.Client
+            || ownedResumptionTicketBytes is null
+            || ownedResumptionTicketNonce is null
+            || ownedResumptionTicketLifetimeSeconds is null
+            || ownedResumptionTicketAgeAdd is null
+            || ownedResumptionTicketCapturedAtTicks is null
+            || !HasResumptionMasterSecret)
+        {
+            detachedResumptionTicketSnapshot = null;
+            return false;
+        }
+
+        detachedResumptionTicketSnapshot = new QuicDetachedResumptionTicketSnapshot(
+            ownedResumptionTicketBytes,
+            ownedResumptionTicketNonce,
+            ownedResumptionTicketLifetimeSeconds.Value,
+            ownedResumptionTicketAgeAdd.Value,
+            ownedResumptionTicketCapturedAtTicks.Value,
+            ResumptionMasterSecret);
         return true;
     }
 
@@ -998,6 +1053,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             case QuicTlsUpdateKind.PeerCertificatePolicyAccepted:
             case QuicTlsUpdateKind.PeerFinishedVerified:
                 stateChanged |= TryCommitPeerTransportParametersFromTlsBridgeDriver(nowTicks, ref effects);
+                if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.PeerFinishedVerified)
+                {
+                    stateChanged |= TryCaptureResumptionMasterSecret();
+                }
                 break;
 
             case QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted:
@@ -1040,6 +1099,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             case QuicTlsUpdateKind.PacketProtectionMaterialAvailable:
             case QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable:
             case QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable:
+            case QuicTlsUpdateKind.ResumptionMasterSecretAvailable:
             case QuicTlsUpdateKind.PostHandshakeTicketAvailable:
                 if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.CryptoDataAvailable
                     && tlsState.Role == QuicTlsRole.Client
@@ -1049,9 +1109,14 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                     initialBootstrapClientHelloBytes = tlsStateUpdatedEvent.Update.CryptoData.ToArray();
                 }
 
+                if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.ResumptionMasterSecretAvailable)
+                {
+                    stateChanged |= TryCaptureResumptionMasterSecret();
+                }
+
                 if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.PostHandshakeTicketAvailable)
                 {
-                    stateChanged |= TryCaptureOwnedResumptionTicketSnapshot();
+                    stateChanged |= TryCaptureOwnedResumptionTicketSnapshot(nowTicks);
                 }
 
                 stateChanged |= TryFlushInitialPackets(ref effects);
@@ -1059,6 +1124,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 break;
         }
 
+        stateChanged |= TryCaptureResumptionMasterSecret();
         return stateChanged;
     }
 
@@ -2539,11 +2605,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             ref effects);
     }
 
-    private bool TryCaptureOwnedResumptionTicketSnapshot()
+    private bool TryCaptureOwnedResumptionTicketSnapshot(long nowTicks)
     {
         if (ownedResumptionTicketBytes is not null
             || tlsState.Role != QuicTlsRole.Client
-            || !tlsState.HasPostHandshakeTicket)
+            || !tlsState.HasPostHandshakeTicket
+            || !tlsState.PostHandshakeTicketLifetimeSeconds.HasValue
+            || !tlsState.PostHandshakeTicketAgeAdd.HasValue)
         {
             return false;
         }
@@ -2555,6 +2623,30 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         ownedResumptionTicketBytes = ticketBytes.ToArray();
+        ownedResumptionTicketNonce = tlsState.PostHandshakeTicketNonce.ToArray();
+        ownedResumptionTicketLifetimeSeconds = tlsState.PostHandshakeTicketLifetimeSeconds;
+        ownedResumptionTicketAgeAdd = tlsState.PostHandshakeTicketAgeAdd;
+        ownedResumptionTicketCapturedAtTicks = nowTicks;
+        _ = TryCaptureResumptionMasterSecret();
+        return true;
+    }
+
+    private bool TryCaptureResumptionMasterSecret()
+    {
+        if (resumptionMasterSecret is not null
+            || tlsState.Role != QuicTlsRole.Client
+            || !tlsState.HasResumptionMasterSecret)
+        {
+            return false;
+        }
+
+        ReadOnlyMemory<byte> secretBytes = tlsState.ResumptionMasterSecret;
+        if (secretBytes.IsEmpty)
+        {
+            return false;
+        }
+
+        resumptionMasterSecret = secretBytes.ToArray();
         return true;
     }
 

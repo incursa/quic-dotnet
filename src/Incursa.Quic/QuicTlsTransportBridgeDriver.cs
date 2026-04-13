@@ -94,6 +94,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// </summary>
     internal ReadOnlyMemory<byte> LocalHandshakeKeyShare => keySchedule?.LocalKeyShare ?? ReadOnlyMemory<byte>.Empty;
 
+    /// <summary>
+    /// Gets the client-role resumption master secret derived during the handshake, if available.
+    /// </summary>
+    internal ReadOnlyMemory<byte> ResumptionMasterSecret => keySchedule?.ResumptionMasterSecret ?? ReadOnlyMemory<byte>.Empty;
+
     /// <inheritdoc />
     public IReadOnlyList<QuicTlsStateUpdate> StartHandshake(QuicTransportParameters localTransportParameters)
     {
@@ -979,6 +984,9 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         return PublishUpdate(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.PostHandshakeTicketAvailable,
             TranscriptPhase: step.TranscriptPhase,
+            TicketNonce: step.TicketNonce,
+            TicketLifetimeSeconds: step.TicketLifetimeSeconds,
+            TicketAgeAdd: step.TicketAgeAdd,
             TicketBytes: step.TicketBytes));
     }
 

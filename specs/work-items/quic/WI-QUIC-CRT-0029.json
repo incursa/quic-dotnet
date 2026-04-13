@@ -1,0 +1,46 @@
+{
+  "title": "QUIC CRT detached resumption-credential material capture work item",
+  "verification_links": [
+    "VER-QUIC-CRT-0029"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_type": "work_item",
+  "completion_notes": "This is the landed narrow credential-capture slice. It retains opaque ticket bytes plus the minimum resumption-credential material required for a later honest resumption attempt, but it does not claim ClientHello reuse, PSK derivation, resumed-handshake support, or any public early-data promise.",
+  "out_of_scope": [
+    "public API widening",
+    "ticket replay into ClientHello",
+    "PSK derivation",
+    "resumed handshake support",
+    "0-RTT packet send/receive support",
+    "anti-replay behavior",
+    "broad support for arbitrary post-handshake TLS messages",
+    "fake replay or fake resumption success paths",
+    "transfer enablement",
+    "retry enablement",
+    "key update",
+    "broader session-management infrastructure",
+    "opportunistic refactors unrelated to the richer detached carrier or dormant import"
+  ],
+  "status": "landed",
+  "domain": "quic",
+  "summary": "Retain the minimum detached resumption-credential material on the managed client/runtime path and store the richer carrier as dormant internal state in a later client setup without widening the supported promise.",
+  "verification_plan": "Run focused requirement-home tests for richer detached carrier export, absence before capture, dormant import into later client setup, duplicate-update non-replacement, server-role rejection, explicit early-data closure before and after capture and handoff, the public no-hand-off/no-resumption/no-early-data guard, and unchanged handshake/bootstrap behavior with dormant state present; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs`](../../../src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs)\n- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0131.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0131.cs)\n- [`docs/design/quic-interop-prep-plan.md`](../../../docs/design/quic-interop-prep-plan.md)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)"
+    }
+  ],
+  "planned_changes": "- A richer immutable detached ticket carrier now retains ticket bytes, ticket nonce, ticket lifetime seconds, ticket age add, capture timestamp, and a resumption master secret derived from the supported handshake.\n- The later managed client setup path stores that richer carrier as separate dormant internal state.\n- The bridge-state ingress seam remains the transient source of ticket bytes, but the runtime keeps its own richer detached copy.\n- Focused requirement-home tests cover richer export, absence before ingress, dormant import, duplicate-update non-replacement, server-role rejection, explicit early-data closure before and after handoff, unchanged handshake/bootstrap behavior, and the public no-hand-off/no-resumption/no-early-data guard.\n- PSK derivation, 0-RTT packet processing, ClientHello replay, replay ownership, transfer, retry, key update, and any public API widening remain out of scope.",
+  "design_links": [
+    "ARC-QUIC-CRT-0029"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0131"
+  ],
+  "artifact_id": "WI-QUIC-CRT-0029"
+}
