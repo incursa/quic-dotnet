@@ -23,6 +23,14 @@ public sealed class QuicListener : IAsyncDisposable
     /// </summary>
     public static ValueTask<QuicListener> ListenAsync(QuicListenerOptions options, CancellationToken cancellationToken = default)
     {
+        return ListenAsync(options, cancellationToken, diagnosticsSinkFactory: null);
+    }
+
+    internal static ValueTask<QuicListener> ListenAsync(
+        QuicListenerOptions options,
+        CancellationToken cancellationToken,
+        Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory)
+    {
         ArgumentNullException.ThrowIfNull(options);
         options.Validate(nameof(options));
         cancellationToken.ThrowIfCancellationRequested();
@@ -31,7 +39,9 @@ public sealed class QuicListener : IAsyncDisposable
             options.ListenEndPoint,
             options.ApplicationProtocols,
             options.ConnectionOptionsCallback,
-            options.ListenBacklog);
+            options.ListenBacklog,
+            retryBootstrapEnabled: false,
+            diagnosticsSinkFactory: diagnosticsSinkFactory);
 
         try
         {

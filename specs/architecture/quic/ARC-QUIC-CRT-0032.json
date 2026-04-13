@@ -6,18 +6,21 @@
   "title": "QUIC diagnostics sink and qlog adapter boundary architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Describe the connection-scoped diagnostics seam and sibling qlog adapter boundary that keep Incursa.Quic free of qlog serialization and file concerns while still allowing per-connection observational tracing.",
+  "purpose": "Describe the connection-scoped diagnostics seam, sibling qlog adapter boundary, and narrow host-facing qlog capture helper that keep Incursa.Quic free of qlog serialization and file concerns while still allowing per-connection observational tracing.",
   "related_artifacts": [
     "SPEC-QUIC-CRT",
     "WI-QUIC-CRT-0032",
     "WI-QUIC-CRT-0033",
+    "WI-QUIC-CRT-0035",
     "VER-QUIC-CRT-0032",
-    "VER-QUIC-CRT-0033"
+    "VER-QUIC-CRT-0033",
+    "VER-QUIC-CRT-0035"
   ],
   "satisfies": [
     "REQ-QUIC-CRT-0134",
     "REQ-QUIC-CRT-0135",
-    "REQ-QUIC-CRT-0136"
+    "REQ-QUIC-CRT-0136",
+    "REQ-QUIC-CRT-0138"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicDiagnostics.cs",
@@ -27,14 +30,17 @@
     "src/Incursa.Quic/QuicConnectionRuntimeHost.cs",
     "src/Incursa.Quic/QuicClientConnectionHost.cs",
     "src/Incursa.Quic/QuicListenerHost.cs",
-    "src/Incursa.Quic/QuicConnection.cs"
+    "src/Incursa.Quic/QuicConnection.cs",
+    "src/Incursa.Quic.Qlog/QuicQlogCapture.cs",
+    "src/Incursa.Quic.Qlog/QuicQlogDiagnosticsSink.cs",
+    "src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj"
   ],
   "risks": [
     "If the sink contract remains string-only, the adapter will not have enough stable transport facts to map cleanly to qlog builders.",
     "If per-connection enablement is resolved lazily inside the reducer, packet, stream, timer, and path paths will pay repeated policy checks.",
     "If the adapter owns serializer or file logic, qlog output concerns will leak back into the transport core through package dependencies."
   ],
-  "design_summary": "The transport core resolves one diagnostics sink per connection during connection setup and stores only the resolved sink inside the runtime. The runtime emits structured transport facts through that sink, but it never references qlog builders, JSON writers, or file paths. A sibling Incursa.Quic.Qlog adapter package will depend on Incursa.Quic, Incursa.Qlog, and Incursa.Qlog.Quic, register the qlog schema once per trace, and convert the transport facts into qlog events and trace append operations. File rotation, serializer choice, and QLOGDIR ownership stay outside the transport core.",
+  "design_summary": "The transport core resolves one diagnostics sink per connection during connection setup and stores only the resolved sink inside the runtime. The runtime emits structured transport facts through that sink, but it never references qlog builders, JSON writers, or file paths. A sibling Incursa.Quic.Qlog adapter package depends on Incursa.Quic, Incursa.Qlog, and Incursa.Qlog.Quic, registers the qlog schema once per trace, and converts the transport facts into qlog events and trace append operations. A narrow host-facing capture helper above that adapter can aggregate one or many traces in memory and hand the resulting qlog file to the existing JSON serializer without moving file rotation, serializer choice, or QLOGDIR ownership into the transport core.",
   "alternatives_considered": [
     "Put qlog adapters directly in Incursa.Quic. Rejected because it would add qlog and serializer dependencies to the core package and contaminate the hot path.",
     "Use one global diagnostics registry. Rejected because it would require repeated configuration checks and make per-connection targeting coarse.",
@@ -45,9 +51,10 @@
     "Per-connection sink resolution must happen before the runtime starts processing events.",
     "The adapter may omit qlog fields when transport facts are unavailable; it must not invent data.",
     "qlog schema registration must happen once per trace, not once per event.",
-    "The adapter must not influence scheduling, routing, or recovery behavior."
+    "The adapter must not influence scheduling, routing, or recovery behavior.",
+    "A host-facing capture helper may own the in-memory `QlogFile` envelope and collected `QlogTrace` instances, but it must keep file policy above the transport core."
   ],
-  "data_and_state_considerations": "The client and listener hosts are the natural sink-resolution points because they already own connection setup and endpoint metadata. The runtime should store only the resolved sink or null object, while the adapter package owns the qlog trace and per-trace event append order. The consumer or host chooses whether to serialize one trace or many traces after the adapter has captured the events.",
+  "data_and_state_considerations": "The client and listener hosts are the natural sink-resolution points because they already own connection setup and endpoint metadata. The runtime should store only the resolved sink or null object, while the adapter package owns the qlog trace and per-trace event append order. The consumer or host chooses whether to serialize one trace or many traces after the adapter has captured the events, and the host-facing capture helper may aggregate that in-memory file before handing it to the serializer.",
   "supplemental_sections": [
     {
       "heading": "Scope",

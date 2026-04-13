@@ -39,7 +39,9 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
     private string? retryTokenFromRetryHex;
     private string? retryBootstrapReplayPacketTokenHex;
 
-    public QuicClientConnectionHost(QuicClientConnectionSettings settings)
+    public QuicClientConnectionHost(
+        QuicClientConnectionSettings settings,
+        Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory = null)
     {
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
@@ -59,7 +61,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             localEndPoint.Port);
 
         endpoint = new QuicConnectionRuntimeEndpoint(1);
-        runtime = CreateRuntime(settings);
+        runtime = CreateRuntime(settings, diagnosticsSinkFactory?.Invoke());
         connection = new QuicConnection(runtime, settings.Options, this);
         handle = endpoint.AllocateConnectionHandle();
 
@@ -284,7 +286,9 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         }
     }
 
-    private static QuicConnectionRuntime CreateRuntime(QuicClientConnectionSettings settings)
+    private static QuicConnectionRuntime CreateRuntime(
+        QuicClientConnectionSettings settings,
+        IQuicDiagnosticsSink? diagnosticsSink = null)
     {
         QuicClientConnectionOptions options = settings.Options;
         QuicReceiveWindowSizes receiveWindowSizes = options.InitialReceiveWindowSizes;
@@ -302,7 +306,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             InitialLocalBidirectionalSendLimit: (ulong)Math.Max(0, receiveWindowSizes.LocallyInitiatedBidirectionalStream),
             InitialLocalUnidirectionalSendLimit: (ulong)Math.Max(0, receiveWindowSizes.UnidirectionalStream),
             InitialPeerBidirectionalSendLimit: 0));
-        IQuicDiagnosticsSink diagnosticsSink = QuicDiagnostics.ResolveConnectionSink();
+        diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
 
         return new QuicConnectionRuntime(
             bookkeeping,

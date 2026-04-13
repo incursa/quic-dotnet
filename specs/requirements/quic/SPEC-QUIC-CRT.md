@@ -12,7 +12,7 @@ This specification covers endpoint ingress classification, routing tables, conne
 
 ## Context
 
-The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The current diagnostics placeholder exposes a no-op sink, but the next slice needs a typed, connection-scoped diagnostics contract plus a sibling qlog adapter boundary so transport facts can be mapped without bringing JSON or serializer concerns into the core. The server-role proof floor still stops at inbound Finished, so server-side client-auth and client-certificate handling on the existing `SslServerAuthenticationOptions` carrier remain the next open gap. The client-side PSK-attempt path now has a ServerHello accept/reject branch-point slice under `REQ-QUIC-CRT-0133`, and the accepted-path abbreviated completion follow-on is traced separately under `REQ-QUIC-CRT-0137`. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, diagnostics, qlog-adapter, and package-compatibility work can be implemented against one clear architecture, while the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.
+The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The current diagnostics placeholder exposes a no-op sink, but the next slice needs a typed, connection-scoped diagnostics contract plus a sibling qlog adapter boundary and a narrow host-facing qlog capture helper so transport facts can be mapped and serialized without bringing JSON or serializer concerns into the core. The server-role proof floor still stops at inbound Finished, so server-side client-auth and client-certificate handling on the existing `SslServerAuthenticationOptions` carrier remain the next open gap. The client-side PSK-attempt path now has a ServerHello accept/reject branch-point slice under `REQ-QUIC-CRT-0133`, and the accepted-path abbreviated completion follow-on is traced separately under `REQ-QUIC-CRT-0137`. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, diagnostics, qlog-adapter, qlog-capture, and package-compatibility work can be implemented against one clear architecture, while the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.
 
 ## Decision Summary
 
@@ -117,6 +117,7 @@ The new runtime becomes the orchestration layer that owns ordering and lifecycle
 This specification is intended to unlock the architecture blockers called out for:
 
 - the diagnostics seam and sibling qlog adapter boundary
+- the host-facing qlog capture helper above the adapter boundary
 - 9000-11-migration-core
 - 9000-13-idle-and-close
 - 9000-14-stateless-reset
@@ -1320,3 +1321,27 @@ Notes:
 - The accepted branch is abbreviated because the client now expects `EncryptedExtensions` followed by `Finished` rather than the full certificate chain path.
 - Rejected attempts still rejoin the existing full-handshake path unchanged.
 - This slice completes the accepted client-side resumed handshake only; it does not add 0-RTT, anti-replay, or any public resumption promise.
+
+## REQ-QUIC-CRT-0138 Add a narrow host-facing qlog capture helper above the adapter
+The library MUST provide a narrow opt-in host-facing qlog capture helper above the sibling adapter boundary so a caller can enable qlog capture per client connection or per listener host instance, collect the resulting qlog trace data in memory through the existing `Incursa.Quic.Qlog` adapter, and serialize the captured contained qlog file through `Incursa.Qlog.Serialization.Json.QlogJsonSerializer` without moving file-system output policy into `Incursa.Quic`. The disabled path MUST remain unchanged, the transport core MUST remain qlog-free, and the capture helper MUST not broaden app-wide logging control.
+
+Trace:
+- Source Refs:
+  - docs/requirements-workflow.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicConnection.cs
+  - src/Incursa.Quic/QuicListener.cs
+  - src/Incursa.Quic/QuicClientConnectionHost.cs
+  - src/Incursa.Quic/QuicListenerHost.cs
+  - src/Incursa.Quic.Qlog/QuicQlogCapture.cs
+  - src/Incursa.Quic.Qlog/QuicQlogDiagnosticsSink.cs
+  - src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj
+  - C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog\\QlogFile.cs
+  - C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog\\QlogTrace.cs
+  - C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog\\Serialization\\Json\\QlogJsonSerializer.cs
+  - C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog\\Serialization\\Json\\QlogJsonTextSequenceSerializer.cs
+
+Notes:
+- The helper may own the in-memory `QlogFile` envelope and collected `QlogTrace` instances, but serializer choice, file paths, rotation, and retention remain above the transport core.
+- The listener-facing path MUST create one trace per accepted connection rather than sharing a single trace for the listener host instance.
+- Sequential JSON Text Sequences output is optional for this slice and remains subordinate to the contained JSON path unless a consumer explicitly needs it.

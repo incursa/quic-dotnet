@@ -34,20 +34,27 @@ public sealed class QuicConnection : IAsyncDisposable
     /// </summary>
     public static ValueTask<QuicConnection> ConnectAsync(QuicClientConnectionOptions options, CancellationToken cancellationToken = default)
     {
-        return ConnectAsync(options, detachedResumptionTicketSnapshot: null, cancellationToken);
+        return ConnectAsync(
+            options,
+            detachedResumptionTicketSnapshot: null,
+            cancellationToken: cancellationToken,
+            diagnosticsSink: null);
     }
 
     internal static ValueTask<QuicConnection> ConnectAsync(
         QuicClientConnectionOptions options,
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        IQuicDiagnosticsSink? diagnosticsSink = null)
     {
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
             options,
             nameof(options),
             detachedResumptionTicketSnapshot: detachedResumptionTicketSnapshot);
         cancellationToken.ThrowIfCancellationRequested();
-        return new QuicClientConnectionHost(settings).ConnectAsync(cancellationToken);
+        return new QuicClientConnectionHost(
+            settings,
+            diagnosticsSink is null ? null : () => diagnosticsSink).ConnectAsync(cancellationToken);
     }
 
     /// <summary>

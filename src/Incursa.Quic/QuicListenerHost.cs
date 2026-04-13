@@ -29,6 +29,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly Channel<object> acceptQueue;
     private readonly List<SslApplicationProtocol> applicationProtocols;
     private readonly Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>> connectionOptionsCallback;
+    private readonly Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory;
     private readonly QuicConnectionRuntimeEndpoint endpoint;
     private readonly ConcurrentDictionary<QuicConnectionHandle, PendingConnectionState> connections = new();
     private readonly bool retryBootstrapEnabled;
@@ -52,7 +53,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         List<SslApplicationProtocol> applicationProtocols,
         Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>> connectionOptionsCallback,
         int listenBacklog,
-        bool retryBootstrapEnabled = false)
+        bool retryBootstrapEnabled = false,
+        Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory = null)
     {
         ArgumentNullException.ThrowIfNull(listenEndPoint);
         ArgumentNullException.ThrowIfNull(applicationProtocols);
@@ -66,6 +68,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         this.applicationProtocols = [.. applicationProtocols];
         this.connectionOptionsCallback = connectionOptionsCallback;
         this.retryBootstrapEnabled = retryBootstrapEnabled;
+        this.diagnosticsSinkFactory = diagnosticsSinkFactory;
         endpoint = new QuicConnectionRuntimeEndpoint(1);
         acceptQueue = Channel.CreateBounded<object>(new BoundedChannelOptions(listenBacklog)
         {
@@ -855,7 +858,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         throw new InvalidOperationException("Unexpected listener queue item.");
     }
 
-    private static QuicConnectionRuntime CreateRuntime(QuicServerConnectionOptions options)
+    private QuicConnectionRuntime CreateRuntime(QuicServerConnectionOptions options)
     {
         QuicReceiveWindowSizes receiveWindowSizes = options.InitialReceiveWindowSizes;
         QuicConnectionStreamState bookkeeping = new(new QuicConnectionStreamStateOptions(
@@ -872,12 +875,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             InitialLocalBidirectionalSendLimit: (ulong)Math.Max(0, receiveWindowSizes.LocallyInitiatedBidirectionalStream),
             InitialLocalUnidirectionalSendLimit: (ulong)Math.Max(0, receiveWindowSizes.UnidirectionalStream),
             InitialPeerBidirectionalSendLimit: 0));
-        IQuicDiagnosticsSink diagnosticsSink = QuicDiagnostics.ResolveConnectionSink();
+        IQuicDiagnosticsSink? diagnosticsSink = diagnosticsSinkFactory?.Invoke();
 
         return new QuicConnectionRuntime(
             bookkeeping,
             tlsRole: QuicTlsRole.Server,
-            diagnosticsSink: diagnosticsSink);
+            diagnosticsSink: QuicDiagnostics.ResolveConnectionSink(diagnosticsSink));
     }
 
     private sealed class PendingConnectionState
