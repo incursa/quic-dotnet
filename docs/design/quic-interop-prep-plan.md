@@ -90,6 +90,7 @@ Supported today:
 - Narrow TLS 1.3 proof slices.
 - The standard BCL-shaped client validation path on the existing `SslClientAuthenticationOptions` carrier, including `TargetHost`, `CertificateChainPolicy`, revocation delegation, and callback overrides.
 - The explicit pinned-leaf acceptance seam.
+- The callback-driven server-side `ClientCertificateRequired` floor on the existing `SslServerAuthenticationOptions` carrier, while broader chain/revocation customization stays deferred.
 - The public `QuicClientConnectionOptions.PeerCertificatePolicy` plus `QuicPeerCertificatePolicy` carrier for exact peer leaf DER and explicit trust-material SHA-256, feeding the existing internal exact-match snapshot.
 - The reject-first supported subset of client TLS options already described in the public API docs, including the still-unsupported broader client-auth knobs.
 
@@ -102,7 +103,7 @@ Partially implemented but not yet promised:
 Still missing:
 
 - Broader client-auth or TLS-option support.
-- Server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier, including the narrow `ClientCertificateRequired` request/validate floor traced by `REQ-QUIC-CRT-0124`.
+- Broader server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier beyond the callback-driven `ClientCertificateRequired` floor traced by `REQ-QUIC-CRT-0124`.
 - `0-RTT`.
 - Key update.
 

@@ -193,9 +193,9 @@ public sealed class REQ_QUIC_CRT_0124
     }
 
     [Fact]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
-    public void ServerConnectionOptionsValidatorStillRejectsClientCertificateRequired()
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ServerConnectionOptionsValidatorAcceptsClientCertificateRequiredWhenCallbackDriven()
     {
         using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
         QuicServerConnectionOptions options = new()
@@ -211,10 +211,153 @@ public sealed class REQ_QUIC_CRT_0124
             },
         };
 
+        QuicServerConnectionSettings settings = QuicServerConnectionOptionsValidator.Capture(
+            options,
+            nameof(options),
+            [SslApplicationProtocol.Http3]);
+
+        Assert.True(settings.Options.ServerAuthenticationOptions.ClientCertificateRequired);
+        Assert.NotNull(settings.Options.ServerAuthenticationOptions.RemoteCertificateValidationCallback);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServerConnectionOptionsValidatorRejectsClientCertificateRequiredWithoutCallback()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        QuicServerConnectionOptions options = new()
+        {
+            ServerAuthenticationOptions = new SslServerAuthenticationOptions
+            {
+                ApplicationProtocols = [SslApplicationProtocol.Http3],
+                ServerCertificate = serverCertificate,
+                ClientCertificateRequired = true,
+                EnabledSslProtocols = SslProtocols.Tls13,
+                EncryptionPolicy = EncryptionPolicy.RequireEncryption,
+            },
+        };
+
         Assert.Throws<NotSupportedException>(() => QuicServerConnectionOptionsValidator.Capture(
             options,
             nameof(options),
             [SslApplicationProtocol.Http3]));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServerConnectionOptionsValidatorRejectsClientCertificateRequiredWhenRevocationCustomizationIsSupplied()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        QuicServerConnectionOptions options = new()
+        {
+            ServerAuthenticationOptions = new SslServerAuthenticationOptions
+            {
+                ApplicationProtocols = [SslApplicationProtocol.Http3],
+                ServerCertificate = serverCertificate,
+                ClientCertificateRequired = true,
+                EnabledSslProtocols = SslProtocols.Tls13,
+                EncryptionPolicy = EncryptionPolicy.RequireEncryption,
+                CertificateRevocationCheckMode = X509RevocationMode.Online,
+                RemoteCertificateValidationCallback = (_, _, _, _) => true,
+            },
+        };
+
+        Assert.Throws<NotSupportedException>(() => QuicServerConnectionOptionsValidator.Capture(
+            options,
+            nameof(options),
+            [SslApplicationProtocol.Http3]));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServerConnectionOptionsValidatorRejectsClientCertificateRequiredWhenChainCustomizationIsSupplied()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        QuicServerConnectionOptions options = new()
+        {
+            ServerAuthenticationOptions = new SslServerAuthenticationOptions
+            {
+                ApplicationProtocols = [SslApplicationProtocol.Http3],
+                ServerCertificate = serverCertificate,
+                ClientCertificateRequired = true,
+                EnabledSslProtocols = SslProtocols.Tls13,
+                EncryptionPolicy = EncryptionPolicy.RequireEncryption,
+                CertificateChainPolicy = new X509ChainPolicy
+                {
+                    RevocationMode = X509RevocationMode.NoCheck,
+                },
+                RemoteCertificateValidationCallback = (_, _, _, _) => true,
+            },
+        };
+
+        Assert.Throws<NotSupportedException>(() => QuicServerConnectionOptionsValidator.Capture(
+            options,
+            nameof(options),
+            [SslApplicationProtocol.Http3]));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServerRoleRejectsMissingClientCertificateAfterTheCertificateRequest()
+    {
+        byte[] serverHandshakePrivateKey = CreateScalar(0x22);
+        byte[] serverSigningPrivateKey = CreateScalar(0x44);
+        byte[] clientHandshakePrivateKey = CreateScalar(0x11);
+        QuicTransportParameters localTransportParameters = CreateServerTransportParameters();
+        QuicTransportParameters peerTransportParameters = CreateClientTransportParameters();
+
+        using ECDsa serverCertificateKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        serverCertificateKey.ImportParameters(new ECParameters
+        {
+            Curve = ECCurve.NamedCurves.nistP256,
+            D = serverSigningPrivateKey,
+        });
+
+        byte[] serverLeafCertificateDer = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(serverCertificateKey);
+
+        QuicTlsTransportBridgeDriver driver = new(
+            QuicTlsRole.Server,
+            localHandshakePrivateKey: serverHandshakePrivateKey,
+            localServerLeafCertificateDer: serverLeafCertificateDer,
+            localServerLeafSigningPrivateKey: serverSigningPrivateKey);
+
+        Assert.True(driver.TryConfigureServerAuthenticationMaterial(
+            serverLeafCertificateDer,
+            serverSigningPrivateKey,
+            clientCertificateRequired: true,
+            serverRemoteCertificateValidationCallback: (_, _, _, _) => true));
+
+        Assert.Single(driver.StartHandshake(localTransportParameters));
+
+        QuicTlsKeySchedule clientHelloSchedule = new(clientHandshakePrivateKey);
+        Assert.True(clientHelloSchedule.TryCreateClientHello(peerTransportParameters, out byte[] clientHello));
+
+        IReadOnlyList<QuicTlsStateUpdate> serverUpdates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            clientHello);
+
+        Assert.Contains(
+            serverUpdates,
+            update => update.Kind == QuicTlsUpdateKind.CryptoDataAvailable
+                && ParseHandshakeMessageType(update.CryptoData.Span) == QuicTlsHandshakeMessageType.CertificateRequest);
+
+        IReadOnlyList<QuicTlsStateUpdate> prematureFinishedUpdates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            new byte[]
+            {
+                (byte)QuicTlsHandshakeMessageType.Finished,
+                0x00,
+                0x00,
+                0x00,
+            });
+
+        Assert.Contains(prematureFinishedUpdates, update => update.Kind == QuicTlsUpdateKind.FatalAlert);
+        Assert.True(driver.State.IsTerminal);
+        Assert.False(driver.State.PeerCertificatePolicyAccepted);
     }
 
     private static byte[] CreateClientCertificateVerifyTranscript(

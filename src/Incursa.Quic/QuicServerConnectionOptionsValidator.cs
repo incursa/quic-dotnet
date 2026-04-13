@@ -49,7 +49,20 @@ internal static class QuicServerConnectionOptionsValidator
 
         if (authenticationOptions.ClientCertificateRequired)
         {
-            throw new NotSupportedException("Client certificate authentication is not supported by this slice.");
+            if (authenticationOptions.RemoteCertificateValidationCallback is null)
+            {
+                throw new NotSupportedException("ClientCertificateRequired requires a RemoteCertificateValidationCallback on this slice.");
+            }
+
+            if (authenticationOptions.CertificateChainPolicy is not null)
+            {
+                throw new NotSupportedException("CertificateChainPolicy is not supported when ClientCertificateRequired is true on this slice.");
+            }
+
+            if (authenticationOptions.CertificateRevocationCheckMode != X509RevocationMode.NoCheck)
+            {
+                throw new NotSupportedException("CertificateRevocationCheckMode is not supported when ClientCertificateRequired is true on this slice.");
+            }
         }
 
         if (authenticationOptions.CipherSuitesPolicy is not null)

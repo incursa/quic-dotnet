@@ -6,7 +6,7 @@
   "title": "QUIC CRT server client-auth transcript/runtime prerequisite architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Describe the smallest internal managed server seam needed to emit TLS 1.3 CertificateRequest and accept client Certificate / CertificateVerify / Finished through the existing transcript/runtime bridge without widening the public listener boundary yet.",
+  "purpose": "Describe the smallest honest public server-auth gate on the existing SslServerAuthenticationOptions carrier, reusing the internal managed transcript/runtime prerequisite to emit TLS 1.3 CertificateRequest and accept client Certificate / CertificateVerify / Finished through the existing bridge without widening broader client-auth behavior.",
   "related_artifacts": [
     "SPEC-QUIC-CRT",
     "WI-QUIC-CRT-0022",
@@ -28,15 +28,15 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs"
   ],
   "risks": [
-    "If the server-auth flag is not threaded into the transcript owner before handshake processing starts, the managed branch will still look client-only even though the code compiles.",
+    "If the validator allows ClientCertificateRequired without the callback seam, the public gate would overclaim a client-auth floor the runtime cannot exercise.",
     "If the client-certificate callback is modeled as a trust-store replacement, the slice will overclaim PKI behavior that was explicitly deferred.",
-    "If the public validator is relaxed before the internal runtime branch is proven, the supported boundary will widen without an honest proof plan."
+    "If the public gate is left closed after the internal floor exists, the supported carrier will remain artificially blocked."
   ],
-  "design_summary": "The narrowest honest step is an internal server-auth prerequisite inside the existing TLS transcript and bridge machinery. The transcript owner needs a role-aware branch for an inbound client Certificate / CertificateVerify / Finished sequence after ClientHello when server client-auth is enabled, the key schedule needs to emit one local CertificateRequest and verify client CertificateVerify with the client-side TLS 1.3 context string, and the transport bridge needs a server-side validation callback seam that can accept or reject the presented client certificate without introducing a broader PKI policy surface. The public server carrier remains unchanged in this slice, so the current validator rejection can stay in place while the internal prerequisite is proven.",
+  "design_summary": "The narrowest honest step is to open the existing public server-auth carrier only where the already-landed internal TLS transcript and bridge machinery can prove the behavior. The transcript owner now has a role-aware branch for an inbound client Certificate / CertificateVerify / Finished sequence after ClientHello when server client-auth is enabled, the key schedule emits one local CertificateRequest, and the transport bridge owns the existing callback seam that can accept or reject the presented client certificate without introducing a broader PKI policy surface. Broader chain/revocation customization, broader PKI behavior, and any public API widening beyond the existing carrier remain deferred.",
   "supplemental_sections": [
     {
       "heading": "Scope",
-      "content": "This architecture slice is intentionally narrower than the eventual public server-auth floor. It covers the internal transcript/runtime prerequisite only: CertificateRequest emission, client Certificate / CertificateVerify / Finished acceptance, and callback-driven acceptance on the existing bridge seam."
+      "content": "This architecture slice now covers the public server-auth gate plus the internal transcript/runtime prerequisite: CertificateRequest emission, client Certificate / CertificateVerify / Finished acceptance, and callback-driven acceptance on the existing bridge seam. Broader chain/revocation customization and broader PKI behavior remain out of scope."
     },
     {
       "heading": "Related Code And Tests",

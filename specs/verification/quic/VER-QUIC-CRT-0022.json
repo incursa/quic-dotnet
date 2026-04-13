@@ -2,7 +2,7 @@
   "title": "QUIC CRT server client-auth transcript/runtime prerequisite verification",
   "preconditions": [
     "The Incursa.Quic library builds successfully on net10.0.",
-    "The internal server-auth transcript/runtime prerequisite is wired into the bridge and key schedule without relaxing the public server validator.",
+    "The internal server-auth transcript/runtime prerequisite is wired into the bridge and key schedule, and the public validator opens `ClientCertificateRequired` only on the callback-driven path.",
     "The current client-only and exact-pinning CRT proofs remain available as regression references."
   ],
   "verification_method": "Execution, inspection, and regression evidence.",
@@ -27,23 +27,25 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0013.cs",
     "scripts/Validate-SpecTraceJson.ps1"
   ],
   "supplemental_sections": [
     {
       "heading": "Acceptance Criteria",
-      "content": "- The server flight emits exactly one CertificateRequest when the internal server-auth prerequisite is enabled.\n- The server-role transcript accepts client Certificate -> CertificateVerify -> Finished in that mode and fails closed when the client certificate callback rejects.\n- The public validator still rejects ClientCertificateRequired until the public boundary is intentionally widened in a later slice."
+      "content": "- The server flight emits exactly one CertificateRequest when the server-auth floor is enabled.\n- The server-role transcript accepts client Certificate -> CertificateVerify -> Finished in that mode and fails closed when the client certificate callback rejects.\n- The public validator accepts `ClientCertificateRequired` only on the callback-driven path and still rejects deferred chain/revocation customization on this slice."
     }
   ],
-  "status_summary": "This verification artifact covers the internal prerequisite slice only; the public server listener promise remains unchanged.",
-  "scope": "Verify the server-role CertificateRequest / client certificate presentation transcript-runtime prerequisite while leaving the public listener validator rejection intact.",
+  "status_summary": "This verification artifact covers the public server `ClientCertificateRequired` gate and the internal callback-driven server-auth floor; broader chain/revocation customization remains deferred.",
+  "scope": "Verify the public server `ClientCertificateRequired` gate and the server-role CertificateRequest / client certificate presentation transcript-runtime prerequisite while leaving broader chain/revocation customization deferred.",
   "procedure": [
     "Run the new server-auth requirement-home tests once the bridge and transcript wiring exists.",
     "Run the current CRT and API guards that must remain unchanged, especially the mainstream client TLS and exact-pinning floors.",
     "Run the full `REQ_QUIC_CRT_` sweep.",
     "Run the repo-local SpecTrace validation and markdown rendering checks after the canonical JSON updates."
   ],
-  "expected_result": "- The internal server-auth prerequisite slice is proven with positive and negative requirement-home evidence.\n- The public `ClientCertificateRequired` validator rejection remains in place.\n- The mainstream client TLS path and exact-pinning path remain green.\n- Transfer, retry, 0-RTT, key update, and broader PKI behavior remain unchanged.",
+  "expected_result": "- The public `ClientCertificateRequired` gate lands on the existing carrier.\n- The internal server-auth prerequisite slice is proven with positive and negative requirement-home evidence.\n- The mainstream client TLS path and exact-pinning path remain green.\n- Transfer, retry, 0-RTT, key update, and broader PKI behavior remain unchanged.",
   "related_artifacts": [
     "SPEC-QUIC-CRT",
     "ARC-QUIC-CRT-0022",

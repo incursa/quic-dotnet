@@ -8,7 +8,7 @@
     "SPEC-QUIC-CRT"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "completion_notes": "This work item intentionally stops short of public listener acceptance. The validator may continue to reject ClientCertificateRequired until the internal transcript/runtime prerequisite is proven and the public boundary is revisited separately.",
+  "completion_notes": "This work item lands the public `ClientCertificateRequired` gate on the existing `SslServerAuthenticationOptions` carrier after the internal transcript/runtime prerequisite is in place. Callback-driven acceptance is supported, while broader chain/revocation customization, broader PKI, 0-RTT, key update, transfer, retry, and client-side certificate-presentation remain out of scope.",
   "out_of_scope": [
     "public listener widening",
     "transfer enablement",
@@ -21,8 +21,8 @@
   ],
   "status": "planned",
   "domain": "quic",
-  "summary": "Add the smallest internal managed server-auth prerequisite needed to emit CertificateRequest and accept an inbound client Certificate / CertificateVerify / Finished sequence through the existing transcript and bridge seams without widening the public server surface yet.",
-  "verification_plan": "Run focused requirement-home tests for the internal server-auth path, re-run the current CRT and API guards that must remain unchanged, re-run the full REQ_QUIC_CRT_ sweep, and run repo-local SpecTrace validation/render checks after the canonical JSON updates.",
+  "summary": "Open the existing public server carrier to callback-driven `ClientCertificateRequired` acceptance on top of the already-landed managed server-auth prerequisite, without widening broader PKI, transfer, or retry behavior.",
+  "verification_plan": "Run focused requirement-home tests for the public validator gate and the internal server-auth path, re-run the current CRT and API guards that must remain unchanged, re-run the full REQ_QUIC_CRT_ sweep, and run repo-local SpecTrace validation/render checks after the canonical JSON updates.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
@@ -30,8 +30,7 @@
     }
   ],
   "artifact_type": "work_item",
-  "planned_changes": "- Thread a server-client-auth-required flag and callback through the existing runtime/bridge seam.\n- Emit one TLS 1.3 CertificateRequest on the server flight when the internal prerequisite flag is enabled.\n- Accept an inbound client Certificate / CertificateVerify / Finished sequence in the server-role transcript and key schedule.\n- Surface client-certificate acceptance only through the existing callback seam and fail closed if acceptance is not granted.\n- Keep the public listener validator rejection for ClientCertificateRequired in place until the full public boundary is revisited.\n- Add positive and negative requirement-home tests that prove the internal prerequisite slice without claiming broader PKI, 0-RTT, transfer, retry, or key-update behavior."
-  ,
+  "planned_changes": "- Open the existing public server carrier to `ClientCertificateRequired` only where the callback-driven acceptance seam exists.\n- Emit one TLS 1.3 `CertificateRequest` on the server flight when the server-auth floor is enabled.\n- Accept an inbound client `Certificate` / `CertificateVerify` / `Finished` sequence in the server-role transcript and key schedule.\n- Surface client-certificate acceptance only through the existing callback seam and fail closed if acceptance is not granted.\n- Keep explicit chain/revocation customization deferred on this slice.\n- Add positive and negative requirement-home tests that prove the public gate, the internal prerequisite slice, and the rejection paths without claiming broader PKI, 0-RTT, transfer, retry, or key-update behavior.",
   "design_links": [
     "ARC-QUIC-CRT-0022"
   ],
