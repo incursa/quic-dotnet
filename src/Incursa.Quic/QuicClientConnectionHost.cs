@@ -302,6 +302,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             InitialLocalBidirectionalSendLimit: (ulong)Math.Max(0, receiveWindowSizes.LocallyInitiatedBidirectionalStream),
             InitialLocalUnidirectionalSendLimit: (ulong)Math.Max(0, receiveWindowSizes.UnidirectionalStream),
             InitialPeerBidirectionalSendLimit: 0));
+        IQuicDiagnosticsSink diagnosticsSink = QuicDiagnostics.ResolveConnectionSink();
 
         return new QuicConnectionRuntime(
             bookkeeping,
@@ -309,7 +310,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             clientCertificatePolicySnapshot: settings.ClientCertificatePolicySnapshot,
             remoteCertificateValidationCallback: options.ClientAuthenticationOptions.RemoteCertificateValidationCallback,
             clientAuthenticationOptions: options.ClientAuthenticationOptions,
-            detachedResumptionTicketSnapshot: settings.DetachedResumptionTicketSnapshot);
+            detachedResumptionTicketSnapshot: settings.DetachedResumptionTicketSnapshot,
+            diagnosticsSink: diagnosticsSink);
     }
 
     private static QuicTransportParameters CreateLocalTransportParameters(

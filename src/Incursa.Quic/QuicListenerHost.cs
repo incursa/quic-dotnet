@@ -872,8 +872,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             InitialLocalBidirectionalSendLimit: (ulong)Math.Max(0, receiveWindowSizes.LocallyInitiatedBidirectionalStream),
             InitialLocalUnidirectionalSendLimit: (ulong)Math.Max(0, receiveWindowSizes.UnidirectionalStream),
             InitialPeerBidirectionalSendLimit: 0));
+        IQuicDiagnosticsSink diagnosticsSink = QuicDiagnostics.ResolveConnectionSink();
 
-        return new QuicConnectionRuntime(bookkeeping, tlsRole: QuicTlsRole.Server);
+        return new QuicConnectionRuntime(
+            bookkeeping,
+            tlsRole: QuicTlsRole.Server,
+            diagnosticsSink: diagnosticsSink);
     }
 
     private sealed class PendingConnectionState

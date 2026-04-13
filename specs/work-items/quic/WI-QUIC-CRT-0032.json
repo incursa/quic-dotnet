@@ -2,11 +2,12 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0032",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "landed",
   "title": "QUIC core diagnostics sink and per-connection resolution work item",
   "owner": "quic-maintainers",
   "domain": "quic",
   "summary": "Add a typed, connection-scoped diagnostics contract in Incursa.Quic and resolve diagnostics once per connection so disabled paths stay cheap.",
+  "completion_notes": "Implemented the typed transport diagnostics contract in Incursa.Quic, threaded the resolved null sink through the client and listener runtime setup paths, and kept the disabled path on a cached no-op branch. Focused requirement-home and integration tests for the diagnostics seam passed; benchmark evidence and package dependency inspection remain part of the verification shell.",
   "related_artifacts": [
     "SPEC-QUIC-CRT"
   ],

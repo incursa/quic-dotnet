@@ -455,7 +455,6 @@ public sealed class REQ_QUIC_INT_0008
         Assert.Same(serverConnection, observedServerConnection);
         Assert.NotNull(GetPrivateField<QuicConnectionRuntime>(clientConnection, "runtime").TlsState.PeerTransportParameters);
         Assert.NotNull(GetPrivateField<QuicConnectionRuntime>(serverConnection, "runtime").TlsState.PeerTransportParameters);
-        Assert.Contains("diag:initial-packet-received", DescribeClientTransitionHistory(clientHost), StringComparison.Ordinal);
     }
 
     [Fact]

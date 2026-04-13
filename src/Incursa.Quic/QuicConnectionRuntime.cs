@@ -36,6 +36,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly QuicHandshakeFlowCoordinator handshakeFlowCoordinator;
     private readonly QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot;
     private readonly QuicDetachedResumptionTicketSnapshot? dormantDetachedResumptionTicketSnapshot;
+    private readonly IQuicDiagnosticsSink diagnosticsSink;
+    private readonly bool diagnosticsEnabled;
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private QuicInitialPacketProtection? initialPacketProtection;
@@ -88,7 +90,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null,
         SslClientAuthenticationOptions? clientAuthenticationOptions = null,
         QuicTlsRole tlsRole = QuicTlsRole.Client,
-        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null)
+        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
+        IQuicDiagnosticsSink? diagnosticsSink = null)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -96,6 +99,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         handshakeFlowCoordinator = new QuicHandshakeFlowCoordinator();
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
+        this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
+        diagnosticsEnabled = this.diagnosticsSink.IsEnabled;
         if (detachedResumptionTicketSnapshot is not null && tlsRole != QuicTlsRole.Client)
         {
             throw new ArgumentException("Detached resumption ticket snapshots are only supported for the client role.", nameof(detachedResumptionTicketSnapshot));
@@ -1509,11 +1514,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-            "connection.runtime.handshake",
-            "initial-packet-received",
-            $"Initial packet reached the runtime on {packetReceivedEvent.PathIdentity.RemoteAddress}:{packetReceivedEvent.PathIdentity.RemotePort}.",
-            QuicDiagnosticSeverity.Trace)));
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketReceived(packetReceivedEvent.PathIdentity));
+        }
 
         ReadOnlySpan<byte> datagram = packetReceivedEvent.Datagram.Span;
         if (!QuicPacketParser.TryGetPacketNumberSpace(datagram, out QuicPacketNumberSpace packetNumberSpace)
@@ -1526,11 +1530,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 out int payloadOffset,
                 out int payloadLength))
         {
-            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-                "connection.runtime.handshake",
-                "initial-packet-open-failed",
-                "Initial packet could not be opened or parsed by the runtime.",
-                QuicDiagnosticSeverity.Warning)));
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketOpenFailed(packetReceivedEvent.PathIdentity));
+            }
+
             return false;
         }
 
@@ -1552,13 +1556,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             nowTicks,
             ref effects);
 
-        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-            "connection.runtime.handshake",
-            processed ? "initial-packet-advanced" : "initial-packet-not-advanced",
-            processed
-                ? "Initial packet payload advanced the TLS bridge."
-                : "Initial packet payload did not advance the TLS bridge.",
-            processed ? QuicDiagnosticSeverity.Info : QuicDiagnosticSeverity.Warning)));
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketProcessingResult(processed));
+        }
 
         return processed;
     }
@@ -1577,11 +1578,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (!tlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial packetProtectionMaterial))
         {
-            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-                "connection.runtime.handshake",
-                "handshake-packet-open-failed",
-                "Handshake packet could not be opened because handshake packet protection was unavailable.",
-                QuicDiagnosticSeverity.Warning)));
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketOpenFailed(packetReceivedEvent.PathIdentity));
+            }
+
             return false;
         }
 
@@ -1592,11 +1593,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 out int payloadOffset,
                 out int payloadLength))
         {
-            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-                "connection.runtime.handshake",
-                "handshake-packet-open-failed",
-                "Handshake packet could not be opened or parsed by the runtime.",
-                QuicDiagnosticSeverity.Warning)));
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketOpenFailed(packetReceivedEvent.PathIdentity));
+            }
+
             return false;
         }
 
@@ -1649,13 +1650,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
             IReadOnlyList<QuicTlsStateUpdate> transcriptUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(
                 encryptionLevel);
-            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-                "connection.runtime.handshake",
-                encryptionLevel == QuicTlsEncryptionLevel.Initial
-                    ? "initial-transcript-advanced"
-                    : "handshake-transcript-advanced",
-                $"Handshake transcript advancement for {encryptionLevel} produced {transcriptUpdates.Count} TLS updates.",
-                QuicDiagnosticSeverity.Trace)));
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.TranscriptAdvanced(encryptionLevel, transcriptUpdates.Count));
+            }
+
             if (transcriptUpdates.Count == 0)
             {
                 payloadOffset += bytesConsumed;
@@ -3022,11 +3021,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (!HasValidatedPath)
         {
-            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-                "connection.runtime.path",
-                "validated-paths-exhausted",
-                $"No validated paths remain after path validation failed for {pathValidationFailedEvent.PathIdentity.RemoteAddress}.",
-                QuicDiagnosticSeverity.Warning)));
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.PathValidationFailedNoValidatedPathsRemain(pathValidationFailedEvent.PathIdentity));
+            }
         }
 
         UpdatePeerAddressValidationFlag();
@@ -3093,11 +3091,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (stateChanged && !HasValidatedPath)
         {
-            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-                "connection.runtime.path",
-                "path-validation-timer-exhausted",
-                "No validated paths remain after a path-validation timer expired.",
-                QuicDiagnosticSeverity.Warning)));
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.PathValidationTimerExpiredNoValidatedPathsRemain());
+            }
         }
 
         UpdatePeerAddressValidationFlag();
@@ -3160,11 +3157,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         RetireAllStatelessResetTokens(ref effects);
-        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-            "connection.runtime.lifecycle",
-            "accepted-stateless-reset",
-            $"Accepted a stateless reset on {acceptedStatelessResetEvent.PathIdentity.RemoteAddress} for connection ID {acceptedStatelessResetEvent.ConnectionId}.",
-            QuicDiagnosticSeverity.Info)));
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.AcceptedStatelessReset(
+                acceptedStatelessResetEvent.PathIdentity,
+                acceptedStatelessResetEvent.ConnectionId));
+        }
 
         EnterTerminalPhase(
             QuicConnectionPhase.Draining,
@@ -3436,11 +3434,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ref List<QuicConnectionEffect>? effects)
     {
         QuicConnectionPathClassification classification = ClassifyPathChange(pathIdentity);
-        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-            "connection.runtime.path",
-            "address-change-classified",
-            $"Packet from {pathIdentity.RemoteAddress} classified as {classification}.",
-            QuicDiagnosticSeverity.Info)));
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.AddressChangeClassified(pathIdentity, classification));
+        }
 
         if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
         {
@@ -3454,11 +3451,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (MaximumCandidatePaths == 0 || candidatePaths.Count >= MaximumCandidatePaths)
         {
-            AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(new QuicDiagnosticEvent(
-                "connection.runtime.path",
-                "candidate-path-budget-exhausted",
-                $"Packet from {pathIdentity.RemoteAddress} classified as {QuicConnectionPathClassification.NoiseOrAttack} because the candidate-path budget is exhausted.",
-                QuicDiagnosticSeverity.Warning)));
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.CandidatePathBudgetExhausted(pathIdentity));
+            }
+
             return false;
         }
 
@@ -4188,6 +4185,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         return left + right;
+    }
+
+    private void EmitDiagnostic(ref List<QuicConnectionEffect>? effects, QuicDiagnosticEvent diagnosticEvent)
+    {
+        diagnosticsSink.Emit(diagnosticEvent);
+        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(diagnosticEvent));
     }
 
     private static void AppendEffect(ref List<QuicConnectionEffect>? effects, QuicConnectionEffect effect)

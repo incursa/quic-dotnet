@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0032"
 artifact_type: "work_item"
 title: "QUIC core diagnostics sink and per-connection resolution work item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0134"
@@ -51,6 +51,10 @@ Add a typed, connection-scoped diagnostics contract in Incursa.Quic and resolve 
 
 Run requirement-home tests for the typed diagnostics contract and per-connection resolution, benchmark the disabled emission path, and inspect assembly references to confirm `Incursa.Quic` remains free of qlog packages.
 
+## Completion Notes
+
+Implemented the typed transport diagnostics contract in Incursa.Quic, threaded the resolved null sink through the client and listener runtime setup paths, and kept the disabled path on a cached no-op branch. Focused requirement-home and integration tests for the diagnostics seam passed; benchmark evidence and package dependency inspection remain part of the verification shell.
+
 ## Trace Links
 
 Addresses:
@@ -83,3 +87,4 @@ This slice covers only the core diagnostics sink and its per-connection resoluti
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0134.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0134.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0135.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0135.cs)
 - [`benchmarks/README.md`](../../../benchmarks/README.md)
+
