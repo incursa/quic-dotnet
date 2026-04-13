@@ -93,6 +93,7 @@ Supported today:
 - The callback-driven server-side `ClientCertificateRequired` floor on the existing `SslServerAuthenticationOptions` carrier, plus the narrow `CertificateChainPolicy` follow-on and standalone `CertificateRevocationCheckMode` floor on that same path when `CertificateChainPolicy` is absent.
 - The public `QuicClientConnectionOptions.PeerCertificatePolicy` plus `QuicPeerCertificatePolicy` carrier for exact peer leaf DER and explicit trust-material SHA-256, feeding the existing internal exact-match snapshot.
 - The reject-first supported subset of client TLS options already described in the public API docs, including the still-unsupported broader client-auth knobs.
+- The narrow internal post-Finished ticket seam under `REQ-QUIC-CRT-0128`, `ARC-QUIC-CRT-0026`, `WI-QUIC-CRT-0026`, and `VER-QUIC-CRT-0026`, plus the separate client-side 1-RTT post-handshake ticket-ingress slice under `REQ-QUIC-CRT-0129`, `ARC-QUIC-CRT-0027`, `WI-QUIC-CRT-0027`, and `VER-QUIC-CRT-0027`, are now landed internal/runtime slices. They surface opaque ticket bytes after Finished, consume only a valid `NewSessionTicket` message on `OneRtt` CRYPTO, and ignore unsupported 1-RTT post-handshake TLS messages instead of broadening the parser.
 
 Partially implemented but not yet promised:
 
@@ -105,7 +106,6 @@ Still missing:
 - Broader client-auth or TLS-option support.
 - Broader server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier beyond the callback-driven `ClientCertificateRequired` plus `CertificateChainPolicy` and standalone `CertificateRevocationCheckMode` floors traced by `REQ-QUIC-CRT-0124`, `REQ-QUIC-CRT-0125`, and `REQ-QUIC-CRT-0126`.
 - `0-RTT`.
-- The separate client-side 1-RTT post-handshake ticket-ingress follow-on, tracked as `REQ-QUIC-CRT-0129`, `ARC-QUIC-CRT-0027`, `WI-QUIC-CRT-0027`, and `VER-QUIC-CRT-0027`, is now the next smallest runtime slice. It only consumes a valid `NewSessionTicket` message on `OneRtt` CRYPTO after Finished, extracts opaque ticket bytes, and does not claim ticket persistence, replay ownership, PSK derivation, or a 0-RTT packet path.
 - The first honest 0-RTT prerequisite, tracked separately as `REQ-QUIC-CRT-0127`, `ARC-QUIC-CRT-0025`, `WI-QUIC-CRT-0025`, and `VER-QUIC-CRT-0025`, is still unimplemented; it is limited to opaque resumption-ticket ownership plus an explicit early-data gate and does not add PSK derivation or a 0-RTT packet path.
 - Key update.
 
@@ -204,7 +204,7 @@ Notes on dependency:
 9. `Client-side 1-RTT post-handshake ticket ingress`
    - Goal: keep the wire-ingress follow-on traceable under `REQ-QUIC-CRT-0129`, `ARC-QUIC-CRT-0027`, `WI-QUIC-CRT-0027`, and `VER-QUIC-CRT-0027`.
    - Focus: the client-side `OneRtt` CRYPTO path, the TLS 1.3 `NewSessionTicket` boundary after Finished, opaque ticket extraction, and the existing internal update seam.
-   - Status: identified. The managed bridge already has the internal ticket sink, but it still needs the real `OneRtt` ingress path before the runtime can claim this slice honestly.
+   - Status: landed. The managed bridge now consumes a valid `NewSessionTicket` on the supported client-only `OneRtt` path after Finished, extracts opaque ticket bytes through the existing internal update seam, and keeps unsupported 1-RTT post-handshake TLS messages ignored rather than broadening the parser.
    - Depends on: the current handshake/runtime proof floor and the `REQ-QUIC-CRT-0128` seam staying stable.
 
 10. `Opaque resumption-ticket ownership and early-data gate`

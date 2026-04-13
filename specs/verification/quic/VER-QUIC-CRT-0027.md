@@ -18,20 +18,20 @@ Execution, inspection, and regression evidence.
 
 - The repository builds successfully on net10.0.
 - The current client TLS, server client-auth, transfer, retry, and narrow CRT guard sets remain green.
-- REQ-QUIC-CRT-0128 remains the narrow internal post-Finished ticket seam and REQ-QUIC-CRT-0129 remains a client-only OneRtt ingress follow-on rather than a resumption or early-data implementation.
+- REQ-QUIC-CRT-0128 remains the narrow internal post-Finished ticket seam and REQ-QUIC-CRT-0129 is the landed client-only OneRtt ingress slice rather than a resumption or early-data implementation.
 
 ## Procedure or Approach
 
-- Inspect the bridge driver, bridge state, transcript progress, and runtime seams for a narrow client-side OneRtt ingress path that recognizes only the TLS 1.3 NewSessionTicket message after Finished.
+- Inspect the bridge driver, bridge state, transcript progress, and runtime seams for a narrow client-side OneRtt ingress path that recognizes only the TLS 1.3 NewSessionTicket message after Finished and routes protected application-packet CRYPTO into the existing internal update seam.
 - Verify that the path rejects pre-Finished ingress, server-role ingress, and duplicate ingress without widening the stored ticket or the public boundary.
-- Add focused requirement-home tests for post-Finished ticket surfacing, pre-Finished rejection, duplicate retention, server-role rejection, unsupported 1-RTT post-handshake TLS message handling, unchanged handshake/1-RTT behavior, and the public no-ticket/no-early-data surface guard.
+- Run the focused REQ_QUIC_CRT_0129 requirement-home tests for post-Finished ticket surfacing, pre-Finished rejection, duplicate retention, server-role rejection, unsupported 1-RTT post-handshake TLS message handling, unchanged handshake/1-RTT behavior, and the public no-ticket/no-early-data surface guard.
 - Run the current CRT/API/INT guard set and the full `REQ_QUIC_CRT_` sweep.
 - Run repo-local SpecTrace validation and markdown render checks after the canonical JSON updates.
 
 ## Expected Result
 
 - A valid NewSessionTicket carried in OneRtt CRYPTO after Finished surfaces the existing internal post-handshake ticket update and stores only opaque ticket bytes.
-- Pre-Finished ingress, server-role ingress, and duplicate ingress do not replace the retained opaque bytes.
+- Pre-Finished ingress, server-role ingress, and duplicate ingress do not replace the retained opaque bytes, and the runtime keeps the slice client-role only without widening the public boundary.
 - Unsupported 1-RTT post-handshake TLS messages are ignored rather than being promoted into a general post-handshake engine, and the public surface still does not expose ticket or early-data promises.
 
 ## Evidence
@@ -52,7 +52,7 @@ Execution, inspection, and regression evidence.
 
 ## Status
 
-This verification artifact records the client-side OneRtt ingress follow-on and now points at the implemented requirement-home and runtime evidence in the working tree.
+This verification artifact records the landed client-side OneRtt ingress slice and now points at the implemented requirement-home and runtime evidence in the working tree. REQ-QUIC-CRT-0128 remains the separate internal post-Finished seam that this slice reuses.
 
 ## Related Artifacts
 

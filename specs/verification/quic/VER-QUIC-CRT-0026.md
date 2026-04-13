@@ -22,16 +22,16 @@ Execution, inspection, and regression evidence.
 
 ## Procedure or Approach
 
-- Inspect the transcript-progress, bridge-driver, bridge-state, and runtime seams for opaque post-Finished ticket surfacing.
-- Verify that handshake completion and 1-RTT readiness remain unchanged when the ticket seam is exercised.
-- Add focused requirement-home tests for post-Finished ticket surfacing, pre-Finished rejection, duplicate/unsupported ticket handling, unsupported 1-RTT ingress handling, and negative public-surface promises.
+- Inspect the transcript-progress, bridge-driver, bridge-state, and runtime seams for opaque post-Finished ticket surfacing through the internal update seam.
+- Verify that handshake completion and 1-RTT readiness remain unchanged when the internal ticket seam is exercised.
+- Run the focused REQ_QUIC_CRT_0128 requirement-home tests for post-Finished ticket surfacing, pre-Finished rejection, duplicate retention, server-role rejection, and unsupported OneRtt post-handshake message ignore behavior on the narrow internal seam.
 - Run the current CRT/API/INT guard set and the full `REQ_QUIC_CRT_` sweep.
 - Run repo-local SpecTrace validation and markdown render checks after the canonical JSON updates.
 
 ## Expected Result
 
-- The managed client/runtime path surfaces opaque post-handshake ticket bytes after Finished and stores them only as internal state.
-- The slice does not claim ticket persistence, replay ownership, PSK derivation, 0-RTT packet support, or anti-replay guarantees.
+- The managed client/runtime path surfaces opaque post-handshake ticket bytes after Finished and stores them only as internal state through the narrow update seam from REQ-QUIC-CRT-0128.
+- Unsupported OneRtt post-handshake TLS messages are ignored at this seam and do not broaden the implementation into a general post-handshake engine.
 - Existing handshake, client TLS, server client-auth, transfer, and retry floors remain unchanged, and the public surface still does not expose ticket or early-data promises.
 
 ## Evidence
@@ -51,7 +51,7 @@ Execution, inspection, and regression evidence.
 
 ## Status
 
-This verification artifact records the landed internal post-handshake ticket-bearing update seam and points at the requirement-home and runtime evidence in the working tree.
+This verification artifact records the landed internal post-Finished ticket-bearing update seam and points at the requirement-home and runtime evidence in the working tree. The real client-side OneRtt wire-ingress follow-on remains traced separately under VER-QUIC-CRT-0027.
 
 ## Related Artifacts
 
