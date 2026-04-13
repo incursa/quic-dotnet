@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Buffers.Binary;
 using System.Security.Cryptography;
 
@@ -198,6 +199,102 @@ internal static class QuicPostHandshakeTicketTestSupport
             CreateFinishedTranscript(finishedVerifyData));
     }
 
+    internal static (
+        byte[] ServerHelloTranscript,
+        byte[] EncryptedExtensionsTranscript,
+        byte[] FinishedTranscript) CreateAcceptedClientHandshakeTranscriptParts(
+        ReadOnlyMemory<byte> clientHelloTranscript,
+        QuicTransportParameters localTransportParameters,
+        QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot,
+        long nowTicks,
+        ReadOnlyMemory<byte> localHandshakePrivateKey,
+        QuicTransportParameters peerTransportParameters)
+    {
+        QuicTlsKeySchedule schedule = new(localHandshakePrivateKey);
+        Assert.True(schedule.TryCreateClientHello(
+            localTransportParameters,
+            detachedResumptionTicketSnapshot,
+            nowTicks,
+            out _));
+        schedule.AppendLocalHandshakeMessage(clientHelloTranscript.Span);
+
+        byte[] serverHello = CreateServerHelloTranscript(selectedPreSharedKey: true);
+        byte[] encryptedExtensions = CreateEncryptedExtensionsTranscript(peerTransportParameters);
+
+        IReadOnlyList<QuicTlsStateUpdate> serverHelloUpdates = schedule.ProcessTranscriptStep(
+            CreateServerHelloStep(serverHello, selectedPreSharedKey: true));
+        Assert.Equal(4, serverHelloUpdates.Count);
+        Assert.True(schedule.TryGetExpectedPeerFinishedVerifyData(out byte[] serverHelloOnlyVerifyData));
+
+        Assert.Empty(schedule.ProcessTranscriptStep(CreateEncryptedExtensionsStep(peerTransportParameters)));
+        Assert.True(schedule.TryGetExpectedPeerFinishedVerifyData(out byte[] finishedVerifyData));
+        Assert.False(serverHelloOnlyVerifyData.SequenceEqual(finishedVerifyData));
+
+        return (
+            serverHello,
+            encryptedExtensions,
+            CreateFinishedTranscript(finishedVerifyData));
+    }
+
+    internal static QuicConnectionRuntime CreateAcceptedFinishedClientRuntime()
+    {
+        QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot =
+            QuicResumptionClientHelloTestSupport.CreateDetachedResumptionTicketSnapshot();
+        byte[] localHandshakePrivateKey = CreateScalar(0x11);
+        QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
+        QuicTransportParameters peerTransportParameters = CreatePeerTransportParameters();
+
+        QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            tlsRole: QuicTlsRole.Client,
+            localHandshakePrivateKey: localHandshakePrivateKey,
+            detachedResumptionTicketSnapshot: detachedResumptionTicketSnapshot);
+
+        QuicTlsTransportBridgeDriver driver = new(
+            QuicTlsRole.Client,
+            localHandshakePrivateKey: localHandshakePrivateKey);
+
+        long nowTicks = detachedResumptionTicketSnapshot.CapturedAtTicks + Stopwatch.Frequency;
+        long observedAtTicks = nowTicks;
+        IReadOnlyList<QuicTlsStateUpdate> bootstrapUpdates = driver.StartHandshake(
+            localTransportParameters,
+            detachedResumptionTicketSnapshot,
+            nowTicks);
+        observedAtTicks = ApplyRuntimeUpdates(runtime, bootstrapUpdates, observedAtTicks);
+
+        (
+            byte[] serverHelloTranscript,
+            byte[] encryptedExtensionsTranscript,
+            byte[] finishedTranscript) = CreateAcceptedClientHandshakeTranscriptParts(
+            bootstrapUpdates[1].CryptoData,
+            localTransportParameters,
+            detachedResumptionTicketSnapshot,
+            nowTicks,
+            localHandshakePrivateKey,
+            peerTransportParameters);
+
+        observedAtTicks = ApplyRuntimeUpdates(
+            runtime,
+            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, serverHelloTranscript),
+            observedAtTicks);
+        observedAtTicks = ApplyRuntimeUpdates(
+            runtime,
+            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, encryptedExtensionsTranscript),
+            observedAtTicks);
+        observedAtTicks = ApplyRuntimeUpdates(
+            runtime,
+            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, finishedTranscript),
+            observedAtTicks);
+
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
+        Assert.True(runtime.TlsState.OneRttKeysAvailable);
+        Assert.True(runtime.HasResumptionMasterSecret);
+        Assert.False(runtime.IsEarlyDataAdmissionOpen);
+
+        return runtime;
+    }
+
     internal static byte[] CreatePostHandshakeTicketMessage(
         ReadOnlySpan<byte> ticket,
         ReadOnlySpan<byte> ticketNonce,
@@ -264,7 +361,7 @@ internal static class QuicPostHandshakeTicketTestSupport
         };
     }
 
-    private static QuicTlsTranscriptStep CreateServerHelloStep(byte[] transcriptBytes)
+    private static QuicTlsTranscriptStep CreateServerHelloStep(byte[] transcriptBytes, bool selectedPreSharedKey = false)
     {
         return new QuicTlsTranscriptStep(
             QuicTlsTranscriptStepKind.Progressed,
@@ -275,6 +372,7 @@ internal static class QuicPostHandshakeTicketTestSupport
             TranscriptHashAlgorithm: QuicTlsTranscriptHashAlgorithm.Sha256,
             NamedGroup: QuicTlsNamedGroup.Secp256r1,
             KeyShare: CreateServerKeyShare(),
+            PreSharedKeySelected: selectedPreSharedKey,
             HandshakeMessageBytes: transcriptBytes);
     }
 
@@ -311,10 +409,10 @@ internal static class QuicPostHandshakeTicketTestSupport
             HandshakeMessageBytes: transcriptBytes);
     }
 
-    private static byte[] CreateServerHelloTranscript()
+    internal static byte[] CreateServerHelloTranscript(bool selectedPreSharedKey = false)
     {
         byte[] keyShare = CreateServerKeyShare();
-        int extensionsLength = 6 + 4 + 2 + 2 + keyShare.Length;
+        int extensionsLength = 6 + 4 + 2 + 2 + keyShare.Length + (selectedPreSharedKey ? 6 : 0);
         byte[] body = new byte[40 + extensionsLength];
         int index = 0;
 
@@ -348,6 +446,17 @@ internal static class QuicPostHandshakeTicketTestSupport
         WriteUInt16(body.AsSpan(index, 2), (ushort)keyShare.Length);
         index += 2;
         keyShare.CopyTo(body.AsSpan(index, keyShare.Length));
+
+        if (selectedPreSharedKey)
+        {
+            index += keyShare.Length;
+
+            WriteUInt16(body.AsSpan(index, 2), 0x0029);
+            index += 2;
+            WriteUInt16(body.AsSpan(index, 2), 2);
+            index += 2;
+            WriteUInt16(body.AsSpan(index, 2), 0);
+        }
 
         return WrapHandshakeMessage(QuicTlsHandshakeMessageType.ServerHello, body);
     }

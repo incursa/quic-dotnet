@@ -91,6 +91,7 @@ internal sealed class QuicTlsKeySchedule
     private bool serverClientCertificateRequired;
     private bool peerCertificateVerifyVerified;
     private bool peerFinishedVerified;
+    private bool resumptionAttemptPending;
     private bool isTerminal;
 
     /// <summary>
@@ -204,9 +205,11 @@ internal sealed class QuicTlsKeySchedule
                 nowTicks,
                 out clientHelloBytes))
         {
+            resumptionAttemptPending = true;
             return true;
         }
 
+        resumptionAttemptPending = false;
         return TryCreateInitialClientHello(
             transportParametersEncoded.AsSpan(0, transportParametersEncodedBytes),
             baseExtensionsLength,
@@ -542,14 +545,89 @@ internal sealed class QuicTlsKeySchedule
         }
 
         AppendTranscriptMessage(step.HandshakeMessageBytes.Span);
-        ReadOnlySpan<byte> transcriptHash = HashTranscript();
 
+        if (resumptionAttemptPending)
+        {
+            resumptionAttemptPending = false;
+
+            if (step.PreSharedKeySelected)
+            {
+                List<QuicTlsStateUpdate> acceptedUpdates =
+                [
+                    new QuicTlsStateUpdate(
+                        QuicTlsUpdateKind.ResumptionAttemptDispositionAvailable,
+                        ResumptionAttemptDisposition: QuicTlsResumptionAttemptDisposition.Accepted),
+                ];
+
+                ReadOnlySpan<byte> acceptedTranscriptHash = HashTranscript();
+                if (!TryDeriveHandshakeTrafficSecrets(
+                        step.KeyShare.Span,
+                        acceptedTranscriptHash,
+                        protectWithClientTrafficSecret: true,
+                        out QuicTlsPacketProtectionMaterial acceptedOpenMaterial,
+                        out QuicTlsPacketProtectionMaterial acceptedProtectMaterial))
+                {
+                    acceptedUpdates.AddRange(BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription));
+                    return acceptedUpdates;
+                }
+
+                handshakeSecretsDerived = true;
+                acceptedUpdates.Add(new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: acceptedOpenMaterial));
+                acceptedUpdates.Add(new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: acceptedProtectMaterial));
+                acceptedUpdates.Add(new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.KeysAvailable,
+                    QuicTlsEncryptionLevel.Handshake));
+                return acceptedUpdates;
+            }
+
+            List<QuicTlsStateUpdate> rejectedUpdates =
+            [
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.ResumptionAttemptDispositionAvailable,
+                    ResumptionAttemptDisposition: QuicTlsResumptionAttemptDisposition.Rejected),
+            ];
+
+            ReadOnlySpan<byte> transcriptHash = HashTranscript();
+            if (!TryDeriveHandshakeTrafficSecrets(
+                    step.KeyShare.Span,
+                    transcriptHash,
+                    protectWithClientTrafficSecret: true,
+                    out QuicTlsPacketProtectionMaterial openMaterial,
+                    out QuicTlsPacketProtectionMaterial protectMaterial))
+            {
+                rejectedUpdates.AddRange(BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription));
+                return rejectedUpdates;
+            }
+
+            handshakeSecretsDerived = true;
+            rejectedUpdates.Add(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
+                PacketProtectionMaterial: openMaterial));
+            rejectedUpdates.Add(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable,
+                PacketProtectionMaterial: protectMaterial));
+            rejectedUpdates.Add(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.KeysAvailable,
+                QuicTlsEncryptionLevel.Handshake));
+            return rejectedUpdates;
+        }
+
+        if (step.PreSharedKeySelected)
+        {
+            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+        }
+
+        ReadOnlySpan<byte> nonResumptionTranscriptHash = HashTranscript();
         if (!TryDeriveHandshakeTrafficSecrets(
                 step.KeyShare.Span,
-                transcriptHash,
+                nonResumptionTranscriptHash,
                 protectWithClientTrafficSecret: true,
-                out QuicTlsPacketProtectionMaterial openMaterial,
-                out QuicTlsPacketProtectionMaterial protectMaterial))
+                out QuicTlsPacketProtectionMaterial nonResumptionOpenMaterial,
+                out QuicTlsPacketProtectionMaterial nonResumptionProtectMaterial))
         {
             return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
         }
@@ -559,10 +637,10 @@ internal sealed class QuicTlsKeySchedule
         [
             new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
-                PacketProtectionMaterial: openMaterial),
+                PacketProtectionMaterial: nonResumptionOpenMaterial),
             new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable,
-                PacketProtectionMaterial: protectMaterial),
+                PacketProtectionMaterial: nonResumptionProtectMaterial),
             new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.KeysAvailable,
                 QuicTlsEncryptionLevel.Handshake),

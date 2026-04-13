@@ -1,0 +1,44 @@
+{
+  "title": "QUIC CRT client-side ServerHello branch-point work item",
+  "verification_links": [
+    "VER-QUIC-CRT-0031"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_type": "work_item",
+  "completion_notes": "This is the landed client-side ServerHello branch-point slice. The managed client/runtime path now classifies a PSK-capable ClientHello attempt as accepted or rejected at ServerHello, cleanly returns rejected attempts to the existing full-handshake path, and recognizes accepted attempts without claiming resumed-handshake success or any public early-data promise.",
+  "out_of_scope": [
+    "public API widening",
+    "resumed handshake support",
+    "0-RTT packet send/receive support",
+    "anti-replay behavior",
+    "broad support for arbitrary post-handshake TLS messages",
+    "fake replay or fake resumption success paths",
+    "transfer enablement",
+    "retry enablement",
+    "key update",
+    "broader session-management infrastructure",
+    "opportunistic refactors unrelated to the ServerHello accept/reject branch seam"
+  ],
+  "status": "landed",
+  "domain": "quic",
+  "summary": "Classify the PSK-capable ClientHello attempt at ServerHello as accepted or rejected on the managed client/runtime path, keep rejection on the existing full-handshake path, and leave resumed-handshake success out of scope.",
+  "verification_plan": "Run focused requirement-home tests for rejected-branch fallback, accepted-branch recognition, bootstrap-without-dormant-material, early-data closure in both branches, and the public no-resumption/no-early-data guard; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs`](../../../src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0133.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0133.cs)\n- [`docs/design/quic-interop-prep-plan.md`](../../../docs/design/quic-interop-prep-plan.md)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)"
+    }
+  ],
+  "planned_changes": "- The bridge parses the ServerHello `pre_shared_key` selection signal and classifies the PSK-capable ClientHello attempt as accepted or rejected.\n- Rejected attempts continue through the existing full-handshake path and do not corrupt the dormant client snapshot.\n- Accepted attempts are recognized but stop before any abbreviated-handshake success claim.\n- Focused requirement-home tests cover accepted/rejected classification, fallback, early-data closure, and the public no-resumption/no-early-data guard.\n- Resumed-handshake success, 0-RTT packet processing, transfer, retry, key update, and any public API widening remain out of scope.",
+  "design_links": [
+    "ARC-QUIC-CRT-0031"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0133"
+  ],
+  "artifact_id": "WI-QUIC-CRT-0031"
+}

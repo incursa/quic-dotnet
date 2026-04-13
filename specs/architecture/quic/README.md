@@ -56,6 +56,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0030.json`](ARC-QUIC-CRT-0030.json): canonical CRT client-side ClientHello PSK-attempt design source
 - [`ARC-QUIC-CRT-0031.json`](ARC-QUIC-CRT-0031.json): canonical CRT client-side ServerHello branch-point design source
 - [`ARC-QUIC-CRT-0032.json`](ARC-QUIC-CRT-0032.json): canonical CRT diagnostics sink and qlog adapter boundary design source
+- [`ARC-QUIC-CRT-0033.json`](ARC-QUIC-CRT-0033.json): canonical CRT client-side abbreviated resumption completion design source
 
 ## Notes
 

@@ -90,6 +90,10 @@ internal sealed class QuicTransportTlsBridgeState
 
     public bool HasResumptionMasterSecret => resumptionMasterSecret is not null;
 
+    public QuicTlsResumptionAttemptDisposition ResumptionAttemptDisposition { get; private set; } = QuicTlsResumptionAttemptDisposition.Unknown;
+
+    private bool HasAcceptedResumptionAttempt => ResumptionAttemptDisposition == QuicTlsResumptionAttemptDisposition.Accepted;
+
     public uint CurrentOneRttKeyPhase { get; private set; }
 
     public QuicTlsTranscriptPhase HandshakeTranscriptPhase { get; private set; } = QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage;
@@ -123,8 +127,6 @@ internal sealed class QuicTransportTlsBridgeState
 
         return !IsTerminal
             && !PeerTransportParametersCommitted
-            && PeerCertificateVerifyVerified
-            && PeerCertificatePolicyAccepted
             && PeerFinishedVerified
             && StagedPeerTransportParameters is not null
             && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed
@@ -132,7 +134,8 @@ internal sealed class QuicTransportTlsBridgeState
             && HandshakeMessageLength.HasValue
             && SelectedCipherSuite.HasValue
             && TranscriptHashAlgorithm.HasValue
-            && AreEquivalent(StagedPeerTransportParameters, parameters);
+            && AreEquivalent(StagedPeerTransportParameters, parameters)
+            && (HasAcceptedResumptionAttempt || (PeerCertificateVerifyVerified && PeerCertificatePolicyAccepted));
     }
 
     private bool CanCommitServerPeerTransportParameters(QuicTransportParameters parameters)
@@ -169,14 +172,14 @@ internal sealed class QuicTransportTlsBridgeState
 
         return !IsTerminal
             && !PeerHandshakeTranscriptCompleted
-            && PeerCertificateVerifyVerified
             && PeerFinishedVerified
             && StagedPeerTransportParameters is not null
             && HandshakeTranscriptPhase == QuicTlsTranscriptPhase.Completed
             && HandshakeMessageType == QuicTlsHandshakeMessageType.Finished
             && HandshakeMessageLength.HasValue
             && SelectedCipherSuite.HasValue
-            && TranscriptHashAlgorithm.HasValue;
+            && TranscriptHashAlgorithm.HasValue
+            && (HasAcceptedResumptionAttempt || PeerCertificateVerifyVerified);
     }
 
     internal QuicCryptoBuffer InitialIngressCryptoBuffer => initialIngressCryptoBuffer;
@@ -289,6 +292,10 @@ internal sealed class QuicTransportTlsBridgeState
             case QuicTlsUpdateKind.ResumptionMasterSecretAvailable:
                 return !update.ResumptionMasterSecret.IsEmpty
                     && TryStoreResumptionMasterSecret(update.ResumptionMasterSecret);
+
+            case QuicTlsUpdateKind.ResumptionAttemptDispositionAvailable:
+                return update.ResumptionAttemptDisposition.HasValue
+                    && TryStoreResumptionAttemptDisposition(update.ResumptionAttemptDisposition.Value);
 
             case QuicTlsUpdateKind.PostHandshakeTicketAvailable:
                 return update.TranscriptPhase == QuicTlsTranscriptPhase.Completed
@@ -760,6 +767,25 @@ internal sealed class QuicTransportTlsBridgeState
         postHandshakeTicketAgeAdd = null;
         resumptionMasterSecret = null;
         packetProtectionMaterials.Clear();
+        return true;
+    }
+
+    private bool TryStoreResumptionAttemptDisposition(QuicTlsResumptionAttemptDisposition disposition)
+    {
+        if (IsTerminal
+            || disposition == QuicTlsResumptionAttemptDisposition.Unknown
+            || (ResumptionAttemptDisposition != QuicTlsResumptionAttemptDisposition.Unknown
+                && ResumptionAttemptDisposition != disposition))
+        {
+            return false;
+        }
+
+        if (ResumptionAttemptDisposition == disposition)
+        {
+            return false;
+        }
+
+        ResumptionAttemptDisposition = disposition;
         return true;
     }
 

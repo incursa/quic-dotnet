@@ -81,6 +81,16 @@ internal enum QuicTlsTranscriptPhase
 }
 
 /// <summary>
+/// The branch disposition observed for a PSK-capable resumption attempt at ServerHello.
+/// </summary>
+internal enum QuicTlsResumptionAttemptDisposition
+{
+    Unknown = 0,
+    Rejected = 1,
+    Accepted = 2,
+}
+
+/// <summary>
 /// TLS-to-transport state update kinds.
 /// </summary>
 internal enum QuicTlsUpdateKind
@@ -105,6 +115,7 @@ internal enum QuicTlsUpdateKind
     OneRttProtectPacketProtectionMaterialAvailable = 17,
     PostHandshakeTicketAvailable = 18,
     ResumptionMasterSecretAvailable = 19,
+    ResumptionAttemptDispositionAvailable = 20,
 }
 
 /// <summary>
@@ -128,6 +139,7 @@ internal readonly record struct QuicTlsStateUpdate(
     uint? TicketLifetimeSeconds = null,
     uint? TicketAgeAdd = null,
     ReadOnlyMemory<byte> ResumptionMasterSecret = default,
+    QuicTlsResumptionAttemptDisposition? ResumptionAttemptDisposition = null,
     ReadOnlyMemory<byte> TicketBytes = default);
 
 /// <summary>

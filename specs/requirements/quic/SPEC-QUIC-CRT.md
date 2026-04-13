@@ -12,7 +12,7 @@ This specification covers endpoint ingress classification, routing tables, conne
 
 ## Context
 
-The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The current diagnostics placeholder exposes a no-op sink, but the next slice needs a typed, connection-scoped diagnostics contract plus a sibling qlog adapter boundary so transport facts can be mapped without bringing JSON or serializer concerns into the core. The server-role proof floor still stops at inbound Finished, so server-side client-auth and client-certificate handling on the existing `SslServerAuthenticationOptions` carrier remain the next open gap. The client-side PSK-attempt path now has a ServerHello accept/reject branch-point slice that distinguishes accepted attempts from rejected ones without claiming abbreviated-handshake completion. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, diagnostics, qlog-adapter, and package-compatibility work can be implemented against one clear architecture, while the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.
+The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The current diagnostics placeholder exposes a no-op sink, but the next slice needs a typed, connection-scoped diagnostics contract plus a sibling qlog adapter boundary so transport facts can be mapped without bringing JSON or serializer concerns into the core. The server-role proof floor still stops at inbound Finished, so server-side client-auth and client-certificate handling on the existing `SslServerAuthenticationOptions` carrier remain the next open gap. The client-side PSK-attempt path now has a ServerHello accept/reject branch-point slice under `REQ-QUIC-CRT-0133`, and the accepted-path abbreviated completion follow-on is traced separately under `REQ-QUIC-CRT-0137`. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, diagnostics, qlog-adapter, and package-compatibility work can be implemented against one clear architecture, while the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.
 
 ## Decision Summary
 
@@ -1295,3 +1295,28 @@ Notes:
 - The adapter may own qlog trace creation, schema registration, and event append ordering, but it must not own JSON writers or file paths.
 - File rotation, serializer choice, and `QLOGDIR` ownership remain host or adapter concerns, consistent with `REQ-QUIC-INT-0004`.
 - The adapter must be observational only; it must not mutate runtime scheduling, endpoint routing, or recovery behavior.
+
+## REQ-QUIC-CRT-0137 Complete an accepted PSK-capable ClientHello attempt through the abbreviated resumption flight
+In the client role, the library MUST advance an accepted PSK-capable ClientHello attempt past ServerHello through the abbreviated TLS 1.3 resumption flight so that the client-side handshake completes without requiring the full-handshake certificate and certificate-verify path on that accepted branch. Rejected attempts MUST continue to fall back cleanly to the existing full-handshake path. The slice MUST remain client-role only, MUST keep early-data admission explicitly closed, MUST remain managed client/runtime only, MUST NOT widen public API or IsSupported, MUST NOT claim 0-RTT, anti-replay, key update, or broad resumption support beyond this accepted-path completion, and MUST NOT alter transfer or retry contracts.
+
+Trace:
+- Source Refs:
+  - RFC 8446 Section 4.1.3
+  - RFC 8446 Section 4.2.11.1
+  - RFC 8446 Section 4.2.11.2
+  - docs/design/quic-interop-prep-plan.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - src/Incursa.Quic/QuicTlsKeySchedule.cs
+  - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
+  - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
+  - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+  - src/Incursa.Quic/QuicClientConnectionHost.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0133.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0137.cs
+
+Notes:
+- The accepted branch is abbreviated because the client now expects `EncryptedExtensions` followed by `Finished` rather than the full certificate chain path.
+- Rejected attempts still rejoin the existing full-handshake path unchanged.
+- This slice completes the accepted client-side resumed handshake only; it does not add 0-RTT, anti-replay, or any public resumption promise.

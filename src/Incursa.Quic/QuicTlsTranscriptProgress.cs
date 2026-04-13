@@ -50,6 +50,7 @@ internal sealed class QuicTlsTranscriptProgress
     private QuicTlsTranscriptHashAlgorithm? transcriptHashAlgorithm;
     private ushort? terminalAlertDescription;
     private bool serverClientCertificateRequired;
+    private bool serverHelloSelectedPreSharedKey;
 
     /// <summary>
     /// Initializes the transcript owner for a client role by default.
@@ -293,9 +294,10 @@ internal sealed class QuicTlsTranscriptProgress
             parsedMessage.HandshakeMessageLength,
             parsedMessage.SelectedCipherSuite,
             parsedMessage.TranscriptHashAlgorithm,
-            parsedMessage.NamedGroup,
-            parsedMessage.KeyShare,
-            handshakeMessageBytes);
+            NamedGroup: parsedMessage.NamedGroup,
+            KeyShare: parsedMessage.KeyShare,
+            PreSharedKeySelected: parsedMessage.PreSharedKeySelected,
+            HandshakeMessageBytes: handshakeMessageBytes);
         return TranscriptAdvanceResult.Progressed;
     }
 
@@ -490,7 +492,8 @@ internal sealed class QuicTlsTranscriptProgress
         if (!TryParseServerHelloExtensions(
             handshakeMessageBody.Slice(handshakeMessageBody.Length - extensionsLength, extensionsLength),
             out QuicTlsNamedGroup peerNamedGroup,
-            out ReadOnlyMemory<byte> peerKeyShare))
+            out ReadOnlyMemory<byte> peerKeyShare,
+            out bool preSharedKeySelected))
         {
             return false;
         }
@@ -504,7 +507,9 @@ internal sealed class QuicTlsTranscriptProgress
             SelectedCipherSuite: cipherSuite,
             TranscriptHashAlgorithm: hashAlgorithm,
             NamedGroup: peerNamedGroup,
-            KeyShare: peerKeyShare);
+            KeyShare: peerKeyShare,
+            PreSharedKeySelected: preSharedKeySelected);
+        serverHelloSelectedPreSharedKey = preSharedKeySelected;
         return true;
     }
 
@@ -536,7 +541,9 @@ internal sealed class QuicTlsTranscriptProgress
         parsedMessage = new ParsedHandshakeMessage(
             QuicTlsTranscriptStepKind.PeerTransportParametersStaged,
             QuicTlsTranscriptPhase.PeerTransportParametersStaged,
-            HandshakeProgressState.AwaitingCertificate,
+            serverHelloSelectedPreSharedKey
+                ? HandshakeProgressState.AwaitingFinished
+                : HandshakeProgressState.AwaitingCertificate,
             QuicTlsHandshakeMessageType.EncryptedExtensions,
             handshakeMessageLengthValue,
             transportParameters);
@@ -670,13 +677,16 @@ internal sealed class QuicTlsTranscriptProgress
     private bool TryParseServerHelloExtensions(
         ReadOnlySpan<byte> extensions,
         out QuicTlsNamedGroup peerNamedGroup,
-        out ReadOnlyMemory<byte> peerKeyShare)
+        out ReadOnlyMemory<byte> peerKeyShare,
+        out bool preSharedKeySelected)
     {
         peerNamedGroup = default;
         peerKeyShare = default;
+        preSharedKeySelected = false;
 
         bool foundSupportedVersions = false;
         bool foundKeyShare = false;
+        bool foundPreSharedKey = false;
         List<ushort> seenExtensionTypes = [];
 
         int index = 0;
@@ -722,6 +732,16 @@ internal sealed class QuicTlsTranscriptProgress
 
                 foundKeyShare = true;
             }
+            else if (extensionType == PreSharedKeyExtensionType)
+            {
+                if (foundPreSharedKey
+                    || !TryParseServerHelloPreSharedKey(extensionValue, out preSharedKeySelected))
+                {
+                    return false;
+                }
+
+                foundPreSharedKey = true;
+            }
             else if (extensionType == QuicTransportParametersCodec.QuicTransportParametersExtensionType)
             {
                 return false;
@@ -733,6 +753,24 @@ internal sealed class QuicTlsTranscriptProgress
         }
 
         return foundSupportedVersions && foundKeyShare;
+    }
+
+    private static bool TryParseServerHelloPreSharedKey(
+        ReadOnlySpan<byte> extensionValue,
+        out bool preSharedKeySelected)
+    {
+        preSharedKeySelected = false;
+
+        int index = 0;
+        if (!TryReadUInt16(extensionValue, ref index, out ushort selectedIdentity)
+            || selectedIdentity != 0
+            || index != extensionValue.Length)
+        {
+            return false;
+        }
+
+        preSharedKeySelected = true;
+        return true;
     }
 
     private bool TryParseClientHelloExtensions(
@@ -1066,6 +1104,7 @@ internal sealed class QuicTlsTranscriptProgress
         terminalAlertDescription = alertDescription;
         phase = QuicTlsTranscriptPhase.Failed;
         progressState = HandshakeProgressState.Failed;
+        serverHelloSelectedPreSharedKey = false;
         partialTranscript.Clear();
         return TranscriptAdvanceResult.Failed;
     }
@@ -1295,7 +1334,8 @@ internal sealed class QuicTlsTranscriptProgress
         QuicTlsCipherSuite? SelectedCipherSuite = null,
         QuicTlsTranscriptHashAlgorithm? TranscriptHashAlgorithm = null,
         QuicTlsNamedGroup? NamedGroup = null,
-        ReadOnlyMemory<byte> KeyShare = default);
+        ReadOnlyMemory<byte> KeyShare = default,
+        bool PreSharedKeySelected = false);
 }
 
 /// <summary>
@@ -1323,6 +1363,7 @@ internal readonly record struct QuicTlsTranscriptStep(
     QuicTlsTranscriptHashAlgorithm? TranscriptHashAlgorithm = null,
     QuicTlsNamedGroup? NamedGroup = null,
     ReadOnlyMemory<byte> KeyShare = default,
+    bool PreSharedKeySelected = false,
     ReadOnlyMemory<byte> HandshakeMessageBytes = default,
     ReadOnlyMemory<byte> TicketNonce = default,
     uint? TicketLifetimeSeconds = null,

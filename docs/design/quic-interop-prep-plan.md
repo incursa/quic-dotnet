@@ -234,6 +234,18 @@ Notes on dependency:
    - Status: landed. The managed client/runtime path now consumes the dormant carrier to build a PSK-capable ClientHello attempt with binder material while keeping early data explicitly closed.
    - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, and the detached credential-capture slice staying stable.
 
+14. `Client-side ServerHello accept/reject branch point`
+   - Goal: keep the ServerHello branch-point seam traceable under `REQ-QUIC-CRT-0133`, `ARC-QUIC-CRT-0031`, `WI-QUIC-CRT-0031`, and `VER-QUIC-CRT-0031`.
+   - Focus: PSK-capable ClientHello ServerHello classification, rejected fallback to the existing full-handshake path, accepted recognition without abbreviated-handshake success, and preserved early-data closure across both outcomes.
+   - Status: landed. The managed client/runtime path now classifies the PSK-capable ClientHello attempt as accepted or rejected at ServerHello, rejected attempts fall back cleanly to the existing full-handshake path, and accepted attempts are recognized without claiming resumed-handshake success.
+   - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, the detached credential-capture slice, and the ClientHello PSK-attempt slice staying stable.
+
+15. `Client-side abbreviated resumption completion`
+   - Goal: keep the accepted-path follow-on traceable under `REQ-QUIC-CRT-0137`, `ARC-QUIC-CRT-0033`, `WI-QUIC-CRT-0034`, and `VER-QUIC-CRT-0034`.
+   - Focus: accepted PSK ServerHello continuation through abbreviated `EncryptedExtensions -> Finished` completion, rejected fallback unchanged, omitted certificate and certificate-verify messages on the accepted branch, preserved early-data closure, and no public resumption claim.
+   - Status: landed. The managed client/runtime path now advances accepted PSK attempts through the abbreviated resumption flight, rejected attempts still fall back cleanly to the existing full-handshake path, and the connection reaches Active without widening the public surface.
+   - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, the detached credential-capture slice, the ClientHello PSK-attempt slice, and the ServerHello branch-point slice staying stable.
+
 ## Do-Not-Widen Boundaries
 
 - Keep `QuicConnection` and `QuicListener` on the current narrow supported promise until the runtime and TLS buckets are stable.

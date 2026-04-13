@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0031",
+  "artifact_type": "architecture",
+  "status": "landed",
+  "title": "QUIC CRT client-side ServerHello branch-point architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the smallest honest ServerHello branch-point seam: the managed client/runtime path classifies a PSK-capable ClientHello attempt as accepted or rejected, sends rejected attempts back through the existing full-handshake path without corrupting state, and does not claim resumed-handshake success yet.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0031",
+    "VER-QUIC-CRT-0031"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0133"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0133.cs"
+  ],
+  "risks": [
+    "If the ServerHello pre_shared_key signal is not parsed from the transcript, accepted attempts cannot be distinguished from rejected ones.",
+    "If rejection does not fall back through the existing full-handshake path, the slice would silently corrupt state or poison the bootstrap path.",
+    "If accepted attempts are treated as resumed-handshake success, the runtime would overclaim behavior that the repository has not yet proved.",
+    "If the branch outcome leaks into public API or IsSupported, the slice would widen beyond the narrow proof floor."
+  ],
+  "design_summary": "The managed client/runtime path already owns opaque resumption material and can build a PSK-capable ClientHello attempt. This slice extends the server-side acceptance seam just enough to read the ServerHello pre_shared_key selection, classify the attempt as accepted or rejected, and keep the rejected branch on the existing full-handshake path. Accepted attempts are recognized but do not claim abbreviated-handshake completion, and early data remains closed.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice covers only client-side ServerHello branch-point classification for a PSK-capable ClientHello attempt. Rejected attempts must rejoin the existing full-handshake path without corrupting state. Accepted attempts are recognized but do not claim resumed-handshake success, abbreviated-handshake completion, or any 0-RTT behavior."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs`](../../../src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0133.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0133.cs)\n- [`docs/design/quic-interop-prep-plan.md`](../../../docs/design/quic-interop-prep-plan.md)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)"
+    }
+  ]
+}

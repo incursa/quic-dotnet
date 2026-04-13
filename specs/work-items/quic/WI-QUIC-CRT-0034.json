@@ -1,0 +1,41 @@
+{
+  "title": "QUIC CRT client-side abbreviated resumption completion work item",
+  "verification_links": [
+    "VER-QUIC-CRT-0034"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "status": "landed",
+  "domain": "quic",
+  "summary": "Advance accepted PSK ClientHello attempts through abbreviated client-side handshake completion while keeping rejected attempts on the existing full-handshake fallback and early data closed.",
+  "verification_plan": "Run focused requirement-home tests for accepted abbreviated completion, rejected fallback, abbreviated transcript omission of certificate and certificate-verify, early-data closure, and the public no-resumption/no-early-data guard; then run the relevant CRT/API/INT guard set, the full `REQ_QUIC_CRT_` sweep, and SpecTrace render/validation checks.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0133.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0133.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0137.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0137.cs)"
+    }
+  ],
+  "completion_notes": "The managed client/runtime path now advances accepted PSK ClientHello attempts through the abbreviated `EncryptedExtensions -> Finished` resumption flight, keeps rejected attempts on the existing full-handshake fallback path, and keeps early data explicitly closed without widening the public surface.",
+  "design_links": [
+    "ARC-QUIC-CRT-0033"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0137"
+  ],
+  "artifact_id": "WI-QUIC-CRT-0034",
+  "artifact_type": "work_item",
+  "out_of_scope": [
+    "0-RTT packet send/receive support",
+    "anti-replay behavior",
+    "key update",
+    "public API widening",
+    "IsSupported widening",
+    "broad post-handshake TLS support",
+    "transfer enablement",
+    "retry enablement",
+    "opportunistic refactors unrelated to accepted-branch completion"
+  ]
+}
