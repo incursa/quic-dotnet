@@ -12,7 +12,7 @@ This specification covers endpoint ingress classification, routing tables, conne
 
 ## Context
 
-The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, and package-compatibility work can be implemented against one clear architecture, while the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.
+The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The server-role proof floor still stops at inbound Finished, so server-side client-auth and client-certificate handling on the existing `SslServerAuthenticationOptions` carrier remain the next open gap. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, and package-compatibility work can be implemented against one clear architecture, while the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.
 
 ## Decision Summary
 
@@ -996,3 +996,30 @@ Notes:
 - This slice is intentionally narrower than broad TLS policy or full PKI support.
 - The trust-material input is explicit and single-valued; it does not imply OS trust-store integration or generalized chain building.
 - The peer-identity match is exact and single-valued; wildcard or broader SAN policy remains out of scope.
+
+## REQ-QUIC-CRT-0124 Request and validate client certificates on the existing server-auth carrier
+In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true, the library MUST emit one TLS 1.3 `CertificateRequest` on the local server flight, accept one inbound client `Certificate` / `CertificateVerify` / `Finished` sequence for that request context, and surface client-certificate acceptance only through the existing `RemoteCertificateValidationCallback` seam on that same `SslServerAuthenticationOptions` carrier. This slice MUST remain separate from explicit `CertificateChainPolicy` and `CertificateRevocationCheckMode` customization, broader PKI behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.
+
+Trace:
+- Source Refs:
+  - docs/design/quic-public-api-gap-matrix.md
+  - docs/design/quic-interop-prep-plan.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicServerConnectionOptions.cs
+  - src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs
+  - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
+  - src/Incursa.Quic/QuicTlsKeySchedule.cs
+  - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
+  - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\Internal\MsQuicConfiguration.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs
+
+Notes:
+- This is the smallest server-side client-auth floor and remains server-role only.
+- The server-side transcript must stay separate from the client-role peer-certificate floor in REQ-QUIC-CRT-0123.
+- The client-side certificate-presentation path is a separate prerequisite and does not belong to this clause.
+- CertificateChainPolicy and CertificateRevocationCheckMode remain deferred until the server-auth floor is proven end to end.

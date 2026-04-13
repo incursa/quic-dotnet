@@ -15,6 +15,8 @@ internal static class QuicTlsCertificateVerifyTestSupport
 
     private static readonly byte[] ServerCertificateVerifyContext =
         Encoding.ASCII.GetBytes("TLS 1.3, server CertificateVerify");
+    private static readonly byte[] ClientCertificateVerifyContext =
+        Encoding.ASCII.GetBytes("TLS 1.3, client CertificateVerify");
 
     internal static byte[] CreateLeafCertificateDer(ECDsa leafKey)
     {
@@ -61,13 +63,51 @@ internal static class QuicTlsCertificateVerifyTestSupport
         return WrapHandshakeMessage(QuicTlsHandshakeMessageType.Certificate, body);
     }
 
+    internal static byte[] CreateCertificateRequestTranscript()
+    {
+        Span<byte> body = stackalloc byte[11];
+        int index = 0;
+
+        body[index++] = 0x00;
+        WriteUInt16(body.Slice(index, UInt16Length), 8);
+        index += UInt16Length;
+        WriteUInt16(body.Slice(index, UInt16Length), 0x000D);
+        index += UInt16Length;
+        WriteUInt16(body.Slice(index, UInt16Length), 4);
+        index += UInt16Length;
+        WriteUInt16(body.Slice(index, UInt16Length), 2);
+        index += UInt16Length;
+        WriteUInt16(body.Slice(index, UInt16Length), (ushort)QuicTlsSignatureScheme.EcdsaSecp256r1Sha256);
+
+        return WrapHandshakeMessage(QuicTlsHandshakeMessageType.CertificateRequest, body);
+    }
+
     internal static byte[] CreateCertificateVerifyTranscript(
         ECDsa leafKey,
         ReadOnlySpan<byte> transcriptHash,
         QuicTlsSignatureScheme signatureScheme = QuicTlsSignatureScheme.EcdsaSecp256r1Sha256,
         DSASignatureFormat signatureFormat = CertificateVerifySignatureFormat)
     {
-        byte[] signature = CreateCertificateVerifySignature(leafKey, transcriptHash, signatureFormat);
+        return CreateCertificateVerifyTranscript(
+            leafKey,
+            transcriptHash,
+            useClientContext: false,
+            signatureScheme: signatureScheme,
+            signatureFormat: signatureFormat);
+    }
+
+    internal static byte[] CreateCertificateVerifyTranscript(
+        ECDsa leafKey,
+        ReadOnlySpan<byte> transcriptHash,
+        bool useClientContext,
+        QuicTlsSignatureScheme signatureScheme = QuicTlsSignatureScheme.EcdsaSecp256r1Sha256,
+        DSASignatureFormat signatureFormat = CertificateVerifySignatureFormat)
+    {
+        byte[] signature = CreateCertificateVerifySignature(
+            leafKey,
+            transcriptHash,
+            useClientContext,
+            signatureFormat);
         byte[] body = new byte[UInt16Length + UInt16Length + signature.Length];
         int index = 0;
 
@@ -83,19 +123,24 @@ internal static class QuicTlsCertificateVerifyTestSupport
     internal static byte[] CreateCertificateVerifySignature(
         ECDsa leafKey,
         ReadOnlySpan<byte> transcriptHash,
+        bool useClientContext = false,
         DSASignatureFormat signatureFormat = CertificateVerifySignatureFormat)
     {
         ArgumentNullException.ThrowIfNull(leafKey);
 
+        ReadOnlySpan<byte> certificateVerifyContext = useClientContext
+            ? ClientCertificateVerifyContext
+            : ServerCertificateVerifyContext;
+
         Span<byte> signedData = stackalloc byte[CertificateVerifySignedDataPrefixLength
-            + ServerCertificateVerifyContext.Length
+            + certificateVerifyContext.Length
             + 1
             + transcriptHash.Length];
         signedData[..CertificateVerifySignedDataPrefixLength].Fill(0x20);
-        ServerCertificateVerifyContext.CopyTo(signedData.Slice(CertificateVerifySignedDataPrefixLength));
-        signedData[CertificateVerifySignedDataPrefixLength + ServerCertificateVerifyContext.Length] = 0x00;
+        certificateVerifyContext.CopyTo(signedData.Slice(CertificateVerifySignedDataPrefixLength));
+        signedData[CertificateVerifySignedDataPrefixLength + certificateVerifyContext.Length] = 0x00;
         transcriptHash.CopyTo(
-            signedData.Slice(CertificateVerifySignedDataPrefixLength + ServerCertificateVerifyContext.Length + 1));
+            signedData.Slice(CertificateVerifySignedDataPrefixLength + certificateVerifyContext.Length + 1));
 
         return leafKey.SignData(signedData, HashAlgorithmName.SHA256, signatureFormat);
     }

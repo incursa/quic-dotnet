@@ -264,9 +264,15 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     internal bool TryConfigureServerAuthenticationMaterial(
         ReadOnlyMemory<byte> certificateDer,
-        ReadOnlyMemory<byte> signingPrivateKey)
+        ReadOnlyMemory<byte> signingPrivateKey,
+        bool clientCertificateRequired = false,
+        RemoteCertificateValidationCallback? serverRemoteCertificateValidationCallback = null)
     {
-        return tlsBridgeDriver.TryConfigureServerAuthenticationMaterial(certificateDer, signingPrivateKey);
+        return tlsBridgeDriver.TryConfigureServerAuthenticationMaterial(
+            certificateDer,
+            signingPrivateKey,
+            clientCertificateRequired,
+            serverRemoteCertificateValidationCallback);
     }
 
     /// <summary>

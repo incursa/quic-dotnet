@@ -25,6 +25,11 @@ internal sealed class QuicTlsKeySchedule
     private const ushort HandshakeTranscriptParseFailureAlertDescription = 0x0032;
     private const int UInt16Length = sizeof(ushort);
     private const int UInt24Length = 3;
+    private const int CertificateRequestContextLength = 0;
+    private const ushort CertificateRequestExtensionsLength = 8;
+    private const ushort CertificateRequestSignatureAlgorithmsExtensionType = 0x000D;
+    private const ushort CertificateRequestSignatureAlgorithmsExtensionLength = 4;
+    private const ushort CertificateRequestSignatureSchemeListLength = 2;
     private const int UInt24HighByteShift = 16;
     private const int UInt24MidByteShift = 8;
     private const int UInt24HighByteIndex = 0;
@@ -55,6 +60,7 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] ServerApplicationTrafficLabel = Encoding.ASCII.GetBytes("s ap traffic");
     private static readonly byte[] FinishedLabel = Encoding.ASCII.GetBytes("finished");
     private static readonly byte[] ServerCertificateVerifyContext = Encoding.ASCII.GetBytes("TLS 1.3, server CertificateVerify");
+    private static readonly byte[] ClientCertificateVerifyContext = Encoding.ASCII.GetBytes("TLS 1.3, client CertificateVerify");
     private static readonly byte[] QuicKeyLabel = Encoding.ASCII.GetBytes("quic key");
     private static readonly byte[] QuicIvLabel = Encoding.ASCII.GetBytes("quic iv");
     private static readonly byte[] QuicHpLabel = Encoding.ASCII.GetBytes("quic hp");
@@ -73,6 +79,7 @@ internal sealed class QuicTlsKeySchedule
     private byte[]? peerLeafCertificateDer;
     private bool handshakeSecretsDerived;
     private bool localServerFlightCompleted;
+    private bool serverClientCertificateRequired;
     private bool peerCertificateVerifyVerified;
     private bool peerFinishedVerified;
     private bool isTerminal;
@@ -124,6 +131,17 @@ internal sealed class QuicTlsKeySchedule
     /// Gets the public local ephemeral key share associated with the current role's key pair.
     /// </summary>
     public ReadOnlyMemory<byte> LocalKeyShare => localKeyShare;
+
+    /// <summary>
+    /// Configures whether the server role should emit a CertificateRequest and accept a client certificate response.
+    /// </summary>
+    internal void ConfigureServerClientAuthentication(bool clientCertificateRequired)
+    {
+        if (role == QuicTlsRole.Server)
+        {
+            serverClientCertificateRequired = clientCertificateRequired;
+        }
+    }
 
     /// <summary>
     /// Creates the supported client Initial ClientHello transcript bytes for the current key share and transport parameters.
@@ -336,6 +354,8 @@ internal sealed class QuicTlsKeySchedule
                     localTransportParameters,
                     localServerLeafCertificateDer,
                     localServerLeafSigningPrivateKey),
+                QuicTlsHandshakeMessageType.Certificate => ProcessCertificate(step),
+                QuicTlsHandshakeMessageType.CertificateVerify => ProcessCertificateVerify(step),
                 QuicTlsHandshakeMessageType.Finished => ProcessFinished(step),
                 _ => BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription),
             };
@@ -359,6 +379,7 @@ internal sealed class QuicTlsKeySchedule
         ReadOnlyMemory<byte> localServerLeafSigningPrivateKey)
     {
         byte[]? certificateBytes = null;
+        byte[]? certificateRequestBytes = null;
         ECDsa? localServerLeafSigningKey = null;
 
         try
@@ -447,6 +468,23 @@ internal sealed class QuicTlsKeySchedule
             ];
 
             ulong certificateOffset = (ulong)encryptedExtensionsBytes.Length;
+            if (serverClientCertificateRequired)
+            {
+                if (!TryCreateCertificateRequest(out certificateRequestBytes))
+                {
+                    return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+                }
+
+                AppendTranscriptMessage(certificateRequestBytes);
+                updates.Add(new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.CryptoDataAvailable,
+                    QuicTlsEncryptionLevel.Handshake,
+                    CryptoDataOffset: certificateOffset,
+                    CryptoData: certificateRequestBytes));
+
+                certificateOffset += (ulong)certificateRequestBytes.Length;
+            }
+
             if (certificateBytes is not null)
             {
                 AppendTranscriptMessage(certificateBytes);
@@ -546,6 +584,11 @@ internal sealed class QuicTlsKeySchedule
 
     private IReadOnlyList<QuicTlsStateUpdate> ProcessCertificate(QuicTlsTranscriptStep step)
     {
+        if (role == QuicTlsRole.Server && !serverClientCertificateRequired)
+        {
+            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+        }
+
         if (peerLeafCertificateDer is not null)
         {
             return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
@@ -563,6 +606,11 @@ internal sealed class QuicTlsKeySchedule
 
     private IReadOnlyList<QuicTlsStateUpdate> ProcessCertificateVerify(QuicTlsTranscriptStep step)
     {
+        if (role == QuicTlsRole.Server && !serverClientCertificateRequired)
+        {
+            return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+        }
+
         if (peerLeafCertificateDer is null || peerCertificateVerifyVerified)
         {
             return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
@@ -904,6 +952,36 @@ internal sealed class QuicTlsKeySchedule
         return true;
     }
 
+    private static bool TryCreateCertificateRequest(out byte[] certificateRequestBytes)
+    {
+        certificateRequestBytes = Array.Empty<byte>();
+
+        Span<byte> body = stackalloc byte[11];
+        int index = 0;
+
+        body[index++] = (byte)CertificateRequestContextLength;
+        BinaryPrimitives.WriteUInt16BigEndian(body.Slice(index, UInt16Length), CertificateRequestExtensionsLength);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(
+            body.Slice(index, UInt16Length),
+            CertificateRequestSignatureAlgorithmsExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(
+            body.Slice(index, UInt16Length),
+            CertificateRequestSignatureAlgorithmsExtensionLength);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(
+            body.Slice(index, UInt16Length),
+            CertificateRequestSignatureSchemeListLength);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(
+            body.Slice(index, UInt16Length),
+            (ushort)QuicTlsSignatureScheme.EcdsaSecp256r1Sha256);
+
+        certificateRequestBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.CertificateRequest, body);
+        return true;
+    }
+
     private static bool TryCreateCertificate(ReadOnlySpan<byte> leafCertificateDer, out byte[] certificateBytes)
     {
         certificateBytes = Array.Empty<byte>();
@@ -1096,15 +1174,18 @@ internal sealed class QuicTlsKeySchedule
             }
 
             byte[] transcriptHash = HashTranscript();
+            ReadOnlySpan<byte> certificateVerifyContext = role == QuicTlsRole.Server
+                ? ClientCertificateVerifyContext
+                : ServerCertificateVerifyContext;
             Span<byte> signedData = stackalloc byte[CertificateVerifyContextPrefixLength
-                + ServerCertificateVerifyContext.Length
+                + certificateVerifyContext.Length
                 + 1
                 + HashLength];
             signedData[..CertificateVerifyContextPrefixLength].Fill(CertificateVerifySignedDataPrefixByte);
-            ServerCertificateVerifyContext.CopyTo(signedData.Slice(CertificateVerifyContextPrefixLength));
-            signedData[CertificateVerifyContextPrefixLength + ServerCertificateVerifyContext.Length] = 0x00;
+            certificateVerifyContext.CopyTo(signedData.Slice(CertificateVerifyContextPrefixLength));
+            signedData[CertificateVerifyContextPrefixLength + certificateVerifyContext.Length] = 0x00;
             transcriptHash.AsSpan().CopyTo(
-                signedData.Slice(CertificateVerifyContextPrefixLength + ServerCertificateVerifyContext.Length + 1));
+                signedData.Slice(CertificateVerifyContextPrefixLength + certificateVerifyContext.Length + 1));
 
             return publicKey.VerifyData(
                 signedData,

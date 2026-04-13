@@ -1,0 +1,53 @@
+{
+  "title": "QUIC CRT server client-auth transcript/runtime prerequisite verification",
+  "preconditions": [
+    "The Incursa.Quic library builds successfully on net10.0.",
+    "The internal server-auth transcript/runtime prerequisite is wired into the bridge and key schedule without relaxing the public server validator.",
+    "The current client-only and exact-pinning CRT proofs remain available as regression references."
+  ],
+  "verification_method": "Execution, inspection, and regression evidence.",
+  "owner": "quic-maintainers",
+  "artifact_type": "verification",
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "status": "planned",
+  "domain": "quic",
+  "verifies": [
+    "REQ-QUIC-CRT-0124"
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs",
+    "scripts/Validate-SpecTraceJson.ps1"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- The server flight emits exactly one CertificateRequest when the internal server-auth prerequisite is enabled.\n- The server-role transcript accepts client Certificate -> CertificateVerify -> Finished in that mode and fails closed when the client certificate callback rejects.\n- The public validator still rejects ClientCertificateRequired until the public boundary is intentionally widened in a later slice."
+    }
+  ],
+  "status_summary": "This verification artifact covers the internal prerequisite slice only; the public server listener promise remains unchanged.",
+  "scope": "Verify the server-role CertificateRequest / client certificate presentation transcript-runtime prerequisite while leaving the public listener validator rejection intact.",
+  "procedure": [
+    "Run the new server-auth requirement-home tests once the bridge and transcript wiring exists.",
+    "Run the current CRT and API guards that must remain unchanged, especially the mainstream client TLS and exact-pinning floors.",
+    "Run the full `REQ_QUIC_CRT_` sweep.",
+    "Run the repo-local SpecTrace validation and markdown rendering checks after the canonical JSON updates."
+  ],
+  "expected_result": "- The internal server-auth prerequisite slice is proven with positive and negative requirement-home evidence.\n- The public `ClientCertificateRequired` validator rejection remains in place.\n- The mainstream client TLS path and exact-pinning path remain green.\n- Transfer, retry, 0-RTT, key update, and broader PKI behavior remain unchanged.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0022",
+    "WI-QUIC-CRT-0022"
+  ],
+  "artifact_id": "VER-QUIC-CRT-0022"
+}

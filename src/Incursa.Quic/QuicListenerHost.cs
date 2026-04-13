@@ -510,7 +510,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 || !runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId)
                 || !runtime.TryConfigureServerAuthenticationMaterial(
                     validatedOptions.ServerLeafCertificateDer,
-                    validatedOptions.ServerLeafSigningPrivateKey))
+                    validatedOptions.ServerLeafSigningPrivateKey,
+                    selectedOptions.ServerAuthenticationOptions.ClientCertificateRequired,
+                    selectedOptions.ServerAuthenticationOptions.RemoteCertificateValidationCallback))
             {
                 return false;
             }

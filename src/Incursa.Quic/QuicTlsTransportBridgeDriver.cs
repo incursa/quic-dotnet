@@ -27,8 +27,10 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private readonly SslClientAuthenticationOptions? clientAuthenticationOptions;
     private readonly byte[]? pinnedPeerLeafCertificateSha256;
     private readonly RemoteCertificateValidationCallback? remoteCertificateValidationCallback;
+    private RemoteCertificateValidationCallback? serverRemoteCertificateValidationCallback;
     private ReadOnlyMemory<byte> localServerLeafCertificateDer;
     private ReadOnlyMemory<byte> localServerLeafSigningPrivateKey;
+    private bool serverClientCertificateRequired;
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> nextIngressOffsets = [];
     private readonly Dictionary<QuicTlsEncryptionLevel, ulong> transcriptIngressBaseOffsets = [];
 
@@ -113,11 +115,18 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
     internal bool TryConfigureServerAuthenticationMaterial(
         ReadOnlyMemory<byte> certificateDer,
-        ReadOnlyMemory<byte> signingPrivateKey)
+        ReadOnlyMemory<byte> signingPrivateKey,
+        bool clientCertificateRequired = false,
+        RemoteCertificateValidationCallback? serverRemoteCertificateValidationCallback = null)
     {
         if (Role != QuicTlsRole.Server
             || certificateDer.IsEmpty
             || signingPrivateKey.IsEmpty)
+        {
+            return false;
+        }
+
+        if (clientCertificateRequired && serverRemoteCertificateValidationCallback is null)
         {
             return false;
         }
@@ -136,6 +145,10 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
         localServerLeafCertificateDer = certificateDer.ToArray();
         localServerLeafSigningPrivateKey = signingPrivateKey.ToArray();
+        serverClientCertificateRequired = clientCertificateRequired;
+        this.serverRemoteCertificateValidationCallback = serverRemoteCertificateValidationCallback;
+        handshakeTranscriptProgress.ConfigureServerClientAuthentication(clientCertificateRequired);
+        keySchedule?.ConfigureServerClientAuthentication(clientCertificateRequired);
         return true;
     }
 
@@ -498,6 +511,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             return Array.Empty<QuicTlsStateUpdate>();
         }
 
+        if (Role == QuicTlsRole.Server && serverClientCertificateRequired)
+        {
+            return PublishServerClientCertificateAcceptance();
+        }
+
         if (clientCertificatePolicySnapshot is not null)
         {
             return PublishSnapshotAcceptedPeerCertificatePolicy();
@@ -654,6 +672,41 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             try
             {
                 bool accepted = remoteCertificateValidationCallback(
+                    sender: this,
+                    certificate: peerCertificate,
+                    chain: null,
+                    sslPolicyErrors: SslPolicyErrors.RemoteCertificateChainErrors);
+
+                return accepted
+                    ? PublishUpdate(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted))
+                    : PublishFatalAlert(PeerCertificatePolicyMismatchAlertDescription);
+            }
+            catch (Exception ex)
+            {
+                throw new QuicException(
+                    QuicError.CallbackError,
+                    null,
+                    "The remote certificate validation callback failed.",
+                    ex);
+            }
+        }
+    }
+
+    private IReadOnlyList<QuicTlsStateUpdate> PublishServerClientCertificateAcceptance()
+    {
+        if (serverRemoteCertificateValidationCallback is null
+            || keySchedule is null
+            || !keySchedule.TryCreatePeerLeafCertificate(out X509Certificate2? peerCertificate)
+            || peerCertificate is null)
+        {
+            return PublishFatalAlert(PeerCertificatePolicyMismatchAlertDescription);
+        }
+
+        using (peerCertificate)
+        {
+            try
+            {
+                bool accepted = serverRemoteCertificateValidationCallback(
                     sender: this,
                     certificate: peerCertificate,
                     chain: null,

@@ -42,6 +42,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0019.json`](ARC-QUIC-CRT-0019.json): canonical CRT client-role 1-RTT readiness design source
 - [`ARC-QUIC-CRT-0020.json`](ARC-QUIC-CRT-0020.json): canonical CRT retry bootstrap ownership design source
 - [`ARC-QUIC-CRT-0021.json`](ARC-QUIC-CRT-0021.json): canonical CRT client trust-material and peer-identity validation design source
+- [`ARC-QUIC-CRT-0022.json`](ARC-QUIC-CRT-0022.json): canonical CRT server client-auth transcript/runtime prerequisite design source
 - [`ARC-QUIC-API-0001.json`](ARC-QUIC-API-0001.json): canonical public API boundary design source
 - [`ARC-QUIC-API-0002.json`](ARC-QUIC-API-0002.json): canonical initial stream-capacity callback design source
 - [`ARC-QUIC-API-0003.json`](ARC-QUIC-API-0003.json): canonical explicit pinned identity and trust-material client-policy design source

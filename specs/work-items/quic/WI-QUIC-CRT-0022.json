@@ -1,0 +1,42 @@
+{
+  "title": "QUIC CRT server client-auth transcript/runtime prerequisite work item",
+  "verification_links": [
+    "VER-QUIC-CRT-0022"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "completion_notes": "This work item intentionally stops short of public listener acceptance. The validator may continue to reject ClientCertificateRequired until the internal transcript/runtime prerequisite is proven and the public boundary is revisited separately.",
+  "out_of_scope": [
+    "public listener widening",
+    "transfer enablement",
+    "retry enablement",
+    "0-RTT",
+    "key update",
+    "broad PKI or trust-store integration",
+    "client-side certificate-presentation prerequisite",
+    "broader client-auth policy beyond the requested server-auth slice"
+  ],
+  "status": "planned",
+  "domain": "quic",
+  "summary": "Add the smallest internal managed server-auth prerequisite needed to emit CertificateRequest and accept an inbound client Certificate / CertificateVerify / Finished sequence through the existing transcript and bridge seams without widening the public server surface yet.",
+  "verification_plan": "Run focused requirement-home tests for the internal server-auth path, re-run the current CRT and API guards that must remain unchanged, re-run the full REQ_QUIC_CRT_ sweep, and run repo-local SpecTrace validation/render checks after the canonical JSON updates.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs`](../../../src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs)\n- [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs)"
+    }
+  ],
+  "artifact_type": "work_item",
+  "planned_changes": "- Thread a server-client-auth-required flag and callback through the existing runtime/bridge seam.\n- Emit one TLS 1.3 CertificateRequest on the server flight when the internal prerequisite flag is enabled.\n- Accept an inbound client Certificate / CertificateVerify / Finished sequence in the server-role transcript and key schedule.\n- Surface client-certificate acceptance only through the existing callback seam and fail closed if acceptance is not granted.\n- Keep the public listener validator rejection for ClientCertificateRequired in place until the full public boundary is revisited.\n- Add positive and negative requirement-home tests that prove the internal prerequisite slice without claiming broader PKI, 0-RTT, transfer, retry, or key-update behavior."
+  ,
+  "design_links": [
+    "ARC-QUIC-CRT-0022"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0124"
+  ],
+  "artifact_id": "WI-QUIC-CRT-0022"
+}

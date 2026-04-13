@@ -44,6 +44,7 @@ This pass promotes the consumer-lifetime facade that is already backed by the ex
 The following remain intentionally out of scope for this pass:
 
 - combined `Abort(Both, ...)`
+- server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier, including `ClientCertificateRequired`, callback-driven acceptance, and the narrow certificate-request/validate floor
 - `0-RTT`
 - key update
 - interop-runner enablement

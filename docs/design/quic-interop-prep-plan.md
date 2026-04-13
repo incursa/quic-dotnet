@@ -102,6 +102,7 @@ Partially implemented but not yet promised:
 Still missing:
 
 - Broader client-auth or TLS-option support.
+- Server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier, including the narrow `ClientCertificateRequired` request/validate floor traced by `REQ-QUIC-CRT-0124`.
 - `0-RTT`.
 - Key update.
 

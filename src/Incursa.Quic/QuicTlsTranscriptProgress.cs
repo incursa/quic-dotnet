@@ -44,6 +44,7 @@ internal sealed class QuicTlsTranscriptProgress
     private QuicTlsCipherSuite? selectedCipherSuite;
     private QuicTlsTranscriptHashAlgorithm? transcriptHashAlgorithm;
     private ushort? terminalAlertDescription;
+    private bool serverClientCertificateRequired;
 
     /// <summary>
     /// Initializes the transcript owner for a client role by default.
@@ -62,6 +63,11 @@ internal sealed class QuicTlsTranscriptProgress
         progressState = role == QuicTlsRole.Server
             ? HandshakeProgressState.AwaitingClientHello
             : HandshakeProgressState.AwaitingServerHello;
+    }
+
+    internal void ConfigureServerClientAuthentication(bool clientCertificateRequired)
+    {
+        serverClientCertificateRequired = clientCertificateRequired;
     }
 
     internal ulong IngressCursor => ingressCursor;
@@ -342,7 +348,9 @@ internal sealed class QuicTlsTranscriptProgress
         parsedMessage = new ParsedHandshakeMessage(
             QuicTlsTranscriptStepKind.PeerTransportParametersStaged,
             QuicTlsTranscriptPhase.PeerTransportParametersStaged,
-            HandshakeProgressState.AwaitingFinished,
+            serverClientCertificateRequired
+                ? HandshakeProgressState.AwaitingCertificate
+                : HandshakeProgressState.AwaitingFinished,
             QuicTlsHandshakeMessageType.ClientHello,
             handshakeMessageLengthValue,
             transportParameters,

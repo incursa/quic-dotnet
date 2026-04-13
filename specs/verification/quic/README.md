@@ -42,6 +42,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0019.json`](VER-QUIC-CRT-0019.json): canonical CRT client-role 1-RTT readiness verification source
 - [`VER-QUIC-CRT-0020.json`](VER-QUIC-CRT-0020.json): canonical CRT retry bootstrap verification source
 - [`VER-QUIC-CRT-0021.json`](VER-QUIC-CRT-0021.json): canonical CRT client trust-material and peer-identity validation verification source
+- [`VER-QUIC-CRT-0022.json`](VER-QUIC-CRT-0022.json): canonical CRT server client-auth transcript/runtime prerequisite verification source
 - [`VER-QUIC-API-0001.json`](VER-QUIC-API-0001.json): canonical public API surface verification source
 - [`VER-QUIC-API-0002.json`](VER-QUIC-API-0002.json): canonical initial stream-capacity callback verification source
 - [`VER-QUIC-API-0003.json`](VER-QUIC-API-0003.json): canonical explicit pinned identity and trust-material client-policy verification source
