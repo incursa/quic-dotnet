@@ -1,3 +1,6 @@
+using System.Buffers;
+using System.Globalization;
+using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -12,11 +15,16 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private const int HandshakeIngressDrainChunkBytes = 512;
     private const int Sha256FingerprintLength = 32;
     private const ushort PeerCertificatePolicyMismatchAlertDescription = 0x0031;
+    private const string ServerAuthenticationOid = "1.3.6.1.5.5.7.3.1";
+    private static readonly IdnMapping s_idnMapping = new();
+    private static readonly SearchValues<char> s_safeDnsChars =
+        SearchValues.Create("-.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz");
 
     private readonly QuicTransportTlsBridgeState bridgeState;
     private readonly QuicTlsTranscriptProgress handshakeTranscriptProgress;
     private readonly QuicTlsKeySchedule? keySchedule;
     private readonly QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot;
+    private readonly SslClientAuthenticationOptions? clientAuthenticationOptions;
     private readonly byte[]? pinnedPeerLeafCertificateSha256;
     private readonly RemoteCertificateValidationCallback? remoteCertificateValidationCallback;
     private ReadOnlyMemory<byte> localServerLeafCertificateDer;
@@ -32,13 +40,15 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         ReadOnlyMemory<byte> localServerLeafCertificateDer = default,
         ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default,
         QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot = null,
-        RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null)
+        RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null,
+        SslClientAuthenticationOptions? clientAuthenticationOptions = null)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState(role);
         handshakeTranscriptProgress = new QuicTlsTranscriptProgress(Role);
         keySchedule = new QuicTlsKeySchedule(Role, localHandshakePrivateKey);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
+        this.clientAuthenticationOptions = clientAuthenticationOptions;
 
         if (!pinnedPeerLeafCertificateSha256.IsEmpty)
         {
@@ -493,6 +503,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             return PublishSnapshotAcceptedPeerCertificatePolicy();
         }
 
+        if (clientAuthenticationOptions is not null)
+        {
+            return PublishStandardValidationAcceptedPeerCertificatePolicy();
+        }
+
         if (remoteCertificateValidationCallback is not null)
         {
             return PublishCallbackAcceptedPeerCertificatePolicy();
@@ -572,6 +587,58 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
     }
 
+    private IReadOnlyList<QuicTlsStateUpdate> PublishStandardValidationAcceptedPeerCertificatePolicy()
+    {
+        if (keySchedule is null
+            || clientAuthenticationOptions is null
+            || !bridgeState.CanEmitPeerCertificatePolicyAccepted())
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        if (!keySchedule.TryCreatePeerLeafCertificate(out X509Certificate2? peerCertificate)
+            || peerCertificate is null)
+        {
+            return PublishFatalAlert(PeerCertificatePolicyMismatchAlertDescription);
+        }
+
+        using (peerCertificate)
+        using (X509Chain chain = new X509Chain())
+        {
+            ConfigureClientCertificateChainPolicy(chain, clientAuthenticationOptions);
+
+            SslPolicyErrors sslPolicyErrors = ValidateStandardPeerCertificate(chain, peerCertificate, clientAuthenticationOptions);
+
+            if (remoteCertificateValidationCallback is not null)
+            {
+                try
+                {
+                    bool accepted = remoteCertificateValidationCallback(
+                        sender: this,
+                        certificate: peerCertificate,
+                        chain: chain,
+                        sslPolicyErrors: sslPolicyErrors);
+
+                    return accepted
+                        ? PublishUpdate(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted))
+                        : PublishFatalAlert(PeerCertificatePolicyMismatchAlertDescription);
+                }
+                catch (Exception ex)
+                {
+                    throw new QuicException(
+                        QuicError.CallbackError,
+                        null,
+                        "The remote certificate validation callback failed.",
+                        ex);
+                }
+            }
+
+            return sslPolicyErrors == SslPolicyErrors.None
+                ? PublishUpdate(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted))
+                : PublishFatalAlert(PeerCertificatePolicyMismatchAlertDescription);
+        }
+    }
+
     private IReadOnlyList<QuicTlsStateUpdate> PublishCallbackAcceptedPeerCertificatePolicy()
     {
         if (remoteCertificateValidationCallback is null
@@ -605,6 +672,81 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                     ex);
             }
         }
+    }
+
+    private static void ConfigureClientCertificateChainPolicy(
+        X509Chain chain,
+        SslClientAuthenticationOptions clientAuthenticationOptions)
+    {
+        ArgumentNullException.ThrowIfNull(chain);
+        ArgumentNullException.ThrowIfNull(clientAuthenticationOptions);
+
+        if (clientAuthenticationOptions.CertificateChainPolicy is not null)
+        {
+            chain.ChainPolicy = clientAuthenticationOptions.CertificateChainPolicy.Clone();
+        }
+        else
+        {
+            chain.ChainPolicy.RevocationMode = clientAuthenticationOptions.CertificateRevocationCheckMode;
+            chain.ChainPolicy.RevocationFlag = X509RevocationFlag.ExcludeRoot;
+        }
+
+        if (chain.ChainPolicy.ApplicationPolicy.Count == 0)
+        {
+            chain.ChainPolicy.ApplicationPolicy.Add(new Oid(ServerAuthenticationOid));
+        }
+    }
+
+    private static SslPolicyErrors ValidateStandardPeerCertificate(
+        X509Chain chain,
+        X509Certificate2 peerCertificate,
+        SslClientAuthenticationOptions clientAuthenticationOptions)
+    {
+        ArgumentNullException.ThrowIfNull(chain);
+        ArgumentNullException.ThrowIfNull(peerCertificate);
+        ArgumentNullException.ThrowIfNull(clientAuthenticationOptions);
+
+        SslPolicyErrors sslPolicyErrors = chain.Build(peerCertificate)
+            ? SslPolicyErrors.None
+            : SslPolicyErrors.RemoteCertificateChainErrors;
+
+        if (!string.IsNullOrEmpty(clientAuthenticationOptions.TargetHost)
+            && clientAuthenticationOptions.CertificateChainPolicy?.VerificationFlags.HasFlag(X509VerificationFlags.IgnoreInvalidName) != true)
+        {
+            string normalizedHostName = NormalizeHostName(clientAuthenticationOptions.TargetHost);
+            if (!peerCertificate.MatchesHostname(normalizedHostName, allowWildcards: true, allowCommonName: true))
+            {
+                sslPolicyErrors |= SslPolicyErrors.RemoteCertificateNameMismatch;
+            }
+        }
+
+        return sslPolicyErrors;
+    }
+
+    private static string NormalizeHostName(string? targetHost)
+    {
+        if (string.IsNullOrEmpty(targetHost))
+        {
+            return string.Empty;
+        }
+
+        targetHost = targetHost.TrimEnd('.');
+
+        try
+        {
+            return s_idnMapping.GetAscii(targetHost);
+        }
+        catch (ArgumentException) when (IsSafeDnsString(targetHost))
+        {
+            // The input looks like a safe DNS string even though IDN conversion rejected it.
+        }
+
+        return targetHost;
+    }
+
+    private static bool IsSafeDnsString(ReadOnlySpan<char> name)
+    {
+        return !name.ContainsAnyExcept(s_safeDnsChars);
     }
 
     private void DriveTranscriptProgress(List<QuicTlsStateUpdate> updates)

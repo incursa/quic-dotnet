@@ -8,7 +8,7 @@ Define the intended public API surface for Incursa.Quic using the public surface
 
 ## Scope
 
-This specification defines the initial consumer-facing public API surface for Incursa.Quic. The repository is implementing the surface in phases, and the current slice promotes the connection-side facade, the first server-side entry surface (`QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `ListenAsync`, and `AcceptConnectionAsync`), the first client-side entry surface (`QuicClientConnectionOptions` and `QuicConnection.ConnectAsync(...)`) plus the narrow public client-policy carrier (`QuicPeerCertificatePolicy` on `QuicClientConnectionOptions.PeerCertificatePolicy`), the first stream-entry surface (`QuicConnection.AcceptInboundStreamAsync(...)` and `QuicConnection.OpenOutboundStreamAsync(...)`), the narrow runtime-backed stream write/completion slice on send-capable streams, the narrow reset/stop-sending abort slice on the supported loopback path, the first honest stream-capacity callback subset over the existing runtime and host machinery, the narrow supported close-driven capacity-release follow-on on that same runtime and host machinery, and the shared `QuicConnection.IsSupported` / `QuicListener.IsSupported` capability marker slice. The supported positive client/server loopback boundary is now present on that narrow listener/client path, the supported positive stream open/accept boundary is now present on that same active loopback path through a minimal 1-RTT short-header stream-control lane, the supported stream write/completion boundary is now present on that same path, the supported narrow stream-abort boundary is now present on that same path, the supported stream-capacity callback subset now reports non-zero initial peer stream-capacity increments committed from peer transport parameters, later real peer `MAX_STREAMS` growth on the supported active loopback path, and one real close-driven peer-capacity reclamation increment when the peer emits `MAX_STREAMS` after a peer-initiated stream reaches the supported locally closed state on that same supported active loopback path, and the shared support marker now reflects the current runtime capability facts for the supported managed slice. Full TLS trust-store and hostname validation and broader abort parity beyond the supported read/write abort subset remain deferred. Broader stream-management parity beyond that supported close-driven release subset also remains deferred. Helper-layer packet, frame, TLS, handshake, runtime, recovery, and congestion types remain internal unless a future specification explicitly promotes them.
+This specification defines the initial consumer-facing public API surface for Incursa.Quic. The repository is implementing the surface in phases, and the current slice promotes the connection-side facade, the first server-side entry surface (`QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `ListenAsync`, and `AcceptConnectionAsync`), the first client-side entry surface (`QuicClientConnectionOptions` and `QuicConnection.ConnectAsync(...)`) plus the narrow public client-policy carrier (`QuicPeerCertificatePolicy` on `QuicClientConnectionOptions.PeerCertificatePolicy`), the first stream-entry surface (`QuicConnection.AcceptInboundStreamAsync(...)` and `QuicConnection.OpenOutboundStreamAsync(...)`), the narrow runtime-backed stream write/completion slice on send-capable streams, the narrow reset/stop-sending abort slice on the supported loopback path, the first honest stream-capacity callback subset over the existing runtime and host machinery, the narrow supported close-driven capacity-release follow-on on that same runtime and host machinery, and the shared `QuicConnection.IsSupported` / `QuicListener.IsSupported` capability marker slice. The supported positive client/server loopback boundary is now present on that narrow listener/client path, the supported positive stream open/accept boundary is now present on that same active loopback path through a minimal 1-RTT short-header stream-control lane, the supported stream write/completion boundary is now present on that same path, the supported narrow stream-abort boundary is now present on that same path, the supported stream-capacity callback subset now reports non-zero initial peer stream-capacity increments committed from peer transport parameters, later real peer `MAX_STREAMS` growth on the supported active loopback path, and one real close-driven peer-capacity reclamation increment when the peer emits `MAX_STREAMS` after a peer-initiated stream reaches the supported locally closed state on that same supported active loopback path, and the shared support marker now reflects the current runtime capability facts for the supported managed slice. Standard BCL-shaped client TLS validation on the existing `SslClientAuthenticationOptions` carrier is now present, the exact-pinned `QuicPeerCertificatePolicy` floor remains separate, and broader client-auth, `0-RTT`, key update, transfer, and retry remain deferred. Broader stream-management parity beyond that supported close-driven release subset also remains deferred. Helper-layer packet, frame, TLS, handshake, runtime, recovery, and congestion types remain internal unless a future specification explicitly promotes them.
 
 ## Context
 
@@ -129,8 +129,8 @@ Notes:
 - Public option objects are configuration bags, not live mutable protocol state.
 - Listener setup, client connect setup, and the server callback are now live.
 - The supported stream-capacity callback subset is intentionally narrow: it reports the initial non-zero peer stream-capacity increment committed from peer transport parameters on the supported loopback path, later real peer `MAX_STREAMS` growth on the supported active loopback path, and the narrow close-driven release subset described in `REQ-QUIC-API-0009`.
-- The supported client TLS/auth subset is intentionally narrow: non-empty ALPN, TLS 1.3 or the default protocol selection, no target host / hostname validation, no client certificates or chain policy, an explicit RemoteCertificateValidationCallback gate, and no custom trust, cipher-suite, or renegotiation/resumption overrides. Unsupported SslClientAuthenticationOptions settings MUST be rejected deterministically instead of being silently ignored.
-- Unsupported SslClientAuthenticationOptions settings MUST be rejected deterministically instead of being silently ignored.
+- The supported client TLS/auth subset is standard-shaped on the mainstream path: `TargetHost`, `CertificateChainPolicy`, `CertificateRevocationCheckMode`, and `RemoteCertificateValidationCallback` are honored there, while `QuicPeerCertificatePolicy` remains the separate exact-pinning floor.
+- Unsupported broader `SslClientAuthenticationOptions` settings MUST still be rejected deterministically instead of being silently ignored.
 - The supported stream-capacity callback subset now also reports one real close-driven reclaim increment only when the peer emits `MAX_STREAMS` after a peer-initiated stream reaches the supported locally closed state.
 
 ## REQ-QUIC-API-0006 Keep the close and error surface explicit
@@ -253,3 +253,45 @@ Notes:
 - The public carrier is `QuicClientConnectionOptions.PeerCertificatePolicy` with the `QuicPeerCertificatePolicy` payload type, and it deliberately does not reuse `TargetHost` or `CertificateChainPolicy`.
 - The managed client path now accepts that carrier and feeds the existing internal snapshot without widening the broader supported TLS/auth boundary.
 - The existing internal snapshot seam already carries the exact peer leaf DER and explicit trust-material hash values, so the public contract should match those values exactly rather than infer broader trust-store semantics.
+
+## REQ-QUIC-API-0013 Expose standard BCL-shaped client TLS validation on the existing client-auth carrier
+The library MUST, for the mainstream public client-connect path, honor `SslClientAuthenticationOptions.TargetHost`, `SslClientAuthenticationOptions.CertificateChainPolicy`, `SslClientAuthenticationOptions.CertificateRevocationCheckMode`, and `SslClientAuthenticationOptions.RemoteCertificateValidationCallback` using BCL X509 chain and hostname primitives on the existing `SslClientAuthenticationOptions` carrier. When `QuicClientConnectionOptions.PeerCertificatePolicy` is supplied, the exact-pinning floor on `QuicPeerCertificatePolicy` MUST remain separate and mixed-mode configuration MUST be rejected. This slice MUST remain separate from `TargetHostName` public projection, broader client-auth, `0-RTT`, key update, transfer, and retry behavior.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-API-0004
+- Implemented By:
+  - WI-QUIC-API-0004
+- Verified By:
+  - VER-QUIC-API-0004
+- Source Refs:
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
+  - C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\System.Net.Security.xml
+  - C:\src\dotnet\runtime\src\libraries\Common\src\System\Net\Security\CertificateValidation.Unix.cs
+  - C:\src\dotnet\runtime\src\libraries\Common\src\System\Net\Security\CertificateValidation.Windows.cs
+  - C:\src\dotnet\runtime\src\libraries\Common\src\System\Net\Security\TargetHostNameHelper.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
+  - docs/design/quic-public-api.md
+  - docs/design/quic-public-api-gap-matrix.md
+  - docs/design/quic-interop-prep-plan.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicPeerCertificatePolicy.cs
+  - src/Incursa.Quic/QuicClientConnectionOptions.cs
+  - src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0012.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0013.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs
+- Related:
+  - REQ-QUIC-API-0005
+  - REQ-QUIC-API-0012
+  - REQ-QUIC-CRT-0123
+  - SPEC-QUIC-CRT
+
+Notes:
+- The mainstream client path now uses the existing `SslClientAuthenticationOptions` carrier and BCL/X509 primitives rather than a repo-owned validation object.
+- The standard path honors `TargetHost`, `CertificateChainPolicy`, `CertificateRevocationCheckMode`, and `RemoteCertificateValidationCallback` when supplied, while `QuicPeerCertificatePolicy` remains the exact-pinning floor.
+- Mixed-mode configuration that combines the exact-pinning floor with the standard validation inputs, including callback-driven validation, is rejected so the supported boundary stays unambiguous.
+- Broader client-auth, `0-RTT`, key update, transfer, and retry remain out of scope for this slice.

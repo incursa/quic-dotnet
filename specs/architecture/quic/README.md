@@ -45,6 +45,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-API-0001.json`](ARC-QUIC-API-0001.json): canonical public API boundary design source
 - [`ARC-QUIC-API-0002.json`](ARC-QUIC-API-0002.json): canonical initial stream-capacity callback design source
 - [`ARC-QUIC-API-0003.json`](ARC-QUIC-API-0003.json): canonical explicit pinned identity and trust-material client-policy design source
+- [`ARC-QUIC-API-0004.json`](ARC-QUIC-API-0004.json): canonical hostname-based peer identity and trust-anchor client-policy design source
 
 ## Notes
 

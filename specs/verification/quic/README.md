@@ -45,6 +45,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-API-0001.json`](VER-QUIC-API-0001.json): canonical public API surface verification source
 - [`VER-QUIC-API-0002.json`](VER-QUIC-API-0002.json): canonical initial stream-capacity callback verification source
 - [`VER-QUIC-API-0003.json`](VER-QUIC-API-0003.json): canonical explicit pinned identity and trust-material client-policy verification source
+- [`VER-QUIC-API-0004.json`](VER-QUIC-API-0004.json): canonical hostname-based peer identity and trust-anchor verification source
 
 ## Notes
 

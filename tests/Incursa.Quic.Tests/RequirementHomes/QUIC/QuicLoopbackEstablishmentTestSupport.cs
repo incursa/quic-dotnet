@@ -10,17 +10,26 @@ namespace Incursa.Quic.Tests;
 
 internal static class QuicLoopbackEstablishmentTestSupport
 {
-    internal static X509Certificate2 CreateServerCertificate()
+    internal static X509Certificate2 CreateServerCertificate(string? dnsName = null)
     {
         using ECDsa leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
         CertificateRequest request = new(
-            "CN=Incursa.Quic Loopback Establishment Test",
+            dnsName is null
+                ? "CN=Incursa.Quic Loopback Establishment Test"
+                : $"CN={dnsName}",
             leafKey,
             HashAlgorithmName.SHA256);
 
         request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
         request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, false));
         request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(request.PublicKey, false));
+
+        if (!string.IsNullOrEmpty(dnsName))
+        {
+            SubjectAlternativeNameBuilder subjectAlternativeName = new();
+            subjectAlternativeName.AddDnsName(dnsName);
+            request.CertificateExtensions.Add(subjectAlternativeName.Build());
+        }
 
         return request.CreateSelfSigned(
             DateTimeOffset.UtcNow.AddDays(-1),
@@ -43,22 +52,47 @@ internal static class QuicLoopbackEstablishmentTestSupport
         };
     }
 
-    internal static QuicClientConnectionOptions CreateSupportedClientOptions(IPEndPoint remoteEndPoint)
+    internal static QuicClientConnectionOptions CreateSupportedClientOptions(
+        IPEndPoint remoteEndPoint,
+        string? targetHost = null,
+        X509Certificate2? trustedServerCertificate = null)
     {
         ArgumentNullException.ThrowIfNull(remoteEndPoint);
+
+        SslClientAuthenticationOptions clientAuthenticationOptions = new()
+        {
+            AllowRenegotiation = false,
+            AllowTlsResume = true,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            EnabledSslProtocols = SslProtocols.Tls13,
+            EncryptionPolicy = EncryptionPolicy.RequireEncryption,
+        };
+
+        if (trustedServerCertificate is not null)
+        {
+            clientAuthenticationOptions.TargetHost = targetHost ?? "localhost";
+            clientAuthenticationOptions.CertificateChainPolicy = new X509ChainPolicy
+            {
+                RevocationMode = X509RevocationMode.NoCheck,
+                TrustMode = X509ChainTrustMode.CustomRootTrust,
+            };
+            clientAuthenticationOptions.CertificateChainPolicy.CustomTrustStore.Add(
+                X509CertificateLoader.LoadCertificate(trustedServerCertificate.RawData));
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(targetHost))
+            {
+                clientAuthenticationOptions.TargetHost = targetHost;
+            }
+
+            clientAuthenticationOptions.RemoteCertificateValidationCallback = (_, _, _, errors) => errors == SslPolicyErrors.RemoteCertificateChainErrors;
+        }
 
         return new QuicClientConnectionOptions
         {
             RemoteEndPoint = remoteEndPoint,
-            ClientAuthenticationOptions = new SslClientAuthenticationOptions
-            {
-                AllowRenegotiation = false,
-                AllowTlsResume = true,
-                ApplicationProtocols = [SslApplicationProtocol.Http3],
-                EnabledSslProtocols = SslProtocols.Tls13,
-                EncryptionPolicy = EncryptionPolicy.RequireEncryption,
-                RemoteCertificateValidationCallback = (_, _, _, errors) => errors == SslPolicyErrors.RemoteCertificateChainErrors,
-            },
+            ClientAuthenticationOptions = clientAuthenticationOptions,
         };
     }
 

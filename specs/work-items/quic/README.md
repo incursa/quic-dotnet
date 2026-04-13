@@ -35,6 +35,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-API-0001.json`](WI-QUIC-API-0001.json): canonical public API surface promotion work item
 - [`WI-QUIC-API-0002.json`](WI-QUIC-API-0002.json): canonical initial stream-capacity callback work item
 - [`WI-QUIC-API-0003.json`](WI-QUIC-API-0003.json): canonical explicit pinned identity and trust-material client-policy work item
+- [`WI-QUIC-API-0004.json`](WI-QUIC-API-0004.json): canonical hostname-based peer identity and trust-anchor work item
 
 ## Notes
 

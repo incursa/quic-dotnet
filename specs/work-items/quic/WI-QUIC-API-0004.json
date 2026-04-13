@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-API-0004",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "Incursa.Quic Standard Client TLS Validation Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement the narrowest honest standard public client-validation mode on the existing `SslClientAuthenticationOptions` carrier while keeping the exact-pinning floor on `QuicPeerCertificatePolicy` separate.",
+  "related_artifacts": [
+    "SPEC-QUIC-API"
+  ],
+  "design_links": [
+    "ARC-QUIC-API-0004"
+  ],
+  "verification_links": [
+    "VER-QUIC-API-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-API-0013"
+  ],
+  "planned_changes": "- Validate the mainstream client path with the existing `SslClientAuthenticationOptions` carrier, including `TargetHost`, `CertificateChainPolicy`, `CertificateRevocationCheckMode`, and `RemoteCertificateValidationCallback`.\n- Thread the captured standard validation inputs through the client options validator, client host, runtime, and TLS bridge driver without introducing a new QUIC-specific carrier.\n- Keep `QuicClientConnectionOptions.PeerCertificatePolicy` and `QuicPeerCertificatePolicy` as the separate exact-pinning floor.\n- Reject mixed-mode configuration so the exact-pinning and standard validation semantics cannot be conflated.\n- Add focused requirement-home proof for standard validation success, trust mismatch, hostname mismatch, mixed-mode rejection, and the unchanged exact-pinning floor.",
+  "verification_plan": "Run focused requirement-home tests that prove standard BCL-shaped validation success, trust mismatch failure, hostname mismatch failure, mixed-mode rejection, and the unchanged exact-pinning floor. Keep the incumbent `REQ-QUIC-API-0005`, `REQ-QUIC-API-0012`, and `REQ-QUIC-CRT-0123` coverage green, then run the full `REQ_QUIC_CRT_` sweep and the repo-local SpecTrace render/check flow if canonical JSON changes.",
+  "completion_notes": "This work item now covers the mainstream standard validation path on the existing client carrier plus the exact-pinning coexistence boundary. It does not introduce a new QUIC-specific validation object.",
+  "out_of_scope": [
+    "A new QUIC-specific validation carrier.",
+    "SNI or `TargetHostName` behavior.",
+    "Broader client-auth.",
+    "0-RTT.",
+    "Key update.",
+    "Transfer or retry changes."
+  ]
+}

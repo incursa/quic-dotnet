@@ -307,7 +307,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             bookkeeping,
             tlsRole: QuicTlsRole.Client,
             clientCertificatePolicySnapshot: settings.ClientCertificatePolicySnapshot,
-            remoteCertificateValidationCallback: options.ClientAuthenticationOptions.RemoteCertificateValidationCallback);
+            remoteCertificateValidationCallback: options.ClientAuthenticationOptions.RemoteCertificateValidationCallback,
+            clientAuthenticationOptions: options.ClientAuthenticationOptions);
     }
 
     private static QuicTransportParameters CreateLocalTransportParameters(

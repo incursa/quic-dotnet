@@ -7,7 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0005">The listener and client surfaces carry configuration through QuicListenerOptions, QuicClientConnectionOptions, QuicPeerCertificatePolicy, and QuicServerConnectionOptions, and the supported client TLS subset is explicit, callback-gated or policy-gated, reject-first, and honest about the supported stream-capacity callback subset rather than implied.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0005">The listener and client surfaces carry configuration through QuicListenerOptions, QuicClientConnectionOptions, QuicPeerCertificatePolicy, and QuicServerConnectionOptions, and the supported client TLS subset is explicit, standard-shaped on the mainstream path, reject-first for still-unsupported knobs, and honest about the supported stream-capacity callback subset rather than implied.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0005")]
 public sealed class REQ_QUIC_API_0005
@@ -132,23 +132,11 @@ public sealed class REQ_QUIC_API_0005
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void ConnectAsync_RejectsUnsupportedClientTlsSettingsDeterministically()
+    public void ConnectAsync_RejectsStillUnsupportedClientTlsSettingsDeterministically()
     {
-        QuicClientConnectionOptions targetHostOptions = CreateClientOptions();
-        targetHostOptions.ClientAuthenticationOptions.TargetHost = "example.com";
-        Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(targetHostOptions));
-
         QuicClientConnectionOptions emptyAlpnOptions = CreateClientOptions();
         emptyAlpnOptions.ClientAuthenticationOptions.ApplicationProtocols = [];
         Assert.Throws<ArgumentException>(() => QuicConnection.ConnectAsync(emptyAlpnOptions));
-
-        QuicClientConnectionOptions missingCallbackOptions = CreateClientOptions();
-        missingCallbackOptions.ClientAuthenticationOptions.RemoteCertificateValidationCallback = null;
-        Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(missingCallbackOptions));
-
-        QuicClientConnectionOptions chainPolicyOptions = CreateClientOptions();
-        chainPolicyOptions.ClientAuthenticationOptions.CertificateChainPolicy = new X509ChainPolicy();
-        Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(chainPolicyOptions));
 
         QuicClientConnectionOptions protocolOptions = CreateClientOptions();
         protocolOptions.ClientAuthenticationOptions.EnabledSslProtocols = SslProtocols.Tls12;

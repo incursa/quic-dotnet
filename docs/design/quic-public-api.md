@@ -86,7 +86,8 @@ This pass promotes the connection/stream facade, the listener/server entry surfa
 - `REQ-QUIC-API-0009` covers the supported stream-capacity callback deltas on the supported loopback and active-loopback paths, including real peer stream-close-driven release on the supported active-loopback path.
 - `REQ-QUIC-API-0010` covers the narrow runtime-backed stream write, completion, and write-abort lane on send-capable streams.
 - `REQ-QUIC-API-0011` covers the shared runtime capability marker on `QuicConnection` and `QuicListener`.
-- `REQ-QUIC-API-0012` defines and now lands the narrow public client-policy carrier `QuicClientConnectionOptions.PeerCertificatePolicy` with the `QuicPeerCertificatePolicy` payload for exact pinned peer identity and explicit trust material, and it keeps that carrier separate from `TargetHost`, `CertificateChainPolicy`, and broader trust-store or hostname-validation semantics.
+- `REQ-QUIC-API-0012` defines and now lands the narrow public client-policy carrier `QuicClientConnectionOptions.PeerCertificatePolicy` with the `QuicPeerCertificatePolicy` payload for exact pinned peer identity and explicit trust material, and it keeps that carrier separate from the mainstream BCL-shaped validation path.
+- `REQ-QUIC-API-0013` now lands the mainstream standard client-validation path on the existing `SslClientAuthenticationOptions` carrier, honoring `TargetHost`, `CertificateChainPolicy`, `CertificateRevocationCheckMode`, and callback overrides while keeping `QuicPeerCertificatePolicy` as the separate exact-pinning floor.
 
 ## Public Member Shape
 
@@ -102,7 +103,7 @@ The first slice keeps the consumer contract intentionally narrow:
 - `QuicException` carries the close/error classification.
 - `QuicAbortDirection`, `QuicError`, `QuicStreamType`, and `QuicStreamCapacityChangedArgs` are the public classification/payload types used by the facade.
 - `QuicConnection.IsSupported` and `QuicListener.IsSupported` are shared runtime capability markers for the supported managed loopback slice.
-- The current narrow client-input slice uses `QuicClientConnectionOptions.PeerCertificatePolicy` plus `QuicPeerCertificatePolicy` to feed the existing internal client certificate-policy snapshot instead of reusing `TargetHost` or `CertificateChainPolicy`.
+- The current client-input slice uses `QuicClientConnectionOptions.PeerCertificatePolicy` plus `QuicPeerCertificatePolicy` for the exact-pinning floor, while the mainstream `SslClientAuthenticationOptions` validation path honors `TargetHost`, `CertificateChainPolicy`, `CertificateRevocationCheckMode`, and `RemoteCertificateValidationCallback` on the same client carrier.
 
 The public types do not introduce new endpoint or TLS wrapper abstractions in this slice. `QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `QuicClientConnectionOptions`, `QuicPeerCertificatePolicy`, `QuicStreamCapacityChangedArgs`, and `QuicConnectionOptions.StreamCapacityCallback` are now part of the approved facade.
 
@@ -116,8 +117,21 @@ The listener entry points are now part of this slice.
 - The shared `IsSupported` marker is backed by one cached internal capability probe that checks the runtime prerequisites the supported managed slice already needs.
 - Stream entry now reuses the same runtime and stream-state seams, plus a minimal 1-RTT short-header stream-control path, so the supported loopback connection can open and accept a real `QuicStream` facade and publish bytes plus EOF on the supported writable side while honoring the narrow read/write abort pair without surfacing the broader abort-heavy pipeline.
 - The stream-capacity callback now reuses the same runtime and stream-state seams by projecting the initial peer stream-limit increments committed from transport parameters, later real peer `MAX_STREAMS` growth on the supported active loopback path, and the narrow close-driven release path where the runtime emits one real `MAX_STREAMS` increment only after a peer-initiated stream reaches the supported locally closed state.
-- The supported `SslClientAuthenticationOptions` subset is intentionally narrow: non-empty ALPN, TLS 1.3 or the default protocol selection, no target host or SNI/hostname validation, no client certificates, no chain policy, and an explicit `RemoteCertificateValidationCallback` gate over the parsed peer leaf certificate. Unsupported settings are rejected deterministically instead of being ignored.
+- The supported `SslClientAuthenticationOptions` subset is standard-shaped on the mainstream path: non-empty ALPN, TLS 1.3 or the default protocol selection, `TargetHost` when supplied, `CertificateChainPolicy` when supplied, `CertificateRevocationCheckMode` delegation, and `RemoteCertificateValidationCallback` overrides. Unsupported broader client-auth settings, cipher-suite policies, and resumption/renegotiation knobs outside the current slice are still rejected deterministically instead of being ignored.
 - Broader stream-management parity and any close-driven release behavior outside that supported locally closed subset remain deferred until the fuller stream-capacity path exists end to end.
+
+## Standard Client Validation
+
+The mainstream client-validation question is now closed on the existing `SslClientAuthenticationOptions` carrier.
+
+- `TargetHost` is honored through BCL hostname matching when supplied.
+- `CertificateChainPolicy` is honored through BCL `X509Chain` trust evaluation when supplied.
+- `CertificateRevocationCheckMode` is delegated into the chain policy when no explicit chain policy is supplied.
+- `RemoteCertificateValidationCallback` still receives the built chain and computed policy errors and can override acceptance in the standard BCL manner.
+- `QuicClientConnectionOptions.PeerCertificatePolicy` / `QuicPeerCertificatePolicy` remains the separate exact-pinning floor.
+- Mixed configuration between the exact-pinning floor and the standard validation inputs is rejected so the supported boundary stays honest.
+
+This does not imply a new QUIC-specific validation policy type, `TargetHostName` public projection, broader client-auth, `0-RTT`, key update, transfer, or retry.
 
 ## Internal-Only Boundary
 

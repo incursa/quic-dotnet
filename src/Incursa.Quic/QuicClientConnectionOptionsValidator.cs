@@ -39,15 +39,27 @@ internal static class QuicClientConnectionOptionsValidator
             throw new ArgumentException("At least one application protocol is required.", $"{parameterName}.{nameof(QuicClientConnectionOptions.ClientAuthenticationOptions)}.{nameof(SslClientAuthenticationOptions.ApplicationProtocols)}");
         }
 
-        if (authenticationOptions.RemoteCertificateValidationCallback is null
-            && capturedCertificatePolicySnapshot is null)
+        if (capturedCertificatePolicySnapshot is not null)
         {
-            throw new NotSupportedException("ClientAuthenticationOptions.RemoteCertificateValidationCallback is required when PeerCertificatePolicy is not supplied because this slice does not yet support trust-store or hostname validation.");
-        }
+            if (!string.IsNullOrEmpty(authenticationOptions.TargetHost))
+            {
+                throw new NotSupportedException("ClientAuthenticationOptions.TargetHost is not supported when PeerCertificatePolicy is supplied because the exact-pinning path does not use hostname validation.");
+            }
 
-        if (!string.IsNullOrEmpty(authenticationOptions.TargetHost))
-        {
-            throw new NotSupportedException("ClientAuthenticationOptions.TargetHost is not supported by this slice because SNI and hostname validation are not implemented yet.");
+            if (authenticationOptions.CertificateChainPolicy is not null)
+            {
+                throw new NotSupportedException("CertificateChainPolicy is not supported when PeerCertificatePolicy is supplied because the exact-pinning path does not use chain validation.");
+            }
+
+            if (authenticationOptions.CertificateRevocationCheckMode != X509RevocationMode.NoCheck)
+            {
+                throw new NotSupportedException("Certificate revocation checking is not supported when PeerCertificatePolicy is supplied because the exact-pinning path does not use chain validation.");
+            }
+
+            if (authenticationOptions.RemoteCertificateValidationCallback is not null)
+            {
+                throw new NotSupportedException("RemoteCertificateValidationCallback is not supported when PeerCertificatePolicy is supplied because the exact-pinning path does not use the standard callback-driven validation flow.");
+            }
         }
 
         if (authenticationOptions.ClientCertificates is { Count: > 0 })
@@ -65,19 +77,9 @@ internal static class QuicClientConnectionOptionsValidator
             throw new NotSupportedException("Local certificate selection callbacks are not supported by this slice.");
         }
 
-        if (authenticationOptions.CertificateChainPolicy is not null)
-        {
-            throw new NotSupportedException("Certificate chain policies are not supported by this slice.");
-        }
-
         if (authenticationOptions.CipherSuitesPolicy is not null)
         {
             throw new NotSupportedException("Cipher suite policies are not supported by this slice.");
-        }
-
-        if (authenticationOptions.CertificateRevocationCheckMode != X509RevocationMode.NoCheck)
-        {
-            throw new NotSupportedException("Certificate revocation checking is not supported by this slice.");
         }
 
         if (authenticationOptions.EncryptionPolicy != EncryptionPolicy.RequireEncryption)
@@ -147,9 +149,11 @@ internal static class QuicClientConnectionOptionsValidator
                 AllowRenegotiation = authenticationOptions.AllowRenegotiation,
                 AllowTlsResume = authenticationOptions.AllowTlsResume,
                 ApplicationProtocols = applicationProtocols,
+                CertificateChainPolicy = authenticationOptions.CertificateChainPolicy?.Clone(),
                 CertificateRevocationCheckMode = authenticationOptions.CertificateRevocationCheckMode,
                 EnabledSslProtocols = authenticationOptions.EnabledSslProtocols,
                 EncryptionPolicy = authenticationOptions.EncryptionPolicy,
+                TargetHost = authenticationOptions.TargetHost,
                 RemoteCertificateValidationCallback = authenticationOptions.RemoteCertificateValidationCallback,
             },
         };

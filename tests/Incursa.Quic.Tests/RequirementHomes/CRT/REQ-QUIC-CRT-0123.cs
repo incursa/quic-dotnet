@@ -1,6 +1,8 @@
 using System.Buffers.Binary;
 using System.Net;
+using System.Net.Security;
 using System.Reflection;
+using System.Security.Authentication;
 using System.Security.Cryptography;
 
 namespace Incursa.Quic.Tests;
@@ -21,7 +23,18 @@ public sealed class REQ_QUIC_CRT_0123
         byte[] expectedTrust = explicitTrustMaterialSource.ToArray();
 
         IPEndPoint remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-        QuicClientConnectionOptions options = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(remoteEndPoint);
+        QuicClientConnectionOptions options = new()
+        {
+            RemoteEndPoint = remoteEndPoint,
+            ClientAuthenticationOptions = new SslClientAuthenticationOptions
+            {
+                AllowRenegotiation = false,
+                AllowTlsResume = true,
+                ApplicationProtocols = [SslApplicationProtocol.Http3],
+                EnabledSslProtocols = SslProtocols.Tls13,
+                EncryptionPolicy = EncryptionPolicy.RequireEncryption,
+            },
+        };
         options.PeerCertificatePolicy = new QuicPeerCertificatePolicy
         {
             ExactPeerLeafCertificateDer = exactPeerIdentitySource,

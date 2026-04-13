@@ -184,7 +184,6 @@ public sealed class REQ_QUIC_API_0012
         QuicClientConnectionOptions clientOptions = CreatePeerPolicyClientOptions(
             new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
             peerCertificatePolicy);
-        clientOptions.ClientAuthenticationOptions.RemoteCertificateValidationCallback = static (_, _, _, _) => true;
 
         await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
 
