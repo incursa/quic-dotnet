@@ -1099,3 +1099,23 @@ Notes:
 - This is the smallest honest 0-RTT prerequisite and remains narrower than any 0-RTT data-path slice.
 - The owned ticket state is opaque bytes plus replay metadata; it is not a PSK and it does not imply a packet parser or sender change.
 - The server-side acceptance/replay story and any remembered transport-parameter follow-on remain separate work.
+
+## REQ-QUIC-CRT-0128 Surface opaque post-handshake ticket-bearing TLS updates after Finished
+In the client role, the transport-facing TLS bridge MUST be able to surface an opaque post-handshake ticket-bearing TLS update after the supported Finished proof boundary by carrying ticket bytes through an internal update seam once Finished has been verified. The slice MUST keep handshake completion and 1-RTT application-data behavior unchanged, MUST keep the ticket bytes opaque, and MUST NOT imply ticket persistence, replay ownership, PSK derivation, resumed-handshake support, 0-RTT packet support, anti-replay behavior, key update, transfer, retry, or any public API widening.
+
+Trace:
+- Source Refs:
+  - docs/design/quic-interop-prep-plan.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicTlsTransport.cs
+  - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
+  - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
+  - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0128.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0001.cs
+
+Notes:
+- This is a narrow internal seam only; it does not claim ticket ownership, replay logic, or any 0-RTT support.
+- The update is intentionally opaque and exists only so later ticket-handling work can observe a truthful post-Finished boundary.
+- REQ-QUIC-CRT-0127 remains the separate opaque resumption-ticket and early-data gate prerequisite.

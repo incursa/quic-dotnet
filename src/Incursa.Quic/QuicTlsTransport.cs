@@ -102,6 +102,7 @@ internal enum QuicTlsUpdateKind
     PeerCertificatePolicyAccepted = 15,
     OneRttOpenPacketProtectionMaterialAvailable = 16,
     OneRttProtectPacketProtectionMaterialAvailable = 17,
+    PostHandshakeTicketAvailable = 18,
 }
 
 /// <summary>
@@ -120,7 +121,8 @@ internal readonly record struct QuicTlsStateUpdate(
     ulong? CryptoDataOffset = null,
     ReadOnlyMemory<byte> CryptoData = default,
     QuicTlsPacketProtectionMaterial? PacketProtectionMaterial = null,
-    QuicTlsTranscriptPhase? TranscriptPhase = null);
+    QuicTlsTranscriptPhase? TranscriptPhase = null,
+    ReadOnlyMemory<byte> TicketBytes = default);
 
 /// <summary>
 /// A transport-facing bridge to a concrete TLS implementation.

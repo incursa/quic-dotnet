@@ -105,6 +105,7 @@ Still missing:
 - Broader client-auth or TLS-option support.
 - Broader server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier beyond the callback-driven `ClientCertificateRequired` plus `CertificateChainPolicy` and standalone `CertificateRevocationCheckMode` floors traced by `REQ-QUIC-CRT-0124`, `REQ-QUIC-CRT-0125`, and `REQ-QUIC-CRT-0126`.
 - `0-RTT`.
+- The separate post-handshake ticket-bearing update seam, tracked as `REQ-QUIC-CRT-0128`, `ARC-QUIC-CRT-0026`, `WI-QUIC-CRT-0026`, and `VER-QUIC-CRT-0026`, is now the next smallest runtime slice. It only surfaces opaque ticket bytes after Finished and does not claim ticket persistence, replay ownership, PSK derivation, or a 0-RTT packet path.
 - The first honest 0-RTT prerequisite, tracked separately as `REQ-QUIC-CRT-0127`, `ARC-QUIC-CRT-0025`, `WI-QUIC-CRT-0025`, and `VER-QUIC-CRT-0025`, is still unimplemented; it is limited to opaque resumption-ticket ownership plus an explicit early-data gate and does not add PSK derivation or a 0-RTT packet path.
 - Key update.
 
@@ -194,7 +195,13 @@ Notes on dependency:
    - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch after the current proof floor is fixed. `handshake` is already wired into the managed bootstrap path, and the narrow child-process `retry` path is now handled separately.
    - Depends on: the client-role 1-RTT readiness seam, the TLS trust/policy slice, the current narrow stream slice staying stable, and any stream follow-ons that prove inseparable from the remaining cases.
 
-8. `Opaque resumption-ticket ownership and early-data gate`
+8. `Post-handshake ticket-bearing TLS update seam`
+   - Goal: keep the smallest honest post-Finished runtime seam traceable under `REQ-QUIC-CRT-0128`, `ARC-QUIC-CRT-0026`, `WI-QUIC-CRT-0026`, and `VER-QUIC-CRT-0026`.
+   - Focus: opaque ticket bytes surfaced internally after Finished through the existing bridge/state seam, with handshake completion and 1-RTT readiness unchanged and no resumption or 0-RTT claim.
+   - Status: landed in the narrow internal runtime slice. The bridge can now surface opaque ticket bytes after Finished without widening the supported public promise.
+   - Depends on: the current handshake/runtime proof floor staying stable.
+
+9. `Opaque resumption-ticket ownership and early-data gate`
    - Goal: keep the first honest 0-RTT prerequisite traceable under `REQ-QUIC-CRT-0127`, `ARC-QUIC-CRT-0025`, `WI-QUIC-CRT-0025`, and `VER-QUIC-CRT-0025`.
    - Focus: opaque resumption-ticket capture and replay ownership on the managed client/runtime path, with an explicit early-data gate that remains closed until that state exists.
    - Status: identified. The runtime does not yet own this seam, so the repo cannot honestly claim 0-RTT support.

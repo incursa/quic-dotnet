@@ -1033,6 +1033,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             case QuicTlsUpdateKind.PacketProtectionMaterialAvailable:
             case QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable:
             case QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable:
+            case QuicTlsUpdateKind.PostHandshakeTicketAvailable:
                 if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.CryptoDataAvailable
                     && tlsState.Role == QuicTlsRole.Client
                     && initialBootstrapClientHelloBytes is null

@@ -39,6 +39,7 @@ internal sealed class QuicTlsTranscriptProgress
     private HandshakeProgressState progressState;
     private QuicTlsTranscriptPhase phase = QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage;
     private QuicTransportParameters? stagedPeerTransportParameters;
+    private byte[]? stagedPostHandshakeTicketBytes;
     private QuicTlsHandshakeMessageType? handshakeMessageType;
     private uint? handshakeMessageLength;
     private QuicTlsCipherSuite? selectedCipherSuite;
@@ -90,6 +91,21 @@ internal sealed class QuicTlsTranscriptProgress
 
     internal bool HasPendingBytes => partialTranscript.WrittenCount > 0;
 
+    internal bool TryStagePostHandshakeTicket(ReadOnlyMemory<byte> ticketBytes)
+    {
+        if (terminalAlertDescription.HasValue
+            || role != QuicTlsRole.Client
+            || phase != QuicTlsTranscriptPhase.Completed
+            || ticketBytes.IsEmpty
+            || stagedPostHandshakeTicketBytes is not null)
+        {
+            return false;
+        }
+
+        stagedPostHandshakeTicketBytes = ticketBytes.ToArray();
+        return true;
+    }
+
     internal void AppendCryptoBytes(ulong offset, ReadOnlySpan<byte> cryptoBytes)
     {
         if (terminalAlertDescription.HasValue || cryptoBytes.IsEmpty)
@@ -134,6 +150,16 @@ internal sealed class QuicTlsTranscriptProgress
             {
                 Fail(HandshakeTranscriptParseFailureAlertDescription);
                 return BuildFatalStep();
+            }
+
+            if (stagedPostHandshakeTicketBytes is not null)
+            {
+                byte[] ticketBytes = stagedPostHandshakeTicketBytes;
+                stagedPostHandshakeTicketBytes = null;
+                return new QuicTlsTranscriptStep(
+                    QuicTlsTranscriptStepKind.PostHandshakeTicketAvailable,
+                    QuicTlsTranscriptPhase.Completed,
+                    TicketBytes: ticketBytes);
             }
 
             return new QuicTlsTranscriptStep(QuicTlsTranscriptStepKind.None);
@@ -1063,7 +1089,8 @@ internal enum QuicTlsTranscriptStepKind
     None = 0,
     Progressed = 1,
     PeerTransportParametersStaged = 2,
-    Fatal = 3,
+    PostHandshakeTicketAvailable = 3,
+    Fatal = 4,
 }
 
 /// <summary>
@@ -1080,6 +1107,7 @@ internal readonly record struct QuicTlsTranscriptStep(
     QuicTlsNamedGroup? NamedGroup = null,
     ReadOnlyMemory<byte> KeyShare = default,
     ReadOnlyMemory<byte> HandshakeMessageBytes = default,
+    ReadOnlyMemory<byte> TicketBytes = default,
     ushort? AlertDescription = null);
 
 #pragma warning restore S109

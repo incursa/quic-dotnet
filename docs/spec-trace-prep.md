@@ -56,11 +56,3 @@ dotnet tool run workbench -- doctor --json
 `Validate-SpecTraceJson.ps1` pulls the canonical model schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) so this repository does not have to mirror that file locally.
 
 Use the templates under [`../specs/templates/README.md`](../specs/templates/README.md) when the first requirement, architecture, work-item, or verification artifacts are created.
-
-## Current Scope
-
-The first QUIC requirement slice now exists under [`../specs/requirements/quic/SPEC-QUIC-RFC8999.json`](../specs/requirements/quic/SPEC-QUIC-RFC8999.json) with a verification artifact under [`../specs/verification/quic/VER-QUIC-RFC8999-0001.json`](../specs/verification/quic/VER-QUIC-RFC8999-0001.json).
-
-For the current project position, blocked areas, and next implementation order, see [`quic-triage.md`](quic-triage.md).
-
-Future RFC slices should follow the same order of operations: translate the RFC into canonical requirements and gap records first, then add design, work-item, verification, and implementation details after the requirement text is stable.

@@ -343,6 +343,26 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     }
 
     /// <summary>
+    /// Publishes an opaque post-handshake ticket update to the bridge state.
+    /// </summary>
+    internal IReadOnlyList<QuicTlsStateUpdate> PublishPostHandshakeTicket(ReadOnlyMemory<byte> ticketBytes)
+    {
+        if (Role != QuicTlsRole.Client || bridgeState.IsTerminal)
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        if (!handshakeTranscriptProgress.TryStagePostHandshakeTicket(ticketBytes))
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        List<QuicTlsStateUpdate> updates = [];
+        DriveTranscriptProgress(updates);
+        return updates;
+    }
+
+    /// <summary>
     /// Buffers inbound CRYPTO bytes into the runtime-owned bridge state.
     /// </summary>
     public bool TryBufferIncomingCryptoData(
@@ -923,6 +943,10 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                     break;
                 }
 
+                case QuicTlsTranscriptStepKind.PostHandshakeTicketAvailable:
+                    AppendPublishedUpdates(updates, PublishPostHandshakeTicketUpdate(step));
+                    return;
+
                 case QuicTlsTranscriptStepKind.Fatal:
                     if (step.AlertDescription.HasValue)
                     {
@@ -932,6 +956,19 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                     return;
             }
         }
+    }
+
+    private IReadOnlyList<QuicTlsStateUpdate> PublishPostHandshakeTicketUpdate(QuicTlsTranscriptStep step)
+    {
+        if (step.TicketBytes.IsEmpty)
+        {
+            return Array.Empty<QuicTlsStateUpdate>();
+        }
+
+        return PublishUpdate(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.PostHandshakeTicketAvailable,
+            TranscriptPhase: step.TranscriptPhase,
+            TicketBytes: step.TicketBytes));
     }
 
     private ulong GetNextIngressOffset(QuicTlsEncryptionLevel encryptionLevel)
