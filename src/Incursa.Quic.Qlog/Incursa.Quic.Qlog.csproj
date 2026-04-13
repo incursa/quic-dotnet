@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <IsTrimmable>true</IsTrimmable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <Description>QUIC diagnostics adapter for Incursa.Quic.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>quic;qlog;diagnostics</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Incursa.Quic\Incursa.Quic.csproj" />
+    <ProjectReference Include="..\..\..\qlog-dotnet\src\Incursa.Qlog\Incursa.Qlog.csproj" />
+    <ProjectReference Include="..\..\..\qlog-dotnet\src\Incursa.Qlog.Quic\Incursa.Qlog.Quic.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

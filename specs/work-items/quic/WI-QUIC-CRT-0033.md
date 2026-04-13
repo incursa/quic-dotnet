@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0033"
 artifact_type: "work_item"
 title: "QUIC qlog adapter package boundary work item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0136"
@@ -49,6 +49,10 @@ Add a sibling Incursa.Quic.Qlog adapter package that maps structured transport d
 ## Verification Plan
 
 Run adapter mapping tests, inspect package references to confirm the sibling dependency direction, and verify that the transport core remains free of qlog and serializer dependencies.
+
+## Completion Notes
+
+Implemented the sibling Incursa.Quic.Qlog adapter package, wired it to the sibling qlog-dotnet packages, and added requirement-home coverage for typed diagnostics mapping and boundary ownership.
 
 ## Trace Links
 

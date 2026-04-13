@@ -2,11 +2,12 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0033",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "landed",
   "title": "QUIC qlog adapter package boundary work item",
   "owner": "quic-maintainers",
   "domain": "quic",
   "summary": "Add a sibling Incursa.Quic.Qlog adapter package that maps structured transport diagnostics into Incursa.Qlog.Quic events while keeping serialization and file ownership out of Incursa.Quic.",
+  "completion_notes": "Implemented the sibling Incursa.Quic.Qlog adapter package, wired it to the sibling qlog-dotnet packages, and added requirement-home coverage for typed diagnostics mapping and boundary ownership.",
   "related_artifacts": [
     "SPEC-QUIC-CRT"
   ],

@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Incursa.Quic/Incursa.Quic.csproj" />
+    <Project Path="src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj" />
     <Project Path="src/Incursa.Quic.InteropHarness/Incursa.Quic.InteropHarness.csproj" />
   </Folder>
   <Folder Name="/benchmarks/">
