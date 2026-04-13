@@ -40,6 +40,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private QuicInitialPacketProtection? initialPacketProtection;
     private QuicConnectionPathIdentity? bootstrapOutboundPathIdentity;
     private byte[]? initialBootstrapClientHelloBytes;
+    private byte[]? ownedResumptionTicketBytes;
     private byte[]? retrySourceConnectionId;
     private byte[]? retryToken;
     private bool retryBootstrapPendingReplay;
@@ -215,6 +216,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     internal QuicConnectionSendRuntime SendRuntime => sendRuntime;
 
     internal QuicTransportTlsBridgeState TlsState => tlsState;
+
+    internal ReadOnlyMemory<byte> OwnedResumptionTicketBytes => ownedResumptionTicketBytes ?? ReadOnlyMemory<byte>.Empty;
+
+    internal bool HasOwnedResumptionTicket => ownedResumptionTicketBytes is not null;
+
+    internal bool IsEarlyDataAdmissionOpen => false;
 
     internal QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot => clientCertificatePolicySnapshot;
 
@@ -1040,6 +1047,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                     && !tlsStateUpdatedEvent.Update.CryptoData.IsEmpty)
                 {
                     initialBootstrapClientHelloBytes = tlsStateUpdatedEvent.Update.CryptoData.ToArray();
+                }
+
+                if (tlsStateUpdatedEvent.Update.Kind == QuicTlsUpdateKind.PostHandshakeTicketAvailable)
+                {
+                    stateChanged |= TryCaptureOwnedResumptionTicketSnapshot();
                 }
 
                 stateChanged |= TryFlushInitialPackets(ref effects);
@@ -2525,6 +2537,25 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 LocalMaxIdleTimeoutMicros: localTransportParameters.MaxIdleTimeout),
             nowTicks,
             ref effects);
+    }
+
+    private bool TryCaptureOwnedResumptionTicketSnapshot()
+    {
+        if (ownedResumptionTicketBytes is not null
+            || tlsState.Role != QuicTlsRole.Client
+            || !tlsState.HasPostHandshakeTicket)
+        {
+            return false;
+        }
+
+        ReadOnlyMemory<byte> ticketBytes = tlsState.PostHandshakeTicketBytes;
+        if (ticketBytes.IsEmpty)
+        {
+            return false;
+        }
+
+        ownedResumptionTicketBytes = ticketBytes.ToArray();
+        return true;
     }
 
     private bool TryCommitPeerTransportParametersFromTlsBridgeDriver(

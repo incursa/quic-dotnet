@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0026"
 artifact_type: "work_item"
 title: "QUIC CRT post-handshake ticket-bearing TLS update seam work item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0128"
@@ -33,11 +33,11 @@ Surface an opaque post-handshake ticket-bearing TLS update after Finished throug
 
 ## Planned Changes
 
-- Add a narrow internal update kind that carries opaque post-handshake ticket bytes.
-- Let the transcript/update seam surface that ticket-bearing update after Finished without changing handshake completion or 1-RTT readiness.
-- Retain the ticket bytes in bridge/runtime state only as opaque internal data.
-- Add focused requirement-home tests for positive post-Finished surfacing, pre-Finished rejection, duplicate/unsupported handling, unsupported 1-RTT ingress handling, unchanged handshake/1-RTT behavior, and the public no-ticket/no-early-data guard.
-- Keep ticket persistence, replay ownership, PSK derivation, 0-RTT, transfer, retry, key update, and any public API widening out of scope.
+- A narrow internal update kind now carries opaque post-handshake ticket bytes.
+- The transcript/update seam surfaces that ticket-bearing update after Finished without changing handshake completion or 1-RTT readiness.
+- The ticket bytes are retained in bridge/runtime state only as opaque internal data.
+- Focused requirement-home tests cover positive post-Finished surfacing, pre-Finished rejection, duplicate/unsupported handling, unsupported 1-RTT ingress handling, unchanged handshake/1-RTT behavior, and the public no-ticket/no-early-data guard.
+- Ticket persistence, replay ownership, PSK derivation, 0-RTT, transfer, retry, key update, and any public API widening remain out of scope.
 
 ## Out of Scope
 
@@ -56,11 +56,11 @@ Surface an opaque post-handshake ticket-bearing TLS update after Finished throug
 
 ## Verification Plan
 
-When implemented, run focused requirement-home tests for post-Finished ticket surfacing, pre-Finished rejection, duplicate/unsupported ticket handling, unsupported 1-RTT ingress handling, unchanged handshake/1-RTT readiness, and the public no-ticket/no-early-data surface guard; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.
+Run focused requirement-home tests for post-Finished ticket surfacing, pre-Finished rejection, duplicate/unsupported ticket handling, unsupported 1-RTT ingress handling, unchanged handshake/1-RTT readiness, and the public no-ticket/no-early-data surface guard; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.
 
 ## Completion Notes
 
-This is intentionally a narrow internal seam slice. It records opaque ticket bytes after Finished only; it does not claim ticket ownership, replay handling, PSK derivation, 0-RTT support, or any public ticket/early-data promise.
+This is a landed narrow internal seam slice. It records opaque ticket bytes after Finished only; it does not claim ticket ownership, replay handling, PSK derivation, 0-RTT support, or any public ticket/early-data promise.
 
 ## Trace Links
 

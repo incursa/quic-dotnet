@@ -1,5 +1,5 @@
 {
-  "title": "QUIC CRT resumption-ticket ownership and early-data gate work item",
+  "title": "QUIC CRT client resumption-ticket snapshot and early-data gate work item",
   "verification_links": [
     "VER-QUIC-CRT-0025"
   ],
@@ -8,30 +8,34 @@
     "SPEC-QUIC-CRT"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "completion_notes": "This is intentionally a prerequisite slice. It records opaque ticket ownership and an explicit closed gate only; PSK derivation and any 0-RTT packet path stay deferred.",
+  "completion_notes": "This is a landed narrow runtime-owned snapshot slice. It records opaque ticket ownership and an explicit closed gate only; it does not claim PSK derivation, replay handoff, 0-RTT support, or any public ticket/early-data promise.",
   "out_of_scope": [
     "public API widening",
+    "ticket replay into a later connection",
     "PSK derivation",
-    "0-RTT packet protection",
-    "0-RTT packet parsing",
-    "anti-replay guarantees",
+    "resumed handshake support",
+    "0-RTT packet send/receive support",
+    "anti-replay behavior",
+    "broad support for arbitrary post-handshake TLS messages",
+    "fake replay or fake resumption success paths",
     "transfer enablement",
     "retry enablement",
     "key update",
-    "broader session-management infrastructure"
+    "broader session-management infrastructure",
+    "opportunistic refactors unrelated to owned ticket state or explicit gate closure"
   ],
-  "status": "planned",
+  "status": "landed",
   "domain": "quic",
-  "summary": "Own opaque resumption-ticket state on the managed client/runtime path and keep early data gated closed until that state exists.",
-  "verification_plan": "When implemented, run focused requirement-home tests for ticket capture, retention, replay wiring, and negative 0-RTT admission; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",
+  "summary": "Own opaque resumption-ticket snapshot on the managed client/runtime path and keep early data gated closed until that state exists.",
+  "verification_plan": "Run focused requirement-home tests for runtime-owned snapshot capture, absence before ingress, duplicate retention, server-role rejection, explicit early-data closure before and after capture, and the public no-ticket/no-early-data guard; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
-      "content": "- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs`](../../../src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`docs/design/quic-interop-prep-plan.md`](../../../docs/design/quic-interop-prep-plan.md)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)"
+      "content": "- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0127.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0127.cs)\n- [`docs/design/quic-interop-prep-plan.md`](../../../docs/design/quic-interop-prep-plan.md)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)"
     }
   ],
   "artifact_type": "work_item",
-  "planned_changes": "- Add an internal opaque resumption-ticket carrier to the client connection host/runtime boundary.\n- Capture ticket material from the TLS bridge when available and retain it for later connection replay.\n- Thread the owned state through the existing connection bootstrap path without altering transfer, retry, or key-update behavior.\n- Add an explicit early-data admission gate that keeps 0-RTT closed until the owned state exists.\n- Add focused requirement-home tests for absence of ticket state, capture/retention, replay wiring, and negative 0-RTT admission once the runtime seam exists.\n- Keep PSK derivation, 0-RTT packet processing, anti-replay guarantees, and public API widening out of scope.",
+  "planned_changes": "- A runtime-owned opaque resumption-ticket snapshot now captures the first accepted client-side ticket update from the existing ingress seam.\n- The runtime exposes an explicit early-data gate that remains closed before and after snapshot capture.\n- The bridge-state ingress seam remains the transient source of ticket bytes, but the runtime keeps its own copy.\n- Focused requirement-home tests cover positive capture, absence before ingress, duplicate handling, server-role rejection, closed early-data behavior, and the public no-ticket/no-early-data guard.\n- PSK derivation, 0-RTT packet processing, replay handoff, anti-replay guarantees, transfer, retry, key update, and any public API widening remain out of scope.",
   "design_links": [
     "ARC-QUIC-CRT-0025"
   ],

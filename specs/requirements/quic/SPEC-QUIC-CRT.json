@@ -1331,8 +1331,8 @@
     },
     {
       "id": "REQ-QUIC-CRT-0127",
-      "title": "Own opaque resumption-ticket state and keep early data gated closed",
-      "statement": "In the client role, the library MUST own opaque resumption-ticket state on the managed connection path, capture and retain one server-issued ticket through the later connection replay boundary, and keep the early-data gate explicitly closed until that owned state is present and replayable. This slice MUST NOT derive PSKs, send or accept 0-RTT payloads, add anti-replay guarantees, widen the public API, or alter transfer or retry contracts.",
+      "title": "Own opaque client resumption-ticket snapshot and keep early data gated closed",
+      "statement": "In the client role, the library MUST own an opaque resumption-ticket snapshot on the managed client/runtime path, capture the first opaque ticket bytes received through the existing internal post-handshake ticket ingress seam into that owned snapshot distinct from transient bridge-state storage, and keep the early-data gate explicitly closed on the managed client/runtime path. This slice MUST keep the snapshot opaque, MUST NOT derive PSKs, MUST NOT send or accept 0-RTT payloads, MUST NOT add anti-replay guarantees, MUST NOT widen the public API, and MUST NOT alter transfer or retry contracts.",
       "trace": {
         "upstream_refs": [
           "RFC 9000 Sections 5.3, 7.4.1, 17.2.3, and 17.2.5",
@@ -1341,15 +1341,18 @@
           "docs/design/quic-interop-prep-plan.md",
           "src/Incursa.Quic/QuicClientConnectionHost.cs",
           "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
           "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs",
           "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
-          "src/Incursa.Quic/QuicTransportTlsBridgeState.cs"
+          "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0127.cs"
         ]
       },
       "notes": [
         "This is the smallest honest 0-RTT prerequisite and remains narrower than any 0-RTT data-path slice.",
-        "The owned ticket state is opaque bytes plus replay metadata; it is not a PSK and it does not imply a packet parser or sender change.",
-        "The server-side acceptance/replay story and any remembered transport-parameter follow-on remain separate work."
+        "The owned ticket state is opaque bytes held on the managed runtime path; it is not a PSK and it does not imply replay handoff or a packet parser or sender change.",
+        "The client/runtime early-data gate remains explicitly closed in this slice, and the later 0-RTT packet-path work stays separate."
       ]
     },
     {

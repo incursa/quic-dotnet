@@ -86,6 +86,71 @@ internal static class QuicPostHandshakeTicketTestSupport
         return driver;
     }
 
+    internal static QuicConnectionRuntime CreateFinishedClientRuntime()
+    {
+        byte[] localHandshakePrivateKey = CreateScalar(0x11);
+        QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
+        QuicTransportParameters peerTransportParameters = CreatePeerTransportParameters();
+
+        using ECDsa leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        byte[] leafCertificateDer = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(leafKey);
+        byte[] pinnedPeerLeafCertificateSha256 = SHA256.HashData(leafCertificateDer);
+
+        QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            tlsRole: QuicTlsRole.Client,
+            localHandshakePrivateKey: localHandshakePrivateKey,
+            pinnedPeerLeafCertificateSha256: pinnedPeerLeafCertificateSha256);
+
+        QuicTlsTransportBridgeDriver driver = new(
+            QuicTlsRole.Client,
+            localHandshakePrivateKey: localHandshakePrivateKey,
+            pinnedPeerLeafCertificateSha256: pinnedPeerLeafCertificateSha256);
+
+        long observedAtTicks = 0;
+        IReadOnlyList<QuicTlsStateUpdate> bootstrapUpdates = driver.StartHandshake(localTransportParameters);
+        observedAtTicks = ApplyRuntimeUpdates(runtime, bootstrapUpdates, observedAtTicks);
+
+        (
+            byte[] serverHelloTranscript,
+            byte[] encryptedExtensionsTranscript,
+            byte[] certificateTranscript,
+            byte[] certificateVerifyTranscript,
+            byte[] finishedTranscript) = CreateClientHandshakeTranscriptParts(
+            bootstrapUpdates[1].CryptoData,
+            localHandshakePrivateKey,
+            peerTransportParameters,
+            leafKey,
+            leafCertificateDer);
+
+        observedAtTicks = ApplyRuntimeUpdates(
+            runtime,
+            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, serverHelloTranscript),
+            observedAtTicks);
+        observedAtTicks = ApplyRuntimeUpdates(
+            runtime,
+            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, encryptedExtensionsTranscript),
+            observedAtTicks);
+        observedAtTicks = ApplyRuntimeUpdates(
+            runtime,
+            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, certificateTranscript),
+            observedAtTicks);
+        observedAtTicks = ApplyRuntimeUpdates(
+            runtime,
+            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, certificateVerifyTranscript),
+            observedAtTicks);
+        observedAtTicks = ApplyRuntimeUpdates(
+            runtime,
+            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, finishedTranscript),
+            observedAtTicks);
+
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
+        Assert.True(runtime.TlsState.OneRttKeysAvailable);
+
+        return runtime;
+    }
+
     internal static (
         byte[] ServerHelloTranscript,
         byte[] EncryptedExtensionsTranscript,
@@ -353,6 +418,26 @@ internal static class QuicPostHandshakeTicketTestSupport
         WriteUInt24(transcript.AsSpan(1, UInt24Length), body.Length);
         body.CopyTo(transcript.AsSpan(HandshakeHeaderLength));
         return transcript;
+    }
+
+    private static long ApplyRuntimeUpdates(
+        QuicConnectionRuntime runtime,
+        IReadOnlyList<QuicTlsStateUpdate> updates,
+        long observedAtTicks)
+    {
+        Assert.NotEmpty(updates);
+
+        foreach (QuicTlsStateUpdate update in updates)
+        {
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionTlsStateUpdatedEvent(observedAtTicks, update),
+                nowTicks: observedAtTicks);
+
+            Assert.True(result.StateChanged);
+            observedAtTicks++;
+        }
+
+        return observedAtTicks;
     }
 
     private static void WriteUInt16(Span<byte> destination, ushort value)

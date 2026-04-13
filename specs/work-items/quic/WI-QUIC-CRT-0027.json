@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0027",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "landed",
   "title": "QUIC CRT client-side 1-RTT post-handshake ticket ingress work item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -13,7 +13,7 @@
     "VER-QUIC-CRT-0027"
   ],
   "summary": "Surface an opaque post-handshake ticket update from a real client-side OneRtt CRYPTO ingress path after Finished without widening the supported boundary.",
-  "completion_notes": "This is intentionally a narrow client-side ingress slice. It records opaque ticket bytes after Finished only; it does not claim ticket ownership, replay handling, PSK derivation, 0-RTT support, or any public ticket/early-data promise.",
+  "completion_notes": "This is a landed narrow client-side ingress slice. It records opaque ticket bytes after Finished only; it does not claim ticket ownership, replay handling, PSK derivation, 0-RTT support, or any public ticket/early-data promise.",
   "out_of_scope": [
     "public API widening",
     "ticket persistence",
@@ -28,8 +28,8 @@
     "key update",
     "broader TLS refactoring unrelated to this seam"
   ],
-  "verification_plan": "When implemented, run focused requirement-home tests for post-Finished ticket surfacing, pre-Finished rejection, duplicate ingress retention, server-role rejection, unsupported 1-RTT post-handshake TLS message handling, unchanged handshake/1-RTT readiness, and the public no-ticket/no-early-data guard; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",
-  "planned_changes": "- Add a narrow OneRtt ingress buffer and parser path for TLS 1.3 NewSessionTicket.\n- Preserve the existing internal PostHandshakeTicketAvailable seam and feed it from the real ingress path after Finished.\n- Keep unsupported 1-RTT post-handshake TLS messages ignored rather than generalized.\n- Retain duplicate rejection, pre-Finished rejection, and server-role rejection.\n- Keep ticket persistence, replay ownership, PSK derivation, 0-RTT, transfer, retry, key update, and any public API widening out of scope.",
+  "verification_plan": "Run focused requirement-home tests for post-Finished ticket surfacing, pre-Finished rejection, duplicate ingress retention, server-role rejection, unsupported 1-RTT post-handshake TLS message handling, unchanged handshake/1-RTT readiness, and the public no-ticket/no-early-data guard; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",
+  "planned_changes": "- A narrow OneRtt ingress buffer and parser path now handles TLS 1.3 NewSessionTicket.\n- The existing internal PostHandshakeTicketAvailable seam is fed from the real ingress path after Finished.\n- Unsupported 1-RTT post-handshake TLS messages remain ignored rather than generalized.\n- Duplicate rejection, pre-Finished rejection, and server-role rejection remain in place.\n- Ticket persistence, replay ownership, PSK derivation, 0-RTT, transfer, retry, key update, and any public API widening remain out of scope.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",

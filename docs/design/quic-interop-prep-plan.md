@@ -100,14 +100,15 @@ Partially implemented but not yet promised:
 - The managed proof and commit gates that already separate transcript progression from local policy acceptance and peer transport-parameter commit.
 - The internal exact peer-identity and explicit trust-material snapshot seam that backs the public carrier.
 - The current server-role proof floor, including the local handshake-flight pieces already recorded in the CRT requirement homes.
+- The managed client/runtime path now owns opaque resumption-ticket state and an explicit closed early-data gate under `REQ-QUIC-CRT-0127`. That internal snapshot is intentionally narrower than any 0-RTT packet path and does not add PSK derivation.
 
 Still missing:
 
 - Broader client-auth or TLS-option support.
 - Broader server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier beyond the callback-driven `ClientCertificateRequired` plus `CertificateChainPolicy` and standalone `CertificateRevocationCheckMode` floors traced by `REQ-QUIC-CRT-0124`, `REQ-QUIC-CRT-0125`, and `REQ-QUIC-CRT-0126`.
-- `0-RTT`.
-- The first honest 0-RTT prerequisite, tracked separately as `REQ-QUIC-CRT-0127`, `ARC-QUIC-CRT-0025`, `WI-QUIC-CRT-0025`, and `VER-QUIC-CRT-0025`, is still unimplemented; it is limited to opaque resumption-ticket ownership plus an explicit early-data gate and does not add PSK derivation or a 0-RTT packet path.
-- Key update.
+- `0-RTT packet path`.
+- `PSK derivation`.
+- `Key update`.
 
 Why this stays separate:
 
@@ -207,10 +208,10 @@ Notes on dependency:
    - Status: landed. The managed bridge now consumes a valid `NewSessionTicket` on the supported client-only `OneRtt` path after Finished, extracts opaque ticket bytes through the existing internal update seam, and keeps unsupported 1-RTT post-handshake TLS messages ignored rather than broadening the parser.
    - Depends on: the current handshake/runtime proof floor and the `REQ-QUIC-CRT-0128` seam staying stable.
 
-10. `Opaque resumption-ticket ownership and early-data gate`
+10. `Opaque resumption-ticket snapshot and early-data gate`
    - Goal: keep the first honest 0-RTT prerequisite traceable under `REQ-QUIC-CRT-0127`, `ARC-QUIC-CRT-0025`, `WI-QUIC-CRT-0025`, and `VER-QUIC-CRT-0025`.
-   - Focus: opaque resumption-ticket capture and replay ownership on the managed client/runtime path, with an explicit early-data gate that remains closed until that state exists.
-   - Status: identified. The runtime does not yet own this seam, so the repo cannot honestly claim 0-RTT support.
+   - Focus: opaque resumption-ticket capture on the managed client/runtime path, with an explicit early-data gate that remains closed and no replay or 0-RTT claim.
+   - Status: landed. The runtime now owns opaque resumption-ticket state on the managed client/runtime path and keeps the early-data gate explicitly closed.
    - Depends on: the client-role 1-RTT readiness seam and the current handshake/runtime proof floor.
 
 ## Do-Not-Widen Boundaries

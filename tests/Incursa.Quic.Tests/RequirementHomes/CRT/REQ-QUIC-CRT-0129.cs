@@ -114,9 +114,9 @@ public sealed class REQ_QUIC_CRT_0129
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void PublicSurfaceDoesNotExposeResumptionTicketOrEarlyDataPromises()
+    public void PublicSurfaceDoesNotExposeTicketOwnershipResumptionOrEarlyDataPromises()
     {
-        string[] forbiddenFragments = ["Resum", "Ticket", "EarlyData"];
+        string[] forbiddenFragments = ["Ownership", "Resum", "Ticket", "EarlyData"];
 
         string[] publicMembers = typeof(QuicConnection).Assembly
             .GetExportedTypes()
