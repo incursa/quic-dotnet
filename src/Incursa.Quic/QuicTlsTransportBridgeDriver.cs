@@ -101,6 +101,12 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
     /// <inheritdoc />
     public IReadOnlyList<QuicTlsStateUpdate> StartHandshake(QuicTransportParameters localTransportParameters)
+        => StartHandshake(localTransportParameters, detachedResumptionTicketSnapshot: null, nowTicks: 0);
+
+    internal IReadOnlyList<QuicTlsStateUpdate> StartHandshake(
+        QuicTransportParameters localTransportParameters,
+        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot,
+        long nowTicks)
     {
         List<QuicTlsStateUpdate> updates = [];
 
@@ -108,7 +114,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
         if (Role == QuicTlsRole.Client
             && keySchedule is not null
-            && keySchedule.TryCreateClientHello(localTransportParameters, out byte[] clientHelloBytes))
+            && keySchedule.TryCreateClientHello(
+                localTransportParameters,
+                detachedResumptionTicketSnapshot,
+                nowTicks,
+                out byte[] clientHelloBytes))
         {
             keySchedule.AppendLocalHandshakeMessage(clientHelloBytes);
             updates.Add(new QuicTlsStateUpdate(

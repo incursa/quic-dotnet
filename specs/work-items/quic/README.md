@@ -43,6 +43,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0027.json`](WI-QUIC-CRT-0027.json): canonical CRT client-side 1-RTT post-handshake ticket ingress work item
 - [`WI-QUIC-CRT-0028.json`](WI-QUIC-CRT-0028.json): canonical CRT detached resumption-ticket carrier handoff work item
 - [`WI-QUIC-CRT-0029.json`](WI-QUIC-CRT-0029.json): canonical CRT detached resumption-credential material capture work item
+- [`WI-QUIC-CRT-0030.json`](WI-QUIC-CRT-0030.json): canonical CRT client-side ClientHello PSK-attempt work item
 
 ## Notes
 

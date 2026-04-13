@@ -299,7 +299,7 @@ public sealed class REQ_QUIC_CRT_0131
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public async Task HandshakeBootstrapBehaviorRemainsUnchangedWhenTheRicherDormantCarrierIsPresent()
+    public void LaterClientSetupKeepsTheRicherCarrierDormantUntilABootstrapAttemptConsumesIt()
     {
         using QuicConnectionRuntime originRuntime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
         QuicTlsTransportBridgeDriver driver = QuicPostHandshakeTicketTestSupport.CreateFinishedClientDriver();
@@ -317,48 +317,20 @@ public sealed class REQ_QUIC_CRT_0131
             new QuicConnectionTlsStateUpdatedEvent(400, ticketUpdates[0]),
             nowTicks: 400).StateChanged);
         Assert.True(originRuntime.TryExportDetachedResumptionTicketSnapshot(out QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot));
+        Assert.NotNull(detachedResumptionTicketSnapshot);
+        using QuicConnectionRuntime laterRuntime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            tlsRole: QuicTlsRole.Client,
+            detachedResumptionTicketSnapshot: detachedResumptionTicketSnapshot);
 
-        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
-        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-
-        QuicListenerOptions listenerOptions = new()
-        {
-            ListenEndPoint = listenEndPoint,
-            ApplicationProtocols = [SslApplicationProtocol.Http3],
-            ListenBacklog = 1,
-            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(
-                QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
-        };
-
-        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
-        Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
-
-        QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
-            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
-            trustedServerCertificate: serverCertificate);
-
-        Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(clientOptions, detachedResumptionTicketSnapshot).AsTask();
-
-        await Task.WhenAll(acceptTask, connectTask).WaitAsync(TimeSpan.FromSeconds(5));
-
-        QuicConnection serverConnection = await acceptTask;
-        QuicConnection clientConnection = await connectTask;
-
-        try
-        {
-            QuicConnectionRuntime clientRuntime = GetRuntime(clientConnection);
-            Assert.Equal(QuicConnectionPhase.Active, clientRuntime.Phase);
-            Assert.True(clientRuntime.PeerHandshakeTranscriptCompleted);
-            Assert.True(clientRuntime.TlsState.OneRttKeysAvailable);
-            Assert.False(clientRuntime.HasOwnedResumptionTicket);
-            Assert.True(clientRuntime.HasDormantDetachedResumptionTicketSnapshot);
-            Assert.False(clientRuntime.IsEarlyDataAdmissionOpen);
-        }
-        finally
-        {
-            await serverConnection.DisposeAsync();
-            await clientConnection.DisposeAsync();
-        }
+        Assert.Equal(QuicConnectionPhase.Establishing, laterRuntime.Phase);
+        Assert.False(laterRuntime.PeerHandshakeTranscriptCompleted);
+        Assert.False(laterRuntime.TlsState.OneRttKeysAvailable);
+        Assert.False(laterRuntime.HasOwnedResumptionTicket);
+        Assert.True(laterRuntime.HasDormantDetachedResumptionTicketSnapshot);
+        Assert.Equal(detachedResumptionTicketSnapshot.TicketBytes.ToArray(), laterRuntime.DormantDetachedResumptionTicketSnapshot!.TicketBytes.ToArray());
+        Assert.Equal(detachedResumptionTicketSnapshot.ResumptionMasterSecret.ToArray(), laterRuntime.DormantDetachedResumptionTicketSnapshot.ResumptionMasterSecret.ToArray());
+        Assert.False(laterRuntime.IsEarlyDataAdmissionOpen);
     }
 
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)

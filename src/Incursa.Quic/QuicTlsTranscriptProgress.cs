@@ -26,11 +26,14 @@ internal sealed class QuicTlsTranscriptProgress
     private const int MaximumSessionIdLength = 32;
     private const ushort SupportedVersionsExtensionType = 0x002b;
     private const ushort KeyShareExtensionType = 0x0033;
+    private const ushort PreSharedKeyExtensionType = 0x0029;
+    private const ushort PskKeyExchangeModesExtensionType = 0x002d;
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
     private const ushort TlsAes128GcmSha256Value = (ushort)QuicTlsCipherSuite.TlsAes128GcmSha256;
     private const byte UncompressedPointFormat = 0x04;
     private const int Secp256r1CoordinateLength = 32;
     private const int Secp256r1KeyShareLength = 1 + (Secp256r1CoordinateLength * 2);
+    private const byte PskDheKeMode = 0x01;
 
     private readonly QuicTlsRole role;
     private readonly ArrayBufferWriter<byte> partialTranscript = new();
@@ -746,6 +749,8 @@ internal sealed class QuicTlsTranscriptProgress
         bool foundSupportedVersions = false;
         bool foundKeyShare = false;
         bool foundTransportParameters = false;
+        bool foundPskKeyExchangeModes = false;
+        bool foundPreSharedKey = false;
         List<ushort> seenExtensionTypes = [];
 
         int index = 0;
@@ -798,13 +803,36 @@ internal sealed class QuicTlsTranscriptProgress
                 transportParameters = parsedTransportParameters;
                 foundTransportParameters = true;
             }
+            else if (extensionType == PskKeyExchangeModesExtensionType)
+            {
+                if (foundPskKeyExchangeModes || !TryParseClientHelloPskKeyExchangeModes(extensionValue))
+                {
+                    return false;
+                }
+
+                foundPskKeyExchangeModes = true;
+            }
+            else if (extensionType == PreSharedKeyExtensionType)
+            {
+                if (foundPreSharedKey
+                    || index != extensions.Length
+                    || !TryParseClientHelloPreSharedKey(extensionValue))
+                {
+                    return false;
+                }
+
+                foundPreSharedKey = true;
+            }
             else
             {
                 return false;
             }
         }
 
-        return foundSupportedVersions && foundKeyShare && foundTransportParameters;
+        return foundSupportedVersions
+            && foundKeyShare
+            && foundTransportParameters
+            && foundPskKeyExchangeModes == foundPreSharedKey;
     }
 
     private static bool TryParseClientHelloSupportedVersions(ReadOnlySpan<byte> extensionValue)
@@ -856,6 +884,50 @@ internal sealed class QuicTlsTranscriptProgress
 
         namedGroup = QuicTlsNamedGroup.Secp256r1;
         peerKeyShare = keyExchange.ToArray();
+        return true;
+    }
+
+    private static bool TryParseClientHelloPskKeyExchangeModes(ReadOnlySpan<byte> extensionValue)
+    {
+        int index = 0;
+        return TryReadUInt8(extensionValue, ref index, out int modesLength)
+            && modesLength == 1
+            && TryReadUInt8(extensionValue, ref index, out int keyExchangeMode)
+            && keyExchangeMode == PskDheKeMode
+            && index == extensionValue.Length;
+    }
+
+    private static bool TryParseClientHelloPreSharedKey(ReadOnlySpan<byte> extensionValue)
+    {
+        int index = 0;
+        if (!TryReadUInt16(extensionValue, ref index, out ushort identitiesLength)
+            || identitiesLength == 0
+            || index + identitiesLength > extensionValue.Length)
+        {
+            return false;
+        }
+
+        int identitiesEnd = index + identitiesLength;
+        if (!TryReadUInt16(extensionValue, ref index, out ushort identityLength)
+            || identityLength == 0
+            || !TrySkipBytes(extensionValue, ref index, identityLength)
+            || !TryReadUInt32(extensionValue, ref index, out _)
+            || index != identitiesEnd)
+        {
+            return false;
+        }
+
+        if (!TryReadUInt16(extensionValue, ref index, out ushort bindersLength)
+            || bindersLength != 1 + FinishedSha256Length
+            || index + bindersLength != extensionValue.Length
+            || !TryReadUInt8(extensionValue, ref index, out int binderLength)
+            || binderLength != FinishedSha256Length
+            || !TrySkipBytes(extensionValue, ref index, binderLength)
+            || index != extensionValue.Length)
+        {
+            return false;
+        }
+
         return true;
     }
 

@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Buffers.Binary;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -42,11 +43,15 @@ internal sealed class QuicTlsKeySchedule
     private const ushort Tls13Version = 0x0304;
     private const ushort SupportedVersionsExtensionType = 0x002b;
     private const ushort KeyShareExtensionType = 0x0033;
+    private const ushort PreSharedKeyExtensionType = 0x0029;
+    private const ushort PskKeyExchangeModesExtensionType = 0x002d;
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
     private const ushort TlsCipherSuitesListLength = UInt16Length;
     private const byte SupportedVersionsVectorLength = (byte)UInt16Length;
     private const ushort SupportedVersionsExtensionBodyLength = 1 + UInt16Length;
     private const ushort KeyShareEntryFixedLength = UInt16Length + UInt16Length;
+    private const byte PskKeyExchangeModesVectorLength = 1;
+    private const byte PskDheKeMode = 0x01;
     private const int CertificateVerifyContextPrefixLength = 64;
     private const int EcdsaP256KeySizeBits = 256;
     private const byte CertificateVerifySignedDataPrefixByte = 0x20;
@@ -60,6 +65,8 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] ServerApplicationTrafficLabel = Encoding.ASCII.GetBytes("s ap traffic");
     private static readonly byte[] FinishedLabel = Encoding.ASCII.GetBytes("finished");
     private static readonly byte[] ResumptionMasterLabel = Encoding.ASCII.GetBytes("res master");
+    private static readonly byte[] ResumptionLabel = Encoding.ASCII.GetBytes("resumption");
+    private static readonly byte[] ResumptionBinderLabel = Encoding.ASCII.GetBytes("res binder");
     private static readonly byte[] ServerCertificateVerifyContext = Encoding.ASCII.GetBytes("TLS 1.3, server CertificateVerify");
     private static readonly byte[] ClientCertificateVerifyContext = Encoding.ASCII.GetBytes("TLS 1.3, client CertificateVerify");
     private static readonly byte[] QuicKeyLabel = Encoding.ASCII.GetBytes("quic key");
@@ -154,6 +161,16 @@ internal sealed class QuicTlsKeySchedule
     /// Creates the supported client Initial ClientHello transcript bytes for the current key share and transport parameters.
     /// </summary>
     internal bool TryCreateClientHello(QuicTransportParameters localTransportParameters, out byte[] clientHelloBytes)
+        => TryCreateClientHello(localTransportParameters, detachedResumptionTicketSnapshot: null, nowTicks: 0, out clientHelloBytes);
+
+    /// <summary>
+    /// Creates the supported client Initial ClientHello transcript bytes for the current key share and transport parameters.
+    /// </summary>
+    internal bool TryCreateClientHello(
+        QuicTransportParameters localTransportParameters,
+        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot,
+        long nowTicks,
+        out byte[] clientHelloBytes)
     {
         clientHelloBytes = Array.Empty<byte>();
 
@@ -175,62 +192,25 @@ internal sealed class QuicTlsKeySchedule
         int supportedVersionsExtensionLength = 2 + 2 + 1 + 2;
         int keyShareExtensionLength = 2 + 2 + 2 + 2 + 2 + localKeyShare.Length;
         int transportParametersExtensionLength = 2 + 2 + transportParametersEncodedBytes;
-        int extensionsLength = supportedVersionsExtensionLength
+        int baseExtensionsLength = supportedVersionsExtensionLength
             + keyShareExtensionLength
             + transportParametersExtensionLength;
 
-        byte[] body = new byte[43 + extensionsLength];
-        int index = 0;
+        if (CanAttemptResumption(detachedResumptionTicketSnapshot)
+            && TryCreateResumptionClientHello(
+                transportParametersEncoded.AsSpan(0, transportParametersEncodedBytes),
+                baseExtensionsLength,
+                detachedResumptionTicketSnapshot!,
+                nowTicks,
+                out clientHelloBytes))
+        {
+            return true;
+        }
 
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), TlsLegacyVersion);
-        index += UInt16Length;
-
-        Span<byte> clientRandom = body.AsSpan(index, TlsRandomLength);
-        RandomNumberGenerator.Fill(clientRandom);
-        index += TlsRandomLength;
-
-        body[index++] = 0x00;
-
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), TlsCipherSuitesListLength);
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), (ushort)profile.CipherSuite);
-        index += UInt16Length;
-
-        body[index++] = 1;
-        body[index++] = NullCompressionMethod;
-
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)extensionsLength));
-        index += UInt16Length;
-
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedVersionsExtensionType);
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedVersionsExtensionBodyLength);
-        index += UInt16Length;
-        body[index++] = SupportedVersionsVectorLength;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Tls13Version);
-        index += UInt16Length;
-
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), KeyShareExtensionType);
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(UInt16Length + KeyShareEntryFixedLength + localKeyShare.Length)));
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(KeyShareEntryFixedLength + localKeyShare.Length)));
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Secp256r1NamedGroup);
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)localKeyShare.Length));
-        index += UInt16Length;
-        localKeyShare.CopyTo(body, index);
-        index += localKeyShare.Length;
-
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), QuicTransportParametersCodec.QuicTransportParametersExtensionType);
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)transportParametersEncodedBytes));
-        index += UInt16Length;
-        transportParametersEncoded.AsSpan(0, transportParametersEncodedBytes).CopyTo(body.AsSpan(index));
-
-        clientHelloBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.ClientHello, body);
-        return true;
+        return TryCreateInitialClientHello(
+            transportParametersEncoded.AsSpan(0, transportParametersEncodedBytes),
+            baseExtensionsLength,
+            out clientHelloBytes);
     }
 
     /// <summary>
@@ -889,6 +869,124 @@ internal sealed class QuicTlsKeySchedule
             out material);
     }
 
+    private bool TryCreateInitialClientHello(
+        ReadOnlySpan<byte> transportParametersEncoded,
+        int baseExtensionsLength,
+        out byte[] clientHelloBytes)
+    {
+        int extensionsLength = baseExtensionsLength;
+        byte[] body = new byte[43 + extensionsLength];
+        WriteClientHelloPrefix(body, extensionsLength, out int index);
+        WriteClientHelloBaseExtensions(body, ref index, transportParametersEncoded);
+        clientHelloBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.ClientHello, body);
+        return true;
+    }
+
+    private bool TryCreateResumptionClientHello(
+        ReadOnlySpan<byte> transportParametersEncoded,
+        int baseExtensionsLength,
+        QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot,
+        long nowTicks,
+        out byte[] clientHelloBytes)
+    {
+        clientHelloBytes = Array.Empty<byte>();
+
+        ReadOnlySpan<byte> ticketBytes = detachedResumptionTicketSnapshot.TicketBytes.Span;
+        ReadOnlySpan<byte> ticketNonce = detachedResumptionTicketSnapshot.TicketNonce.Span;
+        ReadOnlySpan<byte> detachedResumptionMasterSecret = detachedResumptionTicketSnapshot.ResumptionMasterSecret.Span;
+        if (ticketBytes.IsEmpty
+            || detachedResumptionMasterSecret.Length != HashLength
+            || ticketBytes.Length > ushort.MaxValue)
+        {
+            return false;
+        }
+
+        int pskIdentityLength = UInt16Length + ticketBytes.Length + sizeof(uint);
+        int identitiesVectorLength = pskIdentityLength;
+        int binderEntryLength = 1 + HashLength;
+        int bindersVectorLength = binderEntryLength;
+        int pskModesExtensionLength = UInt16Length + UInt16Length + 1 + PskKeyExchangeModesVectorLength;
+        int preSharedKeyExtensionLength = UInt16Length
+            + identitiesVectorLength
+            + UInt16Length
+            + bindersVectorLength;
+        int extensionsLength = baseExtensionsLength
+            + pskModesExtensionLength
+            + (UInt16Length + UInt16Length + preSharedKeyExtensionLength);
+
+        byte[] body = new byte[43 + extensionsLength];
+        WriteClientHelloPrefix(body, extensionsLength, out int index);
+        WriteClientHelloBaseExtensions(body, ref index, transportParametersEncoded);
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), PskKeyExchangeModesExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(1 + PskKeyExchangeModesVectorLength)));
+        index += UInt16Length;
+        body[index++] = PskKeyExchangeModesVectorLength;
+        body[index++] = PskDheKeMode;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), PreSharedKeyExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)preSharedKeyExtensionLength));
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)identitiesVectorLength));
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)ticketBytes.Length));
+        index += UInt16Length;
+        ticketBytes.CopyTo(body.AsSpan(index, ticketBytes.Length));
+        index += ticketBytes.Length;
+        BinaryPrimitives.WriteUInt32BigEndian(
+            body.AsSpan(index, sizeof(uint)),
+            ComputeObfuscatedTicketAge(detachedResumptionTicketSnapshot, nowTicks));
+        index += sizeof(uint);
+
+        int truncatedBodyLength = index;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)bindersVectorLength));
+        index += UInt16Length;
+        body[index++] = HashLength;
+        int binderOffset = index;
+
+        byte[] partialClientHello = WrapHandshakeMessagePrefix(
+            QuicTlsHandshakeMessageType.ClientHello,
+            body.Length,
+            body.AsSpan(0, truncatedBodyLength));
+
+        byte[]? resumptionPsk = null;
+        byte[]? earlySecret = null;
+        byte[]? binderKey = null;
+
+        try
+        {
+            resumptionPsk = HkdfExpandLabel(detachedResumptionMasterSecret, ResumptionLabel, ticketNonce, HashLength);
+            earlySecret = HkdfExtract(new byte[HashLength], resumptionPsk);
+            binderKey = HkdfExpandLabel(earlySecret, ResumptionBinderLabel, EmptyTranscriptHash, HashLength);
+            byte[] partialTranscriptHash = SHA256.HashData(partialClientHello);
+            byte[] binder = DeriveFinishedVerifyData(binderKey, partialTranscriptHash);
+            binder.CopyTo(body.AsSpan(binderOffset, HashLength));
+        }
+        finally
+        {
+            if (resumptionPsk is not null)
+            {
+                CryptographicOperations.ZeroMemory(resumptionPsk);
+            }
+
+            if (earlySecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(earlySecret);
+            }
+
+            if (binderKey is not null)
+            {
+                CryptographicOperations.ZeroMemory(binderKey);
+            }
+        }
+
+        clientHelloBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.ClientHello, body);
+        return true;
+    }
+
     private bool TryCreateServerHello(ReadOnlySpan<byte> clientHelloBytes, out byte[] serverHelloBytes)
     {
         serverHelloBytes = Array.Empty<byte>();
@@ -1078,6 +1176,18 @@ internal sealed class QuicTlsKeySchedule
         transcript[0] = (byte)messageType;
         WriteUInt24(transcript.AsSpan(1, UInt24Length), body.Length);
         body.CopyTo(transcript.AsSpan(HandshakeHeaderLength));
+        return transcript;
+    }
+
+    private static byte[] WrapHandshakeMessagePrefix(
+        QuicTlsHandshakeMessageType messageType,
+        int fullBodyLength,
+        ReadOnlySpan<byte> bodyPrefix)
+    {
+        byte[] transcript = new byte[HandshakeHeaderLength + bodyPrefix.Length];
+        transcript[0] = (byte)messageType;
+        WriteUInt24(transcript.AsSpan(1, UInt24Length), fullBodyLength);
+        bodyPrefix.CopyTo(transcript.AsSpan(HandshakeHeaderLength));
         return transcript;
     }
 
@@ -1551,5 +1661,85 @@ internal sealed class QuicTlsKeySchedule
         parameters.Q.X.CopyTo(keyShare, 1);
         parameters.Q.Y.CopyTo(keyShare, 1 + Secp256r1CoordinateLength);
         return keyShare;
+    }
+
+    private static bool CanAttemptResumption(QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot)
+        => detachedResumptionTicketSnapshot is not null
+            && detachedResumptionTicketSnapshot.HasResumptionCredentialMaterial
+            && detachedResumptionTicketSnapshot.TicketLifetimeSeconds > 0
+            && !detachedResumptionTicketSnapshot.TicketBytes.IsEmpty
+            && detachedResumptionTicketSnapshot.ResumptionMasterSecret.Length == HashLength;
+
+    private void WriteClientHelloPrefix(byte[] body, int extensionsLength, out int index)
+    {
+        index = 0;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), TlsLegacyVersion);
+        index += UInt16Length;
+
+        Span<byte> clientRandom = body.AsSpan(index, TlsRandomLength);
+        RandomNumberGenerator.Fill(clientRandom);
+        index += TlsRandomLength;
+
+        body[index++] = 0x00;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), TlsCipherSuitesListLength);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), (ushort)profile.CipherSuite);
+        index += UInt16Length;
+
+        body[index++] = 1;
+        body[index++] = NullCompressionMethod;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)extensionsLength));
+        index += UInt16Length;
+    }
+
+    private void WriteClientHelloBaseExtensions(
+        byte[] body,
+        ref int index,
+        ReadOnlySpan<byte> transportParametersEncoded)
+    {
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedVersionsExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedVersionsExtensionBodyLength);
+        index += UInt16Length;
+        body[index++] = SupportedVersionsVectorLength;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Tls13Version);
+        index += UInt16Length;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), KeyShareExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(UInt16Length + KeyShareEntryFixedLength + localKeyShare.Length)));
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(KeyShareEntryFixedLength + localKeyShare.Length)));
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Secp256r1NamedGroup);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)localKeyShare.Length));
+        index += UInt16Length;
+        localKeyShare.CopyTo(body, index);
+        index += localKeyShare.Length;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), QuicTransportParametersCodec.QuicTransportParametersExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)transportParametersEncoded.Length));
+        index += UInt16Length;
+        transportParametersEncoded.CopyTo(body.AsSpan(index, transportParametersEncoded.Length));
+        index += transportParametersEncoded.Length;
+    }
+
+    private static uint ComputeObfuscatedTicketAge(
+        QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot,
+        long nowTicks)
+    {
+        long elapsedTicks = nowTicks > detachedResumptionTicketSnapshot.CapturedAtTicks
+            ? nowTicks - detachedResumptionTicketSnapshot.CapturedAtTicks
+            : 0;
+        ulong ticketAgeMilliseconds = elapsedTicks <= 0
+            ? 0
+            : (unchecked((ulong)elapsedTicks) * 1_000UL) / (ulong)Stopwatch.Frequency;
+        uint ticketAgeMilliseconds32 = unchecked((uint)ticketAgeMilliseconds);
+        return unchecked(ticketAgeMilliseconds32 + detachedResumptionTicketSnapshot.TicketAgeAdd);
     }
 }

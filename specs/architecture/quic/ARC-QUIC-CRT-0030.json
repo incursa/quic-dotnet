@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0030",
+  "artifact_type": "architecture",
+  "status": "landed",
+  "title": "QUIC CRT client-side ClientHello PSK-attempt architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the smallest honest PSK-attempt seam: the managed client/runtime path consumes dormant detached resumption material to build a PSK-capable ClientHello with binder emission while keeping early data closed and without claiming resumed-handshake success yet.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0030",
+    "VER-QUIC-CRT-0030"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0132"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs"
+  ],
+  "risks": [
+    "If the binder is emitted without the dormant carrier actually feeding the ClientHello attempt path, the slice would look implemented while remaining dead code.",
+    "If the detached carrier is consumed without preserving the closed early-data gate or the bootstrap fallback, the slice would overclaim resumption capability that the repository has not yet proven.",
+    "If the pre_shared_key ordering or binder-length math is wrong, the server parser will reject the ClientHello and the attempt path will not be truthful.",
+    "If the carrier leaks into public API or becomes part of the supported IsSupported promise, the slice will widen beyond the narrow proof floor."
+  ],
+  "design_summary": "The managed client/runtime path already owns opaque ticket ingress, a runtime-local ticket snapshot, a detached carrier handoff, and the minimum resumption credential material. This slice consumes that dormant carrier to construct a PSK-capable ClientHello attempt with the supported `psk_dhe_ke` mode, a single PSK identity, a computed binder, and an explicitly closed early-data gate. The carrier stays immutable and dormant outside the emitted ClientHello, and the slice does not claim resumed-handshake success or any public surface change.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice covers only client-side ClientHello PSK-attempt construction from the dormant detached carrier and the minimum parser acceptance needed to ingest the emitted PSK-attempt message. It does not add resumed-handshake success, 0-RTT packet support, anti-replay, key update, or a public API expansion."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs`](../../../src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs)\n- [`docs/design/quic-interop-prep-plan.md`](../../../docs/design/quic-interop-prep-plan.md)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)"
+    }
+  ]
+}

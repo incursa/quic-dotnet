@@ -95,20 +95,21 @@ Supported today:
 - The reject-first supported subset of client TLS options already described in the public API docs, including the still-unsupported broader client-auth knobs.
 - The narrow internal post-Finished ticket seam under `REQ-QUIC-CRT-0128`, `ARC-QUIC-CRT-0026`, `WI-QUIC-CRT-0026`, and `VER-QUIC-CRT-0026`, plus the separate client-side 1-RTT post-handshake ticket-ingress slice under `REQ-QUIC-CRT-0129`, `ARC-QUIC-CRT-0027`, `WI-QUIC-CRT-0027`, and `VER-QUIC-CRT-0027`, are now landed internal/runtime slices. They surface opaque ticket bytes after Finished, consume only a valid `NewSessionTicket` message on `OneRtt` CRYPTO, and ignore unsupported 1-RTT post-handshake TLS messages instead of broadening the parser.
 - The detached resumption-ticket handoff slice under `REQ-QUIC-CRT-0130`, `ARC-QUIC-CRT-0028`, `WI-QUIC-CRT-0028`, and `VER-QUIC-CRT-0028` is now landed as a cross-lifetime internal carrier slice. The originating client/runtime path can export a detached opaque carrier from the owned ticket snapshot, and a later managed client setup can accept that carrier as dormant internal state without changing handshake or early-data behavior.
+- The detached resumption-credential material capture slice under `REQ-QUIC-CRT-0131`, `ARC-QUIC-CRT-0029`, `WI-QUIC-CRT-0029`, and `VER-QUIC-CRT-0029`, and the client-side ClientHello PSK-attempt slice under `REQ-QUIC-CRT-0132`, `ARC-QUIC-CRT-0030`, `WI-QUIC-CRT-0030`, and `VER-QUIC-CRT-0030`, are now landed internal/runtime slices. They retain the opaque ticket bytes, nonce, lifetime, age add, capture timestamp, and resumption master secret as dormant internal state, then consume that dormant carrier to emit a PSK-capable ClientHello attempt with binder material while keeping early data closed.
 
 Partially implemented but not yet promised:
 
 - The managed proof and commit gates that already separate transcript progression from local policy acceptance and peer transport-parameter commit.
 - The internal exact peer-identity and explicit trust-material snapshot seam that backs the public carrier.
 - The current server-role proof floor, including the local handshake-flight pieces already recorded in the CRT requirement homes.
-- The managed client/runtime path now owns opaque resumption-ticket state and an explicit closed early-data gate under `REQ-QUIC-CRT-0127`. That internal snapshot is intentionally narrower than any 0-RTT packet path and does not add PSK derivation.
+- The managed client/runtime path now owns opaque resumption-ticket state and an explicit closed early-data gate under `REQ-QUIC-CRT-0127`. That internal snapshot is intentionally narrower than any 0-RTT packet path and does not claim resumed-handshake success.
 
 Still missing:
 
 - Broader client-auth or TLS-option support.
 - Broader server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier beyond the callback-driven `ClientCertificateRequired` plus `CertificateChainPolicy` and standalone `CertificateRevocationCheckMode` floors traced by `REQ-QUIC-CRT-0124`, `REQ-QUIC-CRT-0125`, and `REQ-QUIC-CRT-0126`.
 - `0-RTT packet path`.
-- `PSK derivation`.
+- `resumed-handshake success`.
 - `Key update`.
 
 Why this stays separate:
@@ -226,6 +227,12 @@ Notes on dependency:
    - Focus: retention of the opaque ticket bytes together with the ticket nonce, ticket lifetime, ticket age add, capture timestamp, and handshake-derived resumption master secret so a later client can honestly attempt resumption without claiming the attempt yet.
    - Status: landed. The detached carrier now carries the minimum honest resumption-credential material as dormant internal state on the managed client/runtime path, but it still does not claim a resumption attempt.
    - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, and the detached handoff slice staying stable.
+
+13. `Client-side ClientHello PSK attempt`
+   - Goal: keep the client-side PSK-attempt seam traceable under `REQ-QUIC-CRT-0132`, `ARC-QUIC-CRT-0030`, `WI-QUIC-CRT-0030`, and `VER-QUIC-CRT-0030`.
+   - Focus: dormant detached carrier consumption, PSK-capable ClientHello construction, binder emission, preserved early-data closure, and parser acceptance of the emitted attempt without claiming resumed-handshake success.
+   - Status: landed. The managed client/runtime path now consumes the dormant carrier to build a PSK-capable ClientHello attempt with binder material while keeping early data explicitly closed.
+   - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, and the detached credential-capture slice staying stable.
 
 ## Do-Not-Widen Boundaries
 

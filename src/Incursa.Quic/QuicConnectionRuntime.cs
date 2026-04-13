@@ -978,7 +978,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
-        IReadOnlyList<QuicTlsStateUpdate> updates = tlsBridgeDriver.StartHandshake(localTransportParameters);
+        IReadOnlyList<QuicTlsStateUpdate> updates = tlsBridgeDriver.StartHandshake(
+            localTransportParameters,
+            dormantDetachedResumptionTicketSnapshot,
+            nowTicks);
         if (updates.Count == 0)
         {
             return false;

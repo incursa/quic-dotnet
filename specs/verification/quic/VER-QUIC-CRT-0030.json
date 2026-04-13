@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0030",
+  "artifact_type": "verification",
+  "status": "landed",
+  "title": "QUIC CRT client-side ClientHello PSK-attempt verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verifies": [
+    "REQ-QUIC-CRT-0132"
+  ],
+  "verification_method": "Execution, inspection, and regression evidence.",
+  "scope": "Verify that the dormant detached resumption carrier can drive a PSK-capable ClientHello attempt path and that early data remains closed without claiming resumed-handshake success or 0-RTT packet support.",
+  "preconditions": [
+    "The repository builds successfully on net10.0.",
+    "The current client TLS, server client-auth, transfer, retry, and narrow CRT guard sets remain green.",
+    "REQ-QUIC-CRT-0127, REQ-QUIC-CRT-0128, REQ-QUIC-CRT-0129, REQ-QUIC-CRT-0130, and REQ-QUIC-CRT-0131 remain the landed ticket prerequisites, and REQ-QUIC-CRT-0132 remains a narrow PSK-attempt slice rather than a claimed resumed-handshake implementation."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0001.cs",
+    "docs/design/quic-interop-prep-plan.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "scripts/Validate-SpecTraceJson.ps1",
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- A managed client/runtime path with eligible dormant detached material emits a ClientHello that contains `psk_key_exchange_modes`, `pre_shared_key`, and a binder derived from the dormant carrier.\n- The emitted ClientHello keeps early data explicitly closed and preserves the existing bootstrap ClientHello when no eligible dormant carrier is present.\n- The slice does not claim resumed-handshake success, 0-RTT packet support, replay ownership, or any public API widening."
+    }
+  ],
+  "status_summary": "This verification artifact records the landed client-side PSK-attempt slice and points at the requirement-home and runtime evidence that proves the dormant carrier is consumed in the ClientHello attempt path. The bridge-state ingress seam, the internal post-Finished seam, the client-side OneRtt ingress follow-on, the detached handoff slice, and the detached credential-capture slice remain traced separately under REQ-QUIC-CRT-0128 through REQ-QUIC-CRT-0131.",
+  "procedure": [
+    "Inspect the detached carrier, client runtime bootstrap, key schedule, bridge driver, and transcript seams for emitted PSK-attempt ClientHello bytes distinct from the non-resumption bootstrap path.",
+    "Verify that the ClientHello includes `psk_key_exchange_modes`, `pre_shared_key`, a correctly computed binder, and an obfuscated ticket age derived from the dormant carrier.",
+    "Verify that early-data admission remains explicitly closed and that the non-resumption bootstrap path remains unchanged when no eligible dormant carrier is present.",
+    "Verify that server-role use does not participate in the PSK-attempt path.",
+    "Verify that the public surface still does not expose resumption or early-data promises.",
+    "Run the focused REQ_QUIC_CRT_0132 requirement-home tests for PSK-attempt ClientHello emission, binder proof, early-data closure, bootstrap fallback, server-role non-participation, the public no-PSK/no-resumption/no-early-data guard, and unchanged non-resumption handshake/bootstrap behavior.",
+    "Run the current CRT/API/INT guard set and the full `REQ_QUIC_CRT_` sweep.",
+    "Run repo-local SpecTrace validation and markdown render checks after the canonical JSON updates."
+  ],
+  "expected_result": "- A managed client/runtime path with eligible dormant detached material emits a PSK-capable ClientHello attempt that includes binder material derived from the dormant carrier.\n- The emitted ClientHello keeps early data closed, preserves the non-resumption bootstrap path when no dormant carrier is present, and does not claim resumed-handshake success.\n- The slice does not claim 0-RTT packet support, anti-replay, key update, transfer, retry, or any public API widening.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0030",
+    "WI-QUIC-CRT-0030"
+  ]
+}

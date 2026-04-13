@@ -1145,7 +1145,7 @@ Notes:
 - The extracted ticket bytes stay opaque and do not imply resumption, replay ownership, or early data.
 
 ## REQ-QUIC-CRT-0130 Export and hand off a detached opaque resumption-ticket carrier across client connection lifetimes
-In the client role, the library MUST be able to export an opaque detached resumption-ticket carrier from the current-lifetime owned resumption-ticket snapshot after REQ-QUIC-CRT-0127 has captured real ticket bytes, and a later managed client setup MUST be able to accept that carrier and store it as separate dormant internal state. The detached carrier MUST remain distinct from transient bridge-state ticket bytes and the current runtime-owned snapshot bytes, MUST keep handshake/bootstrap behavior unchanged when dormant state is present, MUST keep early-data admission explicitly closed before and after handoff, MUST keep the carrier opaque, MUST NOT derive PSKs, MUST NOT place the handed-off ticket into ClientHello, MUST NOT imply resumed-handshake or 0-RTT support, MUST NOT add anti-replay, MUST NOT widen public API or IsSupported, and MUST remain client-role only.
+In the client role, the library MUST be able to export an opaque detached resumption-ticket carrier from the current-lifetime owned resumption-ticket snapshot after REQ-QUIC-CRT-0127 has captured real ticket bytes, and a later managed client setup MUST be able to accept that carrier and store it as separate dormant internal state. The detached carrier MUST remain distinct from transient bridge-state ticket bytes and the current runtime-owned snapshot bytes, MUST keep early-data admission explicitly closed before and after handoff, MUST keep the carrier opaque, MUST remain client-role only, and, by itself, MUST NOT claim PSK derivation, resumed-handshake success, 0-RTT support, anti-replay, public API or IsSupported widening, or transfer or retry changes.
 
 Trace:
 - Source Refs:
@@ -1160,11 +1160,11 @@ Trace:
 
 Notes:
 - This is the smallest honest cross-lifetime handoff slice and remains narrower than any resumption or 0-RTT implementation.
-- The exported carrier is a detached copy of the owned snapshot; the later client setup stores it as dormant internal state and does not consume it during handshake.
+- The exported carrier is a detached copy of the owned snapshot; the later client setup stores it as dormant internal state, and any later ClientHello consumption is traced separately.
 - Server-role use remains out of scope for this slice.
 
 ## REQ-QUIC-CRT-0131 Capture the minimum detached resumption-credential material needed for a later resumption attempt
-In the client role, the library MUST expand the detached resumption-ticket carrier established by REQ-QUIC-CRT-0130 so that, after real post-Finished ticket ingress has been accepted, the originating managed client/runtime path retains the opaque ticket bytes, ticket nonce, ticket lifetime seconds, ticket age add, capture timestamp, and the handshake-derived resumption master secret. A later managed client setup MUST be able to accept that richer carrier and store it as separate dormant internal state without changing handshake/bootstrap behavior. The carrier MUST remain immutable and opaque, MUST remain distinct from transient bridge-state storage and the current runtime-owned snapshot, MUST keep early-data admission explicitly closed before and after capture and handoff, MUST remain client-role only, and MUST NOT derive or use a PSK in ClientHello, MUST NOT emit a binder or claim resumed-handshake or 0-RTT support, MUST NOT add anti-replay, MUST NOT widen public API or IsSupported, and MUST NOT alter transfer or retry contracts.
+In the client role, the library MUST expand the detached resumption-ticket carrier established by REQ-QUIC-CRT-0130 so that, after real post-Finished ticket ingress has been accepted, the originating managed client/runtime path retains the opaque ticket bytes, ticket nonce, ticket lifetime seconds, ticket age add, capture timestamp, and the handshake-derived resumption master secret. A later managed client setup MUST be able to accept that richer carrier and store it as separate dormant internal state before any later resumption-attempt logic consumes it. The carrier MUST remain immutable and opaque, MUST remain distinct from transient bridge-state storage and the current runtime-owned snapshot, MUST keep early-data admission explicitly closed before and after capture and handoff, MUST remain client-role only, and, by itself, MUST NOT claim resumed-handshake or 0-RTT support, MUST NOT add anti-replay, MUST NOT widen public API or IsSupported, and MUST NOT alter transfer or retry contracts.
 
 Trace:
 - Source Refs:
@@ -1187,5 +1187,27 @@ Trace:
 
 Notes:
 - This slice is the narrow prerequisite for a later honest resumption attempt. It is not a resumed-handshake implementation.
-- The resumption master secret is carried only as internal material that a later client can use to derive the PSK; it is not consumed in the current handshake.
+- The resumption master secret is carried only as internal material that a later client can use to derive the PSK; any later ClientHello attempt is traced separately.
 - Server-role use remains out of scope for this slice.
+
+## REQ-QUIC-CRT-0132 Build a PSK-capable ClientHello attempt from dormant detached resumption material
+In the client role, the library MUST consume an eligible dormant detached resumption-ticket carrier established by REQ-QUIC-CRT-0131 to build the managed Initial ClientHello as a PSK-capable attempt. The emitted ClientHello MUST include `psk_key_exchange_modes` with `psk_dhe_ke`, a `pre_shared_key` extension whose identity is derived from the opaque ticket bytes and whose binder is derived from the resumption master secret and ticket nonce, and it MUST keep early-data admission explicitly closed. When no eligible dormant carrier is present, the existing bootstrap ClientHello MUST remain unchanged. The slice MUST remain client-role only, MUST NOT claim resumed-handshake success or 0-RTT, MUST NOT widen public API or IsSupported, MUST NOT alter transfer or retry contracts, and MUST keep the minimum server-side transcript parser acceptance limited to the emitted PSK-attempt ClientHello rather than a general post-handshake engine.
+
+Trace:
+- Source Refs:
+  - RFC 8446 Section 4.2.11.1
+  - RFC 8446 Section 4.2.11.2
+  - RFC 8446 Section 7.1
+  - docs/design/quic-interop-prep-plan.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs
+  - src/Incursa.Quic/QuicTlsKeySchedule.cs
+  - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
+  - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs
+
+Notes:
+- The dormant carrier is only consumed when it has the credential material needed for a truthful PSK attempt and the ticket remains eligible.
+- The binder and obfuscated ticket age are derived from the dormant carrier and the current monotonic age, not from a public API change.
+- The emitted ClientHello is a PSK attempt, not a claim of resumed-handshake success.

@@ -1,0 +1,44 @@
+{
+  "title": "QUIC CRT client-side ClientHello PSK-attempt work item",
+  "verification_links": [
+    "VER-QUIC-CRT-0030"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_type": "work_item",
+  "completion_notes": "This is the landed client-side PSK-attempt slice. The managed client/runtime path now consumes the dormant detached carrier to emit a PSK-capable ClientHello with binder material while keeping early data closed, but it does not claim resumed-handshake success or any public early-data promise.",
+  "out_of_scope": [
+    "public API widening",
+    "resumed handshake support",
+    "0-RTT packet send/receive support",
+    "anti-replay behavior",
+    "broad support for arbitrary post-handshake TLS messages",
+    "fake replay or fake resumption success paths",
+    "transfer enablement",
+    "retry enablement",
+    "key update",
+    "broader session-management infrastructure",
+    "opportunistic refactors unrelated to the ClientHello PSK-attempt seam"
+  ],
+  "status": "landed",
+  "domain": "quic",
+  "summary": "Consume the dormant detached resumption carrier to emit a PSK-capable ClientHello attempt on the managed client/runtime path while keeping early data closed and leaving resumed-handshake success out of scope.",
+  "verification_plan": "Run focused requirement-home tests for PSK-capable ClientHello attempt construction from dormant detached material, binder proof, early-data closure, bootstrap fallback without dormant material, server-role non-participation, the public no-PSK/no-resumption/no-early-data guard, and unchanged non-resumption handshake/bootstrap behavior; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs`](../../../src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0132.cs)\n- [`docs/design/quic-interop-prep-plan.md`](../../../docs/design/quic-interop-prep-plan.md)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)"
+    }
+  ],
+  "planned_changes": "- The runtime bootstrap path consumes the dormant detached resumption carrier when it is eligible and keeps the existing bootstrap ClientHello when it is not.\n- The key schedule constructs a PSK-capable ClientHello with `psk_key_exchange_modes`, `pre_shared_key`, obfuscated ticket age, and binder bytes derived from the dormant carrier.\n- The managed transcript parser accepts the emitted PSK-attempt ClientHello without becoming a general post-handshake TLS engine.\n- Focused requirement-home tests cover PSK-attempt ClientHello emission, binder proof, early-data closure, bootstrap fallback, server-role non-participation, and the public no-PSK/no-resumption/no-early-data guard.\n- Resumed-handshake success, 0-RTT packet processing, transfer, retry, key update, and any public API widening remain out of scope.",
+  "design_links": [
+    "ARC-QUIC-CRT-0030"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0132"
+  ],
+  "artifact_id": "WI-QUIC-CRT-0030"
+}

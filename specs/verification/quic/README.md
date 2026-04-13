@@ -53,6 +53,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0027.json`](VER-QUIC-CRT-0027.json): canonical CRT client-side 1-RTT post-handshake ticket ingress verification source
 - [`VER-QUIC-CRT-0028.json`](VER-QUIC-CRT-0028.json): canonical CRT detached resumption-ticket carrier handoff verification source
 - [`VER-QUIC-CRT-0029.json`](VER-QUIC-CRT-0029.json): canonical CRT detached resumption-credential material capture verification source
+- [`VER-QUIC-CRT-0030.json`](VER-QUIC-CRT-0030.json): canonical CRT client-side ClientHello PSK-attempt verification source
 
 ## Notes
 
