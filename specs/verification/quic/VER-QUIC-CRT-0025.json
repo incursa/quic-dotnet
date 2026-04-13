@@ -1,0 +1,50 @@
+{
+  "title": "QUIC CRT resumption-ticket ownership and early-data gate verification",
+  "preconditions": [
+    "The repository builds successfully on net10.0.",
+    "The current client TLS, server client-auth, transfer, and retry floors remain green.",
+    "REQ-QUIC-CRT-0127 remains a narrow prerequisite slice rather than a claimed 0-RTT implementation."
+  ],
+  "verification_method": "Execution, inspection, and regression evidence.",
+  "owner": "quic-maintainers",
+  "artifact_type": "verification",
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "status": "planned",
+  "domain": "quic",
+  "verifies": [
+    "REQ-QUIC-CRT-0127"
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "docs/design/quic-interop-prep-plan.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "scripts/Test-SpecTraceRepository.ps1",
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- The managed client/runtime path owns opaque resumption-ticket state.\n- The early-data gate stays closed until that owned state exists and can be replayed.\n- The slice does not claim PSK derivation, 0-RTT packet support, or any public API widening."
+    }
+  ],
+  "status_summary": "This verification artifact records the first honest 0-RTT prerequisite as a planned slice; implementation evidence does not exist yet.",
+  "scope": "Verify opaque resumption-ticket ownership and explicit early-data gating without claiming any 0-RTT packet path.",
+  "procedure": [
+    "Inspect the client host/runtime/bridge seams for owned resumption-ticket capture and retention.",
+    "Verify that early-data admission remains closed until ticket state exists.",
+    "Add focused requirement-home tests for ticket capture, replay handoff, and negative 0-RTT admission once the runtime seam exists.",
+    "Run the current CRT/API/INT guard set and the full `REQ_QUIC_CRT_` sweep.",
+    "Run repo-local SpecTrace validation and markdown render checks after the canonical JSON updates."
+  ],
+  "expected_result": "- The managed path owns opaque ticket state and uses it as the only future early-data prerequisite.\n- The slice does not claim PSK derivation, 0-RTT packet support, or anti-replay guarantees beyond the owned state.\n- Existing handshake, client TLS, server client-auth, transfer, and retry floors remain unchanged.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0025",
+    "WI-QUIC-CRT-0025"
+  ],
+  "artifact_id": "VER-QUIC-CRT-0025"
+}

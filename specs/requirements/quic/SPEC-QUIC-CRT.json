@@ -1240,7 +1240,7 @@
     {
       "id": "REQ-QUIC-CRT-0124",
       "title": "Request and validate client certificates on the existing server-auth carrier",
-      "statement": "In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true, the library MUST emit one TLS 1.3 `CertificateRequest` on the local server flight, accept one inbound client `Certificate` / `CertificateVerify` / `Finished` sequence for that request context, and surface client-certificate acceptance only through the existing `RemoteCertificateValidationCallback` seam on that same `SslServerAuthenticationOptions` carrier. This slice MUST remain separate from explicit `CertificateChainPolicy` and `CertificateRevocationCheckMode` customization, broader PKI behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.",
+      "statement": "In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true, the library MUST emit one TLS 1.3 `CertificateRequest` on the local server flight, accept one inbound client `Certificate` / `CertificateVerify` / `Finished` sequence for that request context, and surface client-certificate acceptance only through the existing `RemoteCertificateValidationCallback` seam on that same `SslServerAuthenticationOptions` carrier. This slice MUST remain separate from the server-side `CertificateChainPolicy` follow-on in `REQ-QUIC-CRT-0125`, the standalone `CertificateRevocationCheckMode` floor in `REQ-QUIC-CRT-0126`, broader PKI behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.",
       "trace": {
         "upstream_refs": [
           "docs/design/quic-public-api-gap-matrix.md",
@@ -1264,7 +1264,92 @@
         "This is the smallest server-side client-auth floor and remains server-role only.",
         "The server-side transcript must stay separate from the client-role peer-certificate floor in REQ-QUIC-CRT-0123.",
         "The client-side certificate-presentation path is a separate prerequisite and does not belong to this clause.",
-        "CertificateChainPolicy and CertificateRevocationCheckMode remain deferred until the server-auth floor is proven end to end."
+        "Server-side CertificateChainPolicy customization is traced separately in REQ-QUIC-CRT-0125.",
+        "Standalone CertificateRevocationCheckMode is traced separately in REQ-QUIC-CRT-0126."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0125",
+      "title": "Honor server-side CertificateChainPolicy on the existing callback-driven client-auth path",
+      "statement": "In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true and `RemoteCertificateValidationCallback` is supplied, the library MUST honor `SslServerAuthenticationOptions.CertificateChainPolicy` on that same carrier by delegating presented-client-certificate evaluation to BCL `X509Chain` / `X509ChainPolicy` primitives before invoking the callback. The callback MUST observe the built chain and computed `SslPolicyErrors`, and absent callback override the library MUST fail closed when that delegated policy evaluation does not succeed. This slice MUST remain separate from the standalone `CertificateRevocationCheckMode` floor in `REQ-QUIC-CRT-0126`, broader PKI or path-building behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.",
+      "trace": {
+        "upstream_refs": [
+          "docs/design/quic-public-api.md",
+          "docs/design/quic-public-api-gap-matrix.md",
+          "docs/design/quic-interop-prep-plan.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "src/Incursa.Quic/QuicServerConnectionOptions.cs",
+          "src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs",
+          "src/Incursa.Quic/QuicListenerHost.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\src\\System\\Net\\Quic\\QuicConnection.cs",
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\src\\System\\Net\\Quic\\QuicConnection.SslConnectionOptions.cs",
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Security\\src\\System\\Net\\Security\\SslAuthenticationOptions.cs",
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\MsQuicTests.cs"
+        ]
+      },
+      "notes": [
+        "This is a narrow server-role follow-on to REQ-QUIC-CRT-0124 and does not widen the public carrier shape.",
+        "The delegated proof floor is limited to CertificateChainPolicy-driven chain evaluation plus callback-visible chain and policy errors.",
+        "Standalone CertificateRevocationCheckMode without CertificateChainPolicy is traced separately in REQ-QUIC-CRT-0126.",
+        "QuicPeerCertificatePolicy remains the separate exact-pinning path for the client role under REQ-QUIC-CRT-0123."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0126",
+      "title": "Honor server-side CertificateRevocationCheckMode on the existing callback-driven client-auth path",
+      "statement": "In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true and `RemoteCertificateValidationCallback` is supplied, the library MUST honor `SslServerAuthenticationOptions.CertificateRevocationCheckMode` on that same carrier by mapping the standalone revocation mode into the BCL `X509Chain` used for presented-client-certificate evaluation before invoking the callback. This floor applies only when `CertificateChainPolicy` is absent; mixed `CertificateChainPolicy` plus standalone `CertificateRevocationCheckMode` remains unsupported on this slice. This slice MUST remain separate from `REQ-QUIC-CRT-0125`, broader PKI or path-building behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.",
+      "trace": {
+        "upstream_refs": [
+          "docs/design/quic-public-api.md",
+          "docs/design/quic-public-api-gap-matrix.md",
+          "docs/design/quic-interop-prep-plan.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "src/Incursa.Quic/QuicServerConnectionOptions.cs",
+          "src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs",
+          "src/Incursa.Quic/QuicListenerHost.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\src\\System\\Net\\Quic\\QuicConnection.cs",
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\src\\System\\Net\\Quic\\QuicConnection.SslConnectionOptions.cs",
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Security\\src\\System\\Net\\Security\\SslAuthenticationOptions.cs",
+          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Security\\src\\System\\Net\\Security\\SslStream.Protocol.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0126.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs"
+        ]
+      },
+      "notes": [
+        "This is the smallest standalone server-side revocation floor and remains server-role only.",
+        "The server-side transcript must stay separate from the client-role peer-certificate floor in REQ-QUIC-CRT-0123.",
+        "The client-side certificate-presentation path is a separate prerequisite and does not belong to this clause.",
+        "The callback-driven CertificateChainPolicy floor remains traced separately in REQ-QUIC-CRT-0125.",
+        "Broader PKI/path-building, 0-RTT, key update, transfer, retry, and mixed policy configuration remain out of scope."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0127",
+      "title": "Own opaque resumption-ticket state and keep early data gated closed",
+      "statement": "In the client role, the library MUST own opaque resumption-ticket state on the managed connection path, capture and retain one server-issued ticket through the later connection replay boundary, and keep the early-data gate explicitly closed until that owned state is present and replayable. This slice MUST NOT derive PSKs, send or accept 0-RTT payloads, add anti-replay guarantees, widen the public API, or alter transfer or retry contracts.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Sections 5.3, 7.4.1, 17.2.3, and 17.2.5",
+          "RFC 9002 Sections 6.2.2 and 6.4",
+          "connection-runtime-state-machine.md",
+          "docs/design/quic-interop-prep-plan.md",
+          "src/Incursa.Quic/QuicClientConnectionHost.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs",
+          "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+          "src/Incursa.Quic/QuicTransportTlsBridgeState.cs"
+        ]
+      },
+      "notes": [
+        "This is the smallest honest 0-RTT prerequisite and remains narrower than any 0-RTT data-path slice.",
+        "The owned ticket state is opaque bytes plus replay metadata; it is not a PSK and it does not imply a packet parser or sender change.",
+        "The server-side acceptance/replay story and any remembered transport-parameter follow-on remain separate work."
       ]
     }
   ]

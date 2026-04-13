@@ -1,0 +1,50 @@
+{
+  "title": "QUIC CRT server revocation callback path verification",
+  "preconditions": [
+    "The Incursa.Quic library builds successfully on net10.0.",
+    "The callback-driven ClientCertificateRequired floor from REQ-QUIC-CRT-0124 remains in place.",
+    "The server runtime/bridge delegates standalone CertificateRevocationCheckMode-driven client-certificate evaluation to BCL X509Chain primitives when CertificateChainPolicy is absent."
+  ],
+  "verification_method": "Execution, inspection, and regression evidence.",
+  "owner": "quic-maintainers",
+  "artifact_type": "verification",
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "status": "planned",
+  "domain": "quic",
+  "verifies": [
+    "REQ-QUIC-CRT-0126"
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0126.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0013.cs",
+    "scripts/Validate-SpecTraceJson.ps1"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- The server callback-driven ClientCertificateRequired path now accepts standalone CertificateRevocationCheckMode and passes a built X509Chain plus computed SslPolicyErrors into the existing callback when CertificateChainPolicy is absent.\n- A mixed CertificateChainPolicy plus standalone revocation configuration is rejected on this slice.\n- The existing callback-driven floor, missing-client-certificate failure, server chain-policy floor, mainstream client TLS mode, exact pinning floor, transfer contract, retry contract, and unsupported broader settings remain unchanged."
+    }
+  ],
+  "status_summary": "This verification artifact covers the narrow server-side standalone CertificateRevocationCheckMode floor on the callback-driven ClientCertificateRequired path while leaving mixed policy handling unsupported.",
+  "scope": "Verify server-side standalone CertificateRevocationCheckMode delegation on the existing callback-driven ClientCertificateRequired path and its regression boundaries without widening broader policy promises.",
+  "procedure": [
+    "Run the focused server revocation requirement-home tests and the existing callback-driven ClientCertificateRequired tests.",
+    "Run the current CRT, API, and INT guards that must remain unchanged, especially the mainstream client TLS and exact-pinning floors plus the transfer/retry contracts.",
+    "Run the full `REQ_QUIC_CRT_` sweep.",
+    "Run the repo-local SpecTrace validation and markdown rendering checks after the canonical JSON updates."
+  ],
+  "expected_result": "- The server callback-driven ClientCertificateRequired path now honors standalone CertificateRevocationCheckMode through BCL X509Chain delegation when CertificateChainPolicy is absent.\n- Mixed CertificateChainPolicy plus standalone revocation is rejected on this slice.\n- The existing callback-driven floor, missing-client-certificate failure, server chain-policy floor, mainstream client TLS, exact pinning, transfer, retry, 0-RTT, and key update posture remain unchanged.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0024",
+    "WI-QUIC-CRT-0024"
+  ],
+  "artifact_id": "VER-QUIC-CRT-0024"
+}

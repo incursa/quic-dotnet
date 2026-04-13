@@ -37,6 +37,8 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-API-0002.json`](WI-QUIC-API-0002.json): canonical initial stream-capacity callback work item
 - [`WI-QUIC-API-0003.json`](WI-QUIC-API-0003.json): canonical explicit pinned identity and trust-material client-policy work item
 - [`WI-QUIC-API-0004.json`](WI-QUIC-API-0004.json): canonical hostname-based peer identity and trust-anchor work item
+- [`WI-QUIC-CRT-0024.json`](WI-QUIC-CRT-0024.json): canonical CRT server revocation callback path work item
+- [`WI-QUIC-CRT-0025.json`](WI-QUIC-CRT-0025.json): canonical CRT resumption-ticket ownership and early-data gate work item
 
 ## Notes
 

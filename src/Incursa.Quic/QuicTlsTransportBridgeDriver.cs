@@ -16,6 +16,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private const int Sha256FingerprintLength = 32;
     private const ushort PeerCertificatePolicyMismatchAlertDescription = 0x0031;
     private const string ServerAuthenticationOid = "1.3.6.1.5.5.7.3.1";
+    private const string ClientAuthenticationOid = "1.3.6.1.5.5.7.3.2";
     private static readonly IdnMapping s_idnMapping = new();
     private static readonly SearchValues<char> s_safeDnsChars =
         SearchValues.Create("-.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz");
@@ -27,6 +28,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private readonly SslClientAuthenticationOptions? clientAuthenticationOptions;
     private readonly byte[]? pinnedPeerLeafCertificateSha256;
     private readonly RemoteCertificateValidationCallback? remoteCertificateValidationCallback;
+    private X509ChainPolicy? serverClientCertificateChainPolicy;
+    private X509RevocationMode serverClientCertificateRevocationCheckMode = X509RevocationMode.NoCheck;
     private RemoteCertificateValidationCallback? serverRemoteCertificateValidationCallback;
     private ReadOnlyMemory<byte> localServerLeafCertificateDer;
     private ReadOnlyMemory<byte> localServerLeafSigningPrivateKey;
@@ -117,6 +120,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         ReadOnlyMemory<byte> certificateDer,
         ReadOnlyMemory<byte> signingPrivateKey,
         bool clientCertificateRequired = false,
+        X509ChainPolicy? serverClientCertificateChainPolicy = null,
+        X509RevocationMode serverClientCertificateRevocationCheckMode = X509RevocationMode.NoCheck,
         RemoteCertificateValidationCallback? serverRemoteCertificateValidationCallback = null)
     {
         if (Role != QuicTlsRole.Server
@@ -127,6 +132,25 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
 
         if (clientCertificateRequired && serverRemoteCertificateValidationCallback is null)
+        {
+            return false;
+        }
+
+        if (clientCertificateRequired
+            && serverClientCertificateChainPolicy is not null
+            && serverClientCertificateRevocationCheckMode != X509RevocationMode.NoCheck)
+        {
+            return false;
+        }
+
+        if (!clientCertificateRequired
+            && serverClientCertificateChainPolicy is not null)
+        {
+            return false;
+        }
+
+        if (!clientCertificateRequired
+            && serverClientCertificateRevocationCheckMode != X509RevocationMode.NoCheck)
         {
             return false;
         }
@@ -146,6 +170,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         localServerLeafCertificateDer = certificateDer.ToArray();
         localServerLeafSigningPrivateKey = signingPrivateKey.ToArray();
         serverClientCertificateRequired = clientCertificateRequired;
+        this.serverClientCertificateChainPolicy = serverClientCertificateChainPolicy?.Clone();
+        this.serverClientCertificateRevocationCheckMode = serverClientCertificateRevocationCheckMode;
         this.serverRemoteCertificateValidationCallback = serverRemoteCertificateValidationCallback;
         handshakeTranscriptProgress.ConfigureServerClientAuthentication(clientCertificateRequired);
         keySchedule?.ConfigureServerClientAuthentication(clientCertificateRequired);
@@ -704,13 +730,33 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
         using (peerCertificate)
         {
+            X509Chain? chain = null;
+            SslPolicyErrors sslPolicyErrors = SslPolicyErrors.RemoteCertificateChainErrors;
+
             try
             {
+                if (serverClientCertificateChainPolicy is not null)
+                {
+                    chain = new X509Chain();
+                    ConfigureServerClientCertificateChainPolicy(chain, serverClientCertificateChainPolicy);
+                    sslPolicyErrors = chain.Build(peerCertificate)
+                        ? SslPolicyErrors.None
+                        : SslPolicyErrors.RemoteCertificateChainErrors;
+                }
+                else if (serverClientCertificateRevocationCheckMode != X509RevocationMode.NoCheck)
+                {
+                    chain = new X509Chain();
+                    ConfigureServerClientCertificateRevocationCheckMode(chain, serverClientCertificateRevocationCheckMode);
+                    sslPolicyErrors = chain.Build(peerCertificate)
+                        ? SslPolicyErrors.None
+                        : SslPolicyErrors.RemoteCertificateChainErrors;
+                }
+
                 bool accepted = serverRemoteCertificateValidationCallback(
                     sender: this,
                     certificate: peerCertificate,
-                    chain: null,
-                    sslPolicyErrors: SslPolicyErrors.RemoteCertificateChainErrors);
+                    chain: chain,
+                    sslPolicyErrors: sslPolicyErrors);
 
                 return accepted
                     ? PublishUpdate(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted))
@@ -724,6 +770,40 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                     "The remote certificate validation callback failed.",
                     ex);
             }
+            finally
+            {
+                chain?.Dispose();
+            }
+        }
+    }
+
+    private static void ConfigureServerClientCertificateChainPolicy(
+        X509Chain chain,
+        X509ChainPolicy serverClientCertificateChainPolicy)
+    {
+        ArgumentNullException.ThrowIfNull(chain);
+        ArgumentNullException.ThrowIfNull(serverClientCertificateChainPolicy);
+
+        chain.ChainPolicy = serverClientCertificateChainPolicy.Clone();
+
+        if (chain.ChainPolicy.ApplicationPolicy.Count == 0)
+        {
+            chain.ChainPolicy.ApplicationPolicy.Add(new Oid(ClientAuthenticationOid));
+        }
+    }
+
+    private static void ConfigureServerClientCertificateRevocationCheckMode(
+        X509Chain chain,
+        X509RevocationMode serverClientCertificateRevocationCheckMode)
+    {
+        ArgumentNullException.ThrowIfNull(chain);
+
+        chain.ChainPolicy.RevocationMode = serverClientCertificateRevocationCheckMode;
+        chain.ChainPolicy.RevocationFlag = X509RevocationFlag.ExcludeRoot;
+
+        if (chain.ChainPolicy.ApplicationPolicy.Count == 0)
+        {
+            chain.ChainPolicy.ApplicationPolicy.Add(new Oid(ClientAuthenticationOid));
         }
     }
 

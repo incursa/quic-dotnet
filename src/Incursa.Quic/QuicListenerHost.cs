@@ -267,8 +267,16 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 }
 
                 IPEndPoint receivedFrom = (IPEndPoint)receiveResult.RemoteEndPoint;
-                IPEndPoint localEndPoint = (IPEndPoint)socket.LocalEndPoint!;
-                QuicConnectionPathIdentity pathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
+                QuicConnectionPathIdentity pathIdentity;
+                try
+                {
+                    IPEndPoint localEndPoint = (IPEndPoint)socket.LocalEndPoint!;
+                    pathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
+                }
+                catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
+                {
+                    break;
+                }
 
                 byte[] datagram = buffer.AsSpan(0, receiveResult.ReceivedBytes).ToArray();
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, pathIdentity);
@@ -512,6 +520,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     validatedOptions.ServerLeafCertificateDer,
                     validatedOptions.ServerLeafSigningPrivateKey,
                     selectedOptions.ServerAuthenticationOptions.ClientCertificateRequired,
+                    selectedOptions.ServerAuthenticationOptions.CertificateChainPolicy,
+                    selectedOptions.ServerAuthenticationOptions.CertificateRevocationCheckMode,
                     selectedOptions.ServerAuthenticationOptions.RemoteCertificateValidationCallback))
             {
                 return false;

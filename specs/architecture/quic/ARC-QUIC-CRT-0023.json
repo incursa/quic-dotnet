@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0023",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC CRT server chain-policy callback path architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the smallest honest server-side CertificateChainPolicy follow-on on the existing SslServerAuthenticationOptions carrier, reusing the already-landed callback-driven ClientCertificateRequired path while delegating client-certificate evaluation to BCL X509 chain primitives.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0023",
+    "VER-QUIC-CRT-0023"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0125"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs"
+  ],
+  "risks": [
+    "If the validator opens CertificateChainPolicy without the runtime delegating to X509Chain, the public boundary will overclaim behavior that still collapses to chain=null in the callback.",
+    "If the runtime treats CertificateChainPolicy as a custom policy engine instead of passing it through to BCL X509 primitives, the slice will drift into broader PKI behavior that the repository has not proven.",
+    "If standalone CertificateRevocationCheckMode is opened on the same pass without deterministic proof, the supported boundary will overclaim a second policy input."
+  ],
+  "design_summary": "The narrow follow-on keeps the existing callback-driven ClientCertificateRequired path and adds one delegated chain-evaluation seam beneath it. The listener validator admits CertificateChainPolicy only when the callback-driven server-auth path is already enabled, the runtime threads the selected SslServerAuthenticationOptions into the bridge, and the transport bridge creates an X509Chain for the presented client certificate, clones the supplied CertificateChainPolicy into that chain, adds the client-auth EKU when the policy leaves ApplicationPolicy empty, builds the chain, computes SslPolicyErrors, and then invokes the existing callback with the built chain and computed errors. Standalone CertificateRevocationCheckMode, broader PKI/path building, and any public surface widening remain out of scope.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This architecture slice covers only server-side CertificateChainPolicy delegation on the callback-driven ClientCertificateRequired path. It does not add a new public carrier, a new callback surface, standalone revocation-mode support, or broader client-auth parity."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs`](../../../src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs)\n- [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs)"
+    }
+  ]
+}

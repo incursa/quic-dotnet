@@ -44,7 +44,7 @@ This pass promotes the consumer-lifetime facade that is already backed by the ex
 The following remain intentionally out of scope for this pass:
 
 - combined `Abort(Both, ...)`
-- broader server-side chain/revocation customization beyond the callback-driven `ClientCertificateRequired` floor on the existing `SslServerAuthenticationOptions` carrier
+- broader server-side client-auth beyond the callback-driven `ClientCertificateRequired` plus `CertificateChainPolicy` and standalone `CertificateRevocationCheckMode` floors on the existing `SslServerAuthenticationOptions` carrier
 - `0-RTT`
 - key update
 - interop-runner enablement
@@ -89,7 +89,9 @@ This pass promotes the connection/stream facade, the listener/server entry surfa
 - `REQ-QUIC-API-0011` covers the shared runtime capability marker on `QuicConnection` and `QuicListener`.
 - `REQ-QUIC-API-0012` defines and now lands the narrow public client-policy carrier `QuicClientConnectionOptions.PeerCertificatePolicy` with the `QuicPeerCertificatePolicy` payload for exact pinned peer identity and explicit trust material, and it keeps that carrier separate from the mainstream BCL-shaped validation path.
 - `REQ-QUIC-API-0013` now lands the mainstream standard client-validation path on the existing `SslClientAuthenticationOptions` carrier, honoring `TargetHost`, `CertificateChainPolicy`, `CertificateRevocationCheckMode`, and callback overrides while keeping `QuicPeerCertificatePolicy` as the separate exact-pinning floor.
-- `REQ-QUIC-CRT-0124` now lands the narrow server-side `ClientCertificateRequired` floor on the existing `SslServerAuthenticationOptions` carrier, with callback-driven acceptance on that path and explicit chain/revocation customization deferred.
+- `REQ-QUIC-CRT-0124` now lands the narrow server-side `ClientCertificateRequired` floor on the existing `SslServerAuthenticationOptions` carrier, with callback-driven acceptance on that path and the narrow chain/revocation follow-ons traced separately.
+- `REQ-QUIC-CRT-0125` now lands the narrow server-side `CertificateChainPolicy` follow-on on that same callback-driven `ClientCertificateRequired` path.
+- `REQ-QUIC-CRT-0126` now lands the standalone server-side `CertificateRevocationCheckMode` floor on that same callback-driven `ClientCertificateRequired` path when `CertificateChainPolicy` is absent.
 
 ## Public Member Shape
 
@@ -134,6 +136,15 @@ The mainstream client-validation question is now closed on the existing `SslClie
 - Mixed configuration between the exact-pinning floor and the standard validation inputs is rejected so the supported boundary stays honest.
 
 This does not imply a new QUIC-specific validation policy type, `TargetHostName` public projection, broader client-auth, `0-RTT`, key update, transfer, or retry.
+
+## Server-Side Client Validation
+
+The server-auth question is now split into narrow floors on the existing `SslServerAuthenticationOptions` carrier.
+
+- `ClientCertificateRequired` remains the gate that enables the server-role client-certificate transcript.
+- `CertificateChainPolicy` is honored through BCL `X509Chain` trust evaluation on the callback-driven path in `REQ-QUIC-CRT-0125`.
+- `CertificateRevocationCheckMode` is honored through BCL `X509Chain` revocation configuration on that same callback-driven path when `CertificateChainPolicy` is absent in `REQ-QUIC-CRT-0126`.
+- Mixed `CertificateChainPolicy` plus standalone `CertificateRevocationCheckMode` remains unsupported on this slice.
 
 ## Internal-Only Boundary
 

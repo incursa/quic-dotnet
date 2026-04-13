@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0024",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC CRT server revocation callback path architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the smallest honest server-side CertificateRevocationCheckMode floor on the existing SslServerAuthenticationOptions carrier, reusing the already-landed callback-driven ClientCertificateRequired path while delegating standalone revocation to BCL X509 chain primitives when CertificateChainPolicy is absent.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0024",
+    "VER-QUIC-CRT-0024"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0126"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0126.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs"
+  ],
+  "risks": [
+    "If the validator admits standalone CertificateRevocationCheckMode without threading it to the bridge, the public boundary will overclaim a promise that still behaves like the old reject-first slice.",
+    "If the bridge builds a custom revocation path instead of delegating to X509Chain, the slice will drift into broader PKI behavior that the repository has not proven.",
+    "If mixed CertificateChainPolicy and standalone CertificateRevocationCheckMode is not kept separate, the supported boundary will overclaim a second policy input."
+  ],
+  "design_summary": "The narrow revocation follow-on keeps the existing callback-driven ClientCertificateRequired path and adds one standalone revocation seam beneath it. The listener validator admits CertificateRevocationCheckMode only when the callback-driven server-auth path is already enabled and no CertificateChainPolicy is supplied, the runtime threads the selected SslServerAuthenticationOptions into the bridge, and the transport bridge creates an X509Chain for the presented client certificate, maps the standalone revocation mode into the chain policy, adds the client-auth EKU when the policy leaves ApplicationPolicy empty, builds the chain, computes SslPolicyErrors, and then invokes the existing callback with the built chain and computed errors. CertificateChainPolicy remains the separate follow-on, and mixed CertificateChainPolicy plus standalone revocation, broader PKI/path building, and any public surface widening remain out of scope.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This architecture slice covers only standalone server-side CertificateRevocationCheckMode delegation on the callback-driven ClientCertificateRequired path. It does not add a new public carrier, a new callback surface, mixed CertificateChainPolicy handling, or broader client-auth parity."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs`](../../../src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs)\n- [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0126.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0126.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs)"
+    }
+  ]
+}

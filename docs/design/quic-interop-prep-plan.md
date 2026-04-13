@@ -90,7 +90,7 @@ Supported today:
 - Narrow TLS 1.3 proof slices.
 - The standard BCL-shaped client validation path on the existing `SslClientAuthenticationOptions` carrier, including `TargetHost`, `CertificateChainPolicy`, revocation delegation, and callback overrides.
 - The explicit pinned-leaf acceptance seam.
-- The callback-driven server-side `ClientCertificateRequired` floor on the existing `SslServerAuthenticationOptions` carrier, while broader chain/revocation customization stays deferred.
+- The callback-driven server-side `ClientCertificateRequired` floor on the existing `SslServerAuthenticationOptions` carrier, plus the narrow `CertificateChainPolicy` follow-on and standalone `CertificateRevocationCheckMode` floor on that same path when `CertificateChainPolicy` is absent.
 - The public `QuicClientConnectionOptions.PeerCertificatePolicy` plus `QuicPeerCertificatePolicy` carrier for exact peer leaf DER and explicit trust-material SHA-256, feeding the existing internal exact-match snapshot.
 - The reject-first supported subset of client TLS options already described in the public API docs, including the still-unsupported broader client-auth knobs.
 
@@ -103,8 +103,9 @@ Partially implemented but not yet promised:
 Still missing:
 
 - Broader client-auth or TLS-option support.
-- Broader server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier beyond the callback-driven `ClientCertificateRequired` floor traced by `REQ-QUIC-CRT-0124`.
+- Broader server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier beyond the callback-driven `ClientCertificateRequired` plus `CertificateChainPolicy` and standalone `CertificateRevocationCheckMode` floors traced by `REQ-QUIC-CRT-0124`, `REQ-QUIC-CRT-0125`, and `REQ-QUIC-CRT-0126`.
 - `0-RTT`.
+- The first honest 0-RTT prerequisite, tracked separately as `REQ-QUIC-CRT-0127`, `ARC-QUIC-CRT-0025`, `WI-QUIC-CRT-0025`, and `VER-QUIC-CRT-0025`, is still unimplemented; it is limited to opaque resumption-ticket ownership plus an explicit early-data gate and does not add PSK derivation or a 0-RTT packet path.
 - Key update.
 
 Why this stays separate:
@@ -192,6 +193,12 @@ Notes on dependency:
    - Goal: route the remaining unsupported interop testcases into the real endpoint-host path instead of returning `127`.
    - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch after the current proof floor is fixed. `handshake` is already wired into the managed bootstrap path, and the narrow child-process `retry` path is now handled separately.
    - Depends on: the client-role 1-RTT readiness seam, the TLS trust/policy slice, the current narrow stream slice staying stable, and any stream follow-ons that prove inseparable from the remaining cases.
+
+8. `Opaque resumption-ticket ownership and early-data gate`
+   - Goal: keep the first honest 0-RTT prerequisite traceable under `REQ-QUIC-CRT-0127`, `ARC-QUIC-CRT-0025`, `WI-QUIC-CRT-0025`, and `VER-QUIC-CRT-0025`.
+   - Focus: opaque resumption-ticket capture and replay ownership on the managed client/runtime path, with an explicit early-data gate that remains closed until that state exists.
+   - Status: identified. The runtime does not yet own this seam, so the repo cannot honestly claim 0-RTT support.
+   - Depends on: the client-role 1-RTT readiness seam and the current handshake/runtime proof floor.
 
 ## Do-Not-Widen Boundaries
 

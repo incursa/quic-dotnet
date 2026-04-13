@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net.Security;
 using System.Text;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Channels;
 
@@ -266,12 +267,16 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ReadOnlyMemory<byte> certificateDer,
         ReadOnlyMemory<byte> signingPrivateKey,
         bool clientCertificateRequired = false,
+        X509ChainPolicy? serverClientCertificateChainPolicy = null,
+        X509RevocationMode serverClientCertificateRevocationCheckMode = X509RevocationMode.NoCheck,
         RemoteCertificateValidationCallback? serverRemoteCertificateValidationCallback = null)
     {
         return tlsBridgeDriver.TryConfigureServerAuthenticationMaterial(
             certificateDer,
             signingPrivateKey,
             clientCertificateRequired,
+            serverClientCertificateChainPolicy,
+            serverClientCertificateRevocationCheckMode,
             serverRemoteCertificateValidationCallback);
     }
 

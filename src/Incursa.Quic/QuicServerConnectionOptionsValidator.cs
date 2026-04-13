@@ -54,15 +54,19 @@ internal static class QuicServerConnectionOptionsValidator
                 throw new NotSupportedException("ClientCertificateRequired requires a RemoteCertificateValidationCallback on this slice.");
             }
 
-            if (authenticationOptions.CertificateChainPolicy is not null)
+            if (authenticationOptions.CertificateChainPolicy is not null
+                && authenticationOptions.CertificateRevocationCheckMode != X509RevocationMode.NoCheck)
             {
-                throw new NotSupportedException("CertificateChainPolicy is not supported when ClientCertificateRequired is true on this slice.");
+                throw new NotSupportedException("Standalone CertificateRevocationCheckMode is not supported when CertificateChainPolicy is supplied on this slice. Use CertificateChainPolicy.RevocationMode on the supported server chain-policy path.");
             }
-
-            if (authenticationOptions.CertificateRevocationCheckMode != X509RevocationMode.NoCheck)
-            {
-                throw new NotSupportedException("CertificateRevocationCheckMode is not supported when ClientCertificateRequired is true on this slice.");
-            }
+        }
+        else if (authenticationOptions.CertificateChainPolicy is not null)
+        {
+            throw new NotSupportedException("CertificateChainPolicy is only supported on the callback-driven ClientCertificateRequired path on this slice.");
+        }
+        else if (authenticationOptions.CertificateRevocationCheckMode != X509RevocationMode.NoCheck)
+        {
+            throw new NotSupportedException("CertificateRevocationCheckMode is only supported on the callback-driven ClientCertificateRequired path on this slice.");
         }
 
         if (authenticationOptions.CipherSuitesPolicy is not null)

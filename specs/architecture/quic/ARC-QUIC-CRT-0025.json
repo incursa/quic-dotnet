@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0025",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC CRT resumption-ticket ownership and early-data gate architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the smallest honest 0-RTT prerequisite: opaque resumption-ticket ownership on the managed client/runtime path plus an explicit early-data gate that stays closed until ticket state exists.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0025",
+    "VER-QUIC-CRT-0025"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0127"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "src/Incursa.Quic/QuicPacketParsing.cs"
+  ],
+  "risks": [
+    "If ticket state is modeled as structured PSK or application policy data, the slice will overgrow into broad session-management infrastructure that the repository has not proven.",
+    "If the early-data gate is loosened before ticket state exists, the repo will claim 0-RTT support it cannot honestly provide.",
+    "If the gate changes the supported public boundary, the slice will widen beyond the current proof floor."
+  ],
+  "design_summary": "The current managed runtime already has a narrow Retry replay seam, but it does not own resumption-ticket state. This slice adds an opaque ticket carrier at the client host/runtime boundary, gives the TLS bridge a place to publish captured ticket bytes into that carrier, and keeps early-data admission closed until that state exists. No PSK derivation, 0-RTT packet path, or anti-replay story is added here.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice covers only opaque resumption-ticket ownership and an explicit early-data gate. It does not add 0-RTT packet processing, PSK derivation, or a public API expansion."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs`](../../../src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicPacketParser.cs`](../../../src/Incursa.Quic/QuicPacketParser.cs)\n- [`src/Incursa.Quic/QuicPacketParsing.cs`](../../../src/Incursa.Quic/QuicPacketParsing.cs)\n- [`docs/design/quic-interop-prep-plan.md`](../../../docs/design/quic-interop-prep-plan.md)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)"
+    }
+  ]
+}
