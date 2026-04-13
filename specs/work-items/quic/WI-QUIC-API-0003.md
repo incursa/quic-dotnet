@@ -21,7 +21,7 @@ related_artifacts:
 
 ## Summary
 
-Define the public client-policy carrier for exact pinned peer identity and explicit trust material, and align the public API specification and companion docs with the existing internal snapshot seam without changing runtime behavior.
+Implement `QuicClientConnectionOptions.PeerCertificatePolicy` and `QuicPeerCertificatePolicy`, wire the carrier into the existing internal snapshot seam, and align the public API trace with the landed exact-match floor.
 
 ## Requirements Addressed
 
@@ -33,32 +33,29 @@ Define the public client-policy carrier for exact pinned peer identity and expli
 
 ## Planned Changes
 
-- Add the new public client-policy carrier shape to the API specification as a future public-input contract.
-- Update the public API companion docs and gap ledger to call out the exact pinned identity/trust-material pair and its internal snapshot mapping.
-- Keep the validator, runtime, and bridge implementation unchanged in this slice.
-- Preserve the reject-first client behavior and the unsupported `TargetHost` / `CertificateChainPolicy` boundary until a later implementation slice.
-- Do not add OS trust-store, revocation, broader client-auth, hostname-validation, transfer, or retry work.
+- Add `QuicPeerCertificatePolicy` and `QuicClientConnectionOptions.PeerCertificatePolicy` as the exact public carrier for the peer leaf DER and explicit trust-material SHA-256 pair.
+- Translate that carrier in `QuicClientConnectionOptionsValidator` into the existing internal `QuicClientCertificatePolicySnapshot` without changing the host/runtime/bridge seam beyond the current snapshot path.
+- Add focused requirement-home proof for public capture, exact-byte preservation, supported exact-match success, and fail-closed mismatch behavior.
+- Keep `TargetHost` and `CertificateChainPolicy` rejected, and do not add OS trust-store, revocation, broader client-auth, hostname-validation, transfer, or retry work.
 
 ## Out of Scope
 
-- Runtime code changes.
-- Validator changes.
-- Bridge changes.
-- Implementation of the new public inputs.
 - OS trust-store integration.
 - Revocation.
 - Broader client-auth.
 - Hostname validation.
+- TargetHost support.
+- CertificateChainPolicy support.
 - Transfer enablement.
 - Retry enablement.
 
 ## Verification Plan
 
-Run the repo-local SpecTrace render/check flow and repository validation after the canonical JSON updates, then review the public API companion docs to ensure the new carrier is named consistently and the current reject-first boundary remains explicit.
+Run the focused API and CRT requirement-home tests that prove public capture, exact-byte preservation, exact-match success, fail-closed mismatch handling, and unchanged `TargetHost` / `CertificateChainPolicy` rejection, then run the required guard set, the full `REQ_QUIC_CRT_` sweep, and SpecTrace render/check if the canonical JSON artifacts change.
 
 ## Completion Notes
 
-This work item is a design trace only. The actual public-input implementation remains a later slice.
+This slice lands the narrow public carrier plus the exact-match fail-closed floor without widening the public supported boundary beyond the approved exact DER plus explicit SHA-256 contract.
 
 ## Trace Links
 
@@ -80,9 +77,12 @@ Verified By:
 - `docs/design/quic-public-api-gap-matrix.md`
 - `docs/design/quic-interop-prep-plan.md`
 - `specs/requirements/quic/REQUIREMENT-GAPS.md`
+- `src/Incursa.Quic/QuicPeerCertificatePolicy.cs`
+- `src/Incursa.Quic/QuicClientConnectionOptions.cs`
 - `src/Incursa.Quic/QuicClientCertificatePolicySnapshot.cs`
 - `src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs`
 - `src/Incursa.Quic/QuicClientConnectionHost.cs`
 - `src/Incursa.Quic/QuicConnectionRuntime.cs`
 - `src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`
 - `src/Incursa.Quic/QuicTransportTlsBridgeState.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0012.cs`

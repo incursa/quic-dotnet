@@ -4,7 +4,7 @@
 
 ## Scope
 
-This slice covers the canonical public-design trace for the future explicit pinned peer identity and explicit trust-material carrier, plus the companion doc and gap-ledger alignment. It does not prove runtime acceptance behavior or widen the public client contract.
+This slice covers the landed `QuicClientConnectionOptions.PeerCertificatePolicy` plus `QuicPeerCertificatePolicy` carrier, its translation into the internal snapshot, the supported exact-match success path, the fail-closed mismatch floor, and the companion trace/doc alignment. It does not widen the public client contract beyond the exact DER plus explicit SHA-256 pair.
 
 ## Requirements Verified
 
@@ -12,24 +12,24 @@ This slice covers the canonical public-design trace for the future explicit pinn
 
 ## Verification Method
 
-Document inspection, SpecTrace render/check, and repository validation over the public design surfaces.
+Requirement-home execution over the landed public carrier plus SpecTrace render/check for the canonical API trace surfaces.
 
 ## Preconditions
 
 - The incumbent SPEC-QUIC-API artifacts exist.
 - The internal client certificate-policy snapshot seam is present.
-- The current public client path remains reject-first.
+- The managed client bridge still owns the fail-closed exact-match decision point.
 
 ## Procedure or Approach
 
-- Run the repo-local SpecTrace render/check flow for the changed canonical JSON artifacts.
-- Run the repo-local SpecTrace repository validation profile used for trace integrity.
-- Inspect the public API companion docs and gap ledger for consistent naming of the explicit pinned identity and explicit trust-material carrier.
-- Confirm that no runtime, validator, or bridge code changed in this slice.
+- Run `tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0012.cs` to prove the public carrier names, capture, exact-byte preservation, supported exact-match success, and fail-closed mismatch handling.
+- Run the existing QUIC and CRT guard requirement homes that prove the unchanged `TargetHost` / `CertificateChainPolicy` rejection and the internal exact-match floor.
+- Run the full unconstrained `REQ_QUIC_CRT_` sweep to confirm the internal dependency slice remains green.
+- Run the repo-local SpecTrace render/check flow for the changed canonical JSON artifacts and inspect the companion docs for consistent use of the exact carrier names.
 
 ## Expected Result
 
-The new API requirement is present and linked, the public-design companion docs describe the carrier as separate from `TargetHost` and `CertificateChainPolicy`, the gap ledger routes the next client-trust gap to the API-owned design slice, and the current public client behavior remains reject-first.
+The public carrier is present with the approved exact names, the managed client path preserves the bytes into the internal snapshot unchanged, matching peer policy succeeds on the supported loopback path, missing or mismatched identity/trust values fail closed deterministically, `TargetHost` and `CertificateChainPolicy` remain rejected, and the companion trace/docs use the exact carrier names consistently.
 
 ## Evidence
 
@@ -40,16 +40,21 @@ The new API requirement is present and linked, the public-design companion docs 
 - docs/design/quic-public-api.md
 - docs/design/quic-public-api-gap-matrix.md
 - docs/design/quic-interop-prep-plan.md
+- src/Incursa.Quic/QuicPeerCertificatePolicy.cs
+- src/Incursa.Quic/QuicClientConnectionOptions.cs
 - src/Incursa.Quic/QuicClientCertificatePolicySnapshot.cs
 - src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs
 - src/Incursa.Quic/QuicClientConnectionHost.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs
 - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0012.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs
 
 ## Status
 
-This verification artifact captures the design-only public-input slice; implementation evidence is intentionally deferred.
+This verification artifact captures the landed narrow public-input carrier and the proof that it feeds the existing fail-closed internal exact-match floor without widening the broader client TLS/auth promise.
 
 ## Related Artifacts
 

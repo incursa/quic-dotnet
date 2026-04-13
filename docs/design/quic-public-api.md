@@ -28,6 +28,7 @@ This pass promotes the consumer-lifetime facade that is already backed by the ex
 - `QuicListener`
 - `QuicListenerOptions`
 - `QuicClientConnectionOptions`
+- `QuicPeerCertificatePolicy`
 - `QuicServerConnectionOptions`
 - `QuicStreamCapacityChangedArgs`
 - `QuicConnectionOptions.StreamCapacityCallback`
@@ -85,7 +86,7 @@ This pass promotes the connection/stream facade, the listener/server entry surfa
 - `REQ-QUIC-API-0009` covers the supported stream-capacity callback deltas on the supported loopback and active-loopback paths, including real peer stream-close-driven release on the supported active-loopback path.
 - `REQ-QUIC-API-0010` covers the narrow runtime-backed stream write, completion, and write-abort lane on send-capable streams.
 - `REQ-QUIC-API-0011` covers the shared runtime capability marker on `QuicConnection` and `QuicListener`.
-- `REQ-QUIC-API-0012` defines the future public client-policy carrier for exact pinned peer identity and explicit trust material, and it keeps that carrier separate from `TargetHost`, `CertificateChainPolicy`, and broader trust-store or hostname-validation semantics.
+- `REQ-QUIC-API-0012` defines and now lands the narrow public client-policy carrier `QuicClientConnectionOptions.PeerCertificatePolicy` with the `QuicPeerCertificatePolicy` payload for exact pinned peer identity and explicit trust material, and it keeps that carrier separate from `TargetHost`, `CertificateChainPolicy`, and broader trust-store or hostname-validation semantics.
 
 ## Public Member Shape
 
@@ -101,9 +102,9 @@ The first slice keeps the consumer contract intentionally narrow:
 - `QuicException` carries the close/error classification.
 - `QuicAbortDirection`, `QuicError`, `QuicStreamType`, and `QuicStreamCapacityChangedArgs` are the public classification/payload types used by the facade.
 - `QuicConnection.IsSupported` and `QuicListener.IsSupported` are shared runtime capability markers for the supported managed loopback slice.
-- The next public client-input slice is a dedicated exact peer-identity plus explicit trust-material carrier that feeds the existing internal client certificate-policy snapshot instead of reusing `TargetHost` or `CertificateChainPolicy`.
+- The current narrow client-input slice uses `QuicClientConnectionOptions.PeerCertificatePolicy` plus `QuicPeerCertificatePolicy` to feed the existing internal client certificate-policy snapshot instead of reusing `TargetHost` or `CertificateChainPolicy`.
 
-The public types do not introduce new endpoint or TLS wrapper abstractions in this slice. `QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `QuicClientConnectionOptions`, `QuicStreamCapacityChangedArgs`, and `QuicConnectionOptions.StreamCapacityCallback` are now part of the approved facade.
+The public types do not introduce new endpoint or TLS wrapper abstractions in this slice. `QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `QuicClientConnectionOptions`, `QuicPeerCertificatePolicy`, `QuicStreamCapacityChangedArgs`, and `QuicConnectionOptions.StreamCapacityCallback` are now part of the approved facade.
 
 ## Listener And Client Split
 

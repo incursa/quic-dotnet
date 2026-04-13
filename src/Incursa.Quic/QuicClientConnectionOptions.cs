@@ -19,6 +19,11 @@ public sealed class QuicClientConnectionOptions : QuicConnectionOptions
     public IPEndPoint? LocalEndPoint { get; set; }
 
     /// <summary>
+    /// Gets or sets the narrow peer-certificate policy carrier used by the managed client exact-match floor.
+    /// </summary>
+    public QuicPeerCertificatePolicy? PeerCertificatePolicy { get; set; }
+
+    /// <summary>
     /// Gets or sets the remote endpoint to connect.
     /// </summary>
     public EndPoint RemoteEndPoint { get; set; } = null!;

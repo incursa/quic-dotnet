@@ -7,7 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0005">The listener and client surfaces carry configuration through QuicListenerOptions, QuicClientConnectionOptions, and QuicServerConnectionOptions, and the supported client TLS subset is explicit, callback-gated, reject-first, and honest about the supported stream-capacity callback subset rather than implied.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0005">The listener and client surfaces carry configuration through QuicListenerOptions, QuicClientConnectionOptions, QuicPeerCertificatePolicy, and QuicServerConnectionOptions, and the supported client TLS subset is explicit, callback-gated or policy-gated, reject-first, and honest about the supported stream-capacity callback subset rather than implied.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0005")]
 public sealed class REQ_QUIC_API_0005
@@ -88,13 +88,45 @@ public sealed class REQ_QUIC_API_0005
         {
             "ClientAuthenticationOptions",
             "LocalEndPoint",
+            "PeerCertificatePolicy",
             "RemoteEndPoint",
         }, propertyNames);
 
         QuicClientConnectionOptions options = new();
         Assert.Null(options.LocalEndPoint);
         Assert.Null(options.ClientAuthenticationOptions);
+        Assert.Null(options.PeerCertificatePolicy);
         Assert.Null(options.RemoteEndPoint);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void QuicPeerCertificatePolicy_ExposeOnlyTheApprovedKnobs()
+    {
+        string[] propertyNames = typeof(QuicPeerCertificatePolicy)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+            .Select(property => property.Name)
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.Equal(new[]
+        {
+            "ExactPeerLeafCertificateDer",
+            "ExplicitTrustMaterialSha256",
+        }, propertyNames);
+
+        PropertyInfo? exactPeerLeafCertificateDerProperty = typeof(QuicPeerCertificatePolicy).GetProperty(nameof(QuicPeerCertificatePolicy.ExactPeerLeafCertificateDer));
+        Assert.NotNull(exactPeerLeafCertificateDerProperty);
+        Assert.Equal(typeof(ReadOnlyMemory<byte>), exactPeerLeafCertificateDerProperty!.PropertyType);
+
+        PropertyInfo? explicitTrustMaterialSha256Property = typeof(QuicPeerCertificatePolicy).GetProperty(nameof(QuicPeerCertificatePolicy.ExplicitTrustMaterialSha256));
+        Assert.NotNull(explicitTrustMaterialSha256Property);
+        Assert.Equal(typeof(ReadOnlyMemory<byte>), explicitTrustMaterialSha256Property!.PropertyType);
+
+        QuicPeerCertificatePolicy policy = new();
+        Assert.True(policy.ExactPeerLeafCertificateDer.IsEmpty);
+        Assert.True(policy.ExplicitTrustMaterialSha256.IsEmpty);
     }
 
     [Fact]

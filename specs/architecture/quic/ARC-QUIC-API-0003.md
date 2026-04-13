@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Describe how the future public client-policy carrier for exact pinned peer identity and explicit trust material feeds the existing internal client certificate-policy snapshot without widening the public TLS/auth promise.
+Describe how `QuicClientConnectionOptions.PeerCertificatePolicy` and `QuicPeerCertificatePolicy` feed the existing internal client certificate-policy snapshot without widening the public TLS/auth promise.
 
 ## Requirements Satisfied
 
@@ -12,13 +12,14 @@ Describe how the future public client-policy carrier for exact pinned peer ident
 
 ## Design Summary
 
-The future public client policy carrier should live on the client-connect option surface and carry two exact bytes-oriented values: the peer leaf certificate DER and the explicit trust-material SHA-256. The capture path should remain inside the client options validator and client host, and the bridge should continue to evaluate the snapshot fail closed. This architecture does not introduce trust-store integration, revocation, hostname validation, or any broader client-auth semantics; it only defines the narrow public-input contract that matches the already-landed internal snapshot model.
+The public client policy carrier lives on `QuicClientConnectionOptions.PeerCertificatePolicy` and uses `QuicPeerCertificatePolicy` to carry two exact bytes-oriented values: the peer leaf certificate DER and the explicit trust-material SHA-256. The capture path stays inside the client options validator and client host, and the bridge continues to evaluate the snapshot fail closed. This architecture does not introduce trust-store integration, revocation, hostname validation, or any broader client-auth semantics; it only defines the narrow public-input contract that matches the already-landed internal snapshot model.
 
 ## Key Components
 
 - docs/design/quic-public-api.md
 - docs/design/quic-public-api-gap-matrix.md
 - docs/design/quic-interop-prep-plan.md
+- src/Incursa.Quic/QuicPeerCertificatePolicy.cs
 - src/Incursa.Quic/QuicClientConnectionOptions.cs
 - src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs
 - src/Incursa.Quic/QuicClientConnectionHost.cs
@@ -26,10 +27,11 @@ The future public client policy carrier should live on the client-connect option
 - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
 - src/Incursa.Quic/QuicClientCertificatePolicySnapshot.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0012.cs
 
 ## Edge Cases and Constraints
 
-- Both inputs must be present together; missing either input stays reject-first.
+- The validator captures the public policy carrier into the internal snapshot even when one value is missing so the managed bridge can fail closed deterministically on missing identity or trust material.
 - The carrier must not be modeled as `TargetHost` or `CertificateChainPolicy`, because those names import unsupported SNI, hostname-validation, and chain-policy semantics.
 - The exact values must survive capture unchanged so the internal snapshot can compare the peer leaf DER and trust-material hash byte-for-byte.
 - The public carrier stays separate from trust-store integration, revocation, broader client-auth, `0-RTT`, key update, transfer, and retry.

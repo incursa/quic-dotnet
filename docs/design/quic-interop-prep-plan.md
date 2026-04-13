@@ -89,17 +89,17 @@ Supported today:
 
 - Narrow TLS 1.3 proof slices.
 - The explicit pinned-leaf acceptance seam.
+- The public `QuicClientConnectionOptions.PeerCertificatePolicy` plus `QuicPeerCertificatePolicy` carrier for exact peer leaf DER and explicit trust-material SHA-256, feeding the existing internal exact-match snapshot.
 - The reject-first supported subset of client TLS options already described in the public API docs.
 
 Partially implemented but not yet promised:
 
 - The managed proof and commit gates that already separate transcript progression from local policy acceptance and peer transport-parameter commit.
-- The internal exact peer-identity and explicit trust-material snapshot seam that supports the next client trust floor.
+- The internal exact peer-identity and explicit trust-material snapshot seam that backs the public carrier.
 - The current server-role proof floor, including the local handshake-flight pieces already recorded in the CRT requirement homes.
 
 Still missing:
 
-- The public carrier for explicit pinned peer identity and explicit trust material.
 - Trust-store policy.
 - Hostname and identity validation.
 - Certificate-path validation.
@@ -178,8 +178,9 @@ Notes on dependency:
    - Depends on: the current handshake/runtime proof floor and the client-role 1-RTT readiness seam.
 
 5. `TLS trust/policy/validation`
-   - Goal: define the next honest client-input step without claiming a broader trust-policy story than exists.
+   - Goal: keep the landed public client-policy carrier aligned with the internal snapshot and exact-match floor.
    - Focus: the public carrier shape for explicit pinned peer identity and explicit trust material, the exact snapshot handoff, and the boundaries around the current reject-first client options.
+   - Status: landed. The public carrier now exists and feeds the internal snapshot/fail-closed bridge seam, while the broader trust-policy story stays out of scope.
    - Depends on: the current handshake/runtime proof floor and the client-role 1-RTT readiness seam.
 
 6. `Broader stream-management parity`
@@ -209,7 +210,7 @@ Notes on dependency:
 - The smaller post-handshake stream open/accept prerequisite under `REQ-QUIC-INT-0011`, `ARC-QUIC-INT-0004`, `WI-QUIC-INT-0004`, and `VER-QUIC-INT-0004` is now closed by the managed child-process harness path.
 - The narrow child-process `retry` contract under `REQ-QUIC-INT-0012`, `ARC-QUIC-INT-0005`, `WI-QUIC-INT-0005`, and `VER-QUIC-INT-0005` is now closed.
 - The managed client/listener bootstrap seam is already proven.
-- The current client trust story now has an internal exact peer-identity and explicit trust-material snapshot seam, and the next public-design slice exposes that pair explicitly without turning it into a broader trust-store or hostname-validation story.
+- The current client trust story now has a public exact peer-identity and explicit trust-material carrier plus the internal snapshot seam, and the remaining trust-policy story still does not widen to trust-store or hostname-validation semantics.
 
 ## Trace Links
 

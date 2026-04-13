@@ -16,6 +16,8 @@ Incursa.Quic.QuicClientConnectionOptions.ClientAuthenticationOptions.get -> Syst
 Incursa.Quic.QuicClientConnectionOptions.ClientAuthenticationOptions.set -> void
 Incursa.Quic.QuicClientConnectionOptions.LocalEndPoint.get -> System.Net.IPEndPoint?
 Incursa.Quic.QuicClientConnectionOptions.LocalEndPoint.set -> void
+Incursa.Quic.QuicClientConnectionOptions.PeerCertificatePolicy.get -> Incursa.Quic.QuicPeerCertificatePolicy?
+Incursa.Quic.QuicClientConnectionOptions.PeerCertificatePolicy.set -> void
 Incursa.Quic.QuicClientConnectionOptions.RemoteEndPoint.get -> System.Net.EndPoint!
 Incursa.Quic.QuicClientConnectionOptions.RemoteEndPoint.set -> void
 Incursa.Quic.QuicConnectionOptions
@@ -74,6 +76,12 @@ Incursa.Quic.QuicListener.IsSupported.get -> bool
 Incursa.Quic.QuicListener.AcceptConnectionAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicConnection!>
 Incursa.Quic.QuicListener.DisposeAsync() -> System.Threading.Tasks.ValueTask
 Incursa.Quic.QuicListener.ListenAsync(Incursa.Quic.QuicListenerOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicListener!>
+Incursa.Quic.QuicPeerCertificatePolicy
+Incursa.Quic.QuicPeerCertificatePolicy.QuicPeerCertificatePolicy() -> void
+Incursa.Quic.QuicPeerCertificatePolicy.ExactPeerLeafCertificateDer.get -> System.ReadOnlyMemory<byte>
+Incursa.Quic.QuicPeerCertificatePolicy.ExactPeerLeafCertificateDer.init -> void
+Incursa.Quic.QuicPeerCertificatePolicy.ExplicitTrustMaterialSha256.get -> System.ReadOnlyMemory<byte>
+Incursa.Quic.QuicPeerCertificatePolicy.ExplicitTrustMaterialSha256.init -> void
 Incursa.Quic.QuicReceiveWindowSizes
 Incursa.Quic.QuicReceiveWindowSizes.QuicReceiveWindowSizes() -> void
 Incursa.Quic.QuicReceiveWindowSizes.Connection.get -> int

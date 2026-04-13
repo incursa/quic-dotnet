@@ -17,36 +17,50 @@ public sealed class REQ_QUIC_CRT_0123
         byte[] exactPeerIdentitySource = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(
             ECDsa.Create(ECCurve.NamedCurves.nistP256));
         byte[] explicitTrustMaterialSource = SHA256.HashData(exactPeerIdentitySource);
-        byte originalIdentityByte = exactPeerIdentitySource[0];
-        byte originalTrustByte = explicitTrustMaterialSource[0];
-
-        QuicClientCertificatePolicySnapshot snapshot = new(exactPeerIdentitySource, explicitTrustMaterialSource);
-        exactPeerIdentitySource[0] ^= 0x80;
-        explicitTrustMaterialSource[0] ^= 0x80;
-
-        Assert.Equal(originalIdentityByte, snapshot.ExactPeerLeafCertificateDer.Span[0]);
-        Assert.Equal(originalTrustByte, snapshot.ExplicitTrustMaterialSha256.Span[0]);
+        byte[] expectedIdentity = exactPeerIdentitySource.ToArray();
+        byte[] expectedTrust = explicitTrustMaterialSource.ToArray();
 
         IPEndPoint remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
         QuicClientConnectionOptions options = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(remoteEndPoint);
+        options.PeerCertificatePolicy = new QuicPeerCertificatePolicy
+        {
+            ExactPeerLeafCertificateDer = exactPeerIdentitySource,
+            ExplicitTrustMaterialSha256 = explicitTrustMaterialSource,
+        };
+
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
             options,
-            nameof(options),
-            snapshot);
+            nameof(options));
 
-        Assert.Same(snapshot, settings.ClientCertificatePolicySnapshot);
+        exactPeerIdentitySource[0] ^= 0x80;
+        explicitTrustMaterialSource[0] ^= 0x80;
+
+        Assert.NotNull(settings.Options.PeerCertificatePolicy);
+        Assert.NotSame(options.PeerCertificatePolicy, settings.Options.PeerCertificatePolicy);
+        Assert.Equal(expectedIdentity, settings.Options.PeerCertificatePolicy!.ExactPeerLeafCertificateDer.ToArray());
+        Assert.Equal(expectedTrust, settings.Options.PeerCertificatePolicy.ExplicitTrustMaterialSha256.ToArray());
+        Assert.NotNull(settings.ClientCertificatePolicySnapshot);
+        Assert.Equal(expectedIdentity, settings.ClientCertificatePolicySnapshot!.ExactPeerLeafCertificateDer.ToArray());
+        Assert.Equal(expectedTrust, settings.ClientCertificatePolicySnapshot.ExplicitTrustMaterialSha256.ToArray());
 
         await using QuicClientConnectionHost host = new(settings);
 
         QuicClientConnectionSettings capturedSettings = GetPrivateField<QuicClientConnectionSettings>(host, "settings");
-        Assert.Same(snapshot, capturedSettings.ClientCertificatePolicySnapshot);
+        Assert.NotNull(capturedSettings.Options.PeerCertificatePolicy);
+        Assert.Equal(expectedIdentity, capturedSettings.Options.PeerCertificatePolicy!.ExactPeerLeafCertificateDer.ToArray());
+        Assert.Equal(expectedTrust, capturedSettings.Options.PeerCertificatePolicy.ExplicitTrustMaterialSha256.ToArray());
+        Assert.Equal(expectedIdentity, capturedSettings.ClientCertificatePolicySnapshot!.ExactPeerLeafCertificateDer.ToArray());
+        Assert.Equal(expectedTrust, capturedSettings.ClientCertificatePolicySnapshot.ExplicitTrustMaterialSha256.ToArray());
 
         QuicConnection connection = GetPrivateField<QuicConnection>(host, "connection");
         QuicConnectionRuntime runtime = GetPrivateField<QuicConnectionRuntime>(connection, "runtime");
-        Assert.Same(snapshot, runtime.ClientCertificatePolicySnapshot);
+        Assert.Equal(expectedIdentity, runtime.ClientCertificatePolicySnapshot!.ExactPeerLeafCertificateDer.ToArray());
+        Assert.Equal(expectedTrust, runtime.ClientCertificatePolicySnapshot.ExplicitTrustMaterialSha256.ToArray());
 
         QuicTlsTransportBridgeDriver driver = GetPrivateField<QuicTlsTransportBridgeDriver>(runtime, "tlsBridgeDriver");
-        Assert.Same(snapshot, GetPrivateField<QuicClientCertificatePolicySnapshot?>(driver, "clientCertificatePolicySnapshot"));
+        QuicClientCertificatePolicySnapshot driverSnapshot = GetPrivateField<QuicClientCertificatePolicySnapshot>(driver, "clientCertificatePolicySnapshot");
+        Assert.Equal(expectedIdentity, driverSnapshot.ExactPeerLeafCertificateDer.ToArray());
+        Assert.Equal(expectedTrust, driverSnapshot.ExplicitTrustMaterialSha256.ToArray());
 
         _ = localHandshakePrivateKey;
     }

@@ -3,7 +3,7 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0001">The approved public facade now includes QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicClientConnectionOptions, QuicServerConnectionOptions, QuicStreamCapacityChangedArgs, and the corrected QuicStreamType. The client entry point is now public, while broader middleware-style surface remains deferred.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0001">The approved public facade now includes QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicClientConnectionOptions, QuicPeerCertificatePolicy, QuicServerConnectionOptions, QuicStreamCapacityChangedArgs, and the corrected QuicStreamType. The client entry point is now public, while broader middleware-style surface remains deferred.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0001")]
 public sealed class REQ_QUIC_API_0001
@@ -29,6 +29,7 @@ public sealed class REQ_QUIC_API_0001
             "Incursa.Quic.QuicException",
             "Incursa.Quic.QuicListener",
             "Incursa.Quic.QuicListenerOptions",
+            "Incursa.Quic.QuicPeerCertificatePolicy",
             "Incursa.Quic.QuicReceiveWindowSizes",
             "Incursa.Quic.QuicServerConnectionOptions",
             "Incursa.Quic.QuicStream",

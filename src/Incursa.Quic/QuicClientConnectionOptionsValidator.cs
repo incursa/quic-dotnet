@@ -26,6 +26,8 @@ internal static class QuicClientConnectionOptionsValidator
 
         SslClientAuthenticationOptions authenticationOptions = options.ClientAuthenticationOptions
             ?? throw new ArgumentNullException($"{parameterName}.{nameof(QuicClientConnectionOptions.ClientAuthenticationOptions)}");
+        QuicClientCertificatePolicySnapshot? capturedCertificatePolicySnapshot =
+            clientCertificatePolicySnapshot ?? CapturePeerCertificatePolicySnapshot(options.PeerCertificatePolicy);
 
         if (authenticationOptions.ApplicationProtocols is null)
         {
@@ -37,9 +39,10 @@ internal static class QuicClientConnectionOptionsValidator
             throw new ArgumentException("At least one application protocol is required.", $"{parameterName}.{nameof(QuicClientConnectionOptions.ClientAuthenticationOptions)}.{nameof(SslClientAuthenticationOptions.ApplicationProtocols)}");
         }
 
-        if (authenticationOptions.RemoteCertificateValidationCallback is null)
+        if (authenticationOptions.RemoteCertificateValidationCallback is null
+            && capturedCertificatePolicySnapshot is null)
         {
-            throw new NotSupportedException("ClientAuthenticationOptions.RemoteCertificateValidationCallback is required because this slice does not yet support trust-store or hostname validation.");
+            throw new NotSupportedException("ClientAuthenticationOptions.RemoteCertificateValidationCallback is required when PeerCertificatePolicy is not supplied because this slice does not yet support trust-store or hostname validation.");
         }
 
         if (!string.IsNullOrEmpty(authenticationOptions.TargetHost))
@@ -107,7 +110,7 @@ internal static class QuicClientConnectionOptionsValidator
             CaptureOptions(options, authenticationOptions),
             CloneEndPoint(remoteEndPoint),
             options.LocalEndPoint is null ? null : CloneEndPoint(options.LocalEndPoint),
-            clientCertificatePolicySnapshot);
+            capturedCertificatePolicySnapshot);
     }
 
     private static QuicClientConnectionOptions CaptureOptions(
@@ -137,6 +140,7 @@ internal static class QuicClientConnectionOptionsValidator
                 UnidirectionalStream = windows.UnidirectionalStream,
             },
             LocalEndPoint = source.LocalEndPoint is null ? null : CloneEndPoint(source.LocalEndPoint),
+            PeerCertificatePolicy = ClonePeerCertificatePolicy(source.PeerCertificatePolicy),
             RemoteEndPoint = CloneEndPoint((IPEndPoint)source.RemoteEndPoint),
             ClientAuthenticationOptions = new SslClientAuthenticationOptions
             {
@@ -149,6 +153,26 @@ internal static class QuicClientConnectionOptionsValidator
                 RemoteCertificateValidationCallback = authenticationOptions.RemoteCertificateValidationCallback,
             },
         };
+    }
+
+    private static QuicClientCertificatePolicySnapshot? CapturePeerCertificatePolicySnapshot(QuicPeerCertificatePolicy? source)
+    {
+        return source is null
+            ? null
+            : new QuicClientCertificatePolicySnapshot(
+                source.ExactPeerLeafCertificateDer,
+                source.ExplicitTrustMaterialSha256);
+    }
+
+    private static QuicPeerCertificatePolicy? ClonePeerCertificatePolicy(QuicPeerCertificatePolicy? source)
+    {
+        return source is null
+            ? null
+            : new QuicPeerCertificatePolicy
+            {
+                ExactPeerLeafCertificateDer = source.ExactPeerLeafCertificateDer,
+                ExplicitTrustMaterialSha256 = source.ExplicitTrustMaterialSha256,
+            };
     }
 
     private static IPEndPoint CloneEndPoint(IPEndPoint endPoint)
