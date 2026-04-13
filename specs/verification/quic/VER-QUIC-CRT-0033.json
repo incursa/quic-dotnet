@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0033",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC qlog adapter package boundary verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verifies": [
+    "REQ-QUIC-CRT-0136"
+  ],
+  "verification_method": "Focused mapping tests and dependency inspection.",
+  "scope": "Verify that the sibling adapter maps transport diagnostics into Incursa.Qlog.Quic events and keeps file and serializer ownership outside Incursa.Quic.",
+  "preconditions": [
+    "The qlog-dotnet sibling repository is available at C:\\src\\incursa\\qlog-dotnet.",
+    "The core diagnostics slice is already traced under REQ-QUIC-CRT-0134 and REQ-QUIC-CRT-0135."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicDiagnostics.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/Incursa.Quic.csproj",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0136.cs",
+    "C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog\\README.md",
+    "C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog.Quic\\README.md",
+    "C:\\src\\incursa\\qlog-dotnet\\specs\\generated\\qlog\\scope-boundary.md",
+    "C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog.Quic\\QlogQuicEvents.cs",
+    "C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog.Quic\\QlogQuicEvents.TransportActivity.cs",
+    "C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog.Quic\\QlogQuicEvents.StateAndRecovery.cs",
+    "C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog.Quic\\QuicLifecyclePayloads.cs",
+    "C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog.Quic\\QuicNegotiationPayloads.cs",
+    "C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog.Quic\\QuicTransportActivityPayloads.cs",
+    "C:\\src\\incursa\\qlog-dotnet\\src\\Incursa.Qlog.Quic\\QuicStateAndRecoveryPayloads.cs"
+  ],
+  "procedure": [
+    "Verify structured diagnostics map to qlog lifecycle, negotiation, packet activity, stream movement, and recovery events.",
+    "Confirm schema registration occurs at the adapter boundary rather than in Incursa.Quic.",
+    "Inspect package references to confirm `Incursa.Quic.Qlog` depends on `Incursa.Quic`, `Incursa.Qlog`, and `Incursa.Qlog.Quic` only in the forward direction.",
+    "Confirm the transport core remains free of qlog builders, serializer packages, and file paths."
+  ],
+  "expected_result": "The sibling adapter translates structured transport diagnostics into `Incursa.Qlog.Quic` events and keeps qlog trace and output ownership outside the transport core.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0032",
+    "WI-QUIC-CRT-0033"
+  ]
+}

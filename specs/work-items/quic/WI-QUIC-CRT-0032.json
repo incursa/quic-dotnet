@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0032",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC core diagnostics sink and per-connection resolution work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a typed, connection-scoped diagnostics contract in Incursa.Quic and resolve diagnostics once per connection so disabled paths stay cheap.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0032"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0032"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0134",
+    "REQ-QUIC-CRT-0135"
+  ],
+  "planned_changes": "- Refine `QuicDiagnostics.cs` into a typed, connection-scoped diagnostics contract with a null sink.\n- Thread the resolved sink through `QuicClientConnectionHost`, `QuicListenerHost`, and `QuicConnectionRuntime`.\n- Keep the disabled path to a direct no-op branch with no qlog or serializer dependency.\n- Add focused tests for disabled sink behavior and per-connection targeting once the implementation lands.",
+  "verification_plan": "Run requirement-home tests for the typed diagnostics contract and per-connection resolution, benchmark the disabled emission path, and inspect assembly references to confirm `Incursa.Quic` remains free of qlog packages.",
+  "out_of_scope": [
+    "qlog builder mapping",
+    "trace or file serialization",
+    "harness QLOGDIR plumbing",
+    "transport scheduling changes"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice covers only the core diagnostics sink and its per-connection resolution points. It does not add qlog builders or file emission to Incursa.Quic."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicDiagnostics.cs`](../../../src/Incursa.Quic/QuicDiagnostics.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs)\n- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`src/Incursa.Quic/QuicConnection.cs`](../../../src/Incursa.Quic/QuicConnection.cs)\n- [`src/Incursa.Quic/Incursa.Quic.csproj`](../../../src/Incursa.Quic/Incursa.Quic.csproj)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0134.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0134.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0135.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0135.cs)\n- [`benchmarks/README.md`](../../../benchmarks/README.md)"
+    }
+  ]
+}

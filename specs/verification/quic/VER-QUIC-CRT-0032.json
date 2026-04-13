@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0032",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC core diagnostics sink and per-connection resolution verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verifies": [
+    "REQ-QUIC-CRT-0134",
+    "REQ-QUIC-CRT-0135"
+  ],
+  "verification_method": "Focused requirement-home tests, disabled-path benchmark evidence, and dependency inspection.",
+  "scope": "Verify that transport diagnostics are typed, connection-scoped, cheap when disabled, and free of qlog or serializer dependencies in the transport core.",
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully on net10.0.",
+    "The benchmark project is available for the disabled-path measurement.",
+    "REQ-QUIC-CRT-0134 and REQ-QUIC-CRT-0135 remain the active diagnostics requirements."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicDiagnostics.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicConnection.cs",
+    "src/Incursa.Quic/Incursa.Quic.csproj",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0134.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0135.cs",
+    "benchmarks/README.md"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- The diagnostics contract carries structured transport facts and can be replaced by a no-op sink.\n- Diagnostics are resolved once per connection before hot-path processing begins.\n- Disabled-path measurement shows the sink stays allocation-free or equivalent on the no-op path.\n- `Incursa.Quic` stays free of qlog packages, serializer packages, and file ownership."
+    }
+  ],
+  "expected_result": "The library exposes a typed diagnostics sink, resolves it once per connection, and keeps the disabled path extremely cheap without coupling the transport core to qlog or serialization.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0032",
+    "WI-QUIC-CRT-0032"
+  ]
+}

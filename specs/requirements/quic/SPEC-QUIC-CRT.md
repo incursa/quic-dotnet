@@ -4,15 +4,15 @@
 
 ## Purpose
 
-Define the architecture and implementation requirements for the connection-owned QUIC runtime that arbitrates packet receive events, timer expirations, path changes, stateless reset handling, handshake packet flow, close and drain transitions, live stream orchestration, and the trim and Native AOT compatibility posture of the shipped package.
+Define the architecture and implementation requirements for the connection-owned QUIC runtime that arbitrates packet receive events, timer expirations, path changes, stateless reset handling, handshake packet flow, close and drain transitions, live stream orchestration, structured diagnostics capture, and the trim and Native AOT compatibility posture of the shipped package.
 
 ## Scope
 
-This specification covers endpoint ingress classification, routing tables, connection ownership, execution profiles, event and effect modeling, timer scheduling, lifecycle phases, migration and path state, handshake packet open/protect coordination, stateless reset handling, stream ownership, performance posture for high connection density, packaged-library trimming and Native AOT compatibility, and reducer-oriented testability.
+This specification covers endpoint ingress classification, routing tables, connection ownership, execution profiles, event and effect modeling, timer scheduling, lifecycle phases, migration and path state, handshake packet open/protect coordination, stateless reset handling, stream ownership, structured diagnostics capture, per-connection diagnostics resolution, qlog adapter boundary ownership, performance posture for high connection density, packaged-library trimming and Native AOT compatibility, and reducer-oriented testability.
 
 ## Context
 
-The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The server-role proof floor still stops at inbound Finished, so server-side client-auth and client-certificate handling on the existing `SslServerAuthenticationOptions` carrier remain the next open gap. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, and package-compatibility work can be implemented against one clear architecture, while the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.
+The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The current diagnostics placeholder exposes a no-op sink, but the next slice needs a typed, connection-scoped diagnostics contract plus a sibling qlog adapter boundary so transport facts can be mapped without bringing JSON or serializer concerns into the core. The server-role proof floor still stops at inbound Finished, so server-side client-auth and client-certificate handling on the existing `SslServerAuthenticationOptions` carrier remain the next open gap. The client-side PSK-attempt path now has a ServerHello accept/reject branch-point slice that distinguishes accepted attempts from rejected ones without claiming abbreviated-handshake completion. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, diagnostics, qlog-adapter, and package-compatibility work can be implemented against one clear architecture, while the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.
 
 ## Decision Summary
 
@@ -116,6 +116,7 @@ The new runtime becomes the orchestration layer that owns ordering and lifecycle
 
 This specification is intended to unlock the architecture blockers called out for:
 
+- the diagnostics seam and sibling qlog adapter boundary
 - 9000-11-migration-core
 - 9000-13-idle-and-close
 - 9000-14-stateless-reset
@@ -1211,3 +1212,86 @@ Notes:
 - The dormant carrier is only consumed when it has the credential material needed for a truthful PSK attempt and the ticket remains eligible.
 - The binder and obfuscated ticket age are derived from the dormant carrier and the current monotonic age, not from a public API change.
 - The emitted ClientHello is a PSK attempt, not a claim of resumed-handshake success.
+
+## REQ-QUIC-CRT-0133 Classify a PSK-capable ClientHello attempt at ServerHello as accepted or rejected
+In the client role, the library MUST classify a PSK-capable ClientHello attempt at ServerHello as accepted or rejected by parsing the server's `pre_shared_key` selection signal on the supported TLS 1.3 subset. A rejected attempt MUST fall back cleanly to the existing non-resumption/full-handshake path without corrupting the dormant client runtime state. An accepted attempt MUST be recognized as accepted on the client path, keep early-data admission explicitly closed, and MUST NOT by itself claim resumed-handshake success or any broader abbreviated-handshake completion. The slice MUST remain client-role only, MUST NOT widen public API or IsSupported, MUST NOT add 0-RTT, anti-replay, key update, or broad post-handshake TLS support, and MUST NOT alter transfer or retry contracts.
+
+Trace:
+- Source Refs:
+  - RFC 8446 Section 4.1.3
+  - RFC 8446 Section 4.2.11.2
+  - docs/design/quic-interop-prep-plan.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - src/Incursa.Quic/QuicTlsKeySchedule.cs
+  - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
+  - src/Incursa.Quic/QuicTlsTransport.cs
+  - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0133.cs
+
+Notes:
+- This slice is the narrow ServerHello branch-point seam for a later honest abbreviated-handshake completion slice. It is not resumed-handshake success.
+- Rejected attempts rejoin the existing full-handshake path; accepted attempts are recognized but do not advance to abbreviated-handshake success.
+- Server-role use remains out of scope for this slice.
+
+## REQ-QUIC-CRT-0134 Expose a typed transport diagnostics contract
+The library MUST expose a typed transport diagnostics contract that carries structured transport facts, can be represented by a no-op when disabled, and is not hardwired to qlog, JSON, or file serialization.
+
+Trace:
+- Source Refs:
+  - docs/requirements-workflow.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicDiagnostics.cs
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs
+  - src/Incursa.Quic/QuicClientConnectionHost.cs
+  - src/Incursa.Quic/QuicListenerHost.cs
+
+Notes:
+- The contract may remain internal, but it must live in the main library because it participates in transport ownership, not host serialization.
+- String-only messages are insufficient for the future qlog adapter boundary because the adapter needs stable transport facts, not parsed prose.
+- The disabled path must remain a null object or equivalent no-op sink.
+
+## REQ-QUIC-CRT-0135 Resolve diagnostics once per connection
+The library MUST resolve diagnostics enablement once per connection at setup time and pass the runtime a connection-scoped sink or null object before hot-path event processing begins; packet, stream, timer, and path paths MUST NOT repeat global diagnostics configuration checks.
+
+Trace:
+- Source Refs:
+  - docs/requirements-workflow.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicDiagnostics.cs
+  - src/Incursa.Quic/QuicConnection.cs
+  - src/Incursa.Quic/QuicClientConnectionHost.cs
+  - src/Incursa.Quic/QuicListenerHost.cs
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+
+Notes:
+- The sink or factory may be supplied from options or host policy, but the runtime must only see the resolved per-connection object.
+- The disabled path should stay to a single cheap branch or direct no-op delegate with no allocations, schema registration, or string formatting.
+- This slice is observational only and does not alter transport scheduling or connection behavior.
+
+## REQ-QUIC-CRT-0136 Keep qlog mapping and output ownership outside the transport core
+The library MUST keep qlog mapping, trace construction, and output or file ownership outside the transport core; a sibling adapter or host layer MAY translate the library's structured diagnostics into `Incursa.Qlog.Quic` events, but the transport core MUST NOT depend on qlog builders or serializer packages.
+
+Trace:
+- Source Refs:
+  - docs/requirements-workflow.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicDiagnostics.cs
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs
+  - src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
+  - src/Incursa.Quic/QuicClientConnectionHost.cs
+  - src/Incursa.Quic/QuicListenerHost.cs
+  - C:\src\incursa\qlog-dotnet\specs\generated\qlog\scope-boundary.md
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\README.md
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\README.md
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.cs
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.TransportActivity.cs
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.StateAndRecovery.cs
+
+Notes:
+- The adapter may own qlog trace creation, schema registration, and event append ordering, but it must not own JSON writers or file paths.
+- File rotation, serializer choice, and `QLOGDIR` ownership remain host or adapter concerns, consistent with `REQ-QUIC-INT-0004`.
+- The adapter must be observational only; it must not mutate runtime scheduling, endpoint routing, or recovery behavior.
