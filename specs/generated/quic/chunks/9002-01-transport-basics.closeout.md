@@ -11,7 +11,7 @@
 ## Audit Result
 
 - Audit result: `clean_with_explicit_blockers`
-- In-scope requirements: 21 total, 9 implemented and tested, 1 deferred, 11 blocked with explicit notes.
+- In-scope requirements: 21 total, 10 implemented and tested, 1 deferred, 10 blocked with explicit notes.
 - No stale requirement IDs remain in scope.
 - No silent gaps remain in scope.
 - Scoped direct requirement refs are test-only in this slice; no in-scope source refs were found under `src/Incursa.Quic`.
@@ -28,6 +28,7 @@
 - `REQ-QUIC-RFC9002-S3-0008` Permit mixed frame types per packet.
 - `REQ-QUIC-RFC9002-S3-0011` Acknowledge all packets.
 - `REQ-QUIC-RFC9002-S3-0012` Delay acknowledgment for non-ack-eliciting packets.
+- `REQ-QUIC-RFC9002-S3-0016` Count PADDING toward bytes in flight.
 - `REQ-QUIC-RFC9002-S3-0017` Suppress direct ACKs for PADDING.
 
 ### Deferred
@@ -46,20 +47,21 @@
 - `REQ-QUIC-RFC9002-S3-0013` Shorten CRYPTO acknowledgment timers.
 - `REQ-QUIC-RFC9002-S3-0014` Count non-ACK packets toward congestion limits.
 - `REQ-QUIC-RFC9002-S3-0015` Treat non-ACK packets as in flight.
-- `REQ-QUIC-RFC9002-S3-0016` Count PADDING toward bytes in flight.
 
 ## Reference Audit
 
 - Source requirement refs found: none
-- Test requirement refs found: `REQ-QUIC-RFC9002-S2-0002`, `REQ-QUIC-RFC9002-S2-0003`, `REQ-QUIC-RFC9002-S3-0001`, `REQ-QUIC-RFC9002-S3-0002`, `REQ-QUIC-RFC9002-S3-0003`, `REQ-QUIC-RFC9002-S3-0004`, `REQ-QUIC-RFC9002-S3-0008`, `REQ-QUIC-RFC9002-S3-0011`, `REQ-QUIC-RFC9002-S3-0012`, `REQ-QUIC-RFC9002-S3-0017`
+- Test requirement refs found: `REQ-QUIC-RFC9002-S2-0002`, `REQ-QUIC-RFC9002-S2-0003`, `REQ-QUIC-RFC9002-S3-0001`, `REQ-QUIC-RFC9002-S3-0002`, `REQ-QUIC-RFC9002-S3-0003`, `REQ-QUIC-RFC9002-S3-0004`, `REQ-QUIC-RFC9002-S3-0008`, `REQ-QUIC-RFC9002-S3-0011`, `REQ-QUIC-RFC9002-S3-0012`, `REQ-QUIC-RFC9002-S3-0016`, `REQ-QUIC-RFC9002-S3-0017`
 - Source files checked for requirement IDs: `src/Incursa.Quic/QuicFrameCodec.cs`, `src/Incursa.Quic/QuicPacketParser.cs`, `src/Incursa.Quic/PublicAPI.Unshipped.txt`
-- Test files with requirement traits: `tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs`, `tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs`, `tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs`, `tests/Incursa.Quic.Tests/QuicPacketParserTests.cs`, `tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs`
+- Test files with requirement traits: `tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs`, `tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs`, `tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs`, `tests/Incursa.Quic.Tests/QuicPacketParserTests.cs`, `tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs`
 - Stale or wrong refs found: none
 
 ## Tests Reviewed
 
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~QuicFrameCodecTests|FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests|FullyQualifiedName~QuicAckGenerationStateTests"` - `78 passed, 0 failed, 0 skipped`
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj` - `263 passed, 0 failed, 0 skipped`
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~REQ_QUIC_RFC9002_S3_0016"` - `1 passed, 0 failed, 0 skipped`
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj` - `1810 passed, 7 failed, 0 skipped`
 
 ## Remaining Open Requirements
 
@@ -74,10 +76,10 @@
 - `REQ-QUIC-RFC9002-S3-0013`: blocked by missing CRYPTO-aware ACK timer shortening.
 - `REQ-QUIC-RFC9002-S3-0014`: blocked by missing congestion-control accounting for non-ACK packets.
 - `REQ-QUIC-RFC9002-S3-0015`: blocked by missing in-flight accounting for non-ACK packets.
-- `REQ-QUIC-RFC9002-S3-0016`: blocked by missing bytes-in-flight accounting for PADDING.
 
 ## Notes
 
 - The prompt named a reconciliation JSON that does not exist in the repo; this closeout relies on the implementation summary artifact and the scoped repo audit.
 - `REQ-QUIC-RFC9002-S3-0001` remains blocked even though tests carry the ID, because the repo still lacks a transmit/composer surface and the current refs only cover parsing and modeling.
+- The latest full dotnet test run still reports unrelated baseline failures in INT/CRT requirement homes; the new S3-0016 proof itself passed.
 - The chunk is trace-consistent for the selected scope and is ready for merge or repo-wide trace/audit follow-up.

@@ -11,8 +11,8 @@
     "S2": 4,
     "S3": 17,
     "total": 21,
-    "covered": 9,
-    "blocked": 11,
+    "covered": 10,
+    "blocked": 10,
     "deferred": 1,
     "partial": 0,
     "needs_review": 0
@@ -82,6 +82,7 @@
       "REQ-QUIC-RFC9002-S3-0008",
       "REQ-QUIC-RFC9002-S3-0011",
       "REQ-QUIC-RFC9002-S3-0012",
+      "REQ-QUIC-RFC9002-S3-0016",
       "REQ-QUIC-RFC9002-S3-0017"
     ],
     "source_files_checked_for_requirement_ids": [
@@ -94,7 +95,8 @@
       "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
       "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
       "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
-      "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs"
+      "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs"
     ],
     "stale_or_wrong_refs_found": [],
     "notes": "All scoped direct refs live in tests and use the correct RFC 9002 IDs. No in-scope source refs were present under src/Incursa.Quic, which matches the repository convention for this slice."
@@ -324,11 +326,15 @@
     {
       "requirement_id": "REQ-QUIC-RFC9002-S3-0016",
       "title": "Count PADDING toward bytes in flight",
-      "completion_status": "blocked by concrete dependency",
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs bytes-in-flight accounting for PADDING.",
-      "notes": "There is no bytes-in-flight or congestion accounting surface to update."
+      "completion_status": "implemented and tested",
+      "tests_covering_requirement": [
+        "RegisterPacketSent_CountsPaddingOnlyPacketsTowardBytesInFlight"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The bytes-in-flight counter accepts a padding-only packet payload, while the frame codec still classifies PADDING as non-ack-eliciting."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S3-0017",
@@ -355,8 +361,7 @@
     "REQ-QUIC-RFC9002-S3-0010",
     "REQ-QUIC-RFC9002-S3-0013",
     "REQ-QUIC-RFC9002-S3-0014",
-    "REQ-QUIC-RFC9002-S3-0015",
-    "REQ-QUIC-RFC9002-S3-0016"
+    "REQ-QUIC-RFC9002-S3-0015"
   ],
   "tests_reviewed": [
     {
@@ -368,11 +373,22 @@
       "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
       "result": "263 passed, 0 failed, 0 skipped",
       "source": "implementation-summary"
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~REQ_QUIC_RFC9002_S3_0016\"",
+      "result": "1 passed, 0 failed, 0 skipped",
+      "source": "implementation-summary"
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+      "result": "1810 passed, 7 failed, 0 skipped",
+      "source": "implementation-summary"
     }
   ],
   "notes": [
     "No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.",
     "The audit found no stale or wrong requirement IDs in the scoped source or tests.",
-    "REQ-QUIC-RFC9002-S3-0001 remains blocked despite its test refs because the repo still lacks a transmit/composer surface."
+    "REQ-QUIC-RFC9002-S3-0001 remains blocked despite its test refs because the repo still lacks a transmit/composer surface.",
+    "The latest full dotnet test run still reports unrelated baseline failures in INT/CRT requirement homes; the new S3-0016 proof itself passed."
   ]
 }

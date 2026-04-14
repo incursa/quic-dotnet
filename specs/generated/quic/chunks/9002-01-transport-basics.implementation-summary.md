@@ -2,24 +2,27 @@
 
 ## Audit Result
 - `partial_with_explicit_blockers`
-- In-scope requirements: 21 total, 9 implemented and tested, 1 deferred, 11 blocked with explicit notes.
+- In-scope requirements: 21 total, 10 implemented and tested, 1 deferred, 10 blocked with explicit notes.
 - No reconciliation artifact existed for this chunk; it was treated as greenfield.
 - All scoped direct requirement refs live in `tests/` and use the correct RFC 9002 IDs.
 - No stale or wrong requirement IDs were found in the scoped code or tests.
 
 ## Requirements Completed
 - `S2`: `REQ-QUIC-RFC9002-S2-0002`, `REQ-QUIC-RFC9002-S2-0003`
-- `S3`: `REQ-QUIC-RFC9002-S3-0002`, `REQ-QUIC-RFC9002-S3-0003`, `REQ-QUIC-RFC9002-S3-0004`, `REQ-QUIC-RFC9002-S3-0008`, `REQ-QUIC-RFC9002-S3-0011`, `REQ-QUIC-RFC9002-S3-0012`, `REQ-QUIC-RFC9002-S3-0017`
+- `S3`: `REQ-QUIC-RFC9002-S3-0002`, `REQ-QUIC-RFC9002-S3-0003`, `REQ-QUIC-RFC9002-S3-0004`, `REQ-QUIC-RFC9002-S3-0008`, `REQ-QUIC-RFC9002-S3-0011`, `REQ-QUIC-RFC9002-S3-0012`, `REQ-QUIC-RFC9002-S3-0016`, `REQ-QUIC-RFC9002-S3-0017`
 
 ## Files Changed
 - [QuicFrameCodec.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicFrameCodec.cs)
 - [QuicPacketParser.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicPacketParser.cs)
 - [PublicAPI.Unshipped.txt](C:/src/incursa/quic-dotnet/src/Incursa.Quic/PublicAPI.Unshipped.txt)
+- [SPEC-QUIC-RFC9002.json](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9002.json)
+- [SPEC-QUIC-RFC9002.md](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9002.md)
 - [QuicAckGenerationStateTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs)
 - [QuicFrameCodecTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs)
 - [QuicLongHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs)
 - [QuicPacketParserTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicPacketParserTests.cs)
 - [QuicShortHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs)
+- [REQ-QUIC-RFC9002-S3-0016.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs)
 - [9002-01-transport-basics.implementation-summary.md](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9002-01-transport-basics.implementation-summary.md)
 - [9002-01-transport-basics.implementation-summary.json](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9002-01-transport-basics.implementation-summary.json)
 
@@ -29,10 +32,13 @@
 - [QuicLongHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs): refreshed trace refs for long-header packet shape and packet-number-length behavior.
 - [QuicShortHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs): refreshed trace refs for short-header packet shape.
 - [QuicAckGenerationStateTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs): refreshed trace refs for ACK generation, ACK delay, packet-space separation, and ECN-aware ACK formatting.
+- [REQ-QUIC-RFC9002-S3-0016.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs): added the padding-bytes-in-flight proof.
 
 ## Tests Run and Results
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~QuicFrameCodecTests|FullyQualifiedName~QuicPacketParserTests|FullyQualifiedName~QuicLongHeaderPacketTests|FullyQualifiedName~QuicShortHeaderPacketTests|FullyQualifiedName~QuicAckGenerationStateTests"` - `78 passed, 0 failed, 0 skipped`
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj` - `263 passed, 0 failed, 0 skipped`
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~REQ_QUIC_RFC9002_S3_0016"` - `1 passed, 0 failed, 0 skipped`
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj` - `1810 passed, 7 failed, 0 skipped`
 
 ## Reference Audit
 - [src/Incursa.Quic/QuicFrameCodec.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicFrameCodec.cs): no in-scope requirement refs, which matches the repo convention for this slice.
@@ -43,6 +49,7 @@
 - [tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs): uses `REQ-QUIC-RFC9002-S3-0001`, `REQ-QUIC-RFC9002-S3-0002`, and `REQ-QUIC-RFC9002-S3-0003`.
 - [tests/Incursa.Quic.Tests/QuicPacketParserTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicPacketParserTests.cs): uses `REQ-QUIC-RFC9002-S3-0002` and `REQ-QUIC-RFC9002-S3-0004`.
 - [tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs): uses `REQ-QUIC-RFC9002-S3-0001` and `REQ-QUIC-RFC9002-S3-0003`.
+- [tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs): uses `REQ-QUIC-RFC9002-S3-0016`.
 - Stale or wrong requirement IDs: none found.
 
 ## Remaining Open Requirements in Scope
@@ -60,9 +67,9 @@
 - `REQ-QUIC-RFC9002-S3-0013` - Needs CRYPTO-aware ACK timer shortening.
 - `REQ-QUIC-RFC9002-S3-0014` - Needs congestion-control accounting for non-ACK packets.
 - `REQ-QUIC-RFC9002-S3-0015` - Needs in-flight accounting for non-ACK packets.
-- `REQ-QUIC-RFC9002-S3-0016` - Needs bytes-in-flight accounting for PADDING.
 
 ## Risks or Follow-up Notes
 - The chunk is internally consistent and the direct requirement refs are attached only in `tests/`.
 - The remaining blocked items all depend on missing sender, retransmission, loss-detection, or congestion-control surfaces.
 - The implementation summary is the canonical chunk record because no reconciliation artifact existed.
+- The latest full `dotnet test` run still reports unrelated baseline failures in INT/CRT requirement homes; the new `S3-0016` proof itself passed.

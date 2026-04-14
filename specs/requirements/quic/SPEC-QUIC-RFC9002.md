@@ -318,6 +318,8 @@ Trace:
 - Source Refs:
   - RFC 9002 §3 RFC9002-S3-B8-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs::RegisterPacketSent_CountsPaddingOnlyPacketsTowardBytesInFlight
 
 ## REQ-QUIC-RFC9002-S3-0017 Suppress direct ACKs for PADDING
 PADDING frames MUST NOT directly cause an acknowledgment to be sent.
