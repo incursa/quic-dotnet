@@ -20596,6 +20596,11 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0035.cs::TryApplyMaxDataFrame_AcceptsAnOutdatedMaximumDataFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0035.cs::TryApplyMaxStreamDataFrame_IgnoresAnOutdatedMaximumStreamDataFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0035.cs::TryApplyMaxStreamsFrame_LeavesAnAlreadyAdvertisedLimitUnchanged"
+        ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B21-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
@@ -20621,6 +20626,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0036.cs::TryAcknowledgePacket_RemovesQueuedRetransmissionForAnAcknowledgedLostPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0036.cs::TryAcknowledgePacket_LeavesAnUnrelatedQueuedRetransmissionIntact",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0036.cs::TryAcknowledgePacket_PreservesLaterQueuedRetransmissionsWhenRemovingAnAckedPacket"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B22-P5-S1",
@@ -20648,6 +20658,11 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0037.cs::TryAcknowledgePacket_RemovesALostPacketWhenLaterTrafficIsAcknowledgedFirst",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0037.cs::TryAcknowledgePacket_LeavesALostPacketQueuedWhenAnUnlostPacketIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0037.cs::TryAcknowledgePacket_PreservesOtherLostPacketsWhenAcknowledgmentsArriveOutOfOrder"
+        ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B22-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
@@ -20673,6 +20688,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0038.cs::TryDiscardPendingRetransmissionsOlderThan_RemovesQueuedRetransmissionsPastTheCutoff",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0038.cs::TryDiscardPendingRetransmissionsOlderThan_LeavesQueuedRetransmissionsAtOrAfterTheCutoff",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0038.cs::TryDiscardPendingRetransmissionsOlderThan_ClearsTheLossDetectionDeadlineWhenTheQueueWasTheLastRetainedState"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B22-P5-S4",

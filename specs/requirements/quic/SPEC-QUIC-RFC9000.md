@@ -11231,6 +11231,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B21-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0035.cs::TryApplyMaxDataFrame_AcceptsAnOutdatedMaximumDataFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0035.cs::TryApplyMaxStreamDataFrame_IgnoresAnOutdatedMaximumStreamDataFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0035.cs::TryApplyMaxStreamsFrame_LeavesAnAlreadyAdvertisedLimitUnchanged
 
 ## REQ-QUIC-RFC9000-S13P3-0036 avoid retransmitting information from packets once they are acknowledged
 A sender SHOULD avoid retransmitting information from packets once they are acknowledged.
@@ -11245,6 +11249,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B22-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0036.cs::TryAcknowledgePacket_RemovesQueuedRetransmissionForAnAcknowledgedLostPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0036.cs::TryAcknowledgePacket_LeavesAnUnrelatedQueuedRetransmissionIntact
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0036.cs::TryAcknowledgePacket_PreservesLaterQueuedRetransmissionsWhenRemovingAnAckedPacket
 
 ## REQ-QUIC-RFC9000-S13P3-0037 This includes packets that are acknowledged after being declared lost, which can happen in the presence of network reordering
 This includes packets that MUST are acknowledged after being declared lost, which can happen in the presence of network reordering.
@@ -11259,6 +11267,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B22-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0037.cs::TryAcknowledgePacket_RemovesALostPacketWhenLaterTrafficIsAcknowledgedFirst
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0037.cs::TryAcknowledgePacket_LeavesALostPacketQueuedWhenAnUnlostPacketIsAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0037.cs::TryAcknowledgePacket_PreservesOtherLostPacketsWhenAcknowledgmentsArriveOutOfOrder
 
 ## REQ-QUIC-RFC9000-S13P3-0038 can discard this information after a period of time elapses that adequately allows for reordering, such as a PTO (Section 6
 A sender can discard MUST this information after a period of time elapses that adequately allows for reordering, such as a PTO (Section 6.2 of [QUIC-RECOVERY]), or based on other events, such as reaching a memory limit.
@@ -11273,6 +11285,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B22-P5-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0038.cs::TryDiscardPendingRetransmissionsOlderThan_RemovesQueuedRetransmissionsPastTheCutoff
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0038.cs::TryDiscardPendingRetransmissionsOlderThan_LeavesQueuedRetransmissionsAtOrAfterTheCutoff
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0038.cs::TryDiscardPendingRetransmissionsOlderThan_ClearsTheLossDetectionDeadlineWhenTheQueueWasTheLastRetainedState
 
 ## REQ-QUIC-RFC9000-S13P3-0039 Take congestion control action when loss is detected
 Upon detecting losses, a sender MUST take appropriate congestion control action.
