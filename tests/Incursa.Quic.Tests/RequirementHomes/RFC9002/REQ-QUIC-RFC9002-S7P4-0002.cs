@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9002_S7P4_0002
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Edge)]
     public void TryRegisterLoss_DoesNotIgnorePacketsSentAfterTheEarliestAcknowledgedPacket()
     {
         QuicCongestionControlState state = new();
@@ -18,7 +19,7 @@ public sealed class REQ_QUIC_RFC9002_S7P4_0002
             sentBytes: 1_200,
             sentAtMicros: 2_000,
             packetInFlight: true,
-            packetCanBeDecrypted: true,
+            packetCanBeDecrypted: false,
             keysAvailable: true,
             sentAfterEarliestAcknowledgedPacket: true));
 

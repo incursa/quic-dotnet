@@ -2154,6 +2154,8 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.4 RFC9002-S7.4-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P4-0001.cs::TryRegisterLoss_IgnoresPacketsThatMayHaveArrivedBeforeKeysWereAvailable
 
 ## REQ-QUIC-RFC9002-S7P4-0002 Do not ignore later packet loss
 Endpoints MUST NOT ignore the loss of packets that were sent after the earliest acknowledged packet in a given packet number space.
@@ -2168,6 +2170,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.4 RFC9002-S7.4-B2-P1-S4
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P4-0001.cs::TryRegisterLoss_IgnoresPacketsThatMayHaveArrivedBeforeKeysWereAvailable
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P4-0002.cs::TryRegisterLoss_DoesNotIgnorePacketsSentAfterTheEarliestAcknowledgedPacket
 
 ## REQ-QUIC-RFC9002-S7P5-0001 Do not block probe packets with congestion control
 Probe packets MUST NOT be blocked by the congestion controller.

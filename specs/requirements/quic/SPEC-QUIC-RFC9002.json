@@ -3779,6 +3779,9 @@
         "upstream_refs": [
           "RFC 9002 §7.4 RFC9002-S7.4-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P4-0001.cs::TryRegisterLoss_IgnoresPacketsThatMayHaveArrivedBeforeKeysWereAvailable"
         ]
       }
     },
@@ -3805,6 +3808,10 @@
         "upstream_refs": [
           "RFC 9002 §7.4 RFC9002-S7.4-B2-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P4-0001.cs::TryRegisterLoss_IgnoresPacketsThatMayHaveArrivedBeforeKeysWereAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P4-0002.cs::TryRegisterLoss_DoesNotIgnorePacketsSentAfterTheEarliestAcknowledgedPacket"
         ]
       }
     },

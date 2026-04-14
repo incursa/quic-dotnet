@@ -7,7 +7,9 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S7P4_0001
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9002-S7P4-0002")]
     [CoverageType(RequirementCoverageType.Negative)]
+    [CoverageType(RequirementCoverageType.Edge)]
     public void TryRegisterLoss_IgnoresPacketsThatMayHaveArrivedBeforeKeysWereAvailable()
     {
         QuicCongestionControlState state = new();
@@ -20,7 +22,7 @@ public sealed class REQ_QUIC_RFC9002_S7P4_0001
             packetInFlight: true,
             packetCanBeDecrypted: false,
             keysAvailable: false,
-            sentAfterEarliestAcknowledgedPacket: false));
+            sentAfterEarliestAcknowledgedPacket: true));
 
         Assert.False(state.HasRecoveryStartTime);
         Assert.Equal(13_200UL, state.BytesInFlightBytes);
