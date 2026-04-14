@@ -1,4 +1,5 @@
 using System.Net;
+using Incursa.Quic;
 using Incursa.Qlog;
 using Incursa.Qlog.Quic;
 
@@ -18,7 +19,10 @@ internal static class QuicQlogDiagnosticsMapper
             QuicDiagnosticKind.InitialPacketOpenFailed => CreatePacketDropped(eventTime, diagnosticEvent, QlogQuicKnownValues.PacketTypeInitial),
             QuicDiagnosticKind.InitialPacketAdvanced => CreateConnectionStateUpdated(eventTime, processed: true),
             QuicDiagnosticKind.InitialPacketNotAdvanced => CreateConnectionStateUpdated(eventTime, processed: false),
+            QuicDiagnosticKind.InitialPacketSent => CreateInitialPacketSent(eventTime, diagnosticEvent),
             QuicDiagnosticKind.HandshakePacketOpenFailed => CreatePacketDropped(eventTime, diagnosticEvent, QlogQuicKnownValues.PacketTypeHandshake),
+            QuicDiagnosticKind.RetryReceived => CreateRetryReceived(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.VersionNegotiationReceived => CreateVersionNegotiationReceived(eventTime, diagnosticEvent),
             QuicDiagnosticKind.InitialTranscriptAdvanced when diagnosticEvent.EncryptionLevel.HasValue => CreateKeyUpdated(
                 eventTime,
                 diagnosticEvent,
@@ -48,11 +52,72 @@ internal static class QuicQlogDiagnosticsMapper
 
     private static QlogEvent CreateInitialPacketReceived(double eventTime, QuicDiagnosticEvent diagnosticEvent)
     {
+        return CreatePacketReceived(
+            eventTime,
+            diagnosticEvent,
+            QlogQuicKnownValues.PacketTypeInitial,
+            version: QuicVersionNegotiation.Version1.ToString("x8"));
+    }
+
+    private static QlogEvent CreateInitialPacketSent(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        return CreatePacketSent(
+            eventTime,
+            diagnosticEvent,
+            QlogQuicKnownValues.PacketTypeInitial,
+            version: QuicVersionNegotiation.Version1.ToString("x8"));
+    }
+
+    private static QlogEvent CreateRetryReceived(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        return CreatePacketReceived(
+            eventTime,
+            diagnosticEvent,
+            QlogQuicKnownValues.PacketTypeRetry,
+            version: QuicVersionNegotiation.Version1.ToString("x8"));
+    }
+
+    private static QlogEvent CreateVersionNegotiationReceived(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        return CreatePacketReceived(
+            eventTime,
+            diagnosticEvent,
+            QlogQuicKnownValues.PacketTypeVersionNegotiation,
+            version: "00000000");
+    }
+
+    private static QlogEvent CreatePacketSent(
+        double eventTime,
+        QuicDiagnosticEvent diagnosticEvent,
+        string packetType,
+        string? version = null)
+    {
+        QuicPacketSent payload = new()
+        {
+            Header = new QuicPacketHeader
+            {
+                PacketType = packetType,
+                Version = version,
+            },
+        };
+
+        QlogEvent qlogEvent = QlogQuicEvents.CreatePacketSent(eventTime, payload);
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreatePacketReceived(
+        double eventTime,
+        QuicDiagnosticEvent diagnosticEvent,
+        string packetType,
+        string? version = null)
+    {
         QuicPacketReceived payload = new()
         {
             Header = new QuicPacketHeader
             {
-                PacketType = QlogQuicKnownValues.PacketTypeInitial,
+                PacketType = packetType,
+                Version = version,
             },
         };
 

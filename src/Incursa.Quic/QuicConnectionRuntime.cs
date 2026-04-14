@@ -1063,6 +1063,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         hasSuccessfullyProcessedAnotherPacket = true;
 
         bool stateChanged = true;
+        EmitDiagnostic(ref effects, QuicDiagnostics.RetryReceived());
         stateChanged |= TryFlushInitialPackets(ref effects);
         return stateChanged;
     }
@@ -1097,6 +1098,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
+        EmitDiagnostic(ref effects, QuicDiagnostics.VersionNegotiationReceived());
         return DiscardConnection(
             versionNegotiationReceivedEvent.ObservedAtTicks,
             QuicConnectionCloseOrigin.VersionNegotiation,
@@ -2120,6 +2122,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 break;
             }
 
+            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity));
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
             tlsState.InitialEgressCryptoBuffer.DiscardFutureFrames();
             stateChanged = true;
@@ -2203,6 +2206,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 break;
             }
 
+            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity));
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
             replayOffset += requestedBytes;
             stateChanged = true;

@@ -29,6 +29,9 @@ internal enum QuicDiagnosticKind
     AcceptedStatelessReset = 10,
     AddressChangeClassified = 11,
     CandidatePathBudgetExhausted = 12,
+    InitialPacketSent = 13,
+    RetryReceived = 14,
+    VersionNegotiationReceived = 15,
 }
 
 /// <summary>
@@ -85,6 +88,9 @@ internal readonly record struct QuicDiagnosticEvent(
             ("connection.runtime.handshake", "handshake-packet-open-failed") => QuicDiagnosticKind.HandshakePacketOpenFailed,
             ("connection.runtime.handshake", "initial-transcript-advanced") => QuicDiagnosticKind.InitialTranscriptAdvanced,
             ("connection.runtime.handshake", "handshake-transcript-advanced") => QuicDiagnosticKind.HandshakeTranscriptAdvanced,
+            ("connection.runtime.handshake", "initial-packet-sent") => QuicDiagnosticKind.InitialPacketSent,
+            ("connection.runtime.handshake", "retry-received") => QuicDiagnosticKind.RetryReceived,
+            ("connection.runtime.handshake", "version-negotiation-received") => QuicDiagnosticKind.VersionNegotiationReceived,
             ("connection.runtime.path", "validated-paths-exhausted") => QuicDiagnosticKind.PathValidationFailedNoValidatedPathsRemain,
             ("connection.runtime.path", "path-validation-timer-exhausted") => QuicDiagnosticKind.PathValidationTimerExpiredNoValidatedPathsRemain,
             ("connection.runtime.lifecycle", "accepted-stateless-reset") => QuicDiagnosticKind.AcceptedStatelessReset,
@@ -161,6 +167,36 @@ internal static class QuicDiagnostics
                 ? "Initial packet payload advanced the TLS bridge."
                 : "Initial packet payload did not advance the TLS bridge.",
             processed ? QuicDiagnosticSeverity.Info : QuicDiagnosticSeverity.Warning);
+    }
+
+    internal static QuicDiagnosticEvent InitialPacketSent(QuicConnectionPathIdentity pathIdentity)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.handshake",
+            "initial-packet-sent",
+            $"Initial packet was queued for send on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
+        };
+    }
+
+    internal static QuicDiagnosticEvent RetryReceived()
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.handshake",
+            "retry-received",
+            "Retry packet was received from the peer.",
+            QuicDiagnosticSeverity.Trace);
+    }
+
+    internal static QuicDiagnosticEvent VersionNegotiationReceived()
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.handshake",
+            "version-negotiation-received",
+            "Version Negotiation packet was received from the peer.",
+            QuicDiagnosticSeverity.Trace);
     }
 
     internal static QuicDiagnosticEvent HandshakePacketOpenFailed(QuicConnectionPathIdentity pathIdentity)

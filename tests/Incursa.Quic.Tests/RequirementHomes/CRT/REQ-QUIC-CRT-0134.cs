@@ -15,6 +15,9 @@ public sealed class REQ_QUIC_CRT_0134
             LocalPort: 61234);
 
         QuicDiagnosticEvent initialPacketReceived = QuicDiagnostics.InitialPacketReceived(pathIdentity);
+        QuicDiagnosticEvent initialPacketSent = QuicDiagnostics.InitialPacketSent(pathIdentity);
+        QuicDiagnosticEvent retryReceived = QuicDiagnostics.RetryReceived();
+        QuicDiagnosticEvent versionNegotiationReceived = QuicDiagnostics.VersionNegotiationReceived();
         QuicDiagnosticEvent initialTranscriptAdvanced = QuicDiagnostics.TranscriptAdvanced(QuicTlsEncryptionLevel.Initial, 2);
         QuicDiagnosticEvent handshakeTranscriptAdvanced = QuicDiagnostics.TranscriptAdvanced(QuicTlsEncryptionLevel.Handshake, 5);
         QuicDiagnosticEvent addressChangeClassified = QuicDiagnostics.AddressChangeClassified(
@@ -25,6 +28,17 @@ public sealed class REQ_QUIC_CRT_0134
         Assert.Equal(QuicDiagnosticSeverity.Trace, initialPacketReceived.Severity);
         Assert.Equal(pathIdentity, initialPacketReceived.PathIdentity);
         Assert.Contains("203.0.113.10:443", initialPacketReceived.Message, StringComparison.Ordinal);
+
+        Assert.Equal(QuicDiagnosticKind.InitialPacketSent, initialPacketSent.Kind);
+        Assert.Equal(QuicDiagnosticSeverity.Trace, initialPacketSent.Severity);
+        Assert.Equal(pathIdentity, initialPacketSent.PathIdentity);
+        Assert.Contains("203.0.113.10:443", initialPacketSent.Message, StringComparison.Ordinal);
+
+        Assert.Equal(QuicDiagnosticKind.RetryReceived, retryReceived.Kind);
+        Assert.Equal(QuicDiagnosticSeverity.Trace, retryReceived.Severity);
+
+        Assert.Equal(QuicDiagnosticKind.VersionNegotiationReceived, versionNegotiationReceived.Kind);
+        Assert.Equal(QuicDiagnosticSeverity.Trace, versionNegotiationReceived.Severity);
 
         Assert.Equal(QuicDiagnosticKind.InitialTranscriptAdvanced, initialTranscriptAdvanced.Kind);
         Assert.Equal(QuicTlsEncryptionLevel.Initial, initialTranscriptAdvanced.EncryptionLevel);
@@ -40,12 +54,15 @@ public sealed class REQ_QUIC_CRT_0134
 
         RecordingDiagnosticsSink sink = new();
         sink.Emit(initialPacketReceived);
+        sink.Emit(initialPacketSent);
+        sink.Emit(retryReceived);
+        sink.Emit(versionNegotiationReceived);
         sink.Emit(initialTranscriptAdvanced);
         sink.Emit(handshakeTranscriptAdvanced);
         sink.Emit(addressChangeClassified);
 
         Assert.True(sink.IsEnabled);
-        Assert.Equal(4, sink.Events.Count);
+        Assert.Equal(7, sink.Events.Count);
         Assert.All(sink.Events, diagnosticEvent => Assert.NotEqual(QuicDiagnosticKind.Unknown, diagnosticEvent.Kind));
 
         Assert.False(QuicNullDiagnosticsSink.Instance.IsEnabled);

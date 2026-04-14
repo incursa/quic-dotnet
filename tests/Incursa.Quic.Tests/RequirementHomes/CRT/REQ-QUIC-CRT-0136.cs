@@ -124,6 +124,45 @@ public sealed class REQ_QUIC_CRT_0136
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void DiagnosticsSinkMapsHandshakePacketLifecycleIntoTypedQlogPacketEvents()
+    {
+        QuicConnectionPathIdentity pathIdentity = new(
+            RemoteAddress: "203.0.113.10",
+            LocalAddress: "198.51.100.3",
+            RemotePort: 443,
+            LocalPort: 61234);
+
+        QuicQlogDiagnosticsSink clientSink = new(isServer: false);
+
+        clientSink.Emit(QuicDiagnostics.InitialPacketSent(pathIdentity));
+        clientSink.Emit(QuicDiagnostics.RetryReceived());
+        clientSink.Emit(QuicDiagnostics.VersionNegotiationReceived());
+
+        Assert.Equal(
+            [
+                QlogQuicKnownValues.PacketSentEventName,
+                QlogQuicKnownValues.PacketReceivedEventName,
+                QlogQuicKnownValues.PacketReceivedEventName,
+            ],
+            clientSink.Trace.Events.Select(static qlogEvent => qlogEvent.Name));
+
+        QlogEvent initialPacketSent = clientSink.Trace.Events[0];
+        Assert.Equal("203.0.113.10:443|198.51.100.3:61234", initialPacketSent.Tuple);
+        Assert.Equal(QlogQuicKnownValues.PacketTypeInitial, ReadObjectString(initialPacketSent.Data["header"], "packet_type"));
+        Assert.Equal("00000001", ReadObjectString(initialPacketSent.Data["header"], "version"));
+
+        QlogEvent retryReceived = clientSink.Trace.Events[1];
+        Assert.Equal(QlogQuicKnownValues.PacketTypeRetry, ReadObjectString(retryReceived.Data["header"], "packet_type"));
+        Assert.Equal("00000001", ReadObjectString(retryReceived.Data["header"], "version"));
+
+        QlogEvent versionNegotiationReceived = clientSink.Trace.Events[2];
+        Assert.Equal(QlogQuicKnownValues.PacketTypeVersionNegotiation, ReadObjectString(versionNegotiationReceived.Data["header"], "packet_type"));
+        Assert.Equal("00000000", ReadObjectString(versionNegotiationReceived.Data["header"], "version"));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void AssemblyReferencesKeepTheTransportCoreFreeOfQlogDependencies()
     {
         Assembly coreAssembly = typeof(QuicConnection).Assembly;
