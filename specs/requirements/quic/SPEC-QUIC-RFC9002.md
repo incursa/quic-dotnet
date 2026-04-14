@@ -2355,6 +2355,10 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.6.2 RFC9002-S7.6.2-B9-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0006.cs::TryDetectPersistentCongestion_CollapsesTheWindowWhenPersistentCongestionIsDetected
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0006.cs::TryDetectPersistentCongestion_DoesNotCollapseTheWindowWhenTheDurationIsTooShort
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0006.cs::TryDetectPersistentCongestion_CollapsesTheWindowAtTheDurationBoundary
 
 ## REQ-QUIC-RFC9002-S7P7-0001 Pace all in-flight packets
 A sender SHOULD pace sending of all in-flight packets based on input from the congestion controller.

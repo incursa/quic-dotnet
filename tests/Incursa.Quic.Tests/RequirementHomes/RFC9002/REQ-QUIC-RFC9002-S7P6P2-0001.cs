@@ -12,7 +12,6 @@ public sealed class REQ_QUIC_RFC9002_S7P6P2_0001
     [Requirement("REQ-QUIC-RFC9002-S7P6P2-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7P6P2-0004")]
     [Requirement("REQ-QUIC-RFC9002-S7P6P2-0005")]
-    [Requirement("REQ-QUIC-RFC9002-S7P6P2-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow()
