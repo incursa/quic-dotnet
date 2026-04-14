@@ -796,7 +796,14 @@ internal sealed class QuicTransportTlsBridgeState
         }
 
         ResumptionAttemptDisposition = disposition;
-        return true;
+        bool stateChanged = true;
+
+        if (disposition == QuicTlsResumptionAttemptDisposition.Rejected)
+        {
+            stateChanged |= TryDiscardKeys(QuicTlsEncryptionLevel.ZeroRtt);
+        }
+
+        return stateChanged;
     }
 
     public bool TrySetHandshakeTranscriptPhase(QuicTlsTranscriptPhase transcriptPhase)
@@ -998,6 +1005,8 @@ internal sealed class QuicTransportTlsBridgeState
     {
         return encryptionLevel switch
         {
+            QuicTlsEncryptionLevel.ZeroRtt
+                => packetProtectionMaterials.Remove(encryptionLevel),
             QuicTlsEncryptionLevel.Handshake
                 => TryDiscardHandshakePacketProtectionMaterial(encryptionLevel),
             QuicTlsEncryptionLevel.OneRtt
@@ -1084,6 +1093,18 @@ internal sealed class QuicTransportTlsBridgeState
                 InitialKeysAvailable = false;
                 OldKeysDiscarded = true;
                 return true;
+
+            case QuicTlsEncryptionLevel.ZeroRtt:
+            {
+                bool packetProtectionMaterialDiscarded = TryDiscardPacketProtectionMaterial(encryptionLevel);
+                if (!packetProtectionMaterialDiscarded && OldKeysDiscarded)
+                {
+                    return false;
+                }
+
+                OldKeysDiscarded = true;
+                return true;
+            }
 
             case QuicTlsEncryptionLevel.Handshake:
             {

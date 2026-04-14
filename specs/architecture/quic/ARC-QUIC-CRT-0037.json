@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0037",
+  "artifact_type": "architecture",
+  "status": "landed",
+  "title": "QUIC client-side 0-RTT rejection cleanup architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the managed client/runtime path discards dormant ZeroRtt packet-protection material when a PSK-capable resumption branch is rejected, while leaving accepted attempts intact and avoiding any server-side replay-control claim.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0039",
+    "VER-QUIC-CRT-0039"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0142"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0142.cs"
+  ],
+  "risks": [
+    "If the cleanup is implemented only in the runtime, direct bridge-state callers can retain stale ZeroRtt material after rejection.",
+    "If the rejection branch clears more than ZeroRtt material, the accepted abbreviated path and unrelated handshake material can be over-discarded.",
+    "If the slice is widened into receive-side replay controls, it overclaims anti-replay support instead of staying a cleanup prerequisite."
+  ],
+  "design_summary": "The TLS bridge-state update path stores the resumption disposition and, when that disposition is rejected, discards only dormant ZeroRtt packet-protection material through the existing key-discard helper. The runtime keeps the behavior narrow by flowing the disposition update through the bridge state and observing the resulting state change. Accepted dispositions leave the dormant ZeroRtt material intact, so the cleanup boundary remains a rejected-branch-only prerequisite for later anti-replay work.",
+  "alternatives_considered": [
+    "Synthesize a special runtime-only cleanup event after rejection. Rejected because the bridge state already owns the TLS material lifecycle and can perform the discard directly.",
+    "Clear all packet-protection material on rejection. Rejected because the cleanup must not disturb unrelated handshake or 1-RTT material."
+  ],
+  "edge_cases_and_constraints": [
+    "Client role only.",
+    "Rejected dispositions discard dormant ZeroRtt material and mark old keys discarded.",
+    "Accepted dispositions leave dormant ZeroRtt material intact.",
+    "Repeated rejected dispositions must remain idempotent once the branch has already been handled.",
+    "The slice does not add 0-RTT receive handling, server admission, key update, transfer, retry, or any public API widening.",
+    "The slice does not claim anti-replay support."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0142.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0142.cs)"
+    }
+  ]
+}

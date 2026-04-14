@@ -1720,6 +1720,29 @@
         "The 0-RTT packet-protection package must stay distinct from the current 1-RTT package so the slice does not masquerade as resumed 1-RTT send support.",
         "The later 0-RTT receive, anti-replay, key update, transfer, retry, and public-promise widening families remain separate."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0142",
+      "title": "Discard dormant ZeroRtt material when the resumption branch is rejected",
+      "statement": "In the client role, the library MUST discard dormant ZeroRtt packet-protection material when a PSK-capable ClientHello attempt is rejected at ServerHello, and MUST leave that dormant material intact when the attempt is accepted. The cleanup MUST flow through the existing TLS bridge-state update path so the connection runtime does not retain stale 0-RTT protection material after the rejection boundary. The slice MUST remain client-role only, MUST remain managed client/runtime only, MUST keep early-data admission explicitly closed, MUST NOT add 0-RTT receive handling, server admission, key update, transfer, retry, or public API widening, and MUST NOT claim anti-replay support.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 8446 Section 4.1.3",
+          "RFC 8446 Section 4.6.1",
+          "docs/design/quic-interop-prep-plan.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicTlsTransport.cs",
+          "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+          "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0142.cs"
+        ]
+      },
+      "notes": [
+        "Rejected disposition updates must clear only dormant ZeroRtt material; the accepted branch remains untouched.",
+        "The cleanup is a client-side prerequisite for later replay-control work, not a server-side anti-replay implementation.",
+        "The bridge-state path remains the single place that owns the discard decision."
+      ]
     }
   ]
 }

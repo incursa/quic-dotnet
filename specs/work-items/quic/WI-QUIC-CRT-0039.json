@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0039",
+  "artifact_type": "work_item",
+  "status": "landed",
+  "title": "QUIC client-side 0-RTT rejection cleanup work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the rejected-resumption cleanup branch that discards dormant ZeroRtt packet-protection material while leaving accepted attempts intact and keeping anti-replay support out of scope.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0037"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0039"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0142"
+  ],
+  "completion_notes": "The managed client/runtime path now discards dormant ZeroRtt packet-protection material when the PSK-capable branch is rejected at ServerHello, keeps the accepted branch intact, and leaves receive-side replay controls, key update, transfer, retry, and public API widening out of scope.",
+  "verification_plan": "Run focused requirement-home tests for the direct bridge-state cleanup helper, the runtime rejected-branch cleanup, the runtime accepted-branch retention case, the randomized cleanup boundary, and the public no-broad-support guard; run the permanent BenchmarkDotNet suite for the rejected-vs-accepted cleanup branch; then run SpecTrace render and validation checks.",
+  "out_of_scope": [
+    "0-RTT receive handling",
+    "server admission",
+    "anti-replay enforcement",
+    "key update",
+    "transfer enablement",
+    "retry enablement",
+    "public API widening",
+    "IsSupported widening",
+    "broader stream-management parity",
+    "opportunistic refactors unrelated to the rejected-resumption cleanup branch"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0142.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0142.cs)\n- [`benchmarks/QuicTlsClientZeroRttRejectionCleanupBenchmarks.cs`](../../../benchmarks/QuicTlsClientZeroRttRejectionCleanupBenchmarks.cs)"
+    }
+  ]
+}

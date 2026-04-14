@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0039",
+  "artifact_type": "verification",
+  "status": "landed",
+  "title": "QUIC client-side 0-RTT rejection cleanup verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests, BenchmarkDotNet coverage, and SpecTrace render/validation checks.",
+  "scope": "Verify that rejected resumption dispositions discard dormant ZeroRtt packet-protection material, accepted dispositions leave it intact, the direct bridge-state helper and the runtime path agree on the behavior, and the slice does not widen public API or claim anti-replay support.",
+  "preconditions": [
+    "The repository builds successfully on net10.0.",
+    "REQ-QUIC-CRT-0141 remains a landed prerequisite for the dormant 0-RTT send path.",
+    "REQ-QUIC-CRT-0142 is the active cleanup requirement in this slice."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0142.cs",
+    "benchmarks/QuicTlsClientZeroRttRejectionCleanupBenchmarks.cs",
+    "benchmarks/README.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "scripts/Validate-SpecTraceJson.ps1",
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
+  ],
+  "procedure": [
+    "Run the focused requirement-home tests for rejected cleanup, accepted retention, the direct bridge-state discard helper, the randomized boundary, and the public no-broad-support guard.",
+    "Run the permanent BenchmarkDotNet suite for the rejected-vs-accepted cleanup branch.",
+    "Render the SpecTrace markdown from the canonical JSON and validate the generated artifacts."
+  ],
+  "expected_result": "Rejected resumption attempts clear dormant ZeroRtt packet-protection material and mark old keys discarded, accepted attempts retain the dormant ZeroRtt material, and the library does not claim anti-replay support or any public widening.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0037",
+    "WI-QUIC-CRT-0039"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- Rejected resumption dispositions discard dormant ZeroRtt packet-protection material.\n- Accepted resumption dispositions leave dormant ZeroRtt packet-protection material intact.\n- The bridge-state helper and the runtime path agree on the behavior.\n- The slice does not claim 0-RTT receive handling, server admission, key update, transfer, retry, or anti-replay support."
+    }
+  ]
+}

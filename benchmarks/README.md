@@ -15,6 +15,7 @@ This directory contains permanent BenchmarkDotNet suites for the QUIC parser hot
 - `QuicTlsServerFinishedPublicationBenchmarks`: server Finished publication and 1-RTT packet-protection material derivation
 - `QuicTlsClientFinishedPublicationBenchmarks`: client Finished publication and 1-RTT readiness derivation
 - `QuicTlsClientZeroRttEmissionBenchmarks`: client resumption material publication and protected 0-RTT packet formatting
+- `QuicTlsClientZeroRttRejectionCleanupBenchmarks`: rejected-vs-accepted cleanup for dormant ZeroRtt packet-protection material
 
 ## Run
 
@@ -33,6 +34,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsServerFinishedPublicationBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsClientFinishedPublicationBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsClientZeroRttEmissionBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsClientZeroRttRejectionCleanupBenchmarks*"
 ```
 
 Use `--filter` to narrow to a subset of benchmarks when iterating locally.
