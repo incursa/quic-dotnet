@@ -72,7 +72,8 @@ internal sealed record QuicConnectionHandshakeBootstrapRequestedEvent(
 internal sealed record QuicConnectionRetryReceivedEvent(
     long ObservedAtTicks,
     ReadOnlyMemory<byte> RetrySourceConnectionId,
-    ReadOnlyMemory<byte> RetryToken)
+    ReadOnlyMemory<byte> RetryToken,
+    ReadOnlyMemory<byte> Datagram = default)
     : QuicConnectionEvent(QuicConnectionEventKind.RetryReceived, ObservedAtTicks);
 
 internal sealed record QuicConnectionVersionNegotiationReceivedEvent(

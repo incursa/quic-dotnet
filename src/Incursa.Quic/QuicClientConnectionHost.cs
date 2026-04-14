@@ -236,7 +236,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             new QuicConnectionRetryReceivedEvent(
                 runtime.Clock.Ticks,
                 retryMetadata.RetrySourceConnectionId,
-                retryMetadata.RetryToken));
+                retryMetadata.RetryToken,
+                datagram));
     }
 
     private bool IsReplayInitialPacket(ReadOnlySpan<byte> datagram)

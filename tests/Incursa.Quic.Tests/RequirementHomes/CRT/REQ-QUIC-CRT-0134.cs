@@ -14,10 +14,15 @@ public sealed class REQ_QUIC_CRT_0134
             RemotePort: 443,
             LocalPort: 61234);
 
-        QuicDiagnosticEvent initialPacketReceived = QuicDiagnostics.InitialPacketReceived(pathIdentity);
-        QuicDiagnosticEvent initialPacketSent = QuicDiagnostics.InitialPacketSent(pathIdentity);
-        QuicDiagnosticEvent retryReceived = QuicDiagnostics.RetryReceived();
-        QuicDiagnosticEvent versionNegotiationReceived = QuicDiagnostics.VersionNegotiationReceived();
+        byte[] initialPacketReceivedBytes = [0x01, 0x02, 0x03];
+        byte[] initialPacketSentBytes = [0x04, 0x05, 0x06];
+        byte[] retryReceivedBytes = [0x07, 0x08];
+        byte[] versionNegotiationReceivedBytes = [0x09];
+
+        QuicDiagnosticEvent initialPacketReceived = QuicDiagnostics.InitialPacketReceived(pathIdentity, initialPacketReceivedBytes);
+        QuicDiagnosticEvent initialPacketSent = QuicDiagnostics.InitialPacketSent(pathIdentity, initialPacketSentBytes);
+        QuicDiagnosticEvent retryReceived = QuicDiagnostics.RetryReceived(retryReceivedBytes);
+        QuicDiagnosticEvent versionNegotiationReceived = QuicDiagnostics.VersionNegotiationReceived(versionNegotiationReceivedBytes);
         QuicDiagnosticEvent initialTranscriptAdvanced = QuicDiagnostics.TranscriptAdvanced(QuicTlsEncryptionLevel.Initial, 2);
         QuicDiagnosticEvent handshakeTranscriptAdvanced = QuicDiagnostics.TranscriptAdvanced(QuicTlsEncryptionLevel.Handshake, 5);
         QuicDiagnosticEvent addressChangeClassified = QuicDiagnostics.AddressChangeClassified(
@@ -28,17 +33,21 @@ public sealed class REQ_QUIC_CRT_0134
         Assert.Equal(QuicDiagnosticSeverity.Trace, initialPacketReceived.Severity);
         Assert.Equal(pathIdentity, initialPacketReceived.PathIdentity);
         Assert.Contains("203.0.113.10:443", initialPacketReceived.Message, StringComparison.Ordinal);
+        Assert.Equal(initialPacketReceivedBytes, initialPacketReceived.PacketBytes.ToArray());
 
         Assert.Equal(QuicDiagnosticKind.InitialPacketSent, initialPacketSent.Kind);
         Assert.Equal(QuicDiagnosticSeverity.Trace, initialPacketSent.Severity);
         Assert.Equal(pathIdentity, initialPacketSent.PathIdentity);
         Assert.Contains("203.0.113.10:443", initialPacketSent.Message, StringComparison.Ordinal);
+        Assert.Equal(initialPacketSentBytes, initialPacketSent.PacketBytes.ToArray());
 
         Assert.Equal(QuicDiagnosticKind.RetryReceived, retryReceived.Kind);
         Assert.Equal(QuicDiagnosticSeverity.Trace, retryReceived.Severity);
+        Assert.Equal(retryReceivedBytes, retryReceived.PacketBytes.ToArray());
 
         Assert.Equal(QuicDiagnosticKind.VersionNegotiationReceived, versionNegotiationReceived.Kind);
         Assert.Equal(QuicDiagnosticSeverity.Trace, versionNegotiationReceived.Severity);
+        Assert.Equal(versionNegotiationReceivedBytes, versionNegotiationReceived.PacketBytes.ToArray());
 
         Assert.Equal(QuicDiagnosticKind.InitialTranscriptAdvanced, initialTranscriptAdvanced.Kind);
         Assert.Equal(QuicTlsEncryptionLevel.Initial, initialTranscriptAdvanced.EncryptionLevel);

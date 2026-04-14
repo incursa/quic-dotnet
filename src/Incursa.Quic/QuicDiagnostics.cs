@@ -77,6 +77,11 @@ internal readonly record struct QuicDiagnosticEvent(
     /// </summary>
     public ulong? ConnectionId { get; init; }
 
+    /// <summary>
+    /// Gets the packet bytes associated with the diagnostic, if any.
+    /// </summary>
+    public ReadOnlyMemory<byte> PacketBytes { get; init; }
+
     private static QuicDiagnosticKind InferKind(string category, string name)
     {
         return (category, name) switch
@@ -134,7 +139,9 @@ internal static class QuicDiagnostics
         return diagnosticsSink ?? QuicNullDiagnosticsSink.Instance;
     }
 
-    internal static QuicDiagnosticEvent InitialPacketReceived(QuicConnectionPathIdentity pathIdentity)
+    internal static QuicDiagnosticEvent InitialPacketReceived(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> packetBytes = default)
     {
         return new QuicDiagnosticEvent(
             "connection.runtime.handshake",
@@ -143,10 +150,13 @@ internal static class QuicDiagnostics
             QuicDiagnosticSeverity.Trace)
         {
             PathIdentity = pathIdentity,
+            PacketBytes = packetBytes.ToArray(),
         };
     }
 
-    internal static QuicDiagnosticEvent InitialPacketOpenFailed(QuicConnectionPathIdentity pathIdentity)
+    internal static QuicDiagnosticEvent InitialPacketOpenFailed(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> packetBytes = default)
     {
         return new QuicDiagnosticEvent(
             "connection.runtime.handshake",
@@ -155,6 +165,7 @@ internal static class QuicDiagnostics
             QuicDiagnosticSeverity.Warning)
         {
             PathIdentity = pathIdentity,
+            PacketBytes = packetBytes.ToArray(),
         };
     }
 
@@ -169,7 +180,9 @@ internal static class QuicDiagnostics
             processed ? QuicDiagnosticSeverity.Info : QuicDiagnosticSeverity.Warning);
     }
 
-    internal static QuicDiagnosticEvent InitialPacketSent(QuicConnectionPathIdentity pathIdentity)
+    internal static QuicDiagnosticEvent InitialPacketSent(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> packetBytes = default)
     {
         return new QuicDiagnosticEvent(
             "connection.runtime.handshake",
@@ -178,28 +191,37 @@ internal static class QuicDiagnostics
             QuicDiagnosticSeverity.Trace)
         {
             PathIdentity = pathIdentity,
+            PacketBytes = packetBytes.ToArray(),
         };
     }
 
-    internal static QuicDiagnosticEvent RetryReceived()
+    internal static QuicDiagnosticEvent RetryReceived(ReadOnlySpan<byte> packetBytes = default)
     {
         return new QuicDiagnosticEvent(
             "connection.runtime.handshake",
             "retry-received",
             "Retry packet was received from the peer.",
-            QuicDiagnosticSeverity.Trace);
+            QuicDiagnosticSeverity.Trace)
+        {
+            PacketBytes = packetBytes.ToArray(),
+        };
     }
 
-    internal static QuicDiagnosticEvent VersionNegotiationReceived()
+    internal static QuicDiagnosticEvent VersionNegotiationReceived(ReadOnlySpan<byte> packetBytes = default)
     {
         return new QuicDiagnosticEvent(
             "connection.runtime.handshake",
             "version-negotiation-received",
             "Version Negotiation packet was received from the peer.",
-            QuicDiagnosticSeverity.Trace);
+            QuicDiagnosticSeverity.Trace)
+        {
+            PacketBytes = packetBytes.ToArray(),
+        };
     }
 
-    internal static QuicDiagnosticEvent HandshakePacketOpenFailed(QuicConnectionPathIdentity pathIdentity)
+    internal static QuicDiagnosticEvent HandshakePacketOpenFailed(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> packetBytes = default)
     {
         return new QuicDiagnosticEvent(
             "connection.runtime.handshake",
@@ -208,6 +230,7 @@ internal static class QuicDiagnostics
             QuicDiagnosticSeverity.Warning)
         {
             PathIdentity = pathIdentity,
+            PacketBytes = packetBytes.ToArray(),
         };
     }
 

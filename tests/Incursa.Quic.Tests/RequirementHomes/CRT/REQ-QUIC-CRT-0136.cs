@@ -132,11 +132,15 @@ public sealed class REQ_QUIC_CRT_0136
             RemotePort: 443,
             LocalPort: 61234);
 
+        byte[] initialPacketBytes = [0x01, 0x02, 0x03];
+        byte[] retryBytes = [0x04, 0x05];
+        byte[] versionNegotiationBytes = [0x06];
+
         QuicQlogDiagnosticsSink clientSink = new(isServer: false);
 
-        clientSink.Emit(QuicDiagnostics.InitialPacketSent(pathIdentity));
-        clientSink.Emit(QuicDiagnostics.RetryReceived());
-        clientSink.Emit(QuicDiagnostics.VersionNegotiationReceived());
+        clientSink.Emit(QuicDiagnostics.InitialPacketSent(pathIdentity, initialPacketBytes));
+        clientSink.Emit(QuicDiagnostics.RetryReceived(retryBytes));
+        clientSink.Emit(QuicDiagnostics.VersionNegotiationReceived(versionNegotiationBytes));
 
         Assert.Equal(
             [
@@ -150,14 +154,23 @@ public sealed class REQ_QUIC_CRT_0136
         Assert.Equal("203.0.113.10:443|198.51.100.3:61234", initialPacketSent.Tuple);
         Assert.Equal(QlogQuicKnownValues.PacketTypeInitial, ReadObjectString(initialPacketSent.Data["header"], "packet_type"));
         Assert.Equal("00000001", ReadObjectString(initialPacketSent.Data["header"], "version"));
+        Assert.Equal(3L, ReadObjectNumber(initialPacketSent.Data["raw"], "length"));
+        Assert.Equal(3L, ReadObjectNumber(initialPacketSent.Data["raw"], "payload_length"));
+        Assert.Equal("010203", ReadObjectString(initialPacketSent.Data["raw"], "data"));
 
         QlogEvent retryReceived = clientSink.Trace.Events[1];
         Assert.Equal(QlogQuicKnownValues.PacketTypeRetry, ReadObjectString(retryReceived.Data["header"], "packet_type"));
         Assert.Equal("00000001", ReadObjectString(retryReceived.Data["header"], "version"));
+        Assert.Equal(2L, ReadObjectNumber(retryReceived.Data["raw"], "length"));
+        Assert.Equal(2L, ReadObjectNumber(retryReceived.Data["raw"], "payload_length"));
+        Assert.Equal("0405", ReadObjectString(retryReceived.Data["raw"], "data"));
 
         QlogEvent versionNegotiationReceived = clientSink.Trace.Events[2];
         Assert.Equal(QlogQuicKnownValues.PacketTypeVersionNegotiation, ReadObjectString(versionNegotiationReceived.Data["header"], "packet_type"));
         Assert.Equal("00000000", ReadObjectString(versionNegotiationReceived.Data["header"], "version"));
+        Assert.Equal(1L, ReadObjectNumber(versionNegotiationReceived.Data["raw"], "length"));
+        Assert.Equal(1L, ReadObjectNumber(versionNegotiationReceived.Data["raw"], "payload_length"));
+        Assert.Equal("06", ReadObjectString(versionNegotiationReceived.Data["raw"], "data"));
     }
 
     [Fact]

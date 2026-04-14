@@ -1063,7 +1063,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         hasSuccessfullyProcessedAnotherPacket = true;
 
         bool stateChanged = true;
-        EmitDiagnostic(ref effects, QuicDiagnostics.RetryReceived());
+        EmitDiagnostic(ref effects, QuicDiagnostics.RetryReceived(retryReceivedEvent.Datagram.Span));
         stateChanged |= TryFlushInitialPackets(ref effects);
         return stateChanged;
     }
@@ -1098,7 +1098,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
-        EmitDiagnostic(ref effects, QuicDiagnostics.VersionNegotiationReceived());
+        EmitDiagnostic(ref effects, QuicDiagnostics.VersionNegotiationReceived(versionNegotiationReceivedEvent.Datagram.Span));
         return DiscardConnection(
             versionNegotiationReceivedEvent.ObservedAtTicks,
             QuicConnectionCloseOrigin.VersionNegotiation,
@@ -1649,7 +1649,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     {
         if (diagnosticsEnabled)
         {
-            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketReceived(packetReceivedEvent.PathIdentity));
+            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketReceived(packetReceivedEvent.PathIdentity, packetReceivedEvent.Datagram.Span));
         }
 
         ReadOnlySpan<byte> datagram = packetReceivedEvent.Datagram.Span;
@@ -1665,7 +1665,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             if (diagnosticsEnabled)
             {
-                EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketOpenFailed(packetReceivedEvent.PathIdentity));
+                EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketOpenFailed(packetReceivedEvent.PathIdentity, datagram));
             }
 
             return false;
@@ -1713,7 +1713,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             if (diagnosticsEnabled)
             {
-                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketOpenFailed(packetReceivedEvent.PathIdentity));
+                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketOpenFailed(packetReceivedEvent.PathIdentity, datagram));
             }
 
             return false;
@@ -1728,7 +1728,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             if (diagnosticsEnabled)
             {
-                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketOpenFailed(packetReceivedEvent.PathIdentity));
+                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketOpenFailed(packetReceivedEvent.PathIdentity, datagram));
             }
 
             return false;
@@ -2122,7 +2122,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 break;
             }
 
-            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity));
+            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
             tlsState.InitialEgressCryptoBuffer.DiscardFutureFrames();
             stateChanged = true;
@@ -2206,7 +2206,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 break;
             }
 
-            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity));
+            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
             replayOffset += requestedBytes;
             stateChanged = true;

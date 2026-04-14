@@ -99,6 +99,7 @@ internal static class QuicQlogDiagnosticsMapper
                 PacketType = packetType,
                 Version = version,
             },
+            Raw = CreateRawInfo(diagnosticEvent.PacketBytes),
         };
 
         QlogEvent qlogEvent = QlogQuicEvents.CreatePacketSent(eventTime, payload);
@@ -119,6 +120,7 @@ internal static class QuicQlogDiagnosticsMapper
                 PacketType = packetType,
                 Version = version,
             },
+            Raw = CreateRawInfo(diagnosticEvent.PacketBytes),
         };
 
         QlogEvent qlogEvent = QlogQuicEvents.CreatePacketReceived(eventTime, payload);
@@ -298,6 +300,21 @@ internal static class QuicQlogDiagnosticsMapper
         }
 
         qlogEvent.Tuple = CreateTupleId(value);
+    }
+
+    private static QuicRawInfo? CreateRawInfo(ReadOnlyMemory<byte> packetBytes)
+    {
+        if (packetBytes.IsEmpty)
+        {
+            return null;
+        }
+
+        return new QuicRawInfo
+        {
+            Length = (ulong)packetBytes.Length,
+            PayloadLength = (ulong)packetBytes.Length,
+            Data = Convert.ToHexString(packetBytes.Span),
+        };
     }
 
     private static string CreateTupleId(QuicConnectionPathIdentity pathIdentity)
