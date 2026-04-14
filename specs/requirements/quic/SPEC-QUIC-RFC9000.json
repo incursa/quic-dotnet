@@ -20566,6 +20566,10 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0034.cs::TryRegisterLoss_LeavesQueuedRetransmissionsAvailableAfterLaterTrackedPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0034.cs::TrackSentPacket_DoesNotCreateRetransmissionsWithoutLoss"
+        ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B20-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"

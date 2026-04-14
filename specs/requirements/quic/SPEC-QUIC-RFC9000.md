@@ -11214,6 +11214,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B20-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0034.cs::TryRegisterLoss_LeavesQueuedRetransmissionsAvailableAfterLaterTrackedPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0034.cs::TrackSentPacket_DoesNotCreateRetransmissionsWithoutLoss
 
 ## REQ-QUIC-RFC9000-S13P3-0035 accept packets containing an outdated frame, such as a MAX_DATA frame carrying a smaller maximum data value than one found in an older packet
 A receiver MUST accept packets containing an outdated frame, such as a MAX_DATA frame carrying a smaller maximum data value than one found in an older packet.
@@ -11284,6 +11287,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B23-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0039.cs::TryRegisterLoss_EntersRecoveryAndReducesTheCongestionWindowOnEligibleLossSignals
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0039.cs::TryRegisterLoss_DoesNotChangeTheCongestionWindowForIneligibleLossSignals
 
 ## REQ-QUIC-RFC9000-S13P4-0001 QUIC endpoints MAY use ECN to detect and respond to network congestion
 QUIC endpoints MAY use ECN [RFC3168] to detect and respond to network congestion.
