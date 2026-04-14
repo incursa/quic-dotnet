@@ -37,22 +37,12 @@ internal static class InteropHarnessRunner
         }
 
         InteropHarnessEnvironment settings = settingsCandidate;
-        IQuicDiagnosticsSink diagnostics = CreateDiagnosticsSink(settings);
-        _ = diagnostics;
-
         return settings.Role switch
         {
             InteropHarnessRole.Client => RunClient(settings, stdout, stderr),
             InteropHarnessRole.Server => RunServer(settings, stdout, stderr, certificatePath, privateKeyPath),
             _ => 1,
         };
-    }
-
-    private static IQuicDiagnosticsSink CreateDiagnosticsSink(InteropHarnessEnvironment settings)
-    {
-        return string.IsNullOrWhiteSpace(settings.QlogDirectory)
-            ? QuicNullDiagnosticsSink.Instance
-            : new InteropHarnessPlaceholderDiagnosticsSink(settings.QlogDirectory!);
     }
 
     private static int RunClient(InteropHarnessEnvironment settings, TextWriter stdout, TextWriter stderr)
@@ -97,13 +87,13 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
-                requestUri is null)
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage))
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
                 return 1;
             }
 
+            ArgumentNullException.ThrowIfNull(requestUri);
             IPEndPoint remoteEndPoint = await ResolveHandshakeRemoteEndPointAsync(requestUri).ConfigureAwait(false);
             WriteLineAndFlush(
                 stdout,
@@ -127,7 +117,12 @@ internal static class InteropHarnessRunner
                 },
             };
 
-            await using QuicConnection connection = await QuicConnection.ConnectAsync(clientOptions).ConfigureAwait(false);
+            using InteropHarnessQlogCaptureScope? qlogScope = CreateQlogCaptureScope(settings);
+            if (qlogScope is not null)
+            {
+                WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+            }
+            await using QuicConnection connection = await ConnectWithQlogCaptureAsync(qlogScope, clientOptions).ConfigureAwait(false);
 
             WriteLineAndFlush(
                 stdout,
@@ -154,13 +149,13 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
-                requestUri is null)
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage))
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
                 return 1;
             }
 
+            ArgumentNullException.ThrowIfNull(requestUri);
             IPEndPoint remoteEndPoint = await ResolveHandshakeRemoteEndPointAsync(requestUri).ConfigureAwait(false);
             WriteLineAndFlush(
                 stdout,
@@ -168,7 +163,12 @@ internal static class InteropHarnessRunner
 
             QuicClientConnectionOptions clientOptions = CreateSupportedClientOptions(stdout, settings, remoteEndPoint);
 
-            await using QuicConnection connection = await QuicConnection.ConnectAsync(clientOptions).ConfigureAwait(false);
+            using InteropHarnessQlogCaptureScope? qlogScope = CreateQlogCaptureScope(settings);
+            if (qlogScope is not null)
+            {
+                WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+            }
+            await using QuicConnection connection = await ConnectWithQlogCaptureAsync(qlogScope, clientOptions).ConfigureAwait(false);
             QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).ConfigureAwait(false);
 
             WriteLineAndFlush(
@@ -198,8 +198,7 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
-                requestUri is null)
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage, allowEmptyRequests: true))
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
                 return 1;
@@ -230,7 +229,12 @@ internal static class InteropHarnessRunner
                     ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(CreateSupportedServerOptions(serverCertificate)),
                 };
 
-                await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions).ConfigureAwait(false);
+                using InteropHarnessQlogCaptureScope? qlogScope = CreateQlogCaptureScope(settings);
+                if (qlogScope is not null)
+                {
+                    WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+                }
+                await using QuicListener listener = await ListenWithQlogCaptureAsync(qlogScope, listenerOptions).ConfigureAwait(false);
                 Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
                 await Task.Yield();
                 WriteLineAndFlush(
@@ -298,7 +302,12 @@ internal static class InteropHarnessRunner
                     ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(CreateSupportedServerOptions(serverCertificate)),
                 };
 
-                await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions).ConfigureAwait(false);
+                using InteropHarnessQlogCaptureScope? qlogScope = CreateQlogCaptureScope(settings);
+                if (qlogScope is not null)
+                {
+                    WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+                }
+                await using QuicListener listener = await ListenWithQlogCaptureAsync(qlogScope, listenerOptions).ConfigureAwait(false);
                 Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
                 await Task.Yield();
                 WriteLineAndFlush(
@@ -554,13 +563,13 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
-                requestUri is null)
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage))
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
                 return 1;
             }
 
+            ArgumentNullException.ThrowIfNull(requestUri);
             if (!TryGetTransferPaths(requestUri, out string? relativePath, out string? sourcePath, out string? destinationPath, out errorMessage) ||
                 relativePath is null ||
                 sourcePath is null ||
@@ -577,7 +586,12 @@ internal static class InteropHarnessRunner
 
             QuicClientConnectionOptions clientOptions = CreateSupportedClientOptions(stdout, settings, remoteEndPoint);
 
-            await using QuicConnection connection = await QuicConnection.ConnectAsync(clientOptions).ConfigureAwait(false);
+            using InteropHarnessQlogCaptureScope? qlogScope = CreateQlogCaptureScope(settings);
+            if (qlogScope is not null)
+            {
+                WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+            }
+            await using QuicConnection connection = await ConnectWithQlogCaptureAsync(qlogScope, clientOptions).ConfigureAwait(false);
             await using QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).ConfigureAwait(false);
 
             await using FileStream sourceStream = new(
@@ -618,8 +632,7 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
-                requestUri is null)
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage, allowEmptyRequests: true))
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
                 return 1;
@@ -659,20 +672,25 @@ internal static class InteropHarnessRunner
                     ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(CreateSupportedServerOptions(serverCertificate)),
                 };
 
-                await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions).ConfigureAwait(false);
+                using InteropHarnessQlogCaptureScope? qlogScope = CreateQlogCaptureScope(settings);
+                if (qlogScope is not null)
+                {
+                    WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+                }
+                await using QuicListener listener = await ListenWithQlogCaptureAsync(qlogScope, listenerOptions).ConfigureAwait(false);
                 Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
                 await Task.Yield();
                 WriteLineAndFlush(
                     stdout,
                     $"interop harness: role=server, testcase=transfer, requestCount={settings.Requests.Count} listening on {listenEndPoint}, target={relativePath}.");
 
-            await using QuicConnection connection = await acceptTask.ConfigureAwait(false);
-            await using QuicStream stream = await connection.AcceptInboundStreamAsync().ConfigureAwait(false);
-            FileInfo sourceInfo = new(sourcePath);
-            if (!sourceInfo.Exists)
-            {
-                WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=transfer missing source file '{sourcePath}'.");
-                return 1;
+                await using QuicConnection connection = await acceptTask.ConfigureAwait(false);
+                await using QuicStream stream = await connection.AcceptInboundStreamAsync().ConfigureAwait(false);
+                FileInfo sourceInfo = new(sourcePath);
+                if (!sourceInfo.Exists)
+                {
+                    WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=transfer missing source file '{sourcePath}'.");
+                    return 1;
                 }
 
                 WriteLineAndFlush(
@@ -718,14 +736,57 @@ internal static class InteropHarnessRunner
         writer.Flush();
     }
 
-    private static bool TryGetDispatchRequestUri(
+    private static void WriteQlogCaptureEnabled(
+        TextWriter stdout,
+        InteropHarnessEnvironment settings,
+        InteropHarnessQlogCaptureScope qlogScope)
+    {
+        WriteLineAndFlush(
+            stdout,
+            $"interop harness: role={settings.Role.ToString().ToLowerInvariant()}, testcase={settings.TestCase}, qlog capture enabled at {qlogScope.OutputPath}.");
+    }
+
+    private static InteropHarnessQlogCaptureScope? CreateQlogCaptureScope(InteropHarnessEnvironment settings)
+    {
+        string fileStem = $"{settings.Role.ToString().ToLowerInvariant()}-{settings.TestCase}";
+        return InteropHarnessQlogCaptureScope.Create(settings, fileStem);
+    }
+
+    private static ValueTask<QuicConnection> ConnectWithQlogCaptureAsync(
+        InteropHarnessQlogCaptureScope? qlogScope,
+        QuicClientConnectionOptions options,
+        CancellationToken cancellationToken = default)
+    {
+        return qlogScope is null
+            ? QuicConnection.ConnectAsync(options, cancellationToken)
+            : qlogScope.Capture.ConnectAsync(options, cancellationToken);
+    }
+
+    private static ValueTask<QuicListener> ListenWithQlogCaptureAsync(
+        InteropHarnessQlogCaptureScope? qlogScope,
+        QuicListenerOptions options,
+        CancellationToken cancellationToken = default)
+    {
+        return qlogScope is null
+            ? QuicListener.ListenAsync(options, cancellationToken)
+            : qlogScope.Capture.ListenAsync(options, cancellationToken);
+    }
+
+    internal static bool TryGetDispatchRequestUri(
         InteropHarnessEnvironment settings,
         out Uri? requestUri,
-        out string? errorMessage)
+        out string? errorMessage,
+        bool allowEmptyRequests = false)
     {
         if (settings.Requests.Count == 0)
         {
             requestUri = null;
+            if (allowEmptyRequests)
+            {
+                errorMessage = null;
+                return true;
+            }
+
             errorMessage = "REQUESTS must contain at least one URL for testcase dispatch.";
             return false;
         }
@@ -749,7 +810,7 @@ internal static class InteropHarnessRunner
     }
 
     private static bool TryGetTransferPaths(
-        Uri requestUri,
+        Uri? requestUri,
         out string? relativePath,
         out string? sourcePath,
         out string? destinationPath,
@@ -759,7 +820,15 @@ internal static class InteropHarnessRunner
         sourcePath = null;
         destinationPath = null;
 
-        if (!TryGetTransferRelativePath(requestUri, out relativePath, out errorMessage) ||
+        if (requestUri is null)
+        {
+            if (!TryGetDefaultTransferRelativePath(out relativePath, out errorMessage) ||
+                relativePath is null)
+            {
+                return false;
+            }
+        }
+        else if (!TryGetTransferRelativePath(requestUri, out relativePath, out errorMessage) ||
             relativePath is null)
         {
             return false;
@@ -774,9 +843,38 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex) when (ex is ArgumentException or InvalidOperationException or NotSupportedException or PathTooLongException)
         {
-            errorMessage = $"Unable to resolve transfer paths for '{requestUri}': {ex.Message}";
+            string requestDescription = requestUri?.ToString() ?? "(empty REQUESTS)";
+            errorMessage = $"Unable to resolve transfer paths for '{requestDescription}': {ex.Message}";
             return false;
         }
+    }
+
+    private static bool TryGetDefaultTransferRelativePath(
+        out string? relativePath,
+        out string? errorMessage)
+    {
+        string rootFullPath = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+        if (!Directory.Exists(rootFullPath))
+        {
+            relativePath = null;
+            errorMessage = $"Unable to infer a transfer target because the mounted source root '{rootFullPath}' does not exist.";
+            return false;
+        }
+
+        relativePath = Directory.EnumerateFiles(rootFullPath, "*", SearchOption.AllDirectories)
+            .Select(path => Path.GetRelativePath(rootFullPath, path))
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+            .FirstOrDefault();
+
+        if (relativePath is null)
+        {
+            errorMessage = $"Unable to infer a transfer target from an empty REQUESTS list because '{rootFullPath}' contains no files.";
+            return false;
+        }
+
+        errorMessage = null;
+        return true;
     }
 
     private static bool TryGetTransferRelativePath(
@@ -851,8 +949,13 @@ internal static class InteropHarnessRunner
         return new IPEndPoint(selectedAddress, port);
     }
 
-    private static async ValueTask<IPEndPoint> ResolveHandshakeListenEndPointAsync(Uri requestUri)
+    internal static async ValueTask<IPEndPoint> ResolveHandshakeListenEndPointAsync(Uri? requestUri)
     {
+        if (requestUri is null)
+        {
+            return new IPEndPoint(IPAddress.Any, DefaultHandshakePort);
+        }
+
         int port = requestUri.IsDefaultPort ? DefaultHandshakePort : requestUri.Port;
         if (IPAddress.TryParse(requestUri.Host, out IPAddress? requestAddress))
         {
@@ -907,22 +1010,5 @@ internal static class InteropHarnessRunner
                 },
             },
         };
-    }
-}
-
-internal sealed class InteropHarnessPlaceholderDiagnosticsSink : IQuicDiagnosticsSink
-{
-    public InteropHarnessPlaceholderDiagnosticsSink(string outputDirectory)
-    {
-        OutputDirectory = outputDirectory;
-    }
-
-    public string OutputDirectory { get; }
-
-    public bool IsEnabled => true;
-
-    public void Emit(QuicDiagnosticEvent diagnosticEvent)
-    {
-        _ = diagnosticEvent;
     }
 }

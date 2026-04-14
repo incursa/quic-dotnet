@@ -54,6 +54,7 @@ Add the smallest boundary-clean library seams and a thin companion harness so th
 - Add a new `src/Incursa.Quic.InteropHarness` console project and include it in the solution.
 - Add harness-side environment parsing, role/testcase dispatch, mounted-path configuration, TLS material path mapping, and exit-code mapping that returns `127` for all unsupported cases.
 - Add a Dockerfile, startup script, README documentation, and focused smoke tests for unsupported dispatch behavior.
+- Add qlog snapshot persistence when `QLOGDIR` is present while keeping the transport core format-agnostic.
 - Add library-owned TLS bridge state, structured diagnostics sink types, and a small sender/runtime owner for sent-packet and PTO state without adding Docker or environment parsing to the library.
 
 ## Out of Scope
@@ -64,7 +65,7 @@ Add the smallest boundary-clean library seams and a thin companion harness so th
 
 ## Verification Plan
 
-Build the solution, run focused requirement-home tests for harness dispatch semantics plus the new library seam tests for TLS state, diagnostics sink behavior, and sender-runtime PTO ownership, then inspect the Docker packaging and README surfaces for the interop contract.
+Build the solution, run focused requirement-home tests for harness dispatch semantics, qlog snapshot persistence, and the new library seam tests for TLS state, diagnostics sink behavior, and sender-runtime PTO ownership, then inspect the Docker packaging and README surfaces for the interop contract.
 
 ## Completion Notes
 

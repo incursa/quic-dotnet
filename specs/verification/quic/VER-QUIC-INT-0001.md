@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify the boundary-clean harness foundation: companion-project shape, runner-facing dispatch, unsupported-exit behavior, placeholder diagnostics hooks, and packaging surfaces.
+Verify the boundary-clean harness foundation: companion-project shape, runner-facing dispatch, unsupported-exit behavior, qlog snapshot hooks, and packaging surfaces.
 
 ## Requirements Verified
 
@@ -26,13 +26,13 @@ Focused requirement-home tests, solution build execution, and artifact inspectio
 
 ## Procedure or Approach
 
-- Run the focused INT requirement-home tests for environment parsing, unsupported dispatch semantics, placeholder qlog behavior, SSL key log TODO behavior, and invalid-configuration handling.
+- Run the focused INT requirement-home tests for environment parsing, unsupported dispatch semantics, qlog snapshot persistence, SSL key log TODO behavior, and invalid-configuration handling.
 - Build the solution and confirm the companion harness project participates in the normal CI build graph.
 - Inspect the README, Dockerfile, and startup script to confirm the runner contract stays in the harness and that unsupported cases are documented honestly.
 
 ## Expected Result
 
-The harness parses runner-facing configuration without owning protocol behavior, unsupported testcases return `127`, invalid runner configuration returns `1`, and the repository can build the harness project and its Docker image without polluting the library boundary.
+The harness parses runner-facing configuration without owning protocol behavior, unsupported testcases return `127`, invalid runner configuration returns `1`, qlog snapshots are emitted when `QLOGDIR` is enabled for supported client/listener paths, and the repository can build the harness project and its Docker image without polluting the library boundary.
 
 ## Evidence
 
@@ -57,4 +57,4 @@ The expected first-pass outcome is a traceable harness foundation, not successfu
 
 ## Deferred Coverage
 
-End-to-end interop execution, qlog emission, SSL key logging, and a real application protocol are intentionally deferred. This verification artifact only proves the harness boundary and adapter foundation.
+End-to-end interop execution, broader qlog coverage for every testcase variant, SSL key logging, and a real application protocol are intentionally deferred. This verification artifact only proves the harness boundary and adapter foundation.

@@ -24,7 +24,7 @@ related_artifacts:
 
 ## Summary
 
-Add a repo-local helper that builds the harness image, runs the external interop runner locally through image replacement, and captures execution-report artifacts under a repo-local artifacts tree.
+Add a repo-local helper that builds the harness image, runs the external interop runner locally through image replacement, and captures execution-report artifacts under a repo-local artifacts tree, including split client/server local-role runs.
 
 ## Requirements Addressed
 
@@ -37,9 +37,11 @@ Add a repo-local helper that builds the harness image, runs the external interop
 ## Planned Changes
 
 - Add a PowerShell helper under `scripts/interop` that builds the `Incursa.Quic.InteropHarness` Docker image and invokes the external `quic-interop-runner` locally through the runner's image-replacement path.
+- Support both same-slot both-role runs and split client/server local-role runs so the local harness image can be exercised against quic-go or msquic on the opposite side.
 - Capture the runner's JSON report, Markdown or console-table output, stdout/stderr, and log-directory tree under a repo-local `artifacts/interop-runner/<timestamp>/` directory.
 - Add a short documentation pointer from `scripts/README.md` and the harness README so the local execution loop is discoverable.
 - Keep the external runner repository untouched and avoid any new registry entry or testcase enablement there.
+- Keep supported server-role harness paths honest when the runner supplies an empty `REQUESTS` list.
 
 ## Out of Scope
 
@@ -52,11 +54,11 @@ Add a repo-local helper that builds the harness image, runs the external interop
 
 ## Verification Plan
 
-Run the helper against the local `C:\src\quic-interop\quic-interop-runner` checkout, confirm the harness image builds, confirm the runner writes report artifacts into the repo-local artifact root, and inspect the captured output to ensure unsupported or build-blocked cases are not reported as success.
+Run the helper against the local `C:\src\quic-interop\quic-interop-runner` checkout, confirm the harness image builds, confirm the runner writes report artifacts into the repo-local artifact root, and inspect the captured output to ensure unsupported or build-blocked cases are not reported as success. Exercise both the client-local and server-local helper modes against quic-go and msquic peers, and confirm supported server-role harness paths start even when the runner leaves `REQUESTS` empty on the server side.
 
 ## Completion Notes
 
-The helper now builds the local harness image, runs the external quic-interop-runner through image replacement, and captures repo-local JSON, Markdown, stderr, build-log, and log-tree artifacts without requiring any runner-repository registry change. The local quic-go slot in this checkout still reports a noncompliant exit code, but the helper preserves that failure bundle honestly.
+The helper now builds the local harness image, runs the external quic-interop-runner through image replacement, and captures repo-local JSON, Markdown, stderr, build-log, and log-tree artifacts without requiring any runner-repository registry change. It now supports both same-slot and split-role local runs, and the harness tolerates empty server-side `REQUESTS` on supported dispatch paths. The local quic-go slot in this checkout still reports a noncompliant exit code, but the helper preserves that failure bundle honestly.
 
 ## Trace Links
 

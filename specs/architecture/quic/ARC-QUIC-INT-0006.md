@@ -16,9 +16,9 @@ This slice covers only the repo-local helper, its documentation, and its artifac
 
 ## Design Summary
 
-The helper remains outside the transport core and outside the interop harness binary. It builds the existing `Incursa.Quic.InteropHarness` Docker image locally, then launches the external `quic-interop-runner` from a local checkout using the runner's replacement path so one existing both-role slot can point at the locally-built image without adding a new runner-registry entry. The helper records the runner's JSON report, Markdown or console table output, and log tree under a timestamped repo-local `artifacts/interop-runner/<timestamp>/` directory so the local execution report can be inspected after the run.
+The helper remains outside the transport core and outside the interop harness binary. It builds the existing `Incursa.Quic.InteropHarness` Docker image locally, then launches the external `quic-interop-runner` from a local checkout using the runner's replacement path so either a same-slot both-role run or a split client/server run can point the local image at one side without adding a new runner-registry entry. The helper records the runner's JSON report, Markdown or console table output, and log tree under a timestamped repo-local `artifacts/interop-runner/<timestamp>/` directory so the local execution report can be inspected after the run.
 
-The harness itself remains unchanged: it still owns the environment parsing, endpoint-host shell, testcase dispatch, and honest unsupported exits. The helper only orchestrates local execution and report capture around that existing contract.
+The harness itself remains the process contract owner: it still owns the environment parsing, endpoint-host shell, testcase dispatch, empty-server-request tolerance, and honest unsupported exits. The helper only orchestrates local execution and report capture around that existing contract.
 
 ## Key Components
 
@@ -37,7 +37,7 @@ Each run writes a timestamped artifact root containing the runner report JSON, a
 ## Edge Cases and Constraints
 
 - The runner checkout path or Python executable may be missing on the local machine.
-- The helper must choose an implementation slot that already exists in the runner registry before replacement is applied.
+- The helper must choose implementation slots that already exist in the runner registry before replacement is applied, and split-role runs must avoid replacing the peer slot they are meant to exercise.
 - The artifact root must be unique per run so execution reports are not silently overwritten.
 - Unsupported or build-blocked runs must remain honest and must not be translated into success.
 

@@ -8,11 +8,11 @@ Define the interop-runner-facing companion harness contract that hosts Incursa.Q
 
 ## Scope
 
-This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, unsupported testcase exit behavior, the transfer-owned child-process completion contract, placeholder diagnostics hooks, the repo-local execution-report helper, Docker packaging, and CI participation.
+This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, unsupported testcase exit behavior, the transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, split client/server local execution modes, Docker packaging, and CI participation.
 
 ## Context
 
-Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` contract is tracked separately as a child-process-only open/accept contract on the existing managed path and is now green in the current implementation, the narrow transfer slice is now wired as a child-process completion contract on the existing active-phase path, and the narrow `retry` slice now dispatches into the managed one-Retry replay path instead of falling through to `127`. The one-Retry bootstrap handoff itself remains library-owned under `REQ-QUIC-CRT-0122`, while this spec owns the child-process dispatch and proof under `REQ-QUIC-INT-0012`.
+Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` contract is tracked separately as a child-process-only open/accept contract on the existing managed path and is now green in the current implementation, the narrow transfer slice is now wired as a child-process completion contract on the existing active-phase path, and the narrow `retry` slice now dispatches into the managed one-Retry replay path instead of falling through to `127`. The harness now also needs to tolerate an empty server-side `REQUESTS` list so the runner can start supported server-role paths locally, while the one-Retry bootstrap handoff itself remains library-owned under `REQ-QUIC-CRT-0122` and this spec still owns the child-process dispatch and proof under `REQ-QUIC-INT-0012`.
 
 ## Open Questions
 
@@ -20,7 +20,7 @@ Incursa.Quic remains the owner of reusable transport/runtime behavior. The inter
 
 ## Current Support Posture
 
-The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap, server Initial-response emission, and one-Retry replay handoff. The harness `handshake` testcase now dispatches into that managed path, the smaller `post-handshake-stream` testcase now dispatches into the managed open/accept path and is green in the current implementation, the narrow transfer testcase now dispatches into its managed active-phase path, and the narrow `retry` testcase now dispatches into its managed one-Retry replay path. Unsupported testcases still return exit code `127`.
+The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap, server Initial-response emission, and one-Retry replay handoff. The harness `handshake` testcase now dispatches into that managed path, the smaller `post-handshake-stream` testcase now dispatches into the managed open/accept path and is green in the current implementation, the narrow transfer testcase now dispatches into its managed active-phase path, and the narrow `retry` testcase now dispatches into its managed one-Retry replay path. Supported server-role paths now also tolerate the empty `REQUESTS` list the runner sends, so local execution reports can be produced without changing the runner repository. Unsupported testcases still return exit code `127`.
 
 ## Boundary Split
 
@@ -28,7 +28,7 @@ Library-owned concerns include connection runtime, sender and recovery ownership
 
 ## Local Execution Loop
 
-The next repo-local slice keeps the external interop runner unmodified, builds the harness image locally, and uses the runner's image-replacement path to capture JSON, Markdown, and log artifacts under `artifacts/interop-runner/...` without requiring a registry change in the runner repository.
+The next repo-local slice keeps the external interop runner unmodified, builds the harness image locally, and uses the runner's image-replacement path to capture JSON, Markdown, and log artifacts under `artifacts/interop-runner/...` without requiring a registry change in the runner repository. That local helper now needs to support same-slot both-role runs as well as split client/server runs that replace only the local side and leave the opposite side on an established implementation such as quic-go or msquic.
 
 ## REQ-QUIC-INT-0001 Keep the interop endpoint in a companion project
 The interop endpoint MUST be implemented as a companion project that references `Incursa.Quic` rather than by turning the main library project into an application.
@@ -51,7 +51,7 @@ Notes:
 - Reusable transport behavior remains in the library.
 
 ## REQ-QUIC-INT-0002 Own runner-facing process plumbing in the harness
-The interop harness MUST own parsing of `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE`, mapping of `/www`, `/downloads`, and `/certs`, role dispatch, and runner-facing process exit-code behavior.
+The interop harness MUST own parsing of `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE`, mapping of `/www`, `/downloads`, and `/certs`, role dispatch, and runner-facing process exit-code behavior. Supported server-role dispatch paths MUST still start when the runner provides an empty `REQUESTS` list.
 
 Trace:
 - Satisfied By:
@@ -64,9 +64,11 @@ Trace:
   - src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs
   - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
   - src/Incursa.Quic.InteropHarness/Program.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0002.cs
 
 Notes:
 - These concerns exist because of the interop runner contract and would not belong in the library.
+- Client-side dispatch still uses the first `REQUESTS` URL when one is present, but supported server-side dispatch paths must remain able to start without a request URL from the runner.
 
 ## REQ-QUIC-INT-0003 Return unsupported testcases honestly
 The interop harness MUST return exit code `127` for any unsupported or not-yet-implemented interop testcase.
@@ -83,7 +85,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs
 
 ## REQ-QUIC-INT-0004 Keep qlog and keylog hooks honest
-When `QLOGDIR` is provided, the harness MUST wire that setting into a diagnostics placeholder hook without hardwiring the library to qlog JSON, and when `SSLKEYLOGFILE` is not yet practical it MUST remain a clear TODO rather than fake behavior.
+When `QLOGDIR` is provided, the harness MUST emit contained qlog JSON snapshots for supported client and listener bootstrap paths without hardwiring the library to qlog JSON, and when `SSLKEYLOGFILE` is not yet practical it MUST remain a clear TODO rather than fake behavior.
 
 Trace:
 - Satisfied By:
@@ -235,7 +237,7 @@ Notes:
 - The client replay side is already owned by the library bootstrap seam in REQ-QUIC-CRT-0122; this requirement owns the child-process dispatch and proof.
 
 ## REQ-QUIC-INT-0013 Capture local interop-runner execution reports without changing the runner registry
-The repository MUST provide a local helper that builds the `Incursa.Quic.InteropHarness` image and invokes the external `quic-interop-runner` locally against the already-supported interop testcase subset by replacing an existing both-role implementation image, and it MUST capture the runner's JSON, Markdown, and log artifacts without requiring any change to the runner repository's implementation registry.
+The repository MUST provide a local helper that builds the `Incursa.Quic.InteropHarness` image and invokes the external `quic-interop-runner` locally against the already-supported interop testcase subset by replacing a local-side implementation image in either a same-slot both-role run or a split client/server run, and it MUST capture the runner's JSON, Markdown, and log artifacts without requiring any change to the runner repository's implementation registry.
 
 Trace:
 - Satisfied By:
@@ -261,4 +263,5 @@ Trace:
 
 Notes:
 - The helper is intentionally local-only and may use the runner's image-replacement mechanism rather than adding an Incursa.Quic entry to the runner repository.
+- Split-role runs should keep the opposite side on established implementations such as quic-go or msquic, while same-slot both-role runs remain supported for the local harness image.
 - The helper records execution-report artifacts; it does not introduce new testcase support or any new protocol behavior.

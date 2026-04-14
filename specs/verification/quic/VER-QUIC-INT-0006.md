@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify that the local helper can build the harness image, invoke the external runner through image replacement, and capture runner JSON, Markdown, stdout/stderr, and log artifacts under a repo-local execution-report tree without modifying the runner repository.
+Verify that the local helper can build the harness image, invoke the external runner through image replacement, and capture runner JSON, Markdown, stdout/stderr, and log artifacts under a repo-local execution-report tree without modifying the runner repository. This verification also covers split client/server local-role runs and the harness's empty-server-REQUESTS tolerance on supported paths.
 
 ## Requirements Verified
 
@@ -24,13 +24,14 @@ Local execution, artifact inspection, and report review.
 ## Procedure or Approach
 
 - Run the helper against the local runner checkout with the default both-role replacement slot and the supported testcase subset.
-- Confirm the helper creates a timestamped artifact root under `artifacts/interop-runner/` and that it contains the runner JSON report, the captured Markdown or console table, the log directory tree, and the harness image build output.
+- Run the helper in client-local mode and server-local mode against the established peer slots, then confirm each run creates a timestamped artifact root under `artifacts/interop-runner/` and that it contains the runner JSON report, the captured Markdown or console table, the log directory tree, and the harness image build output.
+- Confirm supported server-role harness paths still start when the runner supplies an empty `REQUESTS` list, while client-role paths continue to require request URLs.
 - Inspect the captured output to verify unsupported testcases still map to the runner's honest unsupported result and build failures remain build failures rather than pass results.
 - If the tree is temporarily mid-edit and the first run fails for an unrelated build reason, wait briefly and rerun once to confirm the helper still behaves honestly after the transient issue clears.
 
 ## Expected Result
 
-The helper produces repo-local execution-report artifacts for a local runner run without requiring any change to the runner repository, and unsupported or build-blocked cases are not misreported as successful runs.
+The helper produces repo-local execution-report artifacts for local runner runs without requiring any change to the runner repository, supported server-role paths tolerate empty runner REQUESTS, split-role client/server local executions work, and unsupported or build-blocked cases are not misreported as successful runs.
 
 ## Evidence
 
@@ -43,7 +44,7 @@ The helper produces repo-local execution-report artifacts for a local runner run
 
 ## Status
 
-Landed; the local helper built the harness image, invoked the external runner through image replacement, and captured a repo-local execution-report bundle while preserving the runner's noncompliant result honestly.
+Landed; the local helper built the harness image, invoked the external runner through image replacement, and captured repo-local execution-report bundles while preserving the runner's noncompliant result honestly. The helper now covers both same-slot and split-role local runs, and the harness tolerates empty server-side `REQUESTS` on supported dispatch paths.
 
 ## Related Artifacts
 

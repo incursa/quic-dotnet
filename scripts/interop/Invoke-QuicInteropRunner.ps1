@@ -2,7 +2,13 @@
 param(
     [string]$RepoRoot,
     [string]$RunnerRoot,
-    [string]$ImplementationSlot = 'quic-go',
+    [string]$ImplementationSlot = '',
+    [ValidateSet('both', 'client', 'server')]
+    [string]$LocalRole = 'both',
+    [string[]]$PeerImplementationSlots = @(
+        'quic-go',
+        'msquic'
+    ),
     [string]$ImageTag = 'incursa-quic-interop-harness:local',
     [string[]]$TestCases = @(
         'handshake',
@@ -59,17 +65,44 @@ function Get-RunnerImplementationRegistry {
     }
 }
 
-function Get-BothRoleSlots {
+function Normalize-StringList {
     param(
         [Parameter(Mandatory)]
-        [object]$RegistryData
+        [AllowEmptyCollection()]
+        [object[]]$Values
     )
 
     return @(
-        $RegistryData.PSObject.Properties |
-            Where-Object { $_.Value.role -eq 'both' } |
-            Select-Object -ExpandProperty Name
+        foreach ($value in $Values) {
+            if ($null -eq $value) {
+                continue
+            }
+
+            foreach ($item in ($value -split ',')) {
+                $trimmed = $item.Trim()
+                if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
+                    $trimmed
+                }
+            }
+        }
     )
+}
+
+function Get-RunnerImplementationRole {
+    param(
+        [Parameter(Mandatory)]
+        [object]$RegistryData,
+
+        [Parameter(Mandatory)]
+        [string]$SlotName
+    )
+
+    $slot = $RegistryData.PSObject.Properties[$SlotName]
+    if ($null -eq $slot) {
+        return $null
+    }
+
+    return [string]$slot.Value.role
 }
 
 function Write-ArtifactTree {
@@ -136,12 +169,67 @@ if (-not (Test-Path -LiteralPath $RunnerRoot)) {
 $repoRootResolved = (Resolve-Path -LiteralPath $RepoRoot).Path
 $runnerRootResolved = (Resolve-Path -LiteralPath $RunnerRoot).Path
 $artifactRootResolved = [System.IO.Path]::GetFullPath($ArtifactsRoot)
+$dockerBuildContextRoot = Split-Path $repoRootResolved -Parent
+
+if (-not (Test-Path -LiteralPath (Join-Path $dockerBuildContextRoot 'qlog-dotnet'))) {
+    throw "Sibling qlog-dotnet checkout was not found at '$(Join-Path $dockerBuildContextRoot 'qlog-dotnet')'."
+}
 
 $registry = Get-RunnerImplementationRegistry -RunnerRootPath $runnerRootResolved
-$bothRoleSlots = Get-BothRoleSlots -RegistryData $registry.Data
+$TestCases = Normalize-StringList -Values $TestCases
+if ($TestCases.Count -eq 0) {
+    throw 'At least one testcase must be requested.'
+}
 
-if (-not ($bothRoleSlots -contains $ImplementationSlot)) {
-    throw "Implementation slot '$ImplementationSlot' is not a both-role slot in '$($registry.Path)'. Available both-role slots: $($bothRoleSlots -join ', ')."
+$PeerImplementationSlots = Normalize-StringList -Values $PeerImplementationSlots
+if ($PeerImplementationSlots.Count -eq 0 -and $LocalRole -ne 'both') {
+    throw 'PeerImplementationSlots must include at least one implementation when LocalRole is client or server.'
+}
+
+if ([string]::IsNullOrWhiteSpace($ImplementationSlot)) {
+    $ImplementationSlot = switch ($LocalRole) {
+        'both' { 'quic-go' }
+        'client' { 'chrome' }
+        'server' { 'nginx' }
+    }
+}
+
+$localRoleCompatibleSlots = switch ($LocalRole) {
+    'both' { @('both') }
+    'client' { @('both', 'client') }
+    'server' { @('both', 'server') }
+}
+
+$peerRoleCompatibleSlots = switch ($LocalRole) {
+    'both' { @('both') }
+    'client' { @('both', 'server') }
+    'server' { @('both', 'client') }
+}
+
+$localImplementationRole = Get-RunnerImplementationRole -RegistryData $registry.Data -SlotName $ImplementationSlot
+if ($null -eq $localImplementationRole) {
+    throw "Implementation slot '$ImplementationSlot' was not found in '$($registry.Path)'."
+}
+
+if ($localImplementationRole -notin $localRoleCompatibleSlots) {
+    throw "Implementation slot '$ImplementationSlot' is role '$localImplementationRole' which is not compatible with LocalRole '$LocalRole'."
+}
+
+if ($LocalRole -ne 'both') {
+    foreach ($peerImplementationSlot in $PeerImplementationSlots) {
+        if ($peerImplementationSlot -eq $ImplementationSlot) {
+            throw "LocalRole '$LocalRole' requires the local replacement slot '$ImplementationSlot' to differ from the peer implementation slot list."
+        }
+
+        $peerImplementationRole = Get-RunnerImplementationRole -RegistryData $registry.Data -SlotName $peerImplementationSlot
+        if ($null -eq $peerImplementationRole) {
+            throw "Peer implementation slot '$peerImplementationSlot' was not found in '$($registry.Path)'."
+        }
+
+        if ($peerImplementationRole -notin $peerRoleCompatibleSlots) {
+            throw "Peer implementation slot '$peerImplementationSlot' is role '$peerImplementationRole' which is not compatible with LocalRole '$LocalRole'."
+        }
+    }
 }
 
 $unsupportedRequestedTestCases = @(
@@ -165,7 +253,7 @@ if (-not (Test-Path -LiteralPath $runnerScriptPath)) {
 
 $null = New-Item -Path $artifactRootResolved -ItemType Directory -Force
 $runStamp = Get-Date -Format 'yyyyMMdd-HHmmssfff'
-$safeSlotName = ($ImplementationSlot -replace '[^A-Za-z0-9_.-]', '-')
+$safeSlotName = "$LocalRole-$ImplementationSlot" -replace '[^A-Za-z0-9_.-]', '-'
 $runRoot = Join-Path $artifactRootResolved "$runStamp-$safeSlotName"
 New-Item -Path $runRoot -ItemType Directory -Force | Out-Null
 
@@ -470,13 +558,51 @@ Set-Content -LiteralPath $runnerShimPath -Value $runnerShimContent -Encoding utf
 @"
 RepoRoot: $repoRootResolved
 RunnerRoot: $runnerRootResolved
-ImplementationSlot: $ImplementationSlot
+LocalRole: $LocalRole
+LocalImplementationSlot: $ImplementationSlot
+PeerImplementationSlots: $($PeerImplementationSlots -join ',')
 ImageTag: $ImageTag
 TestCases: $($TestCases -join ',')
 ArtifactsRoot: $artifactRootResolved
 RunRoot: $runRoot
 RunnerShim: $runnerShimPath
 "@ | Set-Content -LiteralPath $invocationLog
+
+$dockerBuildStageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "interop-runner-build-$runStamp"
+New-Item -Path $dockerBuildStageRoot -ItemType Directory -Force | Out-Null
+$stagingExcludes = @(
+    '.git',
+    'artifacts',
+    'bin',
+    'obj',
+    '.vs',
+    'TestResults',
+    'node_modules'
+)
+
+& robocopy $repoRootResolved (Join-Path $dockerBuildStageRoot 'quic-dotnet') /MIR /NFL /NDL /NJH /NJS /NP /XD @stagingExcludes | Out-Null
+if ($LASTEXITCODE -ge 8) {
+    throw "Failed to stage the quic-dotnet build context copy with robocopy exit code $LASTEXITCODE."
+}
+
+& robocopy (Join-Path $dockerBuildContextRoot 'qlog-dotnet') (Join-Path $dockerBuildStageRoot 'qlog-dotnet') /MIR /NFL /NDL /NJH /NJS /NP /XD @stagingExcludes | Out-Null
+if ($LASTEXITCODE -ge 8) {
+    throw "Failed to stage the qlog-dotnet build context copy with robocopy exit code $LASTEXITCODE."
+}
+
+@"
+**/.git
+**/bin
+**/obj
+**/artifacts
+**/TestResults
+**/.vs
+**/.idea
+**/*.user
+**/*.suo
+"@ | Set-Content -LiteralPath (Join-Path $dockerBuildStageRoot '.dockerignore')
+
+$dockerBuildContextRoot = $dockerBuildStageRoot
 
 Write-Host "Building Incursa.Quic.InteropHarness image..." -ForegroundColor Cyan
 $dockerBuildArgs = @(
@@ -487,7 +613,7 @@ $dockerBuildArgs = @(
     $dockerfilePath
     '--tag'
     $ImageTag
-    $repoRootResolved
+    $dockerBuildContextRoot
 )
 
 & docker @dockerBuildArgs 2>&1 | Tee-Object -FilePath $dockerBuildLog
@@ -499,13 +625,26 @@ Push-Location $runnerRootResolved
 try {
     Write-Host "Running quic-interop-runner locally..." -ForegroundColor Cyan
     $runnerExitCode = 1
+    if ($LocalRole -eq 'both') {
+        $runnerClientImplementations = @($ImplementationSlot)
+        $runnerServerImplementations = @($ImplementationSlot)
+    }
+    elseif ($LocalRole -eq 'client') {
+        $runnerClientImplementations = @($ImplementationSlot)
+        $runnerServerImplementations = @($PeerImplementationSlots)
+    }
+    else {
+        $runnerClientImplementations = @($PeerImplementationSlots)
+        $runnerServerImplementations = @($ImplementationSlot)
+    }
+
     $runnerArgs = @(
         '-p'
         'quic'
         '-s'
-        $ImplementationSlot
+        ($runnerServerImplementations -join ',')
         '-c'
-        $ImplementationSlot
+        ($runnerClientImplementations -join ',')
         '-t'
         ($TestCases -join ',')
         '-r'

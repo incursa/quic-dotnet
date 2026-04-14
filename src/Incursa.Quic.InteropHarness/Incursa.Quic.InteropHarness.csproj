@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Incursa.Quic\Incursa.Quic.csproj" />
+    <ProjectReference Include="..\Incursa.Quic.Qlog\Incursa.Quic.Qlog.csproj" />
   </ItemGroup>
 
 </Project>

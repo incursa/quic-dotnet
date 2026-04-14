@@ -5,11 +5,18 @@ namespace Incursa.Quic.Qlog;
 
 internal sealed class QuicQlogDiagnosticsSink : IQuicDiagnosticsSink
 {
+    private readonly object gate;
     private readonly bool isServer;
     private double nextEventTime;
 
     public QuicQlogDiagnosticsSink(bool isServer, QlogTrace? trace = null)
+        : this(isServer, new object(), trace)
     {
+    }
+
+    public QuicQlogDiagnosticsSink(bool isServer, object gate, QlogTrace? trace = null)
+    {
+        this.gate = gate;
         this.isServer = isServer;
         Trace = trace ?? new QlogTrace();
         if (Trace.VantagePoint is null)
@@ -32,11 +39,14 @@ internal sealed class QuicQlogDiagnosticsSink : IQuicDiagnosticsSink
 
     public void Emit(QuicDiagnosticEvent diagnosticEvent)
     {
-        if (QuicQlogDiagnosticsMapper.TryMap(diagnosticEvent, nextEventTime, isServer, out QlogEvent? mappedEvent) &&
-            mappedEvent is not null)
+        lock (gate)
         {
-            Trace.Events.Add(mappedEvent);
-            nextEventTime += 1;
+            if (QuicQlogDiagnosticsMapper.TryMap(diagnosticEvent, nextEventTime, isServer, out QlogEvent? mappedEvent) &&
+                mappedEvent is not null)
+            {
+                Trace.Events.Add(mappedEvent);
+                nextEventTime += 1;
+            }
         }
     }
 }

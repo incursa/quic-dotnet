@@ -6,7 +6,7 @@ public sealed class REQ_QUIC_INT_0009
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void PlaceholderHooksDoNotFabricateQlogOrKeylogArtifacts()
+    public void UnsupportedDispatchDoesNotFabricateQlogOrKeylogArtifacts()
     {
         using TempDirectoryFixture fixture = new("incursa-quic-interop-tests");
         string qlogDirectory = Path.Combine(fixture.RootDirectory, "qlog");
@@ -24,9 +24,5 @@ public sealed class REQ_QUIC_INT_0009
         Assert.Equal(127, exitCode);
         Assert.False(Directory.Exists(qlogDirectory));
         Assert.False(File.Exists(sslKeyLogFile));
-
-        InteropHarnessPlaceholderDiagnosticsSink sink = new(qlogDirectory);
-        Assert.True(sink.IsEnabled);
-        Assert.Equal(qlogDirectory, sink.OutputDirectory);
     }
 }

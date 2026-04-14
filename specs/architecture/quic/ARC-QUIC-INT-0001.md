@@ -45,7 +45,7 @@ The harness keeps only immutable process configuration derived from environment 
 ## Edge Cases and Constraints
 
 - The harness must return `127` for unsupported or not-yet-implemented testcases instead of claiming speculative support.
-- QLOGDIR is allowed to prepare a diagnostics placeholder hook, but the library must remain format-agnostic.
+- QLOGDIR may emit contained qlog snapshots through a sibling adapter, but the library must remain format-agnostic.
 - SSLKEYLOGFILE may remain a TODO if the TLS provider hook is not practical yet.
 - This slice does not claim end-to-end support for `handshake`, `transfer`, or `retry`.
 
@@ -58,7 +58,7 @@ The harness keeps only immutable process configuration derived from environment 
 ## Risks
 
 - A future endpoint implementation must not let harness convenience code become the owner of protocol behavior.
-- The current placeholder diagnostics hook is intentionally narrow and will need extension once real qlog emission exists.
+- The qlog snapshot hook is intentionally narrow and remains harness-owned so the library stays format-agnostic.
 - A later host implementation must replace the current `127` paths with real library-driven behavior instead of harness-local protocol logic.
 
 ## Boundary Split

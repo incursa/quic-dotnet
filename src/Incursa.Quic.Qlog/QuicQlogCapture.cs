@@ -31,6 +31,20 @@ public sealed class QuicQlogCapture
     public QlogFile File { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the capture has at least one trace component.
+    /// </summary>
+    public bool HasTraces
+    {
+        get
+        {
+            lock (gate)
+            {
+                return File.Traces.Count > 0;
+            }
+        }
+    }
+
+    /// <summary>
     /// Connects a client using a connection-scoped qlog capture sink.
     /// </summary>
     public ValueTask<QuicConnection> ConnectAsync(
@@ -58,7 +72,10 @@ public sealed class QuicQlogCapture
     /// </summary>
     public string ToJson(bool indented = false)
     {
-        return QlogJsonSerializer.Serialize(File, indented);
+        lock (gate)
+        {
+            return QlogJsonSerializer.Serialize(File, indented);
+        }
     }
 
     /// <summary>
@@ -66,7 +83,10 @@ public sealed class QuicQlogCapture
     /// </summary>
     public void WriteJson(Stream stream, bool indented = false)
     {
-        QlogJsonSerializer.Serialize(stream, File, indented);
+        lock (gate)
+        {
+            QlogJsonSerializer.Serialize(stream, File, indented);
+        }
     }
 
     private QuicQlogDiagnosticsSink CreateClientSink()
@@ -81,12 +101,11 @@ public sealed class QuicQlogCapture
 
     private QuicQlogDiagnosticsSink CreateSink(bool isServer)
     {
-        QuicQlogDiagnosticsSink sink = new(isServer);
         lock (gate)
         {
+            QuicQlogDiagnosticsSink sink = new(isServer, gate);
             File.Traces.Add(sink.Trace);
+            return sink;
         }
-
-        return sink;
     }
 }
