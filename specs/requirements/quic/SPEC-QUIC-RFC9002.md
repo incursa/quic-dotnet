@@ -200,6 +200,8 @@ Trace:
 - Source Refs:
   - RFC 9002 §3 RFC9002-S3-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
 
 ## REQ-QUIC-RFC9002-S3-0009 Ensure reliable delivery outcome
 Data and frames that need reliable delivery MUST be acknowledged or declared lost.
@@ -258,6 +260,8 @@ Trace:
 - Source Refs:
   - RFC 9002 §3 RFC9002-S3-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs::RecordProcessedNonAckElicitingPacket_DoesNotRequestAnImmediateAck
 
 ## REQ-QUIC-RFC9002-S3-0013 Shorten CRYPTO acknowledgment timers
 Long header packets that contain CRYPTO frames MUST use shorter timers for acknowledgment.
