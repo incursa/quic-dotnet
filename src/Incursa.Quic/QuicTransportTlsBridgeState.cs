@@ -886,7 +886,7 @@ internal sealed class QuicTransportTlsBridgeState
 
     private bool TryStorePacketProtectionMaterial(QuicTlsPacketProtectionMaterial material)
     {
-        if (IsTerminal || material.EncryptionLevel is not (QuicTlsEncryptionLevel.Handshake or QuicTlsEncryptionLevel.OneRtt))
+        if (IsTerminal || material.EncryptionLevel is not (QuicTlsEncryptionLevel.ZeroRtt or QuicTlsEncryptionLevel.Handshake or QuicTlsEncryptionLevel.OneRtt))
         {
             return false;
         }

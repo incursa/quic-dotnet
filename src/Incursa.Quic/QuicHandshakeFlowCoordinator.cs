@@ -14,6 +14,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     private const int ApplicationPacketNumberLength = 4;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
+    private const int LongHeaderConnectionIdLengthFieldsLength = 1 + 1;
     private const int HeaderProtectionMaskLength = QuicInitialPacketProtection.HeaderProtectionSampleLength;
     private const int LongHeaderFormLength = 1;
     private const int LongHeaderVersionLength = sizeof(uint);
@@ -158,6 +159,45 @@ internal sealed class QuicHandshakeFlowCoordinator
         }
 
         if (!TryBuildApplicationDataPlaintextPacket(
+            applicationPayload,
+            out byte[] plaintextPacket,
+            out int packetNumberOffset,
+            out int packetNumberLength))
+        {
+            return false;
+        }
+
+        if (!TryProtectApplicationDataPacket(
+            material,
+            plaintextPacket,
+            packetNumberOffset,
+            packetNumberLength,
+            out protectedPacket))
+        {
+            return false;
+        }
+
+        nextApplicationPacketNumber = nextApplicationPacketNumber == ulong.MaxValue ? 0 : nextApplicationPacketNumber + 1;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats and protects a 0-RTT long-header packet from an application payload.
+    /// </summary>
+    internal bool TryBuildProtectedZeroRttApplicationPacket(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        out byte[] protectedPacket)
+    {
+        protectedPacket = [];
+
+        if (applicationPayload.IsEmpty
+            || material.EncryptionLevel != QuicTlsEncryptionLevel.ZeroRtt)
+        {
+            return false;
+        }
+
+        if (!TryBuildZeroRttApplicationPlaintextPacket(
             applicationPayload,
             out byte[] plaintextPacket,
             out int packetNumberOffset,
@@ -696,6 +736,73 @@ internal sealed class QuicHandshakeFlowCoordinator
         }
 
         plaintextPacket = packet;
+        return true;
+    }
+
+    private bool TryBuildZeroRttApplicationPlaintextPacket(
+        ReadOnlySpan<byte> applicationPayload,
+        out byte[] plaintextPacket,
+        out int packetNumberOffset,
+        out int packetNumberLength)
+    {
+        plaintextPacket = [];
+        packetNumberOffset = default;
+        packetNumberLength = ApplicationPacketNumberLength;
+
+        if (initialDestinationConnectionId.Length == 0
+            || sourceConnectionId.Length == 0
+            || applicationPayload.Length > int.MaxValue - LongHeaderFixedPrefixLength - LongHeaderConnectionIdLengthFieldsLength - initialDestinationConnectionId.Length - sourceConnectionId.Length - packetNumberLength - ApplicationMinimumProtectedPayloadLength)
+        {
+            return false;
+        }
+
+        int paddedPayloadLength = Math.Max(applicationPayload.Length, ApplicationMinimumProtectedPayloadLength);
+        Span<byte> lengthFieldBuffer = stackalloc byte[QuicVariableLengthInteger.MaxEncodedLength];
+        ulong lengthFieldValue = (ulong)(packetNumberLength + paddedPayloadLength + QuicInitialPacketProtection.AuthenticationTagLength);
+        if (!QuicVariableLengthInteger.TryFormat(lengthFieldValue, lengthFieldBuffer, out int lengthFieldBytes))
+        {
+            return false;
+        }
+
+        int longHeaderPrefixLength = LongHeaderFixedPrefixLength
+            + 1
+            + initialDestinationConnectionId.Length
+            + 1
+            + sourceConnectionId.Length;
+        if (longHeaderPrefixLength > int.MaxValue - lengthFieldBytes - packetNumberLength - paddedPayloadLength)
+        {
+            return false;
+        }
+
+        packetNumberOffset = longHeaderPrefixLength + lengthFieldBytes;
+
+        byte[] versionSpecificData = new byte[lengthFieldBytes + packetNumberLength + paddedPayloadLength];
+        lengthFieldBuffer.Slice(0, lengthFieldBytes).CopyTo(versionSpecificData);
+        BinaryPrimitives.WriteUInt32BigEndian(
+            versionSpecificData.AsSpan(lengthFieldBytes, packetNumberLength),
+            unchecked((uint)nextApplicationPacketNumber));
+
+        applicationPayload.CopyTo(versionSpecificData.AsSpan(lengthFieldBytes + packetNumberLength));
+        if (paddedPayloadLength > applicationPayload.Length)
+        {
+            versionSpecificData.AsSpan(
+                lengthFieldBytes + packetNumberLength + applicationPayload.Length,
+                paddedPayloadLength - applicationPayload.Length).Fill(0);
+        }
+
+        byte headerControlBits = (byte)(
+            QuicPacketHeaderBits.FixedBitMask
+            | (QuicLongPacketTypeBits.ZeroRtt << QuicPacketHeaderBits.LongPacketTypeBitsShift)
+            | (packetNumberLength - 1));
+
+        plaintextPacket = BuildLongHeaderPacket(
+            headerControlBits,
+            QuicVersionNegotiation.Version1,
+            initialDestinationConnectionId,
+            sourceConnectionId,
+            token: ReadOnlySpan<byte>.Empty,
+            versionSpecificData,
+            includeTokenLengthField: false);
         return true;
     }
 

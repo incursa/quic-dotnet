@@ -61,6 +61,7 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] DerivedLabel = Encoding.ASCII.GetBytes("derived");
     private static readonly byte[] ClientHandshakeTrafficLabel = Encoding.ASCII.GetBytes("c hs traffic");
     private static readonly byte[] ServerHandshakeTrafficLabel = Encoding.ASCII.GetBytes("s hs traffic");
+    private static readonly byte[] ClientEarlyTrafficLabel = Encoding.ASCII.GetBytes("c e traffic");
     private static readonly byte[] ClientApplicationTrafficLabel = Encoding.ASCII.GetBytes("c ap traffic");
     private static readonly byte[] ServerApplicationTrafficLabel = Encoding.ASCII.GetBytes("s ap traffic");
     private static readonly byte[] FinishedLabel = Encoding.ASCII.GetBytes("finished");
@@ -146,6 +147,11 @@ internal sealed class QuicTlsKeySchedule
     /// Gets the derived resumption master secret, if the handshake has reached the point where it is available.
     /// </summary>
     internal ReadOnlyMemory<byte> ResumptionMasterSecret => resumptionMasterSecret ?? ReadOnlyMemory<byte>.Empty;
+
+    /// <summary>
+    /// Gets whether the current client ClientHello attempted PSK resumption and may surface 0-RTT material.
+    /// </summary>
+    internal bool ResumptionAttemptPending => resumptionAttemptPending;
 
     /// <summary>
     /// Configures whether the server role should emit a CertificateRequest and accept a client certificate response.
@@ -923,6 +929,60 @@ internal sealed class QuicTlsKeySchedule
         {
             CryptographicOperations.ZeroMemory(localHandshakeSecret);
             handshakeSecret = null;
+        }
+    }
+
+    internal bool TryDeriveClientEarlyTrafficPacketProtectionMaterial(
+        QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot,
+        ReadOnlySpan<byte> clientHelloBytes,
+        out QuicTlsPacketProtectionMaterial material)
+    {
+        material = default;
+
+        if (role != QuicTlsRole.Client
+            || !resumptionAttemptPending
+            || !detachedResumptionTicketSnapshot.HasResumptionCredentialMaterial
+            || !detachedResumptionTicketSnapshot.HasEarlyDataPrerequisiteMaterial
+            || detachedResumptionTicketSnapshot.ResumptionMasterSecret.Length != HashLength
+            || clientHelloBytes.IsEmpty)
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> detachedResumptionMasterSecret = detachedResumptionTicketSnapshot.ResumptionMasterSecret.Span;
+        ReadOnlySpan<byte> ticketNonce = detachedResumptionTicketSnapshot.TicketNonce.Span;
+        byte[]? resumptionPsk = null;
+        byte[]? earlySecret = null;
+        byte[]? clientEarlyTrafficSecret = null;
+
+        try
+        {
+            resumptionPsk = HkdfExpandLabel(detachedResumptionMasterSecret, ResumptionLabel, ticketNonce, HashLength);
+            earlySecret = HkdfExtract(new byte[HashLength], resumptionPsk);
+            byte[] clientHelloTranscriptHash = SHA256.HashData(clientHelloBytes);
+            clientEarlyTrafficSecret = HkdfExpandLabel(earlySecret, ClientEarlyTrafficLabel, clientHelloTranscriptHash, HashLength);
+
+            return TryCreatePacketProtectionMaterial(
+                QuicTlsEncryptionLevel.ZeroRtt,
+                clientEarlyTrafficSecret,
+                out material);
+        }
+        finally
+        {
+            if (resumptionPsk is not null)
+            {
+                CryptographicOperations.ZeroMemory(resumptionPsk);
+            }
+
+            if (earlySecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(earlySecret);
+            }
+
+            if (clientEarlyTrafficSecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(clientEarlyTrafficSecret);
+            }
         }
     }
 

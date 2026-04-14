@@ -54,6 +54,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private byte[]? retrySourceConnectionId;
     private byte[]? retryToken;
     private bool retryBootstrapPendingReplay;
+    private bool zeroRttPacketSent;
 
     private int consumerStarted;
     private int disposed;
@@ -1140,6 +1141,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 }
 
                 stateChanged |= TryFlushInitialPackets(ref effects);
+                stateChanged |= TryFlushZeroRttPackets(ref effects);
                 stateChanged |= TryFlushHandshakePackets(ref effects);
                 break;
         }
@@ -1984,6 +1986,44 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         return stateChanged;
+    }
+
+    private bool TryFlushZeroRttPackets(ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase != QuicConnectionPhase.Establishing
+            || tlsState.Role != QuicTlsRole.Client
+            || zeroRttPacketSent
+            || retryBootstrapPendingReplay
+            || !HasDormantEarlyDataAttemptReadiness
+            || tlsState.OneRttKeysAvailable
+            || tlsState.ResumptionAttemptDisposition == QuicTlsResumptionAttemptDisposition.Rejected
+            || initialBootstrapClientHelloBytes is null
+            || initialBootstrapClientHelloBytes.Length == 0
+            || !TryGetInitialOutboundPath(out QuicConnectionPathIdentity pathIdentity)
+            || !tlsState.TryGetPacketProtectionMaterial(QuicTlsEncryptionLevel.ZeroRtt, out QuicTlsPacketProtectionMaterial packetProtectionMaterial))
+        {
+            return false;
+        }
+
+        Span<byte> applicationPayload = stackalloc byte[ApplicationMinimumProtectedPayloadLength];
+        applicationPayload.Clear();
+        if (!QuicFrameCodec.TryFormatPingFrame(applicationPayload, out int bytesWritten)
+            || bytesWritten <= 0)
+        {
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TryBuildProtectedZeroRttApplicationPacket(
+            applicationPayload,
+            packetProtectionMaterial,
+            out byte[] protectedPacket))
+        {
+            return false;
+        }
+
+        zeroRttPacketSent = true;
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
+        return true;
     }
 
     private bool TryFlushRetriedInitialPackets(

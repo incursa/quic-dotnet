@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0038"
 artifact_type: "work_item"
 title: "QUIC first client-side 0-RTT packet-emission attempt work item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0141"
@@ -31,13 +31,6 @@ Add the first bounded client-side 0-RTT send-attempt path from the dormant carri
 
 - ARC-QUIC-CRT-0036
 
-## Planned Changes
-
-- Extend `QuicTlsPacketProtectionMaterial` and `QuicTlsKeySchedule` with a distinct 0-RTT packet-protection package.
-- Teach `QuicConnectionRuntime` and `QuicHandshakeFlowCoordinator` to admit the first bounded client-side 0-RTT send attempt when the dormant carrier is eligible.
-- Keep the 1-RTT send path unchanged and leave 0-RTT receive handling and replay control for a separate slice.
-- Add focused requirement-home tests and a permanent BenchmarkDotNet suite under `benchmarks/` for the 0-RTT send hot path.
-
 ## Out of Scope
 
 - 0-RTT receive handling
@@ -54,6 +47,10 @@ Add the first bounded client-side 0-RTT send-attempt path from the dormant carri
 ## Verification Plan
 
 Run focused requirement-home tests for positive first-send admission, negative missing-carrier fallback, negative missing-prerequisite fallback, distinct 0-RTT-vs-1-RTT protection material, and the public no-broad-support guard; add fuzz coverage for the packet/protection boundary and the protected-packet formatter; run the permanent BenchmarkDotNet suite for the 0-RTT send hot path; then run the current CRT/API/INT guard set, the full `REQ_QUIC_CRT_` sweep, and SpecTrace render/validation checks.
+
+## Completion Notes
+
+The managed client/runtime path now admits the first bounded client-side 0-RTT send attempt from the dormant carrier when both prerequisite materials are present, emits a protected client 0-RTT application packet, and falls back cleanly when the carrier or derived material is absent while keeping 0-RTT receive handling, anti-replay, key update, transfer/retry, and public API widening out of scope.
 
 ## Trace Links
 

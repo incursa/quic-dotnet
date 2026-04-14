@@ -75,7 +75,7 @@ internal readonly struct QuicTlsPacketProtectionMaterial
     {
         material = default;
 
-        if (encryptionLevel is not (QuicTlsEncryptionLevel.Handshake or QuicTlsEncryptionLevel.OneRtt))
+        if (encryptionLevel is not (QuicTlsEncryptionLevel.ZeroRtt or QuicTlsEncryptionLevel.Handshake or QuicTlsEncryptionLevel.OneRtt))
         {
             return false;
         }

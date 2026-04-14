@@ -16,7 +16,7 @@ This slice is limited to the first client-side 0-RTT packet-emission attempt. It
 
 ## Design Summary
 
-The managed client/runtime path will keep the dormant detached carrier and the readiness observation as the precondition for a first client-side 0-RTT send attempt. When that precondition is satisfied, the runtime will derive a distinct 0-RTT packet-protection package from the carrier and the live transport state, then feed the protected packet into the existing connection-owned send path. The current 1-RTT send path remains unchanged, and the slice stops at the first send attempt rather than expanding into receive handling or replay control.
+The managed client/runtime path keeps the dormant detached carrier and the readiness observation as the precondition for the first client-side 0-RTT send attempt. When that precondition is satisfied, the runtime derives a distinct 0-RTT packet-protection package from the carrier and the live transport state, then feeds the protected packet into the existing connection-owned send path. The current 1-RTT send path remains unchanged, and the slice stops at the first send attempt rather than expanding into receive handling or replay control.
 
 ## Key Components
 

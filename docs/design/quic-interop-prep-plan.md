@@ -262,7 +262,7 @@ Notes on dependency:
 18. `First client-side 0-RTT packet-emission attempt`
    - Goal: keep the initial send-attempt floor traceable under `REQ-QUIC-CRT-0141`, `ARC-QUIC-CRT-0036`, `WI-QUIC-CRT-0038`, and `VER-QUIC-CRT-0038`.
    - Focus: dormant carrier eligibility, derived 0-RTT packet-protection material, first client-side protected 0-RTT application packet emission, clean fallback when the carrier or derived material is missing, and no receive/anti-replay/public-promise widening.
-   - Status: planned. The repo has the dormant readiness prerequisite, but the first honest 0-RTT send-attempt slice is still unimplemented.
+   - Status: landed. The managed client/runtime path now admits the first bounded 0-RTT send-attempt floor, derives distinct 0-RTT packet-protection material, and emits a protected client 0-RTT application packet while keeping the receive/anti-replay/public-promise families separate.
    - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, the detached credential-capture slice, the ClientHello PSK-attempt slice, the ServerHello branch-point slice, the abbreviated resumption completion slice, the internal early-data prerequisite capture slice, and the dormant early-data attempt-readiness slice staying stable.
 
 ## Do-Not-Widen Boundaries

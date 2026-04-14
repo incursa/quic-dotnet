@@ -126,6 +126,19 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                 QuicTlsEncryptionLevel.Initial,
                 CryptoDataOffset: 0,
                 CryptoData: clientHelloBytes));
+
+            if (detachedResumptionTicketSnapshot is not null
+                && detachedResumptionTicketSnapshot.HasEarlyDataPrerequisiteMaterial
+                && keySchedule.ResumptionAttemptPending
+                && keySchedule.TryDeriveClientEarlyTrafficPacketProtectionMaterial(
+                    detachedResumptionTicketSnapshot,
+                    clientHelloBytes,
+                    out QuicTlsPacketProtectionMaterial zeroRttProtectMaterial))
+            {
+                updates.Add(new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: zeroRttProtectMaterial));
+            }
         }
 
         return updates;

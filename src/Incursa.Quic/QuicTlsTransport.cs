@@ -15,8 +15,9 @@ internal enum QuicTlsRole
 internal enum QuicTlsEncryptionLevel
 {
     Initial = 0,
-    Handshake = 1,
-    OneRtt = 2,
+    ZeroRtt = 1,
+    Handshake = 2,
+    OneRtt = 3,
 }
 
 /// <summary>
