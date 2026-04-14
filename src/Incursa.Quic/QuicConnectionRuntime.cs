@@ -20,6 +20,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
+    private static readonly uint[] ClientSupportedVersions = [QuicVersionNegotiation.Version1];
 
     private readonly IMonotonicClock clock;
     private readonly QuicConnectionSendRuntime sendRuntime;
@@ -56,6 +57,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private byte[]? retryToken;
     private bool retryBootstrapPendingReplay;
     private bool zeroRttPacketSent;
+    private bool hasSuccessfullyProcessedAnotherPacket;
 
     private int consumerStarted;
     private int disposed;
@@ -832,6 +834,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 => HandleStreamAction(streamActionEvent, nowTicks, ref effects),
             QuicConnectionPacketReceivedEvent packetReceivedEvent
                 => HandlePacketReceived(packetReceivedEvent, nowTicks, ref effects),
+            QuicConnectionVersionNegotiationReceivedEvent versionNegotiationReceivedEvent
+                => HandleVersionNegotiationReceived(versionNegotiationReceivedEvent, nowTicks, ref effects),
             QuicConnectionPathValidationSucceededEvent pathValidationSucceededEvent
                 => HandlePathValidationSucceeded(pathValidationSucceededEvent, nowTicks, ref effects),
             QuicConnectionPathValidationFailedEvent pathValidationFailedEvent
@@ -1056,10 +1060,48 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         retrySourceConnectionId = retryReceivedEvent.RetrySourceConnectionId.ToArray();
         retryToken = retryReceivedEvent.RetryToken.ToArray();
         retryBootstrapPendingReplay = true;
+        hasSuccessfullyProcessedAnotherPacket = true;
 
         bool stateChanged = true;
         stateChanged |= TryFlushInitialPackets(ref effects);
         return stateChanged;
+    }
+
+    private bool HandleVersionNegotiationReceived(
+        QuicConnectionVersionNegotiationReceivedEvent versionNegotiationReceivedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        _ = nowTicks;
+
+        if (tlsState.Role != QuicTlsRole.Client
+            || phase != QuicConnectionPhase.Establishing
+            || tlsState.IsTerminal)
+        {
+            return false;
+        }
+
+        if (!QuicPacketParser.TryParseVersionNegotiation(
+                versionNegotiationReceivedEvent.Datagram.Span,
+                out QuicVersionNegotiationPacket versionNegotiationPacket))
+        {
+            return false;
+        }
+
+        if (!QuicVersionNegotiation.ShouldAbandonConnectionAttempt(
+                versionNegotiationPacket,
+                QuicVersionNegotiation.Version1,
+                ClientSupportedVersions,
+                hasSuccessfullyProcessedAnotherPacket))
+        {
+            return false;
+        }
+
+        return DiscardConnection(
+            versionNegotiationReceivedEvent.ObservedAtTicks,
+            QuicConnectionCloseOrigin.VersionNegotiation,
+            default,
+            ref effects);
     }
 
     private bool HandleTlsStateUpdated(
@@ -2717,6 +2759,14 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 terminalState.Close.ReasonPhrase ?? "The connection idled.");
         }
 
+        if (terminalState.Origin == QuicConnectionCloseOrigin.VersionNegotiation)
+        {
+            return new QuicException(
+                QuicError.VersionNegotiationError,
+                null,
+                terminalState.Close.ReasonPhrase ?? "The connection could not negotiate a compatible version.");
+        }
+
         long? applicationErrorCode = terminalState.Close.ApplicationErrorCode.HasValue
             ? checked((long)terminalState.Close.ApplicationErrorCode.Value)
             : null;
@@ -3087,6 +3137,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (stateChanged)
         {
+            hasSuccessfullyProcessedAnotherPacket = true;
             AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         }
 

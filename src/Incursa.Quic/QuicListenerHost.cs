@@ -793,6 +793,14 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 terminalState.Close.ReasonPhrase ?? "The listener connection idled before establishment completed.");
         }
 
+        if (terminalState.Origin == QuicConnectionCloseOrigin.VersionNegotiation)
+        {
+            return new QuicException(
+                QuicError.VersionNegotiationError,
+                null,
+                terminalState.Close.ReasonPhrase ?? "The listener connection could not negotiate a compatible version.");
+        }
+
         long? applicationErrorCode = terminalState.Close.ApplicationErrorCode.HasValue
             ? checked((long)terminalState.Close.ApplicationErrorCode.Value)
             : null;

@@ -27,6 +27,7 @@ internal enum QuicConnectionCloseOrigin
     IdleTimeout = 4,
     ProtocolViolation = 5,
     Application = 6,
+    VersionNegotiation = 7,
 }
 
 internal enum QuicConnectionSendingMode

@@ -203,8 +203,22 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
     private void ObserveIngressDatagram(ReadOnlyMemory<byte> datagram, QuicConnectionIngressResult ingressResult)
     {
-        if (ingressResult.Disposition != QuicConnectionIngressDisposition.EndpointHandling
-            || ingressResult.HandlingKind != QuicConnectionEndpointHandlingKind.Retry
+        if (ingressResult.Disposition != QuicConnectionIngressDisposition.EndpointHandling)
+        {
+            return;
+        }
+
+        if (ingressResult.HandlingKind == QuicConnectionEndpointHandlingKind.VersionNegotiation)
+        {
+            _ = endpoint.Host.TryPostEvent(
+                handle,
+                new QuicConnectionVersionNegotiationReceivedEvent(
+                    runtime.Clock.Ticks,
+                    datagram));
+            return;
+        }
+
+        if (ingressResult.HandlingKind != QuicConnectionEndpointHandlingKind.Retry
             || !QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
                 initialDestinationConnectionId,
                 datagram.Span,
@@ -357,6 +371,14 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
                 QuicError.ConnectionIdle,
                 null,
                 terminalState.Close.ReasonPhrase ?? "The client connection idled before establishment completed.");
+        }
+
+        if (terminalState.Origin == QuicConnectionCloseOrigin.VersionNegotiation)
+        {
+            return new QuicException(
+                QuicError.VersionNegotiationError,
+                null,
+                terminalState.Close.ReasonPhrase ?? "The client connection could not negotiate a compatible version.");
         }
 
         long? applicationErrorCode = terminalState.Close.ApplicationErrorCode.HasValue

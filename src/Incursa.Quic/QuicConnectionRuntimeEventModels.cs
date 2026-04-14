@@ -19,6 +19,7 @@ internal enum QuicConnectionEventKind
     CryptoFrameReceived = 14,
     HandshakeBootstrapRequested = 15,
     RetryReceived = 16,
+    VersionNegotiationReceived = 17,
 }
 
 internal enum QuicConnectionEffectKind
@@ -73,6 +74,11 @@ internal sealed record QuicConnectionRetryReceivedEvent(
     ReadOnlyMemory<byte> RetrySourceConnectionId,
     ReadOnlyMemory<byte> RetryToken)
     : QuicConnectionEvent(QuicConnectionEventKind.RetryReceived, ObservedAtTicks);
+
+internal sealed record QuicConnectionVersionNegotiationReceivedEvent(
+    long ObservedAtTicks,
+    ReadOnlyMemory<byte> Datagram)
+    : QuicConnectionEvent(QuicConnectionEventKind.VersionNegotiationReceived, ObservedAtTicks);
 
 internal sealed record QuicConnectionLocalCloseRequestedEvent(
     long ObservedAtTicks,
