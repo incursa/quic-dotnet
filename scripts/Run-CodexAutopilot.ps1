@@ -25,6 +25,10 @@ param(
 
     [int]$MaxConsecutiveNoProgressTurns = 2,
 
+    [int]$MaxConsecutiveNoRuntimeOrTestsTurns = 2,
+
+    [int]$MaxConsecutiveLowValueTurns = 2,
+
     [switch]$AutoCommitIfDirty,
 
     [string]$FallbackCommitMessagePrefix = "Codex autopilot",
@@ -630,6 +634,71 @@ function Get-ChangedPathsBetweenRefs {
     )
 }
 
+function Get-ChangedPathFacts {
+    param(
+        [string[]]$Paths = @()
+    )
+
+    $normalized = @(
+        $Paths |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        ForEach-Object { $_ -replace '\\', '/' } |
+        Select-Object -Unique
+    )
+
+    $hasRuntime = $false
+    $hasTests = $false
+    $hasCanonicalTrace = $false
+    $hasGenerated = $false
+    $hasScripts = $false
+    $hasDocs = $false
+    $hasOther = $false
+
+    foreach ($path in $normalized) {
+        if ($path.StartsWith('src/', [System.StringComparison]::OrdinalIgnoreCase)) {
+            $hasRuntime = $true
+        }
+        elseif ($path.StartsWith('tests/', [System.StringComparison]::OrdinalIgnoreCase)) {
+            $hasTests = $true
+        }
+        elseif (
+            $path.StartsWith('specs/requirements/quic/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $path.StartsWith('specs/architecture/quic/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $path.StartsWith('specs/work-items/quic/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $path.StartsWith('specs/verification/quic/', [System.StringComparison]::OrdinalIgnoreCase)
+        ) {
+            $hasCanonicalTrace = $true
+        }
+        elseif ($path.StartsWith('specs/generated/', [System.StringComparison]::OrdinalIgnoreCase)) {
+            $hasGenerated = $true
+        }
+        elseif ($path.StartsWith('scripts/', [System.StringComparison]::OrdinalIgnoreCase)) {
+            $hasScripts = $true
+        }
+        elseif (
+            $path.StartsWith('docs/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $path.EndsWith('.md', [System.StringComparison]::OrdinalIgnoreCase)
+        ) {
+            $hasDocs = $true
+        }
+        else {
+            $hasOther = $true
+        }
+    }
+
+    return [pscustomobject]@{
+        Paths             = $normalized
+        Count             = $normalized.Count
+        HasRuntime        = $hasRuntime
+        HasTests          = $hasTests
+        HasCanonicalTrace = $hasCanonicalTrace
+        HasGenerated      = $hasGenerated
+        HasScripts        = $hasScripts
+        HasDocs           = $hasDocs
+        HasOther          = $hasOther
+    }
+}
+
 function Get-ChangedPathSummary {
     param(
         [string[]]$Paths = @(),
@@ -641,39 +710,36 @@ function Get-ChangedPathSummary {
         return "(none)"
     }
 
+    $facts = Get-ChangedPathFacts -Paths $Paths
     $labels = New-Object System.Collections.Generic.List[string]
-    $normalized = @($Paths | ForEach-Object { $_ -replace '\\', '/' })
+    $normalized = @($facts.Paths)
 
-    if ($normalized | Where-Object { $_.StartsWith('src/', [System.StringComparison]::OrdinalIgnoreCase) }) {
+    if ($facts.HasRuntime) {
         $labels.Add("runtime")
     }
 
-    if ($normalized | Where-Object { $_.StartsWith('tests/', [System.StringComparison]::OrdinalIgnoreCase) }) {
+    if ($facts.HasTests) {
         $labels.Add("tests")
     }
 
-    if ($normalized | Where-Object {
-            $_.StartsWith('specs/requirements/quic/', [System.StringComparison]::OrdinalIgnoreCase) -or
-            $_.StartsWith('specs/architecture/quic/', [System.StringComparison]::OrdinalIgnoreCase) -or
-            $_.StartsWith('specs/work-items/quic/', [System.StringComparison]::OrdinalIgnoreCase) -or
-            $_.StartsWith('specs/verification/quic/', [System.StringComparison]::OrdinalIgnoreCase)
-        }) {
+    if ($facts.HasCanonicalTrace) {
         $labels.Add("canonical-trace")
     }
 
-    if ($normalized | Where-Object { $_.StartsWith('specs/generated/', [System.StringComparison]::OrdinalIgnoreCase) }) {
+    if ($facts.HasGenerated) {
         $labels.Add("generated")
     }
 
-    if ($normalized | Where-Object { $_.StartsWith('scripts/', [System.StringComparison]::OrdinalIgnoreCase) }) {
+    if ($facts.HasScripts) {
         $labels.Add("scripts")
     }
 
-    if ($normalized | Where-Object {
-            $_.StartsWith('docs/', [System.StringComparison]::OrdinalIgnoreCase) -or
-            $_.EndsWith('.md', [System.StringComparison]::OrdinalIgnoreCase)
-        }) {
+    if ($facts.HasDocs) {
         $labels.Add("docs")
+    }
+
+    if ($facts.HasOther) {
+        $labels.Add("other")
     }
 
     if ($labels.Count -eq 0) {
@@ -685,6 +751,85 @@ function Get-ChangedPathSummary {
     $summary = "$labelText ($($normalized.Count) files): $samplePaths"
 
     return Get-LimitedText -Text $summary -MaxChars $MaxChars -CollapseWhitespace
+}
+
+function Get-ProgressVerdict {
+    param(
+        [Parameter(Mandatory = $true)]
+        [bool]$HeadChanged,
+
+        [string[]]$Paths = @()
+    )
+
+    $facts = Get-ChangedPathFacts -Paths $Paths
+
+    if (-not $HeadChanged -or $facts.Count -eq 0) {
+        return [pscustomobject]@{
+            Verdict                 = "no_progress"
+            Details                 = "No commit was created during the turn."
+            Facts                   = $facts
+            CountsAsNoRuntimeOrTests = $false
+            CountsAsLowValue        = $false
+        }
+    }
+
+    if ($facts.HasRuntime) {
+        return [pscustomobject]@{
+            Verdict                 = "runtime"
+            Details                 = "Commit includes runtime changes under src/."
+            Facts                   = $facts
+            CountsAsNoRuntimeOrTests = $false
+            CountsAsLowValue        = $false
+        }
+    }
+
+    if ($facts.HasTests) {
+        return [pscustomobject]@{
+            Verdict                 = "proof"
+            Details                 = "Commit includes test changes under tests/ without src/ changes."
+            Facts                   = $facts
+            CountsAsNoRuntimeOrTests = $false
+            CountsAsLowValue        = $false
+        }
+    }
+
+    if ($facts.HasCanonicalTrace -and -not ($facts.HasGenerated -or $facts.HasScripts -or $facts.HasDocs -or $facts.HasOther)) {
+        return [pscustomobject]@{
+            Verdict                 = "trace_only"
+            Details                 = "Commit changes only canonical trace artifacts."
+            Facts                   = $facts
+            CountsAsNoRuntimeOrTests = $true
+            CountsAsLowValue        = $true
+        }
+    }
+
+    if ($facts.HasGenerated -and -not ($facts.HasCanonicalTrace -or $facts.HasScripts -or $facts.HasDocs -or $facts.HasOther)) {
+        return [pscustomobject]@{
+            Verdict                 = "generated_only"
+            Details                 = "Commit changes only generated artifacts."
+            Facts                   = $facts
+            CountsAsNoRuntimeOrTests = $true
+            CountsAsLowValue        = $true
+        }
+    }
+
+    if (($facts.HasCanonicalTrace -or $facts.HasGenerated -or $facts.HasDocs) -and -not ($facts.HasScripts -or $facts.HasOther)) {
+        return [pscustomobject]@{
+            Verdict                 = "trace_or_generated_only"
+            Details                 = "Commit changes only trace, generated, or rendered documentation artifacts."
+            Facts                   = $facts
+            CountsAsNoRuntimeOrTests = $true
+            CountsAsLowValue        = $true
+        }
+    }
+
+    return [pscustomobject]@{
+        Verdict                 = "supporting_only"
+        Details                 = "Commit changed files, but none were under src/ or tests/."
+        Facts                   = $facts
+        CountsAsNoRuntimeOrTests = $true
+        CountsAsLowValue        = $false
+    }
 }
 
 function Convert-HistoryToText {
@@ -728,7 +873,12 @@ function Convert-HistoryToText {
             $changeSummary = "(unknown)"
         }
 
-        $lines.Add("Turn $($entry.Turn) [$($entry.Mode)] state=$($entry.State), confidence=$($entry.Confidence), commit=$commitSha, changes=$changeSummary, summary=$summary")
+        $progressVerdict = Get-LimitedText -Text ([string]$entry.ProgressVerdict) -MaxChars 40 -CollapseWhitespace
+        if ([string]::IsNullOrWhiteSpace($progressVerdict)) {
+            $progressVerdict = "(unknown)"
+        }
+
+        $lines.Add("Turn $($entry.Turn) [$($entry.Mode)] state=$($entry.State), confidence=$($entry.Confidence), commit=$commitSha, verdict=$progressVerdict, changes=$changeSummary, summary=$summary")
     }
 
     return ($lines -join [Environment]::NewLine)
@@ -806,6 +956,7 @@ Core operating rules:
 - Treat `specs/generated/` updates as follow-through, not as the primary slice, unless they reconcile already-changed canonical/runtime/test work or restore repo honesty.
 - If you make useful changes, run the most relevant checks you can, then create a local git commit.
 - Keep the turn to one bounded slice and one commit; leave the next slice for the next turn.
+- Recent turn verdicts matter. If the recent turns are trace-only, generated-only, or otherwise missing src/tests movement, pivot to a higher-value lane or stop.
 - If commit signing blocks the commit, retry with --no-gpg-sign.
 - Do not leave useful code changes uncommitted.
 - Do not widen public support claims unless the runtime really earns them.
@@ -1137,6 +1288,9 @@ try {
     $MaxRecentSummaries = [Math]::Max(1, $MaxRecentSummaries)
     $MaxPriorResultChars = [Math]::Max(1, $MaxPriorResultChars)
     $MaxGitContextChars = [Math]::Max(1, $MaxGitContextChars)
+    $MaxConsecutiveNoProgressTurns = [Math]::Max(0, $MaxConsecutiveNoProgressTurns)
+    $MaxConsecutiveNoRuntimeOrTestsTurns = [Math]::Max(0, $MaxConsecutiveNoRuntimeOrTestsTurns)
+    $MaxConsecutiveLowValueTurns = [Math]::Max(0, $MaxConsecutiveLowValueTurns)
     $CompactMaxHistoryTurns = [Math]::Max(1, $CompactMaxHistoryTurns)
     $CompactMaxRecentSummaries = [Math]::Max(1, $CompactMaxRecentSummaries)
     $CompactMaxPriorResultChars = [Math]::Max(1, $CompactMaxPriorResultChars)
@@ -1145,6 +1299,8 @@ try {
     $history = New-Object System.Collections.Generic.List[object]
     $summary = New-Object System.Collections.Generic.List[object]
     $consecutiveNoProgress = 0
+    $consecutiveNoRuntimeOrTestsTurns = 0
+    $consecutiveLowValueTurns = 0
     $lastDecisionSnapshotText = ""
     $stopReason = ""
 
@@ -1326,9 +1482,56 @@ try {
             }
 
             $changeSummary = "(none)"
+            $progressVerdict = "no_progress"
+            $progressDetails = "No commit was created during the turn."
             if (-not $SkipGitChecks) {
                 $changedPaths = Get-ChangedPathsBetweenRefs -RepositoryRoot $workRoot -BeforeRef $headBefore -AfterRef $headAfter
                 $changeSummary = Get-ChangedPathSummary -Paths $changedPaths -MaxChars 180
+                $progress = Get-ProgressVerdict -HeadChanged:$headChanged -Paths $changedPaths
+                $progressVerdict = [string]$progress.Verdict
+                $progressDetails = [string]$progress.Details
+
+                if (-not $headChanged) {
+                    $consecutiveNoRuntimeOrTestsTurns = 0
+                    $consecutiveLowValueTurns = 0
+                }
+                elseif ($progress.CountsAsNoRuntimeOrTests) {
+                    $consecutiveNoRuntimeOrTestsTurns++
+                    if ($progress.CountsAsLowValue) {
+                        $consecutiveLowValueTurns++
+                    }
+                    else {
+                        $consecutiveLowValueTurns = 0
+                    }
+                }
+                else {
+                    $consecutiveNoRuntimeOrTestsTurns = 0
+                    $consecutiveLowValueTurns = 0
+                }
+            }
+
+            $progressGuardrailReason = ""
+            if ($state -eq "continue" -and -not $SkipGitChecks) {
+                if ($MaxConsecutiveLowValueTurns -gt 0 -and $consecutiveLowValueTurns -ge $MaxConsecutiveLowValueTurns) {
+                    $progressGuardrailReason = "Progress guardrail triggered after $consecutiveLowValueTurns consecutive low-value turns ($progressVerdict). Review recent commits before continuing."
+                }
+                elseif ($MaxConsecutiveNoRuntimeOrTestsTurns -gt 0 -and $consecutiveNoRuntimeOrTestsTurns -ge $MaxConsecutiveNoRuntimeOrTestsTurns) {
+                    $progressGuardrailReason = "Progress guardrail triggered after $consecutiveNoRuntimeOrTestsTurns consecutive turns without src/ or tests/ edits. Review recent commits before continuing."
+                }
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($progressGuardrailReason)) {
+                $state = "pause_manual"
+                if ([string]::IsNullOrWhiteSpace($manualReason)) {
+                    $manualReason = $progressGuardrailReason
+                }
+                else {
+                    $manualReason = ($manualReason.Trim() + " " + $progressGuardrailReason).Trim()
+                }
+
+                if ([string]::IsNullOrWhiteSpace($nextStep)) {
+                    $nextStep = "Review recent commits and rerun only after choosing a higher-value lane."
+                }
             }
 
             $historyEntry = [pscustomobject]@{
@@ -1341,6 +1544,7 @@ try {
                 Tests         = $testsSummary
                 Confidence    = $confidence
                 ChangeSummary = $changeSummary
+                ProgressVerdict = $progressVerdict
             }
             [void]$history.Add($historyEntry)
             while ($history.Count -gt $MaxHistoryTurns) {
@@ -1360,6 +1564,8 @@ try {
                 tests       = $testsSummary
                 confidence  = $confidence
                 change_summary = $changeSummary
+                progress_verdict = $progressVerdict
+                progress_details = $progressDetails
                 result_file = $resultPathUsed
                 log_file    = $logPathUsed
                 seconds     = $run.Seconds
@@ -1379,6 +1585,8 @@ try {
                 Tests        = $testsSummary
                 Confidence   = $confidence
                 ChangeSummary= $changeSummary
+                ProgressVerdict = $progressVerdict
+                ProgressDetails = $progressDetails
                 ExitCode     = $run.ExitCode
                 Seconds      = $run.Seconds
                 ResultFile   = $resultPathUsed
@@ -1394,6 +1602,9 @@ try {
             }
             if (-not [string]::IsNullOrWhiteSpace($commitSha)) {
                 Write-Host "  Commit:  $commitSha" -ForegroundColor Gray
+            }
+            if (-not [string]::IsNullOrWhiteSpace($progressVerdict)) {
+                Write-Host "  Verdict: $progressVerdict" -ForegroundColor Gray
             }
 
             switch ($state) {
