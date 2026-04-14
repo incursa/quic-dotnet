@@ -725,7 +725,8 @@
         "src/Incursa.Quic/PublicAPI.Unshipped.txt"
       ],
       "tests_covering_requirement": [
-        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+        "TryDetectPersistentCongestion_DoesNotNeedCrossSpaceStateToRejectTooShortSingleSpaceWindows",
+        "TryDetectPersistentCongestion_StillDetectsPersistentCongestionWhenOnlyApplicationDataStateIsTrackedAtTheBoundary"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"

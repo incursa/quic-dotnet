@@ -2341,6 +2341,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.6.2 RFC9002-S7.6.2-B8-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0005.cs::TryDetectPersistentCongestion_DoesNotNeedCrossSpaceStateToRejectTooShortSingleSpaceWindows
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0005.cs::TryDetectPersistentCongestion_StillDetectsPersistentCongestionWhenOnlyApplicationDataStateIsTrackedAtTheBoundary
 
 ## REQ-QUIC-RFC9002-S7P6P2-0006 Reset cwnd to the minimum on persistent congestion
 When persistent congestion is declared, the sender's congestion window MUST be reduced to the minimum congestion window.
