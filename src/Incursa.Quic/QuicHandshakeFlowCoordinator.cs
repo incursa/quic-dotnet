@@ -149,6 +149,22 @@ internal sealed class QuicHandshakeFlowCoordinator
         QuicTlsPacketProtectionMaterial material,
         out byte[] protectedPacket)
     {
+        return TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            material,
+            keyPhase: false,
+            out protectedPacket);
+    }
+
+    /// <summary>
+    /// Formats and protects a 1-RTT short-header packet from a STREAM/control payload and an explicit Key Phase bit.
+    /// </summary>
+    public bool TryBuildProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        out byte[] protectedPacket)
+    {
         protectedPacket = [];
 
         if (applicationPayload.IsEmpty
@@ -160,6 +176,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         if (!TryBuildApplicationDataPlaintextPacket(
             applicationPayload,
+            keyPhase,
             out byte[] plaintextPacket,
             out int packetNumberOffset,
             out int packetNumberLength))
@@ -230,9 +247,30 @@ internal sealed class QuicHandshakeFlowCoordinator
         out int payloadOffset,
         out int payloadLength)
     {
+        return TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            material,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength,
+            out _);
+    }
+
+    /// <summary>
+    /// Opens a protected 1-RTT short-header packet, returns the unprotected packet bytes plus payload layout, and reports the observed Key Phase bit.
+    /// </summary>
+    public bool TryOpenProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength,
+        out bool keyPhase)
+    {
         openedPacket = [];
         payloadOffset = default;
         payloadLength = default;
+        keyPhase = default;
 
         if (destinationConnectionId.Length == 0
             || material.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt)
@@ -248,7 +286,8 @@ internal sealed class QuicHandshakeFlowCoordinator
                 packetNumberLength,
                 out openedPacket,
                 out payloadOffset,
-                out payloadLength))
+                out payloadLength,
+                out keyPhase))
             {
                 return true;
             }
@@ -703,6 +742,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
     private bool TryBuildApplicationDataPlaintextPacket(
         ReadOnlySpan<byte> applicationPayload,
+        bool keyPhase,
         out byte[] plaintextPacket,
         out int packetNumberOffset,
         out int packetNumberLength)
@@ -721,7 +761,10 @@ internal sealed class QuicHandshakeFlowCoordinator
         packetNumberOffset = 1 + destinationConnectionId.Length;
 
         byte[] packet = new byte[packetNumberOffset + packetNumberLength + paddedPayloadLength];
-        packet[0] = (byte)(QuicPacketHeaderBits.FixedBitMask | (packetNumberLength - 1));
+        packet[0] = (byte)(
+            QuicPacketHeaderBits.FixedBitMask
+            | (keyPhase ? QuicPacketHeaderBits.KeyPhaseBitMask : 0)
+            | (packetNumberLength - 1));
         destinationConnectionId.CopyTo(packet.AsSpan(1));
 
         BinaryPrimitives.WriteUInt32BigEndian(
@@ -867,11 +910,13 @@ internal sealed class QuicHandshakeFlowCoordinator
         int packetNumberLength,
         out byte[] openedPacket,
         out int payloadOffset,
-        out int payloadLength)
+        out int payloadLength,
+        out bool keyPhase)
     {
         openedPacket = [];
         payloadOffset = default;
         payloadLength = default;
+        keyPhase = default;
 
         if (!TryValidatePacketProtectionMaterial(material)
             || packetNumberLength < 1
@@ -911,6 +956,8 @@ internal sealed class QuicHandshakeFlowCoordinator
         {
             return false;
         }
+
+        keyPhase = (unmaskedFirstByte & QuicPacketHeaderBits.KeyPhaseBitMask) != 0;
 
         int unprotectedPacketLength = protectedPacket.Length - QuicInitialPacketProtection.AuthenticationTagLength;
         byte[] openedPacketBuffer = new byte[unprotectedPacketLength];

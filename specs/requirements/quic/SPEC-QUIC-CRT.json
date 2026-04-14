@@ -1767,6 +1767,29 @@
         "Rejected dispositions discard only dormant ZeroRtt material; accepted dispositions leave it intact.",
         "The slice remains separate from 0-RTT receive handling, server admission, key update, transfer, retry, and any public API widening."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0144",
+      "title": "Record the first observed 1-RTT Key Phase transition",
+      "statement": "In the client role, after handshake confirmation and on the active 1-RTT short-header packet path, the library MUST observe the peer Key Phase bit from protected application packets, MUST record the first observed 0->1 transition by setting the existing internal `KeyUpdateInstalled` state and `CurrentOneRttKeyPhase` to 1, MUST leave establishing runtimes unchanged before handshake confirmation, and MUST remain client-role only, managed client/runtime only, and closed to successor-key derivation, TLS KeyUpdate support, transfer, retry, public API widening, and any public key-update promise.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9001 Section 6",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+          "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0137.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0144.cs",
+          "benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md"
+        ]
+      },
+      "notes": [
+        "The slice only records the first observed active-path transition; it does not derive successor key material or implement a general RFC 9001 key-update engine.",
+        "Establishing runtimes remain unchanged before handshake confirmation.",
+        "The short-header helper preserves and reports the Key Phase bit so the runtime can make the first-transition decision without broadening public API."
+      ]
     }
   ]
 }

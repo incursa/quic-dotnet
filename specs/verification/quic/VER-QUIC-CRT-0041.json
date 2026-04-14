@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0041",
+  "artifact_type": "verification",
+  "status": "landed",
+  "title": "QUIC client-side 1-RTT Key Phase observation verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests, fuzzing, BenchmarkDotNet coverage, and SpecTrace render/validation checks.",
+  "scope": "Verify that the short-header helper preserves and reports the Key Phase bit, that an active handshake-confirmed client runtime records the first observed 1-RTT Key Phase transition by installing the existing internal state, that an establishing runtime remains unchanged before handshake confirmation, and that the slice does not claim successor-key derivation, TLS KeyUpdate support, transfer, retry, or public API widening.",
+  "preconditions": [
+    "The repository builds successfully on net10.0.",
+    "REQ-QUIC-CRT-0137 remains a landed prerequisite for the handshake-confirmed active client runtime fixture.",
+    "REQ-QUIC-CRT-0144 is the active key-phase requirement in this slice.",
+    "A permanent BenchmarkDotNet suite exists under benchmarks/README.md for the 1-RTT Key Phase helper path."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0137.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0144.cs",
+    "benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs",
+    "benchmarks/README.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "scripts/Validate-SpecTraceJson.ps1",
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
+  ],
+  "procedure": [
+    "Run the focused requirement-home tests for helper round-trip coverage, active-runtime first-transition install, establishing-runtime no-install behavior, fuzz coverage for the short-header Key Phase boundary, and the public no-broad-support guard.",
+    "Run the permanent BenchmarkDotNet suite for the 1-RTT Key Phase helper path.",
+    "Render the SpecTrace markdown from the canonical JSON and validate the generated artifacts."
+  ],
+  "expected_result": "The short-header helper preserves the Key Phase bit, the active client runtime installs the first observed 1-RTT Key Phase transition only after handshake confirmation, the establishing runtime remains unchanged before handshake confirmation, and the library does not claim successor-key derivation or public key-update support.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0039",
+    "WI-QUIC-CRT-0041"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- The short-header helper preserves and reports the Key Phase bit.\n- The active client runtime records the first observed 1-RTT Key Phase transition by updating the existing internal state.\n- The establishing runtime remains unchanged before handshake confirmation.\n- The slice does not claim successor-key derivation, TLS KeyUpdate support, transfer, retry, or public API widening."
+    }
+  ]
+}

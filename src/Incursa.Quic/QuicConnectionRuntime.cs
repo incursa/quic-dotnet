@@ -1803,12 +1803,27 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             tlsState.OneRttOpenPacketProtectionMaterial.Value,
             out byte[] openedPacket,
             out int payloadOffset,
-            out int payloadLength))
+            out int payloadLength,
+            out bool keyPhase))
         {
             return false;
         }
 
         bool stateChanged = false;
+        if (keyPhase
+            && !tlsState.KeyUpdateInstalled
+            && tlsState.CurrentOneRttKeyPhase == 0)
+        {
+            stateChanged |= HandleTlsStateUpdated(
+                new QuicConnectionTlsStateUpdatedEvent(
+                    nowTicks,
+                    new QuicTlsStateUpdate(
+                        QuicTlsUpdateKind.KeyUpdateInstalled,
+                        KeyPhase: 1)),
+                nowTicks,
+                ref effects);
+        }
+
         bool processedCryptoFrame = false;
         bool processedStreamFrame = false;
         bool processedMaxStreamsFrame = false;
