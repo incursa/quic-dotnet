@@ -50,7 +50,7 @@ Execution, inspection, and regression evidence.
 
 ## Status
 
-planned
+Library-owned retry bootstrap now has execution, inspection, and regression evidence on the current runtime path.
 
 ## Related Artifacts
 

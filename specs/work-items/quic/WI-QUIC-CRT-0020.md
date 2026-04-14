@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0020"
 artifact_type: "work_item"
 title: "QUIC CRT retry bootstrap ownership work item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0122"
@@ -59,7 +59,7 @@ Run the existing Retry helper tests, the library-owned retry bootstrap requireme
 
 ## Completion Notes
 
-Keep the work item narrow: it exists to make the retry bootstrap prerequisite honest, not to claim broader retry support or the child-process harness contract itself.
+Implemented the library-owned one-Retry bootstrap handoff and closed the requirement-home coverage under REQ-QUIC-CRT-0122; the child-process retry contract remains separately traced under REQ-QUIC-INT-0012.
 
 ## Trace Links
 
