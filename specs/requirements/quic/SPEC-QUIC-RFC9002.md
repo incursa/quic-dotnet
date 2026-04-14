@@ -413,6 +413,10 @@ Trace:
 - Source Refs:
   - RFC 9002 §5.1 RFC9002-S5.1-B7-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_UsesOnlyTheLargestAcknowledgedPacketSendTimeWhenMultiplePacketsAreNewlyAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_DoesNotUpdateTheRttWhenALaterAckOnlyAdvancesSmallerPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_UsesTheLargestAcknowledgedPacketTimeAtTheZeroBoundary
 
 ## REQ-QUIC-RFC9002-S5P1-0004 Skip duplicate RTT updates
 An ACK frame SHOULD NOT be used to update RTT estimates if it does not newly acknowledge the largest acknowledged packet.

@@ -728,6 +728,11 @@
         "upstream_refs": [
           "RFC 9002 §5.1 RFC9002-S5.1-B7-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_UsesOnlyTheLargestAcknowledgedPacketSendTimeWhenMultiplePacketsAreNewlyAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_DoesNotUpdateTheRttWhenALaterAckOnlyAdvancesSmallerPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_UsesTheLargestAcknowledgedPacketTimeAtTheZeroBoundary"
         ]
       }
     },
