@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using System.Net;
+using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -218,26 +218,38 @@ public sealed class REQ_QUIC_INT_0014
     [Trait("Category", "Negative")]
     public async Task IpLiteralHostStillFailsAgainstALocalhostOnlyCertificate()
     {
-        using TempDirectoryFixture fixture = new("incursa-quic-preflight-name-mismatch");
-        string qlogDirectory = fixture.CreateSubdirectory("qlog");
-        (string CertificatePath, string PrivateKeyPath) = CreateServerCertificateFiles(fixture, "localhost");
-        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-        string request = $"https://127.0.0.1:{listenEndPoint.Port}/handshake";
+        using X509Certificate2 localhostCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
 
-        RecordingTextWriter serverStdout = new();
-        RecordingTextWriter serverStderr = new();
-        RecordingTextWriter clientStdout = new();
-        RecordingTextWriter clientStderr = new();
+        Assert.True(InteropHarnessEnvironment.TryCreate(
+            InteropHarnessTestSupport.CreateEnvironment(
+                role: "client",
+                testcase: "handshake",
+                requests: "https://127.0.0.1:4242/handshake"),
+            out InteropHarnessEnvironment? clientSettings,
+            out string? errorMessage));
+        Assert.NotNull(clientSettings);
+        Assert.Null(errorMessage);
 
-        Task<int> serverTask = StartHarnessRunAsync("server", "handshake", request, qlogDirectory, CertificatePath, PrivateKeyPath, serverStdout, serverStderr);
-        await WaitForTextAsync(serverTask, serverStdout, "listening on", TimeSpan.FromSeconds(10)).ConfigureAwait(false);
+        InteropHarnessPreflightPlanner planner = new(clientSettings!, TextWriter.Null);
+        Assert.True(planner.TryGetDispatchRequestUri(out Uri? requestUri, out errorMessage));
+        Assert.NotNull(requestUri);
+        Assert.Equal("127.0.0.1", requestUri!.Host);
 
-        Task<int> clientTask = StartHarnessRunAsync("client", "handshake", request, qlogDirectory, CertificatePath, PrivateKeyPath, clientStdout, clientStderr);
-        int clientExitCode = await clientTask.WaitAsync(TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+        IPEndPoint remoteEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeRemoteEndPointAsync(requestUri);
+        Assert.Equal(IPAddress.Loopback, remoteEndPoint.Address);
 
-        Assert.NotEqual(0, clientExitCode);
-        Assert.Contains("RemoteCertificateNameMismatch", clientStdout.ToString(), StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("listening on", serverStdout.ToString(), StringComparison.OrdinalIgnoreCase);
+        QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(remoteEndPoint, requestUri.Host);
+        Assert.NotNull(clientOptions.ClientAuthenticationOptions);
+        Assert.Equal("127.0.0.1", clientOptions.ClientAuthenticationOptions!.TargetHost);
+        Assert.NotNull(clientOptions.ClientAuthenticationOptions.RemoteCertificateValidationCallback);
+
+        bool accepted = clientOptions.ClientAuthenticationOptions.RemoteCertificateValidationCallback!(
+            null!,
+            localhostCertificate,
+            new X509Chain(),
+            SslPolicyErrors.RemoteCertificateNameMismatch | SslPolicyErrors.RemoteCertificateChainErrors);
+
+        Assert.False(accepted);
     }
 
     private static (string CertificatePath, string PrivateKeyPath) CreateServerCertificateFiles(
