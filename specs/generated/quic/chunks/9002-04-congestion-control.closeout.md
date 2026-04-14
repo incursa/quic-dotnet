@@ -91,7 +91,7 @@
 - `REQ-QUIC-RFC9002-S7P7-0005` - Do not pace pure ACK packets. Status: deferred. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers. Gap: The helper can skip pacing pure ACKs, but the sender layer that decides which packets are ACK-only is still missing.
 
 ### S7P8
-- `REQ-QUIC-RFC9002-S7P8-0001` - Do not increase cwnd when underutilized. Status: implemented and tested. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers.
+  - `REQ-QUIC-RFC9002-S7P8-0001` - Do not increase cwnd when underutilized. Status: implemented and tested. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryRegisterAcknowledgedPacket_LeavesTheWindowUnchangedWhenTheSenderIsNotPacingLimited, TryRegisterAcknowledgedPacket_GrowsTheWindowWhenTheSameStateIsPacingLimited.
 - `REQ-QUIC-RFC9002-S7P8-0002` - Do not call yourself application-limited because of pacing delay. Status: deferred. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers. Gap: Application-limited classification due to pacing delay is a sender-state concern that is not represented yet.
 - `REQ-QUIC-RFC9002-S7P8-0003` - Allow alternate cwnd-updating mechanisms after underutilization. Status: implemented and tested. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers.
 

@@ -30,7 +30,6 @@ public sealed class REQ_QUIC_RFC9002_S7P7_0001
     [Requirement("REQ-QUIC-RFC9002-S7P7-0003")]
     [Requirement("REQ-QUIC-RFC9002-S7P7-0004")]
     [Requirement("REQ-QUIC-RFC9002-S7P7-0005")]
-    [Requirement("REQ-QUIC-RFC9002-S7P8-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P8-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7P8-0003")]
     public void TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers()

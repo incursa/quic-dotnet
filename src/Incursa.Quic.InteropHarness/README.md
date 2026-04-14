@@ -5,7 +5,7 @@
 ## Boundary
 
 - Library-owned: connection runtime, sender and recovery ownership, TLS-facing transport contracts, packet protection lifecycle state, handshake confirmation, timers, path validation, retransmission planning, transport-visible diagnostics, `QuicConnectionEndpointHost`, and the packet open/protect helpers.
-- Harness-owned: `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE` parsing; fixed mount-path mapping; handshake and retry dispatch; supported server-role startup with an empty `REQUESTS` list; exit codes; Docker packaging; the startup script; and the thin `InteropEndpointHost` wrapper.
+- Harness-owned: `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE` parsing; fixed mount-path mapping; handshake and retry dispatch; supported server-role startup with an empty `REQUESTS` list; the small preflight planner that isolates request parsing, qlog selection, endpoint resolution, and transfer-path mapping for repo-local smoke tests; exit codes; Docker packaging; the startup script; and the thin `InteropEndpointHost` wrapper.
 
 ## Endpoint Host Shell
 
@@ -19,6 +19,7 @@
 - Maps the fixed container paths used by the runner: `/www`, `/downloads`, and `/certs/cert.pem` plus `/certs/priv.key`.
 - Preserves TLS material and diagnostics hooks without claiming end-to-end transport support yet.
 - Emits contained qlog JSON files under `QLOGDIR` for supported client and listener bootstrap paths.
+- Supports a localhost preflight lane with matching certificate names so harness setup can be isolated before external interop debugging.
 - Exercises the library-owned runtime through a real connected UDP socket in requirement-home coverage.
 - Routes `handshake` into the managed client/listener bootstrap path and returns `0` when that path completes.
 - Routes `post-handshake-stream` into the managed child-process path and returns `0` after the client opens and the server accepts the first application stream.

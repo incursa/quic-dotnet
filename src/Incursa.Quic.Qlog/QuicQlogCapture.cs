@@ -67,6 +67,16 @@ public sealed class QuicQlogCapture
         return QuicListener.ListenAsync(options, cancellationToken, CreateServerSink);
     }
 
+    internal Func<IQuicDiagnosticsSink> CreateClientDiagnosticsSinkFactory()
+    {
+        return CreateClientSink;
+    }
+
+    internal Func<IQuicDiagnosticsSink> CreateServerDiagnosticsSinkFactory()
+    {
+        return CreateServerSink;
+    }
+
     /// <summary>
     /// Serializes the captured file to contained qlog JSON.
     /// </summary>

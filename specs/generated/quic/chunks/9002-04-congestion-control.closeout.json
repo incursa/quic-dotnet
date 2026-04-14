@@ -1001,9 +1001,11 @@
         "src/Incursa.Quic/PublicAPI.Unshipped.txt"
       ],
       "tests_covering_requirement": [
-        "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+        "TryRegisterAcknowledgedPacket_LeavesTheWindowUnchangedWhenTheSenderIsNotPacingLimited",
+        "TryRegisterAcknowledgedPacket_GrowsTheWindowWhenTheSameStateIsPacingLimited"
       ],
       "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0001.cs",
         "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
       ],
       "remaining_gap": null,

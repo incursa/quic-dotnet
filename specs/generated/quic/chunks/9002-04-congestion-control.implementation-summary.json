@@ -99,11 +99,22 @@
         "REQ-QUIC-RFC9002-S7P7-0003",
         "REQ-QUIC-RFC9002-S7P7-0004",
         "REQ-QUIC-RFC9002-S7P7-0005",
-        "REQ-QUIC-RFC9002-S7P8-0001",
         "REQ-QUIC-RFC9002-S7P8-0002",
         "REQ-QUIC-RFC9002-S7P8-0003"
       ],
       "test": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P8-0001"
+      ],
+      "test": "TryRegisterAcknowledgedPacket_LeavesTheWindowUnchangedWhenTheSenderIsNotPacingLimited"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P8-0001"
+      ],
+      "test": "TryRegisterAcknowledgedPacket_GrowsTheWindowWhenTheSameStateIsPacingLimited"
     },
     {
       "requirement_ids": [
