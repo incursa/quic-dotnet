@@ -182,6 +182,47 @@ internal sealed class QuicConnectionSendRuntime
         return updated;
     }
 
+    /// <summary>
+    /// Discards queued retransmission plans sent before a retention cutoff.
+    /// </summary>
+    /// <remarks>
+    /// This is a retention-policy helper; it leaves the retained sent-packet records intact so late
+    /// acknowledgments can still settle the original send history.
+    /// </remarks>
+    public bool TryDiscardPendingRetransmissionsOlderThan(ulong discardBeforeSentAtMicros)
+    {
+        if (pendingRetransmissions.Count == 0)
+        {
+            return false;
+        }
+
+        bool updated = false;
+        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
+        while (pendingRetransmissions.Count > 0)
+        {
+            QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
+            if (retransmission.SentAtMicros < discardBeforeSentAtMicros)
+            {
+                updated = true;
+                continue;
+            }
+
+            retainedRetransmissions.Enqueue(retransmission);
+        }
+
+        while (retainedRetransmissions.Count > 0)
+        {
+            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+        }
+
+        if (updated && pendingRetransmissions.Count == 0 && sentPackets.Count == 0)
+        {
+            LossDetectionDeadlineMicros = null;
+        }
+
+        return updated;
+    }
+
     public bool TryRegisterLoss(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,
