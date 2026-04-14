@@ -261,6 +261,14 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     internal bool HasDormantDetachedResumptionTicketSnapshot => dormantDetachedResumptionTicketSnapshot is not null;
 
+    /// <summary>
+    /// Gets whether the dormant detached carrier is ready for a future 0-RTT attempt.
+    /// </summary>
+    internal bool HasDormantEarlyDataAttemptReadiness =>
+        dormantDetachedResumptionTicketSnapshot is not null
+        && dormantDetachedResumptionTicketSnapshot.HasResumptionCredentialMaterial
+        && dormantDetachedResumptionTicketSnapshot.HasEarlyDataPrerequisiteMaterial;
+
     internal bool TryConfigureInitialPacketProtection(ReadOnlySpan<byte> clientInitialDestinationConnectionId)
     {
         if (initialPacketProtection is not null)

@@ -1,0 +1,42 @@
+{
+  "title": "QUIC CRT dormant early-data attempt readiness work item",
+  "verification_links": [
+    "VER-QUIC-CRT-0037"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "status": "landed",
+  "domain": "quic",
+  "summary": "Add a narrow internal readiness observation over the dormant detached resumption carrier while keeping early data explicitly closed and the actual 0-RTT packet family separate.",
+  "verification_plan": "Run focused requirement-home tests for the REQ-QUIC-CRT-0139 prerequisite regression plus positive readiness, missing-prerequisite negative, the public no-broad-0-RTT guard, and the anti-replay/key-update out-of-scope guard; then run the relevant CRT/API/INT guard set, the full `REQ_QUIC_CRT_` sweep, and SpecTrace render/validation checks.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicConnection.cs`](../../../src/Incursa.Quic/QuicConnection.cs)\n- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs`](../../../src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicResumptionClientHelloTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicResumptionClientHelloTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0139.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0139.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0140.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0140.cs)"
+    }
+  ],
+  "completion_notes": "The managed client/runtime path now surfaces a narrow internal readiness observation when the dormant detached carrier still has both resumption credential material and early-data prerequisite material, but early data remains explicitly closed and actual 0-RTT packet emission remains a separate family.",
+  "design_links": [
+    "ARC-QUIC-CRT-0035"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0140"
+  ],
+  "artifact_id": "WI-QUIC-CRT-0037",
+  "artifact_type": "work_item",
+  "out_of_scope": [
+    "0-RTT packet send/receive support",
+    "anti-replay enforcement",
+    "key update",
+    "public API widening",
+    "IsSupported widening",
+    "broader resumption claims",
+    "broad post-handshake TLS support",
+    "transfer enablement",
+    "retry enablement",
+    "opportunistic refactors unrelated to the new early-data attempt-readiness observation"
+  ]
+}

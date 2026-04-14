@@ -37,7 +37,7 @@ The transport core resolves one diagnostics sink per connection during connectio
 
 ## Data and State Considerations
 
-The client and listener hosts are the natural sink-resolution points because they already own connection setup and endpoint metadata. The runtime should store only the resolved sink or null object, while the adapter package owns the qlog trace and per-trace event append order. The consumer or host chooses whether to serialize one trace or many traces after the adapter has captured the events.
+The client and listener hosts are the natural sink-resolution points because they already own connection setup and endpoint metadata. The runtime should store only the resolved sink or null object, while the adapter package owns the qlog trace and per-trace event append order. The consumer or host chooses whether to serialize one trace or many traces after the adapter has captured the events, and the host-facing capture helper may aggregate that in-memory file before handing it to the serializer.
 
 ## Edge Cases and Constraints
 
@@ -66,7 +66,6 @@ The client and listener hosts are the natural sink-resolution points because the
 - `Incursa.Quic.Qlog` depends on `Incursa.Quic`, `Incursa.Qlog`, and `Incursa.Qlog.Quic`.
 - File and serializer consumers depend on `Incursa.Qlog.Serialization.Json` outside the transport core.
 - The adapter owns `QlogTrace` and `QlogEvent` append flow, not file output.
-- The host-facing capture helper may aggregate and serialize the in-memory qlog file, but it does not move file policy into `Incursa.Quic`.
 
 ## Mapping Sketch
 
@@ -89,9 +88,6 @@ The client and listener hosts are the natural sink-resolution points because the
 - [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)
 - [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)
 - [`src/Incursa.Quic/QuicConnection.cs`](../../../src/Incursa.Quic/QuicConnection.cs)
-- [`src/Incursa.Quic.Qlog/QuicQlogCapture.cs`](../../../src/Incursa.Quic.Qlog/QuicQlogCapture.cs)
-- [`src/Incursa.Quic.Qlog/QuicQlogDiagnosticsSink.cs`](../../../src/Incursa.Quic.Qlog/QuicQlogDiagnosticsSink.cs)
-- [`src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj`](../../../src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0004.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0134.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0134.cs)
