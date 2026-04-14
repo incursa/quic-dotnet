@@ -94,6 +94,8 @@ Trace:
 - Source Refs:
   - RFC 9002 §3 RFC9002-S3-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0001.cs::TryParseShortHeader_ReportsThePacketLevelHeader
 
 ## REQ-QUIC-RFC9002-S3-0002 Indicate encryption level in packet headers
 The packet-level header MUST indicate the encryption level.
@@ -124,6 +126,8 @@ Trace:
 - Source Refs:
   - RFC 9002 §3 RFC9002-S3-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_PreservesThePacketSequenceNumberBytes
 
 ## REQ-QUIC-RFC9002-S3-0004 Map encryption level to packet number space
 The encryption level MUST indicate the packet number space.

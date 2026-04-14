@@ -154,6 +154,9 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0001.cs::TryParseShortHeader_ReportsThePacketLevelHeader"
         ]
       }
     },
@@ -209,6 +212,9 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_PreservesThePacketSequenceNumberBytes"
         ]
       }
     },
