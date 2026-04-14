@@ -3413,6 +3413,10 @@ Trace:
 - Source Refs:
   - RFC 9002 §B.2 RFC9002-SB.2-B5-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-b.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0004.cs::RegisterPacketSent_CountsNonAckOnlyPacketsTowardBytesInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0004.cs::RegisterPacketSent_DoesNotIncreaseBytesInFlightForAckOnlyPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0004.cs::RegisterPacketSent_DoesNotIncreaseBytesInFlightForAckOnlyPacketsAtTheCongestionWindowLimit
 
 ## REQ-QUIC-RFC9002-SBP2-0005 Track ECN-CE counters per packet number space
 The sender MUST track the highest ECN-CE counter value reported by the peer for each packet number space.
@@ -3428,6 +3432,10 @@ Trace:
   - RFC 9002 §B.2 RFC9002-SB.2-B4-P0-S1
   - RFC 9002 §B.2 RFC9002-SB.2-B4-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-b.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0005.cs::TryProcessEcn_TracksIncreasingCeCountsForEachPacketNumberSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0005.cs::TryProcessEcn_DoesNotAdvanceTheSamePacketNumberSpaceForARepeatedCeCount
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0005.cs::TryProcessEcn_TracksTheMaximumReportedCeCountInTheHighestPacketNumberSpace
 
 ## REQ-QUIC-RFC9002-SBP3-0001 Initialize congestion control state at connection start
 At the beginning of a connection, the congestion control state MUST be initialized by setting congestion_window to kInitialWindow, bytes_in_flight to 0, congestion_recovery_start_time to 0, ssthresh to infinite, and each ECN-CE counter to 0.
