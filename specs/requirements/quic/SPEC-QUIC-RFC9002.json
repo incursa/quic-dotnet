@@ -513,6 +513,10 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B7-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0014.cs::RegisterPacketSent_CountsNonAckOnlyPacketsTowardBytesInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0014.cs::RegisterPacketSent_DoesNotCountAckOnlyPacketsTowardBytesInFlight"
         ]
       }
     },
@@ -539,6 +543,10 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B7-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0015.cs::RecordPacketSent_RetainsNonAckOnlyPacketsInTheSentPacketSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0015.cs::RecordPacketSent_DoesNotTrackAckOnlyPacketsAsInFlight"
         ]
       }
     },

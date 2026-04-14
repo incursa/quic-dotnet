@@ -290,6 +290,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §3 RFC9002-S3-B7-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0014.cs::RegisterPacketSent_CountsNonAckOnlyPacketsTowardBytesInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0014.cs::RegisterPacketSent_DoesNotCountAckOnlyPacketsTowardBytesInFlight
 
 ## REQ-QUIC-RFC9002-S3-0015 Treat non-ACK packets as in flight
 Packets containing frames besides ACK or CONNECTION_CLOSE MUST be considered in flight.
@@ -304,6 +307,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §3 RFC9002-S3-B7-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0015.cs::RecordPacketSent_RetainsNonAckOnlyPacketsInTheSentPacketSet
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0015.cs::RecordPacketSent_DoesNotTrackAckOnlyPacketsAsInFlight
 
 ## REQ-QUIC-RFC9002-S3-0016 Count PADDING toward bytes in flight
 Packets containing PADDING frames MUST contribute toward bytes in flight.
