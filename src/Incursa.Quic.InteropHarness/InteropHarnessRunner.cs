@@ -275,8 +275,7 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
-                requestUri is null)
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage, allowEmptyRequests: true))
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
                 return 1;
@@ -348,7 +347,7 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage, allowEmptyRequests: true) ||
                 requestUri is null)
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
@@ -453,8 +452,7 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage) ||
-                requestUri is null)
+            if (!TryGetDispatchRequestUri(settings, out Uri? requestUri, out string? errorMessage, allowEmptyRequests: true))
             {
                 WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
                 return 1;

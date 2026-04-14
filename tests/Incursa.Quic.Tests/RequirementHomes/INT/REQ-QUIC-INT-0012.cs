@@ -34,6 +34,20 @@ public sealed class REQ_QUIC_INT_0012
         Assert.Contains("issued exactly one Retry", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ServerRetryDispatchCanStartWithEmptyRequests()
+    {
+        string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+
+        await using HarnessProcess serverProcess = HarnessProcess.Start("server", "retry", string.Empty, harnessDll);
+
+        await serverProcess.WaitForStdoutContainsAsync("retry contract enabled", TimeSpan.FromSeconds(10));
+        Assert.Contains("requestCount=0", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("listening on", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static async Task WaitForExitAsync(
         HarnessProcess serverProcess,
         HarnessProcess clientProcess,

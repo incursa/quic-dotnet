@@ -30,6 +30,10 @@ Library-owned concerns include connection runtime, sender and recovery ownership
 
 The next repo-local slice keeps the external interop runner unmodified, builds the harness image locally, and uses the runner's image-replacement path to capture JSON, Markdown, and log artifacts under `artifacts/interop-runner/...` without requiring a registry change in the runner repository. That local helper now needs to support same-slot both-role runs as well as split client/server runs that replace only the local side and leave the opposite side on an established implementation such as quic-go or msquic.
 
+## Standalone Local Preflight
+
+Before the repository leans on the external interop runner for debugging, it should have a repo-local preflight lane that can run the managed client against quic-go or msquic as the peer server, and the managed server against quic-go or msquic as the peer client. That preflight lane should reuse the same qlog and diagnostics capture used during interop investigation so harness/runtime issues can be isolated locally before the runner is involved.
+
 ## REQ-QUIC-INT-0001 Keep the interop endpoint in a companion project
 The interop endpoint MUST be implemented as a companion project that references `Incursa.Quic` rather than by turning the main library project into an application.
 
