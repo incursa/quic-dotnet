@@ -41,10 +41,22 @@ Use these in priority order:
    - `specs/architecture/quic/`
    - `specs/work-items/quic/`
    - `specs/verification/quic/`
+   - Prefer these JSON sources over rendered markdown when you need canonical details.
 4. **Generated reports / attestation / Workbench outputs** as supplemental evidence only
 5. **This mission file** as the standing strategy guide
 
 If summary prose disagrees with detailed requirements, tests, or runtime behavior, trust the detailed requirements/tests/runtime.
+
+## Investigation discipline
+
+When you investigate a frontier, keep the scope tight:
+- Start with the owning requirement JSON.
+- Then read the nearest architecture/work-item/verification JSON.
+- Then read targeted requirement-home tests.
+- Then inspect only the 2-5 most likely runtime files.
+- Use small `rg` queries with tight patterns against known paths.
+- Avoid broad `Get-ChildItem`, wide repo listings, repo-wide scans, or large command outputs unless the current turn truly needs them.
+- Read rendered `SPEC-*.md` files only when the canonical JSON/tests/runtime files leave a real ambiguity or you specifically need the rendered view.
 
 ---
 
@@ -137,14 +149,12 @@ If the current lane is blocked, do **not** immediately stop for manual review.
 
 Instead do exactly this:
 
-1. Perform **one broader repo-local investigation pass**.
-   - inspect adjacent requirements,
-   - nearby code,
-   - nearby requirement-home tests,
-   - generated reports,
-   - requirement gaps,
-   - verification/work-item artifacts,
-   - and any obvious sibling slices.
+1. Perform **one bounded repo-local investigation pass**.
+   - inspect the owning requirement JSON and immediate siblings,
+   - inspect the nearest architecture/work-item/verification JSON,
+   - inspect nearby requirement-home tests,
+   - and inspect only the 2-5 most likely runtime files.
+   - Use tight `rg` queries or exact file reads, not a broad repo survey.
 
 2. Decide whether there is a **different bounded lane** that can honestly advance the repo.
 
@@ -158,6 +168,17 @@ Instead do exactly this:
 This means:
 - **blocked in one lane is not enough to stop**,
 - **blocked across all credible lanes is enough to stop**.
+
+---
+
+## Compact mode
+
+When the runner says compact mode, treat context as scarce.
+- Keep the turn narrow and do not expand into a broad repo survey.
+- Use the mission file, short git context, the last parsed autopilot JSON result, and at most a tiny recent summary window.
+- Prefer exact file reads, targeted tests, or one tight `rg` query.
+- Avoid wide `Get-ChildItem`, huge directory walks, and large command outputs.
+- If the needed answer is still not visible, return `pause_manual` rather than widening the search.
 
 ---
 

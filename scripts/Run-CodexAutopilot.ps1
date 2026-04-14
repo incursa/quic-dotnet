@@ -28,7 +28,23 @@ param(
 
     [switch]$SkipGitChecks,
 
-    [int]$HeartbeatMinutes = 5
+    [int]$HeartbeatMinutes = 5,
+
+    [int]$MaxHistoryTurns = 4,
+
+    [int]$MaxRecentSummaries = 3,
+
+    [int]$MaxPriorResultChars = 800,
+
+    [int]$MaxGitContextChars = 1000,
+
+    [int]$CompactMaxHistoryTurns = 1,
+
+    [int]$CompactMaxRecentSummaries = 1,
+
+    [int]$CompactMaxPriorResultChars = 250,
+
+    [int]$CompactMaxGitContextChars = 400
 )
 
 Set-StrictMode -Version Latest
@@ -118,6 +134,42 @@ function Write-LogLine {
     )
 
     [System.IO.File]::AppendAllText($Path, $Line + [Environment]::NewLine)
+}
+
+function Get-LimitedText {
+    param(
+        [AllowEmptyString()]
+        [string]$Text,
+
+        [int]$MaxChars,
+
+        [switch]$CollapseWhitespace
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return ""
+    }
+
+    $value = $Text.Trim()
+    if ($CollapseWhitespace) {
+        $value = ($value -replace '\s+', ' ').Trim()
+    }
+
+    if ($MaxChars -le 0) {
+        return $value
+    }
+
+    if ($value.Length -le $MaxChars) {
+        return $value
+    }
+
+    $marker = "... [truncated]"
+    if ($MaxChars -le $marker.Length) {
+        return $marker.Substring(0, $MaxChars)
+    }
+
+    $headLength = $MaxChars - $marker.Length
+    return $value.Substring(0, $headLength) + $marker
 }
 
 function Write-CodexStreamLine {
@@ -322,6 +374,88 @@ function Get-GitDiffSummary {
     return $result.StdOut.TrimEnd()
 }
 
+function Get-ContextOverflowReason {
+    param(
+        [string[]]$Texts = @()
+    )
+
+    $phrases = @(
+        "context_length_exceeded",
+        "Failed to run pre-sampling compact",
+        "remote compaction failed",
+        "Your input exceeds the context window of this model"
+    )
+
+    foreach ($text in $Texts) {
+        if ([string]::IsNullOrWhiteSpace($text)) {
+            continue
+        }
+
+        foreach ($phrase in $phrases) {
+            if ($text.IndexOf($phrase, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+                return $phrase
+            }
+        }
+    }
+
+    return ""
+}
+
+function Format-GitContextForPrompt {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$GitSnapshot,
+
+        [Parameter(Mandatory = $true)]
+        [int]$MaxChars
+    )
+
+    $text = @"
+Branch: $($GitSnapshot.Branch)
+HEAD: $($GitSnapshot.Head)
+
+Status:
+$($GitSnapshot.Status)
+
+Recent commits:
+$($GitSnapshot.RecentLog)
+"@
+
+    return Get-LimitedText -Text $text -MaxChars $MaxChars
+}
+
+function Format-AutopilotDecisionSnapshotText {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Decision,
+
+        [Parameter(Mandatory = $true)]
+        [int]$MaxChars
+    )
+
+    if ($null -eq $Decision) {
+        return ""
+    }
+
+    $snapshot = [ordered]@{
+        state         = [string]$Decision.state
+        summary       = [string]$Decision.summary
+        next_step     = [string]$Decision.next_step
+        manual_reason = [string]$Decision.manual_reason
+        commit_sha    = [string]$Decision.commit_sha
+        commit_message= [string]$Decision.commit_message
+        tests         = [string]$Decision.tests
+        confidence    = [string]$Decision.confidence
+    }
+
+    if ($Decision.PSObject.Properties.Name -contains "broaden_search_worthwhile") {
+        $snapshot.broaden_search_worthwhile = [bool]$Decision.broaden_search_worthwhile
+    }
+
+    $json = $snapshot | ConvertTo-Json -Compress -Depth 4
+    return Get-LimitedText -Text $json -MaxChars $MaxChars -CollapseWhitespace
+}
+
 function Invoke-GitCommitIfDirty {
     param(
         [Parameter(Mandatory = $true)]
@@ -408,17 +542,41 @@ function Get-MissionText {
 
 function Convert-HistoryToText {
     param(
-        [object[]]$History = @()
+        [object[]]$History = @(),
+
+        [int]$MaxEntries = 3,
+
+        [int]$MaxSummaryChars = 180
     )
 
     if ($null -eq $History -or $History.Count -eq 0) {
         return "(none yet)"
     }
 
+    $entries = @($History)
+    if ($entries.Count -gt $MaxEntries) {
+        $entries = @($entries | Select-Object -Last $MaxEntries)
+    }
+
     $lines = New-Object System.Collections.Generic.List[string]
 
-    foreach ($entry in $History) {
-        $lines.Add("Turn $($entry.Turn) [$($entry.Mode)] -> state=$($entry.State), confidence=$($entry.Confidence), commit=$($entry.CommitSha), summary=$($entry.Summary)")
+    if ($History.Count -gt $entries.Count) {
+        $omitted = $History.Count - $entries.Count
+        $lines.Add("... $omitted older turn(s) omitted ...")
+    }
+
+    foreach ($entry in $entries) {
+        $summary = Get-LimitedText -Text ([string]$entry.Summary) -MaxChars $MaxSummaryChars -CollapseWhitespace
+        $commitSha = Get-LimitedText -Text ([string]$entry.CommitSha) -MaxChars 12 -CollapseWhitespace
+        if ([string]::IsNullOrWhiteSpace($summary)) {
+            $summary = "(no summary)"
+        }
+
+        if ([string]::IsNullOrWhiteSpace($commitSha)) {
+            $commitSha = "(none)"
+        }
+
+        $lines.Add("Turn $($entry.Turn) [$($entry.Mode)] state=$($entry.State), confidence=$($entry.Confidence), commit=$commitSha, summary=$summary")
     }
 
     return ($lines -join [Environment]::NewLine)
@@ -436,18 +594,22 @@ function New-AutopilotPrompt {
         [string]$GitContext,
 
         [Parameter(Mandatory = $true)]
-        [string]$HistoryText,
+        [string]$RecentHistoryText,
 
         [Parameter(Mandatory = $true)]
         [bool]$RescueMode,
 
-        [string]$PriorResultText = ""
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("normal", "compact")]
+        [string]$PromptMode,
+
+        [string]$PriorDecisionText = ""
     )
 
     $rescueInstructions = if ($RescueMode) {
 @"
 You previously reported that you were stuck or needed manual review.
-Before stopping, do one broader repo-local investigation pass:
+Before stopping, do one bounded repo-local investigation pass:
 - inspect adjacent requirements, tests, generated reports, and nearby code
 - look for a closely related bounded task that can honestly advance the mission without human intervention
 - if no such task exists, stop cleanly with state=pause_manual and explain why
@@ -457,15 +619,25 @@ Before stopping, do one broader repo-local investigation pass:
         "This is a normal autonomous turn."
     }
 
-    $priorResultSection = if ([string]::IsNullOrWhiteSpace($PriorResultText)) {
+    $modeInstructions = if ($PromptMode -eq "compact") {
+@"
+Compact retry mode:
+- This turn is being retried because the previous Codex attempt hit a context-window overflow.
+- Stay narrow: use exact file reads, small `rg` queries, or one focused test/check.
+- Do not do broad repo surveys, wide directory listings, or large command outputs this turn.
+- Prefer the mission file, the short git snapshot, the recent summary window, and the last parsed autopilot JSON result.
+- If the answer is not visible in that small window, return pause_manual rather than widening the search.
+"@
+    }
+    else {
+        "Normal mode: keep the turn bounded and avoid broad searches."
+    }
+
+    $priorDecisionSection = if ([string]::IsNullOrWhiteSpace($PriorDecisionText)) {
         "(none)"
     }
     else {
-        $trimmed = $PriorResultText.Trim()
-        if ($trimmed.Length -gt 4000) {
-            $trimmed = $trimmed.Substring(0, 4000) + "..."
-        }
-        $trimmed
+        $PriorDecisionText.Trim()
     }
 
     return @"
@@ -482,8 +654,10 @@ Core operating rules:
 - If commit signing blocks the commit, retry with --no-gpg-sign.
 - Do not leave useful code changes uncommitted.
 - Do not widen public support claims unless the runtime really earns them.
-- If you are blocked, try one broader repo-local search for adjacent progress before asking for manual intervention.
+- If you are blocked, do one narrow repo-local investigation pass using the owning requirement/test/runtime files before asking for manual intervention.
 - Assume the repo state is more authoritative than your memory of earlier turns.
+
+$modeInstructions
 
 Terminal states you may return:
 - continue: useful progress made and another autonomous turn is worthwhile
@@ -509,15 +683,16 @@ END_AUTOPILOT_RESULT
 
 Turn number: $Iteration
 Mode: $(if ($RescueMode) { "rescue" } else { "normal" })
+Prompt mode: $PromptMode
 
 Repo snapshot:
 $GitContext
 
-Prior turn summaries:
-$HistoryText
+Recent turn summaries:
+$RecentHistoryText
 
-Most recent full final response from prior turn:
-$priorResultSection
+Most recent parsed autopilot JSON result:
+$priorDecisionSection
 
 $rescueInstructions
 
@@ -569,6 +744,8 @@ function Invoke-CodexTurn {
     $stdoutTask = $null
     $stderrTask = $null
     $nextHeartbeatAt = $startTime.AddMinutes($HeartbeatMinutes)
+    $stdoutBuffer = New-Object System.Text.StringBuilder
+    $stderrBuffer = New-Object System.Text.StringBuilder
 
     try {
         $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -639,6 +816,7 @@ function Invoke-CodexTurn {
                     $stdoutDone = $true
                 }
                 else {
+                    [void]$stdoutBuffer.AppendLine($line)
                     Write-CodexStreamLine -StreamName "stdout" -Line $line -LogPath $LogPath -TranscriptPath $TranscriptPath
                     $nextHeartbeatAt = (Get-Date).AddMinutes($HeartbeatMinutes)
                 }
@@ -653,6 +831,7 @@ function Invoke-CodexTurn {
                     $stderrDone = $true
                 }
                 else {
+                    [void]$stderrBuffer.AppendLine($line)
                     Write-CodexStreamLine -StreamName "stderr" -Line $line -LogPath $LogPath -TranscriptPath $TranscriptPath
                     $nextHeartbeatAt = (Get-Date).AddMinutes($HeartbeatMinutes)
                 }
@@ -670,14 +849,68 @@ function Invoke-CodexTurn {
         $process.WaitForExit()
         $duration = (Get-Date) - $startTime
         return [pscustomobject]@{
-            ExitCode = $process.ExitCode
-            Seconds  = [math]::Round($duration.TotalSeconds, 2)
+            ExitCode  = $process.ExitCode
+            Seconds   = [math]::Round($duration.TotalSeconds, 2)
+            StdOutText = $stdoutBuffer.ToString()
+            StdErrText = $stderrBuffer.ToString()
         }
     }
     finally {
         if ($null -ne $process) {
             try { $process.Dispose() } catch { }
         }
+    }
+}
+
+function Invoke-CodexAttempt {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$CodexExecutable,
+
+        [Parameter(Mandatory = $true)]
+        [string]$WorkingDirectory,
+
+        [Parameter(Mandatory = $true)]
+        [string]$PromptText,
+
+        [Parameter(Mandatory = $true)]
+        [string]$ResultPath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$LogPath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$TranscriptPath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Sandbox,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Model,
+
+        [Parameter(Mandatory = $true)]
+        [string]$ReasoningEffort,
+
+        [Parameter(Mandatory = $true)]
+        [int]$HeartbeatMinutes
+    )
+
+    $run = Invoke-CodexTurn -CodexExecutable $CodexExecutable -WorkingDirectory $WorkingDirectory -PromptText $PromptText -ResultPath $ResultPath -LogPath $LogPath -TranscriptPath $TranscriptPath -Sandbox $Sandbox -Model $Model -ReasoningEffort $ReasoningEffort -HeartbeatMinutes $HeartbeatMinutes
+    $resultExists = Test-Path -LiteralPath $ResultPath
+    $resultText = if ($resultExists) { Get-Content -LiteralPath $ResultPath -Raw } else { "" }
+    $overflowReason = Get-ContextOverflowReason -Texts @($run.StdErrText, $run.StdOutText, $resultText)
+    $decision = $null
+
+    if (-not [string]::IsNullOrWhiteSpace($resultText) -and [string]::IsNullOrWhiteSpace($overflowReason)) {
+        $decision = Try-ParseAutopilotResult -Text $resultText
+    }
+
+    return [pscustomobject]@{
+        Run           = $run
+        ResultExists   = $resultExists
+        ResultText     = $resultText
+        OverflowReason = $overflowReason
+        Decision       = $decision
     }
 }
 
@@ -741,10 +974,19 @@ try {
         }
     }
 
+    $MaxHistoryTurns = [Math]::Max(1, $MaxHistoryTurns)
+    $MaxRecentSummaries = [Math]::Max(1, $MaxRecentSummaries)
+    $MaxPriorResultChars = [Math]::Max(1, $MaxPriorResultChars)
+    $MaxGitContextChars = [Math]::Max(1, $MaxGitContextChars)
+    $CompactMaxHistoryTurns = [Math]::Max(1, $CompactMaxHistoryTurns)
+    $CompactMaxRecentSummaries = [Math]::Max(1, $CompactMaxRecentSummaries)
+    $CompactMaxPriorResultChars = [Math]::Max(1, $CompactMaxPriorResultChars)
+    $CompactMaxGitContextChars = [Math]::Max(1, $CompactMaxGitContextChars)
+
     $history = New-Object System.Collections.Generic.List[object]
     $summary = New-Object System.Collections.Generic.List[object]
     $consecutiveNoProgress = 0
-    $lastFullResultText = ""
+    $lastDecisionSnapshotText = ""
     $stopReason = ""
 
     for ($iteration = 1; $iteration -le $MaxIterations; $iteration++) {
@@ -771,19 +1013,10 @@ try {
                 Get-GitSnapshot -RepositoryRoot $workRoot
             }
 
-            $gitContext = @"
-Branch: $($gitSnapshot.Branch)
-HEAD: $($gitSnapshot.Head)
-
-Status:
-$($gitSnapshot.Status)
-
-Recent commits:
-$($gitSnapshot.RecentLog)
-"@
-
-            $historyText = Convert-HistoryToText -History ($history.ToArray())
-            $promptText = New-AutopilotPrompt -Mission $mission -Iteration $iteration -GitContext $gitContext -HistoryText $historyText -RescueMode:$rescueMode -PriorResultText $lastFullResultText
+            $gitContext = Format-GitContextForPrompt -GitSnapshot $gitSnapshot -MaxChars $MaxGitContextChars
+            $historyText = Convert-HistoryToText -History ($history.ToArray()) -MaxEntries $MaxRecentSummaries -MaxSummaryChars 180
+            $priorDecisionText = Get-LimitedText -Text $lastDecisionSnapshotText -MaxChars $MaxPriorResultChars -CollapseWhitespace
+            $promptText = New-AutopilotPrompt -Mission $mission -Iteration $iteration -GitContext $gitContext -RecentHistoryText $historyText -RescueMode:$rescueMode -PromptMode "normal" -PriorDecisionText $priorDecisionText
 
             $promptPath = Join-Path $promptsRoot ("turn-{0:D2}-{1}.prompt.md" -f $iteration, $mode)
             $resultPath = Join-Path $resultsRoot ("turn-{0:D2}-{1}.result.md" -f $iteration, $mode)
@@ -793,15 +1026,72 @@ $($gitSnapshot.RecentLog)
 
             $headBefore = if ($SkipGitChecks) { "" } else { (Get-GitSnapshot -RepositoryRoot $workRoot).Head }
 
-            $run = Invoke-CodexTurn -CodexExecutable $codexExecutable -WorkingDirectory $workRoot -PromptText $promptText -ResultPath $resultPath -LogPath $logPath -TranscriptPath $transcriptPath -Sandbox $Sandbox -Model $Model -ReasoningEffort $ReasoningEffort -HeartbeatMinutes $HeartbeatMinutes
+            $attempt = Invoke-CodexAttempt -CodexExecutable $codexExecutable -WorkingDirectory $workRoot -PromptText $promptText -ResultPath $resultPath -LogPath $logPath -TranscriptPath $transcriptPath -Sandbox $Sandbox -Model $Model -ReasoningEffort $ReasoningEffort -HeartbeatMinutes $HeartbeatMinutes
 
-            if (-not (Test-Path -LiteralPath $resultPath)) {
+            if (-not $attempt.ResultExists -and [string]::IsNullOrWhiteSpace($attempt.OverflowReason)) {
                 throw "Codex did not write a final result file: $resultPath"
             }
 
-            $fullResultText = Get-Content -LiteralPath $resultPath -Raw
-            $lastFullResultText = $fullResultText
-            $decision = Try-ParseAutopilotResult -Text $fullResultText
+            $run = $attempt.Run
+            $resultPathUsed = $resultPath
+            $logPathUsed = $logPath
+            $decision = $attempt.Decision
+
+            if (-not [string]::IsNullOrWhiteSpace($attempt.OverflowReason)) {
+                Write-Host "  Context overflow detected ($($attempt.OverflowReason)). Retrying this turn in compact mode." -ForegroundColor Yellow
+                Write-LogLine -Path $transcriptPath -Line "[compact] Context overflow detected ($($attempt.OverflowReason)). Retrying turn $iteration ($mode) in compact mode."
+
+                $compactGitSnapshot = if ($SkipGitChecks) {
+                    [pscustomobject]@{ Branch = "(skipped)"; Status = "(skipped)"; RecentLog = "(skipped)"; Head = ""; IsClean = $true }
+                }
+                else {
+                    Get-GitSnapshot -RepositoryRoot $workRoot
+                }
+
+                $compactGitContext = Format-GitContextForPrompt -GitSnapshot $compactGitSnapshot -MaxChars $CompactMaxGitContextChars
+                $compactHistoryWindow = [Math]::Min($CompactMaxHistoryTurns, $CompactMaxRecentSummaries)
+                $compactHistoryText = Convert-HistoryToText -History ($history.ToArray()) -MaxEntries $compactHistoryWindow -MaxSummaryChars 120
+                $compactPriorDecisionText = Get-LimitedText -Text $lastDecisionSnapshotText -MaxChars $CompactMaxPriorResultChars -CollapseWhitespace
+                $compactPromptText = New-AutopilotPrompt -Mission $mission -Iteration $iteration -GitContext $compactGitContext -RecentHistoryText $compactHistoryText -RescueMode:$rescueMode -PromptMode "compact" -PriorDecisionText $compactPriorDecisionText
+
+                $compactPromptPath = Join-Path $promptsRoot ("turn-{0:D2}-{1}.compact.prompt.md" -f $iteration, $mode)
+                $compactResultPath = Join-Path $resultsRoot ("turn-{0:D2}-{1}.compact.result.md" -f $iteration, $mode)
+                $compactLogPath = Join-Path $logsRoot ("turn-{0:D2}-{1}.compact.log.txt" -f $iteration, $mode)
+
+                Set-Content -LiteralPath $compactPromptPath -Value $compactPromptText -NoNewline
+                Write-Host "  Running compact retry for turn $iteration ($mode)." -ForegroundColor Yellow
+                Write-LogLine -Path $transcriptPath -Line "=== Compact retry for turn $iteration ($mode) ==="
+
+                $compactAttempt = Invoke-CodexAttempt -CodexExecutable $codexExecutable -WorkingDirectory $workRoot -PromptText $compactPromptText -ResultPath $compactResultPath -LogPath $compactLogPath -TranscriptPath $transcriptPath -Sandbox $Sandbox -Model $Model -ReasoningEffort $ReasoningEffort -HeartbeatMinutes $HeartbeatMinutes
+
+                if (-not $compactAttempt.ResultExists -and [string]::IsNullOrWhiteSpace($compactAttempt.OverflowReason)) {
+                    throw "Codex did not write a final result file: $compactResultPath"
+                }
+
+                $run = $compactAttempt.Run
+                $resultPathUsed = $compactResultPath
+                $logPathUsed = $compactLogPath
+                $decision = $compactAttempt.Decision
+
+                if (-not [string]::IsNullOrWhiteSpace($compactAttempt.OverflowReason)) {
+                    Write-Warning "Compact retry for turn $iteration ($mode) also hit a context overflow."
+                    Write-LogLine -Path $transcriptPath -Line "[compact] Compact retry also hit context overflow ($($compactAttempt.OverflowReason)). Stopping for manual review."
+                    $decision = [pscustomobject]@{
+                        state         = "pause_manual"
+                        summary       = "Context overflow persisted after compact retry."
+                        next_step     = "Review the prompt state and reduce carried context before rerunning."
+                        manual_reason = "Codex context overflow persisted after compact retry ($($compactAttempt.OverflowReason))."
+                        commit_sha    = ""
+                        commit_message= ""
+                        tests         = "Not run"
+                        confidence    = "low"
+                        broaden_search_worthwhile = $false
+                    }
+                }
+                else {
+                    Write-LogLine -Path $transcriptPath -Line "[compact] Compact retry completed without another overflow."
+                }
+            }
 
             if ($null -eq $decision) {
                 Write-Warning "Could not parse the autopilot JSON result for turn $iteration ($mode)."
@@ -813,6 +1103,8 @@ $($gitSnapshot.RecentLog)
 
                 continue
             }
+
+            $lastDecisionSnapshotText = Format-AutopilotDecisionSnapshotText -Decision $decision -MaxChars $MaxPriorResultChars
 
             $state = [string]$decision.state
             $summaryText = [string]$decision.summary
@@ -883,6 +1175,9 @@ $($gitSnapshot.RecentLog)
                 Confidence= $confidence
             }
             [void]$history.Add($historyEntry)
+            while ($history.Count -gt $MaxHistoryTurns) {
+                $history.RemoveAt(0)
+            }
 
             $journalLine = [pscustomobject]@{
                 timestamp   = (Get-Date).ToString("o")
@@ -896,8 +1191,8 @@ $($gitSnapshot.RecentLog)
                 commit_message = $commitMessage
                 tests       = $testsSummary
                 confidence  = $confidence
-                result_file = $resultPath
-                log_file    = $logPath
+                result_file = $resultPathUsed
+                log_file    = $logPathUsed
                 seconds     = $run.Seconds
                 exit_code   = $run.ExitCode
             } | ConvertTo-Json -Compress
@@ -916,8 +1211,8 @@ $($gitSnapshot.RecentLog)
                 Confidence   = $confidence
                 ExitCode     = $run.ExitCode
                 Seconds      = $run.Seconds
-                ResultFile   = $resultPath
-                LogFile      = $logPath
+                ResultFile   = $resultPathUsed
+                LogFile      = $logPathUsed
             })
 
             Write-Host "  Decision: state=$state, confidence=$confidence" -ForegroundColor Green
