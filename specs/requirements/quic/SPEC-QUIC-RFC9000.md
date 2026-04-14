@@ -1871,6 +1871,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.2 RFC9000-S4.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0001.cs::TryApplyMaxFrames_AllowsRepeatedCreditAdvertisements
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0001.cs::TryApplyMaxFrames_IgnoresRepeatedCreditAdvertisementsThatDoNotIncreaseTheLimit
 
 ## REQ-QUIC-RFC9000-S4P2-0002 Allow autotuning of flow-control credit
 A receiver MAY use an autotuning mechanism to tune the frequency and amount of advertised additional credit based on a round-trip time estimate and the rate at which the receiving application consumes data.
