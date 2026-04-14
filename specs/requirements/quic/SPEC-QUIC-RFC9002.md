@@ -2982,6 +2982,10 @@ Trace:
 - Source Refs:
   - RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0001.cs::TrySelectLossTimeAndSpaceMicros_ChoosesTheEarliestNonZeroLossTime
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0001.cs::TrySelectLossTimeAndSpaceMicros_ReturnsFalseWhenNoLossTimesArePending
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0001.cs::TrySelectLossTimeAndSpaceMicros_IgnoresZeroLossTimesAtTheBoundary
 
 ## REQ-QUIC-RFC9002-SAP8-0002 Start PTO timing from now when no ack-eliciting packets are in flight
 If no ack-eliciting packets are in flight, GetPtoTimeAndSpace MUST start PTO timing from now() + duration and select Handshake when handshake keys exist, otherwise Initial.
@@ -2996,6 +3000,10 @@ Trace:
 - Source Refs:
   - RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0002.cs::TrySelectPtoTimeAndSpaceMicros_UsesHandshakeWhenHandshakeKeysAreAvailable
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0002.cs::TrySelectPtoTimeAndSpaceMicros_ReturnsFalseWhenNeitherSpaceHasAptoDeadline
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0002.cs::TrySelectPtoTimeAndSpaceMicros_StartsFromNowAtTheImmediateBoundary
 
 ## REQ-QUIC-RFC9002-SAP8-0003 Suppress Application Data PTO until handshake confirmation
 GetPtoTimeAndSpace MUST skip Application Data until the handshake is confirmed.
@@ -3010,6 +3018,10 @@ Trace:
 - Source Refs:
   - RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0003.cs::TryComputeProbeTimeoutMicros_ArmsApplicationDataPtoAfterHandshakeConfirmation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0003.cs::TryComputeProbeTimeoutMicros_SkipsApplicationDataBeforeHandshakeConfirmation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0003.cs::TryComputeProbeTimeoutMicros_UsesTheGranularityFloorWhenTheRttIsZero
 
 ## REQ-QUIC-RFC9002-SAP8-0004 Include max_ack_delay and backoff in Application Data PTO
 When computing Application Data PTO, the sender MUST include max_ack_delay and exponential backoff.
@@ -3024,6 +3036,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0004.cs::TryComputeProbeTimeoutMicros_IncludesMaxAckDelayForApplicationData
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0004.cs::ComputeProbeTimeoutWithBackoffMicros_DoublesTheApplicationDataPtoForEachTimeout
 
 ## REQ-QUIC-RFC9002-SAP8-0005 Complete address validation for servers and validated clients
 `PeerCompletedAddressValidation` MUST return true for servers and for clients only after a Handshake ACK has been received or the handshake has been confirmed.
@@ -3038,6 +3053,8 @@ Trace:
 - Source Refs:
   - RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0005.cs::PeerCompletedAddressValidation_RequiresServerRoleOrHandshakeProof
 
 ## REQ-QUIC-RFC9002-SAP8-0006 Set or cancel the loss detection timer according to loss and PTO state
 `SetLossDetectionTimer` MUST update the timer to the earliest pending loss time when one exists, cancel the timer when the server is at the anti-amplification limit or when no ack-eliciting packets are in flight and peer address validation is complete, and otherwise update the timer to the PTO timeout.
@@ -3052,6 +3069,10 @@ Trace:
 - Source Refs:
   - RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0006.cs::TrySelectLossDetectionTimerMicros_ChoosesTheEarliestPendingLossTime
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0006.cs::TrySelectLossDetectionTimerMicros_CancelsTheTimerWhenRecoveryIsBlocked
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0006.cs::TrySelectLossDetectionTimerMicros_UsesThePtoTimeoutWhenNoLossTimeIsPending
 
 ## REQ-QUIC-RFC9002-SAP9-0001 Handle timeout-driven loss detection first
 When the loss detection timer expires and an earliest loss time exists, the endpoint MUST detect lost packets in that packet number space, assert that the lost-packet list is nonempty, pass the lost packets to `OnPacketsLost`, refresh the timer, and return.
@@ -3267,6 +3288,10 @@ Trace:
 - Source Refs:
   - RFC 9002 §A.11 RFC9002-SA.11-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.11
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_ResetsTheBackoffWhenKeysAreDiscarded
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoDiscardOccurs
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenKeysAreDiscarded
 
 ## REQ-QUIC-RFC9002-SBP1-0001 Use the recommended loss reduction factor
 kLossReductionFactor SHOULD be 0.5.

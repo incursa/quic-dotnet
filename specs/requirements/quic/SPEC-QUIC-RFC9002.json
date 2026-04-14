@@ -5268,6 +5268,11 @@
         "upstream_refs": [
           "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0001.cs::TrySelectLossTimeAndSpaceMicros_ChoosesTheEarliestNonZeroLossTime",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0001.cs::TrySelectLossTimeAndSpaceMicros_ReturnsFalseWhenNoLossTimesArePending",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0001.cs::TrySelectLossTimeAndSpaceMicros_IgnoresZeroLossTimesAtTheBoundary"
         ]
       }
     },
@@ -5294,6 +5299,11 @@
         "upstream_refs": [
           "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0002.cs::TrySelectPtoTimeAndSpaceMicros_UsesHandshakeWhenHandshakeKeysAreAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0002.cs::TrySelectPtoTimeAndSpaceMicros_ReturnsFalseWhenNeitherSpaceHasAptoDeadline",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0002.cs::TrySelectPtoTimeAndSpaceMicros_StartsFromNowAtTheImmediateBoundary"
         ]
       }
     },
@@ -5320,6 +5330,11 @@
         "upstream_refs": [
           "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0003.cs::TryComputeProbeTimeoutMicros_ArmsApplicationDataPtoAfterHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0003.cs::TryComputeProbeTimeoutMicros_SkipsApplicationDataBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0003.cs::TryComputeProbeTimeoutMicros_UsesTheGranularityFloorWhenTheRttIsZero"
         ]
       }
     },
@@ -5346,6 +5361,10 @@
         "upstream_refs": [
           "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0004.cs::TryComputeProbeTimeoutMicros_IncludesMaxAckDelayForApplicationData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0004.cs::ComputeProbeTimeoutWithBackoffMicros_DoublesTheApplicationDataPtoForEachTimeout"
         ]
       }
     },
@@ -5372,6 +5391,9 @@
         "upstream_refs": [
           "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0005.cs::PeerCompletedAddressValidation_RequiresServerRoleOrHandshakeProof"
         ]
       }
     },
@@ -5398,6 +5420,11 @@
         "upstream_refs": [
           "RFC 9002 §A.8 RFC9002-SA.8-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0006.cs::TrySelectLossDetectionTimerMicros_ChoosesTheEarliestPendingLossTime",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0006.cs::TrySelectLossDetectionTimerMicros_CancelsTheTimerWhenRecoveryIsBlocked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0006.cs::TrySelectLossDetectionTimerMicros_UsesThePtoTimeoutWhenNoLossTimeIsPending"
         ]
       }
     },
@@ -5768,6 +5795,11 @@
         "upstream_refs": [
           "RFC 9002 §A.11 RFC9002-SA.11-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_ResetsTheBackoffWhenKeysAreDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoDiscardOccurs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenKeysAreDiscarded"
         ]
       }
     },
