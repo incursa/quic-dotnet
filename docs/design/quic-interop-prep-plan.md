@@ -109,7 +109,7 @@ Still missing:
 
 - Broader client-auth or TLS-option support.
 - Broader server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier beyond the callback-driven `ClientCertificateRequired` plus `CertificateChainPolicy` and standalone `CertificateRevocationCheckMode` floors traced by `REQ-QUIC-CRT-0124`, `REQ-QUIC-CRT-0125`, and `REQ-QUIC-CRT-0126`.
-- `0-RTT packet path`.
+- The first client-side 0-RTT packet-emission attempt floor.
 - `resumed-handshake success`.
 - `Key update`.
 
@@ -258,6 +258,12 @@ Notes on dependency:
    - Focus: dormant detached carrier readiness observation when resumption credential material and early-data prerequisite material are both present, preserved early-data closure, and no 0-RTT packet emission claim.
    - Status: landed. The managed client/runtime path now surfaces a narrow readiness observation when the dormant carrier has both ingredients, but actual 0-RTT packet emission remains a separate family.
    - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, the detached credential-capture slice, the ClientHello PSK-attempt slice, the ServerHello branch-point slice, the abbreviated resumption completion slice, and the internal early-data prerequisite capture slice staying stable.
+
+18. `First client-side 0-RTT packet-emission attempt`
+   - Goal: keep the initial send-attempt floor traceable under `REQ-QUIC-CRT-0141`, `ARC-QUIC-CRT-0036`, `WI-QUIC-CRT-0038`, and `VER-QUIC-CRT-0038`.
+   - Focus: dormant carrier eligibility, derived 0-RTT packet-protection material, first client-side protected 0-RTT application packet emission, clean fallback when the carrier or derived material is missing, and no receive/anti-replay/public-promise widening.
+   - Status: planned. The repo has the dormant readiness prerequisite, but the first honest 0-RTT send-attempt slice is still unimplemented.
+   - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, the detached credential-capture slice, the ClientHello PSK-attempt slice, the ServerHello branch-point slice, the abbreviated resumption completion slice, the internal early-data prerequisite capture slice, and the dormant early-data attempt-readiness slice staying stable.
 
 ## Do-Not-Widen Boundaries
 

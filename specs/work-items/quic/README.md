@@ -51,6 +51,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0035.json`](WI-QUIC-CRT-0035.json): canonical CRT host-facing qlog capture and serialization work item
 - [`WI-QUIC-CRT-0036.json`](WI-QUIC-CRT-0036.json): canonical CRT internal early-data prerequisite capture work item
 - [`WI-QUIC-CRT-0037.json`](WI-QUIC-CRT-0037.json): canonical CRT dormant early-data attempt readiness work item
+- [`WI-QUIC-CRT-0038.json`](WI-QUIC-CRT-0038.json): canonical CRT first client-side 0-RTT packet-emission attempt work item
 
 ## Notes
 

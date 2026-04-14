@@ -1398,3 +1398,29 @@ Notes:
 - The readiness observation is narrower than packet emission; the later 0-RTT family still needs a separate send-path slice.
 - The accepted abbreviated resumption boundary from REQ-QUIC-CRT-0137 and the prerequisite capture from REQ-QUIC-CRT-0139 remain unchanged.
 - The dormant carrier stays internal; this slice does not create a public readiness promise.
+
+## REQ-QUIC-CRT-0141 Attempt the first bounded client-side 0-RTT packet emission
+The managed client/runtime path MUST expose the first bounded client-side 0-RTT packet-emission attempt from the dormant detached resumption carrier. The attempt MUST be admitted only when the carrier contains both the resumption credential material and the early-data prerequisite material from REQ-QUIC-CRT-0139 and REQ-QUIC-CRT-0140. On that branch the runtime MUST derive client-side 0-RTT packet-protection material from the dormant carrier, use the existing connection-owned send path to build a protected client 0-RTT application packet, and keep that material distinct from the current 1-RTT send path. If the prerequisites or derived material are absent, the runtime MUST fall back cleanly without widening the public promise. The slice MUST remain client-role only, MUST remain managed client/runtime only, MUST NOT add 0-RTT receive handling, server admission, anti-replay enforcement, key update, transfer, retry, or public API widening, and MUST NOT alter the current narrow supported public claim.
+
+Trace:
+- Source Refs:
+  - RFC 8446 Section 4.6.1
+  - docs/design/quic-interop-prep-plan.md
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicConnection.cs
+  - src/Incursa.Quic/QuicClientConnectionHost.cs
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs
+  - src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs
+  - src/Incursa.Quic/QuicTlsKeySchedule.cs
+  - src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs
+  - src/Incursa.Quic/QuicTlsTransport.cs
+  - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
+  - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicResumptionClientHelloTestSupport.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0141.cs
+
+Notes:
+- The attempt is client-role only and managed client/runtime only.
+- The 0-RTT packet-protection package must stay distinct from the current 1-RTT package so the slice does not masquerade as resumed 1-RTT send support.
+- The later 0-RTT receive, anti-replay, key update, transfer, retry, and public-promise widening families remain separate.

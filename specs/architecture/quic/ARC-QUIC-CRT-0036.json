@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0036",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC CRT client-side 0-RTT packet-emission attempt architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the managed client/runtime path admits the first bounded 0-RTT packet-emission attempt from the dormant detached carrier without widening 0-RTT receive handling or anti-replay.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0038",
+    "VER-QUIC-CRT-0038"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0141"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnection.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicResumptionClientHelloTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0141.cs"
+  ],
+  "risks": [
+    "If the 0-RTT packet-protection package reuses the 1-RTT material or API shape, the slice will overclaim supported 1-RTT behavior instead of a distinct early-data attempt.",
+    "If the send gate leaks into public API, the attempt floor will widen the promise instead of remaining an internal client/runtime decision.",
+    "If receive handling or anti-replay is folded into the same slice, the family becomes too large to prove honestly in one turn.",
+    "If fallback on missing prerequisites is not clean, the slice could leave the runtime looking ready when it is not."
+  ],
+  "design_summary": "The managed client/runtime path will keep the dormant detached carrier and the readiness observation as the precondition for a first client-side 0-RTT send attempt. When that precondition is satisfied, the runtime will derive a distinct 0-RTT packet-protection package from the carrier and the live transport state, then feed the protected packet into the existing connection-owned send path. The current 1-RTT send path remains unchanged, and the slice stops at the first send attempt rather than expanding into receive handling or replay control.",
+  "alternatives_considered": [
+    "Add 0-RTT receive handling in the same slice. Rejected because the first honest send-attempt boundary is already large enough and receive/replay is a separate family.",
+    "Keep the family as readiness only. Rejected because the repo already has the readiness observation and now needs a real send-attempt boundary.",
+    "Promote the attempt floor into public API. Rejected because the slice must remain internal and managed-client only."
+  ],
+  "edge_cases_and_constraints": [
+    "The slice stays client-role only and managed client/runtime only.",
+    "Missing dormant carrier material or a failed 0-RTT derivation must keep the send gate closed.",
+    "The 0-RTT packet-protection package must remain distinct from the current 1-RTT package and must not alias its state.",
+    "The first send attempt must not imply 0-RTT receive support, server admission, anti-replay, or key-update support.",
+    "The accepted abbreviated resumption boundary from `REQ-QUIC-CRT-0137` and the readiness observation from `REQ-QUIC-CRT-0140` remain unchanged."
+  ],
+  "data_and_state_considerations": "The detached carrier already holds the resumption credential material and the early-data prerequisite material captured by the earlier slices. The new 0-RTT attempt boundary may need a separate internal protection package or encryption-level marker, but it must stay distinct from the owned 1-RTT material and from the public API surface. Missing or invalid prerequisite material must leave the send gate closed.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice is limited to the first client-side 0-RTT packet-emission attempt. It does not add 0-RTT receive handling, anti-replay enforcement, key update, transfer, retry, or any public API widening."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicConnection.cs`](../../../src/Incursa.Quic/QuicConnection.cs)\n- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs`](../../../src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs)\n- [`src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs`](../../../src/Incursa.Quic/QuicTlsPacketProtectionMaterial.cs)\n- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicResumptionClientHelloTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicResumptionClientHelloTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0141.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0141.cs)"
+    }
+  ]
+}
