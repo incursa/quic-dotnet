@@ -45,6 +45,18 @@ dotnet build Incursa.Quic.slnx -c Release
 docker build -f src/Incursa.Quic.InteropHarness/Dockerfile -t incursa-quic-interop-harness .
 ```
 
+## Local interop runner loop
+
+Use the repo-local helper when you want to build the harness image and run the external interop runner locally without changing the runner repository's implementation registry.
+
+```powershell
+pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1
+```
+
+By default, the helper replaces the runner's `quic-go` both-role slot, but you can pass another both-role slot with `-ImplementationSlot`.
+
+Each run writes a timestamped bundle under `artifacts/interop-runner/<timestamp>-<slot>/` containing the runner JSON report, Markdown output, stderr, the Docker build log, the runner log directory, and a file tree summary.
+
 ## Run locally
 
 The image expects the QUIC interop runner mount layout and environment variables.

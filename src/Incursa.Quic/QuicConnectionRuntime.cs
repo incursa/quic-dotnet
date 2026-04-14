@@ -1814,14 +1814,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             && !tlsState.KeyUpdateInstalled
             && tlsState.CurrentOneRttKeyPhase == 0)
         {
-            stateChanged |= HandleTlsStateUpdated(
-                new QuicConnectionTlsStateUpdatedEvent(
-                    nowTicks,
-                    new QuicTlsStateUpdate(
-                        QuicTlsUpdateKind.KeyUpdateInstalled,
-                        KeyPhase: 1)),
-                nowTicks,
-                ref effects);
+            if (!tlsBridgeDriver.TryInstallOneRttKeyUpdate())
+            {
+                return false;
+            }
+
+            stateChanged = true;
         }
 
         bool processedCryptoFrame = false;
@@ -2360,6 +2358,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             payload,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            tlsState.CurrentOneRttKeyPhase == 1,
             out protectedPacket))
         {
             exception = new InvalidOperationException(protectFailureMessage);

@@ -8,7 +8,7 @@ Define the interop-runner-facing companion harness contract that hosts Incursa.Q
 
 ## Scope
 
-This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, unsupported testcase exit behavior, the transfer-owned child-process completion contract, placeholder diagnostics hooks, Docker packaging, and CI participation.
+This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, unsupported testcase exit behavior, the transfer-owned child-process completion contract, placeholder diagnostics hooks, the repo-local execution-report helper, Docker packaging, and CI participation.
 
 ## Context
 
@@ -25,6 +25,10 @@ The repository now has a thin endpoint-host shell that can bridge one library-ow
 ## Boundary Split
 
 Library-owned concerns include connection runtime, sender and recovery ownership, TLS-facing transport state, packet protection lifecycle, handshake confirmation, retransmission planning, timer ownership, path-state ownership, packet open/protect helpers, and transport-visible diagnostics hooks. Endpoint-host concerns include the connected UDP socket lifecycle, receive loop, effect-to-socket send plumbing, and ingress/transition/effect observers. Harness-owned concerns include environment parsing, mounted path mapping, role dispatch, process exit codes, Docker packaging, startup scripts, and the thin endpoint-host shell wrapper.
+
+## Local Execution Loop
+
+The next repo-local slice keeps the external interop runner unmodified, builds the harness image locally, and uses the runner's image-replacement path to capture JSON, Markdown, and log artifacts under `artifacts/interop-runner/...` without requiring a registry change in the runner repository.
 
 ## REQ-QUIC-INT-0001 Keep the interop endpoint in a companion project
 The interop endpoint MUST be implemented as a companion project that references `Incursa.Quic` rather than by turning the main library project into an application.
@@ -229,3 +233,32 @@ Trace:
 Notes:
 - This slice proves the managed one-Retry child-process contract only. It does not widen the public surface, `IsSupported`, transfer, or broader TLS policy.
 - The client replay side is already owned by the library bootstrap seam in REQ-QUIC-CRT-0122; this requirement owns the child-process dispatch and proof.
+
+## REQ-QUIC-INT-0013 Capture local interop-runner execution reports without changing the runner registry
+The repository MUST provide a local helper that builds the `Incursa.Quic.InteropHarness` image and invokes the external `quic-interop-runner` locally against the already-supported interop testcase subset by replacing an existing both-role implementation image, and it MUST capture the runner's JSON, Markdown, and log artifacts without requiring any change to the runner repository's implementation registry.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-INT-0006
+- Implemented By:
+  - WI-QUIC-INT-0006
+- Verified By:
+  - VER-QUIC-INT-0006
+- Code Refs:
+  - scripts/interop/Invoke-QuicInteropRunner.ps1
+  - scripts/interop/README.md
+  - src/Incursa.Quic.InteropHarness/README.md
+  - src/Incursa.Quic.InteropHarness/Dockerfile
+  - README.md
+- Related:
+  - REQ-QUIC-INT-0002
+  - REQ-QUIC-INT-0003
+  - REQ-QUIC-INT-0005
+  - REQ-QUIC-INT-0010
+  - REQ-QUIC-INT-0011
+  - REQ-QUIC-INT-0012
+  - SPEC-QUIC-CRT
+
+Notes:
+- The helper is intentionally local-only and may use the runner's image-replacement mechanism rather than adding an Incursa.Quic entry to the runner repository.
+- The helper records execution-report artifacts; it does not introduce new testcase support or any new protocol behavior.

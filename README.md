@@ -22,6 +22,7 @@ The repo-local JSON validator fetches the upstream SpecTrace model schema from [
 - [`schemas/`](schemas/README.md): repository-level quality and config schemas
 - [`scripts/spec-trace`](scripts/spec-trace/README.md): JSON validation, migration, backup, and parity-check helpers
 - [`scripts/quality`](scripts/quality/README.md): smoke, blocking, and quality attestation evidence lanes
+- [`scripts/interop`](scripts/interop/README.md): local-only helper entry points for building the harness image and running the external interop runner locally
 - [`scripts/release`](scripts/release/README.md): versioning and release-policy checks
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): contribution and validation guidance
 - [`AGENTS.md`](AGENTS.md): repository-specific agent instructions

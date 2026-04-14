@@ -367,6 +367,39 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     }
 
     /// <summary>
+    /// Derives and installs the successor 1-RTT packet-protection pair after the first observed Key Phase transition.
+    /// </summary>
+    internal bool TryInstallOneRttKeyUpdate()
+    {
+        if (Role != QuicTlsRole.Client
+            || keySchedule is null
+            || !bridgeState.PeerHandshakeTranscriptCompleted
+            || !bridgeState.OneRttKeysAvailable
+            || bridgeState.KeyUpdateInstalled
+            || bridgeState.CurrentOneRttKeyPhase != 0
+            || !bridgeState.OneRttOpenPacketProtectionMaterial.HasValue
+            || !bridgeState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            return false;
+        }
+
+        if (!keySchedule.TryDeriveOneRttSuccessorPacketProtectionMaterial(
+            out QuicTlsPacketProtectionMaterial openMaterial,
+            out QuicTlsPacketProtectionMaterial protectMaterial))
+        {
+            return false;
+        }
+
+        if (!bridgeState.TryInstallOneRttKeyUpdate(openMaterial, protectMaterial))
+        {
+            return false;
+        }
+
+        _ = keySchedule.TryDiscardOneRttApplicationTrafficSecrets();
+        return true;
+    }
+
+    /// <summary>
     /// Publishes handshake transcript progression to the bridge state.
     /// </summary>
     public IReadOnlyList<QuicTlsStateUpdate> PublishTranscriptProgressed(

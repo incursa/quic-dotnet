@@ -734,6 +734,27 @@ internal sealed class QuicTransportTlsBridgeState
         return true;
     }
 
+    internal bool TryInstallOneRttKeyUpdate(
+        QuicTlsPacketProtectionMaterial openMaterial,
+        QuicTlsPacketProtectionMaterial protectMaterial)
+    {
+        if (IsTerminal
+            || KeyUpdateInstalled
+            || CurrentOneRttKeyPhase != 0
+            || openMaterial.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt
+            || protectMaterial.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt)
+        {
+            return false;
+        }
+
+        CurrentOneRttKeyPhase = 1;
+        OneRttKeysAvailable = true;
+        oneRttOpenPacketProtectionMaterial = openMaterial;
+        oneRttProtectPacketProtectionMaterial = protectMaterial;
+        KeyUpdateInstalled = true;
+        return true;
+    }
+
     public bool TryDiscardOldKeys()
     {
         if (IsTerminal || OldKeysDiscarded)

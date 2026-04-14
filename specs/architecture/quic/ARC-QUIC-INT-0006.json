@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0006",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC Local Interop-Runner Execution-Report Helper Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the repo-local helper boundary that builds the harness image and invokes the external quic-interop-runner locally via image replacement while leaving the runner repository unmodified.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "WI-QUIC-INT-0006",
+    "VER-QUIC-INT-0006"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0013"
+  ],
+  "key_components": [
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "scripts/README.md",
+    "src/Incursa.Quic.InteropHarness/Incursa.Quic.InteropHarness.csproj",
+    "src/Incursa.Quic.InteropHarness/Dockerfile",
+    "src/Incursa.Quic.InteropHarness/README.md",
+    "artifacts/interop-runner"
+  ],
+  "design_summary": "The helper remains outside the transport core and outside the interop harness binary. It builds the existing `Incursa.Quic.InteropHarness` Docker image locally, then launches the external `quic-interop-runner` from a local checkout using the runner's replacement path so one existing both-role slot can point at the locally-built image without adding a new runner-registry entry. The helper records the runner's JSON report, Markdown or console table output, and log tree under a timestamped repo-local `artifacts/interop-runner/<timestamp>/` directory so the local execution report can be inspected after the run.\n\nThe harness itself remains unchanged: it still owns the environment parsing, endpoint-host shell, testcase dispatch, and honest unsupported exits. The helper only orchestrates local execution and report capture around that existing contract.",
+  "alternatives_considered": [
+    "Register Incursa.Quic in the runner repository's implementation registry. Rejected because the user explicitly wants local-only execution without modifying the runner repository.",
+    "Run the harness container directly without the interop runner. Rejected because the objective is to see the runner's execution reports, not just a single container invocation."
+  ],
+  "edge_cases_and_constraints": [
+    "The runner checkout path or Python executable may be missing on the local machine.",
+    "The helper must choose an implementation slot that already exists in the runner registry before replacement is applied.",
+    "The artifact root must be unique per run so execution reports are not silently overwritten.",
+    "Unsupported or build-blocked runs must remain honest and must not be translated into success."
+  ],
+  "data_and_state_considerations": "Each run writes a timestamped artifact root containing the runner report JSON, any Markdown or table output, the runner log directory tree, and the helper's own console capture. The helper should not persist any transport state beyond those run artifacts.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This slice covers only the repo-local helper, its documentation, and its artifact layout. It does not change the runner repository, the harness runtime behavior, or the supported testcase surface."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`Invoke-QuicInteropRunner.ps1`](../../../scripts/interop/Invoke-QuicInteropRunner.ps1)\n- [`scripts/interop/README.md`](../../../scripts/interop/README.md)\n- [`scripts/README.md`](../../../scripts/README.md)\n- [`README.md`](../../../README.md)\n- [`Incursa.Quic.InteropHarness/README.md`](../../../src/Incursa.Quic.InteropHarness/README.md)\n- [`Incursa.Quic.InteropHarness/Dockerfile`](../../../src/Incursa.Quic.InteropHarness/Dockerfile)"
+    }
+  ],
+  "risks": [
+    "Using an existing implementation slot means the runner matrix will still label the replaced image with that slot name unless the helper rewrites the captured reports.",
+    "The external runner's CLI or log layout could drift over time, so the helper should keep its assumptions narrow and well documented.",
+    "Local build or transient worktree failures may still interrupt a run; the helper must surface that failure honestly rather than masking it."
+  ]
+}

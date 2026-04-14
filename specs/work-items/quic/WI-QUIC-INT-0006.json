@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0006",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC Local Interop-Runner Execution-Report Helper Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a repo-local helper that builds the harness image, runs the external interop runner locally through image replacement, and captures execution-report artifacts under a repo-local artifacts tree.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0006",
+    "VER-QUIC-INT-0006"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0006"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0006"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0013"
+  ],
+  "planned_changes": "- Add a PowerShell helper under `scripts/interop` that builds the `Incursa.Quic.InteropHarness` Docker image and invokes the external `quic-interop-runner` locally through the runner's image-replacement path.\n- Capture the runner's JSON report, Markdown or console-table output, stdout/stderr, and log-directory tree under a repo-local `artifacts/interop-runner/<timestamp>/` directory.\n- Add a short documentation pointer from `scripts/README.md` and the harness README so the local execution loop is discoverable.\n- Keep the external runner repository untouched and avoid any new registry entry or testcase enablement there.",
+  "out_of_scope": [
+    "runner repository registry updates",
+    "new testcase enablement",
+    "transport/runtime behavior changes",
+    "qlog format changes",
+    "benchmark work",
+    "fuzzing work"
+  ],
+  "verification_plan": "Run the helper against the local `C:\\src\\quic-interop\\quic-interop-runner` checkout, confirm the harness image builds, confirm the runner writes report artifacts into the repo-local artifact root, and inspect the captured output to ensure unsupported or build-blocked cases are not reported as success.",
+  "completion_notes": "Planned only; implementation and validation are still pending.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`Invoke-QuicInteropRunner.ps1`](../../../scripts/interop/Invoke-QuicInteropRunner.ps1)\n- [`scripts/interop/README.md`](../../../scripts/interop/README.md)\n- [`scripts/README.md`](../../../scripts/README.md)\n- [`README.md`](../../../README.md)\n- [`Incursa.Quic.InteropHarness/README.md`](../../../src/Incursa.Quic.InteropHarness/README.md)\n- [`Incursa.Quic.InteropHarness/Dockerfile`](../../../src/Incursa.Quic.InteropHarness/Dockerfile)"
+    }
+  ]
+}

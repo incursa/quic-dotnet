@@ -21,6 +21,16 @@ internal static class QuicPostHandshakeTicketTestSupport
     private const byte UncompressedPointFormat = 0x04;
     private const int Secp256r1CoordinateLength = 32;
     private const int Secp256r1KeyShareLength = 1 + (Secp256r1CoordinateLength * 2);
+    private static readonly byte[] PacketConnectionId =
+    [
+        0x0A, 0x0B, 0x0C,
+    ];
+    private static readonly byte[] PacketSourceConnectionId =
+    [
+        0x21, 0x22, 0x23, 0x24,
+    ];
+    private static readonly QuicConnectionPathIdentity PacketPathIdentity =
+        new("203.0.113.10", RemotePort: 443);
 
     internal static QuicTlsTransportBridgeDriver CreateStartedClientDriver()
     {
@@ -101,58 +111,110 @@ internal static class QuicPostHandshakeTicketTestSupport
 
         QuicConnectionRuntime runtime = new(
             QuicConnectionStreamStateTestHelpers.CreateState(),
+            new FakeMonotonicClock(0),
             tlsRole: QuicTlsRole.Client,
             localHandshakePrivateKey: localHandshakePrivateKey,
             pinnedPeerLeafCertificateSha256: pinnedPeerLeafCertificateSha256);
 
-        QuicTlsTransportBridgeDriver driver = new(
-            QuicTlsRole.Client,
-            localHandshakePrivateKey: localHandshakePrivateKey,
-            pinnedPeerLeafCertificateSha256: pinnedPeerLeafCertificateSha256);
+        Assert.True(runtime.TryConfigureInitialPacketProtection(PacketConnectionId));
+        Assert.True(runtime.TrySetBootstrapOutboundPath(PacketPathIdentity));
+        Assert.True(runtime.TrySetHandshakeSourceConnectionId(PacketSourceConnectionId));
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(PacketConnectionId));
 
-        long observedAtTicks = 0;
-        IReadOnlyList<QuicTlsStateUpdate> bootstrapUpdates = driver.StartHandshake(localTransportParameters);
-        observedAtTicks = ApplyRuntimeUpdates(runtime, bootstrapUpdates, observedAtTicks);
+        QuicTlsPacketProtectionMaterial handshakePacketMaterial = CreateHandshakeMaterial();
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 0,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: handshakePacketMaterial)),
+            nowTicks: 0).StateChanged);
 
+        Assert.True(runtime.Transition(
+            new QuicConnectionHandshakeBootstrapRequestedEvent(
+                ObservedAtTicks: 1,
+                LocalTransportParameters: localTransportParameters),
+            nowTicks: 1).StateChanged);
+
+        byte[] clientHelloBytes = QuicResumptionClientHelloTestSupport.GetInitialBootstrapClientHelloBytes(runtime);
         (
             byte[] serverHelloTranscript,
             byte[] encryptedExtensionsTranscript,
             byte[] certificateTranscript,
             byte[] certificateVerifyTranscript,
             byte[] finishedTranscript) = CreateClientHandshakeTranscriptParts(
-            bootstrapUpdates[1].CryptoData,
+            clientHelloBytes,
             localHandshakePrivateKey,
             peerTransportParameters,
             leafKey,
             leafCertificateDer);
 
-        observedAtTicks = ApplyRuntimeUpdates(
+        ulong transcriptOffset = 0;
+        Assert.True(TransitionHandshakePacket(
             runtime,
-            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, serverHelloTranscript),
-            observedAtTicks);
-        observedAtTicks = ApplyRuntimeUpdates(
+            serverHelloTranscript,
+            handshakePacketMaterial,
+            transcriptOffset,
+            observedAtTicks: 2));
+        AssertRuntimeNotClosing(runtime, "serverHello");
+
+        Assert.True(runtime.TlsState.TryGetHandshakeOpenPacketProtectionMaterial(out handshakePacketMaterial));
+        transcriptOffset += (ulong)serverHelloTranscript.Length;
+
+        Assert.True(TransitionHandshakePacket(
             runtime,
-            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, encryptedExtensionsTranscript),
-            observedAtTicks);
-        observedAtTicks = ApplyRuntimeUpdates(
+            encryptedExtensionsTranscript,
+            handshakePacketMaterial,
+            transcriptOffset,
+            observedAtTicks: 3));
+        AssertRuntimeNotClosing(runtime, "encryptedExtensions");
+        transcriptOffset += (ulong)encryptedExtensionsTranscript.Length;
+
+        Assert.True(TransitionHandshakePacket(
             runtime,
-            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, certificateTranscript),
-            observedAtTicks);
-        observedAtTicks = ApplyRuntimeUpdates(
+            certificateTranscript,
+            handshakePacketMaterial,
+            transcriptOffset,
+            observedAtTicks: 4));
+        AssertRuntimeNotClosing(runtime, "certificate");
+        transcriptOffset += (ulong)certificateTranscript.Length;
+
+        Assert.True(TransitionHandshakePacket(
             runtime,
-            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, certificateVerifyTranscript),
-            observedAtTicks);
-        observedAtTicks = ApplyRuntimeUpdates(
+            certificateVerifyTranscript,
+            handshakePacketMaterial,
+            transcriptOffset,
+            observedAtTicks: 5));
+        AssertRuntimeNotClosing(runtime, "certificateVerify");
+        transcriptOffset += (ulong)certificateVerifyTranscript.Length;
+
+        Assert.True(TransitionHandshakePacket(
             runtime,
-            driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.Handshake, finishedTranscript),
-            observedAtTicks);
+            finishedTranscript,
+            handshakePacketMaterial,
+            transcriptOffset,
+            observedAtTicks: 6));
+        AssertRuntimeNotClosing(runtime, "finished");
 
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
+        Assert.True(runtime.TlsState.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
         Assert.True(runtime.HasResumptionMasterSecret);
 
         return runtime;
+    }
+
+    private static void AssertRuntimeNotClosing(QuicConnectionRuntime runtime, string stage)
+    {
+        Assert.True(
+            runtime.Phase != QuicConnectionPhase.Closing,
+            $"after {stage}: phase={runtime.Phase} terminal={runtime.TlsState.IsTerminal} " +
+            $"alert={runtime.TlsState.FatalAlertCode} desc={runtime.TlsState.FatalAlertDescription} " +
+            $"handshakePhase={runtime.TlsState.HandshakeTranscriptPhase} peerFinished={runtime.TlsState.PeerFinishedVerified} " +
+            $"peerHandshakeCompleted={runtime.TlsState.PeerHandshakeTranscriptCompleted} handshakeKeys={runtime.TlsState.HandshakeKeysAvailable} " +
+            $"oneRttKeys={runtime.TlsState.OneRttKeysAvailable} certVerified={runtime.TlsState.PeerCertificateVerifyVerified} " +
+            $"certAccepted={runtime.TlsState.PeerCertificatePolicyAccepted} transportCommitted={runtime.TlsState.PeerTransportParametersCommitted}");
     }
 
     internal static (
@@ -378,6 +440,52 @@ internal static class QuicPostHandshakeTicketTestSupport
             DisableActiveMigration = true,
             InitialSourceConnectionId = [0x0A, 0x0B, 0x0C],
         };
+    }
+
+    private static bool TransitionHandshakePacket(
+        QuicConnectionRuntime runtime,
+        ReadOnlySpan<byte> cryptoPayload,
+        QuicTlsPacketProtectionMaterial material,
+        ulong cryptoOffset,
+        long observedAtTicks)
+    {
+        byte[] protectedPacket = BuildProtectedHandshakePacket(material, cryptoPayload, cryptoOffset);
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: observedAtTicks,
+                PacketPathIdentity,
+                protectedPacket),
+            nowTicks: observedAtTicks);
+
+        return result.StateChanged;
+    }
+
+    private static byte[] BuildProtectedHandshakePacket(
+        QuicTlsPacketProtectionMaterial material,
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoOffset)
+    {
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId, PacketSourceConnectionId);
+        Assert.True(coordinator.TryBuildProtectedHandshakePacket(
+            cryptoPayload,
+            cryptoOffset,
+            material,
+            out byte[] protectedPacket));
+        return protectedPacket;
+    }
+
+    private static QuicTlsPacketProtectionMaterial CreateHandshakeMaterial()
+    {
+        Assert.True(QuicTlsPacketProtectionMaterial.TryCreate(
+            QuicTlsEncryptionLevel.Handshake,
+            QuicAeadAlgorithm.Aes128Gcm,
+            CreateSequentialBytes(0x41, 16),
+            CreateSequentialBytes(0x51, 12),
+            CreateSequentialBytes(0x61, 16),
+            new QuicAeadUsageLimits(64, 128),
+            out QuicTlsPacketProtectionMaterial material));
+
+        return material;
     }
 
     private static QuicTlsTranscriptStep CreateServerHelloStep(byte[] transcriptBytes, bool selectedPreSharedKey = false)

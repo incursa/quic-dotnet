@@ -64,6 +64,7 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] ClientEarlyTrafficLabel = Encoding.ASCII.GetBytes("c e traffic");
     private static readonly byte[] ClientApplicationTrafficLabel = Encoding.ASCII.GetBytes("c ap traffic");
     private static readonly byte[] ServerApplicationTrafficLabel = Encoding.ASCII.GetBytes("s ap traffic");
+    private static readonly byte[] QuicKeyUpdateLabel = Encoding.ASCII.GetBytes("quic ku");
     private static readonly byte[] FinishedLabel = Encoding.ASCII.GetBytes("finished");
     private static readonly byte[] ResumptionMasterLabel = Encoding.ASCII.GetBytes("res master");
     private static readonly byte[] ResumptionLabel = Encoding.ASCII.GetBytes("resumption");
@@ -86,6 +87,8 @@ internal sealed class QuicTlsKeySchedule
     private byte[]? clientHandshakeTrafficSecret;
     private byte[]? serverHandshakeTrafficSecret;
     private byte[]? resumptionMasterSecret;
+    private byte[]? clientApplicationTrafficSecret;
+    private byte[]? serverApplicationTrafficSecret;
     private byte[]? peerLeafCertificateDer;
     private bool handshakeSecretsDerived;
     private bool localServerFlightCompleted;
@@ -893,43 +896,166 @@ internal sealed class QuicTlsKeySchedule
         }
 
         byte[] localHandshakeSecret = handshakeSecret;
+        byte[]? derivedSecret = null;
+        byte[]? masterSecret = null;
+        byte[]? localResumptionMasterSecret = null;
+        byte[]? localClientApplicationTrafficSecret = null;
+        byte[]? localServerApplicationTrafficSecret = null;
         try
         {
-            byte[] derivedSecret = HkdfExpandLabel(localHandshakeSecret, DerivedLabel, EmptyTranscriptHash, HashLength);
-            byte[] masterSecret = HkdfExtract(derivedSecret, []);
-            resumptionMasterSecret = HkdfExpandLabel(masterSecret, ResumptionMasterLabel, resumptionTranscriptHash, HashLength);
-            byte[] clientApplicationTrafficSecret = HkdfExpandLabel(
+            derivedSecret = HkdfExpandLabel(localHandshakeSecret, DerivedLabel, EmptyTranscriptHash, HashLength);
+            masterSecret = HkdfExtract(derivedSecret, []);
+            localResumptionMasterSecret = HkdfExpandLabel(masterSecret, ResumptionMasterLabel, resumptionTranscriptHash, HashLength);
+            localClientApplicationTrafficSecret = HkdfExpandLabel(
                 masterSecret,
                 ClientApplicationTrafficLabel,
                 applicationTrafficTranscriptHash,
                 HashLength);
-            byte[] serverApplicationTrafficSecret = HkdfExpandLabel(
+            localServerApplicationTrafficSecret = HkdfExpandLabel(
                 masterSecret,
                 ServerApplicationTrafficLabel,
                 applicationTrafficTranscriptHash,
                 HashLength);
 
             ReadOnlySpan<byte> openTrafficSecret = role == QuicTlsRole.Client
-                ? serverApplicationTrafficSecret
-                : clientApplicationTrafficSecret;
+                ? localServerApplicationTrafficSecret
+                : localClientApplicationTrafficSecret;
             ReadOnlySpan<byte> protectTrafficSecret = role == QuicTlsRole.Client
-                ? clientApplicationTrafficSecret
-                : serverApplicationTrafficSecret;
+                ? localClientApplicationTrafficSecret
+                : localServerApplicationTrafficSecret;
 
-            return TryCreatePacketProtectionMaterial(
+            if (!TryCreatePacketProtectionMaterial(
                 QuicTlsEncryptionLevel.OneRtt,
                 openTrafficSecret,
                 out openMaterial)
-                && TryCreatePacketProtectionMaterial(
+                || !TryCreatePacketProtectionMaterial(
                     QuicTlsEncryptionLevel.OneRtt,
                     protectTrafficSecret,
-                    out protectMaterial);
+                    out protectMaterial))
+            {
+                return false;
+            }
+
+            this.resumptionMasterSecret = localResumptionMasterSecret;
+            resumptionMasterSecret = localResumptionMasterSecret;
+            clientApplicationTrafficSecret = localClientApplicationTrafficSecret;
+            serverApplicationTrafficSecret = localServerApplicationTrafficSecret;
+            localResumptionMasterSecret = null;
+            localClientApplicationTrafficSecret = null;
+            localServerApplicationTrafficSecret = null;
+            return true;
         }
         finally
         {
             CryptographicOperations.ZeroMemory(localHandshakeSecret);
+            if (derivedSecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(derivedSecret);
+            }
+
+            if (masterSecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(masterSecret);
+            }
+
+            if (localResumptionMasterSecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(localResumptionMasterSecret);
+            }
+
+            if (localClientApplicationTrafficSecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(localClientApplicationTrafficSecret);
+            }
+
+            if (localServerApplicationTrafficSecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(localServerApplicationTrafficSecret);
+            }
+
             handshakeSecret = null;
         }
+    }
+
+    internal bool TryDeriveOneRttSuccessorPacketProtectionMaterial(
+        out QuicTlsPacketProtectionMaterial openMaterial,
+        out QuicTlsPacketProtectionMaterial protectMaterial)
+    {
+        openMaterial = default;
+        protectMaterial = default;
+
+        if (clientApplicationTrafficSecret is null
+            || serverApplicationTrafficSecret is null)
+        {
+            return false;
+        }
+
+        byte[] currentClientApplicationTrafficSecret = clientApplicationTrafficSecret;
+        byte[] currentServerApplicationTrafficSecret = serverApplicationTrafficSecret;
+        byte[]? nextClientApplicationTrafficSecret = null;
+        byte[]? nextServerApplicationTrafficSecret = null;
+
+        try
+        {
+            nextClientApplicationTrafficSecret = HkdfExpandLabel(
+                currentClientApplicationTrafficSecret,
+                QuicKeyUpdateLabel,
+                [],
+                HashLength);
+            nextServerApplicationTrafficSecret = HkdfExpandLabel(
+                currentServerApplicationTrafficSecret,
+                QuicKeyUpdateLabel,
+                [],
+                HashLength);
+
+            ReadOnlySpan<byte> openTrafficSecret = role == QuicTlsRole.Client
+                ? nextServerApplicationTrafficSecret
+                : nextClientApplicationTrafficSecret;
+            ReadOnlySpan<byte> protectTrafficSecret = role == QuicTlsRole.Client
+                ? nextClientApplicationTrafficSecret
+                : nextServerApplicationTrafficSecret;
+
+            if (!TryCreatePacketProtectionMaterial(
+                QuicTlsEncryptionLevel.OneRtt,
+                openTrafficSecret,
+                out openMaterial)
+                || !TryCreatePacketProtectionMaterial(
+                    QuicTlsEncryptionLevel.OneRtt,
+                    protectTrafficSecret,
+                    out protectMaterial))
+            {
+                return false;
+            }
+
+            return true;
+        }
+        finally
+        {
+            if (nextClientApplicationTrafficSecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(nextClientApplicationTrafficSecret);
+            }
+
+            if (nextServerApplicationTrafficSecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(nextServerApplicationTrafficSecret);
+            }
+        }
+    }
+
+    internal bool TryDiscardOneRttApplicationTrafficSecrets()
+    {
+        if (clientApplicationTrafficSecret is null
+            || serverApplicationTrafficSecret is null)
+        {
+            return false;
+        }
+
+        CryptographicOperations.ZeroMemory(clientApplicationTrafficSecret);
+        CryptographicOperations.ZeroMemory(serverApplicationTrafficSecret);
+        clientApplicationTrafficSecret = null;
+        serverApplicationTrafficSecret = null;
+        return true;
     }
 
     internal bool TryDeriveClientEarlyTrafficPacketProtectionMaterial(
@@ -1718,6 +1844,16 @@ internal sealed class QuicTlsKeySchedule
         {
             CryptographicOperations.ZeroMemory(resumptionMasterSecret);
             resumptionMasterSecret = null;
+        }
+        if (clientApplicationTrafficSecret is not null)
+        {
+            CryptographicOperations.ZeroMemory(clientApplicationTrafficSecret);
+            clientApplicationTrafficSecret = null;
+        }
+        if (serverApplicationTrafficSecret is not null)
+        {
+            CryptographicOperations.ZeroMemory(serverApplicationTrafficSecret);
+            serverApplicationTrafficSecret = null;
         }
         peerLeafCertificateDer = null;
         peerCertificateVerifyVerified = false;

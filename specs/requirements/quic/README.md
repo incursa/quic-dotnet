@@ -14,7 +14,7 @@ Each canonical artifact is authored in `.json`.
 
 ## Current Artifacts
 
-- [`SPEC-QUIC-INT.json`](SPEC-QUIC-INT.json): canonical interop-harness adapter and endpoint-host shell source
+- [`SPEC-QUIC-INT.json`](SPEC-QUIC-INT.json): canonical interop-harness adapter, endpoint-host shell, and local execution-report helper source
 - [`SPEC-QUIC-RFC8999.json`](SPEC-QUIC-RFC8999.json): canonical RFC 8999 invariants source
 - [`SPEC-QUIC-RFC9000.json`](SPEC-QUIC-RFC9000.json): canonical RFC 9000 transport source
 - [`SPEC-QUIC-RFC9001.json`](SPEC-QUIC-RFC9001.json): canonical RFC 9001 TLS source

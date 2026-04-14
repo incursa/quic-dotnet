@@ -14,7 +14,7 @@ This directory contains permanent BenchmarkDotNet suites for the QUIC parser hot
 - `QuicRetryIntegrityBenchmarks`: Retry integrity tag generation and validation
 - `QuicTlsServerFinishedPublicationBenchmarks`: server Finished publication and 1-RTT packet-protection material derivation
 - `QuicTlsClientFinishedPublicationBenchmarks`: client Finished publication and 1-RTT readiness derivation
-- `QuicApplicationPacketKeyPhaseBenchmarks`: 1-RTT short-header packet formatting and opening with preserved Key Phase bits
+- `QuicApplicationPacketKeyPhaseBenchmarks`: successor 1-RTT install plus 1-RTT short-header packet formatting and opening with preserved Key Phase bits
 - `QuicTlsClientZeroRttEmissionBenchmarks`: client resumption material publication and protected 0-RTT packet formatting
 - `QuicTlsClientZeroRttRejectionCleanupBenchmarks`: rejected-vs-accepted cleanup for dormant ZeroRtt packet-protection material
 
