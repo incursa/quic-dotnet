@@ -109,6 +109,7 @@ internal static class InteropHarnessRunner
                     ApplicationProtocols = [SslApplicationProtocol.Http3],
                     EnabledSslProtocols = SslProtocols.Tls13,
                     EncryptionPolicy = EncryptionPolicy.RequireEncryption,
+                    TargetHost = requestUri.Host,
                     RemoteCertificateValidationCallback = (_, _, _, errors) =>
                     {
                         WriteLineAndFlush(stdout, $"interop harness: role=client, testcase=handshake, certificate errors={errors}.");
@@ -161,7 +162,11 @@ internal static class InteropHarnessRunner
                 stdout,
                 $"interop harness: role=client, testcase=post-handshake-stream, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}.");
 
-            QuicClientConnectionOptions clientOptions = CreateSupportedClientOptions(stdout, settings, remoteEndPoint);
+            QuicClientConnectionOptions clientOptions = CreateSupportedClientOptions(
+                stdout,
+                settings,
+                remoteEndPoint,
+                requestUri.Host);
 
             using InteropHarnessQlogCaptureScope? qlogScope = CreateQlogCaptureScope(settings);
             if (qlogScope is not null)
@@ -355,7 +360,11 @@ internal static class InteropHarnessRunner
                 stdout,
                 $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}.");
 
-            QuicClientConnectionOptions clientOptions = CreateSupportedClientOptions(stdout, settings, remoteEndPoint);
+            QuicClientConnectionOptions clientOptions = CreateSupportedClientOptions(
+                stdout,
+                settings,
+                remoteEndPoint,
+                requestUri.Host);
             QuicClientConnectionSettings clientSettings = QuicClientConnectionOptionsValidator.Capture(clientOptions, nameof(clientOptions));
 
             await using QuicClientConnectionHost host = new(clientSettings);
@@ -584,7 +593,11 @@ internal static class InteropHarnessRunner
                 stdout,
                 $"interop harness: role=client, testcase=transfer, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}, target={relativePath}.");
 
-            QuicClientConnectionOptions clientOptions = CreateSupportedClientOptions(stdout, settings, remoteEndPoint);
+            QuicClientConnectionOptions clientOptions = CreateSupportedClientOptions(
+                stdout,
+                settings,
+                remoteEndPoint,
+                requestUri.Host);
 
             using InteropHarnessQlogCaptureScope? qlogScope = CreateQlogCaptureScope(settings);
             if (qlogScope is not null)
@@ -991,7 +1004,8 @@ internal static class InteropHarnessRunner
     private static QuicClientConnectionOptions CreateSupportedClientOptions(
         TextWriter stdout,
         InteropHarnessEnvironment settings,
-        IPEndPoint remoteEndPoint)
+        IPEndPoint remoteEndPoint,
+        string? targetHost = null)
     {
         return new QuicClientConnectionOptions
         {
@@ -1003,6 +1017,7 @@ internal static class InteropHarnessRunner
                 ApplicationProtocols = [SslApplicationProtocol.Http3],
                 EnabledSslProtocols = SslProtocols.Tls13,
                 EncryptionPolicy = EncryptionPolicy.RequireEncryption,
+                TargetHost = string.IsNullOrWhiteSpace(targetHost) ? null : targetHost,
                 RemoteCertificateValidationCallback = (_, _, _, errors) =>
                 {
                     WriteLineAndFlush(stdout, $"interop harness: role=client, testcase={settings.TestCase}, certificate errors={errors}.");
