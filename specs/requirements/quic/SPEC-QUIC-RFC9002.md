@@ -502,6 +502,11 @@ Trace:
 - Source Refs:
   - RFC 9002 §5.2 RFC9002-S5.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_SeedsMinRttFromTheLocalObservationEvenWhenPeerDelayFieldsArePresent
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_DoesNotUsePeerAckDelayWhenUpdatingMinRttOnLaterSamples
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_LeavesMinRttAtTheLocalBoundaryWhenLocalDelayConsumesTheSlack
+  - tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_UsesOnlyLocalTimesWhenUpdatingMinRttAndSubtractsLocalDelayBeforeHandshakeConfirmation
 
 ## REQ-QUIC-RFC9002-S5P2-0004 Ignore peer delay in min_rtt
 An endpoint MUST NOT adjust min_rtt for acknowledgment delays reported by the peer.
@@ -552,7 +557,8 @@ Trace:
   - RFC 9002 §5.2 RFC9002-S5.2-B7-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0006.cs::RefreshMinRttFromLatestSample_AllowsOpportunisticReestablishmentAfterALowDelayAck
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0006.cs::TryUpdateFromAck_LeavesMinRttAtTheCurrentFloorWhenTheCallerDoesNotRefreshIt
 
 ## REQ-QUIC-RFC9002-S5P2-0007 Avoid over-refreshing min_rtt
 Implementations SHOULD NOT refresh the min_rtt value too often.
