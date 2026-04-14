@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Security;
 using System.Linq;
 using System.Reflection;
 
@@ -52,12 +54,43 @@ public sealed class REQ_QUIC_CRT_0135
 
     private static QuicConnectionRuntime InvokeCreateRuntime(Type hostType, object settings)
     {
-        MethodInfo createRuntimeMethod = hostType
-            .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
-            .Single(method => method.Name == "CreateRuntime" && method.GetParameters().Length == 1);
+        if (hostType == typeof(QuicClientConnectionHost))
+        {
+            MethodInfo? createRuntimeMethod = hostType.GetMethod(
+                "CreateRuntime",
+                BindingFlags.NonPublic | BindingFlags.Static,
+                binder: null,
+                types: [typeof(QuicClientConnectionSettings), typeof(IQuicDiagnosticsSink)],
+                modifiers: null);
 
-        object? runtime = createRuntimeMethod.Invoke(null, [settings]);
-        return Assert.IsType<QuicConnectionRuntime>(runtime);
+            Assert.NotNull(createRuntimeMethod);
+
+            object? runtime = createRuntimeMethod!.Invoke(null, [settings, null]);
+            return Assert.IsType<QuicConnectionRuntime>(runtime);
+        }
+
+        if (hostType == typeof(QuicListenerHost))
+        {
+            using QuicListenerHost listenerHost = new(
+                new IPEndPoint(IPAddress.Loopback, 0),
+                [SslApplicationProtocol.Http3],
+                static (_, _, _) => new ValueTask<QuicServerConnectionOptions>(new QuicServerConnectionOptions()),
+                listenBacklog: 1);
+
+            MethodInfo? createRuntimeMethod = hostType.GetMethod(
+                "CreateRuntime",
+                BindingFlags.NonPublic | BindingFlags.Instance,
+                binder: null,
+                types: [typeof(QuicServerConnectionOptions)],
+                modifiers: null);
+
+            Assert.NotNull(createRuntimeMethod);
+
+            object? runtime = createRuntimeMethod!.Invoke(listenerHost, [settings]);
+            return Assert.IsType<QuicConnectionRuntime>(runtime);
+        }
+
+        throw new ArgumentOutOfRangeException(nameof(hostType));
     }
 
     private static T GetPrivateField<T>(object target, string fieldName)
