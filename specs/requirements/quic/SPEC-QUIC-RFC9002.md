@@ -3231,6 +3231,10 @@ Trace:
   - RFC 9002 §A.11 RFC9002-SA.11-B2-P1-S1
   - RFC 9002 §A.11 RFC9002-SA.11-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.11
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0001.cs::TryDetectPersistentCongestion_DiscardsLostInitialAndHandshakePacketsWhenKeysAreDropped
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0001.cs::TryDetectPersistentCongestion_DoesNotDiscardPacketsThatWereNotInFlightWhenKeysAreDropped
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0001.cs::TryDetectPersistentCongestion_LeavesOnlyPacketsAfterTheFirstRttSampleBoundary
 
 ## REQ-QUIC-RFC9002-SAP11-0002 Remove discarded packets from bytes in flight and sent-packet state
 When Initial or Handshake keys are discarded, the sender MUST remove the discarded packets from bytes in flight and clear `sent_packets` for that packet number space.
@@ -3245,6 +3249,10 @@ Trace:
 - Source Refs:
   - RFC 9002 §A.11 RFC9002-SA.11-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.11
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0002.cs::TryDetectPersistentCongestion_RemovesDiscardedInitialAndHandshakePacketsFromCongestionAccounting
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0002.cs::TryDetectPersistentCongestion_DoesNotChangeCongestionAccountingForPacketsThatWereNotInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0002.cs::TryDetectPersistentCongestion_RemovesPacketsAtTheDiscardDurationBoundary
 
 ## REQ-QUIC-RFC9002-SAP11-0003 Reset timer state when keys are discarded
 When Initial or Handshake keys are discarded, the sender MUST reset `time_of_last_ack_eliciting_packet[pn_space]`, `loss_time[pn_space]`, and `pto_count`, and set the loss detection timer.
