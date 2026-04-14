@@ -14,6 +14,20 @@ You must do this **without human turn-by-turn steering** unless a true manual st
 
 ---
 
+## Prompt digest
+
+Use this digest when context is scarce or after the first turn:
+
+- Choose one honest bounded slice from the **current** repo state.
+- Prefer protocol completion on the active frontier, then stream parity, then one more interop lane, then bounded stabilization.
+- Keep runtime/code, proof/test, trace/design, and generated follow-through clearly separated.
+- Treat `specs/generated/` reports and coverage triage as follow-through only, not the primary slice, unless they reconcile already-changed canonical/runtime/test work or restore repo honesty.
+- If the current lane blocks, do one narrow repo-local investigation pass, then pivot once before `pause_manual`.
+- Commit useful changes once per turn and leave the next slice for the next turn.
+- Keep support claims narrow until runtime, proof, and trace line up honestly.
+
+---
+
 ## Prime directive
 
 Each turn, inspect the **current repository state** and choose the **single highest-value bounded task** that can be landed honestly in one turn.

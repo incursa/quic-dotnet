@@ -16,6 +16,9 @@ param(
 
     [string]$ReasoningEffort = "xhigh",
 
+    [ValidateSet("always_full", "digest_after_first_turn", "always_digest")]
+    [string]$MissionPromptStyle = "digest_after_first_turn",
+
     [int]$MaxIterations = 12,
 
     [int]$MaxRescueAttemptsPerTurn = 1,
@@ -540,6 +543,150 @@ function Get-MissionText {
     return ($parts -join $separator)
 }
 
+function Get-MissionDigestText {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Mission
+    )
+
+    $match = [regex]::Match(
+        $Mission,
+        '^## Prompt digest\s*(?<body>.*?)(?=^##\s|\z)',
+        [System.Text.RegularExpressions.RegexOptions]::Singleline -bor [System.Text.RegularExpressions.RegexOptions]::Multiline)
+
+    if (-not $match.Success) {
+        return ""
+    }
+
+    return $match.Groups["body"].Value.Trim()
+}
+
+function Get-MissionPromptText {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Mission,
+
+        [Parameter(Mandatory = $true)]
+        [int]$Iteration,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("normal", "compact")]
+        [string]$PromptMode,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("always_full", "digest_after_first_turn", "always_digest")]
+        [string]$MissionPromptStyle
+    )
+
+    $digest = Get-MissionDigestText -Mission $Mission
+    $useDigest = $false
+
+    switch ($MissionPromptStyle) {
+        "always_digest" {
+            $useDigest = $true
+        }
+        "digest_after_first_turn" {
+            $useDigest = $Iteration -gt 1 -or $PromptMode -eq "compact"
+        }
+        default {
+            $useDigest = $false
+        }
+    }
+
+    if ($useDigest -and -not [string]::IsNullOrWhiteSpace($digest)) {
+        return $digest
+    }
+
+    return $Mission.Trim()
+}
+
+function Get-ChangedPathsBetweenRefs {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RepositoryRoot,
+
+        [string]$BeforeRef = "",
+
+        [string]$AfterRef = ""
+    )
+
+    if ([string]::IsNullOrWhiteSpace($BeforeRef) -or [string]::IsNullOrWhiteSpace($AfterRef)) {
+        return @()
+    }
+
+    if ([string]::Equals($BeforeRef, $AfterRef, [System.StringComparison]::OrdinalIgnoreCase)) {
+        return @()
+    }
+
+    $result = Invoke-NativeCapture -FilePath "git" -ArgumentList @("-C", $RepositoryRoot, "diff", "--name-only", "$BeforeRef..$AfterRef")
+    if ($result.ExitCode -ne 0) {
+        return @()
+    }
+
+    return @(
+        $result.StdOut -split '\r?\n' |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        Select-Object -Unique
+    )
+}
+
+function Get-ChangedPathSummary {
+    param(
+        [string[]]$Paths = @(),
+
+        [int]$MaxChars = 180
+    )
+
+    if ($null -eq $Paths -or $Paths.Count -eq 0) {
+        return "(none)"
+    }
+
+    $labels = New-Object System.Collections.Generic.List[string]
+    $normalized = @($Paths | ForEach-Object { $_ -replace '\\', '/' })
+
+    if ($normalized | Where-Object { $_.StartsWith('src/', [System.StringComparison]::OrdinalIgnoreCase) }) {
+        $labels.Add("runtime")
+    }
+
+    if ($normalized | Where-Object { $_.StartsWith('tests/', [System.StringComparison]::OrdinalIgnoreCase) }) {
+        $labels.Add("tests")
+    }
+
+    if ($normalized | Where-Object {
+            $_.StartsWith('specs/requirements/quic/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $_.StartsWith('specs/architecture/quic/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $_.StartsWith('specs/work-items/quic/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $_.StartsWith('specs/verification/quic/', [System.StringComparison]::OrdinalIgnoreCase)
+        }) {
+        $labels.Add("canonical-trace")
+    }
+
+    if ($normalized | Where-Object { $_.StartsWith('specs/generated/', [System.StringComparison]::OrdinalIgnoreCase) }) {
+        $labels.Add("generated")
+    }
+
+    if ($normalized | Where-Object { $_.StartsWith('scripts/', [System.StringComparison]::OrdinalIgnoreCase) }) {
+        $labels.Add("scripts")
+    }
+
+    if ($normalized | Where-Object {
+            $_.StartsWith('docs/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $_.EndsWith('.md', [System.StringComparison]::OrdinalIgnoreCase)
+        }) {
+        $labels.Add("docs")
+    }
+
+    if ($labels.Count -eq 0) {
+        $labels.Add("other")
+    }
+
+    $labelText = ($labels | Select-Object -Unique) -join "+"
+    $samplePaths = ($normalized | Select-Object -First 4) -join ", "
+    $summary = "$labelText ($($normalized.Count) files): $samplePaths"
+
+    return Get-LimitedText -Text $summary -MaxChars $MaxChars -CollapseWhitespace
+}
+
 function Convert-HistoryToText {
     param(
         [object[]]$History = @(),
@@ -576,7 +723,12 @@ function Convert-HistoryToText {
             $commitSha = "(none)"
         }
 
-        $lines.Add("Turn $($entry.Turn) [$($entry.Mode)] state=$($entry.State), confidence=$($entry.Confidence), commit=$commitSha, summary=$summary")
+        $changeSummary = Get-LimitedText -Text ([string]$entry.ChangeSummary) -MaxChars 120 -CollapseWhitespace
+        if ([string]::IsNullOrWhiteSpace($changeSummary)) {
+            $changeSummary = "(unknown)"
+        }
+
+        $lines.Add("Turn $($entry.Turn) [$($entry.Mode)] state=$($entry.State), confidence=$($entry.Confidence), commit=$commitSha, changes=$changeSummary, summary=$summary")
     }
 
     return ($lines -join [Environment]::NewLine)
@@ -650,7 +802,10 @@ Core operating rules:
 - Inspect the CURRENT repo state each turn and choose the single highest-priority bounded task that best advances the mission.
 - Prefer one solid slice per turn over broad churn.
 - Keep runtime/code work, proof/test work, and trace/design work clearly separated.
+- Prefer runtime, requirement-home, and canonical SpecTrace JSON work over generated-report churn.
+- Treat `specs/generated/` updates as follow-through, not as the primary slice, unless they reconcile already-changed canonical/runtime/test work or restore repo honesty.
 - If you make useful changes, run the most relevant checks you can, then create a local git commit.
+- Keep the turn to one bounded slice and one commit; leave the next slice for the next turn.
 - If commit signing blocks the commit, retry with --no-gpg-sign.
 - Do not leave useful code changes uncommitted.
 - Do not widen public support claims unless the runtime really earns them.
@@ -974,6 +1129,10 @@ try {
         }
     }
 
+    if (-not $PSBoundParameters.ContainsKey("AutoCommitIfDirty")) {
+        $AutoCommitIfDirty = $true
+    }
+
     $MaxHistoryTurns = [Math]::Max(1, $MaxHistoryTurns)
     $MaxRecentSummaries = [Math]::Max(1, $MaxRecentSummaries)
     $MaxPriorResultChars = [Math]::Max(1, $MaxPriorResultChars)
@@ -1016,7 +1175,8 @@ try {
             $gitContext = Format-GitContextForPrompt -GitSnapshot $gitSnapshot -MaxChars $MaxGitContextChars
             $historyText = Convert-HistoryToText -History ($history.ToArray()) -MaxEntries $MaxRecentSummaries -MaxSummaryChars 180
             $priorDecisionText = Get-LimitedText -Text $lastDecisionSnapshotText -MaxChars $MaxPriorResultChars -CollapseWhitespace
-            $promptText = New-AutopilotPrompt -Mission $mission -Iteration $iteration -GitContext $gitContext -RecentHistoryText $historyText -RescueMode:$rescueMode -PromptMode "normal" -PriorDecisionText $priorDecisionText
+            $missionPromptText = Get-MissionPromptText -Mission $mission -Iteration $iteration -PromptMode "normal" -MissionPromptStyle $MissionPromptStyle
+            $promptText = New-AutopilotPrompt -Mission $missionPromptText -Iteration $iteration -GitContext $gitContext -RecentHistoryText $historyText -RescueMode:$rescueMode -PromptMode "normal" -PriorDecisionText $priorDecisionText
 
             $promptPath = Join-Path $promptsRoot ("turn-{0:D2}-{1}.prompt.md" -f $iteration, $mode)
             $resultPath = Join-Path $resultsRoot ("turn-{0:D2}-{1}.result.md" -f $iteration, $mode)
@@ -1052,7 +1212,8 @@ try {
                 $compactHistoryWindow = [Math]::Min($CompactMaxHistoryTurns, $CompactMaxRecentSummaries)
                 $compactHistoryText = Convert-HistoryToText -History ($history.ToArray()) -MaxEntries $compactHistoryWindow -MaxSummaryChars 120
                 $compactPriorDecisionText = Get-LimitedText -Text $lastDecisionSnapshotText -MaxChars $CompactMaxPriorResultChars -CollapseWhitespace
-                $compactPromptText = New-AutopilotPrompt -Mission $mission -Iteration $iteration -GitContext $compactGitContext -RecentHistoryText $compactHistoryText -RescueMode:$rescueMode -PromptMode "compact" -PriorDecisionText $compactPriorDecisionText
+                $compactMissionPromptText = Get-MissionPromptText -Mission $mission -Iteration $iteration -PromptMode "compact" -MissionPromptStyle $MissionPromptStyle
+                $compactPromptText = New-AutopilotPrompt -Mission $compactMissionPromptText -Iteration $iteration -GitContext $compactGitContext -RecentHistoryText $compactHistoryText -RescueMode:$rescueMode -PromptMode "compact" -PriorDecisionText $compactPriorDecisionText
 
                 $compactPromptPath = Join-Path $promptsRoot ("turn-{0:D2}-{1}.compact.prompt.md" -f $iteration, $mode)
                 $compactResultPath = Join-Path $resultsRoot ("turn-{0:D2}-{1}.compact.result.md" -f $iteration, $mode)
@@ -1164,15 +1325,22 @@ try {
                 $consecutiveNoProgress++
             }
 
+            $changeSummary = "(none)"
+            if (-not $SkipGitChecks) {
+                $changedPaths = Get-ChangedPathsBetweenRefs -RepositoryRoot $workRoot -BeforeRef $headBefore -AfterRef $headAfter
+                $changeSummary = Get-ChangedPathSummary -Paths $changedPaths -MaxChars 180
+            }
+
             $historyEntry = [pscustomobject]@{
-                Turn      = $iteration
-                Mode      = $mode
-                State     = $state
-                Summary   = $summaryText
-                NextStep  = $nextStep
-                CommitSha = $commitSha
-                Tests     = $testsSummary
-                Confidence= $confidence
+                Turn          = $iteration
+                Mode          = $mode
+                State         = $state
+                Summary       = $summaryText
+                NextStep      = $nextStep
+                CommitSha     = $commitSha
+                Tests         = $testsSummary
+                Confidence    = $confidence
+                ChangeSummary = $changeSummary
             }
             [void]$history.Add($historyEntry)
             while ($history.Count -gt $MaxHistoryTurns) {
@@ -1191,6 +1359,7 @@ try {
                 commit_message = $commitMessage
                 tests       = $testsSummary
                 confidence  = $confidence
+                change_summary = $changeSummary
                 result_file = $resultPathUsed
                 log_file    = $logPathUsed
                 seconds     = $run.Seconds
@@ -1209,6 +1378,7 @@ try {
                 CommitMessage= $commitMessage
                 Tests        = $testsSummary
                 Confidence   = $confidence
+                ChangeSummary= $changeSummary
                 ExitCode     = $run.ExitCode
                 Seconds      = $run.Seconds
                 ResultFile   = $resultPathUsed
