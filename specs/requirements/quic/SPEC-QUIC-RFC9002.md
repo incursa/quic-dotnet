@@ -3139,6 +3139,10 @@ Trace:
 - Source Refs:
   - RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_DoublesThePtoBackoffAndRefreshesTheTimer
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_LeavesTheBasePtoInPlaceBeforeAnyBackoffIncrement
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_SaturatesTheBackoffBeforeRefreshingTheTimer
 
 ## REQ-QUIC-RFC9002-SAP10-0001 Require a known largest acknowledged packet for loss detection
 DetectAndRemoveLostPackets MUST only run when largest_acked_packet[pn_space] is known.
