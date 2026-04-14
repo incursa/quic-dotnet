@@ -23,7 +23,8 @@ internal static class QuicResumptionClientHelloTestSupport
     private static readonly byte[] ResumptionBinderLabel = System.Text.Encoding.ASCII.GetBytes("res binder");
     private static readonly byte[] EmptyTranscriptHash = SHA256.HashData(Array.Empty<byte>());
 
-    internal static QuicDetachedResumptionTicketSnapshot CreateDetachedResumptionTicketSnapshot()
+    internal static QuicDetachedResumptionTicketSnapshot CreateDetachedResumptionTicketSnapshot(
+        uint? ticketMaxEarlyDataSize = null)
     {
         using QuicConnectionRuntime originRuntime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
         QuicTlsTransportBridgeDriver driver = QuicPostHandshakeTicketTestSupport.CreateFinishedClientDriver();
@@ -36,7 +37,8 @@ internal static class QuicResumptionClientHelloTestSupport
             ticketBytes,
             ticketNonce,
             ticketLifetimeSeconds,
-            ticketAgeAdd);
+            ticketAgeAdd,
+            ticketMaxEarlyDataSize);
 
         IReadOnlyList<QuicTlsStateUpdate> ticketUpdates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.OneRtt,

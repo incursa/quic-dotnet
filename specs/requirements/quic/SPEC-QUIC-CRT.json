@@ -27,7 +27,7 @@
   ],
   "purpose": "Define the architecture and implementation requirements for the connection-owned QUIC runtime that arbitrates packet receive events, timer expirations, path changes, stateless reset handling, handshake packet flow, close and drain transitions, live stream orchestration, structured diagnostics capture, and the trim and Native AOT compatibility posture of the shipped package.",
   "scope": "This specification covers endpoint ingress classification, routing tables, connection ownership, execution profiles, event and effect modeling, timer scheduling, lifecycle phases, migration and path state, handshake packet open/protect coordination, stateless reset handling, stream ownership, structured diagnostics capture, per-connection diagnostics resolution, qlog adapter boundary ownership, host-facing qlog capture and serialization above that boundary, performance posture for high connection density, packaged-library trimming and Native AOT compatibility, and reducer-oriented testability.",
-  "context": "The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The current diagnostics placeholder exposes a no-op sink, but the next slice needs a typed, connection-scoped diagnostics contract plus a sibling qlog adapter boundary and a narrow host-facing qlog capture helper so transport facts can be mapped and serialized without bringing JSON or serializer concerns into the core. The server-role proof floor still stops at inbound Finished, so server-side client-auth and client-certificate handling on the existing `SslServerAuthenticationOptions` carrier remain the next open gap. The client-side PSK-attempt path now has a ServerHello accept/reject branch-point slice under `REQ-QUIC-CRT-0133`, and the accepted-path abbreviated completion follow-on is traced separately under `REQ-QUIC-CRT-0137`. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, diagnostics, qlog-adapter, qlog-capture, and package-compatibility work can be implemented against one clear architecture, while the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.",
+  "context": "The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The current diagnostics placeholder exposes a no-op sink, but the next slice needs a typed, connection-scoped diagnostics contract plus a sibling qlog adapter boundary and a narrow host-facing qlog capture helper so transport facts can be mapped and serialized without bringing JSON or serializer concerns into the core. The server-role proof floor still stops at inbound Finished, so server-side client-auth and client-certificate handling on the existing `SslServerAuthenticationOptions` carrier remain the next open gap. The client-side PSK-attempt path now has a ServerHello accept/reject branch-point slice under `REQ-QUIC-CRT-0133`, the accepted-path abbreviated completion follow-on is traced separately under `REQ-QUIC-CRT-0137`, and the next internal family starter captures dormant early-data eligibility material under `REQ-QUIC-CRT-0139` while keeping early-data admission explicitly closed. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, retry-bootstrap, diagnostics, qlog-adapter, qlog-capture, early-data prerequisite capture, and package-compatibility work can be implemented against one clear architecture, while the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.",
   "supplemental_sections": [
     {
       "heading": "Decision Summary",
@@ -1630,6 +1630,36 @@
         "The helper may own the in-memory `QlogFile` envelope and collected `QlogTrace` instances, but serializer choice, file paths, rotation, and retention remain above the transport core.",
         "The listener-facing path MUST create one trace per accepted connection rather than sharing a single trace for the listener host instance.",
         "Sequential JSON Text Sequences output is optional for this slice and remains subordinate to the contained JSON path unless a consumer explicitly needs it."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0139",
+      "title": "Capture the minimum dormant early-data eligibility material behind the detached resumption carrier",
+      "statement": "The managed client/runtime path MUST extend the owned detached resumption-ticket carrier with the minimum honest internal material needed for a later 0-RTT attempt: a preserved `max_early_data_size` value from a valid `NewSessionTicket` `early_data` extension and a cloned snapshot of the successful prior connection's peer transport parameters. The slice MUST remain client-role only, MUST remain managed client/runtime only, MUST preserve detached-carrier semantics and later dormant storage on managed client setup, MUST keep early-data admission explicitly closed before and after capture, and MUST NOT claim 0-RTT packet send/receive, anti-replay enforcement, key update, public API widening, or any broader resumption promise.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 8446 Section 4.6.1",
+          "docs/design/quic-interop-prep-plan.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "src/Incursa.Quic/QuicConnection.cs",
+          "src/Incursa.Quic/QuicClientConnectionHost.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs",
+          "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+          "src/Incursa.Quic/QuicTlsTransport.cs",
+          "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+          "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicResumptionClientHelloTestSupport.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0131.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0137.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0139.cs"
+        ]
+      },
+      "notes": [
+        "The carrier may retain the `max_early_data_size` hint and the peer transport-parameter snapshot, but the library does not open the early-data gate in this slice.",
+        "The readiness marker is only honest when the captured `max_early_data_size` is positive and the peer transport-parameter snapshot is present.",
+        "Later client setup should retain the richer detached snapshot as dormant internal state, yet the accepted abbreviated resumption boundary remains unchanged."
       ]
     }
   ]

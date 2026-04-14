@@ -47,6 +47,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private byte[]? ownedResumptionTicketNonce;
     private uint? ownedResumptionTicketLifetimeSeconds;
     private uint? ownedResumptionTicketAgeAdd;
+    private uint? ownedResumptionTicketMaxEarlyDataSize;
+    private QuicTransportParameters? ownedResumptionTicketPeerTransportParameters;
     private long? ownedResumptionTicketCapturedAtTicks;
     private byte[]? resumptionMasterSecret;
     private byte[]? retrySourceConnectionId;
@@ -305,7 +307,9 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             ownedResumptionTicketLifetimeSeconds.Value,
             ownedResumptionTicketAgeAdd.Value,
             ownedResumptionTicketCapturedAtTicks.Value,
-            ResumptionMasterSecret);
+            ResumptionMasterSecret,
+            ownedResumptionTicketMaxEarlyDataSize,
+            ownedResumptionTicketPeerTransportParameters);
         return true;
     }
 
@@ -2628,6 +2632,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ownedResumptionTicketNonce = tlsState.PostHandshakeTicketNonce.ToArray();
         ownedResumptionTicketLifetimeSeconds = tlsState.PostHandshakeTicketLifetimeSeconds;
         ownedResumptionTicketAgeAdd = tlsState.PostHandshakeTicketAgeAdd;
+        ownedResumptionTicketMaxEarlyDataSize = tlsState.PostHandshakeTicketMaxEarlyDataSize;
+        ownedResumptionTicketPeerTransportParameters = tlsState.PeerTransportParametersSnapshot;
         ownedResumptionTicketCapturedAtTicks = nowTicks;
         _ = TryCaptureResumptionMasterSecret();
         return true;

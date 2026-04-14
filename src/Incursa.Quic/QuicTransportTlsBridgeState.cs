@@ -20,6 +20,7 @@ internal sealed class QuicTransportTlsBridgeState
     private byte[]? postHandshakeTicketNonce;
     private uint? postHandshakeTicketLifetimeSeconds;
     private uint? postHandshakeTicketAgeAdd;
+    private uint? postHandshakeTicketMaxEarlyDataSize;
     private byte[]? resumptionMasterSecret;
 
     internal QuicTransportTlsBridgeState()
@@ -85,6 +86,8 @@ internal sealed class QuicTransportTlsBridgeState
     public uint? PostHandshakeTicketLifetimeSeconds => postHandshakeTicketLifetimeSeconds;
 
     public uint? PostHandshakeTicketAgeAdd => postHandshakeTicketAgeAdd;
+
+    public uint? PostHandshakeTicketMaxEarlyDataSize => postHandshakeTicketMaxEarlyDataSize;
 
     public ReadOnlyMemory<byte> ResumptionMasterSecret => resumptionMasterSecret ?? ReadOnlyMemory<byte>.Empty;
 
@@ -304,7 +307,8 @@ internal sealed class QuicTransportTlsBridgeState
                         update.TicketBytes,
                         update.TicketNonce,
                         update.TicketLifetimeSeconds,
-                        update.TicketAgeAdd);
+                        update.TicketAgeAdd,
+                        update.TicketMaxEarlyDataSize);
 
             case QuicTlsUpdateKind.TranscriptProgressed:
                 return TryApplyTranscriptProgress(update);
@@ -503,6 +507,11 @@ internal sealed class QuicTransportTlsBridgeState
         PeerTransportParametersCommitted = true;
         return true;
     }
+
+    internal QuicTransportParameters? PeerTransportParametersSnapshot =>
+        PeerTransportParameters is null
+            ? null
+            : CloneTransportParameters(PeerTransportParameters);
 
     public bool TryMarkPeerHandshakeTranscriptCompleted()
     {
@@ -765,6 +774,7 @@ internal sealed class QuicTransportTlsBridgeState
         postHandshakeTicketNonce = null;
         postHandshakeTicketLifetimeSeconds = null;
         postHandshakeTicketAgeAdd = null;
+        postHandshakeTicketMaxEarlyDataSize = null;
         resumptionMasterSecret = null;
         packetProtectionMaterials.Clear();
         return true;
@@ -921,7 +931,8 @@ internal sealed class QuicTransportTlsBridgeState
         ReadOnlyMemory<byte> ticketBytes,
         ReadOnlyMemory<byte> ticketNonce,
         uint? ticketLifetimeSeconds,
-        uint? ticketAgeAdd)
+        uint? ticketAgeAdd,
+        uint? ticketMaxEarlyDataSize)
     {
         if (IsTerminal
             || role != QuicTlsRole.Client
@@ -947,6 +958,7 @@ internal sealed class QuicTransportTlsBridgeState
         postHandshakeTicketNonce = ticketNonce.ToArray();
         postHandshakeTicketLifetimeSeconds = ticketLifetimeSeconds;
         postHandshakeTicketAgeAdd = ticketAgeAdd;
+        postHandshakeTicketMaxEarlyDataSize = ticketMaxEarlyDataSize;
         return true;
     }
 

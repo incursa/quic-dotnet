@@ -138,6 +138,7 @@ internal readonly record struct QuicTlsStateUpdate(
     ReadOnlyMemory<byte> TicketNonce = default,
     uint? TicketLifetimeSeconds = null,
     uint? TicketAgeAdd = null,
+    uint? TicketMaxEarlyDataSize = null,
     ReadOnlyMemory<byte> ResumptionMasterSecret = default,
     QuicTlsResumptionAttemptDisposition? ResumptionAttemptDisposition = null,
     ReadOnlyMemory<byte> TicketBytes = default);

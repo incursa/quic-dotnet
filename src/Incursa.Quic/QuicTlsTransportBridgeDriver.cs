@@ -997,6 +997,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             TicketNonce: step.TicketNonce,
             TicketLifetimeSeconds: step.TicketLifetimeSeconds,
             TicketAgeAdd: step.TicketAgeAdd,
+            TicketMaxEarlyDataSize: step.TicketMaxEarlyDataSize,
             TicketBytes: step.TicketBytes));
     }
 

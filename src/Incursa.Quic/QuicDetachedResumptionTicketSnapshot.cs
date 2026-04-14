@@ -19,7 +19,9 @@ internal sealed record QuicDetachedResumptionTicketSnapshot
         uint ticketLifetimeSeconds,
         uint ticketAgeAdd,
         long capturedAtTicks,
-        ReadOnlyMemory<byte> resumptionMasterSecret)
+        ReadOnlyMemory<byte> resumptionMasterSecret,
+        uint? ticketMaxEarlyDataSize = null,
+        QuicTransportParameters? peerTransportParameters = null)
     {
         if (ticketBytes.IsEmpty)
         {
@@ -37,6 +39,8 @@ internal sealed record QuicDetachedResumptionTicketSnapshot
         TicketAgeAdd = ticketAgeAdd;
         CapturedAtTicks = capturedAtTicks;
         ResumptionMasterSecret = resumptionMasterSecret.ToArray();
+        TicketMaxEarlyDataSize = ticketMaxEarlyDataSize;
+        PeerTransportParameters = peerTransportParameters;
     }
 
     public ReadOnlyMemory<byte> TicketBytes { get; }
@@ -51,9 +55,17 @@ internal sealed record QuicDetachedResumptionTicketSnapshot
 
     public ReadOnlyMemory<byte> ResumptionMasterSecret { get; }
 
+    public uint? TicketMaxEarlyDataSize { get; }
+
+    public QuicTransportParameters? PeerTransportParameters { get; }
+
     public bool HasTicketBytes => !TicketBytes.IsEmpty;
 
     public bool HasResumptionMasterSecret => !ResumptionMasterSecret.IsEmpty;
 
     public bool HasResumptionCredentialMaterial => HasTicketBytes && HasResumptionMasterSecret;
+
+    public bool HasEarlyDataPrerequisiteMaterial =>
+        TicketMaxEarlyDataSize is > 0
+        && PeerTransportParameters is not null;
 }

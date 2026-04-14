@@ -28,6 +28,7 @@ internal sealed class QuicTlsTranscriptProgress
     private const ushort KeyShareExtensionType = 0x0033;
     private const ushort PreSharedKeyExtensionType = 0x0029;
     private const ushort PskKeyExchangeModesExtensionType = 0x002d;
+    private const ushort EarlyDataExtensionType = 0x002a;
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
     private const ushort TlsAes128GcmSha256Value = (ushort)QuicTlsCipherSuite.TlsAes128GcmSha256;
     private const byte UncompressedPointFormat = 0x04;
@@ -347,7 +348,8 @@ internal sealed class QuicTlsTranscriptProgress
                 out uint ticketLifetimeSeconds,
                 out uint ticketAgeAdd,
                 out ReadOnlyMemory<byte> ticketNonce,
-                out ReadOnlyMemory<byte> ticketBytes))
+                out ReadOnlyMemory<byte> ticketBytes,
+                out uint? ticketMaxEarlyDataSize))
             {
                 ConsumePostHandshakeBytes(totalMessageLength);
                 continue;
@@ -360,6 +362,7 @@ internal sealed class QuicTlsTranscriptProgress
                 TicketNonce: ticketNonce,
                 TicketLifetimeSeconds: ticketLifetimeSeconds,
                 TicketAgeAdd: ticketAgeAdd,
+                TicketMaxEarlyDataSize: ticketMaxEarlyDataSize,
                 TicketBytes: ticketBytes);
             return TranscriptAdvanceResult.Progressed;
         }
@@ -637,12 +640,14 @@ internal sealed class QuicTlsTranscriptProgress
         out uint ticketLifetimeSeconds,
         out uint ticketAgeAdd,
         out ReadOnlyMemory<byte> ticketNonce,
-        out ReadOnlyMemory<byte> ticketBytes)
+        out ReadOnlyMemory<byte> ticketBytes,
+        out uint? ticketMaxEarlyDataSize)
     {
         ticketLifetimeSeconds = 0;
         ticketAgeAdd = 0;
         ticketNonce = default;
         ticketBytes = default;
+        ticketMaxEarlyDataSize = null;
 
         int index = 0;
         if (!TryReadUInt32(handshakeMessageBody, ref index, out ticketLifetimeSeconds)
@@ -659,12 +664,43 @@ internal sealed class QuicTlsTranscriptProgress
         int ticketBytesOffset = index;
         if (!TrySkipBytes(handshakeMessageBody, ref index, ticketLength)
             || !TryReadUInt16(handshakeMessageBody, ref index, out ushort extensionsLength)
-            || !TrySkipBytes(handshakeMessageBody, ref index, extensionsLength))
+            || index + extensionsLength > handshakeMessageBody.Length)
         {
             return false;
         }
 
-        if (index != handshakeMessageBody.Length)
+        int extensionsEnd = index + extensionsLength;
+        bool seenEarlyDataExtension = false;
+        while (index < extensionsEnd)
+        {
+            if (!TryReadUInt16(handshakeMessageBody, ref index, out ushort extensionType)
+                || !TryReadUInt16(handshakeMessageBody, ref index, out ushort extensionLength))
+            {
+                return false;
+            }
+
+            int extensionValueStart = index;
+            int extensionValueEnd = extensionValueStart + extensionLength;
+            if (extensionValueEnd > extensionsEnd)
+            {
+                return false;
+            }
+
+            if (extensionType == EarlyDataExtensionType)
+            {
+                if (seenEarlyDataExtension || extensionLength != sizeof(uint))
+                {
+                    return false;
+                }
+
+                ticketMaxEarlyDataSize = BinaryPrimitives.ReadUInt32BigEndian(handshakeMessageBody.Slice(extensionValueStart, sizeof(uint)));
+                seenEarlyDataExtension = true;
+            }
+
+            index = extensionValueEnd;
+        }
+
+        if (index != extensionsEnd)
         {
             return false;
         }
@@ -1368,6 +1404,7 @@ internal readonly record struct QuicTlsTranscriptStep(
     ReadOnlyMemory<byte> TicketNonce = default,
     uint? TicketLifetimeSeconds = null,
     uint? TicketAgeAdd = null,
+    uint? TicketMaxEarlyDataSize = null,
     ReadOnlyMemory<byte> TicketBytes = default,
     ushort? AlertDescription = null);
 

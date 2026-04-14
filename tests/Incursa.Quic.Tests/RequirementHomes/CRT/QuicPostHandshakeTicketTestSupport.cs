@@ -15,6 +15,7 @@ internal static class QuicPostHandshakeTicketTestSupport
     private const int MaximumSessionIdLength = 32;
     private const ushort SupportedVersionsExtensionType = 0x002b;
     private const ushort KeyShareExtensionType = 0x0033;
+    private const ushort EarlyDataExtensionType = 0x002a;
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
     private const ushort TlsAes128GcmSha256Value = (ushort)QuicTlsCipherSuite.TlsAes128GcmSha256;
     private const byte UncompressedPointFormat = 0x04;
@@ -299,7 +300,8 @@ internal static class QuicPostHandshakeTicketTestSupport
         ReadOnlySpan<byte> ticket,
         ReadOnlySpan<byte> ticketNonce,
         uint ticketLifetimeSeconds = 0,
-        uint ticketAgeAdd = 0)
+        uint ticketAgeAdd = 0,
+        uint? ticketMaxEarlyDataSize = null)
     {
         if (ticket.IsEmpty)
         {
@@ -311,7 +313,8 @@ internal static class QuicPostHandshakeTicketTestSupport
             throw new ArgumentOutOfRangeException(nameof(ticketNonce));
         }
 
-        int bodyLength = checked(4 + 4 + 1 + ticketNonce.Length + 2 + ticket.Length + 2);
+        int extensionsLength = ticketMaxEarlyDataSize.HasValue ? 8 : 0;
+        int bodyLength = checked(4 + 4 + 1 + ticketNonce.Length + 2 + ticket.Length + 2 + extensionsLength);
         byte[] transcript = new byte[HandshakeHeaderLength + bodyLength];
         int index = 0;
 
@@ -333,7 +336,19 @@ internal static class QuicPostHandshakeTicketTestSupport
         ticket.CopyTo(transcript.AsSpan(index, ticket.Length));
         index += ticket.Length;
 
-        WriteUInt16(transcript.AsSpan(index, UInt16Length), 0);
+        WriteUInt16(transcript.AsSpan(index, UInt16Length), (ushort)extensionsLength);
+        index += UInt16Length;
+
+        if (ticketMaxEarlyDataSize.HasValue)
+        {
+            WriteUInt16(transcript.AsSpan(index, UInt16Length), EarlyDataExtensionType);
+            index += UInt16Length;
+            WriteUInt16(transcript.AsSpan(index, UInt16Length), sizeof(uint));
+            index += UInt16Length;
+            BinaryPrimitives.WriteUInt32BigEndian(transcript.AsSpan(index, sizeof(uint)), ticketMaxEarlyDataSize.Value);
+            index += sizeof(uint);
+        }
+
         return transcript;
     }
 

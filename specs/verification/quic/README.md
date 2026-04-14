@@ -59,6 +59,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0033.json`](VER-QUIC-CRT-0033.json): canonical CRT qlog adapter package boundary verification source
 - [`VER-QUIC-CRT-0034.json`](VER-QUIC-CRT-0034.json): canonical CRT client-side abbreviated resumption completion verification source
 - [`VER-QUIC-CRT-0035.json`](VER-QUIC-CRT-0035.json): canonical CRT host-facing qlog capture and serialization verification source
+- [`VER-QUIC-CRT-0036.json`](VER-QUIC-CRT-0036.json): canonical CRT internal early-data prerequisite capture verification source
 
 ## Notes
 

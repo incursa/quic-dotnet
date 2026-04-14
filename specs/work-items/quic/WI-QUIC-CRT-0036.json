@@ -1,0 +1,42 @@
+{
+  "title": "QUIC CRT internal early-data prerequisite capture work item",
+  "verification_links": [
+    "VER-QUIC-CRT-0036"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "status": "landed",
+  "domain": "quic",
+  "summary": "Capture the minimum dormant early-data prerequisite material behind the detached resumption carrier while keeping early data explicitly closed and the accepted resumption boundary unchanged.",
+  "verification_plan": "Run focused requirement-home tests for positive capture, dormant client setup storage, missing early-data-signal absence, closed early-data admission, the public no-0-RTT guard, and the accepted-resumption regression; then run the relevant CRT/API/INT guard set, the full `REQ_QUIC_CRT_` sweep, and SpecTrace render/validation checks.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicConnection.cs`](../../../src/Incursa.Quic/QuicConnection.cs)\n- [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs`](../../../src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicResumptionClientHelloTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicResumptionClientHelloTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0139.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0139.cs)"
+    }
+  ],
+  "completion_notes": "The managed client/runtime path now retains the ticket's `max_early_data_size` hint together with the cloned peer transport-parameter snapshot as dormant internal state, but early data stays explicitly closed and no public resumption promise widens.",
+  "design_links": [
+    "ARC-QUIC-CRT-0034"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0139"
+  ],
+  "artifact_id": "WI-QUIC-CRT-0036",
+  "artifact_type": "work_item",
+  "out_of_scope": [
+    "0-RTT packet send/receive support",
+    "anti-replay enforcement",
+    "key update",
+    "public API widening",
+    "IsSupported widening",
+    "broader resumption claims",
+    "broad post-handshake TLS support",
+    "transfer enablement",
+    "retry enablement",
+    "opportunistic refactors unrelated to the new early-data prerequisite carrier"
+  ]
+}

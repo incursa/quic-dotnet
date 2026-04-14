@@ -246,12 +246,19 @@ Notes on dependency:
    - Status: landed. The managed client/runtime path now advances accepted PSK attempts through the abbreviated resumption flight, rejected attempts still fall back cleanly to the existing full-handshake path, and the connection reaches Active without widening the public surface.
    - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, the detached credential-capture slice, the ClientHello PSK-attempt slice, and the ServerHello branch-point slice staying stable.
 
+16. `Internal early-data prerequisite capture`
+   - Goal: keep the dormant early-data eligibility capture traceable under `REQ-QUIC-CRT-0139`, `ARC-QUIC-CRT-0034`, `WI-QUIC-CRT-0036`, and `VER-QUIC-CRT-0036`.
+   - Focus: positive `max_early_data_size` capture from `NewSessionTicket`, cloned peer transport-parameter snapshot preservation, dormant storage on later managed client setup, preserved early-data closure, and no 0-RTT or anti-replay claim.
+   - Status: landed. The managed client/runtime path now retains the richer detached carrier with the minimum honest early-data prerequisite material, but early data stays explicitly closed and the accepted resumption boundary remains unchanged.
+   - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, the detached credential-capture slice, the ClientHello PSK-attempt slice, and the abbreviated resumption completion slice staying stable.
+
 ## Do-Not-Widen Boundaries
 
 - Keep `QuicConnection` and `QuicListener` on the current narrow supported promise until the runtime and TLS buckets are stable.
 - Keep `IsSupported` as a narrow managed capability marker. It must not become a feature-completeness claim.
 - Keep `Abort(Both, ...)` unsupported.
 - Keep `0-RTT` and key update out of the public promise.
+- Keep early-data admission explicitly closed until the actual 0-RTT family exists.
 - Keep broader stream-management parity out of the public promise until the stream bucket is actually closed.
 - Keep hostname validation, trust-store validation, and certificate-path validation out of the public client promise until they are implemented and proven.
 - Keep interop runner testcase support at `127` for unsupported cases other than the narrow supported `retry` child-process contract.
@@ -264,6 +271,7 @@ Notes on dependency:
 - The narrow child-process `retry` contract under `REQ-QUIC-INT-0012`, `ARC-QUIC-INT-0005`, `WI-QUIC-INT-0005`, and `VER-QUIC-INT-0005` is now closed.
 - The managed client/listener bootstrap seam is already proven.
 - The current client trust story now has a public exact peer-identity and explicit trust-material carrier plus the internal snapshot seam, and the remaining trust-policy story still does not widen to trust-store or hostname-validation semantics.
+- The early-data prerequisite capture slice under `REQ-QUIC-CRT-0139` is now closed. The managed client/runtime path carries the minimum dormant early-data prerequisite material behind the detached carrier, but early data stays explicitly closed and the repo still does not claim 0-RTT packet support or anti-replay.
 
 ## Trace Links
 
