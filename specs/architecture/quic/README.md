@@ -47,6 +47,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-API-0002.json`](ARC-QUIC-API-0002.json): canonical initial stream-capacity callback design source
 - [`ARC-QUIC-API-0003.json`](ARC-QUIC-API-0003.json): canonical explicit pinned identity and trust-material client-policy design source
 - [`ARC-QUIC-API-0004.json`](ARC-QUIC-API-0004.json): canonical hostname-based peer identity and trust-anchor client-policy design source
+- [`ARC-QUIC-API-0005.json`](ARC-QUIC-API-0005.json): canonical pending outbound stream open design source
 - [`ARC-QUIC-CRT-0024.json`](ARC-QUIC-CRT-0024.json): canonical CRT server revocation callback path design source
 - [`ARC-QUIC-CRT-0025.json`](ARC-QUIC-CRT-0025.json): canonical CRT resumption-ticket ownership and early-data gate design source
 - [`ARC-QUIC-CRT-0026.json`](ARC-QUIC-CRT-0026.json): canonical CRT post-handshake ticket-bearing TLS update seam design source

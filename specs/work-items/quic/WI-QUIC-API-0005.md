@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-API-0005"
 artifact_type: "work_item"
 title: "Incursa.Quic Pending Outbound Stream Open Work Item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-API-0014"

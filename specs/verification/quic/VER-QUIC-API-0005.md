@@ -47,7 +47,7 @@ The requirement-home proof shows a blocked outbound open staying pending until l
 
 ## Status
 
-This verification artifact records the proof burden for keeping blocked outbound opens pending until later real `MAX_STREAMS` growth resumes them without widening the public stream contract.
+Landed; this verification slice records the proof burden for keeping blocked outbound opens pending until later real `MAX_STREAMS` growth resumes them without widening the public stream contract.
 
 ## Related Artifacts
 
