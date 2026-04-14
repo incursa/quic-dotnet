@@ -744,7 +744,7 @@
         "src/Incursa.Quic/PublicAPI.Unshipped.txt"
       ],
       "tests_covering_requirement": [
-        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+        "TryDetectPersistentCongestion_DetectsPersistentCongestionWhenBothDeclaredLostPacketsAreAckEliciting"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
@@ -762,7 +762,9 @@
         "src/Incursa.Quic/PublicAPI.Unshipped.txt"
       ],
       "tests_covering_requirement": [
-        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+        "TryDetectPersistentCongestion_DelaysDetectionUntilAnRttSampleExists",
+        "TryDetectPersistentCongestion_StartsOnceAnRttSampleIsAvailable",
+        "TryDetectPersistentCongestion_DoesNotStartBeforeAnyRttSampleExists"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
@@ -780,7 +782,7 @@
         "src/Incursa.Quic/PublicAPI.Unshipped.txt"
       ],
       "tests_covering_requirement": [
-        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+        "TryDetectPersistentCongestion_ConsidersPacketsAcrossPacketNumberSpaces"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
@@ -798,7 +800,8 @@
         "src/Incursa.Quic/PublicAPI.Unshipped.txt"
       ],
       "tests_covering_requirement": [
-        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+        "TryDetectPersistentCongestion_DoesNotNeedCrossSpaceStateToRejectTooShortSingleSpaceWindows",
+        "TryDetectPersistentCongestion_StillDetectsPersistentCongestionWhenOnlyApplicationDataStateIsTrackedAtTheBoundary"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
@@ -816,7 +819,9 @@
         "src/Incursa.Quic/PublicAPI.Unshipped.txt"
       ],
       "tests_covering_requirement": [
-        "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+        "TryDetectPersistentCongestion_CollapsesTheWindowWhenPersistentCongestionIsDetected",
+        "TryDetectPersistentCongestion_DoesNotCollapseTheWindowWhenTheDurationIsTooShort",
+        "TryDetectPersistentCongestion_CollapsesTheWindowAtTheDurationBoundary"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"

@@ -111,14 +111,57 @@
         "REQ-QUIC-RFC9002-S7P6P1-0001",
         "REQ-QUIC-RFC9002-S7P6P1-0002",
         "REQ-QUIC-RFC9002-S7P6P1-0003",
-        "REQ-QUIC-RFC9002-S7P6P2-0001",
-        "REQ-QUIC-RFC9002-S7P6P2-0002",
-        "REQ-QUIC-RFC9002-S7P6P2-0003",
-        "REQ-QUIC-RFC9002-S7P6P2-0004",
-        "REQ-QUIC-RFC9002-S7P6P2-0005",
-        "REQ-QUIC-RFC9002-S7P6P2-0006"
+        "REQ-QUIC-RFC9002-S7P6P2-0001"
       ],
       "test": "TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P6P2-0002"
+      ],
+      "test": "TryDetectPersistentCongestion_DetectsPersistentCongestionWhenBothDeclaredLostPacketsAreAckEliciting"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P6P2-0003"
+      ],
+      "test": "TryDetectPersistentCongestion_DelaysDetectionUntilAnRttSampleExists"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P6P2-0004"
+      ],
+      "test": "TryDetectPersistentCongestion_ConsidersPacketsAcrossPacketNumberSpaces"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P6P2-0005"
+      ],
+      "test": "TryDetectPersistentCongestion_DoesNotNeedCrossSpaceStateToRejectTooShortSingleSpaceWindows"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P6P2-0005"
+      ],
+      "test": "TryDetectPersistentCongestion_StillDetectsPersistentCongestionWhenOnlyApplicationDataStateIsTrackedAtTheBoundary"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P6P2-0006"
+      ],
+      "test": "TryDetectPersistentCongestion_CollapsesTheWindowWhenPersistentCongestionIsDetected"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P6P2-0006"
+      ],
+      "test": "TryDetectPersistentCongestion_DoesNotCollapseTheWindowWhenTheDurationIsTooShort"
+    },
+    {
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-S7P6P2-0006"
+      ],
+      "test": "TryDetectPersistentCongestion_CollapsesTheWindowAtTheDurationBoundary"
     },
     {
       "requirement_ids": [
