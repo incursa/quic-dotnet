@@ -6006,6 +6006,11 @@
         "upstream_refs": [
           "RFC 9002 §B.2 RFC9002-SB.2-B5-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-b.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0004.cs::RegisterPacketSent_CountsNonAckOnlyPacketsTowardBytesInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0004.cs::RegisterPacketSent_DoesNotIncreaseBytesInFlightForAckOnlyPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0004.cs::RegisterPacketSent_DoesNotIncreaseBytesInFlightForAckOnlyPacketsAtTheCongestionWindowLimit"
         ]
       }
     },
