@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0021",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "landed",
   "title": "QUIC CRT client trust-material and peer-identity validation work item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -32,7 +32,7 @@
     "transfer enablement",
     "retry enablement"
   ],
-  "completion_notes": "This work item exists to make the future client trust-and-identity floor honest; it does not claim broader PKI support or current implementation coverage.",
+  "completion_notes": "Implemented the managed-client exact-trust and exact-peer-identity floor and closed the requirement-home coverage under REQ-QUIC-CRT-0123; the broader standard BCL-shaped validation path is traced separately under REQ-QUIC-API-0013.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",

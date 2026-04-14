@@ -22,8 +22,7 @@ Execution, inspection, and regression evidence.
 
 ## Procedure or Approach
 
-- Run the new client-validation requirement-home tests once the seam exists.
-- Run the current CRT and API guards that cover the managed client path and the callback-driven acceptance boundary.
+- Run the client-validation requirement-home tests and the current CRT/API guards that cover the managed client path and the callback-driven acceptance boundary.
 - Run the full `REQ_QUIC_CRT_` sweep.
 - Re-run the repo-local SpecTrace validation checks and markdown rendering checks after the canonical JSON updates.
 
@@ -51,7 +50,7 @@ Execution, inspection, and regression evidence.
 
 ## Status
 
-planned
+Managed-client exact-trust and exact-peer-identity validation now has execution, inspection, and regression evidence on the current runtime path.
 
 ## Related Artifacts
 

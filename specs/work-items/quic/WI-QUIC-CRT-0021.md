@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0021"
 artifact_type: "work_item"
 title: "QUIC CRT client trust-material and peer-identity validation work item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0123"
@@ -58,7 +58,7 @@ Run the new client-validation requirement-home tests, the current CRT and API gu
 
 ## Completion Notes
 
-This work item exists to make the future client trust-and-identity floor honest; it does not claim broader PKI support or current implementation coverage.
+Implemented the managed-client exact-trust and exact-peer-identity floor and closed the requirement-home coverage under REQ-QUIC-CRT-0123; the broader standard BCL-shaped validation path is traced separately under REQ-QUIC-API-0013.
 
 ## Trace Links
 

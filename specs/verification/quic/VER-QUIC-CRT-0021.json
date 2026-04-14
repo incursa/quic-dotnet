@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0021",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "landed",
   "title": "QUIC CRT client trust-material and peer-identity validation verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -18,8 +18,7 @@
   "scope": "Verify that the managed client path only accepts when explicit trust material and exact peer identity both match, and that it fails closed for trust mismatch, identity mismatch, missing trust material, or missing identity without widening the public client promise.",
   "expected_result": "- A matching trust-material and exact peer-identity pairing is accepted on the supported managed client path.\n- Trust-material mismatch fails closed through the existing fatal/update path.\n- Exact peer-identity mismatch fails closed through the existing fatal/update path.\n- The current callback/pinned-leaf boundary stays honest while the new seam is traced.\n- The public API, `IsSupported`, transfer, retry, 0-RTT, key update, and OS trust-store behavior remain unchanged.",
   "procedure": [
-    "Run the new client-validation requirement-home tests once the seam exists.",
-    "Run the current CRT and API guards that cover the managed client path and the callback-driven acceptance boundary.",
+    "Run the client-validation requirement-home tests and the current CRT/API guards that cover the managed client path and the callback-driven acceptance boundary.",
     "Run the full `REQ_QUIC_CRT_` sweep.",
     "Re-run the repo-local SpecTrace validation checks and markdown rendering checks after the canonical JSON updates."
   ],
@@ -36,6 +35,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs",
     "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
   ],
+  "status_summary": "Managed-client exact-trust and exact-peer-identity validation now has execution, inspection, and regression evidence on the current runtime path.",
   "preconditions": [
     "The Incursa.Quic library builds successfully on net10.0.",
     "The managed client path exposes the narrow trust-material and peer-identity seam described by ARC-QUIC-CRT-0021.",
