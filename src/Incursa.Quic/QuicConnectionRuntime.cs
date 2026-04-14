@@ -3100,7 +3100,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (SendingMode != QuicConnectionSendingMode.Ordinary)
+        if (SendingMode == QuicConnectionSendingMode.None)
         {
             return false;
         }
@@ -3135,6 +3135,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         else if (phase == QuicConnectionPhase.Active)
         {
             stateChanged |= TryHandleApplicationPacketReceived(packetReceivedEvent, nowTicks, ref effects);
+        }
+        else if (phase == QuicConnectionPhase.Closing)
+        {
+            if (terminalState is QuicConnectionTerminalState terminalStateValue)
+            {
+                AppendConnectionClosePacket(ref effects, terminalStateValue.Close);
+            }
         }
 
         stateChanged |= TryFlushHandshakePackets(ref effects);

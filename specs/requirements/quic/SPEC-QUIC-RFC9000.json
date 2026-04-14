@@ -14071,6 +14071,10 @@
         "upstream_refs": [
           "RFC 9000 §10.2.1 RFC9000-S10.2.1-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0010.cs::ClosingRuntimeRepliesToAttributedPacketsWithConnectionClose",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0010.cs::DrainingRuntimeDoesNotReplyToAttributedPacketsWithConnectionClose"
         ]
       }
     },
