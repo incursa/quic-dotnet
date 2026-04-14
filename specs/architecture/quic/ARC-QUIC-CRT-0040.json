@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0040",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC client-side successor 1-RTT Key Phase install architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the managed client/runtime path retains the current 1-RTT application traffic secrets long enough to derive successor packet-protection material on the first observed 0->1 Key Phase transition, installs the new open/protect pair into the existing bridge-state fields, and switches outbound 1-RTT packets to the installed Key Phase bit without introducing a general TLS KeyUpdate engine.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0042",
+    "VER-QUIC-CRT-0042"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0145"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0145.cs",
+    "benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs"
+  ],
+  "risks": [
+    "If the key schedule still drops the current 1-RTT application traffic secrets after initial publication, the successor pair cannot be derived at the first observed transition.",
+    "If the outbound short-header formatter ignores the installed Key Phase bit, the send path and bridge-state view can diverge after installation.",
+    "If the slice expands into a general TLS KeyUpdate engine or repeated successor derivation, it overclaims the current boundary instead of staying on the narrow client-side install seam."
+  ],
+  "design_summary": "The key schedule keeps the client's active 1-RTT application traffic secrets available after initial publication. When the runtime observes the first peer 0->1 Key Phase transition on the active short-header path, the successor open/protect pair is derived from the retained secrets and published through the existing bridge-state update path. The bridge state installs the new pair and flips its key-phase view to 1, and the short-header formatter then reads the installed phase bit for subsequent outbound 1-RTT packets. Establishing runtimes remain unchanged before handshake confirmation, and the slice stops at the first successor install instead of building a general RFC 9001 key-update engine.",
+  "alternatives_considered": [
+    "Keep the observation-only boundary from REQ-QUIC-CRT-0144. Rejected because the next bounded slice needs a real successor-install seam, not another marker-only update.",
+    "Publish a public key-update API. Rejected because the slice must remain internal, managed-client only, and closed to public key-update promises."
+  ],
+  "edge_cases_and_constraints": [
+    "Client role only.",
+    "Handshake-confirmed active path only.",
+    "The first observed 0->1 transition is the only installation trigger.",
+    "Duplicate same-phase packets do not re-trigger installation.",
+    "Establishing runtimes remain unchanged before handshake confirmation.",
+    "The slice does not add TLS KeyUpdate support, transfer enablement, retry enablement, public API widening, or any public key-update promise."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0145.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0145.cs)\n- [`benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs`](../../../benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs)"
+    }
+  ]
+}

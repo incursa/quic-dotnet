@@ -1485,3 +1485,26 @@ Notes:
 - The slice only records the first observed active-path transition; it does not derive successor key material or implement a general RFC 9001 key-update engine.
 - Establishing runtimes remain unchanged before handshake confirmation.
 - The short-header helper preserves and reports the Key Phase bit so the runtime can make the first-transition decision without broadening public API.
+
+## REQ-QUIC-CRT-0145 Install successor 1-RTT packet-protection material on the first observed Key Phase transition
+In the client role, after handshake confirmation and on the active 1-RTT short-header packet path, the library MUST retain the current 1-RTT application traffic secret material long enough to derive a successor 1-RTT open/protect packet-protection pair when the peer Key Phase bit first transitions from 0 to 1. On that first observed 0->1 transition, the runtime MUST derive the successor pair from the retained application traffic secret material, MUST install the successor open/protect material into the existing bridge-state fields, MUST update `KeyUpdateInstalled` and `CurrentOneRttKeyPhase` to 1, and MUST cause subsequently protected outbound 1-RTT packets to use the installed phase-1 material and set the Key Phase bit accordingly. Before handshake confirmation, the establishing runtime MUST remain unchanged. The slice MUST remain client-role only, MUST remain managed client/runtime only, and MUST remain closed to repeated successor derivation, a general RFC 9001 key-update engine, TLS KeyUpdate support, transfer, retry, public API widening, and any public key-update promise.
+
+Trace:
+- Source Refs:
+  - RFC 9001 Section 6
+  - src/Incursa.Quic/QuicConnectionRuntime.cs
+  - src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs
+  - src/Incursa.Quic/QuicTlsKeySchedule.cs
+  - src/Incursa.Quic/QuicTlsTransport.cs
+  - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
+  - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0144.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0145.cs
+  - benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+
+Notes:
+- The slice keeps the client's current 1-RTT application traffic secret material alive long enough to derive the successor pair and then installs the new bridge-state view on the first observed 0->1 transition.
+- Outbound 1-RTT packet formatting must switch to the installed phase-1 bit once the successor pair is installed.
+- The slice does not introduce a general RFC 9001 key-update engine, TLS KeyUpdate support, transfer, retry, public API widening, or any public key-update promise.

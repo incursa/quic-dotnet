@@ -61,6 +61,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0034.json`](ARC-QUIC-CRT-0034.json): canonical CRT internal early-data prerequisite capture design source
 - [`ARC-QUIC-CRT-0035.json`](ARC-QUIC-CRT-0035.json): canonical CRT dormant early-data attempt readiness design source
 - [`ARC-QUIC-CRT-0036.json`](ARC-QUIC-CRT-0036.json): canonical CRT client-side 0-RTT packet-emission attempt design source
+- [`ARC-QUIC-CRT-0040.json`](ARC-QUIC-CRT-0040.json): canonical CRT client-side successor 1-RTT Key Phase install design source
 
 ## Notes
 

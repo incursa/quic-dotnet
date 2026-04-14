@@ -63,6 +63,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0036.json`](VER-QUIC-CRT-0036.json): canonical CRT internal early-data prerequisite capture verification source
 - [`VER-QUIC-CRT-0037.json`](VER-QUIC-CRT-0037.json): canonical CRT dormant early-data attempt readiness verification source
 - [`VER-QUIC-CRT-0038.json`](VER-QUIC-CRT-0038.json): canonical CRT first client-side 0-RTT packet-emission attempt verification source
+- [`VER-QUIC-CRT-0042.json`](VER-QUIC-CRT-0042.json): canonical CRT client-side successor 1-RTT Key Phase install verification source
 
 ## Notes
 
