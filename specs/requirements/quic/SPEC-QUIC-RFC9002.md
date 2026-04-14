@@ -2458,6 +2458,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.8 RFC9002-S7.8-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.8
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0001.cs::TryRegisterAcknowledgedPacket_LeavesTheWindowUnchangedWhenTheSenderIsNotPacingLimited
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0001.cs::TryRegisterAcknowledgedPacket_GrowsTheWindowWhenTheSameStateIsPacingLimited
 
 ## REQ-QUIC-RFC9002-S7P8-0002 Do not call yourself application-limited because of pacing delay
 A sender SHOULD NOT consider itself application limited if it would have fully utilized the congestion window without pacing delay.

@@ -8,11 +8,11 @@ Define the interop-runner-facing companion harness contract that hosts Incursa.Q
 
 ## Scope
 
-This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, unsupported testcase exit behavior, the transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, split client/server local execution modes, Docker packaging, and CI participation.
+This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, unsupported testcase exit behavior, the transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, and CI participation.
 
 ## Context
 
-Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` contract is tracked separately as a child-process-only open/accept contract on the existing managed path and is now green in the current implementation, the narrow transfer slice is now wired as a child-process completion contract on the existing active-phase path, and the narrow `retry` slice now dispatches into the managed one-Retry replay path instead of falling through to `127`. The harness now also needs to tolerate an empty server-side `REQUESTS` list so the runner can start supported server-role paths locally, while the one-Retry bootstrap handoff itself remains library-owned under `REQ-QUIC-CRT-0122` and this spec still owns the child-process dispatch and proof under `REQ-QUIC-INT-0012`.
+Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` contract is tracked separately as a child-process-only open/accept contract on the existing managed path and is now green in the current implementation, the narrow transfer slice is now wired as a child-process completion contract on the existing active-phase path, and the narrow `retry` slice now dispatches into the managed one-Retry replay path instead of falling through to `127`. The harness now also needs to tolerate an empty server-side `REQUESTS` list so the runner can start supported server-role paths locally, while the one-Retry bootstrap handoff itself remains library-owned under `REQ-QUIC-CRT-0122`, this spec still owns the child-process dispatch and proof under `REQ-QUIC-INT-0012`, and the new localhost preflight lane in `REQ-QUIC-INT-0014` exists so harness setup and endpoint selection can be isolated locally before the external runner is involved.
 
 ## Open Questions
 
@@ -32,7 +32,7 @@ The next repo-local slice keeps the external interop runner unmodified, builds t
 
 ## Standalone Local Preflight
 
-Before the repository leans on the external interop runner for debugging, it should have a repo-local preflight lane that can run the managed client against quic-go or msquic as the peer server, and the managed server against quic-go or msquic as the peer client. That preflight lane should reuse the same qlog and diagnostics capture used during interop investigation so harness/runtime issues can be isolated locally before the runner is involved.
+The localhost preflight lane is now captured normatively in REQ-QUIC-INT-0014. It gives the repository a repo-local place to separate harness planning and smoke execution before the external runner or peer-implementation helper is involved.
 
 ## REQ-QUIC-INT-0001 Keep the interop endpoint in a companion project
 The interop endpoint MUST be implemented as a companion project that references `Incursa.Quic` rather than by turning the main library project into an application.
@@ -269,3 +269,33 @@ Notes:
 - The helper is intentionally local-only and may use the runner's image-replacement mechanism rather than adding an Incursa.Quic entry to the runner repository.
 - Split-role runs should keep the opposite side on established implementations such as quic-go or msquic, while same-slot both-role runs remain supported for the local harness image.
 - The helper records execution-report artifacts; it does not introduce new testcase support or any new protocol behavior.
+
+## REQ-QUIC-INT-0014 Separate local preflight planning from localhost smoke execution
+The interop harness MUST expose repo-local preflight decisions for request parsing, qlog selection, endpoint resolution, and transfer-path mapping as independently testable harness behavior, and MUST support a localhost smoke lane in which the managed client and managed server can be exercised directly with matching certificate names while preserving the existing hostname and certificate-validation rules. This slice MUST NOT weaken hostname or certificate validation for IP-literal hosts or require changes to the external `quic-interop-runner` repository.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-INT-0007
+- Implemented By:
+  - WI-QUIC-INT-0007
+- Verified By:
+  - VER-QUIC-INT-0007
+- Code Refs:
+  - src/Incursa.Quic.InteropHarness/InteropHarnessPreflightPlanner.cs
+  - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
+  - src/Incursa.Quic.InteropHarness/README.md
+  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0014.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/QuicLoopbackEstablishmentTestSupport.cs
+- Related:
+  - REQ-QUIC-INT-0002
+  - REQ-QUIC-INT-0004
+  - REQ-QUIC-INT-0005
+  - REQ-QUIC-INT-0010
+  - REQ-QUIC-INT-0011
+  - REQ-QUIC-INT-0012
+  - REQ-QUIC-INT-0013
+  - SPEC-QUIC-CRT
+
+Notes:
+- The preflight planner keeps request parsing, qlog selection, endpoint resolution, and transfer-path mapping available as direct local proofs.
+- The localhost smoke lane exists to separate harness and setup failures from library behavior without loosening certificate or hostname validation.
