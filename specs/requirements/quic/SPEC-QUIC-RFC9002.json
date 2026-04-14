@@ -1156,7 +1156,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0005.cs::Constructor_InitializesTheEstimatorAtConnectionStart"
         ]
       }
     },
@@ -1217,7 +1217,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0007.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt"
         ]
       }
     },
@@ -1245,6 +1245,11 @@
           "RFC 9002 §5.3 RFC9002-S5.3-B18-P12-S1",
           "RFC 9002 §5.3 RFC9002-S5.3-B19-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0008.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0008.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0008.cs::TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples"
         ]
       }
     },

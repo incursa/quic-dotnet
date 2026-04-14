@@ -659,7 +659,7 @@ Trace:
   - RFC 9002 §5.3 RFC9002-S5.3-B14-P9-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0005.cs::Constructor_InitializesTheEstimatorAtConnectionStart
 
 ## REQ-QUIC-RFC9002-S5P3-0006 Seed new-path RTT estimation with the initial RTT
 Before any RTT samples are available for a new path, or when the estimator is reset, the RTT estimator MUST be initialized using the initial RTT.
@@ -694,7 +694,7 @@ Trace:
   - RFC 9002 §5.3 RFC9002-S5.3-B16-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0007.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt
 
 ## REQ-QUIC-RFC9002-S5P3-0008 Reset the estimator on the first post-init sample
 On the first RTT sample after initialization, `smoothed_rtt` MUST be set to `latest_rtt` and `rttvar` to `latest_rtt / 2`.
@@ -710,6 +710,10 @@ Trace:
   - RFC 9002 §5.3 RFC9002-S5.3-B18-P12-S1
   - RFC 9002 §5.3 RFC9002-S5.3-B19-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0008.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0008.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0008.cs::TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples
 
 ## REQ-QUIC-RFC9002-S5P3-0009 Clamp ACK delay after handshake confirmation
 After the handshake is confirmed, an endpoint MUST use the lesser of the acknowledgment delay and the peer's max_ack_delay.
