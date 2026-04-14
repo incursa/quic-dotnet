@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-INT-0005"
 artifact_type: "work_item"
 title: "QUIC Interop Retry Child-Process Work Item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-INT-0012"
@@ -34,13 +34,6 @@ Define and land the smallest child-process Retry contract that proves the server
 
 - ARC-QUIC-INT-0005
 
-## Planned Changes
-
-- Add a one-shot Retry emission seam to `QuicListenerHost` that uses the library-owned Retry integrity helper and keeps the retry bootstrap state narrow.
-- Route the `retry` testcase through `InteropHarnessRunner` on the child-process path and return `0` only after the post-Retry handshake completes.
-- Thread the original destination connection ID and Retry source connection ID into the server transport parameters so the existing binding checks can validate the replayed path.
-- Keep the replay handoff, transfer path, and broader TLS-policy behavior isolated from this work item.
-
 ## Out of Scope
 
 - public API widening
@@ -61,7 +54,7 @@ Run the new retry requirement-home test, the current guards, the library-owned r
 
 ## Completion Notes
 
-Keep the work item narrow: it exists to make the child-process retry contract honest, not to claim broader retry support or the child-process harness contract itself.
+The managed child-process path now dispatches `retry` through the managed one-Retry replay path, the server emits exactly one Retry, the client observes and replays it once, and the harness returns `0` only after the post-Retry handshake completes.
 
 ## Trace Links
 

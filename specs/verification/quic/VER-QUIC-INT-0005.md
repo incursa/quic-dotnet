@@ -56,7 +56,7 @@ The child-process harness proves exactly one valid Retry on the real managed pat
 
 ## Status
 
-Planned; this verification slice records the child-process proof for the narrow retry contract.
+Landed; this verification slice records the proof contract for the managed child-process retry contract.
 
 ## Related Artifacts
 
