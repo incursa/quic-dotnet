@@ -8227,6 +8227,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3 RFC9000-S10.3-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0019.cs::AcceptedStatelessResetTransitionsTheRuntimeToDraining
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0019.cs::ReceiveDatagram_KeepsTheRuntimeAliveWhenTheResetTokenDoesNotMatch
 
 ## REQ-QUIC-RFC9000-S10P3-0020 Invalidate reset tokens when IDs retire
 Tokens MUST be invalidated when their associated connection ID is retired via a RETIRE_CONNECTION_ID frame.
@@ -8241,6 +8244,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3 RFC9000-S10.3-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0020.cs::TryRetireStatelessResetToken_RemovesTheRetiredTokenFromMatching
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0020.cs::TryRetireStatelessResetToken_PreservesOtherTokensOnTheSameEndpoint
 
 ## REQ-QUIC-RFC9000-S10P3-0021 Send reset using the Figure 10 layout
 An endpoint that receives packets it cannot process MUST send a packet using the Stateless Reset layout shown in Figure 10.
