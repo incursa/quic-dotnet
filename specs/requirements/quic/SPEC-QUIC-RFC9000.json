@@ -14567,6 +14567,10 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0001.cs::ReceiveDatagram_DispatchesPotentialStatelessResetDatagramsIntoTheRuntime",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0001.cs::ReceiveDatagram_RoutesPotentialStatelessResetDatagramsWhenThePacketCanBeAssociatedWithAnActiveConnection"
         ]
       }
     },
@@ -14984,6 +14988,9 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B18-P15-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs::TryCreateStatelessResetDatagram_AllowsLongHeaderSizedTriggers"
         ]
       }
     },
