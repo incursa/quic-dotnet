@@ -276,6 +276,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §3 RFC9002-S3-B6-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0013.cs::RecordProcessedCryptoPacket_RequestsAnImmediateAckForLongHeaderSpaces
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0013.cs::RecordProcessedApplicationDataAckElicitingPacket_DoesNotUseTheShortAckTimer
 
 ## REQ-QUIC-RFC9002-S3-0014 Count non-ACK packets toward congestion limits
 Packets containing frames besides ACK or CONNECTION_CLOSE MUST count toward congestion control limits.
