@@ -27,6 +27,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly Channel<ulong> inboundStreamIds;
     private readonly Channel<QuicConnectionEvent> inbox;
     private readonly ConcurrentDictionary<long, TaskCompletionSource<ulong>> pendingStreamOpenRequests = new();
+    private readonly ConcurrentDictionary<long, QuicStreamType> pendingStreamOpenTypes = new();
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingStreamActionRequests = new();
     private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> streamObservers = new();
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
@@ -532,8 +533,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
         TaskCompletionSource<ulong> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        if (!pendingStreamOpenRequests.TryAdd(requestId, completion))
+        if (!pendingStreamOpenRequests.TryAdd(requestId, completion)
+            || !pendingStreamOpenTypes.TryAdd(requestId, streamType))
         {
+            pendingStreamOpenRequests.TryRemove(requestId, out _);
+            pendingStreamOpenTypes.TryRemove(requestId, out _);
             throw new InvalidOperationException("The connection runtime could not queue the stream open request.");
         }
 
@@ -543,9 +547,9 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
                     ((QuicConnectionRuntime, long, CancellationToken))state!;
 
-                if (runtime.pendingStreamOpenRequests.TryRemove(requestId, out TaskCompletionSource<ulong>? pendingCompletion))
+                if (runtime.TryRemovePendingStreamOpenRequest(requestId, out TaskCompletionSource<ulong>? pendingCompletion))
                 {
-                    pendingCompletion.TrySetCanceled(token);
+                    pendingCompletion!.TrySetCanceled(token);
                 }
             }, (this, requestId, cancellationToken))
             : default;
@@ -556,7 +560,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             QuicConnectionStreamActionKind.Open,
             StreamType: streamType)))
         {
-            pendingStreamOpenRequests.TryRemove(requestId, out _);
+            TryRemovePendingStreamOpenRequest(requestId, out _);
             throw IsDisposed
                 ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
                 : new InvalidOperationException("The connection runtime could not queue the stream open request.");
@@ -1221,29 +1225,100 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         QuicStreamType streamType,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (!pendingStreamOpenRequests.TryRemove(requestId, out TaskCompletionSource<ulong>? completion))
+        if (!TryProcessPendingStreamOpenRequest(requestId, streamType, ref effects, out bool stillPending))
+        {
+            return false;
+        }
+
+        _ = stillPending;
+        return true;
+    }
+
+    private bool TryRetryPendingStreamOpenRequests(
+        bool bidirectional,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (pendingStreamOpenTypes.IsEmpty)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        KeyValuePair<long, QuicStreamType>[] pendingRequests = pendingStreamOpenTypes.ToArray();
+        Array.Sort(pendingRequests, static (left, right) => left.Key.CompareTo(right.Key));
+
+        foreach (KeyValuePair<long, QuicStreamType> pendingRequest in pendingRequests)
+        {
+            if ((pendingRequest.Value == QuicStreamType.Bidirectional) != bidirectional)
+            {
+                continue;
+            }
+
+            if (!TryProcessPendingStreamOpenRequest(
+                pendingRequest.Key,
+                pendingRequest.Value,
+                ref effects,
+                out bool stillPending))
+            {
+                continue;
+            }
+
+            if (stillPending)
+            {
+                return stateChanged;
+            }
+
+            stateChanged = true;
+        }
+
+        return stateChanged;
+    }
+
+    private bool TryProcessPendingStreamOpenRequest(
+        long requestId,
+        QuicStreamType streamType,
+        ref List<QuicConnectionEffect>? effects,
+        out bool stillPending)
+    {
+        stillPending = false;
+
+        if (!pendingStreamOpenRequests.TryGetValue(requestId, out TaskCompletionSource<ulong>? completion)
+            || !pendingStreamOpenTypes.TryGetValue(requestId, out QuicStreamType trackedStreamType)
+            || trackedStreamType != streamType)
         {
             return false;
         }
 
         if (!TryValidateStreamSendBoundary(out Exception? exception))
         {
-            completion.TrySetException(exception!);
-            return false;
+            if (TryRemovePendingStreamOpenRequest(requestId, out TaskCompletionSource<ulong>? removedCompletion))
+            {
+                removedCompletion!.TrySetException(exception!);
+            }
+            else
+            {
+                completion.TrySetException(exception!);
+            }
+
+            return true;
         }
 
         bool bidirectional = streamType == QuicStreamType.Bidirectional;
-        if (!streamRegistry.Bookkeeping.TryPeekLocalStream(bidirectional, out QuicStreamId streamId, out QuicStreamsBlockedFrame blockedFrame))
+        if (!streamRegistry.Bookkeeping.TryPeekLocalStream(bidirectional, out QuicStreamId streamId, out _))
         {
-            _ = blockedFrame;
-            completion.TrySetException(new InvalidOperationException("The connection cannot open another outbound stream."));
+            stillPending = true;
+            return true;
+        }
+
+        if (!TryRemovePendingStreamOpenRequest(requestId, out TaskCompletionSource<ulong>? openCompletion))
+        {
             return false;
         }
 
         if (!TryBuildOutboundStreamPayload(streamId.Value, 0, ReadOnlySpan<byte>.Empty, fin: false, out byte[] streamPayload))
         {
-            completion.TrySetException(new InvalidOperationException("The connection runtime could not build the stream open payload."));
-            return false;
+            openCompletion!.TrySetException(new InvalidOperationException("The connection runtime could not build the stream open payload."));
+            return true;
         }
 
         if (!TryProtectAndAccountApplicationPayload(
@@ -1255,21 +1330,21 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             out byte[] protectedPacket,
             out Exception? payloadException))
         {
-            completion.TrySetException(payloadException!);
-            return false;
+            openCompletion!.TrySetException(payloadException!);
+            return true;
         }
 
         if (!streamRegistry.Bookkeeping.TryOpenLocalStream(bidirectional, out QuicStreamId committedStreamId, out QuicStreamsBlockedFrame committedBlockedFrame))
         {
             _ = committedBlockedFrame;
-            completion.TrySetException(new InvalidOperationException("The connection runtime could not commit the stream open."));
-            return false;
+            openCompletion!.TrySetException(new InvalidOperationException("The connection runtime could not commit the stream open."));
+            return true;
         }
 
         if (committedStreamId.Value != streamId.Value)
         {
-            completion.TrySetException(new InvalidOperationException("The connection runtime committed an unexpected outbound stream identifier."));
-            return false;
+            openCompletion!.TrySetException(new InvalidOperationException("The connection runtime committed an unexpected outbound stream identifier."));
+            return true;
         }
 
         activePath = currentPath with
@@ -1281,7 +1356,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             currentPath.Identity,
             protectedPacket));
 
-        completion.TrySetResult(committedStreamId.Value);
+        openCompletion!.TrySetResult(committedStreamId.Value);
         return true;
     }
 
@@ -1873,6 +1948,16 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             int unidirectionalIncrement = GetPositiveIncrement(
                 originalUnidirectionalLimit,
                 streamRegistry.Bookkeeping.PeerUnidirectionalStreamLimit);
+
+            if (bidirectionalIncrement != 0)
+            {
+                stateChanged |= TryRetryPendingStreamOpenRequests(true, ref effects);
+            }
+
+            if (unidirectionalIncrement != 0)
+            {
+                stateChanged |= TryRetryPendingStreamOpenRequests(false, ref effects);
+            }
 
             if (bidirectionalIncrement != 0 || unidirectionalIncrement != 0)
             {
@@ -2517,11 +2602,23 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         foreach (KeyValuePair<long, TaskCompletionSource<ulong>> entry in pendingStreamOpenRequests.ToArray())
         {
-            if (pendingStreamOpenRequests.TryRemove(entry.Key, out TaskCompletionSource<ulong>? completion))
+            if (TryRemovePendingStreamOpenRequest(entry.Key, out TaskCompletionSource<ulong>? completion))
             {
-                completion.TrySetException(completionException);
+                completion!.TrySetException(completionException);
             }
         }
+    }
+
+    private bool TryRemovePendingStreamOpenRequest(long requestId, out TaskCompletionSource<ulong>? completion)
+    {
+        if (!pendingStreamOpenRequests.TryRemove(requestId, out completion))
+        {
+            pendingStreamOpenTypes.TryRemove(requestId, out _);
+            return false;
+        }
+
+        pendingStreamOpenTypes.TryRemove(requestId, out _);
+        return true;
     }
 
     private void CompletePendingStreamActionRequests(Exception completionException)

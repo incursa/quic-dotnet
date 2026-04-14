@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-API-0005",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "Incursa.Quic Pending Outbound Stream Open Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement pending outbound stream opens that remain queued when the peer limit is exhausted and resume only after later real `MAX_STREAMS` growth makes the requested direction available.",
+  "related_artifacts": [
+    "SPEC-QUIC-API"
+  ],
+  "design_links": [
+    "ARC-QUIC-API-0005"
+  ],
+  "verification_links": [
+    "VER-QUIC-API-0005"
+  ],
+  "addresses": [
+    "REQ-QUIC-API-0014"
+  ],
+  "planned_changes": "- Track pending outbound open requests by request ID and requested direction so blocked opens can stay queued instead of failing fast.\n- Retry queued opens only when a real `MAX_STREAMS` frame raises the matching peer limit.\n- Preserve cancellation and terminal-state completion semantics so a queued open cannot be revived after it has been settled.\n- Add focused requirement-home proof for pending behavior, later real `MAX_STREAMS` wake-up, and cancellation while blocked.",
+  "verification_plan": "Run the new `REQ-QUIC-API-0014` requirement-home proof plus the existing `REQ-QUIC-API-0008` and `REQ-QUIC-API-0009` regression coverage, then run `git diff --check` and the repo-local SpecTrace render/check flow for the changed canonical JSON artifacts.",
+  "completion_notes": "This slice keeps the blocked open request honest by staying pending until the peer really grows the matching stream limit. It does not add `STREAMS_BLOCKED` emission or broader stream-management parity.",
+  "out_of_scope": [
+    "`STREAMS_BLOCKED` emission.",
+    "Broader stream-management parity.",
+    "New public API surface.",
+    "0-RTT.",
+    "Key update.",
+    "Transfer or retry changes."
+  ]
+}
