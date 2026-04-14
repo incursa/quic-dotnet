@@ -375,16 +375,28 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         uint? handshakeMessageLength = null,
         QuicTlsCipherSuite? selectedCipherSuite = null,
         QuicTlsTranscriptHashAlgorithm? transcriptHashAlgorithm = null,
-        QuicTransportParameters? transportParameters = null)
+        QuicTransportParameters? transportParameters = null,
+        QuicTlsEarlyDataDisposition? earlyDataDisposition = null)
     {
-        return PublishUpdate(new QuicTlsStateUpdate(
+        List<QuicTlsStateUpdate> updates = [];
+
+        AppendPublishedUpdates(updates, PublishUpdate(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.TranscriptProgressed,
             TransportParameters: transportParameters,
             HandshakeMessageType: handshakeMessageType,
             HandshakeMessageLength: handshakeMessageLength,
             SelectedCipherSuite: selectedCipherSuite,
             TranscriptHashAlgorithm: transcriptHashAlgorithm,
-            TranscriptPhase: transcriptPhase));
+            TranscriptPhase: transcriptPhase)));
+
+        if (earlyDataDisposition.HasValue)
+        {
+            AppendPublishedUpdates(updates, PublishUpdate(new QuicTlsStateUpdate(
+                QuicTlsUpdateKind.PeerEarlyDataDispositionAvailable,
+                PeerEarlyDataDisposition: earlyDataDisposition)));
+        }
+
+        return updates;
     }
 
     /// <summary>
@@ -955,13 +967,21 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                 case QuicTlsTranscriptStepKind.Progressed:
                 case QuicTlsTranscriptStepKind.PeerTransportParametersStaged:
                 {
+                    QuicTlsEarlyDataDisposition? earlyDataDisposition = null;
+                    if (step.EarlyDataAccepted.HasValue)
+                    {
+                        earlyDataDisposition = step.EarlyDataAccepted.Value
+                            ? QuicTlsEarlyDataDisposition.Accepted
+                            : QuicTlsEarlyDataDisposition.Rejected;
+                    }
                     IReadOnlyList<QuicTlsStateUpdate> progressedUpdates = PublishTranscriptProgressed(
                     step.TranscriptPhase ?? QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage,
                     step.HandshakeMessageType,
                     step.HandshakeMessageLength,
                     step.SelectedCipherSuite,
                     step.TranscriptHashAlgorithm,
-                    step.TransportParameters);
+                    step.TransportParameters,
+                    earlyDataDisposition);
                     AppendPublishedUpdates(updates, progressedUpdates);
                     if (progressedUpdates.Count == 0)
                     {

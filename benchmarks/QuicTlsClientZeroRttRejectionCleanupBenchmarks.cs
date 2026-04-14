@@ -3,7 +3,7 @@ using BenchmarkDotNet.Attributes;
 namespace Incursa.Quic.Benchmarks;
 
 /// <summary>
-/// Benchmarks the client-side 0-RTT rejection cleanup branch that discards dormant ZeroRtt material.
+/// Benchmarks the client-side 0-RTT cleanup branches that discard dormant ZeroRtt material on rejected disposition updates.
 /// </summary>
 [MemoryDiagnoser]
 public class QuicTlsClientZeroRttRejectionCleanupBenchmarks
@@ -15,6 +15,12 @@ public class QuicTlsClientZeroRttRejectionCleanupBenchmarks
     private static readonly QuicTlsStateUpdate AcceptedDispositionUpdate = new(
         QuicTlsUpdateKind.ResumptionAttemptDispositionAvailable,
         ResumptionAttemptDisposition: QuicTlsResumptionAttemptDisposition.Accepted);
+    private static readonly QuicTlsStateUpdate RejectedEarlyDataDispositionUpdate = new(
+        QuicTlsUpdateKind.PeerEarlyDataDispositionAvailable,
+        PeerEarlyDataDisposition: QuicTlsEarlyDataDisposition.Rejected);
+    private static readonly QuicTlsStateUpdate AcceptedEarlyDataDispositionUpdate = new(
+        QuicTlsUpdateKind.PeerEarlyDataDispositionAvailable,
+        PeerEarlyDataDisposition: QuicTlsEarlyDataDisposition.Accepted);
 
     private QuicTransportTlsBridgeState bridge = default!;
 
@@ -49,6 +55,24 @@ public class QuicTlsClientZeroRttRejectionCleanupBenchmarks
     public bool RetainAcceptedResumptionAttemptDisposition()
     {
         return bridge.TryApply(AcceptedDispositionUpdate);
+    }
+
+    /// <summary>
+    /// Measures the rejected peer early-data disposition cleanup that discards dormant ZeroRtt material.
+    /// </summary>
+    [Benchmark]
+    public bool DiscardRejectedPeerEarlyDataDisposition()
+    {
+        return bridge.TryApply(RejectedEarlyDataDispositionUpdate);
+    }
+
+    /// <summary>
+    /// Measures the accepted peer early-data disposition retention path that leaves dormant ZeroRtt material intact.
+    /// </summary>
+    [Benchmark]
+    public bool RetainAcceptedPeerEarlyDataDisposition()
+    {
+        return bridge.TryApply(AcceptedEarlyDataDispositionUpdate);
     }
 
     private static QuicTlsPacketProtectionMaterial CreateZeroRttMaterial(byte startValue)

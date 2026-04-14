@@ -298,6 +298,7 @@ internal sealed class QuicTlsTranscriptProgress
             NamedGroup: parsedMessage.NamedGroup,
             KeyShare: parsedMessage.KeyShare,
             PreSharedKeySelected: parsedMessage.PreSharedKeySelected,
+            EarlyDataAccepted: parsedMessage.EarlyDataAccepted,
             HandshakeMessageBytes: handshakeMessageBytes);
         return TranscriptAdvanceResult.Progressed;
     }
@@ -535,8 +536,11 @@ internal sealed class QuicTlsTranscriptProgress
             handshakeMessageBody.Slice(handshakeMessageBody.Length - extensionsLength, extensionsLength),
             allowTransportParameters: true,
             requireTransportParameters: true,
-            GetTransportParameterRoleForCurrentEndpoint(),
-            out QuicTransportParameters? transportParameters))
+            allowEarlyDataExtension: serverHelloSelectedPreSharedKey,
+            reportEarlyDataDisposition: serverHelloSelectedPreSharedKey,
+            receiverRole: GetTransportParameterRoleForCurrentEndpoint(),
+            out QuicTransportParameters? transportParameters,
+            out bool? earlyDataAccepted))
         {
             return false;
         }
@@ -549,7 +553,8 @@ internal sealed class QuicTlsTranscriptProgress
                 : HandshakeProgressState.AwaitingCertificate,
             QuicTlsHandshakeMessageType.EncryptedExtensions,
             handshakeMessageLengthValue,
-            transportParameters);
+            transportParameters,
+            EarlyDataAccepted: earlyDataAccepted);
         return true;
     }
 
@@ -1039,11 +1044,16 @@ internal sealed class QuicTlsTranscriptProgress
         ReadOnlySpan<byte> extensions,
         bool allowTransportParameters,
         bool requireTransportParameters,
+        bool allowEarlyDataExtension,
+        bool reportEarlyDataDisposition,
         QuicTransportParameterRole receiverRole,
-        out QuicTransportParameters? transportParameters)
+        out QuicTransportParameters? transportParameters,
+        out bool? earlyDataAccepted)
     {
         transportParameters = null;
+        earlyDataAccepted = reportEarlyDataDisposition ? false : null;
         bool foundTransportParameters = false;
+        bool foundEarlyData = false;
         List<ushort> seenExtensionTypes = [];
 
         int index = 0;
@@ -1081,6 +1091,20 @@ internal sealed class QuicTlsTranscriptProgress
 
                 transportParameters = parsedTransportParameters;
                 foundTransportParameters = true;
+            }
+            else if (extensionType == EarlyDataExtensionType)
+            {
+                if (!allowEarlyDataExtension || foundEarlyData || extensionLength != 0)
+                {
+                    return false;
+                }
+
+                if (reportEarlyDataDisposition)
+                {
+                    earlyDataAccepted = true;
+                }
+
+                foundEarlyData = true;
             }
             else
             {
@@ -1371,7 +1395,8 @@ internal sealed class QuicTlsTranscriptProgress
         QuicTlsTranscriptHashAlgorithm? TranscriptHashAlgorithm = null,
         QuicTlsNamedGroup? NamedGroup = null,
         ReadOnlyMemory<byte> KeyShare = default,
-        bool PreSharedKeySelected = false);
+        bool PreSharedKeySelected = false,
+        bool? EarlyDataAccepted = null);
 }
 
 /// <summary>
@@ -1400,6 +1425,7 @@ internal readonly record struct QuicTlsTranscriptStep(
     QuicTlsNamedGroup? NamedGroup = null,
     ReadOnlyMemory<byte> KeyShare = default,
     bool PreSharedKeySelected = false,
+    bool? EarlyDataAccepted = null,
     ReadOnlyMemory<byte> HandshakeMessageBytes = default,
     ReadOnlyMemory<byte> TicketNonce = default,
     uint? TicketLifetimeSeconds = null,

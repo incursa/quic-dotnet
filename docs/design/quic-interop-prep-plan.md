@@ -265,6 +265,12 @@ Notes on dependency:
    - Status: landed. The managed client/runtime path now admits the first bounded 0-RTT send-attempt floor, derives distinct 0-RTT packet-protection material, and emits a protected client 0-RTT application packet while keeping the receive/anti-replay/public-promise families separate.
    - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, the detached credential-capture slice, the ClientHello PSK-attempt slice, the ServerHello branch-point slice, the abbreviated resumption completion slice, the internal early-data prerequisite capture slice, and the dormant early-data attempt-readiness slice staying stable.
 
+19. `Peer early-data disposition observation`
+   - Goal: keep the EncryptedExtensions early-data disposition traceable under `REQ-QUIC-CRT-0143`, `ARC-QUIC-CRT-0038`, `WI-QUIC-CRT-0040`, and `VER-QUIC-CRT-0040`.
+   - Focus: accepted versus rejected peer `early_data` disposition on the PSK-capable branch, dormant ZeroRtt retention on acceptance, dormant ZeroRtt cleanup on rejection, malformed/duplicated extension rejection, and no public early-data promise widening.
+   - Status: landed. The managed client/runtime path now observes peer `EncryptedExtensions` `early_data` disposition and keeps the public early-data promise closed.
+   - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, the detached credential-capture slice, the ClientHello PSK-attempt slice, the ServerHello branch-point slice, the abbreviated resumption completion slice, the internal early-data prerequisite capture slice, the dormant early-data attempt-readiness slice, and the first client-side 0-RTT send-attempt slice staying stable.
+
 ## Do-Not-Widen Boundaries
 
 - Keep `QuicConnection` and `QuicListener` on the current narrow supported promise until the runtime and TLS buckets are stable.
@@ -286,6 +292,7 @@ Notes on dependency:
 - The current client trust story now has a public exact peer-identity and explicit trust-material carrier plus the internal snapshot seam, and the remaining trust-policy story still does not widen to trust-store or hostname-validation semantics.
 - The early-data prerequisite capture slice under `REQ-QUIC-CRT-0139` is now closed. The managed client/runtime path carries the minimum dormant early-data prerequisite material behind the detached carrier, but early data stays explicitly closed and the repo still does not claim 0-RTT packet support or anti-replay.
 - The dormant early-data attempt-readiness slice under `REQ-QUIC-CRT-0140` is now closed. The managed client/runtime path surfaces a narrow internal readiness observation when the dormant carrier has both ingredients, but actual 0-RTT packet emission remains a separate family.
+- The peer early-data disposition observation slice under `REQ-QUIC-CRT-0143` is now closed. The managed client/runtime path now observes peer EncryptedExtensions early_data disposition and discards dormant ZeroRtt material on rejection, but public early-data support remains explicitly closed.
 
 ## Trace Links
 

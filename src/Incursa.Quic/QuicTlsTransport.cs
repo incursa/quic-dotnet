@@ -92,6 +92,16 @@ internal enum QuicTlsResumptionAttemptDisposition
 }
 
 /// <summary>
+/// The branch disposition observed for peer early-data acceptance at EncryptedExtensions.
+/// </summary>
+internal enum QuicTlsEarlyDataDisposition
+{
+    Unknown = 0,
+    Rejected = 1,
+    Accepted = 2,
+}
+
+/// <summary>
 /// TLS-to-transport state update kinds.
 /// </summary>
 internal enum QuicTlsUpdateKind
@@ -117,6 +127,7 @@ internal enum QuicTlsUpdateKind
     PostHandshakeTicketAvailable = 18,
     ResumptionMasterSecretAvailable = 19,
     ResumptionAttemptDispositionAvailable = 20,
+    PeerEarlyDataDispositionAvailable = 21,
 }
 
 /// <summary>
@@ -142,6 +153,7 @@ internal readonly record struct QuicTlsStateUpdate(
     uint? TicketMaxEarlyDataSize = null,
     ReadOnlyMemory<byte> ResumptionMasterSecret = default,
     QuicTlsResumptionAttemptDisposition? ResumptionAttemptDisposition = null,
+    QuicTlsEarlyDataDisposition? PeerEarlyDataDisposition = null,
     ReadOnlyMemory<byte> TicketBytes = default);
 
 /// <summary>

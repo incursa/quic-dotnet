@@ -1743,6 +1743,30 @@
         "The cleanup is a client-side prerequisite for later replay-control work, not a server-side anti-replay implementation.",
         "The bridge-state path remains the single place that owns the discard decision."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0143",
+      "title": "Observe peer early-data disposition from EncryptedExtensions and clear dormant ZeroRtt material on rejection",
+      "statement": "In the client role, when a PSK-capable ClientHello attempt reaches the peer `EncryptedExtensions` flight, the library MUST observe the peer `early_data` extension, MUST surface an explicit early-data disposition as `Accepted` when the extension is present with the supported zero-length value and as `Rejected` when it is absent, MUST discard dormant ZeroRtt packet-protection material when that disposition is `Rejected`, MUST leave that dormant material intact when the disposition is `Accepted`, MUST deterministically reject malformed or duplicated `early_data` extension data through the existing fatal/update path, and MUST remain client-role only, managed client/runtime only, closed to any public early-data admission or API widening, and not claim 0-RTT receive handling, server admission, key update, transfer, retry, or anti-replay support.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9001 Section 4.6.2",
+          "docs/design/quic-interop-prep-plan.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicTlsTransport.cs",
+          "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+          "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+          "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/QuicPostHandshakeTicketTestSupport.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0143.cs"
+        ]
+      },
+      "notes": [
+        "The client role only observes the server's early-data disposition; it does not open the public early-data promise.",
+        "Rejected dispositions discard only dormant ZeroRtt material; accepted dispositions leave it intact.",
+        "The slice remains separate from 0-RTT receive handling, server admission, key update, transfer, retry, and any public API widening."
+      ]
     }
   ]
 }

@@ -97,6 +97,8 @@ internal sealed class QuicTransportTlsBridgeState
 
     private bool HasAcceptedResumptionAttempt => ResumptionAttemptDisposition == QuicTlsResumptionAttemptDisposition.Accepted;
 
+    public QuicTlsEarlyDataDisposition PeerEarlyDataDisposition { get; private set; } = QuicTlsEarlyDataDisposition.Unknown;
+
     public uint CurrentOneRttKeyPhase { get; private set; }
 
     public QuicTlsTranscriptPhase HandshakeTranscriptPhase { get; private set; } = QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage;
@@ -299,6 +301,10 @@ internal sealed class QuicTransportTlsBridgeState
             case QuicTlsUpdateKind.ResumptionAttemptDispositionAvailable:
                 return update.ResumptionAttemptDisposition.HasValue
                     && TryStoreResumptionAttemptDisposition(update.ResumptionAttemptDisposition.Value);
+
+            case QuicTlsUpdateKind.PeerEarlyDataDispositionAvailable:
+                return update.PeerEarlyDataDisposition.HasValue
+                    && TryStorePeerEarlyDataDisposition(update.PeerEarlyDataDisposition.Value);
 
             case QuicTlsUpdateKind.PostHandshakeTicketAvailable:
                 return update.TranscriptPhase == QuicTlsTranscriptPhase.Completed
@@ -799,6 +805,33 @@ internal sealed class QuicTransportTlsBridgeState
         bool stateChanged = true;
 
         if (disposition == QuicTlsResumptionAttemptDisposition.Rejected)
+        {
+            stateChanged |= TryDiscardKeys(QuicTlsEncryptionLevel.ZeroRtt);
+        }
+
+        return stateChanged;
+    }
+
+    private bool TryStorePeerEarlyDataDisposition(QuicTlsEarlyDataDisposition disposition)
+    {
+        if (IsTerminal
+            || !HasAcceptedResumptionAttempt
+            || disposition == QuicTlsEarlyDataDisposition.Unknown
+            || (PeerEarlyDataDisposition != QuicTlsEarlyDataDisposition.Unknown
+                && PeerEarlyDataDisposition != disposition))
+        {
+            return false;
+        }
+
+        if (PeerEarlyDataDisposition == disposition)
+        {
+            return false;
+        }
+
+        PeerEarlyDataDisposition = disposition;
+        bool stateChanged = true;
+
+        if (disposition == QuicTlsEarlyDataDisposition.Rejected)
         {
             stateChanged |= TryDiscardKeys(QuicTlsEncryptionLevel.ZeroRtt);
         }

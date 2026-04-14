@@ -209,7 +209,8 @@ internal static class QuicPostHandshakeTicketTestSupport
         QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot,
         long nowTicks,
         ReadOnlyMemory<byte> localHandshakePrivateKey,
-        QuicTransportParameters peerTransportParameters)
+        QuicTransportParameters peerTransportParameters,
+        bool includeEarlyData = false)
     {
         QuicTlsKeySchedule schedule = new(localHandshakePrivateKey);
         Assert.True(schedule.TryCreateClientHello(
@@ -220,14 +221,14 @@ internal static class QuicPostHandshakeTicketTestSupport
         schedule.AppendLocalHandshakeMessage(clientHelloTranscript.Span);
 
         byte[] serverHello = CreateServerHelloTranscript(selectedPreSharedKey: true);
-        byte[] encryptedExtensions = CreateEncryptedExtensionsTranscript(peerTransportParameters);
+        byte[] encryptedExtensions = CreateEncryptedExtensionsTranscript(peerTransportParameters, includeEarlyData);
 
         IReadOnlyList<QuicTlsStateUpdate> serverHelloUpdates = schedule.ProcessTranscriptStep(
             CreateServerHelloStep(serverHello, selectedPreSharedKey: true));
         Assert.Equal(4, serverHelloUpdates.Count);
         Assert.True(schedule.TryGetExpectedPeerFinishedVerifyData(out byte[] serverHelloOnlyVerifyData));
 
-        Assert.Empty(schedule.ProcessTranscriptStep(CreateEncryptedExtensionsStep(peerTransportParameters)));
+        Assert.Empty(schedule.ProcessTranscriptStep(CreateEncryptedExtensionsStep(peerTransportParameters, includeEarlyData)));
         Assert.True(schedule.TryGetExpectedPeerFinishedVerifyData(out byte[] finishedVerifyData));
         Assert.False(serverHelloOnlyVerifyData.SequenceEqual(finishedVerifyData));
 
@@ -237,10 +238,12 @@ internal static class QuicPostHandshakeTicketTestSupport
             CreateFinishedTranscript(finishedVerifyData));
     }
 
-    internal static QuicConnectionRuntime CreateAcceptedFinishedClientRuntime()
+    internal static QuicConnectionRuntime CreateAcceptedFinishedClientRuntime(
+        uint? ticketMaxEarlyDataSize = null,
+        bool includeEarlyData = false)
     {
         QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot =
-            QuicResumptionClientHelloTestSupport.CreateDetachedResumptionTicketSnapshot();
+            QuicResumptionClientHelloTestSupport.CreateDetachedResumptionTicketSnapshot(ticketMaxEarlyDataSize);
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
         QuicTransportParameters peerTransportParameters = CreatePeerTransportParameters();
@@ -272,7 +275,8 @@ internal static class QuicPostHandshakeTicketTestSupport
             detachedResumptionTicketSnapshot,
             nowTicks,
             localHandshakePrivateKey,
-            peerTransportParameters);
+            peerTransportParameters,
+            includeEarlyData);
 
         observedAtTicks = ApplyRuntimeUpdates(
             runtime,
@@ -391,9 +395,11 @@ internal static class QuicPostHandshakeTicketTestSupport
             HandshakeMessageBytes: transcriptBytes);
     }
 
-    private static QuicTlsTranscriptStep CreateEncryptedExtensionsStep(QuicTransportParameters transportParameters)
+    private static QuicTlsTranscriptStep CreateEncryptedExtensionsStep(
+        QuicTransportParameters transportParameters,
+        bool includeEarlyData = false)
     {
-        byte[] transcriptBytes = CreateEncryptedExtensionsTranscript(transportParameters);
+        byte[] transcriptBytes = CreateEncryptedExtensionsTranscript(transportParameters, includeEarlyData);
         return new QuicTlsTranscriptStep(
             QuicTlsTranscriptStepKind.PeerTransportParametersStaged,
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged,
@@ -493,7 +499,9 @@ internal static class QuicPostHandshakeTicketTestSupport
         return keyShare;
     }
 
-    private static byte[] CreateEncryptedExtensionsTranscript(QuicTransportParameters transportParameters)
+    internal static byte[] CreateEncryptedExtensionsTranscript(
+        QuicTransportParameters transportParameters,
+        bool includeEarlyData = false)
     {
         byte[] encodedTransportParameters = new byte[256];
         Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
@@ -502,19 +510,34 @@ internal static class QuicPostHandshakeTicketTestSupport
             encodedTransportParameters,
             out int bytesWritten));
 
-        Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
-            encodedTransportParameters[..bytesWritten],
-            QuicTransportParameterRole.Client,
-            out QuicTransportParameters parsedTransportParameters));
-
         byte[] transcript = new byte[512];
-        Assert.True(QuicTlsTranscriptProgress.TryFormatDeterministicEncryptedExtensionsTransportParametersMessage(
-            parsedTransportParameters,
-            QuicTransportParameterRole.Server,
-            transcript,
-            out int messageBytesWritten));
+        int extensionsLength = 4 + bytesWritten + (includeEarlyData ? 4 : 0);
+        int messageLength = 2 + extensionsLength;
+        int index = 0;
 
-        Array.Resize(ref transcript, messageBytesWritten);
+        transcript[index++] = (byte)QuicTlsHandshakeMessageType.EncryptedExtensions;
+        WriteUInt24(transcript.AsSpan(index, UInt24Length), messageLength);
+        index += UInt24Length;
+
+        WriteUInt16(transcript.AsSpan(index, UInt16Length), (ushort)extensionsLength);
+        index += UInt16Length;
+
+        WriteUInt16(transcript.AsSpan(index, UInt16Length), QuicTransportParametersCodec.QuicTransportParametersExtensionType);
+        index += UInt16Length;
+        WriteUInt16(transcript.AsSpan(index, UInt16Length), (ushort)bytesWritten);
+        index += UInt16Length;
+        encodedTransportParameters.AsSpan(..bytesWritten).CopyTo(transcript.AsSpan(index, bytesWritten));
+        index += bytesWritten;
+
+        if (includeEarlyData)
+        {
+            WriteUInt16(transcript.AsSpan(index, UInt16Length), EarlyDataExtensionType);
+            index += UInt16Length;
+            WriteUInt16(transcript.AsSpan(index, UInt16Length), 0);
+            index += UInt16Length;
+        }
+
+        Array.Resize(ref transcript, HandshakeHeaderLength + messageLength);
         return transcript;
     }
 
