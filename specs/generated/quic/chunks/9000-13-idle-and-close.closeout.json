@@ -32,8 +32,8 @@
     "S10P2P2": 5,
     "S10P2P3": 13,
     "total": 52,
-    "implemented_and_tested": 8,
-    "blocked": 44,
+    "implemented_and_tested": 9,
+    "blocked": 43,
     "partial": 0,
     "needs_review": 0
   },
@@ -47,7 +47,8 @@
       "REQ-QUIC-RFC9000-S10P1-0007",
       "REQ-QUIC-RFC9000-S10P1P1-0001",
       "REQ-QUIC-RFC9000-S10P2P2-0001",
-      "REQ-QUIC-RFC9000-S10P2P2-0003"
+      "REQ-QUIC-RFC9000-S10P2P2-0003",
+      "REQ-QUIC-RFC9000-S10P2P2-0005"
     ],
     "stale_requirement_refs_found": [],
     "notes": "All in-scope references are exact matches for this chunk. The audited test files also contain unrelated RFC tags outside the chunk scope, which were ignored."
@@ -56,6 +57,12 @@
     {
       "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P1_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P2_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P2_0004\"",
       "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P2_0005\"",
+      "passed": 2,
       "failed": 0,
       "skipped": 0
     },
@@ -250,23 +257,26 @@
       ],
       "implemented_requirement_ids": [
         "REQ-QUIC-RFC9000-S10P2P2-0001",
-        "REQ-QUIC-RFC9000-S10P2P2-0003"
+        "REQ-QUIC-RFC9000-S10P2P2-0003",
+        "REQ-QUIC-RFC9000-S10P2P2-0005"
       ],
       "blocked_requirement_ids": [
         "REQ-QUIC-RFC9000-S10P2P2-0002",
-        "REQ-QUIC-RFC9000-S10P2P2-0004",
-        "REQ-QUIC-RFC9000-S10P2P2-0005"
+        "REQ-QUIC-RFC9000-S10P2P2-0004"
       ],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs::TryEnterDrainingState_DisablesSendingPackets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs::TryEnterClosingState_DisablesFurtherPackets"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs::TryEnterClosingState_DisablesFurtherPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0005.cs::ReceivedConnectionCloseFrame_TransitionsTheRuntimeToDraining",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0005.cs::ReceivedConnectionCloseFrame_WhileAlreadyDrainingDoesNotChangeStateAgain"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0005.cs"
       ],
-      "remaining_gap": "This behavior still needs the endpoint runtime for the remaining receive-triggered draining and CONNECTION_CLOSE packet-response policy.",
-      "notes": "The helper-backed closing/draining no-send clauses are now proven, but receive-triggered close handling remains blocked."
+      "remaining_gap": "This behavior still needs the endpoint runtime for immediate-close orchestration and CONNECTION_CLOSE packet-response policy.",
+      "notes": "The helper-backed closing/draining no-send clauses and peer-close draining transition are now proven, but immediate-close orchestration and CONNECTION_CLOSE wire support remain blocked."
     },
     {
       "section_token": "S10P2P3",
@@ -308,5 +318,5 @@
       "notes": "The current repo has no CONNECTION_CLOSE wire support or packet sending state machine."
     }
   ],
-  "conclusion": "The chunk is clean for trace purposes: there are no stale requirement IDs in scope and no silent gaps in scope. The helper-backed close/drain no-send clauses are now proven, while immediate-close orchestration, receive-triggered draining, and CONNECTION_CLOSE wire support remain explicitly deferred behind missing endpoint-runtime support."
+  "conclusion": "The chunk is clean for trace purposes: there are no stale requirement IDs in scope and no silent gaps in scope. The helper-backed close/drain no-send clauses and peer-close draining transition are now proven, while immediate-close orchestration and CONNECTION_CLOSE wire support remain explicitly deferred behind missing endpoint-runtime support."
 }
