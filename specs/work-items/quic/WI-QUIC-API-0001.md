@@ -19,7 +19,7 @@ related_artifacts:
 
 ## Summary
 
-Promote the connection-, listener-, client-entry-, narrow stream-entry-, supported write/completion plus narrow reset/stop-sending abort pair-, narrow initial stream-capacity callback, and shared support-marker Incursa.Quic consumer facade, prove the supported positive loopback establishment, stream open/accept, write/completion, read/write abort, and support-marker boundaries, refine lifecycle semantics from Microsoft test evidence, and hide the helper-layer implementation seams.
+Promote the connection-, listener-, client-entry-, narrow stream-entry-, supported write/completion plus narrow reset/stop-sending abort pair and supported Abort(Both, ...) composition, narrow initial stream-capacity callback, and shared support-marker Incursa.Quic consumer facade, prove the supported positive loopback establishment, stream open/accept, write/completion, read/write/Both abort, and support-marker boundaries, refine lifecycle semantics from Microsoft test evidence, and hide the helper-layer implementation seams.
 
 ## Design Inputs
 
@@ -28,7 +28,7 @@ Promote the connection-, listener-, client-entry-, narrow stream-entry-, support
 ## Planned Changes
 
 - Add the public connection, stream, listener, client-option, error, abort/direction, and stream-capacity-args types named in the slice.
-- Promote the first server-side listener entry surface (`ListenAsync`, `AcceptConnectionAsync`), the first honest client-entry surface (`ConnectAsync(...)`), the narrow stream-entry surface (`AcceptInboundStreamAsync(...)` and `OpenOutboundStreamAsync(...)`), the supported write/completion plus `RESET_STREAM` / `STOP_SENDING` abort pair on send-capable `QuicStream` facades, the narrow initial stream-capacity callback surface (`QuicConnectionOptions.StreamCapacityCallback`), and the shared `QuicConnection.IsSupported` / `QuicListener.IsSupported` capability markers.
+- Promote the first server-side listener entry surface (`ListenAsync`, `AcceptConnectionAsync`), the first honest client-entry surface (`ConnectAsync(...)`), the narrow stream-entry surface (`AcceptInboundStreamAsync(...)` and `OpenOutboundStreamAsync(...)`), the supported write/completion plus `RESET_STREAM` / `STOP_SENDING` abort pair on send-capable `QuicStream` facades, including the supported `Abort(Both, ...)` composition on the bidirectional loopback path, the narrow initial stream-capacity callback surface (`QuicConnectionOptions.StreamCapacityCallback`), and the shared `QuicConnection.IsSupported` / `QuicListener.IsSupported` capability markers.
 - Reuse the existing runtime endpoint, endpoint-host, runtime, stream-state, handshake, and packet seams to build a narrow client host shell over a connected UDP socket and the supported positive loopback establishment boundary, plus the minimal 1-RTT short-header stream-control lane needed for the stream-entry, write/completion, and abort slices.
 - Reuse the existing peer stream-limit bookkeeping to publish truthful initial outbound stream-open capacity increments from peer transport-parameter commit, later real peer `MAX_STREAMS` growth on the supported active loopback path, and real peer stream-close-driven capacity release on that same path.
 - Correct `QuicStreamType` to the approved direction-only public model.
@@ -36,24 +36,24 @@ Promote the connection-, listener-, client-entry-, narrow stream-entry-, support
 - Reconcile the public API analyzer files with the approved smaller public boundary.
 - Add one cached internal capability probe so `QuicConnection.IsSupported` and `QuicListener.IsSupported` stay aligned with the supported managed runtime prerequisites.
 - Reject unsupported `SslClientAuthenticationOptions` settings explicitly instead of silently ignoring them.
-- Reject unsupported `Abort(Both, ...)` directions explicitly instead of fabricating combined read/write parity.
-- Encode the close/dispose, error projection, read-side, listener-accept, stream-open, stream-accept, supported write/completion, supported read/write abort, initial stream-capacity callback, positive loopback establishment, pending-connect cancellation, and option-shape semantics reflected by the Microsoft reference tests and the existing runtime/stream/listener-host seams.
+- Support `Abort(Both, ...)` explicitly by composing the supported read and write runtime actions on the bidirectional loopback path.
+- Encode the close/dispose, error projection, read-side, listener-accept, stream-open, stream-accept, supported write/completion, supported read/write abort, supported combined abort, initial stream-capacity callback, positive loopback establishment, pending-connect cancellation, and option-shape semantics reflected by the Microsoft reference tests and the existing runtime/stream/listener-host seams.
 
 ## Out of Scope
 
 - Changing protocol wire behavior.
 - Introducing a general middleware model.
-- Adding combined `Abort(Both, ...)` or broader stream-management parity in this pass.
+- Adding broader stream-management parity beyond the supported bidirectional abort composition in this pass.
 - Adding the full client-auth contract in this pass.
 - Adding new transport features beyond the approved facade.
 
 ## Verification Plan
 
-Use API-diff and reflection-based surface checks, plus compile-time access tests, to prove the approved public types are visible and the listed seam types are not. Add focused consumer-behavior tests for `QuicStreamType` shape, close/dispose/error projection, read-side terminal behavior, write-side completion behavior, supported `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` loopback behavior, combined `Abort(Both, ...)` rejection, listener setup validation, listener disposal semantics, accept cancellation, supported positive loopback establishment, supported stream open/accept on the active loopback path, supported write/completion on the active loopback path, supported initial stream-capacity callback payloads, pending client-connect cancellation/disposal semantics, unsupported TLS rejection, and the connection/stream/listener/client facade mapping to `QuicConnectionRuntime`, `QuicConnectionStreamState`, `QuicListenerHost`, `QuicConnectionRuntimeEndpoint`, `QuicConnectionEndpointHost`, and `QuicStream`. Keep the proof focused on surface shape, positive-establishment honesty, the initial stream-capacity subset, and terminal behavior rather than full wire success; later stream-capacity evolution, fuzzing, and benchmarks remain separate slices.
+Use API-diff and reflection-based surface checks, plus compile-time access tests, to prove the approved public types are visible and the listed seam types are not. Add focused consumer-behavior tests for `QuicStreamType` shape, close/dispose/error projection, read-side terminal behavior, write-side completion behavior, supported `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` loopback behavior, supported `Abort(Both, ...)` loopback behavior, listener setup validation, listener disposal semantics, accept cancellation, supported positive loopback establishment, supported stream open/accept on the active loopback path, supported write/completion on the active loopback path, supported initial stream-capacity callback payloads, pending client-connect cancellation/disposal semantics, unsupported TLS rejection, and the connection/stream/listener/client facade mapping to `QuicConnectionRuntime`, `QuicConnectionStreamState`, `QuicListenerHost`, `QuicConnectionRuntimeEndpoint`, `QuicConnectionEndpointHost`, and `QuicStream`. Keep the proof focused on surface shape, positive-establishment honesty, the initial stream-capacity subset, and terminal behavior rather than full wire success; later stream-capacity evolution, fuzzing, and benchmarks remain separate slices.
 
 ## Completion Notes
 
-This item keeps the stream-capacity callback narrow and truthful for the initial delta, later real MAX_STREAMS growth, and real peer stream-close-driven capacity release on the supported loopback path. The shared `IsSupported` marker is now part of the same public surface promotion slice, and reset/stop-sending parity and broader write-heavy stream behavior remain separate slices.
+This item keeps the stream-capacity callback narrow and truthful for the initial delta, later real MAX_STREAMS growth, and real peer stream-close-driven capacity release on the supported loopback path. The shared `IsSupported` marker is now part of the same public surface promotion slice, the supported `Abort(Both, ...)` composition now rides the same reset/stop-sending lanes on the bidirectional loopback path, and broader write-heavy stream behavior remains separate slices.
 
 ## Trace Links
 

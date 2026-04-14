@@ -156,7 +156,27 @@ public sealed class QuicStream : Stream
 
         if (abortRead && abortWrite)
         {
-            throw new NotSupportedException("The supported runtime path does not yet expose combined read/write aborts.");
+            if (!canRead || !canWrite)
+            {
+                throw new InvalidOperationException("This stream does not support combined read/write aborts.");
+            }
+
+            if (runtime is null)
+            {
+                throw new NotSupportedException("Aborting both sides requires the supported connection runtime path.");
+            }
+
+            if (!writesClosed.Task.IsCompleted)
+            {
+                runtime.AbortStreamWritesAsync(streamId, checked((ulong)errorCode)).GetAwaiter().GetResult();
+            }
+
+            if (!readsClosed.Task.IsCompleted)
+            {
+                runtime.AbortStreamReadsAsync(streamId, checked((ulong)errorCode)).GetAwaiter().GetResult();
+            }
+
+            return;
         }
 
         if (!abortRead && !abortWrite)

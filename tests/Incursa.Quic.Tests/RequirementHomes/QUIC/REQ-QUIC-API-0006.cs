@@ -5,7 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0006">The library MUST classify terminal and shutdown outcomes through QuicError and QuicException, surface application and transport error codes on the exception where the peer actually provided them, and support the currently approved per-stream abort direction subset through QuicAbortDirection without fabricating broader combined-abort parity.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0006">The library MUST classify terminal and shutdown outcomes through QuicError and QuicException, surface application and transport error codes on the exception where the peer actually provided them, and support per-stream abort direction through QuicAbortDirection, including the combined Both case on the supported bidirectional loopback path, without fabricating broader stream-management parity.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0006")]
 public sealed class REQ_QUIC_API_0006
@@ -43,15 +43,53 @@ public sealed class REQ_QUIC_API_0006
     }
 
     [Fact]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
-    public async Task AbortBoth_IsRejectedInsteadOfSilentlyFakingCombinedAbort()
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task AbortBoth_OnTheSupportedBidirectionalLoopbackPath_ProjectsResetAndStopSendingHonestly()
     {
         await using LoopbackStreamPair pair = await LoopbackStreamPair.CreateAsync();
 
-        Assert.Throws<NotSupportedException>(() => pair.ClientStream.Abort(QuicAbortDirection.Both, 9));
+        pair.ClientStream.Abort(QuicAbortDirection.Both, 9);
 
-        await pair.ClientStream.WriteAsync(new byte[] { 0xAA }, 0, 1).WaitAsync(TimeSpan.FromSeconds(5));
+        QuicException clientReadsClosedException = await Assert.ThrowsAsync<QuicException>(
+            () => pair.ClientStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.Equal(QuicError.OperationAborted, clientReadsClosedException.QuicError);
+        Assert.Null(clientReadsClosedException.ApplicationErrorCode);
+
+        QuicException clientWritesClosedException = await Assert.ThrowsAsync<QuicException>(
+            () => pair.ClientStream.WritesClosed.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.Equal(QuicError.OperationAborted, clientWritesClosedException.QuicError);
+        Assert.Null(clientWritesClosedException.ApplicationErrorCode);
+
+        QuicException serverReadsClosedException = await Assert.ThrowsAsync<QuicException>(
+            () => pair.ServerStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.Equal(QuicError.StreamAborted, serverReadsClosedException.QuicError);
+        Assert.Equal(9, serverReadsClosedException.ApplicationErrorCode);
+
+        QuicException serverWritesClosedException = await Assert.ThrowsAsync<QuicException>(
+            () => pair.ServerStream.WritesClosed.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.Equal(QuicError.StreamAborted, serverWritesClosedException.QuicError);
+        Assert.Equal(9, serverWritesClosedException.ApplicationErrorCode);
+
+        QuicException localReadException = await Assert.ThrowsAsync<QuicException>(
+            () => pair.ClientStream.ReadAsync(new byte[1], 0, 1));
+        Assert.Equal(QuicError.OperationAborted, localReadException.QuicError);
+        Assert.Null(localReadException.ApplicationErrorCode);
+
+        QuicException localWriteException = await Assert.ThrowsAsync<QuicException>(
+            () => pair.ClientStream.WriteAsync(new byte[] { 0xAA }, 0, 1));
+        Assert.Equal(QuicError.OperationAborted, localWriteException.QuicError);
+        Assert.Null(localWriteException.ApplicationErrorCode);
+
+        QuicException peerReadException = await Assert.ThrowsAsync<QuicException>(
+            () => pair.ServerStream.ReadAsync(new byte[1], 0, 1));
+        Assert.Equal(QuicError.StreamAborted, peerReadException.QuicError);
+        Assert.Equal(9, peerReadException.ApplicationErrorCode);
+
+        QuicException peerWriteException = await Assert.ThrowsAsync<QuicException>(
+            () => pair.ServerStream.WriteAsync(new byte[] { 0xAA }, 0, 1));
+        Assert.Equal(QuicError.StreamAborted, peerWriteException.QuicError);
+        Assert.Equal(9, peerWriteException.ApplicationErrorCode);
     }
 
     [Fact]
