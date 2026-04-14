@@ -2120,6 +2120,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.3.3 RFC9002-S7.3.3-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P3-0001.cs::Constructor_LeavesTheSenderInSlowStartBeforeAnyThresholdBoundaryIsReached
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P3-0001.cs::TryRegisterAcknowledgedPacket_LeavesTheSenderInCongestionAvoidanceAtTheThresholdBoundary
 
 ## REQ-QUIC-RFC9002-S7P3P3-0002 Limit congestion-avoidance growth to one datagram per acknowledged window
 A sender in congestion avoidance MUST limit the increase to the congestion window to at most one maximum datagram size for each congestion window that is acknowledged.
@@ -2134,6 +2137,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.3.3 RFC9002-S7.3.3-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P3-0002.cs::TryRegisterAcknowledgedPacket_GrowsTheCongestionWindowByOneDatagramPerCongestionWindowAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P3-0002.cs::TryRegisterAcknowledgedPacket_DoesNotUseTheCongestionAvoidanceFormulaBeforeTheThresholdIsReached
 
 ## REQ-QUIC-RFC9002-S7P4-0001 Ignore undecryptable packet loss before keys are available
 Endpoints MAY ignore the loss of Handshake, 0-RTT, and 1-RTT packets that might have arrived before the peer had packet protection keys to process those packets.
