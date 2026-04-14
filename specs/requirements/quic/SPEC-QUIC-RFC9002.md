@@ -432,8 +432,9 @@ Trace:
   - RFC 9002 §5.1 RFC9002-S5.1-B8-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_UpdatesTheRttWhenTheLargestPacketIsNewlyAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_DoesNotUpdateTheRttWhenTheLargestPacketWasAlreadyAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_LeavesTheRttUnchangedAtTheZeroBoundaryWhenTheLargestPacketWasAlreadyAcknowledged
 
 ## REQ-QUIC-RFC9002-S5P1-0005 Require ack-eliciting progress
 An RTT sample MUST NOT be generated on receiving an ACK frame that does not newly acknowledge at least one ack-eliciting packet.
@@ -465,6 +466,10 @@ Trace:
 - Source Refs:
   - RFC 9002 §5.2 RFC9002-S5.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0001.cs::TryUpdateFromAck_InitializesMinRttFromTheFirstSample
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0001.cs::TryUpdateFromAck_IgnoresAckDelayWhenInitializingTheFirstSample
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0001.cs::TryUpdateFromAck_InitializesTheFirstSampleAtTheZeroBoundary
 
 ## REQ-QUIC-RFC9002-S5P2-0002 Update min_rtt on later samples
 On all RTT samples after the first, min_rtt MUST be set to the lesser of min_rtt and latest_rtt.

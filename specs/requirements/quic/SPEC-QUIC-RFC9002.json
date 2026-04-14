@@ -761,8 +761,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_UpdatesTheRttWhenTheLargestPacketIsNewlyAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_DoesNotUpdateTheRttWhenTheLargestPacketWasAlreadyAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_LeavesTheRttUnchangedAtTheZeroBoundaryWhenTheLargestPacketWasAlreadyAcknowledged"
         ]
       }
     },
@@ -819,6 +820,11 @@
         "upstream_refs": [
           "RFC 9002 §5.2 RFC9002-S5.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0001.cs::TryUpdateFromAck_InitializesMinRttFromTheFirstSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0001.cs::TryUpdateFromAck_IgnoresAckDelayWhenInitializingTheFirstSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0001.cs::TryUpdateFromAck_InitializesTheFirstSampleAtTheZeroBoundary"
         ]
       }
     },
