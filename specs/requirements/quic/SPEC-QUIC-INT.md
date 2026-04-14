@@ -8,11 +8,11 @@ Define the interop-runner-facing companion harness contract that hosts Incursa.Q
 
 ## Scope
 
-This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process prerequisite, the narrow retry child-process contract, unsupported testcase exit behavior, the transfer-owned child-process completion contract, placeholder diagnostics hooks, Docker packaging, and CI participation.
+This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, unsupported testcase exit behavior, the transfer-owned child-process completion contract, placeholder diagnostics hooks, Docker packaging, and CI participation.
 
 ## Context
 
-Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` prerequisite is tracked separately as a child-process-only open/accept contract on the existing managed path, the narrow transfer slice is now wired as a child-process completion contract on the existing active-phase path, and the narrow `retry` slice now dispatches into the managed one-Retry replay path instead of falling through to `127`. The one-Retry bootstrap handoff itself remains library-owned under `REQ-QUIC-CRT-0122`, while this spec owns the child-process dispatch and proof under `REQ-QUIC-INT-0012`.
+Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` contract is tracked separately as a child-process-only open/accept contract on the existing managed path and is now green in the current implementation, the narrow transfer slice is now wired as a child-process completion contract on the existing active-phase path, and the narrow `retry` slice now dispatches into the managed one-Retry replay path instead of falling through to `127`. The one-Retry bootstrap handoff itself remains library-owned under `REQ-QUIC-CRT-0122`, while this spec owns the child-process dispatch and proof under `REQ-QUIC-INT-0012`.
 
 ## Open Questions
 
@@ -20,7 +20,7 @@ Incursa.Quic remains the owner of reusable transport/runtime behavior. The inter
 
 ## Current Support Posture
 
-The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap, server Initial-response emission, and one-Retry replay handoff. The harness `handshake` testcase now dispatches into that managed path, the smaller `post-handshake-stream` prerequisite remains tracked separately and is still blocked by the server-side 1-RTT admission state needed to accept the first application packet, the narrow transfer testcase now dispatches into its managed active-phase path, and the narrow `retry` testcase now dispatches into its managed one-Retry replay path. Unsupported testcases still return exit code `127`.
+The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap, server Initial-response emission, and one-Retry replay handoff. The harness `handshake` testcase now dispatches into that managed path, the smaller `post-handshake-stream` testcase now dispatches into the managed open/accept path and is green in the current implementation, the narrow transfer testcase now dispatches into its managed active-phase path, and the narrow `retry` testcase now dispatches into its managed one-Retry replay path. Unsupported testcases still return exit code `127`.
 
 ## Boundary Split
 

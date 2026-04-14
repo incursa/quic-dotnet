@@ -50,7 +50,7 @@ The child-process harness proves the first application-stream open/accept pair a
 
 ## Status
 
-Planned; this verification slice records the proof contract for the smaller prerequisite beneath the transfer-owned slice.
+Landed; this verification slice records the proof contract for the smaller prerequisite beneath the transfer-owned slice.
 
 ## Related Artifacts
 

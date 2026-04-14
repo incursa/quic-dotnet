@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-INT-0004"
 artifact_type: "work_item"
 title: "QUIC Interop Post-Handshake Stream Open/Accept Work Item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-INT-0011"
@@ -61,7 +61,7 @@ Run the new INT requirement-home test, the existing handshake/public guards, the
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+The managed child-process path now dispatches `post-handshake-stream` after handshake completion, the client opens the first application stream, and the server accepts it on the real harness path.
 
 ## Trace Links
 
