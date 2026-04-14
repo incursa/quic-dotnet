@@ -154,6 +154,113 @@ public sealed class REQ_QUIC_CRT_0141
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzZeroRttPacketEmissionBoundary_RandomizedCarriersStillPublishValidProtectedPackets()
+    {
+        Random random = new(0x5150_2041);
+        byte[] localHandshakePrivateKey = CreateScalar(0x11);
+        Span<byte> lengthFieldBuffer = stackalloc byte[QuicVariableLengthInteger.MaxEncodedLength];
+
+        for (int iteration = 0; iteration < 128; iteration++)
+        {
+            uint ticketMaxEarlyDataSize = (uint)random.Next(1, 1 << 16);
+            QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot =
+                CreateRandomDetachedResumptionTicketSnapshot(random, ticketMaxEarlyDataSize);
+            QuicTransportParameters localTransportParameters =
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedTransportParameters(InitialSourceConnectionId);
+            long nowTicks = detachedResumptionTicketSnapshot.CapturedAtTicks + Stopwatch.Frequency + iteration;
+
+            QuicTlsTransportBridgeDriver driver = new(
+                QuicTlsRole.Client,
+                localHandshakePrivateKey: localHandshakePrivateKey);
+
+            IReadOnlyList<QuicTlsStateUpdate> updates = driver.StartHandshake(
+                localTransportParameters,
+                detachedResumptionTicketSnapshot,
+                nowTicks);
+
+            Assert.Equal(3, updates.Count);
+            Assert.Equal(QuicTlsUpdateKind.LocalTransportParametersReady, updates[0].Kind);
+            Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[1].Kind);
+            Assert.Equal(QuicTlsUpdateKind.PacketProtectionMaterialAvailable, updates[2].Kind);
+            Assert.NotNull(updates[2].PacketProtectionMaterial);
+            Assert.Equal(QuicTlsEncryptionLevel.ZeroRtt, updates[2].PacketProtectionMaterial!.Value.EncryptionLevel);
+
+            using QuicConnectionRuntime clientRuntime = CreateClientRuntime(
+                localHandshakePrivateKey,
+                detachedResumptionTicketSnapshot);
+
+            Assert.True(clientRuntime.HasDormantDetachedResumptionTicketSnapshot);
+            Assert.True(clientRuntime.HasDormantEarlyDataAttemptReadiness);
+
+            QuicConnectionTransitionResult result = clientRuntime.Transition(
+                new QuicConnectionHandshakeBootstrapRequestedEvent(
+                    ObservedAtTicks: nowTicks,
+                    LocalTransportParameters: localTransportParameters),
+                nowTicks);
+
+            Assert.True(result.StateChanged);
+
+            QuicConnectionSendDatagramEffect zeroRttSend = Assert.Single(GetZeroRttSendEffects(result.Effects));
+            Assert.True(IsZeroRttPacket(zeroRttSend.Datagram.Span));
+
+            Assert.True(
+                clientRuntime.TlsState.TryGetPacketProtectionMaterial(
+                    QuicTlsEncryptionLevel.ZeroRtt,
+                    out QuicTlsPacketProtectionMaterial runtimeZeroRttPacketProtectionMaterial));
+
+            byte[] expectedPacket = BuildExpectedZeroRttPacket(
+                CreateZeroRttApplicationPayload(),
+                runtimeZeroRttPacketProtectionMaterial);
+
+            Assert.True(expectedPacket.AsSpan().SequenceEqual(zeroRttSend.Datagram.Span));
+
+            QuicHandshakeFlowCoordinator packetCoordinator = new();
+            Assert.True(packetCoordinator.TrySetInitialDestinationConnectionId(InitialDestinationConnectionId));
+            Assert.True(packetCoordinator.TrySetSourceConnectionId(InitialSourceConnectionId));
+
+            byte[] fuzzPayload = CreateRandomZeroRttApplicationPayload(
+                random,
+                random.Next(1, QuicInitialPacketProtection.HeaderProtectionSampleOffset
+                    + QuicInitialPacketProtection.HeaderProtectionSampleLength
+                    + 16));
+
+            Assert.True(packetCoordinator.TryBuildProtectedZeroRttApplicationPacket(
+                fuzzPayload,
+                runtimeZeroRttPacketProtectionMaterial,
+                out byte[] fuzzProtectedPacket));
+
+            QuicHandshakeFlowCoordinator expectedPacketCoordinator = new();
+            Assert.True(expectedPacketCoordinator.TrySetInitialDestinationConnectionId(InitialDestinationConnectionId));
+            Assert.True(expectedPacketCoordinator.TrySetSourceConnectionId(InitialSourceConnectionId));
+            Assert.True(expectedPacketCoordinator.TryBuildProtectedZeroRttApplicationPacket(
+                fuzzPayload,
+                runtimeZeroRttPacketProtectionMaterial,
+                out byte[] expectedFuzzProtectedPacket));
+
+            Assert.True(fuzzProtectedPacket.AsSpan().SequenceEqual(expectedFuzzProtectedPacket));
+
+            int paddedPayloadLength = Math.Max(
+                fuzzPayload.Length,
+                QuicInitialPacketProtection.HeaderProtectionSampleOffset
+                + QuicInitialPacketProtection.HeaderProtectionSampleLength);
+            ulong lengthFieldValue = (ulong)(sizeof(uint) + paddedPayloadLength + QuicInitialPacketProtection.AuthenticationTagLength);
+            Assert.True(QuicVariableLengthInteger.TryFormat(lengthFieldValue, lengthFieldBuffer, out int lengthFieldBytesWritten));
+            int expectedProtectedLength = 1
+                + sizeof(uint)
+                + 1
+                + InitialDestinationConnectionId.Length
+                + 1
+                + InitialSourceConnectionId.Length
+                + lengthFieldBytesWritten
+                + sizeof(uint)
+                + paddedPayloadLength
+                + QuicInitialPacketProtection.AuthenticationTagLength;
+            Assert.Equal(expectedProtectedLength, fuzzProtectedPacket.Length);
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void PublicSurfaceStillDoesNotExposeZeroRttEarlyDataOrAntiReplayPromises()
@@ -235,6 +342,44 @@ public sealed class REQ_QUIC_CRT_0141
         Assert.True(QuicFrameCodec.TryFormatPingFrame(applicationPayload, out int bytesWritten));
         Assert.True(bytesWritten > 0);
         return applicationPayload;
+    }
+
+    private static QuicDetachedResumptionTicketSnapshot CreateRandomDetachedResumptionTicketSnapshot(
+        Random random,
+        uint ticketMaxEarlyDataSize)
+    {
+        byte[] ticketBytes = CreateRandomBytes(random, random.Next(1, 17));
+        byte[] ticketNonce = CreateRandomBytes(random, random.Next(0, 9));
+        byte[] resumptionMasterSecret = CreateRandomBytes(random, 32);
+
+        return new QuicDetachedResumptionTicketSnapshot(
+            ticketBytes,
+            ticketNonce,
+            ticketLifetimeSeconds: 7_200u + (uint)random.Next(0, 3_600),
+            ticketAgeAdd: unchecked((uint)random.Next()),
+            capturedAtTicks: 1_234 + random.Next(0, 10_000),
+            resumptionMasterSecret,
+            ticketMaxEarlyDataSize,
+            peerTransportParameters: QuicPostHandshakeTicketTestSupport.CreatePeerTransportParameters());
+    }
+
+    private static byte[] CreateRandomZeroRttApplicationPayload(Random random, int length)
+    {
+        byte[] applicationPayload = CreateRandomBytes(random, length);
+        Assert.True(QuicFrameCodec.TryFormatPingFrame(applicationPayload, out int bytesWritten));
+        Assert.True(bytesWritten > 0);
+        return applicationPayload;
+    }
+
+    private static byte[] CreateRandomBytes(Random random, int length)
+    {
+        byte[] data = new byte[length];
+        if (length > 0)
+        {
+            random.NextBytes(data);
+        }
+
+        return data;
     }
 
     private static byte[] CreateScalar(byte value)

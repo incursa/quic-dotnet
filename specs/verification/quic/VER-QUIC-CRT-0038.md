@@ -54,7 +54,7 @@ The managed client/runtime path can attempt the first bounded 0-RTT packet emiss
 
 ## Status
 
-planned
+landed
 
 ## Related Artifacts
 
