@@ -3354,6 +3354,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
+        bool shouldSendReplyClosePacket = phase != QuicConnectionPhase.Closing;
+
         EnterTerminalPhase(
             QuicConnectionPhase.Draining,
             QuicConnectionCloseOrigin.Remote,
@@ -3362,6 +3364,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             preserveTerminalEndTicks: phase == QuicConnectionPhase.Closing);
 
         AppendTerminalEffects(ref effects, emitClosePacket: false);
+        if (shouldSendReplyClosePacket)
+        {
+            AppendConnectionClosePacket(ref effects, CreatePeerConnectionCloseReplyMetadata());
+        }
+
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return true;
     }
@@ -4229,7 +4236,19 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return;
         }
 
-        ReadOnlyMemory<byte> closePayload = FormatConnectionClosePayload(terminalState.Value.Close);
+        AppendConnectionClosePacket(ref effects, terminalState.Value.Close);
+    }
+
+    private void AppendConnectionClosePacket(
+        ref List<QuicConnectionEffect>? effects,
+        QuicConnectionCloseMetadata closeMetadata)
+    {
+        if (activePath is null)
+        {
+            return;
+        }
+
+        ReadOnlyMemory<byte> closePayload = FormatConnectionClosePayload(closeMetadata);
         QuicConnectionActivePathRecord currentPath = activePath.Value;
         if (!currentPath.AmplificationState.TryConsumeSendBudget(
             closePayload.Length,
@@ -4246,6 +4265,15 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             currentPath.Identity,
             closePayload));
+    }
+
+    private static QuicConnectionCloseMetadata CreatePeerConnectionCloseReplyMetadata()
+    {
+        return new QuicConnectionCloseMetadata(
+            TransportErrorCode: QuicTransportErrorCode.NoError,
+            ApplicationErrorCode: null,
+            TriggeringFrameType: 0x1c,
+            ReasonPhrase: null);
     }
 
     private QuicConnectionEffect[] RecomputeLifecycleTimerEffects()

@@ -12,9 +12,17 @@ public sealed class REQ_QUIC_CRT_0026
     {
         FakeMonotonicClock clock = new(0);
         QuicConnectionRuntime runtime = CreateRuntime(clock);
+        QuicConnectionPathIdentity path = new("203.0.113.20", RemotePort: 443);
+
+        runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 0,
+                path,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: MicrosecondsToTicks(50));
 
         QuicConnectionCloseMetadata closeMetadata = new(
-            TransportErrorCode: QuicTransportErrorCode.NoError,
+            TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
             ApplicationErrorCode: null,
             TriggeringFrameType: 0x1c,
             ReasonPhrase: "peer close");
@@ -25,6 +33,16 @@ public sealed class REQ_QUIC_CRT_0026
                 closeMetadata),
             nowTicks: MicrosecondsToTicks(75));
 
+        Assert.True(runtime.ActivePath.HasValue);
+
+        QuicConnectionCloseFrame expectedReply = new(
+            QuicTransportErrorCode.NoError,
+            triggeringFrameType: 0x1c,
+            []);
+        byte[] expectedDatagram = QuicFrameTestData.BuildConnectionCloseFrame(expectedReply);
+        QuicConnectionSendDatagramEffect send = Assert.IsType<QuicConnectionSendDatagramEffect>(
+            Assert.Single(result.Effects, effect => effect is QuicConnectionSendDatagramEffect));
+
         Assert.Equal(QuicConnectionPhase.Draining, runtime.Phase);
         Assert.Equal(QuicConnectionSendingMode.None, runtime.SendingMode);
         Assert.False(runtime.CanSendOrdinaryPackets);
@@ -32,7 +50,8 @@ public sealed class REQ_QUIC_CRT_0026
         Assert.Equal(closeMetadata, runtime.TerminalState?.Close);
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.IdleTimeout));
         Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.DrainLifetime));
-        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+        Assert.Equal(path, send.PathIdentity);
+        Assert.True(expectedDatagram.AsSpan().SequenceEqual(send.Datagram.Span));
         Assert.Contains(result.Effects, effect => effect is QuicConnectionNotifyStreamsOfTerminalStateEffect);
         Assert.Contains(result.Effects, effect => effect is QuicConnectionArmTimerEffect arm && arm.TimerKind == QuicConnectionTimerKind.DrainLifetime);
     }
@@ -57,11 +76,11 @@ public sealed class REQ_QUIC_CRT_0026
 
         long closeDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.CloseLifetime)!.Value;
 
-        runtime.Transition(
+        QuicConnectionTransitionResult result = runtime.Transition(
             new QuicConnectionConnectionCloseFrameReceivedEvent(
                 ObservedAtTicks: 0,
                 new QuicConnectionCloseMetadata(
-                    TransportErrorCode: QuicTransportErrorCode.NoError,
+                    TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
                     ApplicationErrorCode: null,
                     TriggeringFrameType: 0x1c,
                     ReasonPhrase: "peer close")),
@@ -70,6 +89,7 @@ public sealed class REQ_QUIC_CRT_0026
         Assert.Equal(QuicConnectionPhase.Draining, runtime.Phase);
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.CloseLifetime));
         Assert.Equal(closeDueTicks, runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.DrainLifetime));
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
     }
 
     private static QuicConnectionRuntime CreateRuntime(FakeMonotonicClock clock)

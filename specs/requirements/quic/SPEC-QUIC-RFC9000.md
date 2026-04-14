@@ -7681,6 +7681,12 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.2.2 RFC9000-S10.2.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0002.cs::ReceivedConnectionCloseFrame_EmitsANoErrorReplyBeforeDraining
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0002.cs::ReceivedConnectionCloseFrame_WhileAlreadyDrainingDoesNotEmitAnotherClosePacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0002.cs::ReceivedConnectionCloseFrame_WithoutAmplificationBudgetStillEntersDrainingWithoutReply
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs::ReceivedConnectionCloseTransitionsTheRuntimeToDraining
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs::DrainingAfterClosingPreservesTheExistingTerminalEndTime
 
 ## REQ-QUIC-RFC9000-S10P2P2-0003 Send further packets
 An endpoint MUST NOT send further packets.
