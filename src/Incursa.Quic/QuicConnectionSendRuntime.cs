@@ -73,7 +73,9 @@ internal sealed class QuicConnectionSendRuntime
         bool handshakeConfirmed = false)
     {
         QuicConnectionSentPacketKey key = new(packetNumberSpace, packetNumber);
-        if (!sentPackets.Remove(key))
+        bool removedSentPacket = sentPackets.Remove(key);
+        bool removedPendingRetransmission = TryRemovePendingRetransmission(key);
+        if (!removedSentPacket && !removedPendingRetransmission)
         {
             return false;
         }
@@ -90,6 +92,36 @@ internal sealed class QuicConnectionSendRuntime
         }
 
         return true;
+    }
+
+    private bool TryRemovePendingRetransmission(QuicConnectionSentPacketKey key)
+    {
+        if (pendingRetransmissions.Count == 0)
+        {
+            return false;
+        }
+
+        bool removed = false;
+        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
+        while (pendingRetransmissions.Count > 0)
+        {
+            QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
+            if (retransmission.PacketNumberSpace == key.PacketNumberSpace
+                && retransmission.PacketNumber == key.PacketNumber)
+            {
+                removed = true;
+                continue;
+            }
+
+            retainedRetransmissions.Enqueue(retransmission);
+        }
+
+        while (retainedRetransmissions.Count > 0)
+        {
+            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+        }
+
+        return removed;
     }
 
     public bool TryDiscardPacketNumberSpace(QuicPacketNumberSpace packetNumberSpace)
