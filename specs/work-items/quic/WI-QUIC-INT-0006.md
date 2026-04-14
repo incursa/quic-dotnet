@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-INT-0006"
 artifact_type: "work_item"
 title: "QUIC Local Interop-Runner Execution-Report Helper Work Item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-INT-0013"
@@ -56,7 +56,7 @@ Run the helper against the local `C:\src\quic-interop\quic-interop-runner` check
 
 ## Completion Notes
 
-Planned only; implementation and validation are still pending.
+The helper now builds the local harness image, runs the external quic-interop-runner through image replacement, and captures repo-local JSON, Markdown, stderr, build-log, and log-tree artifacts without requiring any runner-repository registry change. The local quic-go slot in this checkout still reports a noncompliant exit code, but the helper preserves that failure bundle honestly.
 
 ## Trace Links
 

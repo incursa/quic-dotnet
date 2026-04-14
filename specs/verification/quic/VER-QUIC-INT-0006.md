@@ -43,7 +43,7 @@ The helper produces repo-local execution-report artifacts for a local runner run
 
 ## Status
 
-Planned; this verification slice records the local-only execution-report helper proof contract.
+Landed; the local helper built the harness image, invoked the external runner through image replacement, and captured a repo-local execution-report bundle while preserving the runner's noncompliant result honestly.
 
 ## Related Artifacts
 
