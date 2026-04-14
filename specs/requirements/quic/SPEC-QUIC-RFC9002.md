@@ -1131,7 +1131,9 @@ Trace:
   - RFC 9002 §6.2.1 RFC9002-S6.2.1-B10-P8-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeProbeTimeoutWithBackoffMicros_DoublesTheBasePtoOnTimeout
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs::TrySelectLossDetectionTimer_DoublesThePtoAfterAProbeTimeoutExpires
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs::TrySelectLossDetectionTimer_LeavesTheBasePtoInPlaceBeforeAnyProbeTimeoutExpires
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs::TrySelectLossDetectionTimer_ContinuesDoublingAfterRepeatedProbeTimeoutExpirations
 
 ## REQ-QUIC-RFC9002-S6P2P1-0008 Reset PTO backoff on acknowledgment
 The PTO backoff factor MUST be reset when an acknowledgment is received.
