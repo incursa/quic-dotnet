@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-INT-0007",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "landed",
   "title": "QUIC Local Harness Preflight Planning and Localhost Smoke Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -36,5 +36,5 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/QuicLoopbackEstablishmentTestSupport.cs",
     "artifacts/interop-runner/"
   ],
-  "status_summary": "Planned. The verification lane is now defined around planner-level tests and direct in-process localhost smoke tests; test execution remains to be captured."
+  "status_summary": "Landed; the requirement-home test lane passed under the narrow REQ_QUIC_INT_0014 filter on 2026-04-14, confirming the planner split, direct localhost handshake/retry/transfer smoke execution, qlog capture, and strict IP-literal certificate rejection."
 }

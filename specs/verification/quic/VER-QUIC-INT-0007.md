@@ -41,7 +41,7 @@ The local preflight planner is independently testable, the in-process localhost 
 
 ## Status
 
-Planned. The verification lane is now defined around planner-level tests and direct in-process localhost smoke tests; test execution remains to be captured.
+Landed; the requirement-home test lane passed under the narrow REQ_QUIC_INT_0014 filter on 2026-04-14, confirming the planner split, direct localhost handshake/retry/transfer smoke execution, qlog capture, and strict IP-literal certificate rejection.
 
 ## Related Artifacts
 

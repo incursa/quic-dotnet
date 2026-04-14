@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-INT-0007"
 artifact_type: "work_item"
 title: "QUIC Local Harness Preflight Planning and Localhost Smoke Work Item"
 domain: "quic"
-status: "in_progress"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-INT-0014"
@@ -52,6 +52,10 @@ Extract a small preflight planner from the interop harness and add direct localh
 ## Verification Plan
 
 Run the new requirement-home test file with a narrow `REQ_QUIC_INT_0014` filter, confirm the planner-level decisions are testable on their own, and inspect the localhost smoke outputs plus qlog artifacts. Re-run once if the tree is temporarily mid-edit and a first pass fails for an unrelated build reason.
+
+## Completion Notes
+
+The preflight planner and localhost smoke lane are implemented, and the requirement-home test lane passed under the narrow REQ_QUIC_INT_0014 filter on 2026-04-14.
 
 ## Trace Links
 
