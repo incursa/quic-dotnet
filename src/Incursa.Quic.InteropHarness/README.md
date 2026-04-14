@@ -75,6 +75,8 @@ docker run --rm \
   incursa-quic-interop-harness
 ```
 
+The harness validates the client certificate against its fixed `Incursa.Quic` leaf name while still resolving the request URI host to the loopback endpoint.
+
 The `handshake` and `post-handshake-stream` testcases now dispatch into the managed bootstrap path. `retry` now dispatches into the narrow managed one-Retry child-process path. `transfer` now dispatches into the narrow managed active-phase transfer path.
 
 ## Stubbed today

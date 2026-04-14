@@ -12,6 +12,9 @@ internal static class InteropHarnessRunner
 {
     private const int UnsupportedExitCode = 127;
     private const int DefaultHandshakePort = 443;
+    // The harness certificate files are fixed to the Incursa.Quic leaf name, while the
+    // request URI still resolves the loopback endpoint separately.
+    private const string ClientTargetHost = "Incursa.Quic";
 
     internal static int Run(System.Collections.IDictionary environment, TextWriter stdout, TextWriter stderr)
     {
@@ -109,7 +112,7 @@ internal static class InteropHarnessRunner
                     ApplicationProtocols = [SslApplicationProtocol.Http3],
                     EnabledSslProtocols = SslProtocols.Tls13,
                     EncryptionPolicy = EncryptionPolicy.RequireEncryption,
-                    TargetHost = requestUri.Host,
+                    TargetHost = ClientTargetHost,
                     RemoteCertificateValidationCallback = (_, _, _, errors) =>
                     {
                         WriteLineAndFlush(stdout, $"interop harness: role=client, testcase=handshake, certificate errors={errors}.");
@@ -166,7 +169,7 @@ internal static class InteropHarnessRunner
                 stdout,
                 settings,
                 remoteEndPoint,
-                requestUri.Host);
+                ClientTargetHost);
 
             using InteropHarnessQlogCaptureScope? qlogScope = CreateQlogCaptureScope(settings);
             if (qlogScope is not null)
@@ -364,7 +367,7 @@ internal static class InteropHarnessRunner
                 stdout,
                 settings,
                 remoteEndPoint,
-                requestUri.Host);
+                ClientTargetHost);
             QuicClientConnectionSettings clientSettings = QuicClientConnectionOptionsValidator.Capture(clientOptions, nameof(clientOptions));
 
             await using QuicClientConnectionHost host = new(clientSettings);
@@ -597,7 +600,7 @@ internal static class InteropHarnessRunner
                 stdout,
                 settings,
                 remoteEndPoint,
-                requestUri.Host);
+                ClientTargetHost);
 
             using InteropHarnessQlogCaptureScope? qlogScope = CreateQlogCaptureScope(settings);
             if (qlogScope is not null)
