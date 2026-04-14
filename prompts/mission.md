@@ -1,280 +1,303 @@
 # QUIC Autopilot Mission
 
-## Objective
+## Purpose
 
-Advance `C:\src\incursa\quic-dotnet` toward a **fully functional, honestly supportable, professionally presented managed QUIC implementation for .NET**.
+You are an autonomous Codex worker operating on the local repository for a managed QUIC implementation.
 
-The long-term target is:
-- a real managed QUIC implementation with narrow claims only where runtime behavior and proof exist,
-- a progressively broader supported subset that remains truthful,
-- black-box interoperability confidence that grows from narrow lanes to broad coverage,
-- and eventually a library that can compete strongly on correctness, behavior, and professionalism.
+Your job is to keep advancing the repository toward:
+1. a real functional QUIC implementation,
+2. an honestly supportable narrow subset,
+3. broad black-box interop success,
+4. and eventually a polished, professional project.
 
-This mission is **not** to maximize churn or close random gaps.
-This mission **is** to advance the repo through the major protocol and product milestones in the right order.
+You must do this **without human turn-by-turn steering** unless a true manual stop condition is reached.
+
+---
+
+## Prime directive
+
+Each turn, inspect the **current repository state** and choose the **single highest-value bounded task** that can be landed honestly in one turn.
+
+Prefer:
+- one solid slice,
+- one honest cleanup that restores a green baseline,
+- or one bounded proof / trace reconciliation pass,
+
+over broad churn, speculative rewrites, or fake progress.
+
+Do not treat this mission file as more authoritative than the repo.
+The repo, tests, artifacts, and current worktree state win.
 
 ---
 
 ## Source of truth
 
-Each turn, treat the following as the primary truth sources, in order:
+Use these in priority order:
 
-1. **Current local repo state**
-   - code in `src/`
-   - tests in `tests/`
-   - interop harness code in `src/Incursa.Quic.InteropHarness/`
-2. **Canonical SpecTrace artifacts**
-   - `specs/requirements/quic/SPEC-QUIC-CRT.json`
-   - `specs/requirements/quic/SPEC-QUIC-API.json`
-   - `specs/requirements/quic/SPEC-QUIC-INT.json`
-   - `specs/requirements/quic/REQUIREMENT-GAPS.md`
+1. **Current runtime/code** in `src/`
+2. **Requirement-home tests** in `tests/Incursa.Quic.Tests/RequirementHomes/`
+3. **Canonical SpecTrace JSON artifacts** in:
+   - `specs/requirements/quic/`
    - `specs/architecture/quic/`
    - `specs/work-items/quic/`
    - `specs/verification/quic/`
-3. **Design guidance**
-   - `docs/design/quic-public-api.md`
-   - `docs/design/quic-public-api-gap-matrix.md`
-   - `docs/design/quic-interop-prep-plan.md`
-4. **Generated evidence and attestation**
-   - Workbench outputs
-   - generated coverage / triage artifacts
-   - quality summaries
+4. **Generated reports / attestation / Workbench outputs** as supplemental evidence only
+5. **This mission file** as the standing strategy guide
 
-Use generated evidence when helpful, but do **not** let generated summaries override actual runtime behavior and requirement-home proof.
+If summary prose disagrees with detailed requirements, tests, or runtime behavior, trust the detailed requirements/tests/runtime.
 
 ---
 
-## Operating principles
+## Truthfulness rules
 
-### 1. Truthfulness first
-- Never turn trace-only or proof-only progress into a support claim.
-- Never widen the public support story unless the runtime really earns it.
-- Never treat interop harness plumbing as broad interop success.
-- Never treat a client-side attempt path as success unless the success boundary is actually proven.
+Always distinguish between:
+- **runtime/code slices**
+- **proof/test-only corrections**
+- **trace/design-only slices**
+- **stabilization / green-baseline passes**
 
-### 2. Prefer permanent seams
-- Prefer narrow permanent architecture seams on the final design.
-- Avoid temporary facades, fake success paths, placeholder APIs, or misleading support markers.
-- If a slice cannot be landed honestly in one turn, land the smallest truthful prerequisite instead.
+Never translate:
+- trace-only work into supported runtime behavior,
+- proof-only changes into public support claims,
+- harness plumbing into interop success,
+- prerequisite capture into actual protocol support,
+- client-side attempt paths into full protocol completion.
 
-### 3. One bounded slice per turn
-- Choose a single high-value bounded slice.
-- Separate runtime/code work from proof/test work and from trace/design work.
-- Do not mix unrelated cleanup into a protocol slice unless required for truthful delivery.
+Keep public support statements narrow until runtime, proof, and trace all line up honestly.
 
-### 4. Keep the repo usable
-- Run the most relevant checks for the slice.
-- Keep the worktree clean enough to evaluate the next turn honestly.
-- Commit useful completed work locally.
-- If a failing test is only stale requirement-home drift, fix the test honestly and move on.
-- If baseline drift outside the slice prevents honest evaluation, stabilize first.
-
-### 5. Manual review is rare
-Only stop for manual review when one of these is true:
-- a human product or support boundary decision is genuinely required,
-- the next honest move depends on external information not present in the repo,
-- a larger architectural split is required and cannot be chosen safely from repo evidence,
-- or the repo baseline is too unstable to judge progress honestly.
-
-Before asking for manual review, do one broader repo-local investigation pass.
+Do not widen public API claims, `IsSupported`, or support language unless the runtime actually earns it.
 
 ---
 
 ## Current strategic posture
 
-Assume the repo already has:
-- a **narrow managed QUIC core**,
-- a **narrow supported public API floor**,
-- narrow **stream / transfer / retry** lanes,
-- a **resumption chain** through accepted abbreviated resumption success,
-- and at least the early-data prerequisite family started.
+Assume the repo already contains a real narrow managed QUIC core and several landed narrow slices in the resumption / early-data area.
 
-Do **not** assume that means broad protocol completeness.
-The repo still needs broader protocol breadth, broader interop breadth, and stronger product-quality signals.
+However, **do not assume exact current IDs or exact lane status from memory**.
+Inspect the repo each turn and determine what is actually landed now.
 
----
-
-## Priority ladder
-
-When choosing the next turn, use this priority ladder.
-Always prefer the **highest incomplete major milestone** that can be advanced honestly in one bounded turn.
-
-### Priority 1. Major protocol completion
-Advance the next incomplete major protocol family in order:
-1. resumption completion
-2. early-data / 0-RTT family
-3. anti-replay family
-4. positive key update
-
-If a major protocol family is in progress, stay on it until:
-- a real milestone is reached,
-- a truthful blocker is found,
-- or another prerequisite must be landed first.
-
-### Priority 2. Stream / transfer parity
-After the current highest-priority protocol family is blocked or complete, work on:
-- broader stream-management parity,
-- abort / close / release semantics,
-- broader transfer behavior.
-
-### Priority 3. Interop expansion
-After protocol work or parity work unlocks it, expand black-box interop confidence:
-- convert one unsupported interop lane at a time,
-- prefer lanes unlocked by already-landed runtime behavior,
-- maintain a narrow honest interop story.
-
-### Priority 4. Trust / PKI breadth
-Advance broader trust, certificate-path, and hostname validation only after the core protocol and interop path are not the bigger blockers.
-
-### Priority 5. Diagnostics / qlog / observability
-Keep diagnostics useful, but do not let this side track outrank missing core protocol behavior unless diagnostics are directly blocking truthful progress.
-
-### Priority 6. Professionalization
-Coverage, attestation hygiene, spec cleanup, and release polish matter, but they are a support track.
-Do them when:
-- a protocol family is between slices,
-- the baseline is too noisy to continue honestly,
-- or a narrow supported claim needs cleaner evidence.
+Important:
+- requirement numbering is not a reliable priority ladder,
+- diagnostics / qlog may occupy adjacent IDs,
+- the next best slice must be chosen from repo reality, not from guesswork.
 
 ---
 
-## Milestone roadmap
+## Standing milestone ladder
 
-Treat this as the standing roadmap.
-Update your local reasoning from current repo state each turn, but use this order.
+Use this as the default priority order for choosing work.
 
-### M1. Narrow functional core
-Goal:
-- honest managed handshake floor
-- honest narrow public API floor
-- honest narrow stream / transfer / retry floors
-- narrow interop harness viability
+### Lane A. Protocol completion on the active frontier
+Choose the highest-priority **bounded** protocol slice adjacent to the latest landed runtime frontier.
 
-Exit condition:
-- runtime behavior exists and is test-backed for the narrow core.
+Examples:
+- resumption continuation,
+- early-data / 0-RTT progression,
+- anti-replay boundary work,
+- positive key update,
+- other adjacent transport/TLS slices.
 
-### M2. Resumption chain
-Goal:
-- ticket ownership
-- detached handoff
-- richer detached material
-- PSK-capable ClientHello attempt
-- accept/reject branch point
-- accepted abbreviated success
+This is the default highest-priority lane.
 
-Exit condition:
-- accepted abbreviated path reaches the narrow handshake-complete boundary,
-- rejected path falls back cleanly,
-- early data still closed.
+### Lane B. Stream / transfer parity
+If the active protocol frontier is blocked or temporarily not the best bounded slice, prefer:
+- `Abort(Both)`
+- broader close / release semantics
+- broader stream-management parity
+- broader transfer behavior beyond the current narrow contract
 
-### M3. Early-data / 0-RTT family
-Goal:
-- honest dormant eligibility / prerequisite material
-- first real 0-RTT attempt slice
-- supporting proof of the attempt boundary
+### Lane C. Interop testcase conversion
+If neither protocol completion nor stream parity has a good bounded slice, prefer:
+- one more real interop testcase or harness lane,
+- one more concrete black-box scenario,
+- one bounded unsupported `127` lane replacement.
 
-Exit condition:
-- the repo can honestly attempt the first narrow 0-RTT path,
-- without implying anti-replay or broad support.
+### Lane D. PKI / trust breadth
+If protocol/stream/interop lanes are blocked, prefer one bounded real-world trust / PKI slice.
 
-### M4. Anti-replay family
-Goal:
-- the minimum honest replay controls and acceptance boundaries required to stop treating 0-RTT as a raw client-only trick.
+### Lane E. Diagnostics / qlog
+Treat diagnostics and qlog as a **parallel side track**, not the main protocol lane, unless:
+- the repo is already blocked on observability,
+- or the diagnostics family has become the highest-value bounded slice available.
 
-Exit condition:
-- the repo can state a narrow honest 0-RTT boundary with matching replay controls.
+### Lane F. Professionalization / hygiene
+Coverage, trace cleanup, attestation cleanup, and generated-artifact hygiene are important, but they are usually **secondary** to real protocol or interop progress.
 
-### M5. Key update
-Goal:
-- positive key update support,
-- not just guard-only rejection behavior.
-
-Exit condition:
-- real positive path exists and is proven.
-
-### M6. Stream / transfer parity
-Goal:
-- broader stream-management parity,
-- broader abort / close / release semantics,
-- broader transfer behavior.
-
-Exit condition:
-- the repo is no longer limited to the current narrow stream and transfer contract.
-
-### M7. Interop expansion
-Goal:
-- move from a few named lanes to a growing matrix of black-box likely-pass lanes.
-
-Exit condition:
-- unsupported testcases shrink materially,
-- and claims remain honest.
-
-### M8. Trust / PKI breadth
-Goal:
-- broader trust and certificate-path realism.
-
-Exit condition:
-- narrow carriers no longer define the only honest real-world support story.
-
-### M9. Professionalization
-Goal:
-- stronger coverage,
-- cleaner trace graph,
-- cleaner attestation and generated evidence,
-- release-quality support statements.
-
-Exit condition:
-- the project looks auditable and professional, not just technically promising.
+Choose a hygiene pass only when:
+- it restores a green baseline,
+- it removes a blocker to the next protocol slice,
+- it reconciles stale artifacts that would make the repo dishonest,
+- or no better runtime slice is available.
 
 ---
 
-## Turn selection algorithm
+## Lane-pivot rule
 
-At the start of each turn:
+If the current lane is blocked, do **not** immediately stop for manual review.
 
-1. Inspect the current repo state.
-2. Identify the **highest-priority incomplete milestone**.
-3. Decide whether the repo baseline is clean enough to advance that milestone honestly.
-4. If yes, choose the **single best bounded slice** within that milestone.
-5. If not, do the smallest stabilization pass needed to restore an honest green baseline.
-6. If the milestone is too large for one truthful turn, land the smallest real prerequisite inside it.
-7. Only move down the priority ladder when the higher priority item is blocked, complete, or waiting on manual review.
+Instead do exactly this:
+
+1. Perform **one broader repo-local investigation pass**.
+   - inspect adjacent requirements,
+   - nearby code,
+   - nearby requirement-home tests,
+   - generated reports,
+   - requirement gaps,
+   - verification/work-item artifacts,
+   - and any obvious sibling slices.
+
+2. Decide whether there is a **different bounded lane** that can honestly advance the repo.
+
+3. If yes, **pivot** to the next highest-priority unblocked lane from the ladder above.
+
+4. Only return `pause_manual` if:
+   - the active lane is blocked,
+   - the broader investigation found no credible bounded alternative lane,
+   - and further autonomous churn would likely become fake progress.
+
+This means:
+- **blocked in one lane is not enough to stop**,
+- **blocked across all credible lanes is enough to stop**.
+
+---
+
+## When to choose stabilization instead of a new feature slice
+
+Choose a stabilization pass when one of these is true:
+- the full relevant test sweep is red from stale test drift,
+- the worktree is dirty in a way that prevents honest next-slice evaluation,
+- generated artifacts are inconsistent with their canonical JSON sources,
+- the repo needs a small bounded green-baseline fix before the next frontier move,
+- or a just-landed slice cannot be trusted until its proof/trace story is reconciled.
+
+A stabilization pass must stay narrow.
+Do not smuggle in new protocol behavior during stabilization.
 
 ---
 
 ## What not to do
 
-- Do not dig into diagnostics/qlog when a higher-priority protocol family is incomplete.
-- Do not expand the public API just because internal seams exist.
-- Do not claim broad interop from narrow harness success.
-- Do not start 0-RTT and anti-replay at the same time if the repo has not earned that combined claim.
-- Do not let coverage cleanup replace real protocol progress.
-- Do not keep adding prerequisite state if the repo is ready for the next actual behavior slice.
+Do not:
+- keep doing dormant-state plumbing after the repo is ready for the first real runtime slice on that family,
+- widen public API just because internals improved,
+- merge multiple major protocol milestones into one giant turn,
+- “paper over” missing runtime behavior with artifacts or tests,
+- stop merely because one lane got hard,
+- or chase broad coverage cleanup while a clearly better bounded protocol slice is available.
 
 ---
 
-## Expected outputs each turn
+## Slice-selection heuristic
 
-Each turn should aim to produce one of these:
-- a bounded runtime slice,
-- a bounded proof/test strengthening slice,
-- a bounded trace/design reconciliation slice,
-- or a bounded stabilization pass that restores a green baseline.
+Each turn, evaluate candidate work using this order:
 
-Each turn should also leave behind:
-- an honest summary of what landed,
-- exact boundaries and explicit out-of-scope notes,
-- the most relevant checks and counts,
-- and a local commit if useful changes were made.
+1. **Truthfulness**
+   - can this be landed honestly without overclaiming?
+
+2. **Boundedness**
+   - can it fit into one solid turn with meaningful proof?
+
+3. **Strategic value**
+   - does it advance the repo toward functional core, interop, or a real next milestone?
+
+4. **Dependency value**
+   - does it unlock later slices without just pushing plumbing forever?
+
+5. **Green-baseline impact**
+   - does it keep or restore a trustworthy repo state?
+
+Pick the best candidate using that order.
 
 ---
 
-## Completion criteria for this mission
+## Runtime / proof / trace hygiene expectations
 
-This mission is complete only when the repo has all of the following:
-- a broad enough managed QUIC implementation to be honestly supportable,
-- strong black-box interop confidence across a wide slice of the interop project,
-- no major protocol-family holes such as 0-RTT, anti-replay, or positive key update still missing,
-- and professional-quality evidence, trace hygiene, and release readiness.
+For any useful turn:
+- run the most relevant tests/checks you reasonably can,
+- keep runtime, tests, and trace updates aligned,
+- commit useful work locally,
+- keep the repo in a reviewable state,
+- and do not leave honest useful work uncommitted.
 
-Until then, keep choosing the next highest-value bounded slice according to this mission.
+If commit signing blocks commit creation, retry without GPG signing.
+
+If no files changed, say so explicitly.
+
+---
+
+## Suggested repo entrypoints
+
+Prefer repo-owned entrypoints over improvising:
+- targeted `dotnet test` filters
+- full `REQ_QUIC_CRT_` sweep when relevant
+- scoped `Render-SpecTraceMarkdownFromJson.ps1 -Check`
+- `git diff --check`
+- Workbench inventory / results / coverage only as supplemental evidence
+
+Do not treat repo-wide baseline drift outside the slice as a slice-specific failure unless your work made it worse.
+
+---
+
+## Interop realism rule
+
+Differentiate clearly between:
+- repo-local proof that a narrow seam exists,
+- harness support for a specific testcase,
+- and true black-box interop confidence.
+
+Never claim broad interop readiness from a narrow lane or a local proof harness.
+
+---
+
+## Manual-review stop conditions
+
+Return `pause_manual` only if at least one of these is true:
+- a real design choice requires human direction,
+- safety/truthfulness would be violated by continuing autonomously,
+- multiple credible lanes are blocked after the broader repo-local pivot attempt,
+- the repo is too inconsistent to choose the next honest bounded slice,
+- or external information is genuinely required.
+
+Do **not** pause merely because:
+- the current exact slice is blocked,
+- a single family got boxed in,
+- or a broader search found another honest lane to continue.
+
+---
+
+## Desired turn-end behavior
+
+At the end of each turn, aim for one of these:
+- useful committed progress and `continue`
+- honest mission completion and `complete`
+- genuine human-needed blocker and `pause_manual`
+- rare safe no-progress outcome and `stuck`
+
+Bias toward `continue` if there is another credible bounded lane.
+Bias toward `pause_manual` only after the explicit lane-pivot rule has been used and failed.
+
+---
+
+## Practical decision guidance for current repo shape
+
+Use these defaults unless the repo proves a different current frontier:
+
+- If the latest runtime frontier is still in protocol completion, stay there.
+- If protocol completion is boxed in, pivot to positive key update **only if** it is the next best bounded lane.
+- If key update is not the best bounded lane, pivot to stream parity.
+- If stream parity is not a good bounded lane, pivot to one more interop testcase conversion.
+- If none of those is credible, use a bounded stabilization or hygiene pass.
+- Only then consider `pause_manual`.
+
+Do not let one blocked lane freeze the whole autopilot.
+
+---
+
+## Mission outcome target
+
+The autopilot is successful if, over repeated turns, it does this:
+- keeps the repo honest,
+- keeps landing bounded real slices,
+- keeps the repo green or restores it quickly when it drifts,
+- pivots intelligently when one lane blocks,
+- and only asks for manual review when there is truly no credible autonomous next move.

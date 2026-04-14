@@ -51,7 +51,7 @@ The public API includes QuicStreamCapacityChangedArgs and QuicConnectionOptions.
 
 ## Status
 
-Execution evidence is expected to cover the initial peer stream-capacity callback delta, later real MAX_STREAMS growth, real peer stream-close-driven capacity release, zero-delta suppression, and cancellation/disposal honesty. Broader write-heavy stream behavior remains out of scope.
+This verification artifact records the landed stream-capacity callback slice and points at the requirement-home and runtime evidence that proves the initial peer delta, later real MAX_STREAMS growth, real peer stream-close-driven capacity release, zero-delta suppression, and cancellation/disposal honesty. Broader write-heavy stream behavior remains out of scope.
 
 ## Related Artifacts
 

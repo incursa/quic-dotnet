@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-API-0002",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "landed",
   "title": "Incursa.Quic Stream Capacity Callback Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -45,5 +45,5 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0009.cs"
   ],
-  "status_summary": "Execution evidence is expected to cover the initial peer stream-capacity callback delta, later real MAX_STREAMS growth, real peer stream-close-driven capacity release, zero-delta suppression, and cancellation/disposal honesty. Broader write-heavy stream behavior remains out of scope."
+  "status_summary": "This verification artifact records the landed stream-capacity callback slice and points at the requirement-home and runtime evidence that proves the initial peer delta, later real MAX_STREAMS growth, real peer stream-close-driven capacity release, zero-delta suppression, and cancellation/disposal honesty. Broader write-heavy stream behavior remains out of scope."
 }

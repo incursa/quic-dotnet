@@ -35,7 +35,7 @@ foreach ($jsonPath in $jsonPaths) {
         continue
     }
 
-    Set-Content -LiteralPath $markdownPath -Value $rendered
+    Set-Content -LiteralPath $markdownPath -NoNewline -Value $rendered
 }
 
 if ($Check) {
