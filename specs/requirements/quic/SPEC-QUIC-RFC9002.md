@@ -3120,9 +3120,9 @@ Trace:
   - RFC 9002 §A.9 RFC9002-SA.9-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9
 - Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_DoublesThePtoBackoffAndRefreshesTheTimer
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_LeavesTheBasePtoInPlaceBeforeAnyBackoffIncrement
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_SaturatesTheBackoffBeforeRefreshingTheTimer
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0004.cs::CanSend_AllowsAnAckElicitingProbePacketWhenTheCongestionWindowIsFull
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0004.cs::CanSend_RejectsNonProbePacketsWhenTheCongestionWindowIsFull
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0004.cs::CanSend_AllowsTwoFullSizedProbeDatagramsWhenTheCongestionWindowIsFull
 
 ## REQ-QUIC-RFC9002-SAP9-0005 Increase PTO backoff after timeout handling
 When PTO fires, the sender MUST increment `pto_count` and refresh the loss detection timer.

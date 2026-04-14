@@ -5518,9 +5518,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-a.9"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_DoublesThePtoBackoffAndRefreshesTheTimer",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_LeavesTheBasePtoInPlaceBeforeAnyBackoffIncrement",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0005.cs::TimeoutHandling_SaturatesTheBackoffBeforeRefreshingTheTimer"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0004.cs::CanSend_AllowsAnAckElicitingProbePacketWhenTheCongestionWindowIsFull",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0004.cs::CanSend_RejectsNonProbePacketsWhenTheCongestionWindowIsFull",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0004.cs::CanSend_AllowsTwoFullSizedProbeDatagramsWhenTheCongestionWindowIsFull"
         ]
       }
     },
