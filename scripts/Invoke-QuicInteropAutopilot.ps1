@@ -497,7 +497,7 @@ function Get-LaneTemplateDefinitions {
                 "scripts/interop",
                 "src/Incursa.Quic.InteropHarness",
                 "tests/Incursa.Quic.Tests/RequirementHomes/INT",
-                "specs/requirements/quic/SPEC-QUIC-INT.json",
+                "specs/requirements/quic/SPEC-QUIC-INT",
                 "specs/architecture/quic/ARC-QUIC-INT",
                 "specs/work-items/quic/WI-QUIC-INT",
                 "specs/verification/quic/VER-QUIC-INT",
@@ -536,8 +536,8 @@ function Get-LaneTemplateDefinitions {
                 "tests/Incursa.Quic.Tests/RequirementHomes/CRT",
                 "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001",
                 "tests/Incursa.Quic.Tests/RequirementHomes/INT",
-                "specs/requirements/quic/SPEC-QUIC-CRT.json",
-                "specs/requirements/quic/SPEC-QUIC-INT.json",
+                "specs/requirements/quic/SPEC-QUIC-CRT",
+                "specs/requirements/quic/SPEC-QUIC-INT",
                 "specs/architecture/quic/ARC-QUIC-CRT",
                 "specs/architecture/quic/ARC-QUIC-INT",
                 "specs/work-items/quic/WI-QUIC-CRT",
@@ -575,9 +575,9 @@ function Get-LaneTemplateDefinitions {
                 "tests/Incursa.Quic.Tests/RequirementHomes/CRT",
                 "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
                 "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002",
-                "specs/requirements/quic/SPEC-QUIC-CRT.json",
-                "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
-                "specs/requirements/quic/SPEC-QUIC-RFC9002.json",
+                "specs/requirements/quic/SPEC-QUIC-CRT",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9002",
                 "specs/architecture/quic/ARC-QUIC-CRT",
                 "specs/architecture/quic/ARC-QUIC-RFC9000",
                 "specs/architecture/quic/ARC-QUIC-RFC9002",
@@ -626,8 +626,8 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic.InteropHarness",
                 "tests/Incursa.Quic.Tests/RequirementHomes/INT",
                 "tests/Incursa.Quic.Tests/RequirementHomes/CRT",
-                "specs/requirements/quic/SPEC-QUIC-INT.json",
-                "specs/requirements/quic/SPEC-QUIC-CRT.json",
+                "specs/requirements/quic/SPEC-QUIC-INT",
+                "specs/requirements/quic/SPEC-QUIC-CRT",
                 "specs/architecture/quic/ARC-QUIC-INT",
                 "specs/architecture/quic/ARC-QUIC-CRT",
                 "specs/work-items/quic/WI-QUIC-INT",
@@ -663,7 +663,7 @@ function Get-LaneTemplateDefinitions {
             allowed_path_prefixes = @(
                 "src/Incursa.Quic",
                 "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
-                "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
                 "specs/architecture/quic/ARC-QUIC-RFC9000",
                 "specs/work-items/quic/WI-QUIC-RFC9000",
                 "specs/verification/quic/VER-QUIC-RFC9000",
@@ -699,8 +699,8 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic",
                 "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
                 "tests/Incursa.Quic.Tests/RequirementHomes/CRT",
-                "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
-                "specs/requirements/quic/SPEC-QUIC-CRT.json",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-CRT",
                 "specs/architecture/quic/ARC-QUIC-RFC9000",
                 "specs/architecture/quic/ARC-QUIC-CRT",
                 "specs/work-items/quic/WI-QUIC-RFC9000",
@@ -1093,8 +1093,20 @@ function Complete-WorkerLaneMerge {
 
 try {
     $resolvedRepoRoot = Resolve-ExistingPath -Path $RepoRoot
-    $resolvedRunnerScriptPath = Resolve-ExistingPath -Path $RunnerScriptPath
-    $resolvedMissionPromptFile = Resolve-ExistingPath -Path $MissionPromptFile
+    $modesNeedingWorkerLaunchInputs = @("prepare", "run")
+    $resolvedRunnerScriptPath = if ($modesNeedingWorkerLaunchInputs -contains $Mode) {
+        Resolve-ExistingPath -Path $RunnerScriptPath
+    }
+    else {
+        $RunnerScriptPath
+    }
+
+    $resolvedMissionPromptFile = if ($modesNeedingWorkerLaunchInputs -contains $Mode) {
+        Resolve-ExistingPath -Path $MissionPromptFile
+    }
+    else {
+        $MissionPromptFile
+    }
     $resolvedWorktreeRoot = Ensure-Directory -Path $WorktreeRoot
     $resolvedStateDirectory = Ensure-Directory -Path $StateDirectory
     $catalogPath = Join-Path $resolvedStateDirectory "lane-catalog.json"

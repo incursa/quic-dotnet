@@ -815,9 +815,20 @@ function Test-PathHasPrefix {
             continue
         }
 
+        $prefixSegments = @($prefix -split '/')
+        $prefixLeaf = if ($prefixSegments.Count -gt 0) { $prefixSegments[-1] } else { $prefix }
+        $isCanonicalArtifactStem = $prefixLeaf -match '^(ARC|SPEC|VER|WI)-[A-Z0-9-]+$'
+
         if (
             $normalizedPath.Equals($prefix, [System.StringComparison]::OrdinalIgnoreCase) -or
-            $normalizedPath.StartsWith($prefix + '/', [System.StringComparison]::OrdinalIgnoreCase)
+            $normalizedPath.StartsWith($prefix + '/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            (
+                $isCanonicalArtifactStem -and
+                (
+                    $normalizedPath.StartsWith($prefix + '-', [System.StringComparison]::OrdinalIgnoreCase) -or
+                    $normalizedPath.StartsWith($prefix + '.', [System.StringComparison]::OrdinalIgnoreCase)
+                )
+            )
         ) {
             return $true
         }
