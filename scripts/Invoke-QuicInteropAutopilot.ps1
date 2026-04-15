@@ -637,10 +637,10 @@ function Get-LaneTemplateDefinitions {
             )
             requirement_families = @("REQ-QUIC-CRT", "REQ-QUIC-RFC9000", "REQ-QUIC-RFC9002")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_CRT_|FullyQualifiedName~REQ_QUIC_RFC9000_|FullyQualifiedName~REQ_QUIC_RFC9002_"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_CRT_0105|FullyQualifiedName~REQ_QUIC_CRT_0117|FullyQualifiedName~REQ_QUIC_CRT_0122|FullyQualifiedName~REQ_QUIC_CRT_0141|FullyQualifiedName~REQ_QUIC_CRT_0142|FullyQualifiedName~REQ_QUIC_CRT_0145"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_CRT_|FullyQualifiedName~REQ_QUIC_RFC9000_|FullyQualifiedName~REQ_QUIC_RFC9002_"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_CRT_0105|FullyQualifiedName~REQ_QUIC_CRT_0117|FullyQualifiedName~REQ_QUIC_CRT_0122|FullyQualifiedName~REQ_QUIC_CRT_0141|FullyQualifiedName~REQ_QUIC_CRT_0142|FullyQualifiedName~REQ_QUIC_CRT_0145"'
             )
             success_gates = @(
                 "a named runtime blocker family shrinks",
