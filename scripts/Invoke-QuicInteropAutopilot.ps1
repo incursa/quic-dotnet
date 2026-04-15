@@ -308,9 +308,24 @@ function Remove-GitWorktreeAndBranch {
     )
 
     if (Test-Path -LiteralPath $WorktreePath) {
-        & $GitExecutable -C $RepoRoot worktree remove --force $WorktreePath | Out-Null
-        if ($LASTEXITCODE -ne 0) {
-            throw "git worktree remove failed for $WorktreePath."
+        $worktreeRemoval = Invoke-NativeCapture -FilePath $GitExecutable -ArgumentList @("-C", $RepoRoot, "worktree", "remove", "--force", $WorktreePath)
+        if ($worktreeRemoval.ExitCode -ne 0) {
+            if ($worktreeRemoval.StdErr -notmatch "not a working tree") {
+                try {
+                    Remove-Item -LiteralPath $WorktreePath -Recurse -Force -ErrorAction Stop
+                }
+                catch {
+                    throw "git worktree remove failed for $WorktreePath. $($worktreeRemoval.StdErr.Trim())"
+                }
+            }
+            elseif (Test-Path -LiteralPath $WorktreePath) {
+                try {
+                    Remove-Item -LiteralPath $WorktreePath -Recurse -Force -ErrorAction Stop
+                }
+                catch {
+                    throw "git worktree remove reported the path was not a working tree, and direct cleanup failed for $WorktreePath."
+                }
+            }
         }
     }
 
@@ -336,9 +351,24 @@ function Remove-GitWorktreeOnly {
         return
     }
 
-    & $GitExecutable -C $RepoRoot worktree remove --force $WorktreePath | Out-Null
-    if ($LASTEXITCODE -ne 0) {
-        throw "git worktree remove failed for $WorktreePath."
+    $worktreeRemoval = Invoke-NativeCapture -FilePath $GitExecutable -ArgumentList @("-C", $RepoRoot, "worktree", "remove", "--force", $WorktreePath)
+    if ($worktreeRemoval.ExitCode -ne 0) {
+        if ($worktreeRemoval.StdErr -notmatch "not a working tree") {
+            try {
+                Remove-Item -LiteralPath $WorktreePath -Recurse -Force -ErrorAction Stop
+            }
+            catch {
+                throw "git worktree remove failed for $WorktreePath. $($worktreeRemoval.StdErr.Trim())"
+            }
+        }
+        elseif (Test-Path -LiteralPath $WorktreePath) {
+            try {
+                Remove-Item -LiteralPath $WorktreePath -Recurse -Force -ErrorAction Stop
+            }
+            catch {
+                throw "git worktree remove reported the path was not a working tree, and direct cleanup failed for $WorktreePath."
+            }
+        }
     }
 }
 
