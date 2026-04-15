@@ -28,4 +28,27 @@ public sealed class REQ_QUIC_RFC9000_S4P5_0002
         Assert.True(snapshot.HasFinalSize);
         Assert.Equal(4UL, snapshot.FinalSize);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryReceiveStreamFrame_UsesImplicitFinValuesToCarryTheFinalSize()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 16,
+            peerBidirectionalReceiveLimit: 8,
+            peerUnidirectionalReceiveLimit: 8,
+            localBidirectionalReceiveLimit: 8,
+            localUnidirectionalSendLimit: 8);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x09, 1, [0x33, 0x44]),
+            out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(2UL, snapshot.FinalSize);
+    }
 }
