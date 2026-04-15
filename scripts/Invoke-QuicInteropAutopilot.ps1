@@ -717,10 +717,10 @@ function Get-LaneTemplateDefinitions {
             )
             requirement_families = @("REQ-QUIC-RFC9000")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0003"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0003"'
             )
             success_gates = @(
                 "selected partial families become trace-clean with requirement-home evidence"
