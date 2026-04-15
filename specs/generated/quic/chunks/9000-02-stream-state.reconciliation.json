@@ -23,8 +23,8 @@
   },
   "counts": {
     "total": 66,
-    "covered": 16,
-    "partial": 10,
+    "covered": 17,
+    "partial": 9,
     "blocked": 40,
     "needs_review": 0,
     "stale_ids_found": 0,
@@ -39,8 +39,8 @@
     },
     "S3P1": {
       "total": 17,
-      "implemented_and_tested": 4,
-      "partial": 2,
+      "implemented_and_tested": 5,
+      "partial": 1,
       "blocked": 11
     },
     "S3P2": {
@@ -272,9 +272,9 @@
       "requirement_id": "REQ-QUIC-RFC9000-S3-0003",
       "section": "S3",
       "title": "Allow alternate stream state machines with consistent behavior",
-      "status": "partially implemented",
-      "completion_status": "partially implemented",
-      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
       "files_changed": [],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0003.cs"
@@ -320,9 +320,9 @@
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0003",
       "section": "S3P1",
       "title": "Enter Send state on first outbound stream frame",
-      "status": "partially implemented",
-      "completion_status": "partially implemented",
-      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
       "files_changed": [],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0003.cs"
@@ -420,17 +420,17 @@
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0009",
       "section": "S3P1",
       "title": "Enter Data Sent after sending FIN",
-      "status": "partially implemented",
-      "completion_status": "partially implemented",
-      "evidence_type": "helper-layer evidence with explicit blocker note",
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
       "files_changed": [],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0009.cs"
       ],
       "direct_refs_added_or_updated": [],
       "direct_refs_state": "present",
-      "remaining_gap": "Needs a direct edge proof for entering Data Sent when FIN is sent.",
-      "notes": "Needs a direct edge proof for entering Data Sent when FIN is sent."
+      "remaining_gap": null,
+      "notes": "The helper-layer state machine now proves the FIN transition and its zero-length edge boundary."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0010",
@@ -1327,7 +1327,6 @@
     "REQ-QUIC-RFC9000-S3P1-0004",
     "REQ-QUIC-RFC9000-S3P1-0005",
     "REQ-QUIC-RFC9000-S3P1-0006",
-    "REQ-QUIC-RFC9000-S3P1-0009",
     "REQ-QUIC-RFC9000-S3P1-0010",
     "REQ-QUIC-RFC9000-S3P1-0011",
     "REQ-QUIC-RFC9000-S3P1-0012",
@@ -1378,12 +1377,12 @@
   "wrong_requirement_ids": [],
   "tests_run": [
     {
-      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore",
-      "result": "1325 passed, 0 failed, 0 skipped"
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0009\"",
+      "result": "3 passed, 0 failed, 0 skipped"
     }
   ],
   "summary_notes": [
-    "The helper-layer slice now closes 16 requirements, keeps 10 partially implemented, and leaves 40 blocked.",
+    "The helper-layer slice now closes 17 requirements, keeps 9 partially implemented, and leaves 40 blocked.",
     "The remaining open requirements are explicit and grouped by section in the closeout artifact.",
     "The repository still does not have the application-facing stream abstraction or STOP_SENDING/RESET orchestration needed to finish the chunk cleanly."
   ],
@@ -1396,6 +1395,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0009.cs",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "specs/generated/quic/chunks/9000-02-stream-state.reconciliation.md",
     "specs/generated/quic/chunks/9000-02-stream-state.reconciliation.json",

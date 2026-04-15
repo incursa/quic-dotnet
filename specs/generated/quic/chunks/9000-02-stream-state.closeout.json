@@ -16,8 +16,8 @@
   "audit_result": "trace-consistent-with-implemented-partial-and-blocked-items",
   "requirements_in_scope": {
     "total": 66,
-    "covered": 16,
-    "partially_implemented": 10,
+    "covered": 17,
+    "partially_implemented": 9,
     "deferred": 40,
     "uncovered": 0,
     "stale_ids": 0,
@@ -346,10 +346,6 @@
       "reason": "Needs a direct edge proof for entering Send on the first outbound frame."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0009",
-      "reason": "Needs a direct edge proof for entering Data Sent when FIN is sent."
-    },
-    {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0001",
       "reason": "Needs complementary proof that unobservable sending-part states are not over-tracked."
     },
@@ -540,5 +536,5 @@
       "reason": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
     }
   ],
-  "conclusion": "The selected S3/S3P1/S3P2 slice is trace-consistent: 16 clauses are implemented and tested, 10 remain partially implemented with explicit edge gaps, and 40 remain blocked on higher-level stream ownership and orchestration surfaces."
+  "conclusion": "The selected S3/S3P1/S3P2 slice is trace-consistent: 17 clauses are implemented and tested, 9 remain partially implemented with explicit edge gaps, and 40 remain blocked on higher-level stream ownership and orchestration surfaces."
 }

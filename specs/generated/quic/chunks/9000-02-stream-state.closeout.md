@@ -11,7 +11,7 @@
 ## Audit Result
 
 - Audit result: `trace-consistent-with-implemented-partial-and-blocked-items`
-- Requirements in scope: 66 total, 16 implemented and tested, 10 partially implemented, 40 blocked.
+- Requirements in scope: 66 total, 17 implemented and tested, 9 partially implemented, 40 blocked.
 - No stale requirement IDs remain in scope.
 - No silent gaps remain in scope.
 - The chunk is trace-consistent with the helper-layer evidence now present in the repository.
@@ -26,7 +26,7 @@
 ### S3P1
 
 - implemented and tested: `REQ-QUIC-RFC9000-S3P1-0001`, `REQ-QUIC-RFC9000-S3P1-0002`, `REQ-QUIC-RFC9000-S3P1-0007`, `REQ-QUIC-RFC9000-S3P1-0008`
-- partially implemented: `REQ-QUIC-RFC9000-S3P1-0003`, `REQ-QUIC-RFC9000-S3P1-0009`
+- partially implemented: `REQ-QUIC-RFC9000-S3P1-0003`
 - blocked: The helper layer covers basic send-state transitions, but send-path ownership, retransmission/loss handling, ACK tracking, and stream-level flow control remain missing.
   - `REQ-QUIC-RFC9000-S3P1-0004`, `REQ-QUIC-RFC9000-S3P1-0005`, `REQ-QUIC-RFC9000-S3P1-0006`, `REQ-QUIC-RFC9000-S3P1-0010`, `REQ-QUIC-RFC9000-S3P1-0011`, `REQ-QUIC-RFC9000-S3P1-0012`, `REQ-QUIC-RFC9000-S3P1-0013`, `REQ-QUIC-RFC9000-S3P1-0014`, `REQ-QUIC-RFC9000-S3P1-0015`, `REQ-QUIC-RFC9000-S3P1-0016`, `REQ-QUIC-RFC9000-S3P1-0017`
 

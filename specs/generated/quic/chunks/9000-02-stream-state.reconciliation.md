@@ -8,8 +8,8 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 
 ## Status Summary
 
-- implemented and tested: 16
-- partially implemented: 10
+- implemented and tested: 17
+- partially implemented: 9
 - blocked: 40
 
 ## Requirements in Scope
@@ -21,8 +21,8 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 
 ### S3P1
 
-- implemented and tested: `REQ-QUIC-RFC9000-S3P1-0001`, `REQ-QUIC-RFC9000-S3P1-0002`, `REQ-QUIC-RFC9000-S3P1-0007`, `REQ-QUIC-RFC9000-S3P1-0008`
-- partially implemented: `REQ-QUIC-RFC9000-S3P1-0003`, `REQ-QUIC-RFC9000-S3P1-0009`
+- implemented and tested: `REQ-QUIC-RFC9000-S3P1-0001`, `REQ-QUIC-RFC9000-S3P1-0002`, `REQ-QUIC-RFC9000-S3P1-0007`, `REQ-QUIC-RFC9000-S3P1-0008`, `REQ-QUIC-RFC9000-S3P1-0009`
+- partially implemented: `REQ-QUIC-RFC9000-S3P1-0003`
 - blocked: `REQ-QUIC-RFC9000-S3P1-0004`, `REQ-QUIC-RFC9000-S3P1-0005`, `REQ-QUIC-RFC9000-S3P1-0006`, `REQ-QUIC-RFC9000-S3P1-0010`, `REQ-QUIC-RFC9000-S3P1-0011`, `REQ-QUIC-RFC9000-S3P1-0012`, `REQ-QUIC-RFC9000-S3P1-0013`, `REQ-QUIC-RFC9000-S3P1-0014`, `REQ-QUIC-RFC9000-S3P1-0015`, `REQ-QUIC-RFC9000-S3P1-0016`, `REQ-QUIC-RFC9000-S3P1-0017`
 
 ### S3P2
@@ -130,11 +130,11 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 
 ## Tests Run and Results
 
-- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`
-- Passed: 1325
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0009"`
+- Passed: 3
 - Failed: 0
 - Skipped: 0
-- Duration: 874 ms
+- Duration: 37 ms
 
 ## Remaining Gaps
 

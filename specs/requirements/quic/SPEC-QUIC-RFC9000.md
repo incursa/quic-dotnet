@@ -821,6 +821,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B9-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0009.cs::TryReserveSendCapacity_EntersDataSentAfterFin
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0009.cs::TryReserveSendCapacity_EntersDataSentOnZeroLengthFin
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0009.cs::TryReserveSendCapacity_LeavesStreamInSendStateWithoutFin
 
 ## REQ-QUIC-RFC9000-S3P1-0010 Restrict Data Sent retransmissions
 From the Data Sent state, the endpoint MUST retransmit stream data only as necessary.
