@@ -812,6 +812,8 @@ function Get-LaneTemplateDefinitions {
             allowed_path_prefixes = @(
                 "src/Incursa.Quic/QuicStream",
                 "src/Incursa.Quic/QuicConnectionStream",
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
                 "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
                 "specs/requirements/quic/SPEC-QUIC-RFC9000",
                 "specs/architecture/quic/ARC-QUIC-RFC9000",
@@ -1315,7 +1317,7 @@ exit 1
 "@
     Set-Content -LiteralPath $bootstrapScriptPath -Value $bootstrapScript -Encoding utf8
 
-    & $PowerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $bootstrapScriptPath
+    & $PowerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $bootstrapScriptPath | Out-Host
     if ($LASTEXITCODE -ne 0) {
         throw "Worker lane runner failed with exit code $LASTEXITCODE."
     }
@@ -1511,6 +1513,53 @@ function Invoke-WorkerLaneExecution {
     return [pscustomobject]@{
         Decision    = $workerDecision
         CommitShas  = $commitShas
+    }
+}
+
+function Resolve-WorkerExecutionResult {
+    param([Parameter(Mandatory = $true)][AllowNull()]$Execution)
+
+    $candidates = New-Object System.Collections.Generic.List[object]
+    foreach ($item in @($Execution)) {
+        if ($null -eq $item) {
+            continue
+        }
+
+        $propertyNames = @($item.PSObject.Properties.Name)
+        if ($propertyNames -contains "CommitShas" -or $propertyNames -contains "commit_shas" -or $propertyNames -contains "Decision" -or $propertyNames -contains "decision") {
+            [void]$candidates.Add($item)
+        }
+    }
+
+    if ($candidates.Count -eq 0) {
+        throw "Worker execution did not return a structured summary result."
+    }
+
+    $result = $candidates[$candidates.Count - 1]
+    $propertyNames = @($result.PSObject.Properties.Name)
+    $commitShas = if ($propertyNames -contains "CommitShas") {
+        @($result.CommitShas)
+    }
+    elseif ($propertyNames -contains "commit_shas") {
+        @($result.commit_shas)
+    }
+    else {
+        @()
+    }
+
+    $decision = if ($propertyNames -contains "Decision") {
+        $result.Decision
+    }
+    elseif ($propertyNames -contains "decision") {
+        $result.decision
+    }
+    else {
+        $null
+    }
+
+    return [pscustomobject]@{
+        Decision   = $decision
+        CommitShas = $commitShas
     }
 }
 
@@ -1753,7 +1802,7 @@ try {
                 default {
                     $contractPath = Resolve-ExistingPath -Path $state.active_lane.contract_path
                     $workerContract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json -Depth 100
-                    $execution = Invoke-WorkerLaneExecution `
+                    $execution = Resolve-WorkerExecutionResult -Execution (Invoke-WorkerLaneExecution `
                         -PowerShellExecutable $powerShellExecutable `
                         -RunnerScriptPath $resolvedRunnerScriptPath `
                         -MissionPromptFile $resolvedMissionPromptFile `
@@ -1764,7 +1813,7 @@ try {
                         -WorkerModel $WorkerModel `
                         -WorkerReasoningEffort $WorkerReasoningEffort `
                         -WorkerMaxIterations $WorkerMaxIterations `
-                        -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn
+                        -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn)
 
                     $shouldMerge = if ($PSBoundParameters.ContainsKey("AutoMerge")) { [bool]$AutoMerge } else { $true }
                     $hasCommits = @($execution.CommitShas).Count -gt 0
