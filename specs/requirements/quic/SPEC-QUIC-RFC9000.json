@@ -1520,6 +1520,10 @@
         "upstream_refs": [
           "RFC 9000 §3.1 RFC9000-S3.1-B9-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0010.cs::TryReserveSendCapacity_AllowsRetransmissionOfAlreadySentDataAfterDataSent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0010.cs::TryReserveSendCapacity_RejectsBytesBeyondTheKnownFinalSizeAfterDataSent"
         ]
       }
     },
@@ -1546,6 +1550,10 @@
         "upstream_refs": [
           "RFC 9000 §3.1 RFC9000-S3.1-B9-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0011.cs::TryReserveSendCapacity_AllowsRetransmissionWithoutAdditionalFlowControlAfterDataSent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0011.cs::TryReserveSendCapacity_RejectsNewBytesWithoutEmittingBlockedFramesAfterDataSent"
         ]
       }
     },
