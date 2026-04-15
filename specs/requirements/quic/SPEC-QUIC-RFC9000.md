@@ -5187,9 +5187,8 @@ Trace:
   - RFC 9000 §8 RFC9000-S8-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs::CanSend_TracksTheThreeTimesAmplificationCapUntilValidation
-  - tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs::CanSend_AllowsUnlimitedSendingAfterAddressValidation
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8-0001.cs::CanSend_TracksTheThreeTimesAmplificationCapUntilValidation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8-0001.cs::TryRegisterReceivedDatagramPayloadBytes_RejectsNegativePayloadLengths
 
 Notes:
 - The source sentence begins with explanatory lead-in text. This canonical clause retains the atomic obligation, while [`REQ-QUIC-RFC9000-S8P1-0002`](./SPEC-QUIC-RFC9000.json) preserves the cleaner section-scoped restatement from RFC 9000 Section 8.1.
@@ -5240,7 +5239,6 @@ Trace:
   - RFC 9000 §8.1 RFC9000-S8.1-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresDatagramsThatAreNotUniquelyAttributed
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1-0003.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresDatagramsThatAreNotUniquelyAttributed
 
 ## REQ-QUIC-RFC9000-S8P1-0004 Clients MUST ensure that UDP datagrams containing Initial packets have UDP payloads of at least 1200 bytes, adding PADDING frames as necessary
@@ -6549,7 +6547,6 @@ Trace:
   - RFC 9000 §9.3.1 RFC9000-S9.3.1-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs::CanSend_TracksTheThreeTimesAmplificationCapUntilValidation
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded

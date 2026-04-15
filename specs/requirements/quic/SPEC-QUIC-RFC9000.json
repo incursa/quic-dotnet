@@ -8961,8 +8961,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs::CanSend_TracksTheThreeTimesAmplificationCapUntilValidation",
-          "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs::CanSend_AllowsUnlimitedSendingAfterAddressValidation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8-0001.cs::CanSend_TracksTheThreeTimesAmplificationCapUntilValidation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8-0001.cs::TryRegisterReceivedDatagramPayloadBytes_RejectsNegativePayloadLengths"
         ]
       },
       "notes": [
@@ -9046,7 +9046,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresDatagramsThatAreNotUniquelyAttributed"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1-0003.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresDatagramsThatAreNotUniquelyAttributed"
         ]
       }
     },
@@ -11424,7 +11424,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs::CanSend_TracksTheThreeTimesAmplificationCapUntilValidation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs::CanSend_TracksTheThreeTimesAmplificationCapBeforeValidation"
         ]
       }
     },
