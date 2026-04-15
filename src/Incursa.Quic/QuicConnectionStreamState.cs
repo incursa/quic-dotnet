@@ -378,6 +378,14 @@ internal sealed class QuicConnectionStreamState
         return true;
     }
 
+    public bool TryReceiveStreamDataBlockedFrame(
+        QuicStreamDataBlockedFrame frame,
+        out QuicTransportErrorCode errorCode)
+    {
+        QuicStreamId streamId = new(frame.StreamId);
+        return TryResolveReceiveCapableStream(streamId, out _, out errorCode);
+    }
+
     public bool TryReceiveResetStreamFrame(
         QuicResetStreamFrame frame,
         out QuicMaxDataFrame maxDataFrame,

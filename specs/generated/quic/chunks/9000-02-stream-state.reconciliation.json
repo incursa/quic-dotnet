@@ -23,9 +23,9 @@
   },
   "counts": {
     "total": 66,
-    "covered": 19,
-    "partial": 8,
-    "blocked": 39,
+    "covered": 20,
+    "partial": 7,
+    "blocked": 38,
     "needs_review": 0,
     "stale_ids_found": 0,
     "silent_gaps_found": 0
@@ -45,9 +45,9 @@
     },
     "S3P2": {
       "total": 24,
-      "implemented_and_tested": 12,
+      "implemented_and_tested": 13,
       "partial": 6,
-      "blocked": 6
+      "blocked": 5
     },
     "S3P3": {
       "total": 6,
@@ -748,17 +748,21 @@
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0012",
       "section": "S3P2",
       "title": "Receive STREAM and STREAM_DATA_BLOCKED in Recv",
-      "status": "blocked",
-      "completion_status": "not implemented",
-      "evidence_type": "explicit blocker note",
-      "files_changed": [],
+      "status": "implemented and tested",
+      "completion_status": "implemented and tested",
+      "evidence_type": "helper-layer evidence and requirement-home tests",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs"
+      ],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs"
       ],
-      "direct_refs_added_or_updated": [],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs"
+      ],
       "direct_refs_state": "present",
-      "remaining_gap": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination.",
-      "notes": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination."
+      "remaining_gap": null,
+      "notes": "Focused proof now covers receive acceptance for STREAM and STREAM_DATA_BLOCKED in Recv, including the locally initiated unidirectional rejection boundary."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0013",

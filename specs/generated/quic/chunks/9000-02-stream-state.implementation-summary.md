@@ -2,14 +2,14 @@
 
 ## Audit Result
 - `partial_with_explicit_blockers`
-- In-scope requirements: 66 total, 19 implemented and tested, 8 partial, 39 blocked.
+- In-scope requirements: 66 total, 21 implemented and tested, 7 partial, 38 blocked.
 - Reconciliation artifact was present and used as the starting point.
 - The helper layer now closes the low-risk stream-state subset without inventing transport orchestration.
 
 ## Requirements Completed
 - S3: `REQ-QUIC-RFC9000-S3-0001`, `REQ-QUIC-RFC9000-S3-0002`
 - S3P1: `REQ-QUIC-RFC9000-S3P1-0001`, `REQ-QUIC-RFC9000-S3P1-0002`, `REQ-QUIC-RFC9000-S3P1-0003`, `REQ-QUIC-RFC9000-S3P1-0007`, `REQ-QUIC-RFC9000-S3P1-0008`, `REQ-QUIC-RFC9000-S3P1-0009`
-- S3P2: `REQ-QUIC-RFC9000-S3P2-0005`, `REQ-QUIC-RFC9000-S3P2-0006`, `REQ-QUIC-RFC9000-S3P2-0008`, `REQ-QUIC-RFC9000-S3P2-0009`, `REQ-QUIC-RFC9000-S3P2-0011`, `REQ-QUIC-RFC9000-S3P2-0014`, `REQ-QUIC-RFC9000-S3P2-0015`, `REQ-QUIC-RFC9000-S3P2-0016`, `REQ-QUIC-RFC9000-S3P2-0017`, `REQ-QUIC-RFC9000-S3P2-0019`, `REQ-QUIC-RFC9000-S3P2-0020`, `REQ-QUIC-RFC9000-S3P2-0024`
+- S3P2: `REQ-QUIC-RFC9000-S3P2-0005`, `REQ-QUIC-RFC9000-S3P2-0006`, `REQ-QUIC-RFC9000-S3P2-0008`, `REQ-QUIC-RFC9000-S3P2-0009`, `REQ-QUIC-RFC9000-S3P2-0011`, `REQ-QUIC-RFC9000-S3P2-0012`, `REQ-QUIC-RFC9000-S3P2-0014`, `REQ-QUIC-RFC9000-S3P2-0015`, `REQ-QUIC-RFC9000-S3P2-0016`, `REQ-QUIC-RFC9000-S3P2-0017`, `REQ-QUIC-RFC9000-S3P2-0019`, `REQ-QUIC-RFC9000-S3P2-0020`, `REQ-QUIC-RFC9000-S3P2-0024`
 - S3P3: none
 - S3P4: none
 - S3P5: none
@@ -53,7 +53,7 @@
 - Duration: 37 ms
 
 ## Remaining Open Requirements in Scope
-- All 48 non-implemented requirements remain open.
+- All 45 non-implemented requirements remain open.
 - The remaining partially implemented clauses still need stronger edge or negative proof, and the blocked clauses still need the missing application-facing stream abstraction and STOP_SENDING/RESET coordination.
 
 ## Risks or Follow-up Notes

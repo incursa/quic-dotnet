@@ -1184,6 +1184,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B9-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs::TryReceiveStreamDataBlockedFrame_AcceptsPeerInitiatedBidirectionalStreamsInRecv
 
 ## REQ-QUIC-RFC9000-S3P2-0013 Buffer received stream data for ordered delivery
 Incoming data MUST be buffered for ordered delivery to the application, including any reassembly needed to place it in the correct order.
