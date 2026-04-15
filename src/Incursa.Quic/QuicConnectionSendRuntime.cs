@@ -19,14 +19,16 @@ internal readonly record struct QuicConnectionSentPacket(
     bool AckOnlyPacket = false,
     bool ProbePacket = false,
     bool Retransmittable = true,
-    QuicConnectionCryptoSendMetadata? CryptoMetadata = null);
+    QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
+    ReadOnlyMemory<byte> PacketBytes = default);
 
 internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicPacketNumberSpace PacketNumberSpace,
     ulong PacketNumber,
     ulong PayloadBytes,
     ulong SentAtMicros,
-    QuicConnectionCryptoSendMetadata? CryptoMetadata = null);
+    QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
+    ReadOnlyMemory<byte> PacketBytes = default);
 
 /// <summary>
 /// Owns connection-scoped send state, PTO bookkeeping, and retransmission planning.
@@ -248,7 +250,8 @@ internal sealed class QuicConnectionSendRuntime
                 packet.PacketNumber,
                 packet.PayloadBytes,
                 packet.SentAtMicros,
-                packet.CryptoMetadata));
+                packet.CryptoMetadata,
+                packet.PacketBytes));
         }
 
         ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(

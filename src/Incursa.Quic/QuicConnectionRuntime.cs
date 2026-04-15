@@ -2472,21 +2472,22 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return true;
     }
 
-    private void TrackApplicationPacket(ulong packetNumber, ReadOnlySpan<byte> protectedPacket)
+    private void TrackApplicationPacket(ulong packetNumber, byte[] protectedPacket)
     {
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber,
             (ulong)protectedPacket.Length,
-            GetElapsedMicros(lastTransitionTicks)));
+            GetElapsedMicros(lastTransitionTicks),
+            PacketBytes: protectedPacket));
     }
 
-    private void TrackInitialPacket(ulong packetNumber, ReadOnlySpan<byte> protectedPacket)
+    private void TrackInitialPacket(ulong packetNumber, byte[] protectedPacket)
     {
         TrackCryptoPacket(QuicPacketNumberSpace.Initial, QuicTlsEncryptionLevel.Initial, packetNumber, protectedPacket);
     }
 
-    private void TrackHandshakePacket(ulong packetNumber, ReadOnlySpan<byte> protectedPacket)
+    private void TrackHandshakePacket(ulong packetNumber, byte[] protectedPacket)
     {
         TrackCryptoPacket(QuicPacketNumberSpace.Handshake, QuicTlsEncryptionLevel.Handshake, packetNumber, protectedPacket);
     }
@@ -2495,14 +2496,15 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         QuicPacketNumberSpace packetNumberSpace,
         QuicTlsEncryptionLevel encryptionLevel,
         ulong packetNumber,
-        ReadOnlySpan<byte> protectedPacket)
+        byte[] protectedPacket)
     {
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             packetNumberSpace,
             packetNumber,
             (ulong)protectedPacket.Length,
             GetElapsedMicros(lastTransitionTicks),
-            CryptoMetadata: new QuicConnectionCryptoSendMetadata(encryptionLevel)));
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(encryptionLevel),
+            PacketBytes: protectedPacket));
     }
 
     private bool TryBuildOutboundStreamPayload(
