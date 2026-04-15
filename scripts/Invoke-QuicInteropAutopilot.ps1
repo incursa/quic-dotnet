@@ -948,67 +948,67 @@ function Start-WorkerRun {
         [Parameter(Mandatory = $true)][int]$WorkerMaxRescueAttemptsPerTurn
     )
 
-    $argumentList = @(
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        $RunnerScriptPath,
-        "-WorkingDirectory",
-        $WorkerContract.worktree_path,
-        "-InitialPromptFile",
-        $MissionPromptFile,
-        "-OutputDirectory",
-        $WorkerContract.output_directory,
-        "-CodexCommand",
-        $CodexCommand,
-        "-Sandbox",
-        $Sandbox,
-        "-Model",
-        $WorkerModel,
-        "-ReasoningEffort",
-        $WorkerReasoningEffort,
-        "-MissionPromptStyle",
-        "always_digest",
-        "-MaxIterations",
-        $WorkerMaxIterations.ToString(),
-        "-MaxRescueAttemptsPerTurn",
-        $WorkerMaxRescueAttemptsPerTurn.ToString(),
-        "-TargetLaneId",
-        $WorkerContract.lane_id,
-        "-TargetScope",
-        $WorkerContract.objective,
-        "-RequirementGapsPath",
-        (Join-Path $WorkerContract.worktree_path "specs/requirements/quic/REQUIREMENT-GAPS.md"),
-        "-StopOnPathViolation",
-        "-StopOnBlockedGap"
-    )
-
-    if (@($WorkerContract.allowed_path_prefixes).Count -gt 0) {
-        $argumentList += @("-AllowedPathPrefixes") + @($WorkerContract.allowed_path_prefixes)
+    $runnerParameters = [ordered]@{
+        WorkingDirectory             = $WorkerContract.worktree_path
+        InitialPromptFile            = $MissionPromptFile
+        OutputDirectory              = $WorkerContract.output_directory
+        CodexCommand                 = $CodexCommand
+        Sandbox                      = $Sandbox
+        Model                        = $WorkerModel
+        ReasoningEffort              = $WorkerReasoningEffort
+        MissionPromptStyle           = "always_digest"
+        MaxIterations                = $WorkerMaxIterations
+        MaxRescueAttemptsPerTurn     = $WorkerMaxRescueAttemptsPerTurn
+        TargetLaneId                 = $WorkerContract.lane_id
+        TargetScope                  = $WorkerContract.objective
+        AllowedPathPrefixes          = @($WorkerContract.allowed_path_prefixes)
+        ForbiddenPathPrefixes        = @($WorkerContract.forbidden_path_prefixes)
+        RequirementFamilies          = @($WorkerContract.requirement_families)
+        BlockingGapIds               = @($WorkerContract.blocking_gap_ids)
+        VerificationCommands         = @($WorkerContract.verification_commands)
+        MergeCheckCommands           = @($WorkerContract.merge_check_commands)
+        RequirementGapsPath          = (Join-Path $WorkerContract.worktree_path "specs/requirements/quic/REQUIREMENT-GAPS.md")
+        StopOnPathViolation          = $true
+        StopOnBlockedGap             = $true
     }
 
-    if (@($WorkerContract.forbidden_path_prefixes).Count -gt 0) {
-        $argumentList += @("-ForbiddenPathPrefixes") + @($WorkerContract.forbidden_path_prefixes)
-    }
+    $bootstrapParametersPath = Join-Path $WorkerContract.output_directory "worker-runner.parameters.json"
+    $bootstrapScriptPath = Join-Path $WorkerContract.output_directory "worker-runner.bootstrap.ps1"
+    ($runnerParameters | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $bootstrapParametersPath -Encoding utf8
 
-    if (@($WorkerContract.requirement_families).Count -gt 0) {
-        $argumentList += @("-RequirementFamilies") + @($WorkerContract.requirement_families)
-    }
+    $escapedParametersPath = $bootstrapParametersPath.Replace("'", "''")
+    $escapedRunnerScriptPath = $RunnerScriptPath.Replace("'", "''")
+    $bootstrapScript = @"
+Set-StrictMode -Version Latest
+`$ErrorActionPreference = 'Stop'
 
-    if (@($WorkerContract.blocking_gap_ids).Count -gt 0) {
-        $argumentList += @("-BlockingGapIds") + @($WorkerContract.blocking_gap_ids)
+`$runnerParameters = Get-Content -LiteralPath '$escapedParametersPath' -Raw | ConvertFrom-Json -AsHashtable
+foreach (`$arrayKey in @('AllowedPathPrefixes', 'ForbiddenPathPrefixes', 'RequirementFamilies', 'BlockingGapIds', 'VerificationCommands', 'MergeCheckCommands')) {
+    if (`$runnerParameters.ContainsKey(`$arrayKey)) {
+        `$runnerParameters[`$arrayKey] = @(`$runnerParameters[`$arrayKey])
     }
+}
 
-    if (@($WorkerContract.verification_commands).Count -gt 0) {
-        $argumentList += @("-VerificationCommands") + @($WorkerContract.verification_commands)
+foreach (`$switchKey in @('StopOnPathViolation', 'StopOnBlockedGap')) {
+    if (`$runnerParameters.ContainsKey(`$switchKey)) {
+        `$runnerParameters[`$switchKey] = [bool]`$runnerParameters[`$switchKey]
     }
+}
 
-    if (@($WorkerContract.merge_check_commands).Count -gt 0) {
-        $argumentList += @("-MergeCheckCommands") + @($WorkerContract.merge_check_commands)
-    }
+& '$escapedRunnerScriptPath' @runnerParameters
+if (Get-Variable -Name LASTEXITCODE -Scope Global -ErrorAction SilentlyContinue) {
+    exit `$global:LASTEXITCODE
+}
 
-    & $PowerShellExecutable @argumentList
+if (`$?) {
+    exit 0
+}
+
+exit 1
+"@
+    Set-Content -LiteralPath $bootstrapScriptPath -Value $bootstrapScript -Encoding utf8
+
+    & $PowerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $bootstrapScriptPath
     if ($LASTEXITCODE -ne 0) {
         throw "Worker lane runner failed with exit code $LASTEXITCODE."
     }
@@ -1229,7 +1229,7 @@ try {
 
             $workerDecision = Get-WorkerFinalDecision -OutputDirectory $workerContract.output_directory
             $workerHead = Get-GitHead -GitExecutable $gitExecutable -RepositoryRoot $workerContract.worktree_path -Ref "HEAD"
-            $commitShas = Get-CommitRange -GitExecutable $gitExecutable -RepositoryRoot $workerContract.worktree_path -FromRef $workerContract.base_ref -ToRef $workerHead
+            $commitShas = @(Get-CommitRange -GitExecutable $gitExecutable -RepositoryRoot $workerContract.worktree_path -FromRef $workerContract.base_ref -ToRef $workerHead)
 
             Write-Host "Worker lane finished: $($workerContract.lane_id)" -ForegroundColor Green
             if ($null -ne $workerDecision) {
@@ -1285,7 +1285,7 @@ try {
             }
 
             $workerHead = Get-GitHead -GitExecutable $gitExecutable -RepositoryRoot $workerContract.worktree_path -Ref "HEAD"
-            $commitShas = Get-CommitRange -GitExecutable $gitExecutable -RepositoryRoot $workerContract.worktree_path -FromRef $workerContract.base_ref -ToRef $workerHead
+            $commitShas = @(Get-CommitRange -GitExecutable $gitExecutable -RepositoryRoot $workerContract.worktree_path -FromRef $workerContract.base_ref -ToRef $workerHead)
             if ($commitShas.Count -eq 0) {
                 throw "No commits are available to cherry-pick for lane '$($workerContract.lane_id)'."
             }
