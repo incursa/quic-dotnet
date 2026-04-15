@@ -7,6 +7,71 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S3P2_0015
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryReceiveStreamFrame_MarksFinalSizeKnownWhenFinArrives()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 32,
+            peerBidirectionalReceiveLimit: 8);
+
+        byte[] finPacket = QuicStreamTestData.BuildStreamFrame(0x0F, streamId: 5, [0x33, 0x44], offset: 2);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(finPacket, out QuicStreamFrame finFrame));
+
+        Assert.True(state.TryReceiveStreamFrame(finFrame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(5, out QuicConnectionStreamSnapshot snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(4UL, snapshot.FinalSize);
+        Assert.Equal(QuicStreamReceiveState.SizeKnown, snapshot.ReceiveState);
+        Assert.Equal(2UL, snapshot.UniqueBytesReceived);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReceiveStreamFrame_LeavesFinalSizeUnknownWithoutFin()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 32,
+            peerBidirectionalReceiveLimit: 8);
+
+        byte[] nonFinPacket = QuicStreamTestData.BuildStreamFrame(0x0E, streamId: 5, [0x33, 0x44], offset: 2);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(nonFinPacket, out QuicStreamFrame nonFinFrame));
+
+        Assert.True(state.TryReceiveStreamFrame(nonFinFrame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(5, out QuicConnectionStreamSnapshot snapshot));
+        Assert.False(snapshot.HasFinalSize);
+        Assert.Equal(QuicStreamReceiveState.Recv, snapshot.ReceiveState);
+        Assert.Equal(2UL, snapshot.UniqueBytesReceived);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryReceiveStreamFrame_MarksFinalSizeKnownOnZeroLengthFin()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 32,
+            peerBidirectionalReceiveLimit: 8);
+
+        byte[] finPacket = QuicStreamTestData.BuildStreamFrame(0x0F, streamId: 5, [], offset: 4);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(finPacket, out QuicStreamFrame finFrame));
+
+        Assert.True(state.TryReceiveStreamFrame(finFrame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(5, out QuicConnectionStreamSnapshot snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(4UL, snapshot.FinalSize);
+        Assert.Equal(QuicStreamReceiveState.SizeKnown, snapshot.ReceiveState);
+        Assert.Equal(0UL, snapshot.UniqueBytesReceived);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_TryReceiveStreamFrame_MarksFinalSizeKnownWhenFinArrives()
     {

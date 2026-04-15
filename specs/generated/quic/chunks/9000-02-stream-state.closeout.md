@@ -11,7 +11,7 @@
 ## Audit Result
 
 - Audit result: `trace-consistent-with-implemented-partial-and-blocked-items`
-- Requirements in scope: 66 total, 17 implemented and tested, 9 partially implemented, 40 blocked.
+- Requirements in scope: 66 total, 18 implemented and tested, 8 partially implemented, 40 blocked.
 - No stale requirement IDs remain in scope.
 - No silent gaps remain in scope.
 - The chunk is trace-consistent with the helper-layer evidence now present in the repository.
@@ -31,8 +31,8 @@
 
 ### S3P2
 
-- implemented and tested: `REQ-QUIC-RFC9000-S3P2-0005`, `REQ-QUIC-RFC9000-S3P2-0006`, `REQ-QUIC-RFC9000-S3P2-0008`, `REQ-QUIC-RFC9000-S3P2-0011`, `REQ-QUIC-RFC9000-S3P2-0014`, `REQ-QUIC-RFC9000-S3P2-0016`, `REQ-QUIC-RFC9000-S3P2-0017`, `REQ-QUIC-RFC9000-S3P2-0019`, `REQ-QUIC-RFC9000-S3P2-0020`, `REQ-QUIC-RFC9000-S3P2-0024`
-- partially implemented: `REQ-QUIC-RFC9000-S3P2-0001`, `REQ-QUIC-RFC9000-S3P2-0002`, `REQ-QUIC-RFC9000-S3P2-0003`, `REQ-QUIC-RFC9000-S3P2-0007`, `REQ-QUIC-RFC9000-S3P2-0013`, `REQ-QUIC-RFC9000-S3P2-0015`, `REQ-QUIC-RFC9000-S3P2-0021`
+- implemented and tested: `REQ-QUIC-RFC9000-S3P2-0005`, `REQ-QUIC-RFC9000-S3P2-0006`, `REQ-QUIC-RFC9000-S3P2-0008`, `REQ-QUIC-RFC9000-S3P2-0011`, `REQ-QUIC-RFC9000-S3P2-0014`, `REQ-QUIC-RFC9000-S3P2-0015`, `REQ-QUIC-RFC9000-S3P2-0016`, `REQ-QUIC-RFC9000-S3P2-0017`, `REQ-QUIC-RFC9000-S3P2-0019`, `REQ-QUIC-RFC9000-S3P2-0020`, `REQ-QUIC-RFC9000-S3P2-0024`
+- partially implemented: `REQ-QUIC-RFC9000-S3P2-0001`, `REQ-QUIC-RFC9000-S3P2-0002`, `REQ-QUIC-RFC9000-S3P2-0003`, `REQ-QUIC-RFC9000-S3P2-0007`, `REQ-QUIC-RFC9000-S3P2-0013`, `REQ-QUIC-RFC9000-S3P2-0021`
 - blocked: The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination.
   - `REQ-QUIC-RFC9000-S3P2-0004`, `REQ-QUIC-RFC9000-S3P2-0009`, `REQ-QUIC-RFC9000-S3P2-0010`, `REQ-QUIC-RFC9000-S3P2-0012`, `REQ-QUIC-RFC9000-S3P2-0018`, `REQ-QUIC-RFC9000-S3P2-0022`, `REQ-QUIC-RFC9000-S3P2-0023`
 
@@ -59,7 +59,7 @@
 
 ## Remaining Open Requirements
 
-- Partial: 10
+- Partial: 8
 - Blocked: 40
 
 ## Conclusion

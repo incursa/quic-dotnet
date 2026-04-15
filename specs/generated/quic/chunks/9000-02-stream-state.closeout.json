@@ -16,8 +16,8 @@
   "audit_result": "trace-consistent-with-implemented-partial-and-blocked-items",
   "requirements_in_scope": {
     "total": 66,
-    "covered": 17,
-    "partially_implemented": 9,
+    "covered": 18,
+    "partially_implemented": 8,
     "deferred": 40,
     "uncovered": 0,
     "stale_ids": 0,
@@ -117,6 +117,7 @@
       "REQ-QUIC-RFC9000-S3P2-0008",
       "REQ-QUIC-RFC9000-S3P2-0011",
       "REQ-QUIC-RFC9000-S3P2-0014",
+      "REQ-QUIC-RFC9000-S3P2-0015",
       "REQ-QUIC-RFC9000-S3P2-0016",
       "REQ-QUIC-RFC9000-S3P2-0017",
       "REQ-QUIC-RFC9000-S3P2-0019",
@@ -131,7 +132,6 @@
       "REQ-QUIC-RFC9000-S3P2-0003",
       "REQ-QUIC-RFC9000-S3P2-0007",
       "REQ-QUIC-RFC9000-S3P2-0013",
-      "REQ-QUIC-RFC9000-S3P2-0015",
       "REQ-QUIC-RFC9000-S3P2-0021"
     ],
     "deferred_requirement_ids": [
@@ -252,7 +252,7 @@
     "wrong_requirement_refs_found": [],
     "notes": [
       "The helper-layer evidence is carried by QuicConnectionStreamState and the requirement-home stream-state tests.",
-      "S3-0003 remains partial while S3P1-0003 now has direct positive, negative, and edge proof; the other partial clauses have direct test evidence but still need stronger edge proof."
+      "S3-0003 remains partial while S3P2-0013 and S3P2-0021 still need stronger edge proof; S3P2-0015 now has direct positive, negative, edge, and fuzz proof."
     ]
   },
   "evidence": {
@@ -360,10 +360,6 @@
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0013",
       "reason": "Property/fuzz proof exists, but a direct negative or edge case for out-of-order fragments is still missing."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0015",
-      "reason": "Fuzz proof exists, but a direct edge case for final-size transitions on FIN arrival is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0021",

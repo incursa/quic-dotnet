@@ -13,12 +13,13 @@
   "completion_status": "partial_with_explicit_blockers",
   "requirements_in_scope": {
     "total": 66,
-    "implemented_and_tested": 17,
-    "partial": 9,
+    "implemented_and_tested": 18,
+    "partial": 8,
     "blocked": 40
   },
   "files_changed": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs",
     "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "specs/requirements/quic/SPEC-QUIC-RFC9000.md",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
@@ -38,6 +39,13 @@
       "failed": 0,
       "skipped": 0,
       "duration_ms": 39
+    },
+    {
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0015\"",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 37
     }
   ],
   "requirements": [
@@ -353,12 +361,18 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0015",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Focused proof now covers the FIN boundary, the non-FIN negative, and the zero-length FIN edge."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0016",

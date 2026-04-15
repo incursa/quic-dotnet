@@ -1160,6 +1160,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B10-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs::TryReceiveStreamFrame_MarksFinalSizeKnownWhenFinArrives
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs::TryReceiveStreamFrame_LeavesFinalSizeUnknownWithoutFin
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs::TryReceiveStreamFrame_MarksFinalSizeKnownOnZeroLengthFin
 
 ## REQ-QUIC-RFC9000-S3P2-0016 Enter Size Known after FIN
 The receiving part of the stream MUST then enter the Size Known state.
