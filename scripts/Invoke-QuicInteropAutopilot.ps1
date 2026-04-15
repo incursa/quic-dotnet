@@ -509,10 +509,10 @@ function Get-LaneTemplateDefinitions {
             )
             requirement_families = @("REQ-QUIC-INT")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_INT_0014|FullyQualifiedName~REQ_QUIC_INT_0008|FullyQualifiedName~REQ_QUIC_INT_0002"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_INT_0013|FullyQualifiedName~REQ_QUIC_INT_0014|FullyQualifiedName~REQ_QUIC_INT_0008|FullyQualifiedName~REQ_QUIC_INT_0002"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_INT_"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_INT_0013|FullyQualifiedName~REQ_QUIC_INT_0014|FullyQualifiedName~REQ_QUIC_INT_0008|FullyQualifiedName~REQ_QUIC_INT_0002"'
             )
             success_gates = @(
                 "localhost preflight and current INT requirement homes stay green",
