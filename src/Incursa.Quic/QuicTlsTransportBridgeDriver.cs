@@ -371,6 +371,31 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// </summary>
     internal bool TryInstallOneRttKeyUpdate()
     {
+        if (!TryDeriveOneRttSuccessorPacketProtectionMaterial(
+                out QuicTlsPacketProtectionMaterial openMaterial,
+                out QuicTlsPacketProtectionMaterial protectMaterial))
+        {
+            return false;
+        }
+
+        if (!bridgeState.TryInstallOneRttKeyUpdate(openMaterial, protectMaterial))
+        {
+            return false;
+        }
+
+        return TryDiscardOneRttApplicationTrafficSecrets();
+    }
+
+    /// <summary>
+    /// Derives the successor 1-RTT packet-protection pair without installing it into the bridge state.
+    /// </summary>
+    internal bool TryDeriveOneRttSuccessorPacketProtectionMaterial(
+        out QuicTlsPacketProtectionMaterial openMaterial,
+        out QuicTlsPacketProtectionMaterial protectMaterial)
+    {
+        openMaterial = default;
+        protectMaterial = default;
+
         if (Role != QuicTlsRole.Client
             || keySchedule is null
             || !bridgeState.PeerHandshakeTranscriptCompleted
@@ -383,20 +408,17 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             return false;
         }
 
-        if (!keySchedule.TryDeriveOneRttSuccessorPacketProtectionMaterial(
-            out QuicTlsPacketProtectionMaterial openMaterial,
-            out QuicTlsPacketProtectionMaterial protectMaterial))
-        {
-            return false;
-        }
+        return keySchedule.TryDeriveOneRttSuccessorPacketProtectionMaterial(
+            out openMaterial,
+            out protectMaterial);
+    }
 
-        if (!bridgeState.TryInstallOneRttKeyUpdate(openMaterial, protectMaterial))
-        {
-            return false;
-        }
-
-        _ = keySchedule.TryDiscardOneRttApplicationTrafficSecrets();
-        return true;
+    /// <summary>
+    /// Discards retained 1-RTT application traffic secrets after a key update has been committed.
+    /// </summary>
+    internal bool TryDiscardOneRttApplicationTrafficSecrets()
+    {
+        return keySchedule?.TryDiscardOneRttApplicationTrafficSecrets() == true;
     }
 
     /// <summary>

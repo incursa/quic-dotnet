@@ -94,6 +94,24 @@ public sealed class REQ_QUIC_CRT_0145
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void DirectBridgeDriverInstallsSuccessorMaterialOnlyOnce()
+    {
+        QuicTlsTransportBridgeDriver driver = QuicPostHandshakeTicketTestSupport.CreateFinishedClientDriver();
+
+        Assert.True(driver.TryInstallOneRttKeyUpdate());
+        QuicTlsPacketProtectionMaterial installedOpenMaterial = driver.State.OneRttOpenPacketProtectionMaterial!.Value;
+        QuicTlsPacketProtectionMaterial installedProtectMaterial = driver.State.OneRttProtectPacketProtectionMaterial!.Value;
+
+        Assert.False(driver.TryInstallOneRttKeyUpdate());
+        Assert.True(driver.State.KeyUpdateInstalled);
+        Assert.Equal(1U, driver.State.CurrentOneRttKeyPhase);
+        Assert.True(installedOpenMaterial.Matches(driver.State.OneRttOpenPacketProtectionMaterial!.Value));
+        Assert.True(installedProtectMaterial.Matches(driver.State.OneRttProtectPacketProtectionMaterial!.Value));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ActiveClientRuntimeUsesTheInstalledPhaseOneBitForSubsequentOutboundStreamPackets()
