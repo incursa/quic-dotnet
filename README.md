@@ -69,4 +69,4 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for contributor workflow and validation
 
 ## License
 
-This repository is licensed under MIT. See [`LICENSE`](LICENSE) and [`NOTICE.md`](NOTICE.md).
+This repository is licensed under the Apache License, Version 2.0. See [`LICENSE`](LICENSE) and [`NOTICE.md`](NOTICE.md).

@@ -3,7 +3,7 @@
   "settings": {
     "documentationRules": {
       "companyName": "Incursa",
-      "copyrightText": "Copyright (c) {companyName}\n\nLicensed under the MIT License.",
+      "copyrightText": "Copyright (c) {companyName}\n\nLicensed under the Apache License, Version 2.0.",
       "variables": {
       },
       "xmlHeader": false,
