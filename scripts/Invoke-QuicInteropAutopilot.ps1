@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("plan", "prepare", "run", "merge", "cleanup")]
+    [ValidateSet("plan", "prepare", "run", "resume", "merge", "cleanup", "supervise")]
     [string]$Mode = "plan",
 
     [string]$RepoRoot = "C:\src\incursa\quic-dotnet",
@@ -35,6 +35,8 @@ param(
     [switch]$AutoMerge,
 
     [switch]$CleanupAfterMerge,
+
+    [int]$SupervisorMaxCycles = 0,
 
     [switch]$Force
 )
@@ -1072,6 +1074,184 @@ function Get-WorkerFinalDecision {
     return @($rows)[-1]
 }
 
+function Get-ActiveLaneDisposition {
+    param(
+        [Parameter(Mandatory = $true)]$StateObject,
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot
+    )
+
+    if ($null -eq $StateObject.active_lane) {
+        return [pscustomobject]@{
+            Action        = "none"
+            Reason        = "No active worker lane is recorded."
+            DecisionState = ""
+            CommitCount   = 0
+        }
+    }
+
+    if ($StateObject.active_lane.PSObject.Properties.Name -contains "merged" -and [bool]$StateObject.active_lane.merged) {
+        return [pscustomobject]@{
+            Action        = "cleanup"
+            Reason        = "The active lane has already been merged and only cleanup remains."
+            DecisionState = "merged"
+            CommitCount   = 0
+        }
+    }
+
+    $contractPath = [string]$StateObject.active_lane.contract_path
+    if ([string]::IsNullOrWhiteSpace($contractPath) -or -not (Test-Path -LiteralPath $contractPath)) {
+        return [pscustomobject]@{
+            Action        = "cleanup"
+            Reason        = "The active lane contract is missing; cleanup is the only safe recovery."
+            DecisionState = ""
+            CommitCount   = 0
+        }
+    }
+
+    $workerContract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json -Depth 100
+    if ([string]::IsNullOrWhiteSpace($workerContract.worktree_path) -or -not (Test-Path -LiteralPath $workerContract.worktree_path)) {
+        return [pscustomobject]@{
+            Action        = "cleanup"
+            Reason        = "The active lane worktree is missing; cleanup is the only safe recovery."
+            DecisionState = ""
+            CommitCount   = 0
+            WorkerContract = $workerContract
+        }
+    }
+
+    $workerDecision = Get-WorkerFinalDecision -OutputDirectory $workerContract.output_directory
+    $workerHead = Get-GitHead -GitExecutable $GitExecutable -RepositoryRoot $workerContract.worktree_path -Ref "HEAD"
+    $commitShas = @(Get-CommitRange -GitExecutable $GitExecutable -RepositoryRoot $workerContract.worktree_path -FromRef $workerContract.base_ref -ToRef $workerHead)
+    $commitCount = $commitShas.Count
+    $decisionState = ""
+
+    if ($null -ne $workerDecision) {
+        if ($workerDecision.PSObject.Properties.Name -contains "State") {
+            $decisionState = [string]$workerDecision.State
+        }
+        elseif ($workerDecision.PSObject.Properties.Name -contains "state") {
+            $decisionState = [string]$workerDecision.state
+        }
+    }
+
+    $action = "resume"
+    $reason = "The active lane has not reached a terminal decision yet."
+
+    switch ($decisionState) {
+        "continue" {
+            if ($commitCount -gt 0) {
+                $action = "merge"
+                $reason = "The active lane produced commits and requested another autonomous turn."
+            }
+            else {
+                $action = "resume"
+                $reason = "The active lane requested another autonomous turn and has not produced commits yet."
+            }
+        }
+        "complete" {
+            if ($commitCount -gt 0) {
+                $action = "merge"
+                $reason = "The active lane completed and has commits ready to merge."
+            }
+            else {
+                $action = "cleanup"
+                $reason = "The active lane completed without commits; cleanup only."
+            }
+        }
+        "pause_manual" {
+            if ($commitCount -gt 0) {
+                $action = "stop"
+                $reason = "The active lane needs manual review and has commits present."
+            }
+            else {
+                $action = "cleanup"
+                $reason = "The active lane requested manual review without commits; cleanup only."
+            }
+        }
+        "stuck" {
+            if ($commitCount -gt 0) {
+                $action = "stop"
+                $reason = "The active lane is stuck and has commits present."
+            }
+            else {
+                $action = "cleanup"
+                $reason = "The active lane is stuck without commits; cleanup only."
+            }
+        }
+        default {
+            if ($commitCount -gt 0) {
+                $action = "merge"
+                $reason = "The active lane has commits and no terminal worker decision summary."
+            }
+            else {
+                $action = "resume"
+                $reason = "The active lane has no terminal summary and no commits yet."
+            }
+        }
+    }
+
+    return [pscustomobject]@{
+        Action        = $action
+        Reason        = $reason
+        DecisionState = $decisionState
+        CommitCount   = $commitCount
+        WorkerDecision = $workerDecision
+        WorkerContract = $workerContract
+    }
+}
+
+function Invoke-WorkerLaneExecution {
+    param(
+        [Parameter(Mandatory = $true)][string]$PowerShellExecutable,
+        [Parameter(Mandatory = $true)][string]$RunnerScriptPath,
+        [Parameter(Mandatory = $true)][string]$MissionPromptFile,
+        [Parameter(Mandatory = $true)]$WorkerContract,
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$CodexCommand,
+        [Parameter(Mandatory = $true)][string]$Sandbox,
+        [Parameter(Mandatory = $true)][string]$WorkerModel,
+        [Parameter(Mandatory = $true)][string]$WorkerReasoningEffort,
+        [Parameter(Mandatory = $true)][int]$WorkerMaxIterations,
+        [Parameter(Mandatory = $true)][int]$WorkerMaxRescueAttemptsPerTurn
+    )
+
+    Start-WorkerRun `
+        -PowerShellExecutable $PowerShellExecutable `
+        -RunnerScriptPath $RunnerScriptPath `
+        -MissionPromptFile $MissionPromptFile `
+        -WorkerContract $WorkerContract `
+        -CodexCommand $CodexCommand `
+        -Sandbox $Sandbox `
+        -WorkerModel $WorkerModel `
+        -WorkerReasoningEffort $WorkerReasoningEffort `
+        -WorkerMaxIterations $WorkerMaxIterations `
+        -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn
+
+    $workerDecision = Get-WorkerFinalDecision -OutputDirectory $WorkerContract.output_directory
+    $workerHead = Get-GitHead -GitExecutable $GitExecutable -RepositoryRoot $WorkerContract.worktree_path -Ref "HEAD"
+    $commitShas = @(Get-CommitRange -GitExecutable $GitExecutable -RepositoryRoot $WorkerContract.worktree_path -FromRef $WorkerContract.base_ref -ToRef $workerHead)
+
+    Write-Host "Worker lane finished: $($WorkerContract.lane_id)" -ForegroundColor Green
+    if ($null -ne $workerDecision) {
+        Write-Host "  Final state: $($workerDecision.State)"
+    }
+    Write-Host "  Commits: $($commitShas.Count)"
+
+    $shouldMerge = $false
+    if ($commitShas.Count -gt 0) {
+        if ($null -eq $workerDecision -or ($workerDecision.State -notin @("pause_manual", "stuck"))) {
+            $shouldMerge = $true
+        }
+    }
+
+    return [pscustomobject]@{
+        Decision    = $workerDecision
+        CommitShas  = $commitShas
+        ShouldMerge = $shouldMerge
+    }
+}
+
 function Test-LanePreflightMerge {
     param(
         [Parameter(Mandatory = $true)][string]$GitExecutable,
@@ -1135,7 +1315,7 @@ function Complete-WorkerLaneMerge {
 
 try {
     $resolvedRepoRoot = Resolve-ExistingPath -Path $RepoRoot
-    $modesNeedingWorkerLaunchInputs = @("prepare", "run")
+    $modesNeedingWorkerLaunchInputs = @("prepare", "run", "resume", "supervise")
     $resolvedRunnerScriptPath = if ($modesNeedingWorkerLaunchInputs -contains $Mode) {
         Resolve-ExistingPath -Path $RunnerScriptPath
     }
@@ -1267,55 +1447,85 @@ try {
                 throw "Prepare step did not record an active lane."
             }
 
-            $contractPath = Resolve-ExistingPath -Path $state.active_lane.contract_path
-            $workerContract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json -Depth 100
-            Start-WorkerRun `
-                -PowerShellExecutable $powerShellExecutable `
-                -RunnerScriptPath $resolvedRunnerScriptPath `
-                -MissionPromptFile $resolvedMissionPromptFile `
-                -WorkerContract $workerContract `
-                -CodexCommand $CodexCommand `
-                -Sandbox $Sandbox `
-                -WorkerModel $WorkerModel `
-                -WorkerReasoningEffort $WorkerReasoningEffort `
-                -WorkerMaxIterations $WorkerMaxIterations `
-                -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn
-
-            $workerDecision = Get-WorkerFinalDecision -OutputDirectory $workerContract.output_directory
-            $workerHead = Get-GitHead -GitExecutable $gitExecutable -RepositoryRoot $workerContract.worktree_path -Ref "HEAD"
-            $commitShas = @(Get-CommitRange -GitExecutable $gitExecutable -RepositoryRoot $workerContract.worktree_path -FromRef $workerContract.base_ref -ToRef $workerHead)
-
-            Write-Host "Worker lane finished: $($workerContract.lane_id)" -ForegroundColor Green
-            if ($null -ne $workerDecision) {
-                Write-Host "  Final state: $($workerDecision.State)"
-            }
-            Write-Host "  Commits: $($commitShas.Count)"
-
-            $shouldMerge = if ($PSBoundParameters.ContainsKey("AutoMerge")) { [bool]$AutoMerge } else { $true }
-            if ($commitShas.Count -eq 0) {
-                $shouldMerge = $false
+            & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode resume -RepoRoot $resolvedRepoRoot -RunnerScriptPath $resolvedRunnerScriptPath -MissionPromptFile $resolvedMissionPromptFile -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -CodexCommand $CodexCommand -Sandbox $Sandbox -PlannerModel $PlannerModel -PlannerReasoningEffort $PlannerReasoningEffort -WorkerModel $WorkerModel -WorkerReasoningEffort $WorkerReasoningEffort -WorkerMaxIterations $WorkerMaxIterations -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn -AutoMerge:$AutoMerge -CleanupAfterMerge:$CleanupAfterMerge -Force:$Force
+            if ($LASTEXITCODE -ne 0) {
+                throw "Failed to resume worker lane."
             }
 
-            if ($null -ne $workerDecision -and $workerDecision.State -in @("pause_manual", "stuck")) {
-                $shouldMerge = $false
+            break
+        }
+
+        "resume" {
+            if ($null -eq $state.active_lane) {
+                throw "No active worker lane is recorded."
             }
 
-            if ($shouldMerge) {
-                & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode merge -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -Force:$Force
-                if ($LASTEXITCODE -ne 0) {
-                    throw "Merge step failed."
+            $disposition = Get-ActiveLaneDisposition -StateObject $state -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot
+            Write-Host "Active lane disposition: $($disposition.Action)" -ForegroundColor Green
+            Write-Host "  Reason: $($disposition.Reason)" -ForegroundColor Gray
+
+            switch ($disposition.Action) {
+                "merge" {
+                    & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode merge -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -Force:$Force
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Merge step failed."
+                    }
+
+                    $shouldCleanup = if ($PSBoundParameters.ContainsKey("CleanupAfterMerge")) { [bool]$CleanupAfterMerge } else { $true }
+                    if ($shouldCleanup) {
+                        & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode cleanup -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -Force:$Force
+                        if ($LASTEXITCODE -ne 0) {
+                            throw "Cleanup step failed."
+                        }
+                    }
                 }
-
-                $shouldCleanup = if ($PSBoundParameters.ContainsKey("CleanupAfterMerge")) { [bool]$CleanupAfterMerge } else { $true }
-                if ($shouldCleanup) {
+                "cleanup" {
                     & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode cleanup -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -Force:$Force
                     if ($LASTEXITCODE -ne 0) {
                         throw "Cleanup step failed."
                     }
                 }
-            }
-            else {
-                Write-Warning "Worker lane was not auto-merged. Inspect the worktree and run merge or cleanup manually."
+                "stop" {
+                    throw $disposition.Reason
+                }
+                default {
+                    $contractPath = Resolve-ExistingPath -Path $state.active_lane.contract_path
+                    $workerContract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json -Depth 100
+                    $execution = Invoke-WorkerLaneExecution `
+                        -PowerShellExecutable $powerShellExecutable `
+                        -RunnerScriptPath $resolvedRunnerScriptPath `
+                        -MissionPromptFile $resolvedMissionPromptFile `
+                        -WorkerContract $workerContract `
+                        -GitExecutable $gitExecutable `
+                        -CodexCommand $CodexCommand `
+                        -Sandbox $Sandbox `
+                        -WorkerModel $WorkerModel `
+                        -WorkerReasoningEffort $WorkerReasoningEffort `
+                        -WorkerMaxIterations $WorkerMaxIterations `
+                        -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn
+
+                    $shouldMerge = if ($PSBoundParameters.ContainsKey("AutoMerge")) { [bool]$AutoMerge } else { $true }
+                    if ($execution.ShouldMerge -and $shouldMerge) {
+                        & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode merge -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -Force:$Force
+                        if ($LASTEXITCODE -ne 0) {
+                            throw "Merge step failed."
+                        }
+
+                        $shouldCleanup = if ($PSBoundParameters.ContainsKey("CleanupAfterMerge")) { [bool]$CleanupAfterMerge } else { $true }
+                        if ($shouldCleanup) {
+                            & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode cleanup -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -Force:$Force
+                            if ($LASTEXITCODE -ne 0) {
+                                throw "Cleanup step failed."
+                            }
+                        }
+                    }
+                    elseif ($execution.ShouldMerge -and -not $shouldMerge) {
+                        Write-Warning "Worker lane produced commits, but auto-merge is disabled."
+                    }
+                    elseif (-not $execution.ShouldMerge) {
+                        Write-Warning "Worker lane was not auto-merged. Inspect the worktree and run merge or cleanup manually."
+                    }
+                }
             }
 
             break
@@ -1368,10 +1578,60 @@ try {
                 $state.pending_reconciliation_lane_ids = @($state.pending_reconciliation_lane_ids + @($workerContract.lane_id))
             }
 
-            $state.active_lane = $null
+            if ($null -eq $state.active_lane) {
+                $state.active_lane = [pscustomobject]@{}
+            }
+            $state.active_lane | Add-Member -NotePropertyName merged -NotePropertyValue $true -Force
+            $state.active_lane | Add-Member -NotePropertyName merged_at -NotePropertyValue (Get-Date).ToString("o") -Force
             Save-OrchestrationState -StatePath $statePath -StateObject $state
 
-            Write-Host "Merged lane '$($workerContract.lane_id)' to $($workerContract.target_branch)." -ForegroundColor Green
+            Write-Host "Merged lane '$($workerContract.lane_id)' to $($workerContract.target_branch). Cleanup is still required to remove the active worktree." -ForegroundColor Green
+            break
+        }
+
+        "supervise" {
+            $supervisorCycles = 0
+
+            while ($true) {
+                if ($SupervisorMaxCycles -gt 0 -and $supervisorCycles -ge $SupervisorMaxCycles) {
+                    Write-Host "Supervisor reached the configured cycle limit of $SupervisorMaxCycles." -ForegroundColor Yellow
+                    break
+                }
+
+                $state = Get-OrchestrationState -StatePath $statePath
+                if ($null -ne $state.active_lane) {
+                    & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode resume -RepoRoot $resolvedRepoRoot -RunnerScriptPath $resolvedRunnerScriptPath -MissionPromptFile $resolvedMissionPromptFile -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -CodexCommand $CodexCommand -Sandbox $Sandbox -PlannerModel $PlannerModel -PlannerReasoningEffort $PlannerReasoningEffort -WorkerModel $WorkerModel -WorkerReasoningEffort $WorkerReasoningEffort -WorkerMaxIterations $WorkerMaxIterations -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn -AutoMerge:$AutoMerge -CleanupAfterMerge:$CleanupAfterMerge -Force:$Force
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Supervisor resume step failed."
+                    }
+                }
+                else {
+                    $catalog = New-LaneCatalog `
+                        -RepoRoot $resolvedRepoRoot `
+                        -TargetBranch $TargetBranch `
+                        -TriageJson $triageJson `
+                        -OpenGapIds $openGapIds `
+                        -StateObject $state `
+                        -PlannerModel $PlannerModel `
+                        -PlannerReasoningEffort $PlannerReasoningEffort `
+                        -WorkerModel $WorkerModel `
+                        -WorkerReasoningEffort $WorkerReasoningEffort
+
+                    ($catalog | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $catalogPath -Encoding utf8
+                    if ([string]::IsNullOrWhiteSpace($catalog.recommended_lane_id)) {
+                        Write-Host "Supervisor found no eligible lane remaining." -ForegroundColor Green
+                        break
+                    }
+
+                    & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode run -RepoRoot $resolvedRepoRoot -RunnerScriptPath $resolvedRunnerScriptPath -MissionPromptFile $resolvedMissionPromptFile -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -LaneId $catalog.recommended_lane_id -TargetBranch $TargetBranch -CodexCommand $CodexCommand -Sandbox $Sandbox -PlannerModel $PlannerModel -PlannerReasoningEffort $PlannerReasoningEffort -WorkerModel $WorkerModel -WorkerReasoningEffort $WorkerReasoningEffort -WorkerMaxIterations $WorkerMaxIterations -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn -AutoMerge:$AutoMerge -CleanupAfterMerge:$CleanupAfterMerge -Force:$Force
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Supervisor run step failed."
+                    }
+                }
+
+                $supervisorCycles++
+            }
+
             break
         }
 

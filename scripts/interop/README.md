@@ -60,3 +60,22 @@ When `QLOGDIR` is enabled by the runner, the harness writes contained qlog JSON 
 
 - If the runner aborts with `Unable to create certificates`, check `runner.stderr.log` first. That comes from the upstream runner's shell-based certificate bootstrap, not from the helper itself.
 - The helper still keeps the build log, runner stdout/Markdown, stderr, invocation summary, and the partial log tree so you can inspect the failure without rerunning with extra flags.
+
+## `Invoke-QuicInteropAutopilot.ps1`
+
+This orchestrator manages the trace-first lane loop for the local QUIC repo checkout. It can:
+
+1. Plan the next eligible lane from the current requirement/gap state.
+2. Prepare a disposable worker worktree for the selected lane.
+3. Run or resume the active worker lane.
+4. Merge verified commits back to `main`.
+5. Clean up the active worktree after merge.
+6. Supervise the loop so it can continue through the next eligible lane without manual restarts.
+
+Use `-Mode supervise` when you want it to keep chaining through eligible lanes and resuming a half-open active lane until it hits a real blocker:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-QuicInteropAutopilot.ps1 -Mode supervise
+```
+
+Use `-Mode run` for a single bounded lane cycle, `-Mode resume` to continue or reconcile the current active lane, and `-Mode plan` to inspect the next eligible lane without starting Codex.
