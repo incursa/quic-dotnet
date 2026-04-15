@@ -12,7 +12,7 @@ This specification covers endpoint ingress classification, routing tables, conne
 
 ## Context
 
-The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and a narrow client-only managed TLS 1.3 crypto slice. The missing seams are the connection-owned runtime that decides ordering across network, timer, and local API events plus the narrow handshake flow coordinator that turns Handshake packets into CRYPTO bridge traffic and back again. The current diagnostics placeholder exposes a no-op sink, but the next slice needs a typed, connection-scoped diagnostics contract plus a sibling qlog adapter boundary and a narrow host-facing qlog capture helper so transport facts can be mapped and serialized without bringing JSON or serializer concerns into the core. The server-role proof floor still stops at inbound Finished, so server-side client-auth and client-certificate handling on the existing `SslServerAuthenticationOptions` carrier remain the next open gap. The client-side PSK-attempt path now has a ServerHello accept/reject branch-point slice under `REQ-QUIC-CRT-0133`, the accepted-path abbreviated completion follow-on is traced separately under `REQ-QUIC-CRT-0137`, the next internal family starter captures dormant early-data eligibility material under `REQ-QUIC-CRT-0139`, and the first dormant early-data attempt-readiness family under `REQ-QUIC-CRT-0140` keeps early-data admission explicitly closed. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, handshake, live-stream, diagnostics, qlog-adapter, qlog-capture, early-data prerequisite capture, dormant early-data attempt readiness, and package-compatibility work can be implemented against one clear architecture, while the library-owned retry bootstrap seam is now implemented and the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.
+The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and the landed managed handshake follow-ons through server/client `Finished` proof, peer transport-parameter commit gating, directional 1-RTT publication, retry bootstrap replay, certificate-policy floors, resumption-ticket ownership, dormant early-data prerequisite capture, the first bounded client 0-RTT send attempt, early-data rejection cleanup, and the first client key-phase follow-ons. The missing seams are no longer one monolithic handshake floor; the remaining handshake-adjacent work now splits across RFC 9000 control-frame reliability, broader RFC 9001 key-update behavior, and separate interop widening. The current diagnostics placeholder exposes a no-op sink, but the next slice needs a typed, connection-scoped diagnostics contract plus a sibling qlog adapter boundary and a narrow host-facing qlog capture helper so transport facts can be mapped and serialized without bringing JSON or serializer concerns into the core. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, live-stream, diagnostics, qlog-adapter, qlog-capture, early-data prerequisite capture, dormant early-data attempt readiness, and package-compatibility work can be implemented against one clear architecture, while the library-owned retry bootstrap seam is now implemented and the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.
 
 ## Decision Summary
 
@@ -166,10 +166,6 @@ Notes:
 ## REQ-QUIC-CRT-0006 Support a sharded high-density profile
 The production-capable runtime MUST support a sharded execution profile in which many connections share a bounded number of execution owners.
 
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0006.cs::HostRoutesTheSameHandleToTheSameShardEveryTime
-
 Notes:
 - This is the recommended production profile for high connection density.
 - The purpose is to avoid one background task and one timer object per live connection.
@@ -212,10 +208,6 @@ Notes:
 ## REQ-QUIC-CRT-0012 Classify every datagram before mutation
 The endpoint MUST classify each inbound datagram before any connection-owned state is mutated.
 
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0012.cs::EndpointClassifiesVersionNegotiationBeforeAnyConnectionMutation
-
 ## REQ-QUIC-CRT-0013 Route live traffic by destination connection ID
 The endpoint MUST route live connection traffic by destination connection ID together with any secondary bindings required for connection-ID retirement and reissuance.
 
@@ -223,8 +215,6 @@ Trace:
 - Source Refs:
   - RFC 9000 Section 5.1
   - RFC 9000 Section 9.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0013.cs::EndpointRoutesLongHeaderDatagramsToTheMatchingRuntime
 
 ## REQ-QUIC-CRT-0014 Use concurrent registries at endpoint scope
 Endpoint-shared route and token registries MUST use `ConcurrentDictionary` or an equivalently safe concurrent hash-map implementation.
@@ -239,8 +229,6 @@ The endpoint MUST maintain a stateless-reset registry that tracks currently matc
 Trace:
 - Source Refs:
   - RFC 9000 Section 10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0015.cs::EndpointMatchesStatelessResetOnlyForTheOwningRemoteAddress
 
 Notes:
 - The connection runtime produces registration and retirement effects.
@@ -249,19 +237,11 @@ Notes:
 ## REQ-QUIC-CRT-0016 Retire endpoint bindings through explicit effects
 Connection-ID issuance, retirement, and stateless-reset token lifecycle changes MUST be applied to endpoint-shared registries through explicit effects.
 
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0016.cs::EndpointAppliesBindingEffectsAndRetiresThemExplicitly
-
 Notes:
 - The reducer should not mutate endpoint shared maps directly.
 
 ## REQ-QUIC-CRT-0017 Use single-consumer multi-producer inboxes
 Ingress queues MUST use `Channel<T>` instances configured for one consumer and multiple producers.
-
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0017.cs::RunAsyncProcessesInboxEventsInPostedOrder
 
 Notes:
 - In .NET terms this maps to `SingleReader = true` and `SingleWriter = false`.
@@ -270,19 +250,11 @@ Notes:
 ## REQ-QUIC-CRT-0018 Serialize all connection-affecting inputs through queues
 Network input, timer input, and local API input MUST all become queued events before they affect connection-owned state.
 
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0018.cs::MultipleProducersCanEnqueueWithoutMutatingConnectionStateInline
-
 ## REQ-QUIC-CRT-0019 Prevent direct mutation from API callers
 Application-facing APIs MUST enqueue connection or stream actions rather than mutating connection-owned state directly.
 
 ## REQ-QUIC-CRT-0020 Keep shard ownership stable for a connection
 The high-density profile MUST assign each stable connection handle to one shard for its entire lifetime.
-
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0020.cs::ASingleConnectionStaysOnTheSameShardAcrossConcurrentPosts
 
 Notes:
 - Route-table changes and connection-ID changes should update the handle-to-route mapping, not the owner.
@@ -298,10 +270,6 @@ Trace:
 ## REQ-QUIC-CRT-0022 Track peer transcript completion and transport flags in state
 Connection-owned state MUST include peer handshake transcript completed status and transport flags that influence migration and closing behavior.
 
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0022.cs::RuntimeConsumesTlsTransportParametersAndHandshakeCompletion
-
 Notes:
 - Examples include disable-active-migration and whether peer parameters required for idle-timeout calculation have been committed.
 
@@ -312,8 +280,6 @@ Trace:
 - Source Refs:
   - RFC 9000 Section 10.2
   - RFC 9000 Section 10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0023.cs::RuntimePhaseIsTheSourceOfTruthForOrdinarySendingLegality
 
 ## REQ-QUIC-CRT-0024 Keep phase progression monotonic
 Connection phase progression MUST move forward only and never return from Closing, Draining, or Discarded to an earlier operational phase.
@@ -324,8 +290,6 @@ A local immediate-close request MUST transition the connection into Closing exac
 Trace:
 - Source Refs:
   - RFC 9000 Section 10.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0025.cs::LocalCloseTransitionsTheRuntimeToClosingAndEmitsCloseEffects
 
 ## REQ-QUIC-CRT-0026 Enter Draining on received connection close
 Receipt of a valid `CONNECTION_CLOSE` frame MUST transition the connection into Draining.
@@ -333,8 +297,6 @@ Receipt of a valid `CONNECTION_CLOSE` frame MUST transition the connection into 
 Trace:
 - Source Refs:
   - RFC 9000 Section 10.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs::ReceivedConnectionCloseTransitionsTheRuntimeToDraining
 
 ## REQ-QUIC-CRT-0027 Enter Draining on accepted stateless reset
 Acceptance of a valid stateless reset MUST transition the connection into Draining.
@@ -342,8 +304,6 @@ Acceptance of a valid stateless reset MUST transition the connection into Draini
 Trace:
 - Source Refs:
   - RFC 9000 Section 10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0027.cs::AcceptedStatelessResetTransitionsTheRuntimeToDraining
 
 ## REQ-QUIC-CRT-0028 Minimize retained data in Closing
 The Closing phase MUST retain only the state needed to attribute packets to the connection, retransmit close-related packets, and manage the close deadline.
@@ -367,18 +327,12 @@ Trace:
 - Source Refs:
   - RFC 9000 Section 10.2
   - RFC 9000 Section 10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0030.cs::CloseLifetimeExpiryDiscardsTheConnection
 
 ## REQ-QUIC-CRT-0031 Track close reason and close origin
 Connection-owned state MUST record the close reason, close origin, and phase-entry timestamp that produced the terminal lifecycle transition.
 
 ## REQ-QUIC-CRT-0032 Store a complete connection state inventory
 Connection-owned state MUST include phase, transport flags, active path, candidate paths, recently validated paths, stream registry, deadlines, timer generations, and close metadata.
-
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0032.cs::RuntimeExposesTheConnectionOwnedStateInventory
 
 Notes:
 - This is a minimum inventory, not a maximum.
@@ -399,10 +353,6 @@ Notes:
 
 ## REQ-QUIC-CRT-0035 Represent all external stimuli as explicit events
 The runtime MUST represent packet receive, timer expiry, peer handshake transcript completion, close signals, path-validation outcomes, connection-ID lifecycle events, and stream API actions as explicit events.
-
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0035.cs::TransitionUsesTheInjectedMonotonicClockAndReturnsExplicitPlumbing
 
 ## REQ-QUIC-CRT-0036 Represent all side effects explicitly
 The runtime MUST represent send operations, timer operations, endpoint-binding updates, path promotion, token retirement, stream notifications, and state discard as explicit effects.
@@ -436,10 +386,6 @@ Notes:
 
 ## REQ-QUIC-CRT-0043 Map internal errors to explicit lifecycle events
 Protocol and runtime errors MUST be converted into explicit close, drain, or discard events rather than ad hoc control flow.
-
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0043.cs::FatalTlsAlertsAreConvertedIntoConnectionCloseLifecycleTransitions
 
 ## REQ-QUIC-CRT-0044 Prove transitions with state and effect assertions
 Reducer-focused tests MUST assert both post-transition state and the full set of emitted effects for each scenario.
@@ -477,19 +423,11 @@ Every protocol deadline MUST be stored as an absolute monotonic due-tick value.
 ## REQ-QUIC-CRT-0048 Use a priority queue for deadlines
 The deadline scheduler MUST use `PriorityQueue<TElement, TPriority>` or an equivalent min-heap keyed by absolute due ticks.
 
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0048.cs::DeadlineSchedulerDequeuesTheEarliestDueTimerFirst
-
 Notes:
 - A min-heap keeps the next wake-up cheap to find.
 
 ## REQ-QUIC-CRT-0049 Use deterministic tie-breaking for same-deadline timers
 Timer priorities MUST include a monotonic tie-breaker so equal due ticks are ordered deterministically.
-
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0049.cs::TimerPriorityUsesTheSequenceTieBreakerForEqualDeadlines
 
 Notes:
 - `PriorityQueue<TElement, TPriority>` does not guarantee FIFO behavior for equal priorities.
@@ -503,16 +441,8 @@ The production high-density profile MUST NOT depend on one timer instance per li
 ## REQ-QUIC-CRT-0052 Use generation counters for rescheduled timers
 Every rearmable timer MUST carry a generation counter that allows stale expirations to be recognized and ignored.
 
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0052.cs::RearmingAndCancellingATimerAdvanceItsGenerationCounter
-
 ## REQ-QUIC-CRT-0053 Ignore stale timer expirations safely
 A timer expiry event with a stale generation MUST be treated as a no-op.
-
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0053.cs::SchedulerSuppressesStaleDueEntriesAfterATimerIsRearmed
 
 ## REQ-QUIC-CRT-0054 Inject timer expirations through the same queue
 Timer expirations MUST re-enter the owning runtime through the same queue used for network and local API events.
@@ -524,8 +454,6 @@ Trace:
 - Source Refs:
   - RFC 9000 Section 10.1
   - QuicIdleTimeoutState.cs
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0055.cs::TransportParametersCommitDerivesAndArmsTheEffectiveIdleTimeout
 
 ## REQ-QUIC-CRT-0056 Restart the idle timer only on allowed events
 Idle timeout restart logic MUST be triggered only by events permitted by RFC 9000.
@@ -534,8 +462,6 @@ Trace:
 - Source Refs:
   - RFC 9000 Section 10.1
   - QuicIdleTimeoutState.cs
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0056.cs::IdleTimeoutExpiresAfterTheRuntimeArmsAndRestartsTheIdleTimer
 
 Notes:
 - The critical events are successfully processed received packets and the first ack-eliciting send since the last receive.
@@ -577,18 +503,12 @@ Each path record MUST include validation state, amplification budget state, reco
 ## REQ-QUIC-CRT-0063 Classify address changes explicitly
 A packet that arrives from a different peer address MUST be classified explicitly as same-path traffic, probable NAT rebinding, migration candidate, preferred-address transition, or noise or attack.
 
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0063.cs::PacketFromANewAddressBeforeHandshakeConfirmationCreatesACandidatePathAndProbe
-
 ## REQ-QUIC-CRT-0064 Gate active migration on peer handshake transcript completion
 The runtime MUST NOT promote an active path migration before peer handshake transcript completion.
 
 Trace:
 - Source Refs:
   - RFC 9000 Section 9
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0064.cs::ValidationBeforePeerHandshakeTranscriptCompletionDoesNotPromoteThePath
 
 ## REQ-QUIC-CRT-0065 Require validation for changed peer addresses
 Any detected change in peer address MUST trigger path validation unless that address is already considered recently validated.
@@ -604,8 +524,6 @@ Trace:
 - Source Refs:
   - RFC 9000 Section 8.1
   - QuicAntiAmplificationBudget.cs
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0066.cs::LocalCloseDoesNotEmitADatagramWhenTheActivePathHasNoAmplificationBudget
 
 ## REQ-QUIC-CRT-0067 Prevent unvalidated paths from bypassing amplification limits
 The sender MUST budget-check every packet sent on an unvalidated path against that path's amplification limits.
@@ -620,10 +538,6 @@ Trace:
 
 ## REQ-QUIC-CRT-0069 Promote paths only after validation or trusted reuse
 A candidate path MUST become the active path only after successful validation or a recent-validation reuse rule that the runtime treats as trusted.
-
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0069.cs::ValidationSuccessPromotesTheValidatedCandidatePathWhenPeerHandshakeTranscriptCompletes
 
 ## REQ-QUIC-CRT-0070 Reset or restore path-local transport state on promotion
 Promotion of a path MUST reset or restore RTT, congestion, and ECN-related state in a manner consistent with migration semantics.
@@ -687,8 +601,6 @@ The endpoint MUST perform stateless-reset eligibility screening when a datagram 
 Trace:
 - Source Refs:
   - RFC 9000 Section 10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0080.cs::EndpointDispatchesEligibleStatelessResetDatagramsIntoTheRuntime
 
 ## REQ-QUIC-CRT-0081 Match reset tokens without leaking token values
 Stateless-reset token comparison MUST avoid leaking token values through observable timing or equivalent side channels.
@@ -703,8 +615,6 @@ Stateless-reset matching MUST be scoped to the remote address and to tokens for 
 Trace:
 - Source Refs:
   - RFC 9000 Section 10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0082.cs::EndpointRetargetsResetMatchingWhenTheBindingChanges
 
 ## REQ-QUIC-CRT-0083 Exclude retired and unused tokens from matching
 Tokens for retired or never-used connection IDs MUST NOT be considered matchable or emittable.
@@ -712,8 +622,6 @@ Tokens for retired or never-used connection IDs MUST NOT be considered matchable
 Trace:
 - Source Refs:
   - RFC 9000 Section 10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0083.cs::EndpointExcludesRetiredStatelessResetTokensFromMatching
 
 ## REQ-QUIC-CRT-0084 Terminate ordinary operation on accepted stateless reset
 Acceptance of a valid stateless reset MUST end ordinary connection operation without first performing the ordinary close handshake.
@@ -721,8 +629,6 @@ Acceptance of a valid stateless reset MUST end ordinary connection operation wit
 Trace:
 - Source Refs:
   - RFC 9000 Section 10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0084.cs::AcceptedStatelessResetSuppressesTheOrdinaryCloseHandshake
 
 ## REQ-QUIC-CRT-0085 Limit stateless-reset emission
 Stateless-reset emission policy MUST bound send frequency and avoid reset loops or oracle behavior.
@@ -730,15 +636,9 @@ Stateless-reset emission policy MUST bound send frequency and avoid reset loops 
 Trace:
 - Source Refs:
   - RFC 9000 Section 10.3.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0085.cs::EndpointEmissionPolicyLimitsStatelessResetEmissionPerRemoteAddress
 
 ## REQ-QUIC-CRT-0086 Retire reset tokens with connection-ID retirement
 Connection-ID retirement MUST produce retirement of any associated stateless-reset tokens in endpoint memory.
-
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0086.cs::RuntimeRetiresAssociatedStatelessResetTokensWhenConnectionIdsAreRetired
 
 ## REQ-QUIC-CRT-0087 Propagate terminal lifecycle to streams
 When the connection enters Closing, Draining, or Discarded, the runtime MUST notify live streams of the terminal connection state.
@@ -768,10 +668,6 @@ The production high-density profile MUST NOT require one background task per liv
 
 ## REQ-QUIC-CRT-0094 Make shard count independently configurable
 The number of high-density execution shards SHOULD be configurable independently of the live-connection count.
-
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0094.cs::HostShardCountIsConfiguredIndependentlyOfConnectionCount
 
 Notes:
 - This allows tuning for CPU count and expected traffic mix.
@@ -825,10 +721,6 @@ Notes:
 ## REQ-QUIC-CRT-0103 Expose a transport-facing TLS bridge state
 The library MUST expose a transport-facing TLS bridge state or contract that can represent local transport parameters, staged peer transport parameters, committed peer transport parameters, Initial keys available, Handshake keys available, `PeerCertificateVerifyVerified`, `PeerCertificatePolicyAccepted`, `PeerFinishedVerified`, 1-RTT keys available, 1-RTT open packet-protection material, 1-RTT protect packet-protection material, peer handshake transcript completion, key-update installation, old-key discard, and fatal TLS alerts without depending on a concrete TLS implementation.
 
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs::TlsBridgeStateSnapshotsTransportParametersAndTracksKeyLifecycleOutputs
-
 Notes:
 - The bridge may remain internal if needed, but it must live in the main library because it is part of transport ownership, not runner plumbing.
 - `PeerCertificateVerifyVerified` means the client role has cryptographically verified the peer leaf certificate's supported `CertificateVerify` proof path with the managed TLS 1.3 key schedule; it does not imply certificate trust, certificate-path validation, hostname validation, or identity authentication.
@@ -841,19 +733,11 @@ Notes:
 ## REQ-QUIC-CRT-0104 Expose a diagnostics sink abstraction
 The library MUST expose a diagnostics sink abstraction that can be a no-op when disabled and is not hardwired to any single log encoding or qlog serialization format.
 
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs::NullDiagnosticsSinkIsCheapAndNoOpWhenDisabled
-
 Notes:
 - The runtime may emit structured diagnostic facts and let a host map them to its own sink.
 
 ## REQ-QUIC-CRT-0105 Centralize sender and recovery ownership
 The library MUST provide a sender and recovery runtime owner that centralizes packet-sent state, PTO ownership, and retransmission planning around the existing sender and recovery helpers instead of pushing that responsibility into a host adapter.
-
-Trace:
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0105.cs::SenderRecoveryRuntimeTracksPacketsAndOwnsPtoSelection
 
 Notes:
 - The owner may remain internal if needed, but it must live in the library because it is part of the transport runtime.
@@ -865,8 +749,6 @@ Trace:
 - Source Refs:
   - RFC 9001 Sections 5 and 7
   - connection-runtime-state-machine.md
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs::BridgeDriverTranscriptCompletionAndPeerTransportParameterCommitUpdateTheRuntimePhase
 
 Notes:
 - This is a Handshake-level runtime flow slice only and does not imply a full TLS implementation.
@@ -894,8 +776,6 @@ Trace:
   - RFC 9001 Sections 5 and 7
   - RFC 9001 Section 8
   - connection-runtime-state-machine.md
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs::ManagedClientRoleKeySchedulePublishesHandshakeKeysAndVerifiesPeerFinished
 
 Notes:
 - This slice is intentionally client-only and permanent. It does not add trust-store policy, hostname validation, certificate-path building, 0-RTT, 1-RTT, key update, or server-role handshake crypto.
@@ -922,8 +802,6 @@ Trace:
   - RFC 8446 Section 4.4.3
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0110.cs::ClientRoleManagedCertificateVerifyProofSucceedsForTheSupportedLeafSubset
 
 Notes:
 - This slice is intentionally client-only and permanent. It does not add certificate trust, hostname validation, certificate-path building, revocation, OCSP/CRL, 0-RTT, 1-RTT, key update, or server-role handshake crypto.
@@ -937,8 +815,6 @@ Trace:
 - Source Refs:
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs::BridgeStateRequiresExplicitPolicyAcceptanceBeforeCommit
 
 Notes:
 - This slice is intentionally local policy only. It does not add trust-store validation, hostname validation, certificate-path building, revocation, OCSP/CRL, or server-role acceptance.
@@ -953,8 +829,6 @@ Trace:
   - RFC 8446 Sections 4.1.2, 4.1.3, and 7.1
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::ServerRoleKeySchedulePublishesServerHelloBeforeHandshakeKeys
 
 Notes:
 - This slice is intentionally server-role only and permanent. It does not add `EncryptedExtensions`, certificate flight, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
@@ -969,8 +843,6 @@ Trace:
   - RFC 8446 Sections 4.1.2, 4.1.3, and 7.1
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs::ServerRoleEmitsEncryptedExtensionsAfterServerHelloAtTheNextHandshakeOffset
 
 Notes:
 - This slice extends the permanent server-role crypto floor and remains server-role only. It does not add certificate flight, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
@@ -985,8 +857,6 @@ Trace:
   - RFC 8446 Sections 4.1.2, 4.1.3, and 4.4.2
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0114.cs::ServerRoleEmitsLocalCertificateAfterLocalEncryptedExtensionsAtTheNextHandshakeOffset
 
 Notes:
 - This slice extends the permanent server-role crypto floor and remains server-role only. It does not add `CertificateVerify`, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
@@ -1001,8 +871,6 @@ Trace:
   - RFC 8446 Sections 4.1.2, 4.1.3, and 4.4.3
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0115.cs::ServerRoleEmitsLocalCertificateVerifyAndLocalFinishedAfterLocalCertificateAtTheNextHandshakeOffset
 
 Notes:
 - This slice extends the permanent server-role crypto floor and remains server-role only. It does not add server `Finished`, client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
@@ -1017,8 +885,6 @@ Trace:
   - RFC 8446 Sections 4.1.2, 4.1.3, and 4.4.4
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0116.cs::ServerRoleAppendsLocalFinishedToTheManagedTranscriptExplicitly
 
 Notes:
 - This slice extends the permanent server-role crypto floor and remains server-role only. It does not add inbound client `Finished` proof, server-role transport-parameter commit, client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
@@ -1033,8 +899,6 @@ Trace:
   - RFC 8446 Section 4.4.4
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0117.cs::ServerRoleDriverVerifiesInboundClientFinishedAfterTheFullLocalFlight
 
 Notes:
 - This slice is intentionally server-role only. It does not add client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT data-path processing, 1-RTT data-path processing, key update, endpoint-host wiring, or interop-runner handshake support.
@@ -1148,12 +1012,12 @@ Trace:
   - src/Incursa.Quic/QuicTlsKeySchedule.cs
   - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
   - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\Internal\MsQuicConfiguration.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\Internal\MsQuicConfiguration.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs
 
 Notes:
 - This is the smallest server-side client-auth floor and remains server-role only.
@@ -1176,10 +1040,10 @@ Trace:
   - src/Incursa.Quic/QuicListenerHost.cs
   - src/Incursa.Quic/QuicConnectionRuntime.cs
   - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
 
 Notes:
 - This is a narrow server-role follow-on to REQ-QUIC-CRT-0124 and does not widen the public carrier shape.
@@ -1201,10 +1065,10 @@ Trace:
   - src/Incursa.Quic/QuicListenerHost.cs
   - src/Incursa.Quic/QuicConnectionRuntime.cs
   - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
-  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Security\src\System\Net\Security\SslStream.Protocol.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
+  - C:\src\dotnet\runtime\src\libraries\System.Net.Security\src\System\Net\Security\SslStream.Protocol.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0126.cs
@@ -1383,8 +1247,6 @@ Trace:
   - src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs
   - src/Incursa.Quic/QuicClientConnectionHost.cs
   - src/Incursa.Quic/QuicListenerHost.cs
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0134.cs::StructuredTransportDiagnosticsExposeTypedKindsAndPayloads
 
 Notes:
 - The contract may remain internal, but it must live in the main library because it participates in transport ownership, not host serialization.
@@ -1422,12 +1284,12 @@ Trace:
   - src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
   - src/Incursa.Quic/QuicClientConnectionHost.cs
   - src/Incursa.Quic/QuicListenerHost.cs
-  - https://github.com/incursa/qlog-dotnet/blob/main/specs\generated\qlog\scope-boundary.md
-  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\README.md
-  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\README.md
-  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.cs
-  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.TransportActivity.cs
-  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.StateAndRecovery.cs
+  - C:\src\incursa\qlog-dotnet\specs\generated\qlog\scope-boundary.md
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\README.md
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\README.md
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.cs
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.TransportActivity.cs
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.StateAndRecovery.cs
 
 Notes:
 - The adapter may own qlog trace creation, schema registration, and event append ordering, but it must not own JSON writers or file paths.
@@ -1473,10 +1335,10 @@ Trace:
   - src/Incursa.Quic.Qlog/QuicQlogCapture.cs
   - src/Incursa.Quic.Qlog/QuicQlogDiagnosticsSink.cs
   - src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj
-  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\QlogFile.cs
-  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\QlogTrace.cs
-  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\Serialization\Json\QlogJsonSerializer.cs
-  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\Serialization\Json\QlogJsonTextSequenceSerializer.cs
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\QlogFile.cs
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\QlogTrace.cs
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\Serialization\Json\QlogJsonSerializer.cs
+  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\Serialization\Json\QlogJsonTextSequenceSerializer.cs
 
 Notes:
 - The helper may own the in-memory `QlogFile` envelope and collected `QlogTrace` instances, but serializer choice, file paths, rotation, and retention remain above the transport core.
@@ -1646,4 +1508,3 @@ Notes:
 - The slice keeps the client's current 1-RTT application traffic secret material alive long enough to derive the successor pair and then installs the new bridge-state view on the first observed 0->1 transition.
 - Outbound 1-RTT packet formatting must switch to the installed phase-1 bit once the successor pair is installed.
 - The slice does not introduce a general RFC 9001 key-update engine, TLS KeyUpdate support, transfer, retry, public API widening, or any public key-update promise.
-

@@ -690,7 +690,6 @@ function Get-LaneTemplateDefinitions {
             priority = 4
             prerequisite_lane_ids = @("runtime-backbone")
             blocking_gap_ids = @(
-                "9001-05-handshake-orchestration",
                 "9000-19-retransmission-and-frame-reliability",
                 "9000-02-stream-state",
                 "9000-03-flow-control"
@@ -805,9 +804,243 @@ function Get-LaneTemplateDefinitions {
             repeatable = $false
         }
         [pscustomobject]@{
+            lane_id = "stream-send-reset-lifecycle"
+            objective = "Close the send-side stream terminal and reset lifecycle rules that unblock the remaining RFC 9000 stream-state and reset-reliability slices."
+            priority = 7
+            prerequisite_lane_ids = @("runtime-backbone")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicStream",
+                "src/Incursa.Quic/QuicConnectionStream",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S3P1-0013", "REQ-QUIC-RFC9000-S3P1-0014", "REQ-QUIC-RFC9000-S3P1-0015", "REQ-QUIC-RFC9000-S3P1-0016", "REQ-QUIC-RFC9000-S3P1-0017", "REQ-QUIC-RFC9000-S13P3-0011", "REQ-QUIC-RFC9000-S13P3-0012")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0012"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0012"'
+            )
+            success_gates = @(
+                "send-side terminal states become runtime-owned and requirement-home proven",
+                "the lane closes real reset and terminal-stream behavior instead of only reshaping traces"
+            )
+            fail_gates = @(
+                "work stays trace-only or helper-only",
+                "the same S3P1 and S13P3 terminal/reset blocker remains after the lane finishes"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "control-frame-reliability"
+            objective = "Close the remaining runtime-owned RFC 9000 control-frame reliability rules for PATH_RESPONSE, CID lifecycle, NEW_TOKEN, PING/PADDING, and HANDSHAKE_DONE."
+            priority = 8
+            prerequisite_lane_ids = @("runtime-backbone", "path-migration-cid-runtime")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+                "src/Incursa.Quic/QuicPathValidation.cs",
+                "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicStream",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0028", "REQ-QUIC-RFC9000-S13P3-0029", "REQ-QUIC-RFC9000-S13P3-0030", "REQ-QUIC-RFC9000-S13P3-0031", "REQ-QUIC-RFC9000-S13P3-0032", "REQ-QUIC-RFC9000-S13P3-0033")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0028|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0030|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0031|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0032|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0028|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0030|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0031|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0032|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+            )
+            success_gates = @(
+                "control-frame retransmission and no-repair ownership is runtime-backed and narrowly proven",
+                "HANDSHAKE_DONE is handled as a control-frame reliability seam rather than a broader handshake umbrella"
+            )
+            fail_gates = @(
+                "codec-only edits land without runtime resend ownership",
+                "the lane widens into unrelated handshake or interop work"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "stream-stop-sending-read-abort"
+            objective = "Close the remaining STOP_SENDING and read-abort coordination rules, including RESET_STREAM reliability after interruption or loss."
+            priority = 9
+            prerequisite_lane_ids = @("stream-send-reset-lifecycle")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionStreamState.cs",
+                "src/Incursa.Quic/QuicStopSendingFrame.cs",
+                "src/Incursa.Quic/QuicResetStreamFrame.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S3P5", "REQ-QUIC-RFC9000-S13P3-0013")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P5_|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0013"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P5_|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0013"'
+            )
+            success_gates = @(
+                "STOP_SENDING, read abort, and RESET_STREAM recovery rules are proven with focused requirement-home evidence",
+                "the lane closes runtime interruption behavior instead of only adding surface helpers"
+            )
+            fail_gates = @(
+                "the lane adds no proof for repeated STOP_SENDING or deferred reset behavior",
+                "public API widening displaces the narrow runtime goal"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "final-size-and-credit-accounting"
+            objective = "Close final-size immutability and connection-level credit accounting rules that gate the remaining stream and flow-control work."
+            priority = 10
+            prerequisite_lane_ids = @("stream-send-reset-lifecycle", "stream-stop-sending-read-abort")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionStreamState.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S4P5-0002", "REQ-QUIC-RFC9000-S4P5-0004", "REQ-QUIC-RFC9000-S4P5-0005", "REQ-QUIC-RFC9000-S4P5-0006", "REQ-QUIC-RFC9000-S4P5-0007", "REQ-QUIC-RFC9000-S4P5-0008", "REQ-QUIC-RFC9000-S3P5-0003")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S3P5_0003"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S3P5_0003"'
+            )
+            success_gates = @(
+                "final-size and connection credit accounting rules become trace-clean with positive and negative proof",
+                "the lane removes a real blocker for downstream MAX_* and BLOCKED cadence work"
+            )
+            fail_gates = @(
+                "work stays trace-only or never proves the error paths",
+                "the same accounting blocker still prevents downstream flow-control lanes"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "credit-readvertisement-reliability"
+            objective = "Close runtime-owned MAX_DATA, MAX_STREAM_DATA, and MAX_STREAMS re-advertisement reliability after reads, resets, and loss."
+            priority = 11
+            prerequisite_lane_ids = @("final-size-and-credit-accounting")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionStreamState.cs",
+                "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+                "src/Incursa.Quic/QuicMax",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0015", "REQ-QUIC-RFC9000-S13P3-0016", "REQ-QUIC-RFC9000-S13P3-0017", "REQ-QUIC-RFC9000-S13P3-0018", "REQ-QUIC-RFC9000-S13P3-0019", "REQ-QUIC-RFC9000-S13P3-0020", "REQ-QUIC-RFC9000-S13P3-0021")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0020|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0021"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0020|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0021"'
+            )
+            success_gates = @(
+                "MAX_* readvertisement behavior is runtime-backed and loss-aware",
+                "the lane closes credit refresh reliability rather than only emitting frame payloads"
+            )
+            fail_gates = @(
+                "frame serialization changes land without resend ownership",
+                "loss-driven re-advertisement still lacks focused proof"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "blocked-signal-cadence"
+            objective = "Close blocked-frame emission cadence and the rule that blocked signals do not force unrelated packets."
+            priority = 12
+            prerequisite_lane_ids = @("final-size-and-credit-accounting")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionStreamState.cs",
+                "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+                "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+                "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+                "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S4P1-0015", "REQ-QUIC-RFC9000-S4P2-0002", "REQ-QUIC-RFC9000-S4P2-0003", "REQ-QUIC-RFC9000-S4P2-0004", "REQ-QUIC-RFC9000-S13P3-0022", "REQ-QUIC-RFC9000-S13P3-0023", "REQ-QUIC-RFC9000-S13P3-0024", "REQ-QUIC-RFC9000-S13P3-0025")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0025"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0025"'
+            )
+            success_gates = @(
+                "blocked-frame cadence and no-forced-packet behavior are proven narrowly",
+                "the lane closes a real flow-control runtime seam rather than only adding trace metadata"
+            )
+            fail_gates = @(
+                "no negative proof lands for the no-extra-packet rule",
+                "the same blocked-frame cadence blocker remains after the lane finishes"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
             lane_id = "trace-metadata-reconciliation"
             objective = "Reconcile xrefs, generated summaries, and proof metadata only after a semantic merge has landed."
-            priority = 7
+            priority = 13
             prerequisite_lane_ids = @()
             blocking_gap_ids = @()
             allowed_path_prefixes = @(
