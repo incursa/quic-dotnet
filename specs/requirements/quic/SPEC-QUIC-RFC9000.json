@@ -3316,7 +3316,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs::TryApplyMaxFrames_AdvertisesLargerAdvertisedLimits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AdvertisesLargerConnectionLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_IgnoresSmallerConnectionLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AcceptsTheMaximumRepresentableConnectionLimit"
         ]
       }
     },

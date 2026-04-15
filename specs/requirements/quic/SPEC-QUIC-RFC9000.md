@@ -797,6 +797,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B8-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0007.cs::TryReserveSendCapacity_AcceptsMaxStreamDataAfterEnteringSendState
 
 ## REQ-QUIC-RFC9000-S3P1-0008 Signal Send blocking with STREAM_DATA_BLOCKED
 An endpoint in the Send state MUST generate STREAM_DATA_BLOCKED frames if it is blocked from sending by stream flow control limits.
@@ -811,6 +813,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B8-P5-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0008.cs::TryReserveSendCapacity_GeneratesStreamDataBlockedWhenBlockedByFlowControl
 
 ## REQ-QUIC-RFC9000-S3P1-0009 Enter Data Sent after sending FIN
 After the application indicates that all stream data has been sent and a STREAM frame containing the FIN bit is sent, the sending part of the stream MUST enter the Data Sent state.
@@ -1776,6 +1780,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B7-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs::TryApplyMaxFrames_AdvertisesLargerAdvertisedLimits
 
 ## REQ-QUIC-RFC9000-S4P1-0008 Make MAX_STREAM_DATA indicate an absolute stream offset
 A MAX_STREAM_DATA frame MUST indicate the maximum absolute byte offset of a stream.
@@ -1790,6 +1796,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B7-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs::TryApplyMaxFrames_AdvertisesLargerAdvertisedLimits
 
 ## REQ-QUIC-RFC9000-S4P1-0009 Advertise larger connection limits with MAX_DATA
 A receiver MAY advertise a larger limit for a connection by sending a MAX_DATA frame.
@@ -1804,6 +1812,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B8-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AdvertisesLargerConnectionLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_IgnoresSmallerConnectionLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AcceptsTheMaximumRepresentableConnectionLimit
 
 ## REQ-QUIC-RFC9000-S4P1-0010 Track cumulative bytes for connection flow control
 A receiver MUST maintain a cumulative sum of bytes received on all streams to check for violations of the advertised connection or stream data limits.
@@ -1832,6 +1844,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B9-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs::TryApplyMaxFrames_IgnoresSmallerAdvertisedLimits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0007.cs::TryApplyMaxStreamDataFrame_AdvertisesLargerLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AdvertisesLargerConnectionLimit
 
 ## REQ-QUIC-RFC9000-S4P1-0012 Close on flow-control violations
 A receiver MUST close the connection with an error of type FLOW_CONTROL_ERROR if the sender violates the advertised connection or stream data limits.
