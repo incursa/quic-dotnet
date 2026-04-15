@@ -51,7 +51,29 @@ param(
 
     [int]$CompactMaxPriorResultChars = 250,
 
-    [int]$CompactMaxGitContextChars = 400
+    [int]$CompactMaxGitContextChars = 400,
+
+    [string]$TargetLaneId = "",
+
+    [string]$TargetScope = "",
+
+    [string[]]$AllowedPathPrefixes = @(),
+
+    [string[]]$ForbiddenPathPrefixes = @(),
+
+    [string[]]$RequirementFamilies = @(),
+
+    [string[]]$BlockingGapIds = @(),
+
+    [string[]]$VerificationCommands = @(),
+
+    [string[]]$MergeCheckCommands = @(),
+
+    [string]$RequirementGapsPath = "",
+
+    [switch]$StopOnPathViolation,
+
+    [switch]$StopOnBlockedGap
 )
 
 Set-StrictMode -Version Latest
@@ -753,6 +775,353 @@ function Get-ChangedPathSummary {
     return Get-LimitedText -Text $summary -MaxChars $MaxChars -CollapseWhitespace
 }
 
+function Get-NormalizedStringList {
+    param(
+        [AllowNull()][string[]]$Items = @()
+    )
+
+    if ($null -eq $Items) {
+        return @()
+    }
+
+    return @(
+        $Items |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        ForEach-Object { $_.Trim() } |
+        Select-Object -Unique
+    )
+}
+
+function Get-NormalizedPathPrefixList {
+    param(
+        [AllowNull()][string[]]$Items = @()
+    )
+
+    return @(
+        Get-NormalizedStringList -Items $Items |
+        ForEach-Object { ($_ -replace '\\', '/').TrimEnd('/') }
+    )
+}
+
+function Test-PathHasPrefix {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [AllowNull()][string[]]$Prefixes = @()
+    )
+
+    $normalizedPath = ($Path -replace '\\', '/').Trim()
+    foreach ($prefix in @(Get-NormalizedPathPrefixList -Items $Prefixes)) {
+        if ([string]::IsNullOrWhiteSpace($prefix)) {
+            continue
+        }
+
+        if (
+            $normalizedPath.Equals($prefix, [System.StringComparison]::OrdinalIgnoreCase) -or
+            $normalizedPath.StartsWith($prefix + '/', [System.StringComparison]::OrdinalIgnoreCase)
+        ) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Get-PathPolicyResult {
+    param(
+        [AllowNull()][string[]]$Paths = @(),
+        [AllowNull()][string[]]$AllowedPrefixes = @(),
+        [AllowNull()][string[]]$ForbiddenPrefixes = @()
+    )
+
+    $normalizedPaths = @(
+        $Paths |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        ForEach-Object { $_ -replace '\\', '/' } |
+        Select-Object -Unique
+    )
+
+    $allowedPrefixes = @(Get-NormalizedPathPrefixList -Items $AllowedPrefixes)
+    $forbiddenPrefixes = @(Get-NormalizedPathPrefixList -Items $ForbiddenPrefixes)
+
+    $outsideAllowed = New-Object System.Collections.Generic.List[string]
+    $insideForbidden = New-Object System.Collections.Generic.List[string]
+
+    foreach ($path in $normalizedPaths) {
+        if ($allowedPrefixes.Count -gt 0 -and -not (Test-PathHasPrefix -Path $path -Prefixes $allowedPrefixes)) {
+            [void]$outsideAllowed.Add($path)
+        }
+
+        if ($forbiddenPrefixes.Count -gt 0 -and (Test-PathHasPrefix -Path $path -Prefixes $forbiddenPrefixes)) {
+            [void]$insideForbidden.Add($path)
+        }
+    }
+
+    return [pscustomobject]@{
+        HasViolation    = ($outsideAllowed.Count -gt 0 -or $insideForbidden.Count -gt 0)
+        OutsideAllowed  = @($outsideAllowed)
+        InsideForbidden = @($insideForbidden)
+        AllowedPrefixes = @($allowedPrefixes)
+        ForbiddenPrefixes = @($forbiddenPrefixes)
+    }
+}
+
+function Get-RequirementIdsBetweenRefs {
+    param(
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [string]$BeforeRef = "",
+        [string]$AfterRef = ""
+    )
+
+    if ([string]::IsNullOrWhiteSpace($BeforeRef) -or [string]::IsNullOrWhiteSpace($AfterRef)) {
+        return @()
+    }
+
+    if ([string]::Equals($BeforeRef, $AfterRef, [System.StringComparison]::OrdinalIgnoreCase)) {
+        return @()
+    }
+
+    $result = Invoke-NativeCapture -FilePath "git" -ArgumentList @("-C", $RepositoryRoot, "diff", "--unified=0", "$BeforeRef..$AfterRef")
+    if ($result.ExitCode -ne 0) {
+        return @()
+    }
+
+    return @(
+        [regex]::Matches($result.StdOut, 'REQ-[A-Z0-9-]+') |
+        ForEach-Object { $_.Value } |
+        Select-Object -Unique
+    )
+}
+
+function Get-RequirementFamilyPolicyResult {
+    param(
+        [AllowNull()][string[]]$RequirementIds = @(),
+        [AllowNull()][string[]]$AllowedFamilies = @()
+    )
+
+    $allowedFamilies = @(Get-NormalizedStringList -Items $AllowedFamilies)
+    $requirementIds = @(Get-NormalizedStringList -Items $RequirementIds)
+
+    if ($allowedFamilies.Count -eq 0 -or $requirementIds.Count -eq 0) {
+        return [pscustomobject]@{
+            HasViolation = $false
+            RequirementIds = @($requirementIds)
+            OutsideAllowedFamilies = @()
+            AllowedFamilies = @($allowedFamilies)
+        }
+    }
+
+    $outsideAllowedFamilies = New-Object System.Collections.Generic.List[string]
+    foreach ($requirementId in $requirementIds) {
+        $isAllowed = $false
+        foreach ($family in $allowedFamilies) {
+            if ($requirementId.StartsWith($family, [System.StringComparison]::OrdinalIgnoreCase)) {
+                $isAllowed = $true
+                break
+            }
+        }
+
+        if (-not $isAllowed) {
+            [void]$outsideAllowedFamilies.Add($requirementId)
+        }
+    }
+
+    return [pscustomobject]@{
+        HasViolation = $outsideAllowedFamilies.Count -gt 0
+        RequirementIds = @($requirementIds)
+        OutsideAllowedFamilies = @($outsideAllowedFamilies)
+        AllowedFamilies = @($allowedFamilies)
+    }
+}
+
+function Get-OpenGapIds {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path
+    )
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        return @()
+    }
+
+    $state = ""
+    $gapIds = New-Object System.Collections.Generic.List[string]
+    foreach ($line in Get-Content -LiteralPath $Path) {
+        if ($line -match '^## Open Gaps') {
+            $state = "open"
+            continue
+        }
+
+        if ($line -match '^## Closed Gaps') {
+            break
+        }
+
+        if ($state -eq "open" -and $line -match '^- `([^`]+)`') {
+            [void]$gapIds.Add($Matches[1])
+        }
+    }
+
+    return @(Get-NormalizedStringList -Items $gapIds.ToArray())
+}
+
+function Get-BlockingGapStatus {
+    param(
+        [AllowNull()][string[]]$BlockingGapIds = @(),
+        [AllowNull()][string[]]$OpenGapIds = @()
+    )
+
+    $blockingGapIds = @(Get-NormalizedStringList -Items $BlockingGapIds)
+    $openGapIds = @(Get-NormalizedStringList -Items $OpenGapIds)
+
+    $stillOpen = New-Object System.Collections.Generic.List[string]
+    foreach ($gapId in $blockingGapIds) {
+        if ($openGapIds -contains $gapId) {
+            [void]$stillOpen.Add($gapId)
+        }
+    }
+
+    return [pscustomobject]@{
+        HasBlockingGap = $stillOpen.Count -gt 0
+        BlockingGapIds = @($blockingGapIds)
+        OpenGapIds     = @($openGapIds)
+        StillOpen      = @($stillOpen)
+    }
+}
+
+function Get-CurrentPowerShellExecutable {
+    $process = Get-Process -Id $PID -ErrorAction Stop
+    if (-not [string]::IsNullOrWhiteSpace($process.Path)) {
+        return $process.Path
+    }
+
+    if (Test-IsWindows) {
+        return "powershell.exe"
+    }
+
+    return "pwsh"
+}
+
+function Invoke-CommandBatch {
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string[]]$Commands,
+        [Parameter(Mandatory = $true)][string]$TranscriptPath,
+        [Parameter(Mandatory = $true)][string]$Label
+    )
+
+    $normalizedCommands = @(Get-NormalizedStringList -Items $Commands)
+    if ($normalizedCommands.Count -eq 0) {
+        return @()
+    }
+
+    $powerShellExecutable = Get-CurrentPowerShellExecutable
+    $results = New-Object System.Collections.Generic.List[object]
+    $commandIndex = 0
+
+    foreach ($commandText in $normalizedCommands) {
+        $commandIndex++
+        Write-LogLine -Path $TranscriptPath -Line "[$Label] Command ${commandIndex}: $commandText"
+
+        $argumentList = @("-NoProfile")
+        if (Test-IsWindows) {
+            $argumentList += @("-ExecutionPolicy", "Bypass")
+        }
+
+        $argumentList += @("-Command", $commandText)
+
+        $result = Invoke-NativeCapture -FilePath $powerShellExecutable -ArgumentList $argumentList -WorkingDirectory $WorkingDirectory
+        $stdOut = Get-LimitedText -Text $result.StdOut -MaxChars 1000
+        $stdErr = Get-LimitedText -Text $result.StdErr -MaxChars 1000
+
+        if (-not [string]::IsNullOrWhiteSpace($stdOut)) {
+            Write-LogLine -Path $TranscriptPath -Line "[$Label] stdout: $stdOut"
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($stdErr)) {
+            Write-LogLine -Path $TranscriptPath -Line "[$Label] stderr: $stdErr"
+        }
+
+        [void]$results.Add([pscustomobject]@{
+            CommandText = $commandText
+            ExitCode    = $result.ExitCode
+            StdOut      = $result.StdOut
+            StdErr      = $result.StdErr
+        })
+
+        if ($result.ExitCode -ne 0) {
+            break
+        }
+    }
+
+    return $results.ToArray()
+}
+
+function Format-CommandBatchSummary {
+    param(
+        [AllowNull()][object[]]$Results = @(),
+        [Parameter(Mandatory = $true)][string]$Label
+    )
+
+    if ($null -eq $Results -or $Results.Count -eq 0) {
+        return "$Label not run"
+    }
+
+    $summaryParts = New-Object System.Collections.Generic.List[string]
+    foreach ($result in $Results) {
+        $status = if ($result.ExitCode -eq 0) { "ok" } else { "exit=$($result.ExitCode)" }
+        [void]$summaryParts.Add("${status}: $($result.CommandText)")
+    }
+
+    return "$Label " + ($summaryParts -join "; ")
+}
+
+function Get-LaneContractText {
+    param(
+        [string]$TargetLaneId = "",
+        [string]$TargetScope = "",
+        [AllowNull()][string[]]$AllowedPathPrefixes = @(),
+        [AllowNull()][string[]]$ForbiddenPathPrefixes = @(),
+        [AllowNull()][string[]]$RequirementFamilies = @(),
+        [AllowNull()][string[]]$BlockingGapIds = @(),
+        [AllowNull()][string[]]$VerificationCommands = @(),
+        [AllowNull()][string[]]$MergeCheckCommands = @()
+    )
+
+    if (
+        [string]::IsNullOrWhiteSpace($TargetLaneId) -and
+        [string]::IsNullOrWhiteSpace($TargetScope) -and
+        @(Get-NormalizedStringList -Items $AllowedPathPrefixes).Count -eq 0 -and
+        @(Get-NormalizedStringList -Items $ForbiddenPathPrefixes).Count -eq 0 -and
+        @(Get-NormalizedStringList -Items $RequirementFamilies).Count -eq 0 -and
+        @(Get-NormalizedStringList -Items $BlockingGapIds).Count -eq 0 -and
+        @(Get-NormalizedStringList -Items $VerificationCommands).Count -eq 0 -and
+        @(Get-NormalizedStringList -Items $MergeCheckCommands).Count -eq 0
+    ) {
+        return ""
+    }
+
+    $allowedText = if (@(Get-NormalizedStringList -Items $AllowedPathPrefixes).Count -gt 0) { (Get-NormalizedStringList -Items $AllowedPathPrefixes) -join ", " } else { "(none)" }
+    $forbiddenText = if (@(Get-NormalizedStringList -Items $ForbiddenPathPrefixes).Count -gt 0) { (Get-NormalizedStringList -Items $ForbiddenPathPrefixes) -join ", " } else { "(none)" }
+    $familiesText = if (@(Get-NormalizedStringList -Items $RequirementFamilies).Count -gt 0) { (Get-NormalizedStringList -Items $RequirementFamilies) -join ", " } else { "(none)" }
+    $blockingText = if (@(Get-NormalizedStringList -Items $BlockingGapIds).Count -gt 0) { (Get-NormalizedStringList -Items $BlockingGapIds) -join ", " } else { "(none)" }
+    $verificationText = if (@(Get-NormalizedStringList -Items $VerificationCommands).Count -gt 0) { ((Get-NormalizedStringList -Items $VerificationCommands) | ForEach-Object { "- $_" }) -join [Environment]::NewLine } else { "- (none)" }
+    $mergeCheckText = if (@(Get-NormalizedStringList -Items $MergeCheckCommands).Count -gt 0) { ((Get-NormalizedStringList -Items $MergeCheckCommands) | ForEach-Object { "- $_" }) -join [Environment]::NewLine } else { "- (none)" }
+
+    return @"
+Worker lane contract:
+- Target lane id: $(if ([string]::IsNullOrWhiteSpace($TargetLaneId)) { "(none)" } else { $TargetLaneId })
+- Target scope: $(if ([string]::IsNullOrWhiteSpace($TargetScope)) { "(none)" } else { $TargetScope })
+- Allowed path prefixes: $allowedText
+- Forbidden path prefixes: $forbiddenText
+- Allowed requirement families: $familiesText
+- Blocking gap ids that must stay closed for this lane: $blockingText
+- Stay inside the assigned requirement families and path prefixes. If you need to step outside them, stop with state=pause_manual.
+- Do not continue into generated-only or metadata-only follow-through once the semantic slice is done.
+- Run these lane verification commands after useful semantic changes:
+$verificationText
+- These merge checks will run after cherry-pick back to main:
+$mergeCheckText
+"@
+}
+
 function Get-ProgressVerdict {
     param(
         [Parameter(Mandatory = $true)]
@@ -878,7 +1247,14 @@ function Convert-HistoryToText {
             $progressVerdict = "(unknown)"
         }
 
-        $lines.Add("Turn $($entry.Turn) [$($entry.Mode)] state=$($entry.State), confidence=$($entry.Confidence), commit=$commitSha, verdict=$progressVerdict, changes=$changeSummary, summary=$summary")
+        $lanePrefix = if ($entry.PSObject.Properties.Name -contains "TargetLaneId" -and -not [string]::IsNullOrWhiteSpace([string]$entry.TargetLaneId)) {
+            " lane=$($entry.TargetLaneId),"
+        }
+        else {
+            ""
+        }
+
+        $lines.Add("Turn $($entry.Turn) [$($entry.Mode)]$lanePrefix state=$($entry.State), confidence=$($entry.Confidence), commit=$commitSha, verdict=$progressVerdict, changes=$changeSummary, summary=$summary")
     }
 
     return ($lines -join [Environment]::NewLine)
@@ -905,7 +1281,9 @@ function New-AutopilotPrompt {
         [ValidateSet("normal", "compact")]
         [string]$PromptMode,
 
-        [string]$PriorDecisionText = ""
+        [string]$PriorDecisionText = "",
+
+        [string]$LaneContractText = ""
     )
 
     $rescueInstructions = if ($RescueMode) {
@@ -940,6 +1318,13 @@ Compact retry mode:
     }
     else {
         $PriorDecisionText.Trim()
+    }
+
+    $laneContractSection = if ([string]::IsNullOrWhiteSpace($LaneContractText)) {
+        "(none)"
+    }
+    else {
+        $LaneContractText.Trim()
     }
 
     return @"
@@ -999,6 +1384,9 @@ $RecentHistoryText
 
 Most recent parsed autopilot JSON result:
 $priorDecisionSection
+
+Lane contract:
+$laneContractSection
 
 $rescueInstructions
 
@@ -1273,6 +1661,9 @@ try {
     Write-LogLine -Path $transcriptPath -Line "=== Codex autopilot started at $((Get-Date).ToString('s')) ==="
     Write-LogLine -Path $transcriptPath -Line "WorkingDirectory=$workRoot"
     Write-LogLine -Path $transcriptPath -Line "OutputDirectory=$outputRoot"
+    if (-not [string]::IsNullOrWhiteSpace($TargetLaneId)) {
+        Write-LogLine -Path $transcriptPath -Line "TargetLaneId=$TargetLaneId"
+    }
 
     if (-not $SkipGitChecks) {
         if (-not (Test-GitAvailable)) {
@@ -1295,6 +1686,48 @@ try {
     $CompactMaxRecentSummaries = [Math]::Max(1, $CompactMaxRecentSummaries)
     $CompactMaxPriorResultChars = [Math]::Max(1, $CompactMaxPriorResultChars)
     $CompactMaxGitContextChars = [Math]::Max(1, $CompactMaxGitContextChars)
+
+    $AllowedPathPrefixes = @(Get-NormalizedPathPrefixList -Items $AllowedPathPrefixes)
+    $ForbiddenPathPrefixes = @(Get-NormalizedPathPrefixList -Items $ForbiddenPathPrefixes)
+    $RequirementFamilies = @(Get-NormalizedStringList -Items $RequirementFamilies)
+    $BlockingGapIds = @(Get-NormalizedStringList -Items $BlockingGapIds)
+    $VerificationCommands = @(Get-NormalizedStringList -Items $VerificationCommands)
+    $MergeCheckCommands = @(Get-NormalizedStringList -Items $MergeCheckCommands)
+
+    $resolvedRequirementGapsPath = ""
+    if (-not [string]::IsNullOrWhiteSpace($RequirementGapsPath)) {
+        $resolvedRequirementGapsPath = Resolve-ExistingPath -Path $RequirementGapsPath
+    }
+    elseif (($StopOnBlockedGap -or $BlockingGapIds.Count -gt 0) -and (Test-Path -LiteralPath (Join-Path $workRoot "specs/requirements/quic/REQUIREMENT-GAPS.md"))) {
+        $resolvedRequirementGapsPath = Resolve-ExistingPath -Path (Join-Path $workRoot "specs/requirements/quic/REQUIREMENT-GAPS.md")
+    }
+
+    $openGapIds = if (-not [string]::IsNullOrWhiteSpace($resolvedRequirementGapsPath)) {
+        Get-OpenGapIds -Path $resolvedRequirementGapsPath
+    }
+    else {
+        @()
+    }
+
+    $blockingGapStatus = Get-BlockingGapStatus -BlockingGapIds $BlockingGapIds -OpenGapIds $openGapIds
+    $laneContractText = Get-LaneContractText `
+        -TargetLaneId $TargetLaneId `
+        -TargetScope $TargetScope `
+        -AllowedPathPrefixes $AllowedPathPrefixes `
+        -ForbiddenPathPrefixes $ForbiddenPathPrefixes `
+        -RequirementFamilies $RequirementFamilies `
+        -BlockingGapIds $BlockingGapIds `
+        -VerificationCommands $VerificationCommands `
+        -MergeCheckCommands $MergeCheckCommands
+
+    if (-not [string]::IsNullOrWhiteSpace($laneContractText)) {
+        Write-LogLine -Path $transcriptPath -Line "[lane] Contract enabled for lane '$TargetLaneId'."
+    }
+
+    if ($StopOnBlockedGap -and $blockingGapStatus.HasBlockingGap) {
+        $openText = $blockingGapStatus.StillOpen -join ", "
+        throw "Target lane '$TargetLaneId' is blocked by open requirement gaps: $openText"
+    }
 
     $history = New-Object System.Collections.Generic.List[object]
     $summary = New-Object System.Collections.Generic.List[object]
@@ -1332,7 +1765,7 @@ try {
             $historyText = Convert-HistoryToText -History ($history.ToArray()) -MaxEntries $MaxRecentSummaries -MaxSummaryChars 180
             $priorDecisionText = Get-LimitedText -Text $lastDecisionSnapshotText -MaxChars $MaxPriorResultChars -CollapseWhitespace
             $missionPromptText = Get-MissionPromptText -Mission $mission -Iteration $iteration -PromptMode "normal" -MissionPromptStyle $MissionPromptStyle
-            $promptText = New-AutopilotPrompt -Mission $missionPromptText -Iteration $iteration -GitContext $gitContext -RecentHistoryText $historyText -RescueMode:$rescueMode -PromptMode "normal" -PriorDecisionText $priorDecisionText
+            $promptText = New-AutopilotPrompt -Mission $missionPromptText -Iteration $iteration -GitContext $gitContext -RecentHistoryText $historyText -RescueMode:$rescueMode -PromptMode "normal" -PriorDecisionText $priorDecisionText -LaneContractText $laneContractText
 
             $promptPath = Join-Path $promptsRoot ("turn-{0:D2}-{1}.prompt.md" -f $iteration, $mode)
             $resultPath = Join-Path $resultsRoot ("turn-{0:D2}-{1}.result.md" -f $iteration, $mode)
@@ -1369,7 +1802,7 @@ try {
                 $compactHistoryText = Convert-HistoryToText -History ($history.ToArray()) -MaxEntries $compactHistoryWindow -MaxSummaryChars 120
                 $compactPriorDecisionText = Get-LimitedText -Text $lastDecisionSnapshotText -MaxChars $CompactMaxPriorResultChars -CollapseWhitespace
                 $compactMissionPromptText = Get-MissionPromptText -Mission $mission -Iteration $iteration -PromptMode "compact" -MissionPromptStyle $MissionPromptStyle
-                $compactPromptText = New-AutopilotPrompt -Mission $compactMissionPromptText -Iteration $iteration -GitContext $compactGitContext -RecentHistoryText $compactHistoryText -RescueMode:$rescueMode -PromptMode "compact" -PriorDecisionText $compactPriorDecisionText
+                $compactPromptText = New-AutopilotPrompt -Mission $compactMissionPromptText -Iteration $iteration -GitContext $compactGitContext -RecentHistoryText $compactHistoryText -RescueMode:$rescueMode -PromptMode "compact" -PriorDecisionText $compactPriorDecisionText -LaneContractText $laneContractText
 
                 $compactPromptPath = Join-Path $promptsRoot ("turn-{0:D2}-{1}.compact.prompt.md" -f $iteration, $mode)
                 $compactResultPath = Join-Path $resultsRoot ("turn-{0:D2}-{1}.compact.result.md" -f $iteration, $mode)
@@ -1484,12 +1917,57 @@ try {
             $changeSummary = "(none)"
             $progressVerdict = "no_progress"
             $progressDetails = "No commit was created during the turn."
+            $pathPolicyReason = ""
+            $requirementFamilyReason = ""
+            $blockingGapReason = ""
+            $verificationSummary = ""
             if (-not $SkipGitChecks) {
                 $changedPaths = Get-ChangedPathsBetweenRefs -RepositoryRoot $workRoot -BeforeRef $headBefore -AfterRef $headAfter
                 $changeSummary = Get-ChangedPathSummary -Paths $changedPaths -MaxChars 180
                 $progress = Get-ProgressVerdict -HeadChanged:$headChanged -Paths $changedPaths
                 $progressVerdict = [string]$progress.Verdict
                 $progressDetails = [string]$progress.Details
+
+                if ($headChanged -and $StopOnPathViolation) {
+                    $pathPolicy = Get-PathPolicyResult -Paths $changedPaths -AllowedPrefixes $AllowedPathPrefixes -ForbiddenPrefixes $ForbiddenPathPrefixes
+                    if ($pathPolicy.HasViolation) {
+                        $policyParts = New-Object System.Collections.Generic.List[string]
+                        if ($pathPolicy.OutsideAllowed.Count -gt 0) {
+                            [void]$policyParts.Add("outside allowed paths: " + (($pathPolicy.OutsideAllowed | Select-Object -First 6) -join ", "))
+                        }
+
+                        if ($pathPolicy.InsideForbidden.Count -gt 0) {
+                            [void]$policyParts.Add("inside forbidden paths: " + (($pathPolicy.InsideForbidden | Select-Object -First 6) -join ", "))
+                        }
+
+                        $pathPolicyReason = "Path policy violation for lane '$TargetLaneId': " + ($policyParts -join "; ")
+                    }
+
+                    $changedRequirementIds = Get-RequirementIdsBetweenRefs -RepositoryRoot $workRoot -BeforeRef $headBefore -AfterRef $headAfter
+                    $requirementPolicy = Get-RequirementFamilyPolicyResult -RequirementIds $changedRequirementIds -AllowedFamilies $RequirementFamilies
+                    if ($requirementPolicy.HasViolation) {
+                        $requirementFamilyReason = "Requirement-family policy violation for lane '$TargetLaneId': " + (($requirementPolicy.OutsideAllowedFamilies | Select-Object -First 8) -join ", ")
+                    }
+                }
+
+                if ($headChanged -and $StopOnBlockedGap -and -not [string]::IsNullOrWhiteSpace($resolvedRequirementGapsPath)) {
+                    $openGapIds = Get-OpenGapIds -Path $resolvedRequirementGapsPath
+                    $blockingGapStatus = Get-BlockingGapStatus -BlockingGapIds $BlockingGapIds -OpenGapIds $openGapIds
+                    if ($blockingGapStatus.HasBlockingGap) {
+                        $blockingGapReason = "Blocking gaps remain open for lane '$TargetLaneId': " + ($blockingGapStatus.StillOpen -join ", ")
+                    }
+                }
+
+                if (
+                    $headChanged -and
+                    $VerificationCommands.Count -gt 0 -and
+                    [string]::IsNullOrWhiteSpace($pathPolicyReason) -and
+                    [string]::IsNullOrWhiteSpace($requirementFamilyReason) -and
+                    [string]::IsNullOrWhiteSpace($blockingGapReason)
+                ) {
+                    $verificationResults = Invoke-CommandBatch -WorkingDirectory $workRoot -Commands $VerificationCommands -TranscriptPath $transcriptPath -Label "verification"
+                    $verificationSummary = Format-CommandBatchSummary -Results $verificationResults -Label "verification"
+                }
 
                 if (-not $headChanged) {
                     $consecutiveNoRuntimeOrTestsTurns = 0
@@ -1507,6 +1985,46 @@ try {
                 else {
                     $consecutiveNoRuntimeOrTestsTurns = 0
                     $consecutiveLowValueTurns = 0
+                }
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($verificationSummary)) {
+                if ([string]::IsNullOrWhiteSpace($testsSummary) -or $testsSummary -eq "Not run") {
+                    $testsSummary = $verificationSummary
+                }
+                else {
+                    $testsSummary = ($testsSummary.Trim() + " | " + $verificationSummary).Trim()
+                }
+            }
+
+            $laneGuardrailReason = ""
+            if (-not [string]::IsNullOrWhiteSpace($pathPolicyReason)) {
+                $laneGuardrailReason = $pathPolicyReason
+            }
+            elseif (-not [string]::IsNullOrWhiteSpace($requirementFamilyReason)) {
+                $laneGuardrailReason = $requirementFamilyReason
+            }
+            elseif (-not [string]::IsNullOrWhiteSpace($blockingGapReason)) {
+                $laneGuardrailReason = $blockingGapReason
+            }
+            elseif (
+                -not [string]::IsNullOrWhiteSpace($verificationSummary) -and
+                $verificationSummary -match 'exit='
+            ) {
+                $laneGuardrailReason = "Verification command failed for lane '$TargetLaneId'."
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($laneGuardrailReason)) {
+                $state = "pause_manual"
+                if ([string]::IsNullOrWhiteSpace($manualReason)) {
+                    $manualReason = $laneGuardrailReason
+                }
+                else {
+                    $manualReason = ($manualReason.Trim() + " " + $laneGuardrailReason).Trim()
+                }
+
+                if ([string]::IsNullOrWhiteSpace($nextStep)) {
+                    $nextStep = "Review the lane contract and rerun only after fixing the blocked gap, path scope, or failing verification command."
                 }
             }
 
@@ -1537,6 +2055,7 @@ try {
             $historyEntry = [pscustomobject]@{
                 Turn          = $iteration
                 Mode          = $mode
+                TargetLaneId  = $TargetLaneId
                 State         = $state
                 Summary       = $summaryText
                 NextStep      = $nextStep
@@ -1555,6 +2074,8 @@ try {
                 timestamp   = (Get-Date).ToString("o")
                 turn        = $iteration
                 mode        = $mode
+                target_lane_id = $TargetLaneId
+                target_scope = $TargetScope
                 state       = $state
                 summary     = $summaryText
                 next_step   = $nextStep
@@ -1576,6 +2097,8 @@ try {
             $summary.Add([pscustomobject]@{
                 Turn         = $iteration
                 Mode         = $mode
+                TargetLaneId = $TargetLaneId
+                TargetScope  = $TargetScope
                 State        = $state
                 Summary      = $summaryText
                 NextStep     = $nextStep
@@ -1594,6 +2117,9 @@ try {
             })
 
             Write-Host "  Decision: state=$state, confidence=$confidence" -ForegroundColor Green
+            if (-not [string]::IsNullOrWhiteSpace($TargetLaneId)) {
+                Write-Host "  Lane:    $TargetLaneId" -ForegroundColor Gray
+            }
             if (-not [string]::IsNullOrWhiteSpace($summaryText)) {
                 Write-Host "  Summary: $summaryText" -ForegroundColor Gray
             }
