@@ -17,7 +17,7 @@
     "BranchPattern": "work/{id}-{slug}",
     "CommitMessagePattern": "Promote {id}: {title}",
     "DefaultBaseBranch": "main",
-    "RequireCleanWorkingTree": true
+    "RequireCleanWorkingTree": false
   },
   "Github": {
     "Provider": "octokit",
