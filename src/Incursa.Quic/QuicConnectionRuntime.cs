@@ -2113,7 +2113,26 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                     cryptoChunk[..cryptoBytesWritten],
                     cryptoOffset,
                     initialPacketProtection,
+                    out ulong packetNumber,
                     out protectedPacket);
+
+                if (!builtProtectedPacket)
+                {
+                    break;
+                }
+
+                if (!tlsBridgeDriver.TryDequeueOutgoingCryptoData(
+                    QuicTlsEncryptionLevel.Initial,
+                    cryptoChunk[..cryptoBytesWritten],
+                    out ulong dequeuedOffset,
+                    out int dequeuedBytesWritten)
+                    || dequeuedOffset != cryptoOffset
+                    || dequeuedBytesWritten != cryptoBytesWritten)
+                {
+                    break;
+                }
+
+                TrackInitialPacket(packetNumber, protectedPacket);
             }
             else
             {
@@ -2121,23 +2140,26 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                     cryptoChunk[..cryptoBytesWritten],
                     cryptoOffset,
                     initialPacketProtection,
+                    out ulong packetNumber,
                     out protectedPacket);
-            }
 
-            if (!builtProtectedPacket)
-            {
-                break;
-            }
+                if (!builtProtectedPacket)
+                {
+                    break;
+                }
 
-            if (!tlsBridgeDriver.TryDequeueOutgoingCryptoData(
-                QuicTlsEncryptionLevel.Initial,
-                cryptoChunk[..cryptoBytesWritten],
-                out ulong dequeuedOffset,
-                out int dequeuedBytesWritten)
-                || dequeuedOffset != cryptoOffset
-                || dequeuedBytesWritten != cryptoBytesWritten)
-            {
-                break;
+                if (!tlsBridgeDriver.TryDequeueOutgoingCryptoData(
+                    QuicTlsEncryptionLevel.Initial,
+                    cryptoChunk[..cryptoBytesWritten],
+                    out ulong dequeuedOffset,
+                    out int dequeuedBytesWritten)
+                    || dequeuedOffset != cryptoOffset
+                    || dequeuedBytesWritten != cryptoBytesWritten)
+                {
+                    break;
+                }
+
+                TrackInitialPacket(packetNumber, protectedPacket);
             }
 
             EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
@@ -2221,11 +2243,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 retrySourceConnectionId,
                 retryToken,
                 protection,
+                out ulong packetNumber,
                 out byte[] protectedPacket))
             {
                 break;
             }
 
+            TrackInitialPacket(packetNumber, protectedPacket);
             EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
             replayOffset += requestedBytes;
@@ -2273,6 +2297,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 cryptoChunk[..cryptoBytesWritten],
                 cryptoOffset,
                 packetProtectionMaterial,
+                out ulong packetNumber,
                 out byte[] protectedPacket))
             {
                 break;
@@ -2302,6 +2327,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 AmplificationState = updatedAmplificationState,
             };
 
+            TrackHandshakePacket(packetNumber, protectedPacket);
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
                 currentPath.Identity,
                 protectedPacket));
@@ -2453,6 +2479,30 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             packetNumber,
             (ulong)protectedPacket.Length,
             GetElapsedMicros(lastTransitionTicks)));
+    }
+
+    private void TrackInitialPacket(ulong packetNumber, ReadOnlySpan<byte> protectedPacket)
+    {
+        TrackCryptoPacket(QuicPacketNumberSpace.Initial, QuicTlsEncryptionLevel.Initial, packetNumber, protectedPacket);
+    }
+
+    private void TrackHandshakePacket(ulong packetNumber, ReadOnlySpan<byte> protectedPacket)
+    {
+        TrackCryptoPacket(QuicPacketNumberSpace.Handshake, QuicTlsEncryptionLevel.Handshake, packetNumber, protectedPacket);
+    }
+
+    private void TrackCryptoPacket(
+        QuicPacketNumberSpace packetNumberSpace,
+        QuicTlsEncryptionLevel encryptionLevel,
+        ulong packetNumber,
+        ReadOnlySpan<byte> protectedPacket)
+    {
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            packetNumberSpace,
+            packetNumber,
+            (ulong)protectedPacket.Length,
+            GetElapsedMicros(lastTransitionTicks),
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(encryptionLevel)));
     }
 
     private bool TryBuildOutboundStreamPayload(

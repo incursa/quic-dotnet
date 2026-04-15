@@ -63,13 +63,15 @@ public sealed class REQ_QUIC_CRT_0105
             PacketNumber: 1,
             PayloadBytes: 1200,
             SentAtMicros: 100,
-            AckEliciting: true));
+            AckEliciting: true,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Initial)));
         runtime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.Handshake,
             PacketNumber: 2,
             PayloadBytes: 1200,
             SentAtMicros: 200,
-            AckEliciting: true));
+            AckEliciting: true,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Handshake)));
         runtime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.ApplicationData,
             PacketNumber: 3,

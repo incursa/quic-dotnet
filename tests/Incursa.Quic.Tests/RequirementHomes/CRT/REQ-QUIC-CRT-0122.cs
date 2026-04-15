@@ -84,6 +84,17 @@ public sealed class REQ_QUIC_CRT_0122
             serverProtection,
             bootstrapDatagrams);
 
+        int initialPacketCountBeforeRetry = 0;
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPacket in runtime.SendRuntime.SentPackets)
+        {
+            if (sentPacket.Key.PacketNumberSpace == QuicPacketNumberSpace.Initial)
+            {
+                initialPacketCountBeforeRetry++;
+            }
+        }
+
+        Assert.True(initialPacketCountBeforeRetry > 0);
+
         QuicConnectionTransitionResult retryResult = runtime.Transition(
             new QuicConnectionRetryReceivedEvent(
                 ObservedAtTicks: 1,
@@ -131,6 +142,21 @@ public sealed class REQ_QUIC_CRT_0122
             Assert.Equal(bootstrapFrames[index].EncodedLength, replayFrames[index].EncodedLength);
             Assert.Equal(bootstrapFrames[index].CryptoData, replayFrames[index].CryptoData);
         }
+
+        int initialPacketCountAfterRetry = 0;
+        bool observedTrackedReplayPacket = false;
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPacket in runtime.SendRuntime.SentPackets)
+        {
+            if (sentPacket.Key.PacketNumberSpace == QuicPacketNumberSpace.Initial)
+            {
+                initialPacketCountAfterRetry++;
+                observedTrackedReplayPacket |= sentPacket.Value.CryptoMetadata.HasValue
+                    && sentPacket.Value.CryptoMetadata.Value.EncryptionLevel == QuicTlsEncryptionLevel.Initial;
+            }
+        }
+
+        Assert.True(initialPacketCountAfterRetry > initialPacketCountBeforeRetry);
+        Assert.True(observedTrackedReplayPacket);
 
         QuicConnectionTransitionResult duplicateRetryResult = runtime.Transition(
             new QuicConnectionRetryReceivedEvent(

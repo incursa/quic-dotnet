@@ -70,6 +70,11 @@ public sealed class REQ_QUIC_CRT_0142
             nowTicks);
 
         Assert.True(bootstrapResult.StateChanged);
+        Assert.Contains(
+            clientRuntime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.Initial
+                && entry.Value.CryptoMetadata.HasValue
+                && entry.Value.CryptoMetadata.Value.EncryptionLevel == QuicTlsEncryptionLevel.Initial);
         Assert.True(clientRuntime.TlsState.TryGetPacketProtectionMaterial(
             QuicTlsEncryptionLevel.ZeroRtt,
             out QuicTlsPacketProtectionMaterial runtimeZeroRttMaterial));
@@ -113,6 +118,11 @@ public sealed class REQ_QUIC_CRT_0142
             nowTicks);
 
         Assert.True(bootstrapResult.StateChanged);
+        Assert.Contains(
+            clientRuntime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.Initial
+                && entry.Value.CryptoMetadata.HasValue
+                && entry.Value.CryptoMetadata.Value.EncryptionLevel == QuicTlsEncryptionLevel.Initial);
         Assert.True(clientRuntime.TlsState.TryGetPacketProtectionMaterial(
             QuicTlsEncryptionLevel.ZeroRtt,
             out QuicTlsPacketProtectionMaterial runtimeZeroRttMaterial));

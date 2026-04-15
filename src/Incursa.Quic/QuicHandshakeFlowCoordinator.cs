@@ -110,7 +110,26 @@ internal sealed class QuicHandshakeFlowCoordinator
         QuicTlsPacketProtectionMaterial material,
         out byte[] protectedPacket)
     {
+        return TryBuildProtectedHandshakePacket(
+            cryptoPayload,
+            cryptoPayloadOffset,
+            material,
+            out _,
+            out protectedPacket);
+    }
+
+    /// <summary>
+    /// Formats and protects a Handshake packet from a CRYPTO payload and its stream offset.
+    /// </summary>
+    public bool TryBuildProtectedHandshakePacket(
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoPayloadOffset,
+        QuicTlsPacketProtectionMaterial material,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
         protectedPacket = [];
+        packetNumber = default;
 
         if (cryptoPayload.IsEmpty
             || !QuicHandshakePacketProtection.TryCreate(material, out QuicHandshakePacketProtection protection))
@@ -121,19 +140,23 @@ internal sealed class QuicHandshakeFlowCoordinator
         if (!TryBuildHandshakePlaintextPacket(
             cryptoPayload,
             cryptoPayloadOffset,
+            out packetNumber,
             out byte[] plaintextPacket))
         {
+            packetNumber = default;
             return false;
         }
 
         byte[] protectedPacketBuffer = new byte[plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength];
         if (!protection.TryProtect(plaintextPacket, protectedPacketBuffer, out int protectedBytesWritten))
         {
+            packetNumber = default;
             return false;
         }
 
         if (protectedBytesWritten != protectedPacketBuffer.Length)
         {
+            packetNumber = default;
             return false;
         }
 
@@ -361,6 +384,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         return TryBuildHandshakePlaintextPacket(
             cryptoPayload,
             cryptoPayloadOffset,
+            out _,
             out plaintextPacket);
     }
 
@@ -406,6 +430,24 @@ internal sealed class QuicHandshakeFlowCoordinator
             initialDestinationConnectionId,
             ReadOnlySpan<byte>.Empty,
             protection,
+            out _,
+            out protectedPacket);
+    }
+
+    public bool TryBuildProtectedInitialPacket(
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoPayloadOffset,
+        QuicInitialPacketProtection protection,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        return TryBuildProtectedInitialPacket(
+            cryptoPayload,
+            cryptoPayloadOffset,
+            initialDestinationConnectionId,
+            ReadOnlySpan<byte>.Empty,
+            protection,
+            out packetNumber,
             out protectedPacket);
     }
 
@@ -415,12 +457,28 @@ internal sealed class QuicHandshakeFlowCoordinator
         QuicInitialPacketProtection protection,
         out byte[] protectedPacket)
     {
+        return TryBuildProtectedInitialPacketForHandshakeDestination(
+            cryptoPayload,
+            cryptoPayloadOffset,
+            protection,
+            out _,
+            out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedInitialPacketForHandshakeDestination(
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoPayloadOffset,
+        QuicInitialPacketProtection protection,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
         return TryBuildProtectedInitialPacket(
             cryptoPayload,
             cryptoPayloadOffset,
             destinationConnectionId,
             ReadOnlySpan<byte>.Empty,
             protection,
+            out packetNumber,
             out protectedPacket);
     }
 
@@ -438,6 +496,26 @@ internal sealed class QuicHandshakeFlowCoordinator
             destinationConnectionId,
             token,
             protection,
+            out _,
+            out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedInitialPacket(
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoPayloadOffset,
+        ReadOnlySpan<byte> destinationConnectionId,
+        ReadOnlySpan<byte> token,
+        QuicInitialPacketProtection protection,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        return TryBuildProtectedInitialPacketCore(
+            cryptoPayload,
+            cryptoPayloadOffset,
+            destinationConnectionId,
+            token,
+            protection,
+            out packetNumber,
             out protectedPacket);
     }
 
@@ -447,9 +525,11 @@ internal sealed class QuicHandshakeFlowCoordinator
         ReadOnlySpan<byte> destinationConnectionId,
         ReadOnlySpan<byte> token,
         QuicInitialPacketProtection protection,
+        out ulong packetNumber,
         out byte[] protectedPacket)
     {
         protectedPacket = [];
+        packetNumber = default;
 
         if (cryptoPayload.IsEmpty
             || !TryBuildInitialPlaintextPacket(
@@ -457,6 +537,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                 cryptoPayloadOffset,
                 destinationConnectionId,
                 token,
+                out packetNumber,
                 out byte[] plaintextPacket))
         {
             return false;
@@ -465,11 +546,13 @@ internal sealed class QuicHandshakeFlowCoordinator
         byte[] protectedPacketBuffer = new byte[plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength];
         if (!protection.TryProtect(plaintextPacket, protectedPacketBuffer, out int protectedBytesWritten))
         {
+            packetNumber = default;
             return false;
         }
 
         if (protectedBytesWritten != protectedPacketBuffer.Length)
         {
+            packetNumber = default;
             return false;
         }
 
@@ -480,9 +563,11 @@ internal sealed class QuicHandshakeFlowCoordinator
     private bool TryBuildHandshakePlaintextPacket(
         ReadOnlySpan<byte> cryptoPayload,
         ulong cryptoPayloadOffset,
+        out ulong packetNumber,
         out byte[] plaintextPacket)
     {
         plaintextPacket = [];
+        packetNumber = default;
 
         if (!TryFormatCryptoFramePayload(
             cryptoPayload,
@@ -522,6 +607,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             versionSpecificData.AsSpan(versionSpecificDataIndex, paddedPayloadLength - cryptoFramePayloadLength).Fill(0);
         }
 
+        packetNumber = nextPacketNumber;
         byte headerControlBits = (byte)(
             QuicPacketHeaderBits.FixedBitMask
             | (QuicLongPacketTypeBits.Handshake << QuicPacketHeaderBits.LongPacketTypeBitsShift)
@@ -545,9 +631,11 @@ internal sealed class QuicHandshakeFlowCoordinator
         ulong cryptoPayloadOffset,
         ReadOnlySpan<byte> destinationConnectionId,
         ReadOnlySpan<byte> token,
+        out ulong packetNumber,
         out byte[] plaintextPacket)
     {
         plaintextPacket = [];
+        packetNumber = default;
 
         if (destinationConnectionId.Length == 0 || sourceConnectionId.Length == 0)
         {
@@ -612,6 +700,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             versionSpecificData.AsSpan(versionSpecificDataIndex, paddedPayloadLength - cryptoFramePayloadLength).Fill(0);
         }
 
+        packetNumber = nextPacketNumber;
         byte headerControlBits = (byte)(
             QuicPacketHeaderBits.FixedBitMask
             | (QuicLongPacketTypeBits.Initial << QuicPacketHeaderBits.LongPacketTypeBitsShift)
