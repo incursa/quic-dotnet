@@ -3,18 +3,19 @@
 ## Requirements Completed
 - `REQ-QUIC-RFC9000-S4-0001` through `REQ-QUIC-RFC9000-S4-0005`
 - `REQ-QUIC-RFC9000-S4P1-0001` through `REQ-QUIC-RFC9000-S4P1-0014`
+- `REQ-QUIC-RFC9000-S4P2-0001`
 - `REQ-QUIC-RFC9000-S4P2-0005`
 - `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-S4P4-0004`
 - `REQ-QUIC-RFC9000-S4P5-0002` through `REQ-QUIC-RFC9000-S4P5-0008`
 - `REQ-QUIC-RFC9000-S4P6-0001` through `REQ-QUIC-RFC9000-S4P6-0012`
+- `REQ-QUIC-RFC9000-S4P6-0013`
 
 ## Requirements Still Partial
 - `REQ-QUIC-RFC9000-S4P5-0001`
 
 ## Requirements Remaining Blocked
 - `REQ-QUIC-RFC9000-S4P1-0015`
-- `REQ-QUIC-RFC9000-S4P2-0001` through `REQ-QUIC-RFC9000-S4P2-0004`
-- `REQ-QUIC-RFC9000-S4P6-0013`
+- `REQ-QUIC-RFC9000-S4P2-0002` through `REQ-QUIC-RFC9000-S4P2-0004`
 
 ## Files Changed
 - `specs/requirements/quic/REQUIREMENT-GAPS.md`
@@ -48,4 +49,4 @@
 
 ## Risks or Follow-up Notes
 - `REQ-QUIC-RFC9000-S4P5-0001` remains partial because the helper layer can track final size, but it does not own sender/recovery reliability.
-- The only remaining blockers are the blocked-sender cadence requirement, the blocked-signal policy requirements in S4P2, and the stream-credit policy boundary in `REQ-QUIC-RFC9000-S4P6-0013`.
+- The only remaining blockers are the blocked-sender cadence requirement and the blocked-signal policy requirements in S4P2.

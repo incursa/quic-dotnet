@@ -121,7 +121,17 @@
       "notes": "The repo still lacks the connection-scoped sender cadence that would decide when to emit blocked notifications repeatedly."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P2-0001 through REQ-QUIC-RFC9000-S4P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-S4P2-0001",
+      "completion_status": "implemented_and_tested",
+      "tests_covering_requirement": [
+        "TryApplyMaxFrames_AllowsRepeatedCreditAdvertisements",
+        "TryApplyMaxFrames_IgnoresRepeatedCreditAdvertisementsThatDoNotIncreaseTheLimit"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper layer can already repeat or front-load credit advertisements within a round trip without waiting for a blocked signal."
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9000-S4P2-0002 through REQ-QUIC-RFC9000-S4P2-0004",
       "completion_status": "blocked",
       "tests_covering_requirement": [],
       "remaining_gap": "Needs the flow-control autotuning and early-credit advertisement policy that belongs on top of connection-level stream state.",
@@ -194,10 +204,13 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S4P6-0013",
-      "completion_status": "blocked",
-      "tests_covering_requirement": [],
-      "remaining_gap": "Needs the policy that advertises more stream credit without waiting for STREAMS_BLOCKED first.",
-      "notes": "That behavior still depends on the missing stream-opening policy layer."
+      "completion_status": "implemented_and_tested",
+      "tests_covering_requirement": [
+        "TryPeekPeerStreamCapacityRelease_OffersMoreUnidirectionalCreditAfterThePeerStreamCloses",
+        "TryPeekPeerStreamCapacityRelease_ReturnsFalseWhileThePeerStreamIsStillOpen"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper layer can already advertise additional credit as soon as peer stream closure makes it available."
     }
   ]
 }

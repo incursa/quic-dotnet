@@ -4264,6 +4264,10 @@
         "upstream_refs": [
           "RFC 9000 §4.6 RFC9000-S4.6-B7-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0013.cs::TryPeekPeerStreamCapacityRelease_OffersMoreUnidirectionalCreditAfterThePeerStreamCloses",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0013.cs::TryPeekPeerStreamCapacityRelease_ReturnsFalseWhileThePeerStreamIsStillOpen"
         ]
       }
     },

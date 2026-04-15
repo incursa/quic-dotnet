@@ -2327,6 +2327,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B7-P6-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0013.cs::TryPeekPeerStreamCapacityRelease_OffersMoreUnidirectionalCreditAfterThePeerStreamCloses
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0013.cs::TryPeekPeerStreamCapacityRelease_ReturnsFalseWhileThePeerStreamIsStillOpen
 
 ## REQ-QUIC-RFC9000-S5-0001 Treat a QUIC connection as shared client-server state
 A QUIC connection MUST be shared state between a client and a server.

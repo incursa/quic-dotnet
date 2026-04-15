@@ -10,7 +10,7 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 
 ## Audit Result
 
-- The scoped helper-layer flow-control slice now proves 43 requirements directly, with one requirement remaining partial and six remaining explicit blockers.
+- The scoped helper-layer flow-control slice now proves 45 requirements directly, with one requirement remaining partial and four remaining explicit blockers.
 - The current repository state was reconciled against the helper layer, the requirement-home tests, and the generated chunk traces.
 - No stale requirement IDs remain in the scoped tests.
 - No requirement-tagged source refs were found under `src/Incursa.Quic`.
@@ -20,10 +20,12 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 
 - `REQ-QUIC-RFC9000-S4-0001` through `REQ-QUIC-RFC9000-S4-0005`
 - `REQ-QUIC-RFC9000-S4P1-0001` through `REQ-QUIC-RFC9000-S4P1-0014`
+- `REQ-QUIC-RFC9000-S4P2-0001`
 - `REQ-QUIC-RFC9000-S4P2-0005`
 - `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-S4P4-0004`
 - `REQ-QUIC-RFC9000-S4P5-0002` through `REQ-QUIC-RFC9000-S4P5-0008`
 - `REQ-QUIC-RFC9000-S4P6-0001` through `REQ-QUIC-RFC9000-S4P6-0012`
+- `REQ-QUIC-RFC9000-S4P6-0013`
 
 ## Requirements Partial
 
@@ -32,13 +34,12 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 ## Requirements Deferred
 
 - `REQ-QUIC-RFC9000-S4P1-0015`
-- `REQ-QUIC-RFC9000-S4P2-0001` through `REQ-QUIC-RFC9000-S4P2-0004`
-- `REQ-QUIC-RFC9000-S4P6-0013`
+- `REQ-QUIC-RFC9000-S4P2-0002` through `REQ-QUIC-RFC9000-S4P2-0004`
 
 ## Reference Audit
 
 - Source requirement refs found: none.
-- Test requirement refs found: `REQ-QUIC-RFC9000-S4-0001` through `REQ-QUIC-RFC9000-S4-0005`, `REQ-QUIC-RFC9000-S4P1-0001` through `REQ-QUIC-RFC9000-S4P1-0014`, `REQ-QUIC-RFC9000-S4P2-0005`, `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-S4P4-0004`, `REQ-QUIC-RFC9000-S4P5-0001` through `REQ-QUIC-RFC9000-S4P5-0008`, and `REQ-QUIC-RFC9000-S4P6-0001` through `REQ-QUIC-RFC9000-S4P6-0012`.
+- Test requirement refs found: `REQ-QUIC-RFC9000-S4-0001` through `REQ-QUIC-RFC9000-S4-0005`, `REQ-QUIC-RFC9000-S4P1-0001` through `REQ-QUIC-RFC9000-S4P1-0014`, `REQ-QUIC-RFC9000-S4P2-0001`, `REQ-QUIC-RFC9000-S4P2-0005`, `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-S4P4-0004`, `REQ-QUIC-RFC9000-S4P5-0001` through `REQ-QUIC-RFC9000-S4P5-0008`, and `REQ-QUIC-RFC9000-S4P6-0001` through `REQ-QUIC-RFC9000-S4P6-0013`.
 - Stale requirement refs found: none.
 - The accidental RFC 9001 tags in `QuicFrameCodecPart3Tests.cs` and `QuicFrameCodecFuzzTests.cs` were corrected to `REQ-QUIC-RFC9000-S4-0004`.
 
