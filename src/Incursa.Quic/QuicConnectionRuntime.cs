@@ -2205,7 +2205,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
-        TrackApplicationPacket(packetNumber, protectedPacket);
+        // The zero-RTT bootstrap path emits only a PING probe, so it carries no user data to repair.
+        TrackApplicationPacket(packetNumber, protectedPacket, retransmittable: false, probePacket: true);
         zeroRttPacketSent = true;
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
         return true;
@@ -2472,13 +2473,19 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return true;
     }
 
-    private void TrackApplicationPacket(ulong packetNumber, byte[] protectedPacket)
+    private void TrackApplicationPacket(
+        ulong packetNumber,
+        byte[] protectedPacket,
+        bool retransmittable = true,
+        bool probePacket = false)
     {
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber,
             (ulong)protectedPacket.Length,
             GetElapsedMicros(lastTransitionTicks),
+            ProbePacket: probePacket,
+            Retransmittable: retransmittable,
             PacketBytes: protectedPacket));
     }
 
