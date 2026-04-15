@@ -7,6 +7,53 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S4P5_0007
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryReceiveResetStreamFrame_AllowsAResetStreamThatKeepsTheSameFinalSize()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: QuicVariableLengthInteger.MaxValue,
+            peerBidirectionalReceiveLimit: 8);
+
+        ulong streamId = 1;
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x08, streamId, [0xAA, 0xBB], offset: 4),
+            out QuicStreamFrame leadingFrame));
+        Assert.True(state.TryReceiveStreamFrame(leadingFrame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(streamId: streamId, applicationProtocolErrorCode: 0x99, finalSize: 6),
+            out QuicMaxDataFrame maxDataFrame,
+            out errorCode));
+        Assert.Equal(default, maxDataFrame);
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(6UL, snapshot.FinalSize);
+        Assert.Equal(QuicStreamReceiveState.ResetRecvd, snapshot.ReceiveState);
+        Assert.Equal(6UL, snapshot.AccountedBytesReceived);
+        Assert.Equal(2UL, snapshot.UniqueBytesReceived);
+        Assert.Equal(6UL, state.ConnectionAccountedBytesReceived);
+
+        Assert.True(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(streamId: streamId, applicationProtocolErrorCode: 0x99, finalSize: 6),
+            out maxDataFrame,
+            out errorCode));
+        Assert.Equal(default, maxDataFrame);
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId, out snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(6UL, snapshot.FinalSize);
+        Assert.Equal(QuicStreamReceiveState.ResetRecvd, snapshot.ReceiveState);
+        Assert.Equal(6UL, snapshot.AccountedBytesReceived);
+        Assert.Equal(2UL, snapshot.UniqueBytesReceived);
+        Assert.Equal(6UL, state.ConnectionAccountedBytesReceived);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData()
