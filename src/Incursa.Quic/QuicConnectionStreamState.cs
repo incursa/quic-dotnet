@@ -504,6 +504,13 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
+        if (state.HasReceivePart
+            && state.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead)
+        {
+            errorCode = QuicTransportErrorCode.StreamStateError;
+            return false;
+        }
+
         ulong finalSize = state.FinalSize ?? state.HighestSentOffset;
         state.FinalSize = finalSize;
         state.SendState = QuicStreamSendState.ResetSent;
