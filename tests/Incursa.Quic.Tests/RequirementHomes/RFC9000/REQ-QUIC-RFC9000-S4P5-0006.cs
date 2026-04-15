@@ -7,6 +7,39 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S4P5_0006
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryReceiveStreamFrame_KeepsTheFinalSizeStableWhenItDoesNotChange()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 32,
+            peerBidirectionalReceiveLimit: 8);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0F, 1, [0x11, 0x22], offset: 0),
+            out QuicStreamFrame frame));
+
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(2UL, snapshot.FinalSize);
+        Assert.Equal(2UL, snapshot.AccountedBytesReceived);
+        Assert.Equal(QuicStreamReceiveState.DataRecvd, snapshot.ReceiveState);
+
+        Assert.True(state.TryReceiveStreamFrame(frame, out errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(2UL, snapshot.FinalSize);
+        Assert.Equal(2UL, snapshot.AccountedBytesReceived);
+        Assert.Equal(QuicStreamReceiveState.DataRecvd, snapshot.ReceiveState);
+        Assert.Equal(2UL, state.ConnectionAccountedBytesReceived);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReserveSendCapacity_MakesFinalSizeImmutableAfterItIsKnown()
