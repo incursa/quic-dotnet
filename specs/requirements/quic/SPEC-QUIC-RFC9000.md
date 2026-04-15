@@ -11256,6 +11256,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B15-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0028.cs::ReceivedPathChallengeOnACandidatePathEmitsExactlyOnePathResponseDatagram
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0028.cs::TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse
 
 ## REQ-QUIC-RFC9000-S13P3-0029 Send new connection IDs in NEW_CONNECTION_ID frames and retransmit them if lost
 New connection IDs MUST be sent in NEW_CONNECTION_ID frames and retransmitted if the packet containing them is lost.
@@ -11270,6 +11273,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B16-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0029.cs::LossOfANewConnectionIdPacketQueuesRetransmissionUntilAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0029.cs::AcknowledgingAnUnrelatedPacketDoesNotClearQueuedNewConnectionIdRepair
 
 ## REQ-QUIC-RFC9000-S13P3-0030 Send retired connection IDs in RETIRE_CONNECTION_ID frames and retransmit them if lost
 Retired connection IDs MUST be sent in RETIRE_CONNECTION_ID frames and retransmitted if the packet containing them is lost.
@@ -11284,6 +11290,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B16-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0030.cs::LossOfARetireConnectionIdPacketQueuesRetransmissionUntilAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0030.cs::AcknowledgingAnUnrelatedPacketDoesNotClearQueuedRetireConnectionIdRepair
 
 ## REQ-QUIC-RFC9000-S13P3-0031 Compare NEW_TOKEN frames directly for duplicates and reordering
 No special support MUST be used for detecting reordered and duplicated NEW_TOKEN frames other than a direct comparison of the frame contents.
@@ -11298,6 +11307,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B17-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0031.cs::ParsedDuplicateNewTokenFramesCompareEqualByTokenBytes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0031.cs::ParsedNewTokenFramesWithDifferentTokenBytesDoNotCompareEqualByTokenBytes
 
 ## REQ-QUIC-RFC9000-S13P3-0032 PING and PADDING frames contain no information, so lost PING or PADDING frames do not require repair
 PING and PADDING frames contain no information, so lost PING or PADDING frames MUST NOT require repair.
@@ -11312,6 +11324,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B18-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0032.cs::ZeroRttPingBootstrapPacketIsTrackedAsAProbeAndNeverQueuedForRepair
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0032.cs::LossOfAPaddingOnlyPacketDoesNotQueueRepair
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0032.cs::RetransmittablePacketLossQueuesRepair
 
 ## REQ-QUIC-RFC9000-S13P3-0033 The HANDSHAKE_DONE frame MUST be retransmitted until it is acknowledged
 The HANDSHAKE_DONE frame MUST be retransmitted until it is acknowledged.
@@ -11326,6 +11342,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B19-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0033.cs::TryBuildOutboundHandshakeDonePayload_WritesOnlyTheHandshakeDoneTypeByte
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0033.cs::ServerHandshakeDonePacketLossQueuesRepairUntilAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0033.cs::ClientHandshakeDoneTransitionDoesNotEmitAHandshakeDonePacket
 
 ## REQ-QUIC-RFC9000-S13P3-0034 prioritize retransmission of data over sending new data, unless priorities specified by the application indicate otherwise
 Endpoints SHOULD prioritize retransmission of data over sending new data, unless priorities specified by the application indicate otherwise; see Section 2.3.

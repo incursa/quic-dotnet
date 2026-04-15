@@ -20579,6 +20579,10 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B15-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0028.cs::ReceivedPathChallengeOnACandidatePathEmitsExactlyOnePathResponseDatagram",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0028.cs::TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse"
         ]
       }
     },
@@ -20605,6 +20609,10 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B16-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0029.cs::LossOfANewConnectionIdPacketQueuesRetransmissionUntilAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0029.cs::AcknowledgingAnUnrelatedPacketDoesNotClearQueuedNewConnectionIdRepair"
         ]
       }
     },
@@ -20631,6 +20639,10 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B16-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0030.cs::LossOfARetireConnectionIdPacketQueuesRetransmissionUntilAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0030.cs::AcknowledgingAnUnrelatedPacketDoesNotClearQueuedRetireConnectionIdRepair"
         ]
       }
     },
@@ -20657,6 +20669,10 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B17-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0031.cs::ParsedDuplicateNewTokenFramesCompareEqualByTokenBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0031.cs::ParsedNewTokenFramesWithDifferentTokenBytesDoNotCompareEqualByTokenBytes"
         ]
       }
     },
@@ -20683,6 +20699,11 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B18-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0032.cs::ZeroRttPingBootstrapPacketIsTrackedAsAProbeAndNeverQueuedForRepair",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0032.cs::LossOfAPaddingOnlyPacketDoesNotQueueRepair",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0032.cs::RetransmittablePacketLossQueuesRepair"
         ]
       }
     },
@@ -20709,6 +20730,11 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B19-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0033.cs::TryBuildOutboundHandshakeDonePayload_WritesOnlyTheHandshakeDoneTypeByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0033.cs::ServerHandshakeDonePacketLossQueuesRepairUntilAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0033.cs::ClientHandshakeDoneTransitionDoesNotEmitAHandshakeDonePacket"
         ]
       }
     },
