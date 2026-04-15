@@ -835,6 +835,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B9-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0010.cs::TryReserveSendCapacity_AllowsRetransmissionOfAlreadySentDataAfterDataSent
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0010.cs::TryReserveSendCapacity_RejectsBytesBeyondTheKnownFinalSizeAfterDataSent
 
 ## REQ-QUIC-RFC9000-S3P1-0011 Stop flow control checks in Data Sent
 An endpoint in the Data Sent state MUST NOT need to check flow control limits or send STREAM_DATA_BLOCKED frames for the stream.
@@ -849,6 +852,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B9-P6-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0011.cs::TryReserveSendCapacity_AllowsRetransmissionWithoutAdditionalFlowControlAfterDataSent
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0011.cs::TryReserveSendCapacity_RejectsNewBytesWithoutEmittingBlockedFramesAfterDataSent
 
 ## REQ-QUIC-RFC9000-S3P1-0012 Allow ignoring MAX_STREAM_DATA in Data Sent
 An endpoint in the Data Sent state MAY safely ignore any MAX_STREAM_DATA frames it receives from its peer for that stream.
@@ -863,6 +869,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B9-P6-S5
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0012.cs::TryApplyMaxStreamDataFrame_PreservesDataSentAfterPeerCreditIncrease
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0012.cs::TryApplyMaxStreamDataFrame_PreservesDataSentAfterStalePeerCredit
 
 ## REQ-QUIC-RFC9000-S3P1-0013 Enter Data Recvd after all data is acknowledged
 Once all stream data has been successfully acknowledged, the sending part of the stream MUST enter the Data Recvd state.
