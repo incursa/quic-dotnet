@@ -475,7 +475,7 @@ internal sealed class QuicConnectionStreamState
         errorCode = default;
 
         QuicStreamId streamId = new(frame.StreamId);
-        if (!TryResolveSendCapableStream(streamId, allowImplicitPeerOpen: false, out StreamState? state, out errorCode))
+        if (!TryResolveSendCapableStream(streamId, allowImplicitPeerOpen: true, out StreamState? state, out errorCode))
         {
             return false;
         }

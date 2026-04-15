@@ -1010,6 +1010,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B5-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0004.cs::TryReceiveStopSendingFrame_CreatesPeerInitiatedReceivingPartOnFirstFrame
 
 ## REQ-QUIC-RFC9000-S3P2-0005 Start receiving parts in Recv
 The initial state for the receiving part of a stream MUST be Recv.
