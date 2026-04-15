@@ -376,21 +376,33 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0016",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Focused proof now covers the transition into Size Known after FIN arrives."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0017",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Focused proof now covers the transition into Data Recvd once all stream data has arrived."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0018",
