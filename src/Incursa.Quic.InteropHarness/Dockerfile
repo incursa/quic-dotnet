@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY quic-dotnet/ /src/
-COPY qlog-dotnet/ /qlog-dotnet/
 RUN dotnet restore Incursa.Quic.slnx
 RUN dotnet publish src/Incursa.Quic.InteropHarness/Incursa.Quic.InteropHarness.csproj -c Release -o /app/publish --no-restore
 

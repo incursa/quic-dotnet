@@ -8,7 +8,7 @@ The intent is to keep the consumer contract small and stable while the existing 
 
 The baseline for this initial cut is the public/ref surface in Microsoft `System.Net.Quic`:
 
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs`
+- `https://github.com/dotnet/runtime/blob/main/src/libraries/System.Net.Quic/ref/System.Net.Quic.cs`
 
 That ref file is the strongest reference for the initial consumer shape. The current `src/Incursa.Quic/PublicAPI.Unshipped.txt` file is broader than the intended consumer surface and should be treated as analyzer staging, not as the final public contract.
 

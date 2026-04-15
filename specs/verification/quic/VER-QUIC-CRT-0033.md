@@ -16,7 +16,7 @@ Focused mapping tests and dependency inspection.
 
 ## Preconditions
 
-- The qlog-dotnet sibling repository is available at C:\src\incursa\qlog-dotnet.
+- The qlog-dotnet sources are available at https://github.com/incursa/qlog-dotnet.
 - The core diagnostics slice is already traced under REQ-QUIC-CRT-0134 and REQ-QUIC-CRT-0135.
 
 ## Procedure or Approach
@@ -46,16 +46,16 @@ The sibling adapter translates structured transport diagnostics into `Incursa.Ql
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0136.cs
 - tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj
 - Incursa.Quic.slnx
-- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\README.md
-- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\README.md
-- C:\src\incursa\qlog-dotnet\specs\generated\qlog\scope-boundary.md
-- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.cs
-- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.TransportActivity.cs
-- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.StateAndRecovery.cs
-- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicLifecyclePayloads.cs
-- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicNegotiationPayloads.cs
-- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicTransportActivityPayloads.cs
-- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicStateAndRecoveryPayloads.cs
+- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\README.md
+- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\README.md
+- https://github.com/incursa/qlog-dotnet/blob/main/specs\generated\qlog\scope-boundary.md
+- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.cs
+- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.TransportActivity.cs
+- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.StateAndRecovery.cs
+- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicLifecyclePayloads.cs
+- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicNegotiationPayloads.cs
+- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicTransportActivityPayloads.cs
+- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicStateAndRecoveryPayloads.cs
 
 ## Status
 
@@ -66,3 +66,4 @@ landed
 - SPEC-QUIC-CRT
 - ARC-QUIC-CRT-0032
 - WI-QUIC-CRT-0033
+

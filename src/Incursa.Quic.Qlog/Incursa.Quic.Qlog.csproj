@@ -14,8 +14,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Incursa.Quic\Incursa.Quic.csproj" />
-    <ProjectReference Include="..\..\..\qlog-dotnet\src\Incursa.Qlog\Incursa.Qlog.csproj" />
-    <ProjectReference Include="..\..\..\qlog-dotnet\src\Incursa.Qlog.Quic\Incursa.Qlog.Quic.csproj" />
+    <PackageReference Include="Incursa.Qlog" />
+    <PackageReference Include="Incursa.Qlog.Quic" />
   </ItemGroup>
 
   <ItemGroup>

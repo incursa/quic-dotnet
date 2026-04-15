@@ -13,8 +13,7 @@ This wrapper:
 
 Default behavior:
 
-- Runner checkout: `C:\src\quic-interop\quic-interop-runner`
-- Sibling `qlog-dotnet` checkout: `C:\src\incursa\qlog-dotnet`
+- Runner checkout: local `quic-interop-runner` clone configured in the script or passed with `-RunnerRoot`
 - Replacement slot: `quic-go`
 - Testcases: `handshake,retry,transfer`
 - Artifact root: `artifacts/interop-runner/<timestamp>-<slot>/`
@@ -30,7 +29,7 @@ Override the replacement slot or runner checkout when needed:
 ```powershell
 pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 `
   -LocalRole client `
-  -RunnerRoot C:\src\quic-interop\quic-interop-runner
+  -RunnerRoot <path-to-quic-interop-runner>
 ```
 
 The helper defaults to a mode-appropriate local slot so the same checkout can run in either `both`, `client`, or `server` mode without accidentally replacing the peer slot:

@@ -1,21 +1,20 @@
 # Repository Overview
 
-This repository is the trace-first home for the Incursa QUIC library.
-The tree already includes live helper-layer code, requirement-tagged tests, and the QUIC-specific requirement slice under [`specs/requirements/quic/`](specs/requirements/quic/). The repository follows the published SpecTrace model schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) instead of keeping a checked-in local spec-trace requirement suite.
+`Incursa.Quic` is a trace-first QUIC repository. Consumer-facing library code, requirements, verification artifacts, tests, fuzz harnesses, and benchmarks live together so protocol work can be reviewed from requirement to evidence.
 
 ## Canonical Surfaces
 
-- [`README.md`](README.md): repository entry point and quick navigation
-- [`specs/README.md`](specs/README.md): canonical traceability and artifact placement overview
-- [`layout.md`](layout.md): repository layout summary
-- [`authoring.md`](authoring.md): requirement authoring guidance
-- [`artifact-id-policy.json`](artifact-id-policy.json): machine-readable identifier policy
-- [`schemas/`](schemas/README.md): JSON schemas for quality and repository config tooling
-- [`specs/schemas/`](specs/schemas/README.md): JSON schemas for SpecTrace validation
-- [`quality/`](quality/README.md): quality intent and attestation contracts
+- [`README.md`](README.md): repository entry point and navigation.
+- [`specs/README.md`](specs/README.md): canonical traceability layout.
+- [`layout.md`](layout.md): repository structure summary.
+- [`authoring.md`](authoring.md): spec and artifact authoring guidance.
+- [`artifact-id-policy.json`](artifact-id-policy.json): artifact identifier policy.
+- [`schemas/`](schemas/README.md): repository-level schemas.
+- [`specs/schemas/`](specs/schemas/README.md): SpecTrace schemas.
+- [`quality/`](quality/README.md): testing intent and attestation contracts.
 
 ## Working Model
 
-The repository keeps the canonical documents in `specs/`, the repo-level testing intent in `quality/testing-intent.yaml`, and the repo-level attestation contract in `quality/attestation.yaml`.
-
-Root guidance is descriptive only. The owning `SPEC-...` files in `specs/requirements/quic/` remain authoritative for repository protocol work.
+- Canonical requirements, architecture, work items, and verification artifacts live under [`specs/`](specs/README.md).
+- Repository-level testing expectations live in [`quality/testing-intent.yaml`](quality/testing-intent.yaml).
+- Supporting guidance in the repo root is descriptive; the owning `SPEC-...` artifacts remain authoritative for protocol behavior.

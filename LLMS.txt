@@ -1,31 +1,23 @@
 # Incursa.Quic
 
-> AI-readable bootstrap for the `Incursa.Quic` repository. This file is non-authoritative. The prep docs and repo-local instructions should be treated as guidance, not as the source of truth.
-
-`Incursa.Quic` is the scaffold repository for a managed QUIC library. Future RFC-derived requirement work should stay explicit, traceable, benchmarked, and test-heavy.
+> Automation bootstrap for the `Incursa.Quic` repository. This file is non-authoritative.
 
 When working in this repository:
 
-- Follow this authority order: `specs/` landing pages and gap tracker, `docs/requirements-workflow.md`, root docs, then `AGENTS.md`, then this file.
-- Canonical SpecTrace artifacts are authored in sibling `.json` files, and the repository does not keep canonical sibling `.md` companions in the normal workflow.
-- Record unresolved RFC questions in `specs/requirements/quic/REQUIREMENT-GAPS.md` before implementation.
-- Keep requirements, architecture, work items, verification, tests, and benchmarks separate.
-- For parsing, serialization, encoding, decoding, or packet-processing code, expect positive tests, negative tests, fuzz/property coverage, and benchmarks.
-- Use stable file paths and relative links for repo-local Markdown.
-- Do not infer missing protocol rules into code until the requirement slice exists.
+- Follow this authority order: `specs/` landing pages and the gap tracker, [`docs/requirements-workflow.md`](./docs/requirements-workflow.md), root docs, [`AGENTS.md`](./AGENTS.md), then this file.
+- Canonical SpecTrace artifacts are authored in sibling `.json` files under [`specs/`](./specs/README.md).
+- Record unresolved protocol questions in [`specs/requirements/quic/REQUIREMENT-GAPS.md`](./specs/requirements/quic/REQUIREMENT-GAPS.md) before implementation.
+- Keep requirements, architecture, work items, verification, tests, fuzzing, and benchmarks separate.
+- For parsing, serialization, encoding, decoding, or other wire-facing code, expect positive tests, negative tests, fuzz/property coverage, and benchmarks.
+- Use repository-relative links for repo-local Markdown.
+- Do not infer missing protocol rules into code before the requirement slice exists.
 - Before finishing a trace-surface change, run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core` and `dotnet tool run workbench -- --format json validate --profile core`.
-- `Validate-SpecTraceJson.ps1` downloads the upstream SpecTrace model schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) unless you override `-SchemaUri`.
 
 ## Useful Starting Points
 
 - [`README.md`](./README.md)
-- [`docs/requirements-workflow.md`](./docs/requirements-workflow.md)
 - [`docs/README.md`](./docs/README.md)
+- [`docs/requirements-workflow.md`](./docs/requirements-workflow.md)
 - [`docs/testing/README.md`](./docs/testing/README.md)
 - [`specs/README.md`](./specs/README.md)
 - [`specs/requirements/quic/README.md`](./specs/requirements/quic/README.md)
-
-## Current State
-
-- The library project is still empty.
-- Build, packaging, and test scaffolding are already in place.

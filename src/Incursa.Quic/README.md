@@ -1,6 +1,6 @@
 # Incursa.Quic
 
-[`Incursa.Quic`](../../README.md) is the packable, performance-oriented library root for the Incursa QUIC helper layer. It contains the span-backed packet/header parser, varint helpers, frame codecs, and the transport helpers that already exist in the tree.
+`Incursa.Quic` is the packable QUIC library in this repository.
 
 ## Install
 
@@ -8,8 +8,24 @@
 dotnet add package Incursa.Quic
 ```
 
-## Status
+## Consumer Surface
 
-- Header parser and view types are present for the first packet-header slice, and the repository now carries helper surfaces for transport parameters, address validation, anti-amplification, path validation, idle timeout, connection close/drain lifecycle, stateless reset, ACK generation, recovery timing, RTT estimation, congestion control, AEAD usage limits, Retry integrity, TLS-bridge state, diagnostics sinks, and sender/recovery ownership.
-- Package metadata, versioning, and packaging are already configured in the repository root.
-- Future QUIC implementation code can be added here without changing the surrounding repo structure.
+- `QuicConnection`
+- `QuicListener`
+- `QuicStream`
+- `QuicConnectionOptions`
+- `QuicClientConnectionOptions`
+- `QuicServerConnectionOptions`
+- `QuicListenerOptions`
+- `QuicPeerCertificatePolicy`
+- `QuicException`, `QuicError`, `QuicAbortDirection`, and `QuicStreamType`
+
+## Runtime Note
+
+Use `QuicConnection.IsSupported` and `QuicListener.IsSupported` to check whether the managed runtime-backed QUIC surface is available on the current machine.
+
+## Repository Docs
+
+- [`../../README.md`](../../README.md)
+- [`../../docs/quickstart.md`](../../docs/quickstart.md)
+- [`../../docs/requirements-workflow.md`](../../docs/requirements-workflow.md)

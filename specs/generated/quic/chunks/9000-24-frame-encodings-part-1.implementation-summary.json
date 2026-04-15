@@ -142,5 +142,5 @@
       "notes": "The codec now rejects invalid inputs for several of these cases, but the full runtime consequence remains deferred."
     }
   ],
-  "notes": "No reconciliation artifacts existed for this chunk. A pre-existing unrelated worktree edit remains in specs/quic-phase-prompts/Phase-01-Foundation-Wire-Format-and-Packet-Frame-Substrate.md and was left untouched."
+  "notes": "No reconciliation artifacts existed for this chunk."
 }

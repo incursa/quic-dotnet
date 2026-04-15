@@ -1,24 +1,35 @@
 # Quickstart
 
-[`Incursa.Quic`](../src/Incursa.Quic/README.md) is a trace-first repository with live QUIC helper surfaces. The commands below validate the build and packaging setup that is already in place.
+Use this guide to validate the repository and produce local packages.
 
-## Restore and build
+## Prerequisites
+
+- .NET SDK `10.0.201+`
+- PowerShell `7+`
+
+## Validate The Repository
 
 ```bash
 dotnet tool restore
+pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core
+dotnet tool run workbench -- --format json validate --profile core
 dotnet restore Incursa.Quic.slnx
 dotnet build Incursa.Quic.slnx -c Release
 dotnet test Incursa.Quic.slnx -c Release
 ```
 
-## Pack the library
+## Produce Local Packages
 
 ```bash
 dotnet pack src/Incursa.Quic/Incursa.Quic.csproj -c Release
+dotnet pack src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj -c Release
 ```
 
-## What to expect
+## Optional Local Tooling
 
-- The library project currently builds as a packable assembly with the existing helper surface.
-- The test project already contains smoke and blocking tests that validate the package and public API baseline wiring, plus the broader requirement-tagged suite used by the quality attestation path.
-- Versioning and package metadata are defined centrally in the repository root.
+If you use the repo-local Git hooks:
+
+```bash
+python -m pip install pre-commit
+pwsh -NoProfile -File scripts/setup-git-hooks.ps1
+```

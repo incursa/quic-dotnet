@@ -1148,12 +1148,12 @@ Trace:
   - src/Incursa.Quic/QuicTlsKeySchedule.cs
   - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
   - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\Internal\MsQuicConfiguration.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\Internal\MsQuicConfiguration.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs
 
 Notes:
 - This is the smallest server-side client-auth floor and remains server-role only.
@@ -1176,10 +1176,10 @@ Trace:
   - src/Incursa.Quic/QuicListenerHost.cs
   - src/Incursa.Quic/QuicConnectionRuntime.cs
   - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
 
 Notes:
 - This is a narrow server-role follow-on to REQ-QUIC-CRT-0124 and does not widen the public carrier shape.
@@ -1201,10 +1201,10 @@ Trace:
   - src/Incursa.Quic/QuicListenerHost.cs
   - src/Incursa.Quic/QuicConnectionRuntime.cs
   - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Security\src\System\Net\Security\SslStream.Protocol.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Security\src\System\Net\Security\SslStream.Protocol.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0126.cs
@@ -1422,12 +1422,12 @@ Trace:
   - src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
   - src/Incursa.Quic/QuicClientConnectionHost.cs
   - src/Incursa.Quic/QuicListenerHost.cs
-  - C:\src\incursa\qlog-dotnet\specs\generated\qlog\scope-boundary.md
-  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\README.md
-  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\README.md
-  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.cs
-  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.TransportActivity.cs
-  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.StateAndRecovery.cs
+  - https://github.com/incursa/qlog-dotnet/blob/main/specs\generated\qlog\scope-boundary.md
+  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\README.md
+  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\README.md
+  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.cs
+  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.TransportActivity.cs
+  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.StateAndRecovery.cs
 
 Notes:
 - The adapter may own qlog trace creation, schema registration, and event append ordering, but it must not own JSON writers or file paths.
@@ -1473,10 +1473,10 @@ Trace:
   - src/Incursa.Quic.Qlog/QuicQlogCapture.cs
   - src/Incursa.Quic.Qlog/QuicQlogDiagnosticsSink.cs
   - src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj
-  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\QlogFile.cs
-  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\QlogTrace.cs
-  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\Serialization\Json\QlogJsonSerializer.cs
-  - C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\Serialization\Json\QlogJsonTextSequenceSerializer.cs
+  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\QlogFile.cs
+  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\QlogTrace.cs
+  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\Serialization\Json\QlogJsonSerializer.cs
+  - https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\Serialization\Json\QlogJsonTextSequenceSerializer.cs
 
 Notes:
 - The helper may own the in-memory `QlogFile` envelope and collected `QlogTrace` instances, but serializer choice, file paths, rotation, and retention remain above the transport core.
@@ -1646,3 +1646,4 @@ Notes:
 - The slice keeps the client's current 1-RTT application traffic secret material alive long enough to derive the successor pair and then installs the new bridge-state view on the first observed 0->1 transition.
 - Outbound 1-RTT packet formatting must switch to the installed phase-1 bit once the successor pair is installed.
 - The slice does not introduce a general RFC 9001 key-update engine, TLS KeyUpdate support, transfer, retry, public API widening, or any public key-update promise.
+

@@ -130,7 +130,7 @@
 
 - `REQ-QUIC-RFC9000-S18-0001` and `REQ-QUIC-RFC9000-S18-0007` still depend on TLS `extension_data` integration outside this codec slice.
 - `REQ-QUIC-RFC9000-S18P2-0003`, `REQ-QUIC-RFC9000-S18P2-0006`, `REQ-QUIC-RFC9000-S18P2-0007`, `REQ-QUIC-RFC9000-S18P2-0009`, `REQ-QUIC-RFC9000-S18P2-0011`, `REQ-QUIC-RFC9000-S18P2-0012`, `REQ-QUIC-RFC9000-S18P2-0014`, `REQ-QUIC-RFC9000-S18P2-0017`, `REQ-QUIC-RFC9000-S18P2-0018`, `REQ-QUIC-RFC9000-S18P2-0019`, `REQ-QUIC-RFC9000-S18P2-0024`, `REQ-QUIC-RFC9000-S18P2-0025`, `REQ-QUIC-RFC9000-S18P2-0026`, `REQ-QUIC-RFC9000-S18P2-0027`, `REQ-QUIC-RFC9000-S18P2-0034`, `REQ-QUIC-RFC9000-S18P2-0036`, and `REQ-QUIC-RFC9000-S18P2-0038` remain connection-layer or runtime-policy work rather than codec-only work.
-- The unrelated pre-existing edit in `specs/quic-phase-prompts/Phase-01-Foundation-Wire-Format-and-Packet-Frame-Substrate.md` was left untouched.
+- No unrelated worktree edits affected this chunk closeout.
 
 ## Conclusion
 

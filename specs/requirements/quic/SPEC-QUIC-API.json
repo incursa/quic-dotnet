@@ -36,7 +36,7 @@
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs",
           "src/Incursa.Quic/PublicAPI.Unshipped.txt",
-          "docs/quic-triage.md"
+          "docs/design/quic-public-api.md"
         ]
       },
       "notes": [

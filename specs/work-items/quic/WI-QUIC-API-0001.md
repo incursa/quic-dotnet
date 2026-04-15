@@ -89,11 +89,12 @@ Verified By:
 
 ## Reference Behavioral Evidence
 
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs`
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs`
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamTests.cs`
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamConnectedStreamConformanceTests.cs`
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicCipherSuitesPolicyTests.cs`
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamConnectedStreamConformanceTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicCipherSuitesPolicyTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs`
 
 These reference tests are the behavioral evidence for the initial public surface shape and the lifecycle semantics that are now implemented and proven in the target repo.
+

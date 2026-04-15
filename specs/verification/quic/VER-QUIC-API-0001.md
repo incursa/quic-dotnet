@@ -81,11 +81,12 @@ The current proof includes build output and focused requirement-home tests for `
 
 ## Reference Behavioral Evidence
 
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs`
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs`
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamTests.cs`
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamConnectedStreamConformanceTests.cs`
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicCipherSuitesPolicyTests.cs`
-- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamConnectedStreamConformanceTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicCipherSuitesPolicyTests.cs`
+- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs`
 
 These tests are not target-repo proof, but they define the baseline public-behavior expectations that the target verification plan should mirror.
+

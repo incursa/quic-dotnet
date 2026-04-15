@@ -171,10 +171,6 @@ $runnerRootResolved = (Resolve-Path -LiteralPath $RunnerRoot).Path
 $artifactRootResolved = [System.IO.Path]::GetFullPath($ArtifactsRoot)
 $dockerBuildContextRoot = Split-Path $repoRootResolved -Parent
 
-if (-not (Test-Path -LiteralPath (Join-Path $dockerBuildContextRoot 'qlog-dotnet'))) {
-    throw "Sibling qlog-dotnet checkout was not found at '$(Join-Path $dockerBuildContextRoot 'qlog-dotnet')'."
-}
-
 $registry = Get-RunnerImplementationRegistry -RunnerRootPath $runnerRootResolved
 $TestCases = Normalize-StringList -Values $TestCases
 if ($TestCases.Count -eq 0) {
@@ -583,11 +579,6 @@ $stagingExcludes = @(
 & robocopy $repoRootResolved (Join-Path $dockerBuildStageRoot 'quic-dotnet') /MIR /NFL /NDL /NJH /NJS /NP /XD @stagingExcludes | Out-Null
 if ($LASTEXITCODE -ge 8) {
     throw "Failed to stage the quic-dotnet build context copy with robocopy exit code $LASTEXITCODE."
-}
-
-& robocopy (Join-Path $dockerBuildContextRoot 'qlog-dotnet') (Join-Path $dockerBuildStageRoot 'qlog-dotnet') /MIR /NFL /NDL /NJH /NJS /NP /XD @stagingExcludes | Out-Null
-if ($LASTEXITCODE -ge 8) {
-    throw "Failed to stage the qlog-dotnet build context copy with robocopy exit code $LASTEXITCODE."
 }
 
 @"

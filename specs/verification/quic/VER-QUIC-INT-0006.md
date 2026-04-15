@@ -18,7 +18,7 @@ Local execution, artifact inspection, and report review.
 
 - Docker is available on the local machine.
 - Python 3 is available for the external runner checkout.
-- The local runner checkout exists at `C:\src\quic-interop\quic-interop-runner`.
+- The local runner checkout exists at `https://github.com/quic-interop/quic-interop-runner`.
 - The supported INT harness slices remain available through the existing local harness path.
 
 ## Procedure or Approach
@@ -56,3 +56,4 @@ Landed; the local helper built the harness image, invoked the external runner th
 ## Deferred Coverage
 
 No runner repository registry change, no new testcase enablement, no qlog-format changes, and no transport/runtime behavior changes are in scope for this verification slice.
+

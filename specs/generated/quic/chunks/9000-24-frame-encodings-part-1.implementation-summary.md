@@ -74,4 +74,4 @@
 
 - The new codec proves wire encoding/decoding and boundary validation, but not the downstream handshake, stream-control, migration, or stateless-reset behaviors those requirements imply.
 - `REQ-QUIC-RFC9000-S18P2-0036` and `REQ-QUIC-RFC9000-S18P2-0038` currently stop at parse/format rejection; mapping them to QUIC connection errors remains a later connection-layer task.
-- A pre-existing unrelated worktree edit remains in `specs/quic-phase-prompts/Phase-01-Foundation-Wire-Format-and-Packet-Frame-Substrate.md` and was left untouched.
+- No unrelated worktree edits affected this chunk implementation summary.

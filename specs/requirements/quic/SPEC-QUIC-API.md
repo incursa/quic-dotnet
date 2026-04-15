@@ -68,9 +68,9 @@ The library MUST expose only the consumer-facing facade types named in this spec
 
 Trace:
 - Source Refs:
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
   - src/Incursa.Quic/PublicAPI.Unshipped.txt
-  - docs/quic-triage.md
+  - docs/design/quic-public-api.md
 
 Notes:
 - The approved public facade for the current slice is QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicClientConnectionOptions, QuicPeerCertificatePolicy, QuicServerConnectionOptions, QuicStreamCapacityChangedArgs, and the corrected QuicStreamType.
@@ -81,7 +81,7 @@ The library MUST expose server listener creation and accept through QuicListener
 
 Trace:
 - Source Refs:
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
 
 Notes:
 - The listener shell is honest and is backed by the internal listener host.
@@ -93,7 +93,7 @@ The QuicConnection type MUST represent a connected QUIC session and expose the l
 
 Trace:
 - Source Refs:
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0003.cs::QuicConnection_ExposesTheApprovedStreamEntryMethods
 
@@ -109,7 +109,7 @@ The QuicStream type MUST derive from Stream and expose the stream identifier, st
 
 Trace:
 - Source Refs:
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs::QuicStream_ExposesTheNarrowAbortAndCompletionSurface
 
@@ -126,7 +126,7 @@ The library MUST carry configuration through QuicConnectionOptions, QuicListener
 
 Trace:
 - Source Refs:
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
 
 Notes:
 - No custom endpoint or handshake wrapper types are introduced for this slice; the listener and client surfaces reuse EndPoint, IPEndPoint, SslApplicationProtocol, SslClientAuthenticationOptions, SslClientHelloInfo, and SslServerAuthenticationOptions directly.
@@ -142,7 +142,7 @@ The library MUST classify terminal and shutdown outcomes through QuicError and Q
 
 Trace:
 - Source Refs:
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0006.cs::AbortWrite_OnTheSupportedLoopbackPath_ProjectsResetAndTerminalErrorsHonestly
 
@@ -185,10 +185,10 @@ The library MUST honor cancellation tokens on pending listen, accept, connect, o
 
 Trace:
 - Source Refs:
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamTests.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
 
 Notes:
 - The Microsoft tests directly prove cancellation for listener accept, connect, the listener callback, blocked outbound stream opens, and the stream-capacity callback shape; this slice applies that evidence to the listener path, the still-pending client connect path, the stream-entry open/accept path on active loopback connections, the supported write cancellation path, and the supported stream-capacity callback subset.
@@ -202,7 +202,7 @@ The library MUST surface the initial peer stream-capacity delta through QuicConn
 
 Trace:
 - Source Refs:
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
 
 Notes:
 - The callback is a narrow consumer-visible projection of the existing runtime stream-limit commit bookkeeping and is not a general stream-capacity event pipeline.
@@ -214,7 +214,7 @@ On the supported active loopback path, send-capable QuicStream facades MUST supp
 
 Trace:
 - Source Refs:
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamTests.cs
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs::SupportedLoopbackWriteAndDisposeCompletion_DeliversBytesAndPeerEof
 
@@ -272,14 +272,14 @@ Trace:
 - Verified By:
   - VER-QUIC-API-0004
 - Source Refs:
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
   - C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\System.Net.Security.xml
-  - C:\src\dotnet\runtime\src\libraries\Common\src\System\Net\Security\CertificateValidation.Unix.cs
-  - C:\src\dotnet\runtime\src\libraries\Common\src\System\Net\Security\CertificateValidation.Windows.cs
-  - C:\src\dotnet\runtime\src\libraries\Common\src\System\Net\Security\TargetHostNameHelper.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\Common\src\System\Net\Security\CertificateValidation.Unix.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\Common\src\System\Net\Security\CertificateValidation.Windows.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\Common\src\System\Net\Security\TargetHostNameHelper.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
   - docs/design/quic-public-api.md
   - docs/design/quic-public-api-gap-matrix.md
   - docs/design/quic-interop-prep-plan.md
@@ -308,9 +308,10 @@ On the supported active loopback path, `QuicConnection.OpenOutboundStreamAsync(.
 
 Trace:
 - Source Refs:
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
-  - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
+  - https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
 
 Notes:
 - The supported subset is limited to the active loopback path and keeps the pending open request in the runtime queue until a real peer `MAX_STREAMS` update makes the requested direction available.
 - Cancellation, disposal, and terminal-state behavior stay owned by `REQ-QUIC-API-0008`, while later real `MAX_STREAMS` growth on the same path remains the only supported wake-up mechanism for the queued request.
+

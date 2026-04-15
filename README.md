@@ -1,36 +1,30 @@
 # Incursa.Quic
 
 [![CI](https://github.com/incursa/quic-dotnet/actions/workflows/ci.yml/badge.svg)](https://github.com/incursa/quic-dotnet/actions/workflows/ci.yml)
+[![Quality](https://github.com/incursa/quic-dotnet/actions/workflows/library-fast-quality.yml/badge.svg)](https://github.com/incursa/quic-dotnet/actions/workflows/library-fast-quality.yml)
+[![License](https://img.shields.io/github/license/incursa/quic-dotnet)](LICENSE)
 
-`Incursa.Quic` is the trace-first repository for the Incursa QUIC library. It already contains live helper-layer implementation, tests, packaging, and documentation for the packet/header, frame, transport-parameter, recovery, and validation surfaces that are present in the tree.
+`Incursa.Quic` is a trace-first .NET QUIC repository. It combines a managed QUIC surface for consumers with canonical requirements, verification artifacts, fuzzing, and benchmarks so protocol work stays reviewable and reproducible.
 
-The repository is also prepared for a SpecTrace-first workflow so RFC-derived protocol slices can be translated into canonical requirements, gaps, work items, verification artifacts, and generated outputs before implementation.
-Canonical SpecTrace artifacts are authored as `.json` files under [`specs/`](specs/README.md), and the repository no longer depends on sibling Markdown companions for those canonical families.
-The repo-local JSON validator fetches the upstream SpecTrace model schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) at runtime so this repository does not carry a stale checked-in copy.
+## Packages
 
-## What is included
+- [`Incursa.Quic`](src/Incursa.Quic/README.md): consumer-facing `QuicConnection`, `QuicListener`, `QuicStream`, option types, and error vocabulary.
+- [`Incursa.Quic.Qlog`](src/Incursa.Quic.Qlog/README.md): qlog capture support layered on top of `Incursa.Quic`.
 
-- [`specs/`](specs/README.md): canonical requirements, gaps, architecture, work items, verification artifacts, and generated traceability outputs
-- [`benchmarks/`](benchmarks/README.md): permanent microbenchmark suites and performance evidence
-- [`fuzz/`](fuzz/README.md): SharpFuzz harnesses for wire-facing parser slices
-- [`Incursa.Quic`](src/Incursa.Quic/README.md): the packable helper-layer library project and NuGet package root
-- [`Incursa.Quic.InteropHarness`](src/Incursa.Quic.InteropHarness/README.md): the companion interop runner endpoint project and Docker image entrypoint
-- [`Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md): the test project with requirement-tagged positive, negative, property, fuzz, smoke, and blocking checks
-- [`docs/`](docs/README.md): repository documentation
-- [`docs/requirements-workflow.md`](docs/requirements-workflow.md): local order of operations for requirements, testing, fuzzing, and benchmarking
-- [`quality/testing-intent.yaml`](quality/testing-intent.yaml): repo-level testing intent for quality tooling
-- [`schemas/`](schemas/README.md): repository-level quality and config schemas
-- [`scripts/spec-trace`](scripts/spec-trace/README.md): JSON validation, migration, backup, and parity-check helpers
-- [`scripts/quality`](scripts/quality/README.md): smoke, blocking, and quality attestation evidence lanes
-- [`scripts/interop`](scripts/interop/README.md): local-only helper entry points for building the harness image and running the external interop runner locally
-- [`scripts/release`](scripts/release/README.md): versioning and release-policy checks
-- [`CONTRIBUTING.md`](CONTRIBUTING.md): contribution and validation guidance
-- [`AGENTS.md`](AGENTS.md): repository-specific agent instructions
-- [`LLMS.txt`](LLMS.txt): AI bootstrap and reading order
-- [`NOTICE.md`](NOTICE.md): generated dependency inventory
-- [`.config/dotnet-tools.json`](.config/dotnet-tools.json): local tooling manifest for mutation and fuzz tooling
+## Repository Scope
 
-## Quick start
+- Managed QUIC connection, listener, and stream APIs.
+- qlog capture support for connection and listener flows.
+- Canonical requirements, architecture, work items, and verification artifacts under [`specs/`](specs/README.md).
+- xUnit coverage, SharpFuzz harnesses, and BenchmarkDotNet suites for wire-facing and hot-path code.
+
+## Requirements
+
+- .NET SDK `10.0.201+` (managed by [`global.json`](global.json))
+- PowerShell `7+` for the repo scripts
+- Python if you want to install and run `pre-commit`
+
+## Quickstart
 
 ```bash
 dotnet tool restore
@@ -40,54 +34,39 @@ dotnet restore Incursa.Quic.slnx
 dotnet build Incursa.Quic.slnx -c Release
 dotnet test Incursa.Quic.slnx -c Release
 dotnet pack src/Incursa.Quic/Incursa.Quic.csproj -c Release
-python -m pip install pre-commit
-pwsh -File cleanup.ps1
+dotnet pack src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj -c Release
 ```
 
-## Versioning and packaging
+## Repository At A Glance
 
-- The repository version is defined in [`Directory.Build.props`](Directory.Build.props).
-- The NuGet package metadata, readme, icon, and symbol settings are also centralized there.
-- Package versions for test dependencies are centralized in [`Directory.Packages.props`](Directory.Packages.props).
-- Public API release checks are enforced by [`scripts/release/validate-public-api-versioning.ps1`](scripts/release/validate-public-api-versioning.ps1).
+- [`src/Incursa.Quic`](src/Incursa.Quic/README.md): packable core QUIC library.
+- [`src/Incursa.Quic.Qlog`](src/Incursa.Quic.Qlog/README.md): qlog adapter package.
+- [`src/Incursa.Quic.InteropHarness`](src/Incursa.Quic.InteropHarness/README.md): local interop-runner companion process.
+- [`tests/Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md): requirement-linked unit and integration tests.
+- [`benchmarks`](benchmarks/README.md): permanent performance suites.
+- [`fuzz`](fuzz/README.md): fuzz harnesses for wire-facing code.
+- [`docs`](docs/README.md): build, packaging, testing, and contributor guides.
+- [`specs`](specs/README.md): canonical traceability artifacts.
 
-## Repository layout
+## Development Model
 
-- [`specs`](specs/README.md)
-- [`benchmarks`](benchmarks/README.md)
-- [`fuzz`](fuzz/README.md)
-- [`src/Incursa.Quic`](src/Incursa.Quic/README.md)
-- [`src/Incursa.Quic.InteropHarness`](src/Incursa.Quic.InteropHarness/README.md)
-- [`tests/Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md)
-- [`docs`](docs/README.md)
-- [`schemas`](schemas/README.md)
-- [`scripts`](scripts/README.md)
-- [`assets`](assets/README.md)
-- [`AGENTS.md`](AGENTS.md)
-- [`LLMS.txt`](LLMS.txt)
-- [`.githooks`](.githooks)
-- [`CONTRIBUTING.md`](CONTRIBUTING.md)
-- [`NOTICE.md`](NOTICE.md)
+1. Start with [`docs/requirements-workflow.md`](docs/requirements-workflow.md).
+2. Check [`specs/requirements/quic/REQUIREMENT-GAPS.md`](specs/requirements/quic/REQUIREMENT-GAPS.md) and the owning `SPEC-...` artifact before implementing protocol behavior.
+3. Update requirements, architecture, work items, and verification artifacts before relying on code or tests as the source of truth.
+4. Prove wire-facing work with positive tests, negative tests, fuzzing, and benchmarks.
 
-## Documentation tooling
+## Documentation
 
-The repository carries repo-local quality tooling for mutation, fuzz support, and SpecTrace validation:
-
-- `dotnet-stryker`
-- `SharpFuzz.CommandLine`
-- `workbench`
-
-Install them with:
-
-```bash
-dotnet tool restore
-```
-
-Then use the repository docs pages for the build and packaging flow:
-
-- [Repository docs](docs/README.md)
-- [Requirements workflow](docs/requirements-workflow.md)
-- [SpecTrace prep](docs/spec-trace-prep.md)
 - [Quickstart](docs/quickstart.md)
 - [Packaging](docs/packaging.md)
+- [Requirements workflow](docs/requirements-workflow.md)
+- [SpecTrace prep](docs/spec-trace-prep.md)
 - [Testing docs](docs/testing/README.md)
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for contributor workflow and validation expectations.
+
+## License
+
+This repository is licensed under MIT. See [`LICENSE`](LICENSE) and [`NOTICE.md`](NOTICE.md).

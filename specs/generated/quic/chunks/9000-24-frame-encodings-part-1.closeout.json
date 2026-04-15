@@ -166,6 +166,6 @@
   ],
   "notes": [
     "No reconciliation artifacts existed for this chunk.",
-    "A pre-existing unrelated worktree edit remains in specs/quic-phase-prompts/Phase-01-Foundation-Wire-Format-and-Packet-Frame-Substrate.md and was left untouched."
+    "No unrelated worktree edits affected this chunk closeout."
   ]
 }

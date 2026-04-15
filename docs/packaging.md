@@ -1,30 +1,27 @@
 # Packaging
 
-The repository is already wired for NuGet packaging.
+This repository centralizes common package metadata in [`Directory.Build.props`](../Directory.Build.props) and dependency versions in [`Directory.Packages.props`](../Directory.Packages.props).
 
-## Version source
+## Version Source
 
-- Update [`Directory.Build.props`](../Directory.Build.props) to change the package version.
-- The current package version is `1.0.0`.
+- Update [`Directory.Build.props`](../Directory.Build.props) to change the repository version.
+- Keep shared package versions in [`Directory.Packages.props`](../Directory.Packages.props).
 
-## Pack command
+## Local Pack Commands
 
 ```bash
 dotnet pack src/Incursa.Quic/Incursa.Quic.csproj -c Release
+dotnet pack src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj -c Release
 ```
 
-## Package contents
+## Package Contents
 
-- The package readme comes from [`src/Incursa.Quic/README.md`](../src/Incursa.Quic/README.md).
-- The package icon is supplied from [`assets/package-icon.png`](../assets/package-icon.png).
-- Symbols are emitted as `snupkg` files because symbol publishing is already enabled in the shared build props.
+- Package readmes come from the project-local `README.md` files.
+- The package icon comes from [`assets/package-icon.png`](../assets/package-icon.png).
+- Symbols are emitted as `snupkg` files through the shared build configuration.
 
-## Package versions
+## Release Checks
 
-- Test dependency versions are centralized in [`Directory.Packages.props`](../Directory.Packages.props).
-- Add future shared package versions there instead of repeating them in project files.
-
-## Release automation
-
-- [`scripts/release/Invoke-ReleaseVersioning.ps1`](../scripts/release/Invoke-ReleaseVersioning.ps1) calculates or applies the next version.
-- [`scripts/release/validate-public-api-versioning.ps1`](../scripts/release/validate-public-api-versioning.ps1) checks the shipped API baseline against the release tag.
+- [`scripts/release/Invoke-ReleaseVersioning.ps1`](../scripts/release/Invoke-ReleaseVersioning.ps1): calculate or apply the next version.
+- [`scripts/release/validate-public-api-versioning.ps1`](../scripts/release/validate-public-api-versioning.ps1): validate shipped public API baselines against a release tag.
+- [`.github/workflows/publish-nuget-packages.yml`](../.github/workflows/publish-nuget-packages.yml): publish the tagged `Incursa.Quic` package.
