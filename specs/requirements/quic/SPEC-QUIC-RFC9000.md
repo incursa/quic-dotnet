@@ -2178,6 +2178,8 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryReceiveStreamFrame_CommunicatesFinalSizeWhenTerminatedWithFin
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryReceiveResetStreamFrame_CommunicatesFinalSizeWhenTerminatedWithReset
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryReserveSendCapacity_CommunicatesFinalSizeWhenTerminatedWithFin
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryAbortLocalStreamWrites_CommunicatesFinalSizeWhenTerminatedWithReset
 
 ## REQ-QUIC-RFC9000-S4P5-0002 Use STREAM FIN to carry final size
 The final size of a stream MUST be the sum of the Offset and Length fields of a STREAM frame with a FIN flag, including any implicit values.

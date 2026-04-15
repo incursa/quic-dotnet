@@ -57,4 +57,80 @@ public sealed class REQ_QUIC_RFC9000_S4P5_0001
         Assert.Equal(5UL, snapshot.FinalSize);
         Assert.Equal(QuicStreamReceiveState.ResetRecvd, snapshot.ReceiveState);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P5-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryReserveSendCapacity_CommunicatesFinalSizeWhenTerminatedWithFin()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionSendLimit: 32,
+            peerUnidirectionalStreamLimit: 1,
+            localUnidirectionalSendLimit: 8);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: false,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.True(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 2,
+            fin: true,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(default, streamDataBlockedFrame);
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(2UL, snapshot.FinalSize);
+        Assert.Equal(QuicStreamSendState.DataSent, snapshot.SendState);
+        Assert.Equal(2UL, snapshot.UniqueBytesSent);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P5-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryAbortLocalStreamWrites_CommunicatesFinalSizeWhenTerminatedWithReset()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionSendLimit: 32,
+            peerUnidirectionalStreamLimit: 1,
+            localUnidirectionalSendLimit: 8);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: false,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.True(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 3,
+            fin: false,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(default, streamDataBlockedFrame);
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryAbortLocalStreamWrites(streamId.Value, out ulong finalSize, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(3UL, finalSize);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(3UL, snapshot.FinalSize);
+        Assert.Equal(QuicStreamSendState.ResetSent, snapshot.SendState);
+        Assert.Equal(3UL, snapshot.UniqueBytesSent);
+    }
 }
