@@ -152,7 +152,24 @@ internal sealed class QuicHandshakeFlowCoordinator
         return TryBuildProtectedApplicationDataPacket(
             applicationPayload,
             material,
+            out _,
+            out protectedPacket);
+    }
+
+    /// <summary>
+    /// Formats and protects a 1-RTT short-header packet from a STREAM/control payload.
+    /// </summary>
+    public bool TryBuildProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        return TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            material,
             keyPhase: false,
+            out packetNumber,
             out protectedPacket);
     }
 
@@ -165,7 +182,26 @@ internal sealed class QuicHandshakeFlowCoordinator
         bool keyPhase,
         out byte[] protectedPacket)
     {
+        return TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            material,
+            keyPhase,
+            out _,
+            out protectedPacket);
+    }
+
+    /// <summary>
+    /// Formats and protects a 1-RTT short-header packet from a STREAM/control payload and an explicit Key Phase bit.
+    /// </summary>
+    public bool TryBuildProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
         protectedPacket = [];
+        packetNumber = default;
 
         if (applicationPayload.IsEmpty
             || destinationConnectionId.Length == 0
@@ -174,6 +210,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
+        ulong currentPacketNumber = nextApplicationPacketNumber;
         if (!TryBuildApplicationDataPlaintextPacket(
             applicationPayload,
             keyPhase,
@@ -194,6 +231,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
+        packetNumber = currentPacketNumber;
         nextApplicationPacketNumber = nextApplicationPacketNumber == ulong.MaxValue ? 0 : nextApplicationPacketNumber + 1;
         return true;
     }
@@ -206,7 +244,24 @@ internal sealed class QuicHandshakeFlowCoordinator
         QuicTlsPacketProtectionMaterial material,
         out byte[] protectedPacket)
     {
+        return TryBuildProtectedZeroRttApplicationPacket(
+            applicationPayload,
+            material,
+            out _,
+            out protectedPacket);
+    }
+
+    /// <summary>
+    /// Formats and protects a 0-RTT long-header packet from an application payload.
+    /// </summary>
+    internal bool TryBuildProtectedZeroRttApplicationPacket(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
         protectedPacket = [];
+        packetNumber = default;
 
         if (applicationPayload.IsEmpty
             || material.EncryptionLevel != QuicTlsEncryptionLevel.ZeroRtt)
@@ -214,6 +269,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
+        ulong currentPacketNumber = nextApplicationPacketNumber;
         if (!TryBuildZeroRttApplicationPlaintextPacket(
             applicationPayload,
             out byte[] plaintextPacket,
@@ -233,6 +289,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
+        packetNumber = currentPacketNumber;
         nextApplicationPacketNumber = nextApplicationPacketNumber == ulong.MaxValue ? 0 : nextApplicationPacketNumber + 1;
         return true;
     }

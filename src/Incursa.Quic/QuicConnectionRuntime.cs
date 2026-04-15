@@ -2177,11 +2177,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         if (!handshakeFlowCoordinator.TryBuildProtectedZeroRttApplicationPacket(
             applicationPayload,
             packetProtectionMaterial,
+            out ulong packetNumber,
             out byte[] protectedPacket))
         {
             return false;
         }
 
+        TrackApplicationPacket(packetNumber, protectedPacket);
         zeroRttPacketSent = true;
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
         return true;
@@ -2423,6 +2425,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             payload,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhase == 1,
+            out ulong packetNumber,
             out protectedPacket))
         {
             exception = new InvalidOperationException(protectFailureMessage);
@@ -2438,8 +2441,18 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
+        TrackApplicationPacket(packetNumber, protectedPacket);
         exception = null;
         return true;
+    }
+
+    private void TrackApplicationPacket(ulong packetNumber, ReadOnlySpan<byte> protectedPacket)
+    {
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber,
+            (ulong)protectedPacket.Length,
+            GetElapsedMicros(lastTransitionTicks)));
     }
 
     private bool TryBuildOutboundStreamPayload(

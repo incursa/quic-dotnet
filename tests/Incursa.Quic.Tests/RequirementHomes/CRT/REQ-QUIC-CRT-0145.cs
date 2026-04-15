@@ -126,6 +126,7 @@ public sealed class REQ_QUIC_CRT_0145
             return true;
         });
 
+        Assert.Empty(runtime.SendRuntime.SentPackets);
         QuicStream outboundStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
 
         Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
@@ -135,6 +136,11 @@ public sealed class REQ_QUIC_CRT_0145
 
         QuicConnectionSendDatagramEffect sendEffect = Assert.Single(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
         Assert.Equal(PacketPathIdentity, sendEffect.PathIdentity);
+
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedPacket = Assert.Single(runtime.SendRuntime.SentPackets);
+        Assert.Equal(QuicPacketNumberSpace.ApplicationData, trackedPacket.Key.PacketNumberSpace);
+        Assert.Equal(0UL, trackedPacket.Key.PacketNumber);
+        Assert.Equal((ulong)sendEffect.Datagram.Length, trackedPacket.Value.PayloadBytes);
 
         QuicHandshakeFlowCoordinator coordinator = CreatePacketCoordinator();
         Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(

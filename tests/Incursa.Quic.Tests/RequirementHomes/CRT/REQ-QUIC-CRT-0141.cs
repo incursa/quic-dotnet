@@ -80,6 +80,11 @@ public sealed class REQ_QUIC_CRT_0141
         Assert.True(
             expectedPacket.AsSpan().SequenceEqual(zeroRttSend.Datagram.Span),
             $"Expected={Convert.ToHexString(expectedPacket)} Actual={Convert.ToHexString(zeroRttSend.Datagram.ToArray())}");
+
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedPacket = Assert.Single(clientRuntime.SendRuntime.SentPackets);
+        Assert.Equal(QuicPacketNumberSpace.ApplicationData, trackedPacket.Key.PacketNumberSpace);
+        Assert.Equal(0UL, trackedPacket.Key.PacketNumber);
+        Assert.Equal((ulong)zeroRttSend.Datagram.Length, trackedPacket.Value.PayloadBytes);
     }
 
     [Fact]
