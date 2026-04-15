@@ -1191,8 +1191,8 @@ function Get-ActiveLaneDisposition {
         }
         "pause_manual" {
             if ($commitCount -gt 0) {
-                $action = "stop"
-                $reason = "The active lane needs manual review and has commits present."
+                $action = "merge"
+                $reason = "The active lane requested manual review, but it produced commits and will be merged under supervisor mode."
             }
             else {
                 $action = "cleanup"
@@ -1278,7 +1278,6 @@ function Invoke-WorkerLaneExecution {
     return [pscustomobject]@{
         Decision    = $workerDecision
         CommitShas  = $commitShas
-        ShouldMerge = $shouldMerge
     }
 }
 
@@ -1535,7 +1534,11 @@ try {
                         -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn
 
                     $shouldMerge = if ($PSBoundParameters.ContainsKey("AutoMerge")) { [bool]$AutoMerge } else { $true }
-                    if ($execution.ShouldMerge -and $shouldMerge) {
+                    $hasCommits = @($execution.CommitShas).Count -gt 0
+                    $workerState = if ($null -ne $execution.Decision -and $execution.Decision.PSObject.Properties.Name -contains "State") { [string]$execution.Decision.State } else { "" }
+                    $executionShouldMerge = $hasCommits -and ($workerState -notin @("pause_manual", "stuck"))
+
+                    if ($executionShouldMerge -and $shouldMerge) {
                         & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode merge -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -Force:$Force
                         if ($LASTEXITCODE -ne 0) {
                             throw "Merge step failed."
@@ -1549,10 +1552,10 @@ try {
                             }
                         }
                     }
-                    elseif ($execution.ShouldMerge -and -not $shouldMerge) {
+                    elseif ($executionShouldMerge -and -not $shouldMerge) {
                         Write-Warning "Worker lane produced commits, but auto-merge is disabled."
                     }
-                    elseif (-not $execution.ShouldMerge) {
+                    elseif (-not $executionShouldMerge) {
                         Write-Warning "Worker lane was not auto-merged. Inspect the worktree and run merge or cleanup manually."
                     }
                 }
