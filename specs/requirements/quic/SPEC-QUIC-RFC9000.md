@@ -759,6 +759,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B7-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0005.cs::TryReceiveStreamFrame_StartsPeerInitiatedBidirectionalSendersInReady
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0005.cs::TryReceiveStreamFrame_DoesNotStartPeerInitiatedUnidirectionalSendersInReady
 
 ## REQ-QUIC-RFC9000-S3P1-0006 Transmit and retransmit in Send
 In the Send state, an endpoint MUST transmit and retransmit as necessary stream data in STREAM frames.
@@ -773,6 +776,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B8-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0006.cs::TryReserveSendCapacity_TransitionsPeerInitiatedBidirectionalSendersIntoSendAndRetransmits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0006.cs::TryReserveSendCapacity_RejectsPeerInitiatedUnidirectionalStreamsWithoutASendPart
 
 ## REQ-QUIC-RFC9000-S3P1-0007 Respect peer flow control while sending
 An endpoint in the Send state MUST respect the flow control limits set by its peer and continue to accept and process MAX_STREAM_DATA frames.

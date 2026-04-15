@@ -1369,24 +1369,28 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "trace": {
-        "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
-        ],
-        "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
-        ],
-        "verified_by": [
-          "VER-QUIC-RFC9000-0001"
-        ],
-        "upstream_refs": [
-          "RFC 9000 §3.1 RFC9000-S3.1-B7-P4-S1",
-          "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
-        ]
-      }
-    },
-    {
-      "id": "REQ-QUIC-RFC9000-S3P1-0006",
+        "trace": {
+          "satisfied_by": [
+            "ARC-QUIC-RFC9000-0001"
+          ],
+          "implemented_by": [
+            "WI-QUIC-RFC9000-0001"
+          ],
+          "verified_by": [
+            "VER-QUIC-RFC9000-0001"
+          ],
+          "upstream_refs": [
+            "RFC 9000 §3.1 RFC9000-S3.1-B7-P4-S1",
+            "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+          ],
+          "x_test_refs": [
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0005.cs::TryReceiveStreamFrame_StartsPeerInitiatedBidirectionalSendersInReady",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0005.cs::TryReceiveStreamFrame_DoesNotStartPeerInitiatedUnidirectionalSendersInReady"
+          ]
+        }
+      },
+      {
+        "id": "REQ-QUIC-RFC9000-S3P1-0006",
       "title": "Transmit and retransmit in Send",
       "statement": "In the Send state, an endpoint MUST transmit and retransmit as necessary stream data in STREAM frames.",
       "coverage": {
@@ -1402,15 +1406,19 @@
         "implemented_by": [
           "WI-QUIC-RFC9000-0001"
         ],
-        "verified_by": [
-          "VER-QUIC-RFC9000-0001"
-        ],
-        "upstream_refs": [
-          "RFC 9000 §3.1 RFC9000-S3.1-B8-P5-S1",
-          "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
-        ]
-      }
-    },
+          "verified_by": [
+            "VER-QUIC-RFC9000-0001"
+          ],
+          "upstream_refs": [
+            "RFC 9000 §3.1 RFC9000-S3.1-B8-P5-S1",
+            "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+          ],
+          "x_test_refs": [
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0006.cs::TryReserveSendCapacity_TransitionsPeerInitiatedBidirectionalSendersIntoSendAndRetransmits",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0006.cs::TryReserveSendCapacity_RejectsPeerInitiatedUnidirectionalStreamsWithoutASendPart"
+          ]
+        }
+      },
     {
       "id": "REQ-QUIC-RFC9000-S3P1-0007",
       "title": "Respect peer flow control while sending",
