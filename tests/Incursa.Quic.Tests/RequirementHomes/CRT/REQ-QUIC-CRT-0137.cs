@@ -80,9 +80,12 @@ public sealed class REQ_QUIC_CRT_0137
             QuicTlsEncryptionLevel.Handshake,
             encryptedExtensionsTranscript);
 
-        Assert.Single(encryptedExtensionsUpdates);
+        Assert.Equal(2, encryptedExtensionsUpdates.Count);
         Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, encryptedExtensionsUpdates[0].Kind);
         Assert.Equal(QuicTlsHandshakeMessageType.EncryptedExtensions, encryptedExtensionsUpdates[0].HandshakeMessageType);
+        Assert.Equal(QuicTlsUpdateKind.PeerEarlyDataDispositionAvailable, encryptedExtensionsUpdates[1].Kind);
+        Assert.Equal(QuicTlsEarlyDataDisposition.Rejected, encryptedExtensionsUpdates[1].PeerEarlyDataDisposition);
+        Assert.Equal(QuicTlsEarlyDataDisposition.Rejected, driver.State.PeerEarlyDataDisposition);
 
         IReadOnlyList<QuicTlsStateUpdate> finishedUpdates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,

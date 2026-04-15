@@ -13,50 +13,53 @@ public sealed class REQ_QUIC_INT_0010
     [Trait("Category", "Positive")]
     public async Task ManagedChildProcessHarnessTransfersOneFileFromWwwToDownloadsAndCompletesOnEOF()
     {
-        string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
-        string relativePath = $"transfer-{Guid.NewGuid():N}.txt";
-        string requestPath = $"/{relativePath}";
-        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-        string requests = $"https://127.0.0.1:{listenEndPoint.Port}{requestPath}";
-        string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
-        string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
-        string sourcePath = Path.Combine(sourceRoot, relativePath);
-        string destinationPath = Path.Combine(destinationRoot, relativePath);
-        byte[] payload = Encoding.UTF8.GetBytes($"managed transfer proof {Guid.NewGuid():N}");
-
-        Directory.CreateDirectory(sourceRoot);
-        Directory.CreateDirectory(destinationRoot);
-        File.WriteAllBytes(sourcePath, payload);
-
-        if (File.Exists(destinationPath))
+        await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
         {
-            File.Delete(destinationPath);
-        }
+            string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+            string relativePath = $"transfer-{Guid.NewGuid():N}.txt";
+            string requestPath = $"/{relativePath}";
+            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+            string requests = $"https://localhost:{listenEndPoint.Port}{requestPath}";
+            string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+            string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+            string sourcePath = Path.Combine(sourceRoot, relativePath);
+            string destinationPath = Path.Combine(destinationRoot, relativePath);
+            byte[] payload = Encoding.UTF8.GetBytes($"managed transfer proof {Guid.NewGuid():N}");
 
-        try
-        {
-            await using HarnessProcess serverProcess = HarnessProcess.Start("server", "transfer", requests, harnessDll);
-            await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
+            Directory.CreateDirectory(sourceRoot);
+            Directory.CreateDirectory(destinationRoot);
+            File.WriteAllBytes(sourcePath, payload);
 
-            await using HarnessProcess clientProcess = HarnessProcess.Start("client", "transfer", requests, harnessDll);
-            await clientProcess.WaitForStdoutContainsAsync("completed managed transfer", TimeSpan.FromSeconds(10));
-            await serverProcess.WaitForStdoutContainsAsync("completed managed transfer", TimeSpan.FromSeconds(10));
-            await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
+            if (File.Exists(destinationPath))
+            {
+                File.Delete(destinationPath);
+            }
 
-            Assert.Equal(0, clientProcess.Process.ExitCode);
-            Assert.Equal(0, serverProcess.Process.ExitCode);
-            Assert.True(File.Exists(destinationPath));
-            Assert.Equal(payload, File.ReadAllBytes(destinationPath));
-            Assert.Contains("testcase=transfer", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("completed managed transfer", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("testcase=transfer", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("completed managed transfer", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        }
-        finally
-        {
-            TryDelete(sourcePath);
-            TryDelete(destinationPath);
-        }
+            try
+            {
+                await using HarnessProcess serverProcess = HarnessProcess.Start("server", "transfer", requests, harnessDll);
+                await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
+
+                await using HarnessProcess clientProcess = HarnessProcess.Start("client", "transfer", requests, harnessDll);
+                await clientProcess.WaitForStdoutContainsAsync("completed managed transfer", TimeSpan.FromSeconds(10));
+                await serverProcess.WaitForStdoutContainsAsync("completed managed transfer", TimeSpan.FromSeconds(10));
+                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
+
+                Assert.Equal(0, clientProcess.Process.ExitCode);
+                Assert.Equal(0, serverProcess.Process.ExitCode);
+                Assert.True(File.Exists(destinationPath));
+                Assert.Equal(payload, File.ReadAllBytes(destinationPath));
+                Assert.Contains("testcase=transfer", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("completed managed transfer", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("testcase=transfer", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("completed managed transfer", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            }
+            finally
+            {
+                TryDelete(sourcePath);
+                TryDelete(destinationPath);
+            }
+        });
     }
 
     private static void TryDelete(string path)

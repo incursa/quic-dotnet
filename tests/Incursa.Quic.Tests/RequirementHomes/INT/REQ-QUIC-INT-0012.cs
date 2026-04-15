@@ -13,25 +13,28 @@ public sealed class REQ_QUIC_INT_0012
     [Trait("Category", "Positive")]
     public async Task ManagedChildProcessHarnessEmitsAndConsumesExactlyOneRetryBeforeHandshakeCompletes()
     {
-        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-        string requests = $"https://127.0.0.1:{listenEndPoint.Port}/retry";
-        string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+        await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
+        {
+            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+            string requests = $"https://localhost:{listenEndPoint.Port}/retry";
+            string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
 
-        await using HarnessProcess serverProcess = HarnessProcess.Start("server", "retry", requests, harnessDll);
-        await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
+            await using HarnessProcess serverProcess = HarnessProcess.Start("server", "retry", requests, harnessDll);
+            await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
 
-        await using HarnessProcess clientProcess = HarnessProcess.Start("client", "retry", requests, harnessDll);
+            await using HarnessProcess clientProcess = HarnessProcess.Start("client", "retry", requests, harnessDll);
 
-        await clientProcess.WaitForStdoutContainsAsync("observed exactly one Retry transition", TimeSpan.FromSeconds(15));
-        await serverProcess.WaitForStdoutContainsAsync("issued exactly one Retry", TimeSpan.FromSeconds(15));
-        await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
+            await clientProcess.WaitForStdoutContainsAsync("observed exactly one Retry transition", TimeSpan.FromSeconds(15));
+            await serverProcess.WaitForStdoutContainsAsync("issued exactly one Retry", TimeSpan.FromSeconds(15));
+            await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
 
-        Assert.Equal(0, clientProcess.Process.ExitCode);
-        Assert.Equal(0, serverProcess.Process.ExitCode);
-        Assert.Contains("testcase=retry", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("observed exactly one Retry transition", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("testcase=retry", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("issued exactly one Retry", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Equal(0, clientProcess.Process.ExitCode);
+            Assert.Equal(0, serverProcess.Process.ExitCode);
+            Assert.Contains("testcase=retry", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("observed exactly one Retry transition", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("testcase=retry", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("issued exactly one Retry", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+        });
     }
 
     [Fact]

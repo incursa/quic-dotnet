@@ -267,22 +267,12 @@ public sealed class REQ_QUIC_INT_0008
     [Trait("Category", "Positive")]
     public async Task HarnessHandshakeTestcaseCompletesTheManagedBootstrapPath()
     {
-        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-        string requests = $"https://localhost:{listenEndPoint.Port}/handshake";
-        string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
-        using X509Certificate2 harnessCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
-        using ECDsa harnessPrivateKey = harnessCertificate.GetECDsaPrivateKey()!;
-        string certPath = Path.GetFullPath(InteropHarnessEnvironment.CertificatePath);
-        string privateKeyPath = Path.GetFullPath(InteropHarnessEnvironment.PrivateKeyPath);
-        string? originalCertificatePem = File.Exists(certPath) ? File.ReadAllText(certPath) : null;
-        string? originalPrivateKeyPem = File.Exists(privateKeyPath) ? File.ReadAllText(privateKeyPath) : null;
-
-        Directory.CreateDirectory(Path.GetDirectoryName(certPath)!);
-        File.WriteAllText(certPath, harnessCertificate.ExportCertificatePem());
-        File.WriteAllText(privateKeyPath, harnessPrivateKey.ExportPkcs8PrivateKeyPem());
-
-        try
+        await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
         {
+            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+            string requests = $"https://localhost:{listenEndPoint.Port}/handshake";
+            string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+
             await using HarnessProcess serverProcess = HarnessProcess.Start("server", "handshake", requests, harnessDll);
             await serverProcess.WaitForListeningAsync(TimeSpan.FromSeconds(10));
 
@@ -302,33 +292,7 @@ public sealed class REQ_QUIC_INT_0008
             Assert.DoesNotContain("unsupported", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("unsupported", serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("unsupported", clientProcess.Stderr, StringComparison.OrdinalIgnoreCase);
-        }
-        finally
-        {
-            if (originalCertificatePem is null)
-            {
-                if (File.Exists(certPath))
-                {
-                    File.Delete(certPath);
-                }
-            }
-            else
-            {
-                File.WriteAllText(certPath, originalCertificatePem);
-            }
-
-            if (originalPrivateKeyPem is null)
-            {
-                if (File.Exists(privateKeyPath))
-                {
-                    File.Delete(privateKeyPath);
-                }
-            }
-            else
-            {
-                File.WriteAllText(privateKeyPath, originalPrivateKeyPem);
-            }
-        }
+        });
     }
 
     [Fact]

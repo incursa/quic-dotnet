@@ -13,25 +13,28 @@ public sealed class REQ_QUIC_INT_0011
     [Trait("Category", "Positive")]
     public async Task ManagedChildProcessHarnessOpensAndAcceptsTheFirstApplicationStreamAfterHandshake()
     {
-        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-        string requests = $"https://127.0.0.1:{listenEndPoint.Port}/post-handshake-stream";
-        string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+        await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
+        {
+            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+            string requests = $"https://localhost:{listenEndPoint.Port}/post-handshake-stream";
+            string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
 
-        await using HarnessProcess serverProcess = HarnessProcess.Start("server", "post-handshake-stream", requests, harnessDll);
-        await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
+            await using HarnessProcess serverProcess = HarnessProcess.Start("server", "post-handshake-stream", requests, harnessDll);
+            await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
 
-        await using HarnessProcess clientProcess = HarnessProcess.Start("client", "post-handshake-stream", requests, harnessDll);
+            await using HarnessProcess clientProcess = HarnessProcess.Start("client", "post-handshake-stream", requests, harnessDll);
 
-        await clientProcess.WaitForStdoutContainsAsync("opened stream", TimeSpan.FromSeconds(10));
-        await serverProcess.WaitForStdoutContainsAsync("accepted stream", TimeSpan.FromSeconds(10));
-        await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(15));
+            await clientProcess.WaitForStdoutContainsAsync("opened stream", TimeSpan.FromSeconds(10));
+            await serverProcess.WaitForStdoutContainsAsync("accepted stream", TimeSpan.FromSeconds(10));
+            await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(15));
 
-        Assert.Equal(0, clientProcess.Process.ExitCode);
-        Assert.Equal(0, serverProcess.Process.ExitCode);
-        Assert.Contains("testcase=post-handshake-stream", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("opened stream", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("testcase=post-handshake-stream", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("accepted stream", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Equal(0, clientProcess.Process.ExitCode);
+            Assert.Equal(0, serverProcess.Process.ExitCode);
+            Assert.Contains("testcase=post-handshake-stream", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("opened stream", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("testcase=post-handshake-stream", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("accepted stream", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+        });
     }
 
     private static async Task WaitForExitAsync(
