@@ -1054,6 +1054,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B7-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0007.cs::TryApplyMaxStreamDataFrame_OpensBidirectionalStreamWhenPeerCreditArrives
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0007.cs::TryReceiveStopSendingFrame_OpensBidirectionalStreamWhenPeerStopsReceiving
 
 ## REQ-QUIC-RFC9000-S3P2-0008 Interpret MAX_STREAM_DATA on an unopened stream as peer opening
 Receiving a MAX_STREAM_DATA frame for an unopened stream MUST indicate that the remote peer has opened the stream and is providing flow control credit.
