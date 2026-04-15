@@ -1178,6 +1178,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B10-P7-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs::TryReceiveStreamFrame_EntersSizeKnownWhenFinArrives
 
 ## REQ-QUIC-RFC9000-S3P2-0017 Enter Data Recvd after all data arrives
 Once all data for the stream has been received, the receiving part MUST enter the Data Recvd state.
@@ -1192,6 +1194,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B11-P8-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs::TryReceiveStreamFrame_EntersDataRecvdAfterAllDataArrives
 
 ## REQ-QUIC-RFC9000-S3P2-0018 Discard further stream frames after all data is received
 After all data has been received, any STREAM or STREAM_DATA_BLOCKED frames for the stream MAY be discarded.

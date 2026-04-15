@@ -2145,6 +2145,9 @@
         "upstream_refs": [
           "RFC 9000 §3.2 RFC9000-S3.2-B10-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs::TryReceiveStreamFrame_EntersSizeKnownWhenFinArrives"
         ]
       }
     },
@@ -2171,6 +2174,9 @@
         "upstream_refs": [
           "RFC 9000 §3.2 RFC9000-S3.2-B11-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs::TryReceiveStreamFrame_EntersDataRecvdAfterAllDataArrives"
         ]
       }
     },
