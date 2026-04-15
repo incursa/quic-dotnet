@@ -323,6 +323,48 @@ function Remove-GitWorktreeAndBranch {
     }
 }
 
+function Remove-GitWorktreeOnly {
+    param(
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$WorktreePath
+    )
+
+    if (-not (Test-Path -LiteralPath $WorktreePath)) {
+        return
+    }
+
+    & $GitExecutable -C $RepoRoot worktree remove --force $WorktreePath | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "git worktree remove failed for $WorktreePath."
+    }
+}
+
+function Add-ExistingBranchWorktree {
+    param(
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$WorktreePath,
+        [Parameter(Mandatory = $true)][string]$BranchName
+    )
+
+    if (Test-GitWorktreeExists -WorktreePath $WorktreePath) {
+        return $WorktreePath
+    }
+
+    $parent = Split-Path -Path $WorktreePath -Parent
+    if (-not [string]::IsNullOrWhiteSpace($parent)) {
+        Ensure-Directory -Path $parent | Out-Null
+    }
+
+    & $GitExecutable -C $RepoRoot worktree add $WorktreePath $BranchName | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "git worktree add failed for $WorktreePath ($BranchName)."
+    }
+
+    return $WorktreePath
+}
+
 function Get-GitHead {
     param(
         [Parameter(Mandatory = $true)][string]$GitExecutable,
@@ -1288,9 +1330,6 @@ try {
             $contractPath = Resolve-ExistingPath -Path $state.active_lane.contract_path
             $workerContract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json -Depth 100
             $currentBranch = Get-GitCurrentBranch -GitExecutable $gitExecutable -RepositoryRoot $resolvedRepoRoot
-            if ($currentBranch -ne $workerContract.target_branch -and -not $Force) {
-                throw "Repository must be on '$($workerContract.target_branch)' before merging. Current branch: $currentBranch"
-            }
 
             if (-not (Test-GitClean -GitExecutable $gitExecutable -RepositoryRoot $resolvedRepoRoot) -and -not $Force) {
                 throw "Repository must be clean before merging."
@@ -1302,8 +1341,24 @@ try {
                 throw "No commits are available to cherry-pick for lane '$($workerContract.lane_id)'."
             }
 
-            Test-LanePreflightMerge -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot -WorkerContract $workerContract -CommitShas $commitShas -StateDirectory $resolvedStateDirectory
-            Complete-WorkerLaneMerge -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot -WorkerContract $workerContract -CommitShas $commitShas
+            $mergeRepoRoot = $resolvedRepoRoot
+            $temporaryMergeWorktreePath = ""
+            try {
+                if ($currentBranch -ne $workerContract.target_branch) {
+                    $mergeTargetsRoot = Ensure-Directory -Path (Join-Path $resolvedStateDirectory "merge-targets")
+                    $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+                    $temporaryMergeWorktreePath = Join-Path $mergeTargetsRoot "$($workerContract.lane_id)-target-$timestamp"
+                    $mergeRepoRoot = Add-ExistingBranchWorktree -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot -WorktreePath $temporaryMergeWorktreePath -BranchName $workerContract.target_branch
+                }
+
+                Test-LanePreflightMerge -GitExecutable $gitExecutable -RepoRoot $mergeRepoRoot -WorkerContract $workerContract -CommitShas $commitShas -StateDirectory $resolvedStateDirectory
+                Complete-WorkerLaneMerge -GitExecutable $gitExecutable -RepoRoot $mergeRepoRoot -WorkerContract $workerContract -CommitShas $commitShas
+            }
+            finally {
+                if (-not [string]::IsNullOrWhiteSpace($temporaryMergeWorktreePath)) {
+                    Remove-GitWorktreeOnly -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot -WorktreePath $temporaryMergeWorktreePath
+                }
+            }
 
             if ($workerContract.lane_id -eq "trace-metadata-reconciliation") {
                 $state.pending_reconciliation_lane_ids = @()
