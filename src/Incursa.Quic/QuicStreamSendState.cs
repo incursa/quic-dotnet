@@ -7,4 +7,6 @@ internal enum QuicStreamSendState
     Send = 2,
     DataSent = 3,
     ResetSent = 4,
+    DataRecvd = 5,
+    ResetRecvd = 6,
 }

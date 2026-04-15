@@ -44,7 +44,7 @@ public sealed class QuicStream : Stream
             readsClosed.TrySetResult(null);
         }
 
-        if (!canWrite || snapshot.SendState == QuicStreamSendState.DataSent)
+        if (!canWrite || snapshot.SendState is QuicStreamSendState.DataSent or QuicStreamSendState.DataRecvd or QuicStreamSendState.ResetSent or QuicStreamSendState.ResetRecvd)
         {
             writesClosed.TrySetResult(null);
         }

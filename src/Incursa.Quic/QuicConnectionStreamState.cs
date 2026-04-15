@@ -241,6 +241,12 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
+        if (state.SendState is QuicStreamSendState.DataRecvd or QuicStreamSendState.ResetRecvd)
+        {
+            errorCode = QuicTransportErrorCode.StreamStateError;
+            return false;
+        }
+
         ulong endExclusive = offset + (ulong)length;
         if (state.SendState == QuicStreamSendState.ResetSent)
         {
@@ -457,12 +463,14 @@ internal sealed class QuicConnectionStreamState
         errorCode = default;
 
         QuicStreamId streamId = new(streamIdValue);
-        if (!TryResolveSendCapableStream(streamId, allowImplicitPeerOpen: false, out StreamState? state, out errorCode))
+        if (!TryResolveOrOpenLocalSendCapableStream(streamId, out StreamState? state, out errorCode))
         {
             return false;
         }
 
-        if (state.SendState is QuicStreamSendState.DataSent or QuicStreamSendState.ResetSent)
+        if (state.SendState is QuicStreamSendState.ResetSent
+            or QuicStreamSendState.DataRecvd
+            or QuicStreamSendState.ResetRecvd)
         {
             errorCode = QuicTransportErrorCode.StreamStateError;
             return false;
@@ -488,7 +496,10 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
-        if (state.SendState is QuicStreamSendState.DataSent or QuicStreamSendState.ResetSent)
+        if (state.SendState is QuicStreamSendState.DataSent
+            or QuicStreamSendState.DataRecvd
+            or QuicStreamSendState.ResetSent
+            or QuicStreamSendState.ResetRecvd)
         {
             errorCode = QuicTransportErrorCode.StreamStateError;
             return false;
@@ -611,6 +622,26 @@ internal sealed class QuicConnectionStreamState
 
         state.ReceiveState = QuicStreamReceiveState.ResetRead;
         return true;
+    }
+
+    public bool TryAcknowledgeSendCompletion(ulong streamIdValue)
+    {
+        if (!streams.TryGetValue(streamIdValue, out StreamState? state))
+        {
+            return false;
+        }
+
+        switch (state.SendState)
+        {
+            case QuicStreamSendState.DataSent:
+                state.SendState = QuicStreamSendState.DataRecvd;
+                return true;
+            case QuicStreamSendState.ResetSent:
+                state.SendState = QuicStreamSendState.ResetRecvd;
+                return true;
+            default:
+                return false;
+        }
     }
 
     public bool TryGetReceiveAbortErrorCode(ulong streamIdValue, out ulong applicationErrorCode)
@@ -746,6 +777,56 @@ internal sealed class QuicConnectionStreamState
         return false;
     }
 
+    private bool TryResolveOrOpenLocalSendCapableStream(QuicStreamId streamId, [NotNullWhen(true)] out StreamState? state, out QuicTransportErrorCode errorCode)
+    {
+        errorCode = default;
+        if (streams.TryGetValue(streamId.Value, out state))
+        {
+            if (!state.HasSendPart)
+            {
+                errorCode = QuicTransportErrorCode.StreamStateError;
+                return false;
+            }
+
+            return true;
+        }
+
+        if (!IsLocalInitiated(streamId))
+        {
+            errorCode = QuicTransportErrorCode.StreamStateError;
+            return false;
+        }
+
+        bool bidirectional = streamId.IsBidirectional;
+        if (!TryPeekLocalStream(bidirectional, out QuicStreamId nextStreamId, out QuicStreamsBlockedFrame blockedFrame))
+        {
+            _ = blockedFrame;
+            errorCode = QuicTransportErrorCode.StreamLimitError;
+            return false;
+        }
+
+        if (nextStreamId.Value != streamId.Value)
+        {
+            errorCode = QuicTransportErrorCode.StreamStateError;
+            return false;
+        }
+
+        if (!TryOpenLocalStream(bidirectional, out QuicStreamId committedStreamId, out QuicStreamsBlockedFrame committedBlockedFrame))
+        {
+            _ = committedBlockedFrame;
+            errorCode = QuicTransportErrorCode.StreamLimitError;
+            return false;
+        }
+
+        if (committedStreamId.Value != streamId.Value || !streams.TryGetValue(streamId.Value, out state))
+        {
+            errorCode = QuicTransportErrorCode.StreamStateError;
+            return false;
+        }
+
+        return true;
+    }
+
     private bool TryOpenIncomingStreamSequence(QuicStreamId streamId, [NotNullWhen(true)] out StreamState? state, out QuicTransportErrorCode errorCode)
     {
         state = default;
@@ -835,12 +916,20 @@ internal sealed class QuicConnectionStreamState
         return isServer ? streamId.IsClientInitiated : streamId.IsServerInitiated;
     }
 
+    private bool IsLocalInitiated(QuicStreamId streamId)
+    {
+        return isServer ? streamId.IsServerInitiated : streamId.IsClientInitiated;
+    }
+
     private static bool IsStreamReceiveClosed(QuicStreamReceiveState receiveState)
         => receiveState is QuicStreamReceiveState.DataRead or QuicStreamReceiveState.ResetRead;
 
     private static bool IsStreamSendClosed(QuicStreamSendState sendState)
     {
-        return sendState is QuicStreamSendState.DataSent or QuicStreamSendState.ResetSent;
+        return sendState is QuicStreamSendState.DataSent
+            or QuicStreamSendState.DataRecvd
+            or QuicStreamSendState.ResetSent
+            or QuicStreamSendState.ResetRecvd;
     }
 
     private static bool IsPeerStreamFullyClosed(StreamState state)
