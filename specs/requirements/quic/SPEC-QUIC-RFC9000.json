@@ -13605,6 +13605,10 @@
         "upstream_refs": [
           "RFC 9000 §10.2 RFC9000-S10.2-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0004.cs::TerminalLifetimeExpiryDiscardsTheConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0004.cs::EnteringTerminalStateDoesNotDiscardImmediately"
         ]
       }
     },
@@ -13764,6 +13768,11 @@
         "upstream_refs": [
           "RFC 9000 §10.2 RFC9000-S10.2-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0010.cs::ReceivedConnectionCloseFrame_TransitionsTheRuntimeToDraining",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0010.cs::ReceivedConnectionCloseFrame_WhileAlreadyDrainingDoesNotChangeStateAgain",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0010.cs::ReceivedConnectionCloseFrame_WhileClosingPreservesTheTerminalDeadline"
         ]
       }
     },
