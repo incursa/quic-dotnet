@@ -7356,6 +7356,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.2 RFC9000-S10.2-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0001.cs::EnteringClosingOrDrainingState_ArmsTheTerminalLifetimeAtThreeTimesTheCurrentPto
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0001.cs::ClosingLifetimeIgnoresIdleTimeoutConfiguration
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0001.cs::ClosingLifetimeSaturatesWhenTheTerminalDeadlineWouldOverflow
 
 ## REQ-QUIC-RFC9000-S10P2-0002 That have some alternative means to ensure that late-arriving packets do not induce a response, such as those that are able to close the UDP socket, MAY end these states earlier to allow for faster resource recovery
 Endpoints that have some alternative means to ensure that late-arriving packets do not induce a response, such as those that are able to close the UDP socket, MAY end these states earlier to allow for faster resource recovery.

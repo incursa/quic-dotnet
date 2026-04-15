@@ -13522,6 +13522,11 @@
         "upstream_refs": [
           "RFC 9000 §10.2 RFC9000-S10.2-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0001.cs::EnteringClosingOrDrainingState_ArmsTheTerminalLifetimeAtThreeTimesTheCurrentPto",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0001.cs::ClosingLifetimeIgnoresIdleTimeoutConfiguration",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0001.cs::ClosingLifetimeSaturatesWhenTheTerminalDeadlineWouldOverflow"
         ]
       }
     },
