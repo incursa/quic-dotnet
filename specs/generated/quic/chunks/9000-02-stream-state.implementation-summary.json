@@ -13,9 +13,9 @@
   "completion_status": "partial_with_explicit_blockers",
   "requirements_in_scope": {
     "total": 66,
-    "implemented_and_tested": 18,
+    "implemented_and_tested": 19,
     "partial": 8,
-    "blocked": 40
+    "blocked": 39
   },
   "files_changed": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0003.cs",
@@ -307,12 +307,18 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0009",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing ordered reassembly, receive buffering, final-size tracking, MAX_STREAM_DATA generation, and application delivery/reset notification.",
-      "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0009.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0009.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0009.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Focused proof now covers the unopened-stream STOP_SENDING interpretation and the locally initiated unopened-stream error boundary."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0010",

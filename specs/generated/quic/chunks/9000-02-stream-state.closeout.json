@@ -16,9 +16,9 @@
   "audit_result": "trace-consistent-with-implemented-partial-and-blocked-items",
   "requirements_in_scope": {
     "total": 66,
-    "covered": 18,
+    "covered": 19,
     "partially_implemented": 8,
-    "deferred": 40,
+    "deferred": 39,
     "uncovered": 0,
     "stale_ids": 0,
     "wrong_ids": 0
@@ -115,6 +115,7 @@
       "REQ-QUIC-RFC9000-S3P2-0005",
       "REQ-QUIC-RFC9000-S3P2-0006",
       "REQ-QUIC-RFC9000-S3P2-0008",
+      "REQ-QUIC-RFC9000-S3P2-0009",
       "REQ-QUIC-RFC9000-S3P2-0011",
       "REQ-QUIC-RFC9000-S3P2-0014",
       "REQ-QUIC-RFC9000-S3P2-0015",
@@ -147,7 +148,6 @@
       "REQ-QUIC-RFC9000-S3P1-0016",
       "REQ-QUIC-RFC9000-S3P1-0017",
       "REQ-QUIC-RFC9000-S3P2-0004",
-      "REQ-QUIC-RFC9000-S3P2-0009",
       "REQ-QUIC-RFC9000-S3P2-0010",
       "REQ-QUIC-RFC9000-S3P2-0012",
       "REQ-QUIC-RFC9000-S3P2-0018",
@@ -417,7 +417,7 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0009",
-      "reason": "The helper layer covers receive buffering and final-size bookkeeping, but the remaining receive-orchestration clauses still need application-facing delivery and reset coordination."
+      "reason": "Focused proof now covers the unopened-stream STOP_SENDING interpretation and the locally initiated unopened-stream error boundary."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0010",

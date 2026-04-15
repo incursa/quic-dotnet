@@ -1085,6 +1085,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B7-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0009.cs::TryReceiveStopSendingFrame_OpensUnopenedPeerBidirectionalStreamAndRecordsPeerAbortIntent
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0009.cs::TryReceiveStopSendingFrame_RejectsLocallyInitiatedUnopenedStreams
 
 ## REQ-QUIC-RFC9000-S3P2-0010 Allow reordered peer flow-control or stop-sending frames
 Either frame MAY arrive before a STREAM or STREAM_DATA_BLOCKED frame if packets are lost or reordered.
