@@ -25,4 +25,4 @@ pwsh -NoProfile -File scripts/compliance/update-notice.ps1
 
 `Validate-SpecTraceJson.ps1` downloads the upstream SpecTrace schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) by default, so that validation step requires network access unless you override `-SchemaUri`.
 
-Unless a file already carries a different notice, treat contributions as licensed under the repository MIT license.
+Unless a file already carries a different notice, treat contributions as licensed under the repository Apache 2.0 license.

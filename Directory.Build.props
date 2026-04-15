@@ -5,7 +5,7 @@
     <Version>1.0.0</Version>
     <Authors>Samuel McAravey</Authors>
     <Company>Incursa</Company>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageIcon>package-icon.png</PackageIcon>
     <PackageProjectUrl>https://github.com/incursa/quic-dotnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/incursa/quic-dotnet</RepositoryUrl>
