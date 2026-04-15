@@ -3672,6 +3672,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.3 RFC9000-S5.3-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P3-0001.cs::ConnectAsync_OpensARealLoopbackConnectionFromTheClientRole
 
 ## REQ-QUIC-RFC9000-S5P3-0002 Allow clients to enable Early Data
 When implementing the client role, an application protocol MAY enable Early Data when available.
@@ -3714,6 +3716,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.3 RFC9000-S5.3-B8-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P3-0004.cs::ListenAsync_OpensARealLoopbackListenerForTheServerRole
 
 ## REQ-QUIC-RFC9000-S5P3-0005 Allow servers to embed application data in resumption tickets
 If Early Data is supported, an application protocol MAY embed application-controlled data in the TLS resumption ticket sent to the client.
@@ -3788,6 +3792,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.3 RFC9000-S5.3-B14-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P3-0009.cs::PeerHandshakeTranscriptCompleted_TracksOngoingAndCompletedStates
 
 ## REQ-QUIC-RFC9000-S5P3-0010 Allow connection liveness maintenance
 In either role, an application protocol MAY keep a connection from silently closing by either generating PING frames or requesting that the transport send additional frames before the idle timeout expires.
@@ -3816,6 +3822,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.3 RFC9000-S5.3-B16-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P3-0011.cs::CloseAsync_ProjectsTheRuntimeTerminalState
 
 ## REQ-QUIC-RFC9000-S6-0001 Size the first datagram for multi-version support
 Clients that support multiple QUIC versions SHOULD ensure that the first UDP datagram they send is sized to the largest of the minimum datagram sizes from all versions they support, using PADDING frames as necessary.
@@ -7402,6 +7410,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.2 RFC9000-S10.2-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0004.cs::TerminalLifetimeExpiryDiscardsTheConnection
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0004.cs::EnteringTerminalStateDoesNotDiscardImmediately
 
 ## REQ-QUIC-RFC9000-S10P2-0005 Send a Stateless Reset in response to any further incoming packets belonging to this connection
 The endpoint MAY send a Stateless Reset in response to any further incoming packets belonging to this connection.
@@ -7489,6 +7500,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.2 RFC9000-S10.2-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0010.cs::ReceivedConnectionCloseFrame_TransitionsTheRuntimeToDraining
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0010.cs::ReceivedConnectionCloseFrame_WhileAlreadyDrainingDoesNotChangeStateAgain
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0010.cs::ReceivedConnectionCloseFrame_WhileClosingPreservesTheTerminalDeadline
 
 ## REQ-QUIC-RFC9000-S10P2-0011 Close immediately on protocol violation
 Violations of the protocol MUST lead to an immediate close.
