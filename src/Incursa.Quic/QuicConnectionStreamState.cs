@@ -496,8 +496,7 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
-        if (state.SendState is QuicStreamSendState.DataSent
-            or QuicStreamSendState.DataRecvd
+        if (state.SendState is QuicStreamSendState.DataRecvd
             or QuicStreamSendState.ResetSent
             or QuicStreamSendState.ResetRecvd)
         {
