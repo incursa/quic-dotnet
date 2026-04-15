@@ -63,6 +63,39 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0016
     [Requirement("REQ-QUIC-RFC9000-S13P3-0016")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void TryReceiveResetStreamFrame_SendsTheUpdatedConnectionMaximumDataWhenTheResetReleasesBufferedBytes()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 16,
+            peerBidirectionalReceiveLimit: 8);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0E, 1, [0x11, 0x22], offset: 0),
+            out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(2UL, state.ConnectionAccountedBytesReceived);
+
+        Assert.True(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(streamId: 1, applicationProtocolErrorCode: 0x99, finalSize: 5),
+            out QuicMaxDataFrame maxDataFrame,
+            out errorCode));
+
+        Assert.Equal(default, errorCode);
+        Assert.Equal(18UL, maxDataFrame.MaximumData);
+        Assert.Equal(18UL, state.ConnectionReceiveLimit);
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(5UL, snapshot.FinalSize);
+        Assert.Equal(5UL, snapshot.AccountedBytesReceived);
+        Assert.Equal(QuicStreamReceiveState.ResetRecvd, snapshot.ReceiveState);
+        Assert.Equal(5UL, state.ConnectionAccountedBytesReceived);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0016")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryRegisterLoss_QueuesTheMostRecentMaxDataPacketForRepairUntilAcknowledged()
     {
         QuicConnectionSendRuntime runtime = new();
