@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "ARC-QUIC-INT-0005",
   "artifact_type": "architecture",
-  "status": "landed",
+  "status": "implemented",
   "title": "QUIC Interop Retry Child-Process Contract Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",

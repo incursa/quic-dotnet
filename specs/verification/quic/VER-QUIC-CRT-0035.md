@@ -18,7 +18,7 @@ Focused smoke tests and dependency/serialization inspection.
 
 - The repository builds successfully on net10.0.
 - REQ-QUIC-CRT-0134, REQ-QUIC-CRT-0135, and REQ-QUIC-CRT-0136 remain landed prerequisites.
-- The qlog-dotnet sources are available at https://github.com/incursa/qlog-dotnet.
+- The qlog-dotnet sibling repository is available at C:\src\incursa\qlog-dotnet.
 
 ## Procedure or Approach
 
@@ -42,18 +42,17 @@ The library exposes a narrow opt-in host-facing qlog capture path that collects 
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0138.cs
 - tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj
 - Incursa.Quic.slnx
-- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\QlogFile.cs
-- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\QlogTrace.cs
-- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\Serialization\Json\QlogJsonSerializer.cs
-- https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\Serialization\Json\QlogJsonTextSequenceSerializer.cs
+- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\QlogFile.cs
+- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\QlogTrace.cs
+- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\Serialization\Json\QlogJsonSerializer.cs
+- C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\Serialization\Json\QlogJsonTextSequenceSerializer.cs
 
 ## Status
 
-landed
+passed
 
 ## Related Artifacts
 
 - SPEC-QUIC-CRT
 - ARC-QUIC-CRT-0032
 - WI-QUIC-CRT-0035
-

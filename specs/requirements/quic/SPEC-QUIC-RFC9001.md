@@ -165,8 +165,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §3 RFC9001-S3-B8-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0008.cs::RuntimeOwnsTlsProducedHandshakeBytesBeforePacketization
 
 Notes:
 - The source sentence also says QUIC provides TLS a reliable stream abstraction.
@@ -184,8 +182,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §3 RFC9001-S3-B8-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0009.cs::RuntimeReassemblesOutOfOrderCryptoFramesByOffset
 
 Notes:
 - This is the other half of the first interaction sentence.
@@ -241,7 +237,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryFormatStreamFrame_RejectsInvalidTypesAndOffsetMismatches
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0012.cs::TryFormatStreamFrame_RoundTripsAValidStreamFrame
 
 Notes:
 - The source sentence allows STREAM frames or other frame types; the open set is preserved.
@@ -261,7 +256,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-4
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0001.cs::RuntimeCarriesPeerHandshakeDataThroughCryptoFramesAndRejectsMalformedProgression
 
 ## REQ-QUIC-RFC9001-S4-0002 Define CRYPTO frame boundaries
 Each CRYPTO frame MUST consist of a contiguous block of handshake data identified by an offset and length.
@@ -294,8 +288,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §4 RFC9001-S4-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs::RuntimeFormatsOutboundHandshakeCryptoBytesIntoProtectedHandshakePackets
 
 ## REQ-QUIC-RFC9001-S4-0004 Package and encrypt CRYPTO frames
 Those frames MUST be encrypted under the current encryption level.
@@ -310,8 +302,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §4 RFC9001-S4-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs::TryOpenHandshakePacket_RejectsWrongPacketProtectionMaterial
 
 ## REQ-QUIC-RFC9001-S4-0005 Deliver handshake data reliably
 Once TLS handshake data has been delivered to QUIC, QUIC MUST deliver it reliably.
@@ -326,8 +316,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §4 RFC9001-S4-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs::RuntimeOpensHandshakePacketsAndFeedsTheBridgeDriverWithCryptoBytes
 
 ## REQ-QUIC-RFC9001-S4-0006 Associate TLS-produced chunks with current keys
 Each chunk of data that is produced by TLS MUST be associated with the set of keys that TLS is currently using.
@@ -342,8 +330,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §4 RFC9001-S4-B2-P1-S4
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs::SenderRuntimePreservesCryptoMetadataWhenTrackingSentPacket
 
 ## REQ-QUIC-RFC9001-S4-0007 Retransmit with the same keys
 If QUIC needs to retransmit that data, it MUST use the same keys even if TLS has already updated to newer keys.
@@ -358,8 +344,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §4 RFC9001-S4-B2-P1-S5
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs::RetransmissionPlansPreserveTheOriginalCryptoMetadata
 
 ## REQ-QUIC-RFC9001-S4-0008 Map encryption levels to packet number spaces
 Each encryption level MUST correspond to a packet number space.
@@ -466,11 +450,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0003.cs::TryFormatVersionNegotiationResponse_WritesAStatelessParseablePacket
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0003.cs::TryParseVersionNegotiation_ExposesVersionListWithoutProtectionState
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0003.cs::TryParseVersionNegotiation_RejectsOrdinaryProtectedLongHeaders
 
 ## REQ-QUIC-RFC9001-S5-0004 Protect Retry packets with AEAD_AES_128_GCM
 Retry packets MUST use AEAD_AES_128_GCM to provide protection against accidental modification and limit the entities that can produce a valid Retry.
@@ -506,8 +485,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §5 RFC9001-S5-B6-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0005.cs::TryCreate_UsesAes128GcmForInitialPackets
 
 ## REQ-QUIC-RFC9001-S5-0006 Derive Initial keys from the first client Initial
 The keys for Initial packets MUST be derived from the Destination Connection ID field of the first Initial packet sent by the client.
@@ -522,8 +499,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §5 RFC9001-S5-B6-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs::TryDeriveInitialKeyMaterial_UsesTheFirstClientInitialDcid
 
 ## REQ-QUIC-RFC9001-S5-0007 Protect all other packets cryptographically
 All other packets MUST have strong cryptographic protections for confidentiality and integrity using keys and algorithms negotiated by TLS.
@@ -559,8 +534,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §5 RFC9001-S5-B8-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs::TryProtectInitialPacket_AndTryOpenInitialPacket_RoundTrip
 
 ## REQ-QUIC-RFC9001-S5-0009 Treat Initial packets as lacking confidentiality and integrity protection
 Initial packets MUST NOT be considered to have confidentiality or integrity protection.
@@ -575,8 +548,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §5 RFC9001-S5-B8-P3-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0009.cs::TryProtectInitialPacket_LeavesTheLongHeaderConnectionIdsVisible
 
 ## REQ-QUIC-RFC9001-S5-0010 Use a fixed key for Retry packets
 Retry packets MUST use a fixed key.
@@ -621,10 +592,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0002.cs::TryParseShortHeader_ReportsTheKeyPhaseBit
 
 ## REQ-QUIC-RFC9001-S6-0003 Initialize Key Phase to zero
 The Key Phase bit MUST initially be set to 0 for the first set of 1-RTT packets.
@@ -737,8 +704,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B6-P5-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs::KeyUpdateViolationsBecomeConnectionErrors
 
 ## REQ-QUIC-RFC9001-S7-0001 Use caution with unauthenticated Initial data
 Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.
@@ -767,8 +732,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §7 RFC9001-S7-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-7
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0002.cs::TryOpenHandshakePacket_RejectsMalformedCryptoFramePayloads
 
 Notes:
 - This restates the causal consequence in the source sentence as a normative invariant.
@@ -786,11 +749,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §8 RFC9001-S8-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-8
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0001.cs::QuicTransportParametersCanBeCarriedThroughTheCodecAndCommitted
 
 ## REQ-QUIC-RFC9001-S8-0002 Authenticate QUIC transport parameters
 The TLS handshake MUST authenticate values for QUIC transport parameters.
@@ -805,8 +763,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §8 RFC9001-S8-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-8
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs::BridgeStateCommitsSnapshotsOnlyAfterPeerFinishedVerification
 
 ## REQ-QUIC-RFC9001-S9-0001 Apply TLS security considerations to QUIC
 All security considerations that apply to TLS MUST also apply to the use of TLS in QUIC.
@@ -838,8 +794,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §10 RFC9001-S10-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-10
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S10-0001.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata
 
 Notes:
 - The source sentence reports the completed registration in past tense; this clause restates the registry action normatively.
@@ -885,8 +839,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B RFC9001-SB-B10-P2-S4
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcm
 
 ## REQ-QUIC-RFC9001-SB-0002 Require AEAD usage limits
 Any AEAD that is used with QUIC MUST have limits on use that ensure that both confidentiality and integrity are preserved.
@@ -904,7 +856,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds
   - tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0002.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations
 
 ## REQ-QUIC-RFC9001-SBP1P1-0001 Limit GCM confidentiality at 2^11 bytes
 Endpoints that do not send packets larger than 2^11 bytes MUST NOT protect more than 2^28 packets in a single connection.
@@ -919,8 +870,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.1 RFC9001-SB.1.1-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcmConfidentiality
 
 ## REQ-QUIC-RFC9001-SBP1P1-0002 Limit GCM confidentiality at 2^16 bytes
 Endpoints that allow packets as large as 2^16 bytes MUST NOT protect more than 2^23 packets in a single connection.
@@ -935,8 +884,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.1 RFC9001-SB.1.1-B6-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0002.cs::TryGetUsageLimits_UsesTheLargePacketSizeProfileForGcmConfidentiality
 
 ## REQ-QUIC-RFC9001-SBP1P2-0001 Limit GCM integrity at 2^11 bytes
 Endpoints that do not attempt to remove protection from packets larger than 2^11 bytes MUST NOT attempt to remove protection from more than 2^57 packets.
@@ -951,8 +898,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.2 RFC9001-SB.1.2-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcmIntegrity
 
 ## REQ-QUIC-RFC9001-SBP1P2-0002 Limit GCM integrity at unrestricted size
 Endpoints that do not restrict the size of processed packets MUST NOT attempt to remove protection from more than 2^52 packets.
@@ -967,8 +912,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.2 RFC9001-SB.1.2-B6-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0002.cs::TryGetUsageLimits_UsesTheLargePacketSizeProfileForGcmIntegrity
 
 ## REQ-QUIC-RFC9001-SBP1P2-0003 Apply one GCM integrity limit to both functions
 The same integrity limit SHOULD be applied to AEAD_AES_128_GCM and AEAD_AES_256_GCM.
@@ -985,7 +928,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0003.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm
 
 ## REQ-QUIC-RFC9001-SBP2-0001 Limit CCM at 2^11 bytes
 Endpoints that limit packets to 2^11 bytes MUST have both confidentiality and integrity limits of 2^26.5 packets.
@@ -1000,8 +942,6 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.2 RFC9001-SB.2-B12-P8-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForCcm
 
 ## REQ-QUIC-RFC9001-SBP2-0002 Limit CCM at unrestricted packet size
 Endpoints that do not restrict packet size MUST have a limit of 2^21.5 packets.
@@ -1016,5 +956,3 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.2 RFC9001-SB.2-B12-P8-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0002.cs::TryGetUsageLimits_UsesTheUnrestrictedPacketSizeProfileForCcm

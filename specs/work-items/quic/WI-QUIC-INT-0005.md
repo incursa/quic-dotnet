@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-INT-0005"
 artifact_type: "work_item"
 title: "QUIC Interop Retry Child-Process Work Item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-INT-0012"
@@ -33,6 +33,13 @@ Define and land the smallest child-process Retry contract that proves the server
 ## Design Inputs
 
 - ARC-QUIC-INT-0005
+
+## Planned Changes
+
+- Keep the `retry` testcase branch on the managed child-process path in `InteropHarnessRunner`.
+- Sequence the server to emit exactly one valid Retry and the client to replay the Initial exactly once on the real harness path.
+- Advance the managed handshake only after the post-Retry path completes and keep the harness exit code truthful.
+- Add focused requirement-home coverage for one-valid-Retry issuance, one-replay client behavior, and successful post-Retry handshake completion without widening transfer or public API scope.
 
 ## Out of Scope
 

@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0033"
 artifact_type: "work_item"
 title: "QUIC qlog adapter package boundary work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0136"
@@ -80,15 +80,14 @@ This slice is observational only and lives in a sibling adapter package. The tra
 - [`src/Incursa.Quic/QuicClientConnectionHost.cs`](../../../src/Incursa.Quic/QuicClientConnectionHost.cs)
 - [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)
 - [`src/Incursa.Quic/Incursa.Quic.csproj`](../../../src/Incursa.Quic/Incursa.Quic.csproj)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\README.md`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\README.md)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\README.md`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\README.md)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/specs\generated\qlog\scope-boundary.md`](https://github.com/incursa/qlog-dotnet/blob/main/specs\generated\qlog\scope-boundary.md)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.cs`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.cs)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.TransportActivity.cs`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.TransportActivity.cs)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.StateAndRecovery.cs`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QlogQuicEvents.StateAndRecovery.cs)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicLifecyclePayloads.cs`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicLifecyclePayloads.cs)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicNegotiationPayloads.cs`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicNegotiationPayloads.cs)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicTransportActivityPayloads.cs`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicTransportActivityPayloads.cs)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicStateAndRecoveryPayloads.cs`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog.Quic\QuicStateAndRecoveryPayloads.cs)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\README.md`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\README.md)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\README.md`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\README.md)
+- [`C:\src\incursa\qlog-dotnet\specs\generated\qlog\scope-boundary.md`](C:\src\incursa\qlog-dotnet\specs\generated\qlog\scope-boundary.md)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.cs`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.cs)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.TransportActivity.cs`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.TransportActivity.cs)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.StateAndRecovery.cs`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QlogQuicEvents.StateAndRecovery.cs)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicLifecyclePayloads.cs`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicLifecyclePayloads.cs)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicNegotiationPayloads.cs`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicNegotiationPayloads.cs)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicTransportActivityPayloads.cs`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicTransportActivityPayloads.cs)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicStateAndRecoveryPayloads.cs`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog.Quic\QuicStateAndRecoveryPayloads.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0136.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0136.cs)
-

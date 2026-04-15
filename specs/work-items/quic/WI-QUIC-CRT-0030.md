@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0030"
 artifact_type: "work_item"
 title: "QUIC CRT client-side ClientHello PSK-attempt work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0132"

@@ -8,10 +8,11 @@
     "SPEC-QUIC-CRT"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "status": "landed",
+  "status": "complete",
   "domain": "quic",
   "summary": "Capture the minimum dormant early-data prerequisite material behind the detached resumption carrier while keeping early data explicitly closed and the accepted resumption boundary unchanged.",
   "verification_plan": "Run focused requirement-home tests for positive capture, dormant client setup storage, missing early-data-signal absence, closed early-data admission, the public no-0-RTT guard, and the accepted-resumption regression; then run the relevant CRT/API/INT guard set, the full `REQ_QUIC_CRT_` sweep, and SpecTrace render/validation checks.",
+  "planned_changes": "- Retain the ticket `max_early_data_size` hint together with the cloned peer transport-parameter snapshot behind the dormant detached resumption carrier.\n- Keep the captured early-data prerequisite material internal so no public resumption or early-data promise widens.\n- Leave actual 0-RTT packet emission, receive handling, anti-replay, and key-update behavior for later traced slices.\n- Add focused requirement-home coverage proving the retained dormant prerequisite state and the still-closed early-data boundary.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",

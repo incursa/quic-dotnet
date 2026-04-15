@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0038",
   "artifact_type": "work_item",
-  "status": "landed",
+  "status": "complete",
   "title": "QUIC first client-side 0-RTT packet-emission attempt work item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -19,6 +19,7 @@
   "addresses": [
     "REQ-QUIC-CRT-0141"
   ],
+  "planned_changes": "- Admit the first bounded client-side 0-RTT send attempt only when the dormant carrier still holds both resumption credential material and early-data prerequisite material.\n- Emit a protected client 0-RTT application packet on that narrow happy path and fall back cleanly when prerequisite material is absent.\n- Keep receive handling, anti-replay, key update, transfer, retry, and public API widening out of scope.\n- Add focused requirement-home coverage for the admitted attempt, the fallback path, and the still-narrow ownership boundary.",
   "completion_notes": "The managed client/runtime path now admits the first bounded client-side 0-RTT send attempt from the dormant carrier when both prerequisite materials are present, emits a protected client 0-RTT application packet, and falls back cleanly when the carrier or derived material is absent while keeping 0-RTT receive handling, anti-replay, key update, transfer/retry, and public API widening out of scope.",
   "verification_plan": "Run focused requirement-home tests for positive first-send admission, negative missing-carrier fallback, negative missing-prerequisite fallback, distinct 0-RTT-vs-1-RTT protection material, and the public no-broad-support guard; add fuzz coverage for the packet/protection boundary and the protected-packet formatter; run the permanent BenchmarkDotNet suite for the 0-RTT send hot path; then run the current CRT/API/INT guard set, the full `REQ_QUIC_CRT_` sweep, and SpecTrace render/validation checks.",
   "out_of_scope": [

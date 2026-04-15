@@ -33,13 +33,19 @@
   },
   "Validation": {
     "LinkExclude": [
+      ".artifacts/interop-autopilot/",
+      ".dotnet-home/",
       "artifacts/spec-trace-migration/backups/",
       "artifacts/spec-trace-json-migration/backups/",
+      "specs/generated/",
       "specs_old/"
     ],
     "DocExclude": [
+      ".artifacts/interop-autopilot/",
+      ".dotnet-home/",
       "artifacts/spec-trace-migration/backups/",
       "artifacts/spec-trace-json-migration/backups/",
+      "specs/generated/",
       "specs_old/"
     ]
   },

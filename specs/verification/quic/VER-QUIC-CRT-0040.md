@@ -6,6 +6,10 @@
 
 Verify that accepted peer early-data disposition is observed from EncryptedExtensions and retains dormant ZeroRtt packet-protection material, rejected disposition discards that dormant material, malformed or duplicated early_data data fails closed, the direct bridge-state helper and the runtime path agree on the behavior, and the slice does not widen public early-data support or claim anti-replay.
 
+## Requirements Verified
+
+- REQ-QUIC-CRT-0143
+
 ## Verification Method
 
 Focused requirement-home tests, BenchmarkDotNet coverage, and SpecTrace render/validation checks.
@@ -43,7 +47,7 @@ Accepted peer early-data disposition keeps dormant ZeroRtt packet-protection mat
 
 ## Status
 
-landed
+passed
 
 ## Related Artifacts
 

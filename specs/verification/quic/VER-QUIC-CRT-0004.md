@@ -40,6 +40,8 @@ Focused requirement-home tests and inspection evidence from the runtime lifecycl
 ## Procedure or Approach
 
 - Run the lifecycle requirement-home tests for REQ-QUIC-CRT-0023, REQ-QUIC-CRT-0025, REQ-QUIC-CRT-0026, REQ-QUIC-CRT-0027, REQ-QUIC-CRT-0030, REQ-QUIC-CRT-0032, REQ-QUIC-CRT-0035, REQ-QUIC-CRT-0055, REQ-QUIC-CRT-0056, and REQ-QUIC-CRT-0084.
+- Run the RFC 9000 requirement-home tests for REQ-QUIC-RFC9000-S10P2-0006, REQ-QUIC-RFC9000-S10P2-0009, REQ-QUIC-RFC9000-S10P2P1-0010, REQ-QUIC-RFC9000-S10P2P2-0002, REQ-QUIC-RFC9000-S10P2P2-0005, and REQ-QUIC-RFC9000-S10P2P2-0001.
+- Confirm local close enters Closing, repeated local close while already Closing is ignored, and a pathless local close still arms the terminal lifetime without emitting a datagram.
 - Confirm the close and drain transitions arm the expected terminal-lifetime timer and emit the explicit send, notify-streams, and discard effects required by the lifecycle reducer.
 - Confirm the runtime keeps the idle timer unchanged for disallowed events and re-arms it only when peer activity is permitted by the helper state.
 - Confirm accepted stateless reset transitions the runtime to Draining without emitting a close-handshake datagram.
@@ -65,7 +67,7 @@ The runtime derives an effective idle timeout from transport parameters and PTO,
 
 ## Status
 
-planned
+passed
 
 ## Related Artifacts
 

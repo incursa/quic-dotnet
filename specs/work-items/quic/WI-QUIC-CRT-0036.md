@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0036"
 artifact_type: "work_item"
 title: "QUIC CRT internal early-data prerequisite capture work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0139"
@@ -30,6 +30,13 @@ Capture the minimum dormant early-data prerequisite material behind the detached
 ## Design Inputs
 
 - ARC-QUIC-CRT-0034
+
+## Planned Changes
+
+- Retain the ticket `max_early_data_size` hint together with the cloned peer transport-parameter snapshot behind the dormant detached resumption carrier.
+- Keep the captured early-data prerequisite material internal so no public resumption or early-data promise widens.
+- Leave actual 0-RTT packet emission, receive handling, anti-replay, and key-update behavior for later traced slices.
+- Add focused requirement-home coverage proving the retained dormant prerequisite state and the still-closed early-data boundary.
 
 ## Out of Scope
 

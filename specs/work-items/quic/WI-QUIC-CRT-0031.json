@@ -23,7 +23,7 @@
     "broader session-management infrastructure",
     "opportunistic refactors unrelated to the ServerHello accept/reject branch seam"
   ],
-  "status": "landed",
+  "status": "complete",
   "domain": "quic",
   "summary": "Classify the PSK-capable ClientHello attempt at ServerHello as accepted or rejected on the managed client/runtime path, keep rejection on the existing full-handshake path, and leave resumed-handshake success out of scope.",
   "verification_plan": "Run focused requirement-home tests for rejected-branch fallback, accepted-branch recognition, bootstrap-without-dormant-material, early-data closure in both branches, and the public no-resumption/no-early-data guard; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",

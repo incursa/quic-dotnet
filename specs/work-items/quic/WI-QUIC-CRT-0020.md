@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0020"
 artifact_type: "work_item"
 title: "QUIC CRT retry bootstrap ownership work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0122"

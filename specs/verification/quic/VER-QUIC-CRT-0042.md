@@ -6,6 +6,10 @@
 
 Verify that the successor 1-RTT open/protect pair is installed on the first observed 0->1 Key Phase transition, that outbound 1-RTT packets use the installed phase bit after installation, that establishing runtimes remain unchanged before handshake confirmation, and that the slice does not claim a general RFC 9001 key-update engine, TLS KeyUpdate support, transfer, retry, or public API widening.
 
+## Requirements Verified
+
+- REQ-QUIC-CRT-0145
+
 ## Verification Method
 
 Focused requirement-home tests, fuzzing, BenchmarkDotNet coverage, and SpecTrace render/validation checks.

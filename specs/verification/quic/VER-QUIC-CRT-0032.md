@@ -21,6 +21,14 @@ Focused requirement-home tests, disabled-path benchmark evidence, and dependency
 - The benchmark project is available for the disabled-path measurement.
 - REQ-QUIC-CRT-0134 and REQ-QUIC-CRT-0135 remain the active diagnostics requirements.
 
+## Procedure or Approach
+
+- Inspect the diagnostics contract, runtime bootstrap, client host, and listener host seams to confirm the transport diagnostics sink is typed and resolved once per connection before hot-path processing begins.
+- Verify that the connection and runtime event models carry structured transport facts without introducing qlog or serializer dependencies into `Incursa.Quic`.
+- Review the project dependencies and diagnostics-related source files to confirm qlog packages, serializer packages, and file-output ownership remain outside the transport core.
+- Run the focused REQ_QUIC_CRT_0134 and REQ_QUIC_CRT_0135 requirement-home tests and review the disabled-path benchmark evidence.
+- Run repo-local SpecTrace validation and markdown render checks after the canonical JSON updates.
+
 ## Expected Result
 
 The library exposes a typed diagnostics sink, resolves it once per connection, and keeps the disabled path extremely cheap without coupling the transport core to qlog or serialization.

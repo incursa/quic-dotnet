@@ -889,30 +889,30 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-        "trace": {
-          "satisfied_by": [
-            "ARC-QUIC-RFC9001-0001"
-          ],
-          "implemented_by": [
-            "WI-QUIC-RFC9001-0001"
-          ],
-          "verified_by": [
-            "VER-QUIC-RFC9001-0001"
-          ],
-          "upstream_refs": [
-            "RFC 9001 §5 RFC9001-S5-B7-P0-S1",
-            "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
-          ],
-          "x_test_refs": [
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryProtectHandshakePacket_AndTryOpenHandshakePacket_RoundTrip",
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryCreate_RejectsMissingMaterial",
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryCreate_RejectsWrongLevelMaterial",
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryOpenHandshakePacket_RejectsTamperedProtectedPayload",
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryProtectHandshakePacket_RejectsPacketsThatCannotProvideAHeaderProtectionSample",
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::Fuzz_HandshakePacketProtection_RoundTripsRandomValidInputs"
-          ]
-        }
-      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §5 RFC9001-S5-B7-P0-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryProtectHandshakePacket_AndTryOpenHandshakePacket_RoundTrip",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryCreate_RejectsMissingMaterial",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryCreate_RejectsWrongLevelMaterial",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryOpenHandshakePacket_RejectsTamperedProtectedPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::TryProtectHandshakePacket_RejectsPacketsThatCannotProvideAHeaderProtectionSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs::Fuzz_HandshakePacketProtection_RoundTripsRandomValidInputs"
+        ]
+      }
+    },
     {
       "id": "REQ-QUIC-RFC9001-S5-0008",
       "title": "Apply the same protection process to Initial packets",

@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0034"
 artifact_type: "work_item"
 title: "QUIC CRT client-side abbreviated resumption completion work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0137"
@@ -30,6 +30,13 @@ Advance accepted PSK ClientHello attempts through abbreviated client-side handsh
 ## Design Inputs
 
 - ARC-QUIC-CRT-0033
+
+## Planned Changes
+
+- Advance accepted PSK ClientHello attempts through the abbreviated client-side `EncryptedExtensions -> Finished` handshake flight.
+- Keep rejected attempts on the existing full-handshake fallback path rather than forking a second recovery path.
+- Preserve the existing early-data-closed behavior and avoid widening the public resumption contract.
+- Add focused requirement-home coverage for accepted abbreviated completion, rejected fallback, transcript shape, and early-data closure.
 
 ## Out of Scope
 

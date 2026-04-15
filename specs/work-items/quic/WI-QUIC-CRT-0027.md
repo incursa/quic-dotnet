@@ -3,8 +3,12 @@ artifact_id: "WI-QUIC-CRT-0027"
 artifact_type: "work_item"
 title: "QUIC CRT client-side 1-RTT post-handshake ticket ingress work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
+addresses:
+  - "REQ-QUIC-CRT-0129"
+design_links:
+  - "ARC-QUIC-CRT-0027"
 verification_links:
   - "VER-QUIC-CRT-0027"
 related_artifacts:
@@ -18,6 +22,14 @@ related_artifacts:
 ## Summary
 
 Surface an opaque post-handshake ticket update from a real client-side OneRtt CRYPTO ingress path after Finished without widening the supported boundary.
+
+## Requirements Addressed
+
+- REQ-QUIC-CRT-0129
+
+## Design Inputs
+
+- ARC-QUIC-CRT-0027
 
 ## Planned Changes
 
@@ -54,11 +66,11 @@ This is a landed narrow client-side ingress slice. It records opaque ticket byte
 
 Addresses:
 
-
+- REQ-QUIC-CRT-0129
 
 Uses Design:
 
-
+- ARC-QUIC-CRT-0027
 
 Verified By:
 
@@ -67,7 +79,7 @@ Verified By:
 ## Related Code And Tests
 
 - [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)
-- [`src/Incursa.Quic/QuicTransportTlsBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeDriver.cs)
+- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)
 - [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)
 - [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)
 - [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)

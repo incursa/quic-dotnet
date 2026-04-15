@@ -21,7 +21,7 @@ The managed bridge already owns the post-Finished opaque ticket seam through REQ
 ## Key Components
 
 - src/Incursa.Quic/QuicTlsTransport.cs
-- src/Incursa.Quic/QuicTransportTlsBridgeDriver.cs
+- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
 - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs
@@ -35,7 +35,7 @@ The managed bridge already owns the post-Finished opaque ticket seam through REQ
 ## Related Code And Tests
 
 - [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)
-- [`src/Incursa.Quic/QuicTransportTlsBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeDriver.cs)
+- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)
 - [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)
 - [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)
 - [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)

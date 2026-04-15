@@ -29,12 +29,14 @@
   ],
   "scope": "Verify the RFC 8999 long-header invariant slice, including the shared wire\nshape used by version negotiation, the connection-ID length rules, and the\npreservation of opaque version-specific data.",
   "evidence": [
-    "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
-    "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
-    "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
-    "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
-    "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs",
-    "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0008.cs",
     "benchmarks/QuicHeaderParsingBenchmarks.cs",
     "quality/benchmarks/header-parsing-benchmarks.md",
     "quality/testing-intent.yaml"
@@ -49,7 +51,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- [`QuicPacketParserTests.cs`](../../../tests/Incursa.Quic.Tests/QuicPacketParserTests.cs)\n- [`QuicLongHeaderPacketTests.cs`](../../../tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs)\n- [`QuicHeaderPropertyTests.cs`](../../../tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs)\n- [`QuicHeaderFuzzTests.cs`](../../../tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs)\n- [`QuicVersionNegotiationPacketTests.cs`](../../../tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs)\n- [`QuicVersionNegotiationTests.cs`](../../../tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs)\n- [`QuicHeaderParsingBenchmarks.cs`](../../../benchmarks/QuicHeaderParsingBenchmarks.cs)\n- [`header-parsing-benchmarks.md`](../../../quality/benchmarks/header-parsing-benchmarks.md)\n- [`testing-intent.yaml`](../../../quality/testing-intent.yaml)"
+      "content": "- [`REQ-QUIC-RFC8999-S5P1-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0001.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0002.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0003.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0004.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0005.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0006.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0007.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0008.cs)\n- [`QuicHeaderParsingBenchmarks.cs`](../../../benchmarks/QuicHeaderParsingBenchmarks.cs)\n- [`header-parsing-benchmarks.md`](../../../quality/benchmarks/header-parsing-benchmarks.md)\n- [`testing-intent.yaml`](../../../quality/testing-intent.yaml)"
     }
   ],
   "domain": "quic"

@@ -9,7 +9,7 @@
   "owner": "quic-maintainers",
   "artifact_type": "verification",
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "status": "landed",
+  "status": "passed",
   "domain": "quic",
   "verifies": [
     "REQ-QUIC-CRT-0127"

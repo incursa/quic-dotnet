@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0041"
 artifact_type: "work_item"
 title: "QUIC client-side 1-RTT Key Phase observation work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0144"
@@ -30,6 +30,13 @@ Add the first observed active-path 1-RTT Key Phase install boundary while keepin
 ## Design Inputs
 
 - ARC-QUIC-CRT-0039
+
+## Planned Changes
+
+- Record the first observed active-path 1-RTT Key Phase transition only after handshake confirmation.
+- Keep establishing runtimes unchanged before handshake confirmation and avoid deriving successor keys or claiming TLS KeyUpdate support.
+- Leave transfer, retry, and public API widening out of scope for this observation-only slice.
+- Add focused requirement-home coverage for the observed transition boundary and the pre-confirmation negative case.
 
 ## Out of Scope
 

@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0041",
   "artifact_type": "verification",
-  "status": "landed",
+  "status": "passed",
   "title": "QUIC client-side 1-RTT Key Phase observation verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -43,5 +43,8 @@
       "heading": "Acceptance Criteria",
       "content": "- The short-header helper preserves and reports the Key Phase bit.\n- The active client runtime records the first observed 1-RTT Key Phase transition by updating the existing internal state.\n- The establishing runtime remains unchanged before handshake confirmation.\n- The slice does not claim successor-key derivation, TLS KeyUpdate support, transfer, retry, or public API widening."
     }
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0144"
   ]
 }

@@ -6,6 +6,10 @@
 
 Verify that rejected resumption dispositions discard dormant ZeroRtt packet-protection material, accepted dispositions leave it intact, the direct bridge-state helper and the runtime path agree on the behavior, and the slice does not widen public API or claim anti-replay support.
 
+## Requirements Verified
+
+- REQ-QUIC-CRT-0142
+
 ## Verification Method
 
 Focused requirement-home tests, BenchmarkDotNet coverage, and SpecTrace render/validation checks.
@@ -41,7 +45,7 @@ Rejected resumption attempts clear dormant ZeroRtt packet-protection material an
 
 ## Status
 
-landed
+passed
 
 ## Related Artifacts
 

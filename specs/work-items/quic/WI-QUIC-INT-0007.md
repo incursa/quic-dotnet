@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-INT-0007"
 artifact_type: "work_item"
 title: "QUIC Local Harness Preflight Planning and Localhost Smoke Work Item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-INT-0014"

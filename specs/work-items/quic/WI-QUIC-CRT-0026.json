@@ -23,7 +23,7 @@
     "key update",
     "broader TLS refactoring unrelated to this seam"
   ],
-  "status": "landed",
+  "status": "complete",
   "domain": "quic",
   "artifact_type": "work_item",
   "summary": "Surface an opaque post-handshake ticket-bearing TLS update after Finished through the existing internal bridge/runtime seam without widening the supported public promise.",

@@ -43,8 +43,8 @@ Execution, inspection, and benchmark evidence.
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0108.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs)
-- [`tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0009.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0009.cs)
-- [`tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/API/REQ-QUIC-API-0010.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0009.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0009.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs)
 - [`benchmarks/QuicTlsClientFinishedPublicationBenchmarks.cs`](../../../benchmarks/QuicTlsClientFinishedPublicationBenchmarks.cs)
 
 ## Status

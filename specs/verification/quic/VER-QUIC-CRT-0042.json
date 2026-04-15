@@ -51,5 +51,8 @@
       "heading": "Benchmark Scope",
       "content": "- Extend the permanent `QuicApplicationPacketKeyPhaseBenchmarks` suite to cover the successor install and outbound phase-bit path.\n- Keep the benchmark focused on packet-protection derivation and protected packet formatting, not receive handling or replay control."
     }
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0145"
   ]
 }

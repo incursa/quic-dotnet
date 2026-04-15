@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0026"
 artifact_type: "work_item"
 title: "QUIC CRT post-handshake ticket-bearing TLS update seam work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0128"

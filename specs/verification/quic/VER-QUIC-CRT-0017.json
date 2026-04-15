@@ -15,7 +15,7 @@
     "REQ-QUIC-CRT-0119"
   ],
   "artifact_type": "verification",
-  "status": "landed",
+  "status": "passed",
   "procedure": [
     "Run the requirement-home tests that prove the server-role Finished proof boundary and the new 1-RTT publication slice.",
     "Run the bridge-state rejection tests for premature, repeated, conflicting, and fatal publication attempts.",

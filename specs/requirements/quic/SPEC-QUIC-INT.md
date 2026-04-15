@@ -55,7 +55,7 @@ Notes:
 - Reusable transport behavior remains in the library.
 
 ## REQ-QUIC-INT-0002 Own runner-facing process plumbing in the harness
-The interop harness MUST own parsing of `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE`, mapping of `/www`, `/downloads`, and `/certs`, role dispatch, and runner-facing process exit-code behavior. Supported server-role dispatch paths MUST still start when the runner provides an empty `REQUESTS` list.
+The interop harness MUST own parsing of `ROLE`, `TESTCASE`, `REQUESTS`, `QLOGDIR`, and `SSLKEYLOGFILE`, mapping of `/www`, `/downloads`, and `/certs`, role dispatch, and runner-facing process exit-code behavior. Supported server-role dispatch paths must still start when the runner provides an empty `REQUESTS` list.
 
 Trace:
 - Satisfied By:
@@ -84,14 +84,12 @@ Trace:
   - WI-QUIC-INT-0001
 - Verified By:
   - VER-QUIC-INT-0001
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0003.cs::TlsTransportStateTracksParametersKeysAndHandshakeCompletion
 - Code Refs:
   - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs
 
 ## REQ-QUIC-INT-0004 Keep qlog and keylog hooks honest
-When `QLOGDIR` is provided, the harness MUST emit contained qlog JSON snapshots for supported client and listener bootstrap paths without hardwiring the library to qlog JSON, and when `SSLKEYLOGFILE` is not yet practical it MUST remain a clear TODO rather than fake behavior.
+When `QLOGDIR` is provided, the harness MUST emit contained qlog JSON snapshots for supported client and listener bootstrap paths without hardwiring the library to qlog JSON, and when `SSLKEYLOGFILE` is not yet practical it must remain a clear TODO rather than fake behavior.
 
 Trace:
 - Satisfied By:
@@ -118,8 +116,6 @@ Trace:
   - WI-QUIC-INT-0001
 - Verified By:
   - VER-QUIC-INT-0001
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0005.cs::SenderRuntimeTracksLossRetransmissionAndProbeTimeoutState
 - Code Refs:
   - src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs
   - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
@@ -135,8 +131,6 @@ Trace:
   - WI-QUIC-INT-0002
 - Verified By:
   - VER-QUIC-INT-0002
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs::EndpointHostShellBridgesTheLibraryRuntimeThroughAConnectedUdpSocketAndRoutesInboundHandshakeDatagrams
 - Code Refs:
   - src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs
   - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
@@ -153,7 +147,7 @@ Notes:
 - The harness handshake testcase now routes through this seam; the narrow transfer slice now has its own managed active-phase path and the narrow retry slice now has its own managed one-Retry path.
 
 ## REQ-QUIC-INT-0010 Define the first transfer slice as narrow and proof-gated
-The interop harness MUST define a child-process-only transfer slice on the existing Active-phase managed path in which the client and server each participate in exactly one application stream, the first `REQUESTS` URL selects the transfer target, the fixed `/www` and `/downloads` mount-path contract remains in force, the existing `Http3` ALPN remains in force, and exit code `0` is considered honest only after byte delivery and EOF have completed on both sides. This slice MUST NOT widen retry, multi-stream generalization, broader 1-RTT claims, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.
+The interop harness MUST define a child-process-only transfer slice on the existing Active-phase managed path in which the client and server each participate in exactly one application stream, the first `REQUESTS` URL selects the transfer target, the fixed `/www` and `/downloads` mount-path contract remains in force, the existing `Http3` ALPN remains in force, and exit code `0` is considered honest only after byte delivery and EOF have completed on both sides. This slice must not widen retry, multi-stream generalization, broader 1-RTT claims, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.
 
 Trace:
 - Satisfied By:
@@ -186,7 +180,7 @@ Notes:
 - The current runtime already owns the narrow stream open, write, read, and EOF mechanics on the supported active-loopback path; this requirement closes the harness-owned file-pump completion contract and proof.
 
 ## REQ-QUIC-INT-0011 Sequence the first application stream open and accept after handshake
-The interop harness MUST define a child-process-only `post-handshake-stream` testcase on the managed child-process harness path in which, after the existing handshake completes, the client opens the first application stream and the server accepts that first application stream. This requirement MUST remain limited to the managed child-process path and MUST NOT claim byte delivery, EOF completion, transfer enablement, retry enablement, multi-stream behavior, broader 1-RTT data-path readiness, trust-store policy widening, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.
+The interop harness MUST define a child-process-only `post-handshake-stream` testcase on the managed child-process harness path in which, after the existing handshake completes, the client opens the first application stream and the server accepts that first application stream. This requirement must remain limited to the managed child-process path and must not claim byte delivery, EOF completion, transfer enablement, retry enablement, multi-stream behavior, broader 1-RTT data-path readiness, trust-store policy widening, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.
 
 Trace:
 - Satisfied By:
@@ -217,7 +211,7 @@ Notes:
 - The harness owns only the child-process sequencing proof. The runtime already owns the open and accept primitives, and the client opener path depends on the existing client-role 1-RTT readiness gate while the server accepter path depends on the existing active-phase accept gate.
 
 ## REQ-QUIC-INT-0012 Dispatch a single valid Retry through the child-process harness path
-The interop harness MUST define a child-process-only `retry` testcase in which the server emits exactly one valid Retry, the client observes that Retry and reissues the next Initial through the already-landed managed replay handoff, the server accepts the replayed Initial on the real managed path, and exit code `0` is considered honest only after the post-Retry handshake completes. This requirement MUST remain limited to the child-process path and MUST NOT claim public API widening, `IsSupported` widening, transfer generalization, multi-Retry behavior, broad token-lifecycle behavior, trust-store policy, hostname validation, certificate-path validation, revocation, broader client-auth, `0-RTT`, or key update.
+The interop harness MUST define a child-process-only `retry` testcase in which the server emits exactly one valid Retry, the client observes that Retry and reissues the next Initial through the already-landed managed replay handoff, the server accepts the replayed Initial on the real managed path, and exit code `0` is considered honest only after the post-Retry handshake completes. This requirement must remain limited to the child-process path and must not claim public API widening, `IsSupported` widening, transfer generalization, multi-Retry behavior, broad token-lifecycle behavior, trust-store policy, hostname validation, certificate-path validation, revocation, broader client-auth, `0-RTT`, or key update.
 
 Trace:
 - Satisfied By:
@@ -247,7 +241,7 @@ Notes:
 - The client replay side is already owned by the library bootstrap seam in REQ-QUIC-CRT-0122; this requirement owns the child-process dispatch and proof.
 
 ## REQ-QUIC-INT-0013 Capture local interop-runner execution reports without changing the runner registry
-The repository MUST provide a local helper that builds the `Incursa.Quic.InteropHarness` image and invokes the external `quic-interop-runner` locally against the already-supported interop testcase subset by replacing a local-side implementation image in either a same-slot both-role run or a split client/server run, and it MUST capture the runner's JSON, Markdown, and log artifacts without requiring any change to the runner repository's implementation registry.
+The repository MUST provide a local helper that builds the `Incursa.Quic.InteropHarness` image and invokes the external `quic-interop-runner` locally against the already-supported interop testcase subset by replacing a local-side implementation image in either a same-slot both-role run or a split client/server run, and it must capture the runner's JSON, Markdown, and log artifacts without requiring any change to the runner repository's implementation registry.
 
 Trace:
 - Satisfied By:
@@ -278,7 +272,7 @@ Notes:
 - The helper records execution-report artifacts; it does not introduce new testcase support or any new protocol behavior.
 
 ## REQ-QUIC-INT-0014 Separate local preflight planning from localhost smoke execution
-The interop harness MUST expose repo-local preflight decisions for request parsing, qlog selection, endpoint resolution, and transfer-path mapping as independently testable harness behavior, and MUST support a localhost smoke lane in which the managed client and managed server can be exercised directly with matching certificate names while preserving the existing hostname and certificate-validation rules. This slice MUST NOT weaken hostname or certificate validation for IP-literal hosts or require changes to the external `quic-interop-runner` repository.
+The interop harness MUST expose repo-local preflight decisions for request parsing, qlog selection, endpoint resolution, and transfer-path mapping as independently testable harness behavior, and must support a localhost smoke lane in which the managed client and managed server can be exercised directly with matching certificate names while preserving the existing hostname and certificate-validation rules. This slice must not weaken hostname or certificate validation for IP-literal hosts or require changes to the external `quic-interop-runner` repository.
 
 Trace:
 - Satisfied By:

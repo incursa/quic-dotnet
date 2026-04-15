@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0039",
   "artifact_type": "work_item",
-  "status": "landed",
+  "status": "complete",
   "title": "QUIC client-side 0-RTT rejection cleanup work item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -19,6 +19,7 @@
   "addresses": [
     "REQ-QUIC-CRT-0142"
   ],
+  "planned_changes": "- Discard dormant ZeroRtt packet-protection material when the PSK-capable branch is rejected at ServerHello.\n- Keep the accepted branch intact so later admitted 0-RTT ownership still has the retained material it needs.\n- Avoid introducing receive-side replay handling, key update, transfer, retry, or public early-data support in this cleanup slice.\n- Add focused requirement-home coverage for rejected-branch cleanup and accepted-branch retention.",
   "completion_notes": "The managed client/runtime path now discards dormant ZeroRtt packet-protection material when the PSK-capable branch is rejected at ServerHello, keeps the accepted branch intact, and leaves receive-side replay controls, key update, transfer, retry, and public API widening out of scope.",
   "verification_plan": "Run focused requirement-home tests for the direct bridge-state cleanup helper, the runtime rejected-branch cleanup, the runtime accepted-branch retention case, the randomized cleanup boundary, and the public no-broad-support guard; run the permanent BenchmarkDotNet suite for the rejected-vs-accepted cleanup branch; then run SpecTrace render and validation checks.",
   "out_of_scope": [

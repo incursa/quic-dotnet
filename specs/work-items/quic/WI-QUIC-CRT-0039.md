@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0039"
 artifact_type: "work_item"
 title: "QUIC client-side 0-RTT rejection cleanup work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0142"
@@ -30,6 +30,13 @@ Add the rejected-resumption cleanup branch that discards dormant ZeroRtt packet-
 ## Design Inputs
 
 - ARC-QUIC-CRT-0037
+
+## Planned Changes
+
+- Discard dormant ZeroRtt packet-protection material when the PSK-capable branch is rejected at ServerHello.
+- Keep the accepted branch intact so later admitted 0-RTT ownership still has the retained material it needs.
+- Avoid introducing receive-side replay handling, key update, transfer, retry, or public early-data support in this cleanup slice.
+- Add focused requirement-home coverage for rejected-branch cleanup and accepted-branch retention.
 
 ## Out of Scope
 

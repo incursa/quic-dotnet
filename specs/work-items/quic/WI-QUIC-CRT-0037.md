@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0037"
 artifact_type: "work_item"
 title: "QUIC CRT dormant early-data attempt readiness work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0140"
@@ -30,6 +30,13 @@ Add a narrow internal readiness observation over the dormant detached resumption
 ## Design Inputs
 
 - ARC-QUIC-CRT-0035
+
+## Planned Changes
+
+- Add a narrow internal readiness observation that becomes true only when the dormant detached carrier retains both resumption credential material and early-data prerequisite material.
+- Keep the readiness signal internal and explicitly non-committal about actual 0-RTT packet emission or public support.
+- Preserve the existing early-data-closed behavior on paths missing any prerequisite material.
+- Add focused requirement-home coverage for ready versus not-ready observation without widening the packet family.
 
 ## Out of Scope
 

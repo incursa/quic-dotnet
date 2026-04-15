@@ -755,7 +755,7 @@ Notes:
 - The coordinator does not add 1-RTT support, 0-RTT support, key update support, certificate validation, or production handshake orchestration.
 
 ## REQ-QUIC-CRT-0107 Own the narrow Handshake transcript-progress boundary
-The library MUST own a narrow Handshake transcript-progress boundary behind the transport-facing TLS bridge that accepts ordered Handshake CRYPTO fragments incrementally, preserves an ingress cursor and partial transcript buffer, parses the minimal TLS 1.3 peer handshake message progression for the current role (ClientHello and later Finished for server role; ServerHello, EncryptedExtensions, Certificate, CertificateVerify, and Finished for client role), preserves the parsed handshake message type and length together with the selected cipher suite, its implied transcript hash algorithm, and the role-specific QUIC transport-parameters extension payload needed for later policy, stages peer transport parameters only from the correct role-specific message, latches terminal transcript/parse failure, and surfaces transcript progression and fatal alerts through the existing bridge-update path. Peer transport parameter commitment and peer handshake transcript completion remain explicit bridge/runtime policy decisions, and this slice MUST NOT imply certificate validation, signature verification, 0-RTT, 1-RTT, key update, or production TLS handshake support.
+The library MUST own a narrow Handshake transcript-progress boundary behind the transport-facing TLS bridge that accepts ordered Handshake CRYPTO fragments incrementally, preserves an ingress cursor and partial transcript buffer, parses the minimal TLS 1.3 peer handshake message progression for the current role (ClientHello and later Finished for server role; ServerHello, EncryptedExtensions, Certificate, CertificateVerify, and Finished for client role), preserves the parsed handshake message type and length together with the selected cipher suite, its implied transcript hash algorithm, and the role-specific QUIC transport-parameters extension payload needed for later policy, stages peer transport parameters only from the correct role-specific message, latches terminal transcript/parse failure, and surfaces transcript progression and fatal alerts through the existing bridge-update path. Peer transport parameter commitment and peer handshake transcript completion remain explicit bridge/runtime policy decisions, and this slice must not imply certificate validation, signature verification, 0-RTT, 1-RTT, key update, or production TLS handshake support.
 
 Trace:
 - Source Refs:
@@ -782,7 +782,7 @@ Notes:
 - The supported cryptographic subset for this slice is exactly `TLS_AES_128_GCM_SHA256` over `secp256r1`.
 
 ## REQ-QUIC-CRT-0109 Gate peer transport-parameter commit on Finished verification
-In the client role, the library MUST cryptographically verify peer Finished with the managed TLS 1.3 key schedule and transcript hash, surface `PeerFinishedVerified` only after that verification succeeds, and allow `PeerTransportParametersCommitted` only after `PeerCertificateVerifyVerified`, `PeerCertificatePolicyAccepted`, and `PeerFinishedVerified`; malformed, unsupported, or mismatched peer Finished input MUST fail deterministically through the existing fatal/update path, and server-role transport-parameter commit remains unavailable in this slice.
+In the client role, the library MUST cryptographically verify peer Finished with the managed TLS 1.3 key schedule and transcript hash, surface `PeerFinishedVerified` only after that verification succeeds, and allow `PeerTransportParametersCommitted` only after `PeerCertificateVerifyVerified`, `PeerCertificatePolicyAccepted`, and `PeerFinishedVerified`; malformed, unsupported, or mismatched peer Finished input must fail deterministically through the existing fatal/update path, and server-role transport-parameter commit remains unavailable in this slice.
 
 Trace:
 - Source Refs:
@@ -907,7 +907,7 @@ Notes:
 - Server-role peer transport-parameter commit is defined separately in REQ-QUIC-CRT-0118.
 
 ## REQ-QUIC-CRT-0118 Gate server-role peer transport-parameter commit on Finished verification
-In the server role, the library MUST allow `PeerTransportParametersCommitted` only after `PeerFinishedVerified` has been surfaced, the transcript boundary is at the completed local server flight with `HandshakeTranscriptPhase` set to `Completed`, `HandshakeMessageType` set to `Finished`, `HandshakeMessageLength`, `SelectedCipherSuite`, and `TranscriptHashAlgorithm` present, and the supplied peer transport parameters are equivalent to the staged peer transport parameters; malformed, unsupported, repeated, conflicting, terminal, or mismatched commit progression MUST fail deterministically through the existing fatal/update path, and `PeerHandshakeTranscriptCompleted` remains a transcript milestone rather than a commit prerequisite.
+In the server role, the library MUST allow `PeerTransportParametersCommitted` only after `PeerFinishedVerified` has been surfaced, the transcript boundary is at the completed local server flight with `HandshakeTranscriptPhase` set to `Completed`, `HandshakeMessageType` set to `Finished`, `HandshakeMessageLength`, `SelectedCipherSuite`, and `TranscriptHashAlgorithm` present, and the supplied peer transport parameters are equivalent to the staged peer transport parameters; malformed, unsupported, repeated, conflicting, terminal, or mismatched commit progression must fail deterministically through the existing fatal/update path, and `PeerHandshakeTranscriptCompleted` remains a transcript milestone rather than a commit prerequisite.
 
 Trace:
 - Source Refs:
@@ -921,7 +921,7 @@ Notes:
 - `PeerHandshakeTranscriptCompleted` remains a transcript milestone and is not required for the commit gate.
 
 ## REQ-QUIC-CRT-0119 Publish server-role 1-RTT packet-protection material after Finished proof
-In the server role, the library MUST derive the first TLS 1.3 application packet-protection material from the transcript boundary that includes the completed local server flight through local Finished, surface explicit bridge-visible `OneRttOpenPacketProtectionMaterialAvailable` and `OneRttProtectPacketProtectionMaterialAvailable` updates only after `PeerFinishedVerified` has been surfaced for the same supported TLS session, and deterministically reject premature, repeated, conflicting, malformed, terminal-state, or unsupported 1-RTT publication through the existing fatal/update path; this slice MUST NOT add 1-RTT data-path processing, key update, endpoint-host wiring, or broader handshake-completion semantics.
+In the server role, the library MUST derive the first TLS 1.3 application packet-protection material from the transcript boundary that includes the completed local server flight through local Finished, surface explicit bridge-visible `OneRttOpenPacketProtectionMaterialAvailable` and `OneRttProtectPacketProtectionMaterialAvailable` updates only after `PeerFinishedVerified` has been surfaced for the same supported TLS session, and deterministically reject premature, repeated, conflicting, malformed, terminal-state, or unsupported 1-RTT publication through the existing fatal/update path; this slice must not add 1-RTT data-path processing, key update, endpoint-host wiring, or broader handshake-completion semantics.
 
 Trace:
 - Source Refs:
@@ -935,7 +935,7 @@ Notes:
 - The bridge-visible state is directional packet-protection material only; it does not imply `OneRttKeysAvailable` or any application-data path.
 
 ## REQ-QUIC-CRT-0120 Keep the shipped package trimmable and Native AOT compatible
-The library MUST remain trimmable and Native AOT compatible when it is consumed through `PackageReference` as the shipped NuGet package on the supported `net10.0` target, and the package MUST not require unsupported reflection, runtime code generation, or other trim or AOT incompatible behavior on the supported public and internal QUIC slices.
+The library MUST remain trimmable and Native AOT compatible when it is consumed through `PackageReference` as the shipped NuGet package on the supported `net10.0` target, and the package must not require unsupported reflection, runtime code generation, or other trim or AOT incompatible behavior on the supported public and internal QUIC slices.
 
 Trace:
 - Source Refs:
@@ -951,7 +951,7 @@ Notes:
 - Unsupported dynamic-extension patterns remain out of scope until separately specified.
 
 ## REQ-QUIC-CRT-0121 Publish client-role 1-RTT readiness after Finished verification
-In the client role, the library MUST publish `OneRttKeysAvailable` and the first TLS 1.3 application packet-protection material only after the peer Finished has been cryptographically verified by the managed TLS 1.3 key schedule for the supported `TLS_AES_128_GCM_SHA256` over `secp256r1` subset. After that proof boundary, the library MUST surface `KeysAvailable` for `QuicTlsEncryptionLevel.OneRtt` together with `OneRttOpenPacketProtectionMaterialAvailable` and `OneRttProtectPacketProtectionMaterialAvailable`; malformed, unsupported, premature, repeated, conflicting, terminal-state, or mismatched 1-RTT publication MUST fail deterministically through the existing fatal/update path. This slice does not add 1-RTT data-path processing, key update, trust-store policy, hostname validation, certificate-path validation, revocation, or transfer enablement.
+In the client role, the library MUST publish `OneRttKeysAvailable` and the first TLS 1.3 application packet-protection material only after the peer Finished has been cryptographically verified by the managed TLS 1.3 key schedule for the supported `TLS_AES_128_GCM_SHA256` over `secp256r1` subset. After that proof boundary, the library must surface `KeysAvailable` for `QuicTlsEncryptionLevel.OneRtt` together with `OneRttOpenPacketProtectionMaterialAvailable` and `OneRttProtectPacketProtectionMaterialAvailable`; malformed, unsupported, premature, repeated, conflicting, terminal-state, or mismatched 1-RTT publication must fail deterministically through the existing fatal/update path. This slice does not add 1-RTT data-path processing, key update, trust-store policy, hostname validation, certificate-path validation, revocation, or transfer enablement.
 
 Trace:
 - Source Refs:
@@ -965,7 +965,7 @@ Notes:
 - This slice is the client counterpart to server-role 1-RTT packet-protection publication in REQ-QUIC-CRT-0119.
 
 ## REQ-QUIC-CRT-0122 Retain one retry bootstrap handoff across a single replay
-The library bootstrap path MUST retain the original destination connection ID, the server-provided Retry source connection ID, and the Retry token across exactly one valid Retry so the next client Initial can be reissued with the echoed token and the eventual `retry_source_connection_id` binding check can validate the attempt; this slice MUST NOT add interop-runner retry dispatch, public API widening, transfer generalization, broader TLS-policy work, 0-RTT, key update, or broad token-lifecycle behavior.
+The library bootstrap path MUST retain the original destination connection ID, the server-provided Retry source connection ID, and the Retry token across exactly one valid Retry so the next client Initial can be reissued with the echoed token and the eventual `retry_source_connection_id` binding check can validate the attempt; this slice must not add interop-runner retry dispatch, public API widening, transfer generalization, broader TLS-policy work, 0-RTT, key update, or broad token-lifecycle behavior.
 
 Trace:
 - Source Refs:
@@ -980,7 +980,7 @@ Notes:
 - The work is intentionally smaller than broader token-lifecycle or NEW_TOKEN support.
 
 ## REQ-QUIC-CRT-0123 Accept peer certificates only with explicit trust material and exact peer identity
-In the client role, the library MUST extend the local certificate-acceptance seam so that `PeerCertificatePolicyAccepted` is surfaced only when one explicit trust-material input and one exact peer-identity input are both present and match the presented peer certificate; missing trust material, missing peer identity, trust mismatch, and identity mismatch MUST fail deterministically through the existing fatal/update path. This slice MUST NOT add OS trust-store integration, generalized certificate-path building, revocation, broader client-auth, 0-RTT, key update, or public API widening.
+In the client role, the library MUST extend the local certificate-acceptance seam so that `PeerCertificatePolicyAccepted` is surfaced only when one explicit trust-material input and one exact peer-identity input are both present and match the presented peer certificate; missing trust material, missing peer identity, trust mismatch, and identity mismatch must fail deterministically through the existing fatal/update path. This slice must not add OS trust-store integration, generalized certificate-path building, revocation, broader client-auth, 0-RTT, key update, or public API widening.
 
 Trace:
 - Source Refs:
@@ -999,7 +999,7 @@ Notes:
 - The peer-identity match is exact and single-valued; wildcard or broader SAN policy remains out of scope.
 
 ## REQ-QUIC-CRT-0124 Request and validate client certificates on the existing server-auth carrier
-In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true, the library MUST emit one TLS 1.3 `CertificateRequest` on the local server flight, accept one inbound client `Certificate` / `CertificateVerify` / `Finished` sequence for that request context, and surface client-certificate acceptance only through the existing `RemoteCertificateValidationCallback` seam on that same `SslServerAuthenticationOptions` carrier. This slice MUST remain separate from the server-side `CertificateChainPolicy` follow-on in `REQ-QUIC-CRT-0125`, the standalone `CertificateRevocationCheckMode` floor in `REQ-QUIC-CRT-0126`, broader PKI behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.
+In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true, the library MUST emit one TLS 1.3 `CertificateRequest` on the local server flight, accept one inbound client `Certificate` / `CertificateVerify` / `Finished` sequence for that request context, and surface client-certificate acceptance only through the existing `RemoteCertificateValidationCallback` seam on that same `SslServerAuthenticationOptions` carrier. This slice must remain separate from the server-side `CertificateChainPolicy` follow-on in `REQ-QUIC-CRT-0125`, the standalone `CertificateRevocationCheckMode` floor in `REQ-QUIC-CRT-0126`, broader PKI behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.
 
 Trace:
 - Source Refs:
@@ -1027,7 +1027,7 @@ Notes:
 - Standalone CertificateRevocationCheckMode is traced separately in REQ-QUIC-CRT-0126.
 
 ## REQ-QUIC-CRT-0125 Honor server-side CertificateChainPolicy on the existing callback-driven client-auth path
-In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true and `RemoteCertificateValidationCallback` is supplied, the library MUST honor `SslServerAuthenticationOptions.CertificateChainPolicy` on that same carrier by delegating presented-client-certificate evaluation to BCL `X509Chain` / `X509ChainPolicy` primitives before invoking the callback. The callback MUST observe the built chain and computed `SslPolicyErrors`, and absent callback override the library MUST fail closed when that delegated policy evaluation does not succeed. This slice MUST remain separate from the standalone `CertificateRevocationCheckMode` floor in `REQ-QUIC-CRT-0126`, broader PKI or path-building behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.
+In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true and `RemoteCertificateValidationCallback` is supplied, the library MUST honor `SslServerAuthenticationOptions.CertificateChainPolicy` on that same carrier by delegating presented-client-certificate evaluation to BCL `X509Chain` / `X509ChainPolicy` primitives before invoking the callback. The callback must observe the built chain and computed `SslPolicyErrors`, and absent callback override the library must fail closed when that delegated policy evaluation does not succeed. This slice must remain separate from the standalone `CertificateRevocationCheckMode` floor in `REQ-QUIC-CRT-0126`, broader PKI or path-building behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.
 
 Trace:
 - Source Refs:
@@ -1052,7 +1052,7 @@ Notes:
 - QuicPeerCertificatePolicy remains the separate exact-pinning path for the client role under REQ-QUIC-CRT-0123.
 
 ## REQ-QUIC-CRT-0126 Honor server-side CertificateRevocationCheckMode on the existing callback-driven client-auth path
-In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true and `RemoteCertificateValidationCallback` is supplied, the library MUST honor `SslServerAuthenticationOptions.CertificateRevocationCheckMode` on that same carrier by mapping the standalone revocation mode into the BCL `X509Chain` used for presented-client-certificate evaluation before invoking the callback. This floor applies only when `CertificateChainPolicy` is absent; mixed `CertificateChainPolicy` plus standalone `CertificateRevocationCheckMode` remains unsupported on this slice. This slice MUST remain separate from `REQ-QUIC-CRT-0125`, broader PKI or path-building behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.
+In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true and `RemoteCertificateValidationCallback` is supplied, the library MUST honor `SslServerAuthenticationOptions.CertificateRevocationCheckMode` on that same carrier by mapping the standalone revocation mode into the BCL `X509Chain` used for presented-client-certificate evaluation before invoking the callback. This floor applies only when `CertificateChainPolicy` is absent; mixed `CertificateChainPolicy` plus standalone `CertificateRevocationCheckMode` remains unsupported on this slice. This slice must remain separate from `REQ-QUIC-CRT-0125`, broader PKI or path-building behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.
 
 Trace:
 - Source Refs:
@@ -1082,7 +1082,7 @@ Notes:
 - Broader PKI/path-building, 0-RTT, key update, transfer, retry, and mixed policy configuration remain out of scope.
 
 ## REQ-QUIC-CRT-0127 Own opaque client resumption-ticket snapshot and keep early data gated closed
-In the client role, the library MUST own an opaque resumption-ticket snapshot on the managed client/runtime path, capture the first opaque ticket bytes received through the existing internal post-handshake ticket ingress seam into that owned snapshot distinct from transient bridge-state storage, and keep the early-data gate explicitly closed on the managed client/runtime path. This slice MUST keep the snapshot opaque, MUST NOT derive PSKs, MUST NOT send or accept 0-RTT payloads, MUST NOT add anti-replay guarantees, MUST NOT widen the public API, and MUST NOT alter transfer or retry contracts.
+In the client role, the library MUST own an opaque resumption-ticket snapshot on the managed client/runtime path, capture the first opaque ticket bytes received through the existing internal post-handshake ticket ingress seam into that owned snapshot distinct from transient bridge-state storage, and keep the early-data gate explicitly closed on the managed client/runtime path. This slice must keep the snapshot opaque, must not derive PSKs, must not send or accept 0-RTT payloads, must not add anti-replay guarantees, must not widen the public API, and must not alter transfer or retry contracts.
 
 Trace:
 - Source Refs:
@@ -1105,7 +1105,7 @@ Notes:
 - The client/runtime early-data gate remains explicitly closed in this slice, and the later 0-RTT packet-path work stays separate.
 
 ## REQ-QUIC-CRT-0128 Surface opaque post-handshake ticket-bearing TLS updates after Finished
-In the client role, the transport-facing TLS bridge MUST be able to surface an opaque post-handshake ticket-bearing TLS update after the supported Finished proof boundary by carrying ticket bytes through an internal update seam once Finished has been verified. The slice MUST keep handshake completion and 1-RTT application-data behavior unchanged, MUST keep the ticket bytes opaque, and MUST NOT imply ticket persistence, replay ownership, PSK derivation, resumed-handshake support, 0-RTT packet support, anti-replay behavior, key update, transfer, retry, or any public API widening.
+In the client role, the transport-facing TLS bridge MUST be able to surface an opaque post-handshake ticket-bearing TLS update after the supported Finished proof boundary by carrying ticket bytes through an internal update seam once Finished has been verified. The slice must keep handshake completion and 1-RTT application-data behavior unchanged, must keep the ticket bytes opaque, and must not imply ticket persistence, replay ownership, PSK derivation, resumed-handshake support, 0-RTT packet support, anti-replay behavior, key update, transfer, retry, or any public API widening.
 
 Trace:
 - Source Refs:
@@ -1125,14 +1125,14 @@ Notes:
 - REQ-QUIC-CRT-0127 remains the separate opaque resumption-ticket and early-data gate prerequisite.
 
 ## REQ-QUIC-CRT-0129 Ingress opaque post-handshake ticket bytes through 1-RTT CRYPTO after Finished
-In the client role, the transport-facing TLS bridge MUST be able to consume a TLS 1.3 NewSessionTicket message carried in QuicTlsEncryptionLevel.OneRtt CRYPTO data after the supported Finished proof boundary, extract the opaque ticket bytes from that message, and surface them through the existing internal PostHandshakeTicketAvailable update seam. The slice MUST keep handshake completion and 1-RTT application-data behavior unchanged, MUST keep the ticket bytes opaque, MUST reject pre-Finished and server-role ingress, MUST preserve the first retained ticket on duplicate ingress, and MUST NOT imply ticket persistence, replay ownership, PSK derivation, resumed-handshake support, 0-RTT packet support, anti-replay behavior, key update, transfer, retry, or any public API widening. Unsupported 1-RTT post-handshake TLS messages MUST remain outside the supported boundary and be ignored rather than broadening the parser into a general post-handshake engine.
+In the client role, the transport-facing TLS bridge MUST be able to consume a TLS 1.3 NewSessionTicket message carried in QuicTlsEncryptionLevel.OneRtt CRYPTO data after the supported Finished proof boundary, extract the opaque ticket bytes from that message, and surface them through the existing internal PostHandshakeTicketAvailable update seam. The slice must keep handshake completion and 1-RTT application-data behavior unchanged, must keep the ticket bytes opaque, must reject pre-Finished and server-role ingress, must preserve the first retained ticket on duplicate ingress, and must not imply ticket persistence, replay ownership, PSK derivation, resumed-handshake support, 0-RTT packet support, anti-replay behavior, key update, transfer, retry, or any public API widening. Unsupported 1-RTT post-handshake TLS messages must remain outside the supported boundary and be ignored rather than broadening the parser into a general post-handshake engine.
 
 Trace:
 - Source Refs:
   - docs/design/quic-interop-prep-plan.md
   - specs/requirements/quic/REQUIREMENT-GAPS.md
   - src/Incursa.Quic/QuicTlsTransport.cs
-  - src/Incursa.Quic/QuicTransportTlsBridgeDriver.cs
+  - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
   - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
   - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
   - src/Incursa.Quic/QuicConnectionRuntime.cs
@@ -1146,7 +1146,7 @@ Notes:
 - The extracted ticket bytes stay opaque and do not imply resumption, replay ownership, or early data.
 
 ## REQ-QUIC-CRT-0130 Export and hand off a detached opaque resumption-ticket carrier across client connection lifetimes
-In the client role, the library MUST be able to export an opaque detached resumption-ticket carrier from the current-lifetime owned resumption-ticket snapshot after REQ-QUIC-CRT-0127 has captured real ticket bytes, and a later managed client setup MUST be able to accept that carrier and store it as separate dormant internal state. The detached carrier MUST remain distinct from transient bridge-state ticket bytes and the current runtime-owned snapshot bytes, MUST keep early-data admission explicitly closed before and after handoff, MUST keep the carrier opaque, MUST remain client-role only, and, by itself, MUST NOT claim PSK derivation, resumed-handshake success, 0-RTT support, anti-replay, public API or IsSupported widening, or transfer or retry changes.
+In the client role, the library MUST be able to export an opaque detached resumption-ticket carrier from the current-lifetime owned resumption-ticket snapshot after REQ-QUIC-CRT-0127 has captured real ticket bytes, and a later managed client setup must be able to accept that carrier and store it as separate dormant internal state. The detached carrier must remain distinct from transient bridge-state ticket bytes and the current runtime-owned snapshot bytes, must keep early-data admission explicitly closed before and after handoff, must keep the carrier opaque, must remain client-role only, and, by itself, must not claim PSK derivation, resumed-handshake success, 0-RTT support, anti-replay, public API or IsSupported widening, or transfer or retry changes.
 
 Trace:
 - Source Refs:
@@ -1165,7 +1165,7 @@ Notes:
 - Server-role use remains out of scope for this slice.
 
 ## REQ-QUIC-CRT-0131 Capture the minimum detached resumption-credential material needed for a later resumption attempt
-In the client role, the library MUST expand the detached resumption-ticket carrier established by REQ-QUIC-CRT-0130 so that, after real post-Finished ticket ingress has been accepted, the originating managed client/runtime path retains the opaque ticket bytes, ticket nonce, ticket lifetime seconds, ticket age add, capture timestamp, and the handshake-derived resumption master secret. A later managed client setup MUST be able to accept that richer carrier and store it as separate dormant internal state before any later resumption-attempt logic consumes it. The carrier MUST remain immutable and opaque, MUST remain distinct from transient bridge-state storage and the current runtime-owned snapshot, MUST keep early-data admission explicitly closed before and after capture and handoff, MUST remain client-role only, and, by itself, MUST NOT claim resumed-handshake or 0-RTT support, MUST NOT add anti-replay, MUST NOT widen public API or IsSupported, and MUST NOT alter transfer or retry contracts.
+In the client role, the library MUST expand the detached resumption-ticket carrier established by REQ-QUIC-CRT-0130 so that, after real post-Finished ticket ingress has been accepted, the originating managed client/runtime path retains the opaque ticket bytes, ticket nonce, ticket lifetime seconds, ticket age add, capture timestamp, and the handshake-derived resumption master secret. A later managed client setup must be able to accept that richer carrier and store it as separate dormant internal state before any later resumption-attempt logic consumes it. The carrier must remain immutable and opaque, must remain distinct from transient bridge-state storage and the current runtime-owned snapshot, must keep early-data admission explicitly closed before and after capture and handoff, must remain client-role only, and, by itself, must not claim resumed-handshake or 0-RTT support, must not add anti-replay, must not widen public API or IsSupported, and must not alter transfer or retry contracts.
 
 Trace:
 - Source Refs:
@@ -1192,7 +1192,7 @@ Notes:
 - Server-role use remains out of scope for this slice.
 
 ## REQ-QUIC-CRT-0132 Build a PSK-capable ClientHello attempt from dormant detached resumption material
-In the client role, the library MUST consume an eligible dormant detached resumption-ticket carrier established by REQ-QUIC-CRT-0131 to build the managed Initial ClientHello as a PSK-capable attempt. The emitted ClientHello MUST include `psk_key_exchange_modes` with `psk_dhe_ke`, a `pre_shared_key` extension whose identity is derived from the opaque ticket bytes and whose binder is derived from the resumption master secret and ticket nonce, and it MUST keep early-data admission explicitly closed. When no eligible dormant carrier is present, the existing bootstrap ClientHello MUST remain unchanged. The slice MUST remain client-role only, MUST NOT claim resumed-handshake success or 0-RTT, MUST NOT widen public API or IsSupported, MUST NOT alter transfer or retry contracts, and MUST keep the minimum server-side transcript parser acceptance limited to the emitted PSK-attempt ClientHello rather than a general post-handshake engine.
+In the client role, the library MUST consume an eligible dormant detached resumption-ticket carrier established by REQ-QUIC-CRT-0131 to build the managed Initial ClientHello as a PSK-capable attempt. The emitted ClientHello must include `psk_key_exchange_modes` with `psk_dhe_ke`, a `pre_shared_key` extension whose identity is derived from the opaque ticket bytes and whose binder is derived from the resumption master secret and ticket nonce, and it must keep early-data admission explicitly closed. When no eligible dormant carrier is present, the existing bootstrap ClientHello must remain unchanged. The slice must remain client-role only, must not claim resumed-handshake success or 0-RTT, must not widen public API or IsSupported, must not alter transfer or retry contracts, and must keep the minimum server-side transcript parser acceptance limited to the emitted PSK-attempt ClientHello rather than a general post-handshake engine.
 
 Trace:
 - Source Refs:
@@ -1214,7 +1214,7 @@ Notes:
 - The emitted ClientHello is a PSK attempt, not a claim of resumed-handshake success.
 
 ## REQ-QUIC-CRT-0133 Classify a PSK-capable ClientHello attempt at ServerHello as accepted or rejected
-In the client role, the library MUST classify a PSK-capable ClientHello attempt at ServerHello as accepted or rejected by parsing the server's `pre_shared_key` selection signal on the supported TLS 1.3 subset. A rejected attempt MUST fall back cleanly to the existing non-resumption/full-handshake path without corrupting the dormant client runtime state. An accepted attempt MUST be recognized as accepted on the client path, keep early-data admission explicitly closed, and MUST NOT by itself claim resumed-handshake success or any broader abbreviated-handshake completion. The slice MUST remain client-role only, MUST NOT widen public API or IsSupported, MUST NOT add 0-RTT, anti-replay, key update, or broad post-handshake TLS support, and MUST NOT alter transfer or retry contracts.
+In the client role, the library MUST classify a PSK-capable ClientHello attempt at ServerHello as accepted or rejected by parsing the server's `pre_shared_key` selection signal on the supported TLS 1.3 subset. A rejected attempt must fall back cleanly to the existing non-resumption/full-handshake path without corrupting the dormant client runtime state. An accepted attempt must be recognized as accepted on the client path, keep early-data admission explicitly closed, and must not by itself claim resumed-handshake success or any broader abbreviated-handshake completion. The slice must remain client-role only, must not widen public API or IsSupported, must not add 0-RTT, anti-replay, key update, or broad post-handshake TLS support, and must not alter transfer or retry contracts.
 
 Trace:
 - Source Refs:
@@ -1254,7 +1254,7 @@ Notes:
 - The disabled path must remain a null object or equivalent no-op sink.
 
 ## REQ-QUIC-CRT-0135 Resolve diagnostics once per connection
-The library MUST resolve diagnostics enablement once per connection at setup time and pass the runtime a connection-scoped sink or null object before hot-path event processing begins; packet, stream, timer, and path paths MUST NOT repeat global diagnostics configuration checks.
+The library MUST resolve diagnostics enablement once per connection at setup time and pass the runtime a connection-scoped sink or null object before hot-path event processing begins; packet, stream, timer, and path paths must not repeat global diagnostics configuration checks.
 
 Trace:
 - Source Refs:
@@ -1272,7 +1272,7 @@ Notes:
 - This slice is observational only and does not alter transport scheduling or connection behavior.
 
 ## REQ-QUIC-CRT-0136 Keep qlog mapping and output ownership outside the transport core
-The library MUST keep qlog mapping, trace construction, and output or file ownership outside the transport core; a sibling adapter or host layer MAY translate the library's structured diagnostics into `Incursa.Qlog.Quic` events, but the transport core MUST NOT depend on qlog builders or serializer packages.
+The library MUST keep qlog mapping, trace construction, and output or file ownership outside the transport core; a sibling adapter or host layer may translate the library's structured diagnostics into `Incursa.Qlog.Quic` events, but the transport core must not depend on qlog builders or serializer packages.
 
 Trace:
 - Source Refs:
@@ -1297,7 +1297,7 @@ Notes:
 - The adapter must be observational only; it must not mutate runtime scheduling, endpoint routing, or recovery behavior.
 
 ## REQ-QUIC-CRT-0137 Complete an accepted PSK-capable ClientHello attempt through the abbreviated resumption flight
-In the client role, the library MUST advance an accepted PSK-capable ClientHello attempt past ServerHello through the abbreviated TLS 1.3 resumption flight so that the client-side handshake completes without requiring the full-handshake certificate and certificate-verify path on that accepted branch. Rejected attempts MUST continue to fall back cleanly to the existing full-handshake path. The slice MUST remain client-role only, MUST keep early-data admission explicitly closed, MUST remain managed client/runtime only, MUST NOT widen public API or IsSupported, MUST NOT claim 0-RTT, anti-replay, key update, or broad resumption support beyond this accepted-path completion, and MUST NOT alter transfer or retry contracts.
+In the client role, the library MUST advance an accepted PSK-capable ClientHello attempt past ServerHello through the abbreviated TLS 1.3 resumption flight so that the client-side handshake completes without requiring the full-handshake certificate and certificate-verify path on that accepted branch. Rejected attempts must continue to fall back cleanly to the existing full-handshake path. The slice must remain client-role only, must keep early-data admission explicitly closed, must remain managed client/runtime only, must not widen public API or IsSupported, must not claim 0-RTT, anti-replay, key update, or broad resumption support beyond this accepted-path completion, and must not alter transfer or retry contracts.
 
 Trace:
 - Source Refs:
@@ -1322,7 +1322,7 @@ Notes:
 - This slice completes the accepted client-side resumed handshake only; it does not add 0-RTT, anti-replay, or any public resumption promise.
 
 ## REQ-QUIC-CRT-0138 Add a narrow host-facing qlog capture helper above the adapter
-The library MUST provide a narrow opt-in host-facing qlog capture helper above the sibling adapter boundary so a caller can enable qlog capture per client connection or per listener host instance, collect the resulting qlog trace data in memory through the existing `Incursa.Quic.Qlog` adapter, and serialize the captured contained qlog file through `Incursa.Qlog.Serialization.Json.QlogJsonSerializer` without moving file-system output policy into `Incursa.Quic`. The disabled path MUST remain unchanged, the transport core MUST remain qlog-free, and the capture helper MUST not broaden app-wide logging control.
+The library MUST provide a narrow opt-in host-facing qlog capture helper above the sibling adapter boundary so a caller can enable qlog capture per client connection or per listener host instance, collect the resulting qlog trace data in memory through the existing `Incursa.Quic.Qlog` adapter, and serialize the captured contained qlog file through `Incursa.Qlog.Serialization.Json.QlogJsonSerializer` without moving file-system output policy into `Incursa.Quic`. The disabled path must remain unchanged, the transport core must remain qlog-free, and the capture helper must not broaden app-wide logging control.
 
 Trace:
 - Source Refs:
@@ -1346,7 +1346,7 @@ Notes:
 - Sequential JSON Text Sequences output is optional for this slice and remains subordinate to the contained JSON path unless a consumer explicitly needs it.
 
 ## REQ-QUIC-CRT-0139 Capture the minimum dormant early-data eligibility material behind the detached resumption carrier
-The managed client/runtime path MUST extend the owned detached resumption-ticket carrier with the minimum honest internal material needed for a later 0-RTT attempt: a preserved `max_early_data_size` value from a valid `NewSessionTicket` `early_data` extension and a cloned snapshot of the successful prior connection's peer transport parameters. The slice MUST remain client-role only, MUST remain managed client/runtime only, MUST preserve detached-carrier semantics and later dormant storage on managed client setup, MUST keep early-data admission explicitly closed before and after capture, and MUST NOT claim 0-RTT packet send/receive, anti-replay enforcement, key update, public API widening, or any broader resumption promise.
+The managed client/runtime path MUST extend the owned detached resumption-ticket carrier with the minimum honest internal material needed for a later 0-RTT attempt: a preserved `max_early_data_size` value from a valid `NewSessionTicket` `early_data` extension and a cloned snapshot of the successful prior connection's peer transport parameters. The slice must remain client-role only, must remain managed client/runtime only, must preserve detached-carrier semantics and later dormant storage on managed client setup, must keep early-data admission explicitly closed before and after capture, and must not claim 0-RTT packet send/receive, anti-replay enforcement, key update, public API widening, or any broader resumption promise.
 
 Trace:
 - Source Refs:
@@ -1373,7 +1373,7 @@ Notes:
 - Later client setup should retain the richer detached snapshot as dormant internal state, yet the accepted abbreviated resumption boundary remains unchanged.
 
 ## REQ-QUIC-CRT-0140 Recognize dormant early-data attempt readiness from the detached carrier
-The managed client/runtime path MUST expose a narrow internal readiness observation for the dormant detached resumption carrier. The observation MUST be true only when the carrier contains both the resumption credential material already captured in the earlier detached-resumption slices and the early-data prerequisite material from REQ-QUIC-CRT-0139. The observation MUST remain false when either ingredient is absent, MUST remain client-role only, MUST remain managed client/runtime only, MUST keep early-data admission explicitly closed, MUST NOT add 0-RTT packet send/receive, MUST NOT claim anti-replay or key update support, and MUST NOT widen public API or IsSupported.
+The managed client/runtime path MUST expose a narrow internal readiness observation for the dormant detached resumption carrier. The observation must be true only when the carrier contains both the resumption credential material already captured in the earlier detached-resumption slices and the early-data prerequisite material from REQ-QUIC-CRT-0139. The observation must remain false when either ingredient is absent, must remain client-role only, must remain managed client/runtime only, must keep early-data admission explicitly closed, must not add 0-RTT packet send/receive, must not claim anti-replay or key update support, and must not widen public API or IsSupported.
 
 Trace:
 - Source Refs:
@@ -1400,7 +1400,7 @@ Notes:
 - The dormant carrier stays internal; this slice does not create a public readiness promise.
 
 ## REQ-QUIC-CRT-0141 Attempt the first bounded client-side 0-RTT packet emission
-The managed client/runtime path MUST expose the first bounded client-side 0-RTT packet-emission attempt from the dormant detached resumption carrier. The attempt MUST be admitted only when the carrier contains both the resumption credential material and the early-data prerequisite material from REQ-QUIC-CRT-0139 and REQ-QUIC-CRT-0140. On that branch the runtime MUST derive client-side 0-RTT packet-protection material from the dormant carrier, use the existing connection-owned send path to build a protected client 0-RTT application packet, and keep that material distinct from the current 1-RTT send path. If the prerequisites or derived material are absent, the runtime MUST fall back cleanly without widening the public promise. The slice MUST remain client-role only, MUST remain managed client/runtime only, MUST NOT add 0-RTT receive handling, server admission, anti-replay enforcement, key update, transfer, retry, or public API widening, and MUST NOT alter the current narrow supported public claim.
+The managed client/runtime path MUST expose the first bounded client-side 0-RTT packet-emission attempt from the dormant detached resumption carrier. The attempt must be admitted only when the carrier contains both the resumption credential material and the early-data prerequisite material from REQ-QUIC-CRT-0139 and REQ-QUIC-CRT-0140. On that branch the runtime must derive client-side 0-RTT packet-protection material from the dormant carrier, use the existing connection-owned send path to build a protected client 0-RTT application packet, and keep that material distinct from the current 1-RTT send path. If the prerequisites or derived material are absent, the runtime must fall back cleanly without widening the public promise. The slice must remain client-role only, must remain managed client/runtime only, must not add 0-RTT receive handling, server admission, anti-replay enforcement, key update, transfer, retry, or public API widening, and must not alter the current narrow supported public claim.
 
 Trace:
 - Source Refs:
@@ -1426,7 +1426,7 @@ Notes:
 - The later 0-RTT receive, anti-replay, key update, transfer, retry, and public-promise widening families remain separate.
 
 ## REQ-QUIC-CRT-0142 Discard dormant ZeroRtt material when the resumption branch is rejected
-In the client role, the library MUST discard dormant ZeroRtt packet-protection material when a PSK-capable ClientHello attempt is rejected at ServerHello, and MUST leave that dormant material intact when the attempt is accepted. The cleanup MUST flow through the existing TLS bridge-state update path so the connection runtime does not retain stale 0-RTT protection material after the rejection boundary. The slice MUST remain client-role only, MUST remain managed client/runtime only, MUST keep early-data admission explicitly closed, MUST NOT add 0-RTT receive handling, server admission, key update, transfer, retry, or public API widening, and MUST NOT claim anti-replay support.
+In the client role, the library MUST discard dormant ZeroRtt packet-protection material when a PSK-capable ClientHello attempt is rejected at ServerHello, and must leave that dormant material intact when the attempt is accepted. The cleanup must flow through the existing TLS bridge-state update path so the connection runtime does not retain stale 0-RTT protection material after the rejection boundary. The slice must remain client-role only, must remain managed client/runtime only, must keep early-data admission explicitly closed, must not add 0-RTT receive handling, server admission, key update, transfer, retry, or public API widening, and must not claim anti-replay support.
 
 Trace:
 - Source Refs:
@@ -1446,7 +1446,7 @@ Notes:
 - The bridge-state path remains the single place that owns the discard decision.
 
 ## REQ-QUIC-CRT-0143 Observe peer early-data disposition from EncryptedExtensions and clear dormant ZeroRtt material on rejection
-In the client role, when a PSK-capable ClientHello attempt reaches the peer `EncryptedExtensions` flight, the library MUST observe the peer `early_data` extension, MUST surface an explicit early-data disposition as `Accepted` when the extension is present with the supported zero-length value and as `Rejected` when it is absent, MUST discard dormant ZeroRtt packet-protection material when that disposition is `Rejected`, MUST leave that dormant material intact when the disposition is `Accepted`, MUST deterministically reject malformed or duplicated `early_data` extension data through the existing fatal/update path, and MUST remain client-role only, managed client/runtime only, closed to any public early-data admission or API widening, and not claim 0-RTT receive handling, server admission, key update, transfer, retry, or anti-replay support.
+In the client role, when a PSK-capable ClientHello attempt reaches the peer `EncryptedExtensions` flight, the library MUST observe the peer `early_data` extension, must surface an explicit early-data disposition as `Accepted` when the extension is present with the supported zero-length value and as `Rejected` when it is absent, must discard dormant ZeroRtt packet-protection material when that disposition is `Rejected`, must leave that dormant material intact when the disposition is `Accepted`, must deterministically reject malformed or duplicated `early_data` extension data through the existing fatal/update path, and must remain client-role only, managed client/runtime only, closed to any public early-data admission or API widening, and not claim 0-RTT receive handling, server admission, key update, transfer, retry, or anti-replay support.
 
 Trace:
 - Source Refs:
@@ -1467,7 +1467,7 @@ Notes:
 - The slice remains separate from 0-RTT receive handling, server admission, key update, transfer, retry, and any public API widening.
 
 ## REQ-QUIC-CRT-0144 Record the first observed 1-RTT Key Phase transition
-In the client role, after handshake confirmation and on the active 1-RTT short-header packet path, the library MUST observe the peer Key Phase bit from protected application packets, MUST record the first observed 0->1 transition by setting the existing internal `KeyUpdateInstalled` state and `CurrentOneRttKeyPhase` to 1, MUST leave establishing runtimes unchanged before handshake confirmation, and MUST remain client-role only, managed client/runtime only, and closed to successor-key derivation, TLS KeyUpdate support, transfer, retry, public API widening, and any public key-update promise.
+In the client role, after handshake confirmation and on the active 1-RTT short-header packet path, the library MUST observe the peer Key Phase bit from protected application packets, must record the first observed 0->1 transition by setting the existing internal `KeyUpdateInstalled` state and `CurrentOneRttKeyPhase` to 1, must leave establishing runtimes unchanged before handshake confirmation, and must remain client-role only, managed client/runtime only, and closed to successor-key derivation, TLS KeyUpdate support, transfer, retry, public API widening, and any public key-update promise.
 
 Trace:
 - Source Refs:
@@ -1487,7 +1487,7 @@ Notes:
 - The short-header helper preserves and reports the Key Phase bit so the runtime can make the first-transition decision without broadening public API.
 
 ## REQ-QUIC-CRT-0145 Install successor 1-RTT packet-protection material on the first observed Key Phase transition
-In the client role, after handshake confirmation and on the active 1-RTT short-header packet path, the library MUST retain the current 1-RTT application traffic secret material long enough to derive a successor 1-RTT open/protect packet-protection pair when the peer Key Phase bit first transitions from 0 to 1. On that first observed 0->1 transition, the runtime MUST derive the successor pair from the retained application traffic secret material, MUST install the successor open/protect material into the existing bridge-state fields, MUST update `KeyUpdateInstalled` and `CurrentOneRttKeyPhase` to 1, and MUST cause subsequently protected outbound 1-RTT packets to use the installed phase-1 material and set the Key Phase bit accordingly. Before handshake confirmation, the establishing runtime MUST remain unchanged. The slice MUST remain client-role only, MUST remain managed client/runtime only, and MUST remain closed to repeated successor derivation, a general RFC 9001 key-update engine, TLS KeyUpdate support, transfer, retry, public API widening, and any public key-update promise.
+In the client role, after handshake confirmation and on the active 1-RTT short-header packet path, the library MUST retain the current 1-RTT application traffic secret material long enough to derive a successor 1-RTT open/protect packet-protection pair when the peer Key Phase bit first transitions from 0 to 1. On that first observed 0->1 transition, the runtime must derive the successor pair from the retained application traffic secret material, must install the successor open/protect material into the existing bridge-state fields, must update `KeyUpdateInstalled` and `CurrentOneRttKeyPhase` to 1, and must cause subsequently protected outbound 1-RTT packets to use the installed phase-1 material and set the Key Phase bit accordingly. Before handshake confirmation, the establishing runtime must remain unchanged. The slice must remain client-role only, must remain managed client/runtime only, and must remain closed to repeated successor derivation, a general RFC 9001 key-update engine, TLS KeyUpdate support, transfer, retry, public API widening, and any public key-update promise.
 
 Trace:
 - Source Refs:

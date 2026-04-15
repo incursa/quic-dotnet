@@ -37,7 +37,7 @@ Execution, inspection, and regression evidence.
 ## Evidence
 
 - src/Incursa.Quic/QuicTlsTransport.cs
-- src/Incursa.Quic/QuicTransportTlsBridgeDriver.cs
+- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
 - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs

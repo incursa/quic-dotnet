@@ -31,7 +31,7 @@
     {
       "id": "REQ-QUIC-API-0001",
       "title": "Limit the public consumer surface to the approved facade types",
-      "statement": "The library MUST expose only the consumer-facing facade types named in this specification, and it MUST keep all other current helper, parser, runtime, TLS, handshake, packet, frame, transport-parameter, recovery, congestion, and seam types internal unless a future requirement explicitly promotes them.",
+      "statement": "The library MUST expose only the consumer-facing facade types named in this specification, and it must keep all other current helper, parser, runtime, TLS, handshake, packet, frame, transport-parameter, recovery, congestion, and seam types internal unless a future requirement explicitly promotes them.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs",
@@ -47,7 +47,7 @@
     {
       "id": "REQ-QUIC-API-0002",
       "title": "Expose the listener and client entry surfaces honestly",
-      "statement": "The library MUST expose server listener creation and accept through QuicListener.ListenAsync(QuicListenerOptions, CancellationToken) and QuicListener.AcceptConnectionAsync(CancellationToken), and it MUST expose client connection establishment through QuicConnection.ConnectAsync(QuicClientConnectionOptions, CancellationToken). The client entry point MUST complete only when the existing runtime reaches the supported connection-establishment boundary, and it MUST otherwise remain pending or fail with an explicit terminal outcome instead of fabricating success.",
+      "statement": "The library MUST expose server listener creation and accept through QuicListener.ListenAsync(QuicListenerOptions, CancellationToken) and QuicListener.AcceptConnectionAsync(CancellationToken), and it must expose client connection establishment through QuicConnection.ConnectAsync(QuicClientConnectionOptions, CancellationToken). The client entry point must complete only when the existing runtime reaches the supported connection-establishment boundary, and it must otherwise remain pending or fail with an explicit terminal outcome instead of fabricating success.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs"
@@ -97,7 +97,7 @@
     {
       "id": "REQ-QUIC-API-0005",
       "title": "Expose configuration through the approved option and callback types",
-      "statement": "The library MUST carry configuration through QuicConnectionOptions, QuicListenerOptions, QuicClientConnectionOptions, QuicServerConnectionOptions, and QuicReceiveWindowSizes, and it MUST expose only the approved knobs on those types: close and stream default error codes, handshake and idle timeouts, keep-alive interval, inbound stream limits, the supported stream-capacity callback, listener endpoint and backlog, client local/remote endpoints, application protocols, the narrow server connection-options callback, server authentication options, and the supported subset of SslClientAuthenticationOptions.",
+      "statement": "The library MUST carry configuration through QuicConnectionOptions, QuicListenerOptions, QuicClientConnectionOptions, QuicServerConnectionOptions, and QuicReceiveWindowSizes, and it must expose only the approved knobs on those types: close and stream default error codes, handshake and idle timeouts, keep-alive interval, inbound stream limits, the supported stream-capacity callback, listener endpoint and backlog, client local/remote endpoints, application protocols, the narrow server connection-options callback, server authentication options, and the supported subset of SslClientAuthenticationOptions.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs"
@@ -134,7 +134,7 @@
     {
       "id": "REQ-QUIC-API-0007",
       "title": "Keep the TLS, handshake, packet, and runtime seams internal",
-      "statement": "The library MUST keep QuicTlsTranscriptProgress, QuicTlsKeySchedule, QuicTransportTlsBridgeState, QuicHandshakeFlowCoordinator, QuicInitialPacketProtection, QuicHandshakePacketProtection, QuicTlsPacketProtectionMaterial, QuicConnectionRuntime, QuicConnectionRuntimeHost, QuicListenerHost, QuicConnectionRuntimeShard, QuicConnectionSendRuntime, QuicConnectionRuntimeEndpoint, QuicConnectionEndpointHost, QuicClientConnectionHost, and QuicClientConnectionOptionsValidator internal, and it MUST keep the remainder of the packet, frame, transport-parameter, recovery, congestion, and stream-identity helpers internal unless a future requirement explicitly promotes them.",
+      "statement": "The library MUST keep QuicTlsTranscriptProgress, QuicTlsKeySchedule, QuicTransportTlsBridgeState, QuicHandshakeFlowCoordinator, QuicInitialPacketProtection, QuicHandshakePacketProtection, QuicTlsPacketProtectionMaterial, QuicConnectionRuntime, QuicConnectionRuntimeHost, QuicListenerHost, QuicConnectionRuntimeShard, QuicConnectionSendRuntime, QuicConnectionRuntimeEndpoint, QuicConnectionEndpointHost, QuicClientConnectionHost, and QuicClientConnectionOptionsValidator internal, and it must keep the remainder of the packet, frame, transport-parameter, recovery, congestion, and stream-identity helpers internal unless a future requirement explicitly promotes them.",
       "trace": {
         "upstream_refs": [
           "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
@@ -163,7 +163,7 @@
     {
       "id": "REQ-QUIC-API-0008",
       "title": "Honor async lifecycle cancellation and terminal-state transitions",
-      "statement": "The library MUST honor cancellation tokens on pending listen, accept, connect, open-stream, supported write, and close operations, and the server connection-options callback MUST observe the cancellation token supplied by the listener accept flow. A pre-canceled or later-canceled token MUST complete the still-pending operation with OperationCanceledException, but once a listener accept, connection, or stream has committed or reached a terminal state the public API MUST complete with the documented QuicError or ObjectDisposedException outcome instead of silently reviving or hiding the operation.",
+      "statement": "The library MUST honor cancellation tokens on pending listen, accept, connect, open-stream, supported write, and close operations, and the server connection-options callback must observe the cancellation token supplied by the listener accept flow. A pre-canceled or later-canceled token must complete the still-pending operation with OperationCanceledException, but once a listener accept, connection, or stream has committed or reached a terminal state the public API must complete with the documented QuicError or ObjectDisposedException outcome instead of silently reviving or hiding the operation.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicListenerTests.cs",
@@ -183,7 +183,7 @@
     {
       "id": "REQ-QUIC-API-0009",
       "title": "Expose the supported stream-capacity callback deltas",
-      "statement": "The library MUST surface the initial peer stream-capacity delta through QuicConnectionOptions.StreamCapacityCallback on the supported loopback establishment path, and it MUST surface later real peer stream-capacity growth plus the supported close-driven reclaim increment through the same callback on the supported active loopback path. The callback MUST remain silent when the supported boundary is never reached and MUST not emit synthetic deltas.",
+      "statement": "The library MUST surface the initial peer stream-capacity delta through QuicConnectionOptions.StreamCapacityCallback on the supported loopback establishment path, and it must surface later real peer stream-capacity growth plus the supported close-driven reclaim increment through the same callback on the supported active loopback path. The callback must remain silent when the supported boundary is never reached and must not emit synthetic deltas.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicConnectionTests.cs"
@@ -214,7 +214,7 @@
     {
       "id": "REQ-QUIC-API-0011",
       "title": "Expose a shared runtime capability marker for the connection and listener facades",
-      "statement": "The library MUST expose `QuicConnection.IsSupported` and `QuicListener.IsSupported` as public static `bool` properties. Both properties MUST return the same deterministic runtime capability value for the currently supported managed QUIC loopback slice, and that value MUST reflect only whether the current runtime can execute the repository's supported connection/listener path. The value MUST NOT be treated as a promise of full feature completeness, interop-runner enablement, Microsoft parity, `0-RTT`, key update, or broader stream-close-driven capacity release beyond the supported callback subset.",
+      "statement": "The library MUST expose `QuicConnection.IsSupported` and `QuicListener.IsSupported` as public static `bool` properties. Both properties must return the same deterministic runtime capability value for the currently supported managed QUIC loopback slice, and that value must reflect only whether the current runtime can execute the repository's supported connection/listener path. The value must not be treated as a promise of full feature completeness, interop-runner enablement, Microsoft parity, `0-RTT`, key update, or broader stream-close-driven capacity release beyond the supported callback subset.",
       "trace": {
         "upstream_refs": [
           "src/Incursa.Quic/QuicConnection.cs",
@@ -231,7 +231,7 @@
     {
       "id": "REQ-QUIC-API-0012",
       "title": "Expose explicit pinned peer identity and explicit trust material as the client policy carrier",
-      "statement": "The library MUST expose a public client-connect policy carrier for an exact pinned peer leaf certificate DER value and an explicit trust-material SHA-256 value, and it MUST feed those values unchanged into the existing internal client certificate-policy snapshot so the managed client bridge can fail closed on identity or trust mismatch. This slice MUST stay separate from `TargetHost`, `CertificateChainPolicy`, trust-store policy, revocation, broader client-auth, hostname-validation, `0-RTT`, key update, transfer, and retry behavior.",
+      "statement": "The library MUST expose a public client-connect policy carrier for an exact pinned peer leaf certificate DER value and an explicit trust-material SHA-256 value, and it must feed those values unchanged into the existing internal client certificate-policy snapshot so the managed client bridge can fail closed on identity or trust mismatch. This slice must stay separate from `TargetHost`, `CertificateChainPolicy`, trust-store policy, revocation, broader client-auth, hostname-validation, `0-RTT`, key update, transfer, and retry behavior.",
       "trace": {
         "upstream_refs": [
           "docs/design/quic-public-api.md",
@@ -257,7 +257,7 @@
     {
       "id": "REQ-QUIC-API-0013",
       "title": "Expose standard BCL-shaped client TLS validation on the existing client-auth carrier",
-      "statement": "The library MUST, for the mainstream public client-connect path, honor `SslClientAuthenticationOptions.TargetHost`, `SslClientAuthenticationOptions.CertificateChainPolicy`, `SslClientAuthenticationOptions.CertificateRevocationCheckMode`, and `SslClientAuthenticationOptions.RemoteCertificateValidationCallback` using BCL X509 chain and hostname primitives on the existing `SslClientAuthenticationOptions` carrier. When `QuicClientConnectionOptions.PeerCertificatePolicy` is supplied, the exact-pinning floor on `QuicPeerCertificatePolicy` MUST remain separate and mixed-mode configuration MUST be rejected. This slice MUST remain separate from `TargetHostName` public projection, broader client-auth, `0-RTT`, key update, transfer, and retry behavior.",
+      "statement": "The library MUST, for the mainstream public client-connect path, honor `SslClientAuthenticationOptions.TargetHost`, `SslClientAuthenticationOptions.CertificateChainPolicy`, `SslClientAuthenticationOptions.CertificateRevocationCheckMode`, and `SslClientAuthenticationOptions.RemoteCertificateValidationCallback` using BCL X509 chain and hostname primitives on the existing `SslClientAuthenticationOptions` carrier. When `QuicClientConnectionOptions.PeerCertificatePolicy` is supplied, the exact-pinning floor on `QuicPeerCertificatePolicy` must remain separate and mixed-mode configuration must be rejected. This slice must remain separate from `TargetHostName` public projection, broader client-auth, `0-RTT`, key update, transfer, and retry behavior.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-API-0004"
@@ -306,7 +306,7 @@
     {
       "id": "REQ-QUIC-API-0014",
       "title": "Keep blocked outbound stream opens pending until later real MAX_STREAMS growth",
-      "statement": "On the supported active loopback path, `QuicConnection.OpenOutboundStreamAsync(...)` MUST remain pending when the peer's current stream limit for the requested direction is exhausted, and it MUST complete that pending open only after a later real `MAX_STREAMS` increase makes a stream of that direction available. This slice MUST honor cancellation and terminal-state behavior under `REQ-QUIC-API-0008` and MUST not fabricate success, synthetic wake-up, `STREAMS_BLOCKED` emission, or broader stream-management parity.",
+      "statement": "On the supported active loopback path, `QuicConnection.OpenOutboundStreamAsync(...)` MUST remain pending when the peer's current stream limit for the requested direction is exhausted, and it must complete that pending open only after a later real `MAX_STREAMS` increase makes a stream of that direction available. This slice must honor cancellation and terminal-state behavior under `REQ-QUIC-API-0008` and must not fabricate success, synthetic wake-up, `STREAMS_BLOCKED` emission, or broader stream-management parity.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\MsQuicTests.cs",

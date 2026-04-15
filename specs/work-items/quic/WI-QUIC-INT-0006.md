@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-INT-0006"
 artifact_type: "work_item"
 title: "QUIC Local Interop-Runner Execution-Report Helper Work Item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-INT-0013"
@@ -54,7 +54,7 @@ Add a repo-local helper that builds the harness image, runs the external interop
 
 ## Verification Plan
 
-Run the helper against the local `https://github.com/quic-interop/quic-interop-runner` checkout, confirm the harness image builds, confirm the runner writes report artifacts into the repo-local artifact root, and inspect the captured output to ensure unsupported or build-blocked cases are not reported as success. Exercise both the client-local and server-local helper modes against quic-go and msquic peers, and confirm supported server-role harness paths start even when the runner leaves `REQUESTS` empty on the server side.
+Run the helper against the local `C:\src\quic-interop\quic-interop-runner` checkout, confirm the harness image builds, confirm the runner writes report artifacts into the repo-local artifact root, and inspect the captured output to ensure unsupported or build-blocked cases are not reported as success. Exercise both the client-local and server-local helper modes against quic-go and msquic peers, and confirm supported server-role harness paths start even when the runner leaves `REQUESTS` empty on the server side.
 
 ## Completion Notes
 
@@ -82,4 +82,3 @@ Verified By:
 - [`README.md`](../../../README.md)
 - [`Incursa.Quic.InteropHarness/README.md`](../../../src/Incursa.Quic.InteropHarness/README.md)
 - [`Incursa.Quic.InteropHarness/Dockerfile`](../../../src/Incursa.Quic.InteropHarness/Dockerfile)
-

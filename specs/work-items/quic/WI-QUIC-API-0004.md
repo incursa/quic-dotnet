@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-API-0004"
 artifact_type: "work_item"
 title: "Incursa.Quic Standard Client TLS Validation Work Item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-API-0013"

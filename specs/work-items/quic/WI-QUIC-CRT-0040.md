@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0040"
 artifact_type: "work_item"
 title: "QUIC client-side peer early-data disposition work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0143"
@@ -30,6 +30,13 @@ Add the peer EncryptedExtensions early-data disposition branch that surfaces acc
 ## Design Inputs
 
 - ARC-QUIC-CRT-0038
+
+## Planned Changes
+
+- Observe the peer EncryptedExtensions early-data disposition and surface the narrow accepted-versus-rejected branch internally.
+- Discard dormant ZeroRtt packet-protection material on rejection while preserving accepted disposition for later traced ownership.
+- Route malformed or duplicated `early_data` signaling through the existing fatal or update path rather than widening parser behavior.
+- Add focused requirement-home coverage for accepted disposition, rejected disposition, and malformed or duplicate handling.
 
 ## Out of Scope
 

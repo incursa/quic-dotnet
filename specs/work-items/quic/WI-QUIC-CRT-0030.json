@@ -23,7 +23,7 @@
     "broader session-management infrastructure",
     "opportunistic refactors unrelated to the ClientHello PSK-attempt seam"
   ],
-  "status": "landed",
+  "status": "complete",
   "domain": "quic",
   "summary": "Consume the dormant detached resumption carrier to emit a PSK-capable ClientHello attempt on the managed client/runtime path while keeping early data closed and leaving resumed-handshake success out of scope.",
   "verification_plan": "Run focused requirement-home tests for PSK-capable ClientHello attempt construction from dormant detached material, binder proof, early-data closure, bootstrap fallback without dormant material, server-role non-participation, the public no-PSK/no-resumption/no-early-data guard, and unchanged non-resumption handshake/bootstrap behavior; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",

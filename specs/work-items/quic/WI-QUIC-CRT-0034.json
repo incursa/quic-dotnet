@@ -8,10 +8,11 @@
     "SPEC-QUIC-CRT"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "status": "landed",
+  "status": "complete",
   "domain": "quic",
   "summary": "Advance accepted PSK ClientHello attempts through abbreviated client-side handshake completion while keeping rejected attempts on the existing full-handshake fallback and early data closed.",
   "verification_plan": "Run focused requirement-home tests for accepted abbreviated completion, rejected fallback, abbreviated transcript omission of certificate and certificate-verify, early-data closure, and the public no-resumption/no-early-data guard; then run the relevant CRT/API/INT guard set, the full `REQ_QUIC_CRT_` sweep, and SpecTrace render/validation checks.",
+  "planned_changes": "- Advance accepted PSK ClientHello attempts through the abbreviated client-side `EncryptedExtensions -> Finished` handshake flight.\n- Keep rejected attempts on the existing full-handshake fallback path rather than forking a second recovery path.\n- Preserve the existing early-data-closed behavior and avoid widening the public resumption contract.\n- Add focused requirement-home coverage for accepted abbreviated completion, rejected fallback, transcript shape, and early-data closure.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",

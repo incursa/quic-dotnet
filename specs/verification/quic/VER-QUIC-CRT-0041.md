@@ -6,6 +6,10 @@
 
 Verify that the short-header helper preserves and reports the Key Phase bit, that an active handshake-confirmed client runtime records the first observed 1-RTT Key Phase transition by installing the existing internal state, that an establishing runtime remains unchanged before handshake confirmation, and that the slice does not claim successor-key derivation, TLS KeyUpdate support, transfer, retry, or public API widening.
 
+## Requirements Verified
+
+- REQ-QUIC-CRT-0144
+
 ## Verification Method
 
 Focused requirement-home tests, fuzzing, BenchmarkDotNet coverage, and SpecTrace render/validation checks.
@@ -43,7 +47,7 @@ The short-header helper preserves the Key Phase bit, the active client runtime i
 
 ## Status
 
-landed
+passed
 
 ## Related Artifacts
 

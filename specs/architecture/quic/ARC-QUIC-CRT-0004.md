@@ -35,6 +35,8 @@ Ordinary send legality is surfaced as a phase-derived property so callers do not
 
 The close/drain lifetime must preserve its end time when Draining follows Closing, and monotonic time remains the only source for timeout and deadline calculations.
 
+This slice is landed and is proven by requirement-home tests for immediate close, repeated close suppression, peer-close draining, and close/drain lifetime expiry.
+
 ## Key Components
 
 - src/Incursa.Quic/QuicConnectionRuntime.cs

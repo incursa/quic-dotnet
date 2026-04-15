@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0004"
 artifact_type: "work_item"
 title: "QUIC Connection Runtime Lifecycle Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0023"
@@ -85,7 +85,7 @@ Run the lifecycle requirement-home tests and the narrow dotnet test subset that 
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+The runtime close/drain/lifetime slice is landed. Local immediate close enters Closing, attributed packets in Closing receive a CONNECTION_CLOSE reply, peer close transitions to Draining while preserving the terminal deadline, and close/drain lifetime expiry discards the connection. The narrow proof stays separate from the helper-backed idle-timeout arithmetic and from broader packet-format follow-ons.
 
 ## Trace Links
 

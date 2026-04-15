@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0038"
 artifact_type: "work_item"
 title: "QUIC first client-side 0-RTT packet-emission attempt work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0141"
@@ -30,6 +30,13 @@ Add the first bounded client-side 0-RTT send-attempt path from the dormant carri
 ## Design Inputs
 
 - ARC-QUIC-CRT-0036
+
+## Planned Changes
+
+- Admit the first bounded client-side 0-RTT send attempt only when the dormant carrier still holds both resumption credential material and early-data prerequisite material.
+- Emit a protected client 0-RTT application packet on that narrow happy path and fall back cleanly when prerequisite material is absent.
+- Keep receive handling, anti-replay, key update, transfer, retry, and public API widening out of scope.
+- Add focused requirement-home coverage for the admitted attempt, the fallback path, and the still-narrow ownership boundary.
 
 ## Out of Scope
 

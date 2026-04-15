@@ -100,11 +100,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §2 RFC9000-S2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S2-0007 Avoid cross-stream byte ordering guarantees
 QUIC MUST NOT provide ordering between bytes on different streams.
@@ -133,9 +128,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §2 RFC9000-S2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
 
 ## REQ-QUIC-RFC9000-S2-0009 Allow arbitrary per-stream data subject to limits
 QUIC MAY allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.
@@ -150,12 +142,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §2 RFC9000-S2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::FuzzMaxDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S2P1-0001 Constrain unidirectional stream direction
 A unidirectional stream MUST carry data only from the initiator of the stream to its peer.
@@ -198,8 +184,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §2.1 RFC9000-S2.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0003.cs::TryParseStreamIdentifier_ReportsTheEncodedStreamIdValue
 
 ## REQ-QUIC-RFC9000-S2P1-0004 Bound stream IDs to 62 bits
 A stream ID MUST be a 62-bit integer in the range 0 to 2^62-1.
@@ -214,8 +198,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §2.1 RFC9000-S2.1-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0004.cs::TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId
 
 Notes:
 - The ledger renders the numeric expression without the exponent marker; the RFC text intends the 62-bit range.
@@ -247,8 +229,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §2.1 RFC9000-S2.1-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0006.cs::TryParseStreamIdentifier_RejectsTruncatedEncodings
 
 ## REQ-QUIC-RFC9000-S2P1-0007 Forbid stream ID reuse
 A QUIC endpoint MUST NOT reuse a stream ID within a connection.
@@ -279,7 +259,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStreamIdTests.cs::TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0008.cs::TryParseStreamIdentifier_UsesTheLeastSignificantBitToIdentifyTheInitiator
 
 ## REQ-QUIC-RFC9000-S2P1-0009 Use even IDs for client-initiated streams
 Client-initiated streams MUST have even-numbered stream IDs with the least significant bit set to 0.
@@ -294,8 +273,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §2.1 RFC9000-S2.1-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0009.cs::TryParseStreamIdentifier_RecognizesClientInitiatedEvenStreamIds
 
 ## REQ-QUIC-RFC9000-S2P1-0010 Use odd IDs for server-initiated streams
 Server-initiated streams MUST have odd-numbered stream IDs with the least significant bit set to 1.
@@ -312,7 +289,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStreamIdTests.cs::TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0010.cs::TryParseStreamIdentifier_RecognizesServerInitiatedOddStreamIds
 
 ## REQ-QUIC-RFC9000-S2P1-0011 Use the second low bit to distinguish stream direction
 The second least significant bit of a stream ID MUST distinguish bidirectional streams from unidirectional streams, with 0 indicating bidirectional and 1 indicating unidirectional.
@@ -329,7 +305,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStreamIdTests.cs::TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0011.cs::TryParseStreamIdentifier_UsesTheSecondLeastSignificantBitToDistinguishDirection
 
 ## REQ-QUIC-RFC9000-S2P1-0012 Start each stream space at its minimum value
 The stream space for each type MUST begin at its minimum value.
@@ -630,8 +605,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §2.4 RFC9000-S2.4-B6-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
 
 ## REQ-QUIC-RFC9000-S2P4-0006 Allow reading data
 An application protocol MAY read data from a stream.
@@ -660,8 +633,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §2.4 RFC9000-S2.4-B9-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
 
 ## REQ-QUIC-RFC9000-S2P4-0008 Allow stream state-change notifications
 An application protocol MAY request to be informed of stream state changes, including when the peer has opened or reset a stream, when a peer aborts reading on a stream, when new data is available, and when data can or cannot be written to the stream due to flow control.
@@ -690,9 +661,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3 RFC9000-S3-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs::TryOpenLocalStream_UsesSendStateMachineForLocalUnidirectionalStreams
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs::TryReceiveStreamFrame_RejectsLocalUnidirectionalStreamsWithoutReceiveParts
 
 ## REQ-QUIC-RFC9000-S3-0002 Use both state machines for bidirectional streams
 Bidirectional streams MUST use both state machines at both endpoints.
@@ -707,8 +675,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3 RFC9000-S3-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0002.cs::TryOpenLocalStream_UsesBothStateMachinesForLocalBidirectionalStreams
 
 ## REQ-QUIC-RFC9000-S3-0003 Allow alternate stream state machines with consistent behavior
 An implementation MAY define a different stream state machine as long as its behavior is consistent with an implementation that implements these states.
@@ -737,8 +703,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B5-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0001.cs::TryOpenLocalStream_InitializesReadyAsANewlyCreatedSendableStream
 
 ## REQ-QUIC-RFC9000-S3P1-0002 Permit buffering in Ready
 An implementation MAY buffer stream data in the Ready state in preparation for sending.
@@ -753,9 +717,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B5-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs::TryReserveSendCapacity_BuffersDataInReadyState
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs::TryReserveSendCapacity_BuffersOutOfOrderFragmentsInReadyState
 
 ## REQ-QUIC-RFC9000-S3P1-0003 Enter Send state on first outbound stream frame
 Sending the first STREAM or STREAM_DATA_BLOCKED frame MUST cause a sending part of a stream to enter the Send state.
@@ -1007,8 +968,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0001.cs::TryReceiveStreamFrame_DoesNotTrackUnobservableSendingPartStates
 
 ## REQ-QUIC-RFC9000-S3P2-0002 Track data delivery to the application
 The receiving part of a stream MUST track the delivery of data to the application, including data that cannot be observed by the sender.
@@ -1023,8 +982,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B2-P1-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0002.cs::TryReadStreamData_TracksDeliveryOfBufferedPeerData
 
 ## REQ-QUIC-RFC9000-S3P2-0003 Create peer-initiated receiving parts on first frame
 The receiving part of a stream initiated by a peer MUST be created when the first STREAM, STREAM_DATA_BLOCKED, or RESET_STREAM frame is received for that stream.
@@ -1039,8 +996,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B5-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0003.cs::TryReceiveStreamFrame_CreatesPeerInitiatedReceivingPartOnFirstFrame
 
 ## REQ-QUIC-RFC9000-S3P2-0004 Create bidirectional receiving parts on peer flow-control or stop-sending frames
 For bidirectional streams initiated by a peer, receipt of a MAX_STREAM_DATA or STOP_SENDING frame for the sending part of the stream MUST also create the receiving part.
@@ -1071,8 +1026,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B5-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0005.cs::TryReceiveStreamFrame_InitializesTheReceivingPartInRecv
 
 ## REQ-QUIC-RFC9000-S3P2-0006 Enter Recv when the peer-side sending part opens
 For a bidirectional stream, the receiving part MUST enter the Recv state when the sending part initiated by the endpoint enters the Ready state.
@@ -1087,8 +1040,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs::TryApplyMaxStreamDataFrame_EntersRecvWhenPeerSideSendingPartOpens
 
 ## REQ-QUIC-RFC9000-S3P2-0007 Open bidirectional streams on peer flow-control or stop-sending frames
 An endpoint MUST open a bidirectional stream when a MAX_STREAM_DATA or STOP_SENDING frame is received from the peer for that stream.
@@ -1120,8 +1071,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B7-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0008.cs::TryApplyMaxStreamDataFrame_OpensAnUnopenedPeerBidirectionalStream
 
 ## REQ-QUIC-RFC9000-S3P2-0009 Interpret STOP_SENDING on an unopened stream as a peer desire to stop reception
 Receiving a STOP_SENDING frame for an unopened stream MUST indicate that the remote peer no longer wishes to receive data on this stream.
@@ -1184,8 +1133,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B9-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs::TryReceiveStreamDataBlockedFrame_AcceptsPeerInitiatedBidirectionalStreamsInRecv
 
 ## REQ-QUIC-RFC9000-S3P2-0013 Buffer received stream data for ordered delivery
 Incoming data MUST be buffered for ordered delivery to the application, including any reassembly needed to place it in the correct order.
@@ -1200,8 +1147,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B9-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0013.cs::TryReadStreamData_DeliversBufferedFragmentsInOffsetOrder
 
 ## REQ-QUIC-RFC9000-S3P2-0014 Advertise more receive credit as data is consumed
 As data is consumed by the application and buffer space becomes available, the endpoint MUST send MAX_STREAM_DATA frames to allow the peer to send more data.
@@ -1216,8 +1161,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B9-P6-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs::TryReadStreamData_AdvertisesMoreReceiveCreditAsDataIsConsumed
 
 ## REQ-QUIC-RFC9000-S3P2-0015 Recognize final size when FIN arrives
 When a STREAM frame with a FIN bit is received, the final size of the stream MUST be known.
@@ -1296,8 +1239,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B12-P9-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs::TryReceiveStreamFrame_KeepsDataRecvdUntilApplicationReadsIt
 
 ## REQ-QUIC-RFC9000-S3P2-0020 Enter Data Read after delivery to the application
 Once stream data has been delivered, the stream MUST enter the Data Read state.
@@ -1312,8 +1253,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B12-P9-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs::TryReadStreamData_EntersDataReadAfterDeliveryToTheApplication
 
 ## REQ-QUIC-RFC9000-S3P2-0021 Enter Reset Recvd on RESET_STREAM in Recv or Size Known
 Receiving a RESET_STREAM frame in the Recv or Size Known state MUST cause the stream to enter the Reset Recvd state.
@@ -1328,8 +1267,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B13-P10-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0021.cs::TryReceiveResetStreamFrame_EntersResetRecvdWhenResetStreamArrives
 
 ## REQ-QUIC-RFC9000-S3P2-0022 Allow interruption of delivery and signal RESET_STREAM
 An implementation MAY interrupt delivery of stream data, discard any data that was not consumed, and signal the receipt of the RESET_STREAM.
@@ -1372,8 +1309,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B16-P13-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0024.cs::TryAcknowledgeReset_EntersResetReadAfterResetNotification
 
 ## REQ-QUIC-RFC9000-S3P3-0001 Forbid terminal-state transmit frames
 A sender MUST NOT send STREAM, STREAM_DATA_BLOCKED, or RESET_STREAM frames from a terminal state.
@@ -1699,8 +1634,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4 RFC9000-S4-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0001.cs::TryReceiveStreamFrame_EnforcesPerStreamAndConnectionFlowControl
 
 ## REQ-QUIC-RFC9000-S4-0002 Limit bytes on streams and across the connection
 A QUIC receiver MUST control the maximum amount of data the sender can send on a stream and across all streams at any time.
@@ -1715,8 +1648,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4 RFC9000-S4-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0002.cs::TryReceiveStreamFrame_LimitsBytesOnStreamsAndAcrossTheConnection
 
 ## REQ-QUIC-RFC9000-S4-0003 Control how many streams a peer can initiate
 A QUIC endpoint MUST control the maximum cumulative number of streams that its peer can initiate.
@@ -1731,8 +1662,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4 RFC9000-S4-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0003.cs::TryReceiveStreamFrame_ControlsHowManyStreamsAPeerCanInitiate
 
 ## REQ-QUIC-RFC9000-S4-0004 Exclude CRYPTO frames from stream-style flow control
 Data sent in CRYPTO frames MUST NOT be flow controlled in the same way as stream data.
@@ -1747,8 +1676,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4 RFC9000-S4-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0004.cs::TryFormatAndParseCryptoFrame_AllowsOffsetsThatDoNotFollowStreamFlowControl
 
 ## REQ-QUIC-RFC9000-S4-0005 Expose cryptographic buffering limits
 QUIC implementations SHOULD provide an interface for the cryptographic protocol implementation to communicate its buffering limits.
@@ -1766,7 +1693,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs::TryAddFrame_AllowsConfiguredCapacityDuringHandshake
   - tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs::TryAddFrame_ClosesWithBufferExceededWhenCapacityIsNotExpanded
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0005.cs::Constructor_ExposesConfiguredBufferCapacity
 
 ## REQ-QUIC-RFC9000-S4P1-0001 Use limit-based flow control
 QUIC MUST employ a limit-based flow control scheme in which a receiver advertises the total bytes it is prepared to receive on a given stream or for the entire connection.
@@ -1781,8 +1707,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0001.cs::TryReadStreamData_AdvertisesTotalBytesPreparedToReceive
 
 ## REQ-QUIC-RFC9000-S4P1-0002 Limit per-stream receive buffer use
 Stream flow control MUST prevent a single stream from consuming the entire receive buffer for a connection by limiting the amount of data that can be sent on each stream.
@@ -1797,8 +1721,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B3-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReceiveStreamFrame_LimitsThePerStreamReceiveBufferUse
 
 ## REQ-QUIC-RFC9000-S4P1-0003 Limit total stream-data bytes on the connection
 Connection flow control MUST prevent senders from exceeding a receiver's buffer capacity for the connection by limiting the total bytes of stream data sent in STREAM frames on all streams.
@@ -1813,8 +1735,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0003.cs::TryReceiveStreamFrame_LimitsTheTotalStreamDataBytesAcrossTheConnection
 
 ## REQ-QUIC-RFC9000-S4P1-0004 Never send beyond either flow-control limit
 Senders MUST NOT send data in excess of either limit.
@@ -1829,9 +1749,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B5-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0004.cs::TryReserveSendCapacity_RejectsBytesBeyondConnectionSendLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0004.cs::TryReserveSendCapacity_RejectsBytesBeyondStreamSendLimit
 
 ## REQ-QUIC-RFC9000-S4P1-0005 Set initial flow-control limits in transport parameters
 A receiver MUST set initial limits for all streams through transport parameters during the handshake.
@@ -1846,11 +1763,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0005.cs::TryParseAndFormatTransportParameters_PreservesInitialFlowControlLimits
 
 ## REQ-QUIC-RFC9000-S4P1-0006 Advertise larger flow-control limits with MAX frames
 Subsequently, a receiver MUST send MAX_STREAM_DATA or MAX_DATA frames to advertise larger limits.
@@ -1865,9 +1777,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B6-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::FuzzMaxStreamDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0006.cs::TryApplyMaxFrames_AdvertisesIncreasingLimits
 
 ## REQ-QUIC-RFC9000-S4P1-0007 Advertise larger stream limits with MAX_STREAM_DATA
 A receiver MAY advertise a larger limit for a stream by sending a MAX_STREAM_DATA frame with the corresponding stream ID.
@@ -1884,8 +1793,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs::TryApplyMaxFrames_AdvertisesLargerAdvertisedLimits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::FuzzMaxStreamDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0007.cs::TryApplyMaxStreamDataFrame_AdvertisesLargerLimit
 
 ## REQ-QUIC-RFC9000-S4P1-0008 Make MAX_STREAM_DATA indicate an absolute stream offset
 A MAX_STREAM_DATA frame MUST indicate the maximum absolute byte offset of a stream.
@@ -1902,8 +1809,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs::TryApplyMaxFrames_AdvertisesLargerAdvertisedLimits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::FuzzMaxStreamDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0008.cs::TryApplyMaxStreamDataFrame_UsesAbsoluteStreamOffset
 
 ## REQ-QUIC-RFC9000-S4P1-0009 Advertise larger connection limits with MAX_DATA
 A receiver MAY advertise a larger limit for a connection by sending a MAX_DATA frame.
@@ -1922,7 +1827,6 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AdvertisesLargerConnectionLimit
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_IgnoresSmallerConnectionLimit
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AcceptsTheMaximumRepresentableConnectionLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::FuzzMaxStreamDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S4P1-0010 Track cumulative bytes for connection flow control
 A receiver MUST maintain a cumulative sum of bytes received on all streams to check for violations of the advertised connection or stream data limits.
@@ -1937,8 +1841,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B8-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0010.cs::TryReceiveStreamFrame_TracksConnectionReceivedBytesAcrossStreams
 
 ## REQ-QUIC-RFC9000-S4P1-0011 Ignore smaller advertised limits
 Once a receiver advertises a limit for the connection or a stream, advertising a smaller limit MUST have no effect rather than be treated as an error.
@@ -1957,7 +1859,6 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs::TryApplyMaxFrames_IgnoresSmallerAdvertisedLimits
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0007.cs::TryApplyMaxStreamDataFrame_AdvertisesLargerLimit
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AdvertisesLargerConnectionLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs::TryApplyMaxFrames_AdvertisesLargerAdvertisedLimits
 
 ## REQ-QUIC-RFC9000-S4P1-0012 Close on flow-control violations
 A receiver MUST close the connection with an error of type FLOW_CONTROL_ERROR if the sender violates the advertised connection or stream data limits.
@@ -1972,8 +1873,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B10-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0012.cs::TryReceiveStreamFrame_ClosesOnConnectionAndStreamFlowControlViolations
 
 ## REQ-QUIC-RFC9000-S4P1-0013 Ignore non-increasing MAX frames
 A sender MUST ignore any MAX_STREAM_DATA or MAX_DATA frames that do not increase flow control limits.
@@ -1988,8 +1887,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B11-P8-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0013.cs::TryApplyMaxFrames_IgnoresNonIncreasingLimits
 
 ## REQ-QUIC-RFC9000-S4P1-0014 Signal blocked senders
 A sender SHOULD send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame to indicate to the receiver that it has data to write but is blocked by flow control limits.
@@ -2004,10 +1901,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B12-P9-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0014.cs::TryReserveSendCapacity_GeneratesBlockedFramesWhenFlowControlLimitsAreReached
 
 ## REQ-QUIC-RFC9000-S4P1-0015 Periodically signal blocking while flow-control limited
 A sender that is flow control limited SHOULD periodically send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame when it has no ack-eliciting packets in flight.
@@ -2095,8 +1988,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.2 RFC9000-S4.2-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs::TryReadStreamData_SendsCreditWithoutWaitingForBlockedSignals
 
 ## REQ-QUIC-RFC9000-S4P4-0001 Tear down state and ignore later data after RESET_STREAM
 On receipt of a RESET_STREAM frame, an endpoint MUST tear down state for the matching stream and ignore further data arriving on that stream.
@@ -2111,8 +2002,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.4 RFC9000-S4.4-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0001.cs::TryReceiveResetStreamFrame_TerminatesOnlyTheReceiveDirectionAndPreservesTheSendDirection
 
 ## REQ-QUIC-RFC9000-S4P4-0002 Terminate only one direction on RESET_STREAM
 RESET_STREAM MUST terminate one direction of a stream abruptly.
@@ -2127,8 +2016,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.4 RFC9000-S4.4-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0001.cs::TryReceiveResetStreamFrame_TerminatesOnlyTheReceiveDirectionAndPreservesTheSendDirection
 
 ## REQ-QUIC-RFC9000-S4P4-0003 Leave the opposite direction unaffected
 For a bidirectional stream, RESET_STREAM MUST have no effect on data flow in the opposite direction.
@@ -2143,8 +2030,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.4 RFC9000-S4.4-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0001.cs::TryReceiveResetStreamFrame_TerminatesOnlyTheReceiveDirectionAndPreservesTheSendDirection
 
 ## REQ-QUIC-RFC9000-S4P4-0004 Keep flow-control state for the unterminated direction
 Both endpoints MUST maintain flow control state for the stream in the unterminated direction until that direction enters a terminal state.
@@ -2159,8 +2044,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.4 RFC9000-S4.4-B4-P3-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0001.cs::TryReceiveResetStreamFrame_TerminatesOnlyTheReceiveDirectionAndPreservesTheSendDirection
 
 ## REQ-QUIC-RFC9000-S4P5-0001 Communicate final size reliably
 A sender MUST always communicate the final size of a stream to the receiver reliably, no matter how the stream is terminated.
@@ -2194,8 +2077,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.5 RFC9000-S4.5-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0002.cs::TryReceiveStreamFrame_UsesFinToCarryTheFinalSize
 
 ## REQ-QUIC-RFC9000-S4P5-0003 Use RESET_STREAM Final Size to carry final size
 The Final Size field of a RESET_STREAM frame MUST carry the final size value.
@@ -2228,8 +2109,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.5 RFC9000-S4.5-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0004.cs::TryReceiveResetStreamFrame_AccountsFinalSizeAtTheConnectionLevel
 
 ## REQ-QUIC-RFC9000-S4P5-0005 Never send data at or beyond final size
 An endpoint MUST NOT send data on a stream at or beyond the final size.
@@ -2244,8 +2123,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.5 RFC9000-S4.5-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0005.cs::TryReserveSendCapacity_RejectsBytesAtOrBeyondTheKnownFinalSize
 
 ## REQ-QUIC-RFC9000-S4P5-0006 Make final size immutable once known
 Once a final size for a stream is known, it MUST NOT change.
@@ -2260,8 +2137,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.5 RFC9000-S4.5-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0006.cs::TryReserveSendCapacity_MakesFinalSizeImmutableAfterItIsKnown
 
 ## REQ-QUIC-RFC9000-S4P5-0007 Treat final-size changes as errors
 If a RESET_STREAM or STREAM frame is received indicating a change in the final size for the stream, an endpoint SHOULD respond with an error of type FINAL_SIZE_ERROR.
@@ -2276,8 +2151,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.5 RFC9000-S4.5-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData
 
 ## REQ-QUIC-RFC9000-S4P5-0008 Treat data beyond final size as an error
 A receiver SHOULD treat receipt of data at or beyond the final size as an error of type FINAL_SIZE_ERROR, even after a stream is closed.
@@ -2292,8 +2165,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.5 RFC9000-S4.5-B6-P5-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0008.cs::Fuzz_TryReceiveStreamFrame_RejectsDataAtOrBeyondFinalSize
 
 ## REQ-QUIC-RFC9000-S4P6-0001 Limit the cumulative number of incoming streams
 An endpoint MUST limit the cumulative number of incoming streams its peer can open.
@@ -2308,8 +2179,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0001.cs::TryReceiveStreamFrame_LimitsTheCumulativeNumberOfIncomingStreams
 
 ## REQ-QUIC-RFC9000-S4P6-0002 Restrict stream IDs to the advertised limit
 Only streams with stream IDs less than max_streams * 4 + first_stream_id_of_type MAY be opened.
@@ -2324,8 +2193,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0002.cs::TryReceiveStreamFrame_RestrictsStreamIdsToTheAdvertisedLimit
 
 ## REQ-QUIC-RFC9000-S4P6-0003 Set initial stream limits in transport parameters
 Initial limits MUST be set in the transport parameters.
@@ -2340,11 +2207,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0003.cs::TryParseAndFormatTransportParameters_PreservesInitialStreamLimits
 
 ## REQ-QUIC-RFC9000-S4P6-0004 Advertise later stream limits with MAX_STREAMS
 Subsequent limits MUST be advertised using MAX_STREAMS frames.
@@ -2359,9 +2221,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B2-P1-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0004.cs::TryApplyMaxStreamsFrame_AdvertisesLaterLimits
 
 ## REQ-QUIC-RFC9000-S4P6-0005 Apply separate limits by stream direction
 Separate limits MUST apply to unidirectional and bidirectional streams.
@@ -2376,12 +2235,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B2-P1-S5
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0005.cs::TryOpenLocalStream_UsesSeparateBidirectionalAndUnidirectionalLimits
 
 ## REQ-QUIC-RFC9000-S4P6-0006 Close on oversized stream-count values in transport parameters
 If an oversized max_streams value is received in a transport parameter, the connection MUST be closed immediately with TRANSPORT_PARAMETER_ERROR.
@@ -2396,8 +2249,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0006.cs::TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit
 
 ## REQ-QUIC-RFC9000-S4P6-0007 Close on oversized stream-count values in frames
 If an oversized max_streams value is received in a frame, the connection MUST be closed immediately with FRAME_ENCODING_ERROR.
@@ -2412,8 +2263,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit
 
 ## REQ-QUIC-RFC9000-S4P6-0008 Do not exceed the peer's stream limit
 Endpoints MUST NOT exceed the limit set by their peer.
@@ -2428,8 +2277,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0008.cs::TryOpenLocalStream_DoesNotExceedThePeerBidirectionalStreamLimit
 
 ## REQ-QUIC-RFC9000-S4P6-0009 Treat over-limit stream IDs as STREAM_LIMIT_ERROR
 An endpoint that receives a frame with a stream ID exceeding the limit it has sent MUST treat this as a connection error of type STREAM_LIMIT_ERROR.
@@ -2444,8 +2291,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0009.cs::TryReceiveStreamFrame_RejectsOverLimitStreamIds
 
 ## REQ-QUIC-RFC9000-S4P6-0010 Ignore smaller advertised stream limits
 Once a receiver advertises a stream limit using the MAX_STREAMS frame, advertising a smaller limit MUST have no effect.
@@ -2460,8 +2305,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IgnoresSmallerBidirectionalLimit
 
 ## REQ-QUIC-RFC9000-S4P6-0011 Ignore non-increasing MAX_STREAMS frames
 MAX_STREAMS frames that do not increase the stream limit MUST be ignored.
@@ -2476,8 +2319,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs::TryApplyMaxStreamsFrame_IgnoresRepeatedUnidirectionalLimit
 
 ## REQ-QUIC-RFC9000-S4P6-0012 Signal blocked stream openings with STREAMS_BLOCKED
 An endpoint that is unable to open a new stream due to the peer's limits SHOULD send a STREAMS_BLOCKED frame.
@@ -2492,9 +2333,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B7-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0012.cs::TryOpenLocalStream_ReturnsStreamsBlockedWhenThePeerLimitIsReached
 
 ## REQ-QUIC-RFC9000-S4P6-0013 Do not wait for STREAMS_BLOCKED before advertising more credit
 An endpoint MUST NOT wait to receive STREAMS_BLOCKED before advertising additional credit.
@@ -2702,8 +2540,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.1 RFC9000-S5.1-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0005.cs::TryParseLongHeader_AllowsMaximumLengthDestinationConnectionIds
 
 ## REQ-QUIC-RFC9000-S5P1-0006 Keep CIDs free of correlating information
 Connection IDs MUST NOT contain any information that can be used by an external observer to correlate them with other connection IDs for the same connection.
@@ -2732,8 +2568,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.1 RFC9000-S5.1-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0007.cs::TryParseLongHeader_AllowsMaximumLengthSourceConnectionIds
 
 ## REQ-QUIC-RFC9000-S5P1-0008 Include CID fields in long headers
 Packets with long headers MUST include Source Connection ID and Destination Connection ID fields.
@@ -2752,9 +2586,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
 
 ## REQ-QUIC-RFC9000-S5P1-0009 Include only the destination CID in short headers
 Packets with short headers MUST include only the Destination Connection ID and omit the explicit length.
@@ -2819,11 +2650,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
 
 ## REQ-QUIC-RFC9000-S5P1-0013 Permit zero-length CIDs when routing does not need them
 A zero-length connection ID MAY be used when a connection ID is not needed to route to the correct endpoint.
@@ -2838,8 +2664,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.1 RFC9000-S5.1-B9-P8-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0013.cs::TryParseLongHeader_AllowsZeroLengthConnectionIds
 
 ## REQ-QUIC-RFC9000-S5P1-0014 Avoid concurrent zero-length-CID connections on the same address tuple
 An endpoint MUST NOT use the same IP address and port for multiple concurrent connections with zero-length connection IDs unless it is certain that peer connection migration, NAT rebinding, and client port reuse are not in use.
@@ -2886,10 +2710,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.1.1 RFC9000-S5.1.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0001.cs::TryParseNewConnectionIdFrame_AllowsSequenceNumberZero
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0001.cs::TryParseNewConnectionIdFrame_ExposesTheSequenceNumberOnTheWire
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0001.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S5P1P1-0002 Carry the initial CID in the long-header Source CID field
 The initial connection ID issued by an endpoint MUST be sent in the Source Connection ID field of the long packet header during the handshake.
@@ -2904,10 +2724,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.1.1 RFC9000-S5.1.1-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0002.cs::TryParseLongHeader_AllowsAZeroLengthHandshakeSourceConnectionId
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0002.cs::TryParseLongHeader_ExposesTheHandshakeSourceConnectionId
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0002.cs::TryParseLongHeader_RejectsHandshakePacketsMissingTheSourceConnectionIdLengthByte
 
 ## REQ-QUIC-RFC9000-S5P1P1-0003 Assign sequence number 0 to the initial CID
 The sequence number of the initial connection ID MUST be 0.
@@ -2954,8 +2770,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
 
 ## REQ-QUIC-RFC9000-S5P1P1-0006 Increment CID sequence numbers by one
 The sequence number on each newly issued connection ID MUST increase by 1.
@@ -3045,10 +2859,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0011.cs::TryFormatTransportParameters_EmitsActiveConnectionIdLimitForClients
 
 ## REQ-QUIC-RFC9000-S5P1P1-0012 Do not exceed the peer's active CID limit
 An endpoint MUST NOT provide more connection IDs than the peer's limit.
@@ -3249,8 +3059,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S5P1P2-0005 Make RETIRE_CONNECTION_ID a no-reuse request
 Sending a RETIRE_CONNECTION_ID frame MUST indicate that the connection ID will not be used again and request that the peer replace it with a new connection ID using a NEW_CONNECTION_ID frame.
@@ -3269,8 +3077,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S5P1P2-0006 Limit a CID to one local and one destination address
 Endpoints MUST limit the use of a connection ID to packets sent from a single local address to a single destination address.
@@ -3317,8 +3123,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
 
 ## REQ-QUIC-RFC9000-S5P1P2-0009 Continue accepting retired CIDs until the peer retires them
 The endpoint SHOULD continue to accept the previously issued connection IDs until they are retired by the peer.
@@ -3448,7 +3252,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
 
 ## REQ-QUIC-RFC9000-S5P2-0002 Allow existing-connection association or new server connections
 Packets MAY either be associated with an existing connection or, for servers, potentially create a new connection.
@@ -3477,8 +3280,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.2 RFC9000-S5.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0003.cs::TryGetPacketNumberSpace_RecognizesHandshakePacketsThatCanBeAssociatedWithConnections
 
 ## REQ-QUIC-RFC9000-S5P2-0004 Process packets that match the existing CID
 If the packet has a non-zero-length Destination Connection ID corresponding to an existing connection, QUIC MUST process that packet accordingly.
@@ -3553,8 +3354,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.2 RFC9000-S5.2-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0008.cs::TryGetPacketNumberSpace_MapsSupportedPacketFormsToTheExpectedSpaces
 
 ## REQ-QUIC-RFC9000-S5P2-0009 Discard packets with a different protocol version
 Packets MUST be discarded if they indicate a different protocol version than that of the connection.
@@ -3569,8 +3368,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.2 RFC9000-S5.2-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0009.cs::TryGetPacketNumberSpace_AcceptsVersion1Packets
 
 ## REQ-QUIC-RFC9000-S5P2-0010 Discard packets if packet protection cannot be removed
 Packets MUST be discarded if removal of packet protection is unsuccessful once the expected keys are available.
@@ -3599,8 +3396,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.2 RFC9000-S5.2-B7-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0011.cs::TryParseLongHeader_RejectsWeaklyProtectedInvalidPackets
 
 ## REQ-QUIC-RFC9000-S5P2-0012 Generate a connection error on pre-error processing
 An endpoint MUST generate a connection error if it processes the contents of these packets before discovering an error.
@@ -3713,8 +3508,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.2.2 RFC9000-S5.2.2-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize
 
 ## REQ-QUIC-RFC9000-S5P2P2-0002 Allow limiting Version Negotiation responses
 A server MAY limit the number of packets to which it responds with a Version Negotiation packet.
@@ -3759,7 +3552,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize
 
 ## REQ-QUIC-RFC9000-S5P2P2-0005 Match supported-version packets by connection ID or address tuple
 Packets with a supported version or no Version field MUST be matched to a connection using the connection ID or, for packets with zero-length connection IDs, the local address and port.
@@ -3876,9 +3668,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_AcceptsPreferredAddressWithZeroedIpv4Family
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S5P2P3-0003 Allow clients to decline preferred addresses
 Clients MAY choose not to use the preferred address.
@@ -3911,9 +3700,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S5P2P3-0005 Do not let disable_active_migration block preferred-address migration
 The disable_active_migration transport parameter MUST NOT prohibit connection migration after a client has acted on a preferred_address transport parameter.
@@ -4124,7 +3910,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-6
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1
 
 ## REQ-QUIC-RFC9000-S6-0002 Clients that support multiple QUIC versions SHOULD ensure that the first UDP datagram they send is sized to the largest of the minimum datagram sizes from all versions they support, using PADDING frames (Section 19
 Clients that support multiple QUIC versions SHOULD ensure that the first UDP datagram they send is sized to the largest of the minimum datagram sizes from all versions they support, using PADDING frames (Section 19.1) as necessary.
@@ -4141,7 +3926,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-6
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1
 
 ## REQ-QUIC-RFC9000-S6P1-0001 Send Version Negotiation with accepted versions
 If the version selected by the client is not acceptable to the server, the server MUST respond with a Version Negotiation packet that includes a list of versions the server will accept.
@@ -4165,14 +3949,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_RejectsTheReservedVersionNumberInTheAdvertisedList
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_RejectsTheReservedVersionNumberInTheAdvertisedList
 
 ## REQ-QUIC-RFC9000-S6P1-0002 Forbid Version Negotiation responses to Version Negotiation
 An endpoint MUST NOT send a Version Negotiation packet in response to receiving a Version Negotiation packet.
@@ -4191,9 +3967,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport
 
 ## REQ-QUIC-RFC9000-S6P1-0003 Limit Version Negotiation volume
 A server MAY limit the number of Version Negotiation packets it sends.
@@ -4210,7 +3983,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-6.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_CanLimitRepeatedResponses
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0003.cs::ShouldSendVersionNegotiation_CanLimitRepeatedResponses
 
 ## REQ-QUIC-RFC9000-S6P2-0001 Reject unsupported Version Negotiation attempts
 A client that supports only this version of QUIC MUST abandon the current connection attempt if it receives a Version Negotiation packet unless it has received and successfully processed any other packet or the Version Negotiation packet lists the QUIC version selected by the client.
@@ -4230,9 +4002,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldAbandonConnectionAttempt_RequiresOnlyTheSelectedVersionAndANonDiscardablePacket
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0001.cs::Runtime_AbandonsUnsupportedVersionNegotiationAttempts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0001.cs::ShouldAbandonConnectionAttempt_OnlyWhenTheSelectedVersionIsNotAdvertised
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions
 
 Notes:
 - This clause consolidates the lead rule and both exception sentences into one atomic rule.
@@ -4269,7 +4038,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldAbandonConnectionAttempt_RequiresOnlyTheSelectedVersionAndANonDiscardablePacket
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions
 
 ## REQ-QUIC-RFC9000-S6P2-0004 Discard a Version Negotiation packet that lists the QUIC version selected by the client
 A client MUST discard a Version Negotiation packet that lists the QUIC version selected by the client.
@@ -4288,8 +4056,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldAbandonConnectionAttempt_RequiresOnlyTheSelectedVersionAndANonDiscardablePacket
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0001.cs::ShouldAbandonConnectionAttempt_OnlyWhenTheSelectedVersionIsNotAdvertised
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions
 
 ## REQ-QUIC-RFC9000-S6P3-0001 Use reserved versions to test ignoring
 Endpoints MAY add reserved versions to any field where unknown or unsupported versions are ignored to test that a peer correctly ignores the value.
@@ -4308,8 +4074,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::IsReservedVersion_UsesTheReservedPattern
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P3-0001.cs::IsReservedVersion_UsesTheReservedPattern
 
 ## REQ-QUIC-RFC9000-S6P3-0002 Use reserved versions to test discarding
 Endpoints MAY send packets with a reserved version to test that a peer correctly discards the packet.
@@ -4326,7 +4090,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-6.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_RejectsPacketsWithReservedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P3-0002.cs::TryParseVersionNegotiation_RejectsPacketsWithReservedVersions
 
 ## REQ-QUIC-RFC9000-S7-0001 Provide the following properties:
 The cryptographic handshake MUST provide the following properties:
@@ -4495,9 +4258,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.2 RFC9000-S7.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S7P2-0002 Use Source Connection ID to select the peer-facing Destination Connection ID
 Each endpoint MUST use the Source Connection ID field to specify the connection ID that is used in the Destination Connection ID field of packets being sent to it.
@@ -4512,9 +4272,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.2 RFC9000-S7.2-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
 
 ## REQ-QUIC-RFC9000-S7P2-0003 Copy the peer Source Connection ID into subsequent packets
 After processing the first Initial packet, each endpoint MUST set the Destination Connection ID field in subsequent packets it sends to the value of the Source Connection ID field it received.
@@ -4705,10 +4462,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.3 RFC9000-S7.3-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S7P3-0002 Echo the client Source Connection ID in initial_source_connection_id
 Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.
@@ -4723,11 +4476,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.3 RFC9000-S7.3-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0002.cs::TryFormatTransportParameters_EmitsInitialSourceConnectionId
 
 ## REQ-QUIC-RFC9000-S7P3-0003 Echo the client Initial Destination Connection ID in original_destination_connection_id
 A server MUST include the Destination Connection ID field from the first Initial packet it received from the client in the original_destination_connection_id transport parameter.
@@ -4742,10 +4490,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.3 RFC9000-S7.3-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S7P3-0004 Echo the Retry Source Connection ID when Retry is used
 If it sends a Retry packet, a server MUST also include the Source Connection ID field from the Retry packet in the retry_source_connection_id transport parameter.
@@ -4760,10 +4504,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.3 RFC9000-S7.3-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S7P3-0005 The values provided by a peer for these transport parameters MUST match the values that an endpoint used in the Destination and Source Connection ID fields of Initial packets that it sent (and received, for servers)
 The values provided by a peer for these transport parameters MUST match the values that an endpoint used in the Destination and Source Connection ID fields of Initial packets that it sent (and received, for servers).
@@ -4778,8 +4518,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.3 RFC9000-S7.3-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0005.cs::TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindings
 
 ## REQ-QUIC-RFC9000-S7P3-0006 Validate that received transport parameters match received connection ID values
 Endpoints MUST validate that received transport parameters match received connection ID values.
@@ -4794,8 +4532,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.3 RFC9000-S7.3-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0005.cs::TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindings
 
 ## REQ-QUIC-RFC9000-S7P3-0007 Treat the absence of the initial_source_connection_id transport parameter from either endpoint or the absence of the original_destination_connection_id transport parameter from the server as a connection error of type TRANSPORT_PARAMETER_ERROR
 An endpoint MUST treat the absence of the initial_source_connection_id transport parameter from either endpoint or the absence of the original_destination_connection_id transport parameter from the server as a connection error of type TRANSPORT_PARAMETER_ERROR.
@@ -4810,8 +4546,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.3 RFC9000-S7.3-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0007.cs::TryValidateConnectionIdBindings_RejectsMissingConnectionIdBindings
 
 ## REQ-QUIC-RFC9000-S7P3-0008 Treat the following as a connection error of type TRANSPORT_PARAMETER_ERROR or PROTOCOL_VIOLATION:
 An endpoint MUST treat the following as a connection error of type TRANSPORT_PARAMETER_ERROR or PROTOCOL_VIOLATION:
@@ -4826,8 +4560,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.3 RFC9000-S7.3-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0008.cs::TryValidateConnectionIdBindings_RejectsMismatchedConnectionIdBindings
 
 ## REQ-QUIC-RFC9000-S7P3-0009 Include zero-length connection IDs as zero-length transport parameters
 If a zero-length connection ID is selected, the corresponding transport parameter MUST be included with a zero-length value.
@@ -4842,10 +4574,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.3 RFC9000-S7.3-B10-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S7P4-0001 Treat receipt of a transport parameter with an invalid value as a connection error of type TRANSPORT_PARAMETER_ERROR
 An endpoint MUST treat receipt of a transport parameter with an invalid value as a connection error of type TRANSPORT_PARAMETER_ERROR.
@@ -4874,8 +4602,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.4 RFC9000-S7.4-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0002.cs::TryParseTransportParameters_RejectsDuplicateTransportParameters
 
 ## REQ-QUIC-RFC9000-S7P4-0003 Treat receipt of duplicate transport parameters as a connection error of type TRANSPORT_PARAMETER_ERROR
 An endpoint SHOULD treat receipt of duplicate transport parameters as a connection error of type TRANSPORT_PARAMETER_ERROR.
@@ -4890,8 +4616,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.4 RFC9000-S7.4-B8-P7-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0002.cs::TryParseTransportParameters_RejectsDuplicateTransportParameters
 
 ## REQ-QUIC-RFC9000-S7P4P1-0001 The definition of a new transport parameter (Section 7
 The definition of a new transport parameter (Section 7.4.2) MUST specify whether storing the transport parameter for 0-RTT is mandatory, optional, or prohibited.
@@ -5088,8 +4812,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.4.2 RFC9000-S7.4.2-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters
 
 ## REQ-QUIC-RFC9000-S7P5-0001 Support buffering at least 4096 bytes of data received in out-of-order CRYPTO frames
 Implementations MUST support buffering at least 4096 bytes of data received in out-of-order CRYPTO frames.
@@ -5104,8 +4826,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.5 RFC9000-S7.5-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0001.cs::Fuzz_CryptoBuffer_ReconstructsShuffledFramesWithinMinimumCapacity
 
 ## REQ-QUIC-RFC9000-S7P5-0002 Choose to allow more data to be buffered during the handshake
 Endpoints MAY choose to allow more data to be buffered during the handshake.
@@ -5122,7 +4842,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.5
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs::TryAddFrame_AllowsConfiguredCapacityDuringHandshake
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0002.cs::TryAddFrame_AllowsConfiguredCapacityDuringHandshake
 
 ## REQ-QUIC-RFC9000-S7P5-0003 If an endpoint does not expand its buffer, it MUST close the connection with a CRYPTO_BUFFER_EXCEEDED error code
 If an endpoint does not expand its buffer, it MUST close the connection with a CRYPTO_BUFFER_EXCEEDED error code.
@@ -5137,8 +4856,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.5 RFC9000-S7.5-B4-P3-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0003.cs::TryAddFrame_ClosesWithBufferExceededWhenCapacityIsNotExpanded
 
 ## REQ-QUIC-RFC9000-S7P5-0004 Once the handshake completes, if an endpoint is unable to buffer all data in a CRYPTO frame, it MAY discard that CRYPTO frame and all CRYPTO frames received in the future, or it MAY close the connection with a CRYPTO_BUFFER_EXCEEDED error code
 Once the handshake completes, if an endpoint is unable to buffer all data in a CRYPTO frame, it MAY discard that CRYPTO frame and all future CRYPTO frames or close the connection with a CRYPTO_BUFFER_EXCEEDED error code.
@@ -5153,8 +4870,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.5 RFC9000-S7.5-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0004.cs::TryAddFrame_CanCloseAfterHandshakeCompletionInsteadOfDiscarding
 
 ## REQ-QUIC-RFC9000-S7P5-0005 Containing discarded CRYPTO frames MUST be acknowledged because the packet has been received and processed by the transport even though the CRYPTO frame was discarded
 Packets containing discarded CRYPTO frames MUST be acknowledged because the packet has been received and processed by the transport even though the CRYPTO frame was discarded.
@@ -5171,7 +4886,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.5
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs::TryAddFrame_CanDiscardOverflowFramesAfterHandshakeCompletion
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0005.cs::TryAddFrame_CanDiscardOverflowFramesAfterHandshakeCompletion
 
 ## REQ-QUIC-RFC9000-S8-0001 Limit sending to unvalidated addresses
 After receiving packets from an address that is not yet validated, an endpoint MUST limit the amount of data it sends to the unvalidated address to three times the amount of data received from that address.
@@ -5206,8 +4920,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §8.1 RFC9000-S8.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1-0001.cs::CanConsiderPeerAddressValidated_RequiresEndpointChosenAndAtLeast64BitsOfEntropy
 
 ## REQ-QUIC-RFC9000-S8P1-0002 Prior to validating the client address, servers MUST NOT send more than three times as many bytes as the number of bytes they have received
 Prior to validating the client address, servers MUST NOT send more than three times as many bytes as the number of bytes they have received.
@@ -5222,8 +4934,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §8.1 RFC9000-S8.1-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1-0002.cs::CanSend_RejectsDataBeyondThePreValidationBudget
 
 ## REQ-QUIC-RFC9000-S8P1-0003 For the purposes of avoiding amplification prior to address validation, servers MUST count all of the payload bytes received in datagrams that are uniquely attributed to a single connection
 For the purposes of avoiding amplification prior to address validation, servers MUST count all of the payload bytes received in datagrams that are uniquely attributed to a single connection.
@@ -5684,8 +5394,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §8.1.4 RFC9000-S8.1.4-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0005.cs::CanConsumeSendBudget_TracksTheThreeToOneAntiAmplificationLimit
 
 ## REQ-QUIC-RFC9000-S8P1P4-0006 To protect against such attacks, servers MUST ensure that replay of tokens is prevented or limited
 To protect against such attacks, servers MUST ensure that replay of tokens is prevented or limited.
@@ -5771,8 +5479,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §8.1.4 RFC9000-S8.1.4-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0011.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresUnattributedDatagrams
 
 ## REQ-QUIC-RFC9000-S8P1P4-0012 Protect against token replay
 To protect against replay attacks, servers MUST ensure that replay of tokens is prevented or limited.
@@ -5859,8 +5565,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8.2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0004.cs::TryGeneratePathChallengeData_RejectsShortDestinations
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0004.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec
 
 ## REQ-QUIC-RFC9000-S8P2P1-0005 Expand datagrams that contain a PATH_CHALLENGE frame to at least the smallest allowed maximum datagram size of 1200 bytes, unless the anti-amplification limit for the path does not permit sending a datagram of this size
 An endpoint MUST expand datagrams that contain a PATH_CHALLENGE frame to at least the smallest allowed maximum datagram size of 1200 bytes, unless the anti-amplification limit for the path does not permit sending a datagram of this size.
@@ -5875,10 +5579,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §8.2.1 RFC9000-S8.2.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8.2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded
 
 ## REQ-QUIC-RFC9000-S8P2P1-0006 To ensure that the path MTU is large enough, the endpoint MUST perform a second path validation by sending a PATH_CHALLENGE frame in a datagram of at least 1200 bytes
 To ensure that the path MTU is large enough, the endpoint MUST perform a second path validation by sending a PATH_CHALLENGE frame in a datagram of at least 1200 bytes.
@@ -5927,7 +5627,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8.2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0008.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec
 
 ## REQ-QUIC-RFC9000-S8P2P2-0001 On receiving a PATH_CHALLENGE frame, an endpoint MUST respond by echoing the data contained in the PATH_CHALLENGE frame in a PATH_RESPONSE frame
 On receiving a PATH_CHALLENGE frame, an endpoint MUST respond by echoing the data contained in the PATH_CHALLENGE frame in a PATH_RESPONSE frame.
@@ -5944,7 +5643,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8.2.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryFormatPathResponseFrame_EchoesChallengeData
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0001.cs::TryFormatPathResponseFrame_EchoesChallengeData
 
 ## REQ-QUIC-RFC9000-S8P2P2-0002 Delay transmission of a packet containing a PATH_RESPONSE frame unless constrained by congestion control
 An endpoint MUST NOT delay transmission of a packet containing a PATH_RESPONSE frame unless constrained by congestion control.
@@ -6001,10 +5699,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §8.2.2 RFC9000-S8.2.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8.2.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded
 
 ## REQ-QUIC-RFC9000-S8P2P2-0006 However, an endpoint MUST NOT expand the datagram containing the PATH_RESPONSE if the resulting data exceeds the anti-amplification limit
 However, an endpoint MUST NOT expand the datagram containing the PATH_RESPONSE if the resulting data exceeds the anti-amplification limit.
@@ -6019,10 +5713,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §8.2.2 RFC9000-S8.2.2-B4-P3-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-8.2.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded
 
 ## REQ-QUIC-RFC9000-S8P2P2-0007 Send more than one PATH_RESPONSE frame in response to one PATH_CHALLENGE frame
 An endpoint MUST NOT send more than one PATH_RESPONSE frame in response to one PATH_CHALLENGE frame; see Section 13.3.
@@ -6547,9 +6237,6 @@ Trace:
   - RFC 9000 §9.3.1 RFC9000-S9.3.1-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs::CanSend_TracksTheThreeTimesAmplificationCapBeforeValidation
 
 ## REQ-QUIC-RFC9000-S9P3P2-0001 To protect the connection from failing due to such a spurious migration, an endpoint MUST revert to using the last validated peer address when validation of a new peer address fails
@@ -7041,10 +6728,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.1 RFC9000-S9.6.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S9P6P1-0002 Once the handshake is confirmed, the client SHOULD select one of the two addresses provided by the server and initiate path validation (see Section 8
 Once the handshake is confirmed, the client SHOULD select one of the two addresses provided by the server and initiate path validation (see Section 8.2).
@@ -7129,10 +6812,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.1 RFC9000-S9.6.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S9P6P1-0008 Choose a Preferred Address After Handshake Confirmation
 Once the handshake is confirmed, the client SHOULD select one of the two addresses provided by the server and initiate path validation.
@@ -7628,7 +7307,6 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1-0003.cs::TryComputeEffectiveIdleTimeoutMicros_UsesTheMinimumAdvertisedValueAndThePtoFloor
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1-0003.cs::TryComputeEffectiveIdleTimeoutMicros_ReturnsFalseWhenNeitherEndpointAdvertisesAnIdleTimeout
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1-0003.cs::TryComputeEffectiveIdleTimeoutMicros_UsesTheOneMicrosecondBoundaryWhenOneEndpointIsDisabled
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters
 
 ## REQ-QUIC-RFC9000-S10P1-0004 Commit to immediate close before timeout
 An endpoint that announces a max_idle_timeout MUST initiate an immediate close if it abandons the connection before the effective timeout expires.
@@ -7714,8 +7392,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P1-0001.cs::TryFormatPingFrame_ProducesAnAckElicitingLivenessProbe
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P1-0001.cs::TryFormatPingFrame_RejectsAZeroLengthDestination
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0002.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes
 
 ## REQ-QUIC-RFC9000-S10P1P2-0001 Application protocols that use QUIC SHOULD provide guidance on when deferring an idle timeout is appropriate
 Application protocols that use QUIC SHOULD provide guidance on when deferring an idle timeout is appropriate.
@@ -8408,9 +8084,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0003.cs::TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
 
 ## REQ-QUIC-RFC9000-S10P3-0004 Bind stateless reset tokens to connection IDs
 A stateless reset token MUST be specific to a connection ID.
@@ -8540,7 +8213,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible
   - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs::TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible
 
 ## REQ-QUIC-RFC9000-S10P3-0011 Limit Stateless Reset amplification
 An endpoint MUST NOT send a Stateless Reset that is three times or more larger than the packet it receives.
@@ -8576,7 +8248,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseShortHeader_AcceptsAValidShortHeaderPacket
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsEmptyInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseLongHeader_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S10P3-0013 Format Stateless Resets with a short header
 Endpoints MUST send Stateless Resets formatted as a packet with a short header.
@@ -8639,7 +8310,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0016.cs::TryGenerateStatelessResetToken_BindsTheTokenToTheConnectionId
 
 ## REQ-QUIC-RFC9000-S10P3-0017 Advertise reset tokens in NEW_CONNECTION_ID
 An endpoint MUST issue a stateless reset token by including the value in the Stateless Reset Token field of a NEW_CONNECTION_ID frame.
@@ -8656,8 +8326,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0017.cs::TryFormatNewConnectionIdFrame_WritesTheStatelessResetTokenField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
 
 ## REQ-QUIC-RFC9000-S10P3-0018 Permit server transport-parameter reset tokens
 Servers MAY issue a stateless_reset_token transport parameter during the handshake that applies to the connection ID that it selected during the handshake.
@@ -8844,8 +8512,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3 RFC9000-S10.3-B15-P12-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs::CanSendStatelessReset_AllowsResponsesBelowTheThreeTimesAmplificationLimit
 
 ## REQ-QUIC-RFC9000-S10P3-0029 Support all negotiated versions in reset generation
 An endpoint that supports multiple versions of QUIC MUST generate a Stateless Reset that will be accepted by peers that support any version that the endpoint might support or might have supported prior to losing state.
@@ -8879,7 +8545,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs::TryGetTrailingStatelessResetToken_UsesTheTrailingSixteenBytes
 
 ## REQ-QUIC-RFC9000-S10P3P1-0002 Remember recent stateless reset tokens
 An endpoint MUST remember all stateless reset tokens associated with the connection IDs and remote addresses for datagrams it has recently sent.
@@ -8980,8 +8645,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs::TryHandlePotentialStatelessReset_EntersDrainingAndStopsSendingOnMatchingToken
 
 ## REQ-QUIC-RFC9000-S10P3P1-0009 Detect potential reset with the last 16 bytes
 An endpoint MUST detect a potential Stateless Reset using the trailing 16 bytes of the UDP datagram.
@@ -8998,7 +8661,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0009.cs::TryGetTrailingStatelessResetToken_DetectsPotentialResetUsingTheTrailingSixteenBytes
 
 ## REQ-QUIC-RFC9000-S10P3P1-0010 Remember and scope reset tokens
 An endpoint MUST remember all stateless reset tokens associated with connection IDs and remote addresses for datagrams it has recently sent, including Stateless Reset Token field values from NEW_CONNECTION_ID frames and the server's transport parameters, and excluding tokens associated with connection IDs that are unused or retired.
@@ -9031,8 +8693,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs::TryHandlePotentialStatelessReset_TransitionsToDrainingWhenTheTokenMatches
 
 ## REQ-QUIC-RFC9000-S10P3P1-0012 Stop sending after token match
 If the last 16 bytes of the datagram are identical in value to a stateless reset token, the endpoint MUST NOT send any further packets on this connection.
@@ -9047,8 +8707,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_DisablesSendingOnAMatchingToken
 
 ## REQ-QUIC-RFC9000-S10P3P2-0001 Be difficult to guess
 The stateless reset token MUST be difficult to guess.
@@ -9198,8 +8856,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3.2 RFC9000-S10.3.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0010.cs::TryGenerateStatelessResetToken_UsesAStaticKeyAcrossConnections
 
 ## REQ-QUIC-RFC9000-S10P3P2-0011 Reuse the same generation method after state loss
 An endpoint that loses state MAY use the same method to generate a valid stateless reset token.
@@ -9228,8 +8884,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3.2 RFC9000-S10.3.2-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0012.cs::TryGenerateStatelessResetToken_RejectsZeroLengthConnectionIds
 
 ## REQ-QUIC-RFC9000-S10P3P3-0001 Keep Stateless Reset smaller than the triggering packet
 An endpoint MUST ensure that every Stateless Reset that it sends is smaller than the packet that triggered it, unless it maintains state sufficient to prevent looping.
@@ -9246,7 +8900,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::CanSendStatelessReset_RejectsAmplificationAndLoopingViolations
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P3-0001.cs::CanSendStatelessReset_AllowsShorterResets
 
 ## REQ-QUIC-RFC9000-S10P3P3-0002 Allow a reset-send limit
 An endpoint MAY remember the number of Stateless Resets that it has sent and stop generating new Stateless Resets once a limit is reached.
@@ -9263,7 +8916,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::CanSendStatelessReset_RejectsAmplificationAndLoopingViolations
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P3-0002.cs::CanSendStatelessReset_AllowsLoopPreventionState
 
 ## REQ-QUIC-RFC9000-S11-0001 that detects an error SHOULD signal the existence of that error to its peer
 An endpoint that detects an error SHOULD signal the existence of that error to its peer.
@@ -9281,7 +8933,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0001.cs::TryParseConnectionCloseFrame_ParsesTransportAndApplicationVariants
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0001.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
 
 ## REQ-QUIC-RFC9000-S11-0002 The most appropriate error code (Section 20) SHOULD be included in the frame that signals the error
 The most appropriate error code (Section 20) SHOULD be included in the frame that signals the error.
@@ -9299,7 +8950,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0001.cs::TryParseConnectionCloseFrame_ParsesTransportAndApplicationVariants
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0001.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
 
 ## REQ-QUIC-RFC9000-S11-0003 Use a generic error code in place of a specific error code
 An endpoint MAY use a generic error code such as PROTOCOL_VIOLATION or INTERNAL_ERROR in place of a specific error code.
@@ -9314,8 +8964,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §11 RFC9000-S11-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
 
 ## REQ-QUIC-RFC9000-S11-0004 Use any applicable error code
 An endpoint MAY use any applicable error code when it detects an error condition.
@@ -9330,8 +8978,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §11 RFC9000-S11-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
 
 ## REQ-QUIC-RFC9000-S11-0005 A stateless reset MUST NOT be used by an endpoint that has the state necessary to send a frame on the connection
 A stateless reset MUST NOT be used by an endpoint that has the state necessary to send a frame on the connection.
@@ -9362,8 +9008,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs::TryParseConnectionCloseFrame_ParsesAndFormatsTransportAndApplicationVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S11P1-0002 Use CONNECTION_CLOSE type 0x1d for application-specific protocol errors
 Application-specific protocol errors MUST be signaled using the CONNECTION_CLOSE frame with a frame type of 0x1d.
@@ -9380,8 +9024,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs::TryParseConnectionCloseFrame_ParsesAndFormatsTransportAndApplicationVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S11P1-0003 Use CONNECTION_CLOSE type 0x1c for transport errors
 Transport errors, including all those described in this document, MUST be carried in the CONNECTION_CLOSE frame with a frame type of 0x1c.
@@ -9398,8 +9040,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs::TryParseConnectionCloseFrame_ParsesAndFormatsTransportAndApplicationVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S11P1-0004 be prepared to retransmit a packet containing a CONNECTION_CLOSE frame if it receives more packets on a terminated connection
 An endpoint SHOULD be prepared to retransmit a packet containing a CONNECTION_CLOSE frame if it receives more packets on a terminated connection.
@@ -10838,7 +10478,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::ShouldSendAckImmediately_ForOutOfOrderAndCePackets
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
 
 ## REQ-QUIC-RFC9000-S13P2P2-0001 determines how frequently to send acknowledgments in response to ack-eliciting packets
 A receiver determines how MUST frequently to send acknowledgments in response to ack-eliciting packets.
@@ -10897,8 +10536,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0001.cs::TryParseAckFrame_RoundsTripAcknowledgedRangesAndAckDelay
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S13P2P3-0002 Acknowledge the most recently received packets
 ACK frames SHOULD always acknowledge the most recently received packets.
@@ -10913,9 +10550,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S13P2P3-0003 If it does not, then older ranges (those with the smallest packet numbers) are omitted
 If it MUST NOT, then older ranges (those with the smallest packet numbers) are omitted.
@@ -10930,8 +10564,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0004.cs::TryBuildAckFrame_TrimsOldestRangesWhenLimitReached
 
 ## REQ-QUIC-RFC9000-S13P2P3-0004 Limit remembered ACK ranges
 A receiver MUST limit the number of ACK Ranges it remembers and sends in ACK frames.
@@ -10946,8 +10578,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0004.cs::TryBuildAckFrame_TrimsOldestRangesWhenLimitReached
 
 ## REQ-QUIC-RFC9000-S13P2P3-0005 Stop tracking acknowledged ACK ranges
 After receiving acknowledgments for an ACK frame, the receiver SHOULD stop tracking those acknowledged ACK Ranges.
@@ -10990,8 +10620,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0004.cs::TryBuildAckFrame_TrimsOldestRangesWhenLimitReached
 
 ## REQ-QUIC-RFC9000-S13P2P3-0008 Discard ACK ranges when a frame would be too large
 A receiver MUST discard unacknowledged ACK Ranges if an ACK frame would be too large to fit in a packet.
@@ -11006,8 +10634,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0004.cs::TryBuildAckFrame_TrimsOldestRangesWhenLimitReached
 
 ## REQ-QUIC-RFC9000-S13P2P3-0009 Limit ACK frame size further when useful
 Receivers MAY also limit ACK frame size further to preserve space for other frames or to limit the capacity that acknowledgments consume.
@@ -11022,8 +10648,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B5-P4-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0004.cs::TryBuildAckFrame_TrimsOldestRangesWhenLimitReached
 
 ## REQ-QUIC-RFC9000-S13P2P3-0010 Retain ACK ranges unless future packets cannot arrive there
 A receiver MUST retain an ACK Range unless it can ensure that it will not subsequently accept packets with numbers in that range.
@@ -11038,8 +10662,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0004.cs::TryBuildAckFrame_TrimsOldestRangesWhenLimitReached
 
 ## REQ-QUIC-RFC9000-S13P2P3-0011 Retain the largest successfully processed packet number
 Receivers MAY discard all ACK Ranges if they retain the largest packet number that has been successfully processed.
@@ -11054,8 +10676,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B7-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0004.cs::TryBuildAckFrame_TrimsOldestRangesWhenLimitReached
 
 ## REQ-QUIC-RFC9000-S13P2P3-0012 Include the largest received packet number in every ACK frame
 A receiver SHOULD include an ACK Range containing the largest received packet number in every ACK frame.
@@ -11070,9 +10690,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S13P2P3-0013 Section 13
 Section MUST 13.2.4 describes an exemplary approach for determining what packets to acknowledge in each ACK frame.
@@ -11129,9 +10746,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.5 RFC9000-S13.2.5-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S13P2P5-0003 Do not include uncontrolled delays in ACK Delay
 An endpoint MUST NOT include delays that it does not control when populating the ACK Delay field in an ACK frame.
@@ -11176,7 +10790,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.5
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
 
 ## REQ-QUIC-RFC9000-S13P2P6-0001 Carry ACK frames only in the same packet number space
 ACK frames MUST only be carried in a packet that has the same packet number space as the packet being acknowledged.
@@ -11191,8 +10804,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.6 RFC9000-S13.2.6-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.6
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P1-0006.cs::PacketNumberSpaces_AreTrackedIndependently
 
 ## REQ-QUIC-RFC9000-S13P2P6-0002 Use 1-RTT for acknowledging 1-RTT packets
 Packets that are protected with 1-RTT keys MUST be acknowledged in packets that are also protected with 1-RTT keys.
@@ -11209,7 +10820,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.6
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::PacketNumberSpaces_AreTrackedIndependently
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P1-0006.cs::PacketNumberSpaces_AreTrackedIndependently
 
 ## REQ-QUIC-RFC9000-S13P2P6-0003 Acknowledge client 0-RTT packets with 1-RTT packets
 Packets that a client sends with 0-RTT packet protection MUST be acknowledged by the server in packets protected by 1-RTT keys.
@@ -11392,13 +11002,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B6-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
-- Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::Fuzz_TryBuildAckFrame_UsesTheLargestAcknowledgedPacketAcrossRandomOrders
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::TryBuildAckFrame_RejectsAnEmptyAckSet
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::TryBuildAckFrame_UsesTheLargestAcknowledgedPacketForAckDelay
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S13P3-0011 Retransmit RESET_STREAM until acknowledged or data is acknowledged
 Cancellation of stream transmission, as carried in a RESET_STREAM frame, MUST be sent until acknowledged or until all stream data is acknowledged by the peer.
@@ -11639,9 +11242,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::Fuzz_TryGeneratePathChallengeData_ProducesDistinctPayloadsAcrossRepeatedCalls
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::TryGeneratePathChallengeData_RejectsShortDestinations
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec
 
 ## REQ-QUIC-RFC9000-S13P3-0028 Send PATH_RESPONSE once
 Responses to path validation using PATH_RESPONSE frames MUST be sent just once.
@@ -11848,7 +11448,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace
 
 ## REQ-QUIC-RFC9000-S13P4-0002 Check whether the path and peer support ECN before enabling it
 To enable ECN, a sending QUIC endpoint MUST first determine whether a path supports ECN marking and whether the peer reports the ECN values in received IP headers.
@@ -11921,10 +11520,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S13P4P1-0005 Include ECN counts in subsequent ACK frames
 These ECN counts MUST be included in subsequent ACK frames.
@@ -11941,10 +11536,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S13P4P1-0006 Keep separate ECN counts per packet number space
 Each packet number space MUST maintain separate acknowledgment state and separate ECN counts.
@@ -11959,9 +11550,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.1 RFC9000-S13.4.1-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P1-0006.cs::PacketNumberSpaces_AreTrackedIndependently
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace
 
 ## REQ-QUIC-RFC9000-S13P4P1-0007 Count ECN once per coalesced QUIC packet
 Coalesced QUIC packets share the same IP header so the ECN counts MUST be incremented once for each coalesced QUIC packet.
@@ -12020,8 +11608,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2-0001.cs::SenderFlowController_ProcessesEcnInAckFrames
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace
 
 ## REQ-QUIC-RFC9000-S13P4P2-0002 Mark early packets on a new path with ECT(0)
 The endpoint MUST set an ECT(0) codepoint in the IP header of early outgoing packets sent on a new path to the peer.
@@ -12092,8 +11678,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.2 RFC9000-S13.4.2-B8-P5-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0001 Validate ECN counts before using them
 An endpoint that receives an ACK frame with ECN counts MUST validate the counts before using them.
@@ -12108,8 +11692,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0002 Fail ECN validation when counts are missing for newly acknowledged ECT packets
 If an ACK frame newly acknowledges a packet that the endpoint sent with either the ECT(0) or ECT(1) codepoint set, ECN validation MUST fail if the corresponding ECN counts are not present in the ACK frame.
@@ -12124,8 +11706,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs::TryValidateAcknowledgedEcnCounts_DisablesEcnWhenCountsAreMissingOrExceedSentCounts
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0003 This check detects a network element that zeroes the ECN field or a peer that does not report ECN markings
 This check detects a network element that zeroes the ECN field or a peer that MUST NOT report ECN markings.
@@ -12140,8 +11720,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs::TryValidateAcknowledgedEcnCounts_DisablesEcnWhenCountsAreMissingOrExceedSentCounts
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0004 Fail ECN validation when ECT(0) and CE counts are too small
 ECN validation MUST fail if the sum of the increase in ECT(0) and ECN-CE counts is less than the number of newly acknowledged packets that were originally sent with an ECT(0) marking.
@@ -12156,8 +11734,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0005 Fail ECN validation when ECT(1) and CE counts are too small
 ECN validation MUST fail if the sum of the increases to ECT(1) and ECN-CE counts is less than the number of newly acknowledged packets sent with an ECT(1) marking.
@@ -12172,8 +11748,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0006 Do not fail ECN validation for reordered ACK frames that do not increase the largest acknowledged packet number
 An endpoint MUST NOT fail ECN validation as a result of processing an ACK frame that does not increase the largest acknowledged packet number.
@@ -12188,8 +11762,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0007 Fail ECN validation when received counts exceed sent counts
 ECN validation MUST fail if the received total count for either ECT(0) or ECT(1) exceeds the total number of packets sent with each corresponding ECT codepoint.
@@ -12204,8 +11776,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B7-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs::TryValidateAcknowledgedEcnCounts_DisablesEcnWhenCountsAreMissingOrExceedSentCounts
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0008 Fail ECN validation for never-applied ECT counts
 Validation MUST fail when an endpoint receives a non-zero ECN count corresponding to an ECT codepoint that it never applied.
@@ -12220,8 +11790,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B7-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs::TryValidateAcknowledgedEcnCounts_DisablesEcnWhenCountsAreMissingOrExceedSentCounts
 
 ## REQ-QUIC-RFC9000-S13P4P2P2-0001 Disable ECN when validation fails
 If validation fails, then the endpoint MUST disable ECN.
@@ -12236,9 +11804,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.2.2 RFC9000-S13.4.2.2-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs::TryValidateAcknowledgedEcnCounts_DisablesEcnWhenCountsAreMissingOrExceedSentCounts
 
 ## REQ-QUIC-RFC9000-S13P4P2P2-0002 It stops setting the ECT codepoint in IP packets that it sends, assuming that either the network path or the peer does not support ECN
 It stops setting the ECT codepoint in IP packets that it sends, assuming that either the network path or the peer MUST NOT support ECN.
@@ -12269,7 +11834,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
 
 ## REQ-QUIC-RFC9000-S13P4P2P2-0004 Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable
 Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable.
@@ -12284,8 +11848,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.4.2.2 RFC9000-S13.4.2.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace
 
 ## REQ-QUIC-RFC9000-S13P4P2P2-0005 Network routing and path elements can change mid-connection
 Network routing and path elements can change mid-connection; an endpoint MUST disable ECN if validation later fails.
@@ -12302,7 +11864,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
 
 ## REQ-QUIC-RFC9000-S14-0001 Allow one or more QUIC packets per UDP datagram
 A UDP datagram MAY include one or more QUIC packets.
@@ -12345,8 +11906,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §14 RFC9000-S14-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1
 
 ## REQ-QUIC-RFC9000-S14-0004 QUIC MUST NOT be used if the network path cannot support a maximum datagram size of at least 1200 bytes
 QUIC MUST NOT be used if the network path cannot support a maximum datagram size of at least 1200 bytes.
@@ -12361,8 +11920,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §14 RFC9000-S14-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1
 
 ## REQ-QUIC-RFC9000-S14-0005 Use PMTUD or DPLPMTUD to discover larger datagram sizes
 Any maximum datagram size larger than 1200 bytes MUST be discovered using Path Maximum Transmission Unit Discovery (PMTUD) or Datagram Packetization Layer PMTU Discovery (DPLPMTUD).
@@ -12554,8 +12111,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.1 RFC9000-S14.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0008.cs::TryConsumeSendBudget_RejectsPayloadsThatExceedTheRemainingBudget
 
 ## REQ-QUIC-RFC9000-S14P2-0001 The UDP payload includes one or more QUIC packet headers and protected payloads
 The UDP payload includes MUST one or more QUIC packet headers and protected payloads.
@@ -12890,8 +12445,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.4 RFC9000-S14.4-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0002.cs::TryRegisterLoss_IgnoresProbePacketLossForCongestionControl
 
 ## REQ-QUIC-RFC9000-S15-0001 Identify versions with 32-bit unsigned numbers
 QUIC versions MUST be identified using a 32-bit unsigned number.
@@ -13055,8 +12608,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §16 RFC9000-S16-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-16
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0001.cs::TryFormat_SetsTheExpectedLengthPrefixBits
 
 ## REQ-QUIC-RFC9000-S16-0002 The integer value MUST be encoded on the remaining bits, in network byte order
 The integer value MUST be encoded on the remaining bits, in network byte order.
@@ -13071,8 +12622,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §16 RFC9000-S16-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-16
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0002.cs::TryParse_DecodesExactWireEncodings
 
 ## REQ-QUIC-RFC9000-S16-0003 This means that integers are encoded on 1, 2, 4, or 8 bytes and MAY encode 6-, 14-, 30-, or 6...
 This means that integers are encoded on 1, 2, 4, or 8 bytes and MAY encode 6-, 14-, 30-, or 62-bit values, respectively.
@@ -13394,7 +12943,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0012.cs::TryParseLongHeader_ExposesTheRequiredFieldsOnVersion1InitialPackets
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0012.cs::TryParseLongHeader_ExposesTheRequiredFieldsOnVersionNegotiationPackets
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
 
 ## REQ-QUIC-RFC9000-S17P2-0013 The most significant bit (0x80) of byte 0 (the first byte) MUST be set to 1 for long headers
 The most significant bit (0x80) of byte 0 (the first byte) MUST be set to 1 for long headers.
@@ -13532,7 +13080,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AllowsVersion1DestinationConnectionIdUpTo20Bytes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0020.cs::TryParseLongHeader_AllowsVersion1DestinationConnectionIdUpTo20Bytes
 
 ## REQ-QUIC-RFC9000-S17P2-0021 Endpoints that receive a version 1 long header with a value larger than 20 MUST drop the packet
 Endpoints that receive a version 1 long header with a value larger than 20 MUST drop the packet.
@@ -13803,10 +13350,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0003.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0003.cs::TryParseVersionNegotiation_RejectsShortHeaderForm
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
 
 ## REQ-QUIC-RFC9000-S17P2P1-0004 The Unused field MUST be 7 bits long
 The Unused field MUST be 7 bits long.
@@ -13826,9 +13369,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
 
 ## REQ-QUIC-RFC9000-S17P2P1-0005 The Version field MUST be 32 bits long with value 0
 The Version field MUST be 32 bits long with value 0.
@@ -13845,11 +13385,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesZeroVersionAsVersionNegotiationState
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0005.cs::TryParseLongHeader_ExposesZeroVersionAsVersionNegotiationState
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0005.cs::TryParseVersionNegotiation_RejectsOrdinaryLongHeaders
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
 
 ## REQ-QUIC-RFC9000-S17P2P1-0006 The Destination Connection ID Length field MUST be 8 bits long
 The Destination Connection ID Length field MUST be 8 bits long.
@@ -13867,9 +13402,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0006.cs::TryParseVersionNegotiation_PreservesDestinationConnectionIdLengthByte
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0006.cs::TryParseVersionNegotiation_RejectsTruncatedDestinationConnectionIdLengthField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
 
 ## REQ-QUIC-RFC9000-S17P2P1-0007 The Destination Connection ID field MUST be between 0 and 2040 bits long
 The Destination Connection ID field MUST be between 0 and 2040 bits long.
@@ -13887,9 +13419,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0007.cs::TryParseVersionNegotiation_PreservesDestinationConnectionIdRange
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0007.cs::TryParseVersionNegotiation_RejectsTruncatedDestinationConnectionId
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
 
 ## REQ-QUIC-RFC9000-S17P2P1-0008 The Source Connection ID Length field MUST be 8 bits long
 The Source Connection ID Length field MUST be 8 bits long.
@@ -13907,9 +13436,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0008.cs::TryParseVersionNegotiation_PreservesSourceConnectionIdLengthByte
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0008.cs::TryParseVersionNegotiation_RejectsTruncatedSourceConnectionIdLengthField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
 
 ## REQ-QUIC-RFC9000-S17P2P1-0009 The Source Connection ID field MUST be between 0 and 2040 bits long
 The Source Connection ID field MUST be between 0 and 2040 bits long.
@@ -13927,9 +13453,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0009.cs::TryParseVersionNegotiation_PreservesSourceConnectionIdRange
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0009.cs::TryParseVersionNegotiation_RejectsTruncatedSourceConnectionId
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
 
 ## REQ-QUIC-RFC9000-S17P2P1-0010 The value in the Unused field MUST be set to an arbitrary value by the server
 The value in the Unused field MUST be set to an arbitrary value by the server.
@@ -13994,9 +13517,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesZeroVersionAsVersionNegotiationState
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
 
 ## REQ-QUIC-RFC9000-S17P2P1-0014 The server MUST include the value from the Source Connection ID field of the packet it receiv...
 The server MUST include the value from the Source Connection ID field of the packet it receives in the Destination Connection ID field.
@@ -14096,12 +13616,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
   - tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_RejectsEmptyInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_RejectsPacketsWithoutSupportedVersions
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_RejectsTruncatedSupportedVersions
 
 ## REQ-QUIC-RFC9000-S17P2P1-0020 A server MUST NOT send more than one Version Negotiation packet in response to a single UDP d...
 A server MUST NOT send more than one Version Negotiation packet in response to a single UDP datagram.
@@ -14137,8 +13651,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P2-0002 The Header Form field MUST be 1 bits long with value 1
 The Header Form field MUST be 1 bits long with value 1.
@@ -14160,10 +13672,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsShortHeaderForm
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
 
 ## REQ-QUIC-RFC9000-S17P2P2-0003 The Fixed Bit field MUST be 1 bits long with value 1
 The Fixed Bit field MUST be 1 bits long with value 1.
@@ -14185,12 +13693,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsNonVersionNegotiationPacketsWithZeroFixedBit
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0003.cs::TryParseLongHeader_RejectsNonVersionNegotiationPacketsWithZeroFixedBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P2-0004 The Long Packet Type field MUST be 2 bits long with value 0
 The Long Packet Type field MUST be 2 bits long with value 0.
@@ -14211,11 +13713,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P2-0005 The Reserved Bits field MUST be 2 bits long
 The Reserved Bits field MUST be 2 bits long.
@@ -14237,11 +13734,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P2-0006 The Packet Number Length field MUST be 2 bits long
 The Packet Number Length field MUST be 2 bits long.
@@ -14263,11 +13755,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P2-0007 The Version field MUST be 32 bits long
 The Version field MUST be 32 bits long.
@@ -14287,11 +13774,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P2-0008 The Destination Connection ID Length field MUST be 8 bits long
 The Destination Connection ID Length field MUST be 8 bits long.
@@ -14312,11 +13794,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseLongHeader_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
 
 ## REQ-QUIC-RFC9000-S17P2P2-0009 The Destination Connection ID field MUST be between 0 and 160 bits long
 The Destination Connection ID field MUST be between 0 and 160 bits long.
@@ -14341,13 +13818,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttSourceConnectionIdsLongerThan20Bytes
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseLongHeader_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0009.cs::TryParseLongHeader_RejectsInitialDestinationConnectionIdsLongerThan20Bytes
 
 ## REQ-QUIC-RFC9000-S17P2P2-0010 The Source Connection ID Length field MUST be 8 bits long
 The Source Connection ID Length field MUST be 8 bits long.
@@ -14369,12 +13839,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseLongHeader_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0010.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte
 
 ## REQ-QUIC-RFC9000-S17P2P2-0011 The Source Connection ID field MUST be between 0 and 160 bits long
 The Source Connection ID field MUST be between 0 and 160 bits long.
@@ -14400,13 +13864,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseLongHeader_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0011.cs::TryParseLongHeader_RejectsInitialSourceConnectionIdsLongerThan20Bytes
 
 ## REQ-QUIC-RFC9000-S17P2P2-0012 The Token Length field MUST be encoded as a variable-length integer
 The Token Length field MUST be encoded as a variable-length integer.
@@ -14425,9 +13882,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0012.cs::TryParseLongHeader_AcceptsATokenLengthEncodedAsAMultiByteVarint
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0012.cs::TryParseLongHeader_AllowsATokenLengthAtTheLargestOneByteVarintValue
 
 ## REQ-QUIC-RFC9000-S17P2P2-0013 The Length field MUST be encoded as a variable-length integer
 The Length field MUST be encoded as a variable-length integer.
@@ -14446,9 +13900,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0013.cs::TryParseLongHeader_AcceptsALengthEncodedAsAMultiByteVarint
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0013.cs::TryParseLongHeader_AllowsALengthAtTheLargestOneByteVarintValue
 
 ## REQ-QUIC-RFC9000-S17P2P2-0014 The Packet Number field MUST be between 8 and 32 bits long
 The Packet Number field MUST be between 8 and 32 bits long.
@@ -14467,8 +13918,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0014.cs::TryParseLongHeader_AllowsInitialPacketNumberLengthsWithinTheRange
 
 ## REQ-QUIC-RFC9000-S17P2P2-0015 The Initial packet MUST contain a long header as well as the Length and Packet Number fields;...
 The Initial packet MUST contain a long header as well as the Length and Packet Number fields; see Section 17.2.
@@ -14487,8 +13936,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0015.cs::TryParseLongHeader_RejectsInitialPacketsMissingLengthAndPacketNumberFields
 
 ## REQ-QUIC-RFC9000-S17P2P2-0016 The first byte MUST contain the Reserved and Packet Number Length bits; see also Section 17.2
 The first byte MUST contain the Reserved and Packet Number Length bits; see also Section 17.2.
@@ -14509,10 +13956,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P2-0017 The Token Length field MUST be variable-length integer specifying the length of the Token fie...
 The Token Length field MUST be variable-length integer specifying the length of the Token field, in bytes.
@@ -14531,8 +13974,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0017.cs::TryParseLongHeader_ParsesInitialTokenLengthAsTheTokenFieldLength
 
 ## REQ-QUIC-RFC9000-S17P2P2-0018 Reject non-zero Token Length on client receipt
 A client that receives an Initial packet with a non-zero Token Length field MUST either discard the packet or generate a connection error of type PROTOCOL_VIOLATION.
@@ -14680,10 +14121,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1ZeroRttPacketsWithInvalidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0001.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields
 
 ## REQ-QUIC-RFC9000-S17P2P3-0002 The first byte MUST contain the Reserved and Packet Number Length bits; see Section 17.2
 The first byte MUST contain the Reserved and Packet Number Length bits; see Section 17.2.
@@ -14703,9 +14140,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P3-0003 A 0-RTT packet MUST be used to carry "early" data from the client to the server as part of th...
 A 0-RTT packet MUST be used to carry "early" data from the client to the server as part of the first flight, prior to handshake completion.
@@ -14754,10 +14188,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsShortHeaderForm
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0005.cs::TryParseLongHeader_RejectsShortHeaderForm
 
 ## REQ-QUIC-RFC9000-S17P2P3-0006 The Fixed Bit field MUST be 1 bits long with value 1
 The Fixed Bit field MUST be 1 bits long with value 1.
@@ -14777,9 +14207,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsNonVersionNegotiationPacketsWithZeroFixedBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P3-0007 The Long Packet Type field MUST be 2 bits long with value 1
 The Long Packet Type field MUST be 2 bits long with value 1.
@@ -14798,9 +14225,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P3-0008 The Reserved Bits field MUST be 2 bits long
 The Reserved Bits field MUST be 2 bits long.
@@ -14820,9 +14244,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P3-0009 The Packet Number Length field MUST be 2 bits long
 The Packet Number Length field MUST be 2 bits long.
@@ -14842,9 +14263,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9000-S17P2P3-0010 The Version field MUST be 32 bits long
 The Version field MUST be 32 bits long.
@@ -14862,8 +14280,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
 
 ## REQ-QUIC-RFC9000-S17P2P3-0011 The Destination Connection ID Length field MUST be 8 bits long
 The Destination Connection ID Length field MUST be 8 bits long.
@@ -14884,10 +14300,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseLongHeader_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryParseLongHeader_RoundTripsHeaderFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0001.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields
 
 ## REQ-QUIC-RFC9000-S17P2P3-0012 The Destination Connection ID field MUST be between 0 and 160 bits long
 The Destination Connection ID field MUST be between 0 and 160 bits long.
@@ -14909,10 +14321,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttDestinationConnectionIdsLongerThan20Bytes
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttSourceConnectionIdsLongerThan20Bytes
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseLongHeader_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0001.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0012.cs::TryParseLongHeader_AllowsZeroRttDestinationConnectionIdsAt20Bytes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0012.cs::TryParseLongHeader_RejectsZeroRttDestinationConnectionIdsLongerThan20Bytes
 
 ## REQ-QUIC-RFC9000-S17P2P3-0013 The Source Connection ID Length field MUST be 8 bits long
 The Source Connection ID Length field MUST be 8 bits long.
@@ -14930,7 +14338,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseLongHeader_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S17P2P3-0014 The Source Connection ID field MUST be between 0 and 160 bits long
 The Source Connection ID field MUST be between 0 and 160 bits long.
@@ -14953,10 +14360,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttSourceConnectionIdsLongerThan20Bytes
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseLongHeader_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0001.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0014.cs::TryParseLongHeader_AllowsZeroRttSourceConnectionIdsAt20Bytes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0014.cs::TryParseLongHeader_RejectsZeroRttSourceConnectionIdsLongerThan20Bytes
 
 ## REQ-QUIC-RFC9000-S17P2P3-0015 The Length field MUST be encoded as a variable-length integer
 The Length field MUST be encoded as a variable-length integer.
@@ -14975,8 +14378,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1ZeroRttPacketsWithInvalidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0001.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0015.cs::TryParseLongHeader_RejectsZeroRttPacketsWithTruncatedLengthField
 
 ## REQ-QUIC-RFC9000-S17P2P3-0016 The Packet Number field MUST be between 8 and 32 bits long
 The Packet Number field MUST be between 8 and 32 bits long.
@@ -14995,8 +14396,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields
   - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1ZeroRttPacketsWithInvalidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0001.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0016.cs::TryParseLongHeader_AllowsZeroRttPacketNumberLengthsWithinTheRange
 
 ## REQ-QUIC-RFC9000-S17P2P3-0017 A client SHOULD attempt to resend data in 0-RTT packets after it sends a new Initial packet
 A client SHOULD attempt to resend data in 0-RTT packets after it sends a new Initial packet.
@@ -15109,8 +14508,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.4 RFC9000-S17.2.4-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryParseLongHeader_AcceptsHandshakePacketsThatUseLongHeaderTypeTwo
 
 ## REQ-QUIC-RFC9000-S17P2P4-0002 The first byte MUST contain the Reserved and Packet Number Length bits; see Section 17.2
 The first byte MUST contain the Reserved and Packet Number Length bits; see Section 17.2.
@@ -15125,8 +14522,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.4 RFC9000-S17.2.4-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_ExposesHandshakeReservedAndPacketNumberLengthBitsFromByteZero
 
 ## REQ-QUIC-RFC9000-S17P2P4-0003 It MUST be used to carry cryptographic handshake messages and acknowledgments from the server...
 It MUST be used to carry cryptographic handshake messages and acknowledgments from the server and client.
@@ -16104,7 +15499,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0003.cs::TryParseShortHeader_ReportsTheHeaderForm
 
 ## REQ-QUIC-RFC9000-S17P3P1-0004 The Fixed Bit field MUST be 1 bits long with value 1
 The Fixed Bit field MUST be 1 bits long with value 1.
@@ -16124,8 +15518,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0004.cs::TryParseShortHeader_ReportsTheFixedBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
 
 ## REQ-QUIC-RFC9000-S17P3P1-0005 The Spin Bit field MUST be 1 bits long
 The Spin Bit field MUST be 1 bits long.
@@ -16145,8 +15537,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0005.cs::TryParseShortHeader_ReportsTheSpinBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
 
 ## REQ-QUIC-RFC9000-S17P3P1-0006 The Reserved Bits field MUST be 2 bits long
 The Reserved Bits field MUST be 2 bits long.
@@ -16166,8 +15556,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0006.cs::TryParseShortHeader_ReportsTheReservedBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
 
 ## REQ-QUIC-RFC9000-S17P3P1-0007 The Key Phase field MUST be 1 bits long
 The Key Phase field MUST be 1 bits long.
@@ -16187,8 +15575,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0007.cs::TryParseShortHeader_ReportsTheKeyPhaseBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
 
 ## REQ-QUIC-RFC9000-S17P3P1-0008 The Packet Number Length field MUST be 2 bits long
 The Packet Number Length field MUST be 2 bits long.
@@ -16208,8 +15594,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0008.cs::TryParseShortHeader_ReportsThePacketNumberLengthBits
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
 
 ## REQ-QUIC-RFC9000-S17P3P1-0009 The Destination Connection ID field MUST be between 0 and 160 bits long
 The Destination Connection ID field MUST be between 0 and 160 bits long.
@@ -16269,7 +15653,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0012.cs::TryClassifyHeaderForm_RecognizesLongHeadersByTheHighBit
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0012.cs::TryClassifyHeaderForm_RecognizesShortHeadersByTheHighBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
 
 ## REQ-QUIC-RFC9000-S17P3P1-0013 The next bit (0x40) of byte 0 MUST be set to 1
 The next bit (0x40) of byte 0 MUST be set to 1.
@@ -16286,7 +15669,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_ExposesTheFixedBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
 
 ## REQ-QUIC-RFC9000-S17P3P1-0014 Packets containing a zero value for this bit are not valid packets in this version and MUST b...
 Packets containing a zero value for this bit are not valid packets in this version and MUST be discarded.
@@ -16322,7 +15704,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0015.cs::TryParseShortHeader_PreservesReservedBitsAsZero
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0015.cs::TryParseShortHeader_RejectsPacketsWithReservedBitsSet
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
 
 ## REQ-QUIC-RFC9000-S17P3P1-0016 The value included prior to protection MUST be set to 0
 The value included prior to protection MUST be set to 0.
@@ -16339,7 +15720,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0016.cs::TryParseShortHeader_PreservesTheZeroValueBeforeProtection
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
 
 ## REQ-QUIC-RFC9000-S17P3P1-0017 An endpoint MUST treat receipt of a packet that has a non-zero value for these bits, after re...
 An endpoint MUST treat receipt of a packet that has a non-zero value for these bits, after removing both packet and header protection, as a connection error of type PROTOCOL_VIOLATION.
@@ -16360,8 +15740,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsReservedBitsNonZero
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs::TryParseShortHeader_RejectsPacketsWithNonZeroReservedBits
 
 ## REQ-QUIC-RFC9000-S17P3P1-0018 Discarding such a packet after only removing header protection MAY expose the endpoint to att...
 Discarding such a packet after only removing header protection MAY expose the endpoint to attacks; see Section 9.5 of [QUIC-TLS].
@@ -16392,7 +15770,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0019.cs::TryParseShortHeader_ExposesTheKeyPhaseBit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
 
 ## REQ-QUIC-RFC9000-S17P3P1-0020 The least significant two bits (those with a mask of 0x03) of byte 0 MUST contain the length...
 The least significant two bits (those with a mask of 0x03) of byte 0 MUST contain the length of the Packet Number field, encoded as an unsigned two-bit integer that is one less than the length of the Packet Number field in bytes.
@@ -16412,8 +15789,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0020.cs::TryParseShortHeader_EncodesThePacketNumberLengthAsOneLessThanTheFieldLength
 
 ## REQ-QUIC-RFC9000-S17P3P1-0021 The Packet Number field MUST be Packet Number field is 1 to 4 bytes long
 The Packet Number field MUST be Packet Number field is 1 to 4 bytes long.
@@ -16634,9 +16009,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18-0003 Each transport parameter MUST be encoded as an (identifier, length, value) tuple, as shown in...
 Each transport parameter MUST be encoded as an (identifier, length, value) tuple, as shown in Figure 21:
@@ -16656,10 +16028,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue
 
 ## REQ-QUIC-RFC9000-S18-0004 The Transport Parameter ID field MUST be encoded as a variable-length integer
 The Transport Parameter ID field MUST be encoded as a variable-length integer.
@@ -16679,10 +16047,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue
 
 ## REQ-QUIC-RFC9000-S18-0005 The Transport Parameter Length field MUST be encoded as a variable-length integer
 The Transport Parameter Length field MUST be encoded as a variable-length integer.
@@ -16702,10 +16066,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue
 
 ## REQ-QUIC-RFC9000-S18-0006 The Transport Parameter Length field MUST contain the length of the Transport Parameter Value...
 The Transport Parameter Length field MUST contain the length of the Transport Parameter Value field in bytes.
@@ -16725,10 +16085,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue
 
 ## REQ-QUIC-RFC9000-S18-0007 QUIC MUST encode transport parameters into a sequence of bytes, which is then included in the...
 QUIC MUST encode transport parameters into a sequence of bytes, which is then included in the cryptographic handshake.
@@ -16747,9 +16103,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18P1-0001 Transport parameters with an identifier of the form 31 * N + 27 for integer values of N MUST...
 Transport parameters with an identifier of the form 31 * N + 27 for integer values of N MUST be reserved to exercise the requirement that unknown transport parameters be ignored.
@@ -16768,10 +16121,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters
 
 ## REQ-QUIC-RFC9000-S18P1-0002 These transport parameters have no semantics and MAY carry arbitrary values
 These transport parameters have no semantics and MAY carry arbitrary values.
@@ -16790,10 +16139,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters
 
 ## REQ-QUIC-RFC9000-S18P2-0001 This transport parameter MUST only be sent by a server
 This transport parameter MUST only be sent by a server.
@@ -16815,11 +16160,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0037.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0038.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer
 
 ## REQ-QUIC-RFC9000-S18P2-0002 The maximum idle timeout is a value in milliseconds that MUST be encoded as an integer; see (...
 The maximum idle timeout is a value in milliseconds that MUST be encoded as an integer; see (Section 10.1).
@@ -16837,9 +16177,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18P2-0003 A stateless reset token MUST be used in verifying a stateless reset; see Section 10.3
 A stateless reset token MUST be used in verifying a stateless reset; see Section 10.3.
@@ -16875,11 +16212,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0037.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0038.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer
 
 ## REQ-QUIC-RFC9000-S18P2-0005 Forbid clients from sending stateless_reset_token
 This transport parameter MUST NOT be sent by a client.
@@ -16899,11 +16231,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0037.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0038.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer
 
 ## REQ-QUIC-RFC9000-S18P2-0006 A server that does not send this transport parameter MUST NOT use stateless reset (Section 10...
 A server that does not send this transport parameter MUST NOT use stateless reset (Section 10.3) for the connection ID negotiated during the handshake.
@@ -16938,9 +16265,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18P2-0008 The initial maximum data parameter is an integer value that contains the initial value for th...
 The initial maximum data parameter is an integer value that contains the initial value for the maximum amount of data that MAY be sent on the connection.
@@ -16958,9 +16282,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18P2-0009 This MUST be equivalent to sending a MAX_DATA (Section 19.9) for the connection immediately a...
 This MUST be equivalent to sending a MAX_DATA (Section 19.9) for the connection immediately after completing the handshake.
@@ -16994,9 +16315,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18P2-0011 If this parameter is absent or zero, the peer MUST NOT open bidirectional streams until a MAX...
 If this parameter is absent or zero, the peer MUST NOT open bidirectional streams until a MAX_STREAMS frame is sent.
@@ -17045,9 +16363,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18P2-0014 If this parameter is absent or zero, the peer MUST NOT open unidirectional streams until a MA...
 If this parameter is absent or zero, the peer MUST NOT open unidirectional streams until a MAX_STREAMS frame is sent.
@@ -17079,9 +16394,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18P2-0016 The disable active migration transport parameter is included if the endpoint MUST NOT support...
 The disable active migration transport parameter is included if the endpoint MUST NOT support active connection migration (Section 9) on the address being used during the handshake.
@@ -17099,9 +16411,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18P2-0017 An endpoint that receives this transport parameter MUST NOT use a new local address when send...
 An endpoint that receives this transport parameter MUST NOT use a new local address when sending to the address that the peer used during the handshake.
@@ -17149,10 +16458,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
 
 ## REQ-QUIC-RFC9000-S18P2-0020 Servers MAY choose to only send a preferred address of one address family by sending an all-z...
 Servers MAY choose to only send a preferred address of one address family by sending an all-zero address and port (0.0.0.0:0 or [::]:0) for the other family.
@@ -17173,11 +16478,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0020.cs::TryParseTransportParameters_AcceptsPreferredAddressWithZeroedIpv4Family
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
 
 ## REQ-QUIC-RFC9000-S18P2-0021 IP addresses MUST be encoded in network byte order
 IP addresses MUST be encoded in network byte order.
@@ -17198,10 +16498,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
 
 ## REQ-QUIC-RFC9000-S18P2-0022 The preferred_address transport parameter MUST contain an address and port for both IPv4 and...
 The preferred_address transport parameter MUST contain an address and port for both IPv4 and IPv6.
@@ -17222,10 +16518,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
 
 ## REQ-QUIC-RFC9000-S18P2-0023 Finally, a 16-byte Stateless Reset Token field MUST include the stateless reset token associa...
 Finally, a 16-byte Stateless Reset Token field MUST include the stateless reset token associated with the connection ID.
@@ -17246,10 +16538,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
 
 ## REQ-QUIC-RFC9000-S18P2-0024 The Connection ID field and the Stateless Reset Token field MUST contain an alternative conne...
 The Connection ID field and the Stateless Reset Token field MUST contain an alternative connection ID that has a sequence number of 1; see Section 5.1.1.
@@ -17282,10 +16570,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0025.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
 
 ## REQ-QUIC-RFC9000-S18P2-0026 Similarly, a server MUST NOT include a zero-length connection ID in this transport parameter
 Similarly, a server MUST NOT include a zero-length connection ID in this transport parameter.
@@ -17304,9 +16588,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18P2-0027 A client MUST treat a violation of these requirements as a connection error of type TRANSPORT...
 A client MUST treat a violation of these requirements as a connection error of type TRANSPORT_PARAMETER_ERROR.
@@ -17341,10 +16622,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
 
 ## REQ-QUIC-RFC9000-S18P2-0029 The IPv4 Port field MUST be 16 bits long
 The IPv4 Port field MUST be 16 bits long.
@@ -17365,10 +16642,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
 
 ## REQ-QUIC-RFC9000-S18P2-0030 The IPv6 Address field MUST be 128 bits long
 The IPv6 Address field MUST be 128 bits long.
@@ -17389,10 +16662,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
 
 ## REQ-QUIC-RFC9000-S18P2-0031 The IPv6 Port field MUST be 16 bits long
 The IPv6 Port field MUST be 16 bits long.
@@ -17413,10 +16682,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
 
 ## REQ-QUIC-RFC9000-S18P2-0032 The Connection ID Length field MUST be 8 bits long
 The Connection ID Length field MUST be 8 bits long.
@@ -17437,10 +16702,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
 
 ## REQ-QUIC-RFC9000-S18P2-0033 The Stateless Reset Token field MUST be 128 bits long
 The Stateless Reset Token field MUST be 128 bits long.
@@ -17461,10 +16722,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue
 
 ## REQ-QUIC-RFC9000-S18P2-0034 This value MUST include the connection ID received during the handshake, that received in the...
 This value MUST include the connection ID received during the handshake, that received in the preferred_address transport parameter, and those received in NEW_CONNECTION_ID frames.
@@ -17498,10 +16755,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0035.cs::TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo
 
 ## REQ-QUIC-RFC9000-S18P2-0036 An endpoint that receives a value less than 2 MUST close the connection with an error of type...
 An endpoint that receives a value less than 2 MUST close the connection with an error of type TRANSPORT_PARAMETER_ERROR.
@@ -17534,7 +16787,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0037.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient
 
 ## REQ-QUIC-RFC9000-S18P2-0038 A server MUST treat receipt of any of these transport parameters as a connection error of typ...
 A server MUST treat receipt of any of these transport parameters as a connection error of type TRANSPORT_PARAMETER_ERROR.
@@ -17551,7 +16803,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0038.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer
 
 ## REQ-QUIC-RFC9000-S19P1-0001 A PADDING frame (type=0x00) MUST have no semantic value
 A PADDING frame (type=0x00) MUST have no semantic value.
@@ -17570,9 +16821,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_RejectsEmptyAndNonPaddingTypes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_RejectsEmptyAndNonPingTypes
 
 ## REQ-QUIC-RFC9000-S19P1-0002 PADDING frames MAY be used to increase the size of a packet
 PADDING frames MAY be used to increase the size of a packet.
@@ -17627,10 +16875,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::FuzzPaddingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_RejectsEmptyAndNonPaddingTypes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_RejectsEmptyAndNonPingTypes
 
 ## REQ-QUIC-RFC9000-S19P1-0005 That is, a PADDING frame MUST consist of the single byte that identifies the frame as a PADDI...
 That is, a PADDING frame MUST consist of the single byte that identifies the frame as a PADDING frame.
@@ -17649,10 +16893,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::FuzzPaddingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_RejectsEmptyAndNonPaddingTypes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_RejectsEmptyAndNonPingTypes
 
 ## REQ-QUIC-RFC9000-S19P1-0006 The Type field MUST be encoded as a variable-length integer with value 0x00
 The Type field MUST be encoded as a variable-length integer with value 0x00.
@@ -17671,10 +16911,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::FuzzPaddingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_RejectsEmptyAndNonPaddingTypes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_RejectsEmptyAndNonPingTypes
 
 ## REQ-QUIC-RFC9000-S19P2-0001 Endpoints MAY use PING frames (type=0x01) to verify that their peers are still alive or to ch...
 Endpoints MAY use PING frames (type=0x01) to verify that their peers are still alive or to check reachability to the peer.
@@ -17707,8 +16943,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_RejectsEmptyAndNonPingTypes
 
 ## REQ-QUIC-RFC9000-S19P2-0003 The Type field MUST be encoded as a variable-length integer with value 0x01
 The Type field MUST be encoded as a variable-length integer with value 0x01.
@@ -17727,9 +16961,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::FuzzPingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_RejectsEmptyAndNonPingTypes
 
 ## REQ-QUIC-RFC9000-S19P2-0004 The PING frame MAY be used to keep a connection alive when an application or application prot...
 The PING frame MAY be used to keep a connection alive when an application or application protocol wishes to prevent the connection from timing out; see Section 10.1.2.
@@ -17763,9 +16994,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 Notes:
 - This clause depends on both the ACK frame type definition sentence and the combined handling sentence.
@@ -17787,9 +17015,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0003 If the frame type is 0x03, ACK frames also MUST contain the cumulative count of QUIC packets...
 If the frame type is 0x03, ACK frames also MUST contain the cumulative count of QUIC packets with associated ECN marks received on the connection up until this point.
@@ -17808,9 +17033,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0004 Use ECN information to manage congestion state
 If they have enabled ECN for packets they send, QUIC implementations SHOULD use the information in the ECN section to manage their congestion state.
@@ -17898,8 +17120,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S19P3-0010 The Largest Acknowledged field MUST be encoded as a variable-length integer
 The Largest Acknowledged field MUST be encoded as a variable-length integer.
@@ -17918,9 +17138,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0011 The ACK Delay field MUST be encoded as a variable-length integer
 The ACK Delay field MUST be encoded as a variable-length integer.
@@ -17939,9 +17156,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0012 The ACK Range Count field MUST be encoded as a variable-length integer
 The ACK Range Count field MUST be encoded as a variable-length integer.
@@ -17960,9 +17174,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0013 The First ACK Range field MUST be encoded as a variable-length integer
 The First ACK Range field MUST be encoded as a variable-length integer.
@@ -17981,9 +17192,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0014 ACK frames MUST contain the following fields:
 ACK frames MUST contain the following fields:
@@ -18002,9 +17210,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0015 The Largest Acknowledged field MUST be variable-length integer representing the largest packe...
 The Largest Acknowledged field MUST be variable-length integer representing the largest packet number the peer is acknowledging; this is usually the largest packet number that the peer has received prior to generating the ACK frame.
@@ -18023,9 +17228,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0016 Unlike the packet number in the QUIC long or short header, the value in an ACK frame MUST NOT...
 Unlike the packet number in the QUIC long or short header, the value in an ACK frame MUST NOT be truncated.
@@ -18044,9 +17246,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0017 The ACK Delay field MUST be variable-length integer encoding the acknowledgment delay in micr...
 The ACK Delay field MUST be variable-length integer encoding the acknowledgment delay in microseconds; see Section 13.2.5.
@@ -18065,9 +17264,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0018 The ACK Range Count field MUST be variable-length integer specifying the number of ACK Range...
 The ACK Range Count field MUST be variable-length integer specifying the number of ACK Range fields in the frame.
@@ -18086,9 +17282,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0019 The First ACK Range field MUST be variable-length integer indicating the number of contiguous...
 The First ACK Range field MUST be variable-length integer indicating the number of contiguous packets preceding the Largest Acknowledged that are being acknowledged.
@@ -18107,9 +17300,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3-0020 MUST contain additional ranges of packets that are alternately not acknowledged (Gap) and ack...
 MUST contain additional ranges of packets that are alternately not acknowledged (Gap) and acknowledged (ACK Range); see Section 19.3.1.
@@ -18128,9 +17318,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P1-0001 Each ACK Range MUST consist of alternating Gap and ACK Range Length values in descending pack...
 Each ACK Range MUST consist of alternating Gap and ACK Range Length values in descending packet number order.
@@ -18149,9 +17336,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P1-0002 ACK Ranges MAY be repeated
 ACK Ranges MAY be repeated.
@@ -18169,8 +17353,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S19P3P1-0003 The Gap field MUST be encoded as a variable-length integer
 The Gap field MUST be encoded as a variable-length integer.
@@ -18189,9 +17371,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P1-0004 The ACK Range Length field MUST be encoded as a variable-length integer
 The ACK Range Length field MUST be encoded as a variable-length integer.
@@ -18210,9 +17389,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P1-0005 The Gap field MUST be variable-length integer indicating the number of contiguous unacknowled...
 The Gap field MUST be variable-length integer indicating the number of contiguous unacknowledged packets preceding the packet number one lower than the smallest in the preceding ACK Range.
@@ -18231,9 +17407,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P1-0006 The ACK Range Length field MUST be variable-length integer indicating the number of contiguou...
 The ACK Range Length field MUST be variable-length integer indicating the number of contiguous acknowledged packets preceding the largest packet number, as determined by the preceding Gap.
@@ -18252,9 +17425,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P1-0007 A value of 0 MUST indicate that only the largest packet number is acknowledged
 A value of 0 MUST indicate that only the largest packet number is acknowledged.
@@ -18273,9 +17443,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P1-0008 Larger ACK Range values MUST indicate a larger range, with corresponding lower values for the...
 Larger ACK Range values MUST indicate a larger range, with corresponding lower values for the smallest packet number in the range.
@@ -18294,9 +17461,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P1-0009 Each Gap MUST indicate a range of packets that are not being acknowledged
 Each Gap MUST indicate a range of packets that are not being acknowledged.
@@ -18315,9 +17479,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P1-0010 If any computed packet number is negative, an endpoint MUST generate a connection error of ty...
 If any computed packet number is negative, an endpoint MUST generate a connection error of type FRAME_ENCODING_ERROR.
@@ -18336,9 +17497,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P2-0001 The ACK frame MUST use the least significant bit of the type value (that is, type 0x03) to in...
 The ACK frame MUST use the least significant bit of the type value (that is, type 0x03) to indicate ECN feedback and report receipt of QUIC packets with associated ECN codepoints of ECT(0), ECT(1), or ECN-CE in the packet's IP header.
@@ -18356,9 +17514,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P2-0002 The ECT0 Count field MUST be encoded as a variable-length integer
 The ECT0 Count field MUST be encoded as a variable-length integer.
@@ -18377,9 +17532,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P2-0003 The ECT1 Count field MUST be encoded as a variable-length integer
 The ECT1 Count field MUST be encoded as a variable-length integer.
@@ -18398,9 +17550,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P2-0004 The ECN-CE Count field MUST be encoded as a variable-length integer
 The ECN-CE Count field MUST be encoded as a variable-length integer.
@@ -18419,9 +17568,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P2-0005 The ECT0 Count field MUST be variable-length integer representing the total number of packets...
 The ECT0 Count field MUST be variable-length integer representing the total number of packets received with the ECT(0) codepoint in the packet number space of the ACK frame.
@@ -18440,9 +17586,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P2-0006 The ECT1 Count field MUST be variable-length integer representing the total number of packets...
 The ECT1 Count field MUST be variable-length integer representing the total number of packets received with the ECT(1) codepoint in the packet number space of the ACK frame.
@@ -18461,9 +17604,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P3P2-0007 The ECN-CE Count field MUST be variable-length integer representing the total number of packe...
 The ECN-CE Count field MUST be variable-length integer representing the total number of packets received with the ECN-CE codepoint in the packet number space of the ACK frame.
@@ -18482,9 +17622,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
 
 ## REQ-QUIC-RFC9000-S19P4-0001 An endpoint MUST use a RESET_STREAM frame (type=0x04) to abruptly terminate the sending part...
 An endpoint MUST use a RESET_STREAM frame (type=0x04) to abruptly terminate the sending part of a stream.
@@ -18545,9 +17682,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::FuzzResetStreamFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P4-0005 The Stream ID field MUST be encoded as a variable-length integer
 The Stream ID field MUST be encoded as a variable-length integer.
@@ -18566,9 +17700,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::FuzzResetStreamFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P4-0006 The Application Protocol Error Code field MUST be encoded as a variable-length integer
 The Application Protocol Error Code field MUST be encoded as a variable-length integer.
@@ -18587,9 +17718,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::FuzzResetStreamFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P4-0007 The Final Size field MUST be encoded as a variable-length integer
 The Final Size field MUST be encoded as a variable-length integer.
@@ -18608,9 +17736,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::FuzzResetStreamFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P4-0008 RESET_STREAM frames MUST contain the following fields:
 RESET_STREAM frames MUST contain the following fields:
@@ -18629,9 +17754,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::FuzzResetStreamFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P4-0009 The Stream ID field MUST be variable-length integer encoding of the stream ID of the stream b...
 The Stream ID field MUST be variable-length integer encoding of the stream ID of the stream being terminated.
@@ -18650,9 +17772,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::FuzzResetStreamFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P4-0010 A variable-length integer containing the application protocol error code (see Section 20.2) t...
 A variable-length integer containing the application protocol error code (see Section 20.2) that MUST indicate why the stream is being closed.
@@ -18671,9 +17790,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::FuzzResetStreamFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P4-0011 The Final Size field MUST be variable-length integer indicating the final size of the stream...
 The Final Size field MUST be variable-length integer indicating the final size of the stream by the RESET_STREAM sender, in units of bytes; see Section 4.5.
@@ -18692,9 +17808,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::FuzzResetStreamFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P5-0001 An endpoint MUST use a STOP_SENDING frame (type=0x05) to communicate that incoming data is be...
 An endpoint MUST use a STOP_SENDING frame (type=0x05) to communicate that incoming data is being discarded on receipt per application request.
@@ -18769,9 +17882,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::FuzzStopSendingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P5-0006 The Stream ID field MUST be encoded as a variable-length integer
 The Stream ID field MUST be encoded as a variable-length integer.
@@ -18790,9 +17900,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::FuzzStopSendingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P5-0007 The Application Protocol Error Code field MUST be encoded as a variable-length integer
 The Application Protocol Error Code field MUST be encoded as a variable-length integer.
@@ -18811,9 +17918,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::FuzzStopSendingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P5-0008 STOP_SENDING frames MUST contain the following fields:
 STOP_SENDING frames MUST contain the following fields:
@@ -18832,9 +17936,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::FuzzStopSendingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P5-0009 The Stream ID field MUST be variable-length integer carrying the stream ID of the stream bein...
 The Stream ID field MUST be variable-length integer carrying the stream ID of the stream being ignored.
@@ -18853,9 +17954,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::FuzzStopSendingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P5-0010 The Application Protocol Error Code field MUST be variable-length integer containing the appl...
 The Application Protocol Error Code field MUST be variable-length integer containing the application-specified reason the sender is ignoring the stream; see Section 20.2.
@@ -18874,9 +17972,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::FuzzStopSendingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_RejectsTruncatedInputs
 
 ## REQ-QUIC-RFC9000-S19P6-0001 A CRYPTO frame (type=0x06) MUST be used to transmit cryptographic handshake messages
 A CRYPTO frame (type=0x06) MUST be used to transmit cryptographic handshake messages.
@@ -18936,7 +18031,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields
 
 ## REQ-QUIC-RFC9000-S19P6-0005 The Offset field MUST be encoded as a variable-length integer
 The Offset field MUST be encoded as a variable-length integer.
@@ -18954,7 +18048,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P6-0006 The Length field MUST be encoded as a variable-length integer
 The Length field MUST be encoded as a variable-length integer.
@@ -18972,7 +18065,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P6-0007 CRYPTO frames MUST contain the following fields:
 CRYPTO frames MUST contain the following fields:
@@ -18990,7 +18082,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P6-0008 The Offset field MUST be variable-length integer specifying the byte offset in the stream for...
 The Offset field MUST be variable-length integer specifying the byte offset in the stream for the data in this CRYPTO frame.
@@ -19008,7 +18099,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P6-0009 The Length field MUST be variable-length integer specifying the length of the Crypto Data fie...
 The Length field MUST be variable-length integer specifying the length of the Crypto Data field in this CRYPTO frame.
@@ -19026,7 +18116,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P6-0010 The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT...
 The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT exceed 262-1.
@@ -19045,8 +18134,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling
 
 ## REQ-QUIC-RFC9000-S19P6-0011 Receipt of a frame that exceeds this limit MUST be treated as a connection error of type FRAM...
 Receipt of a frame that exceeds this limit MUST be treated as a connection error of type FRAME_ENCODING_ERROR or CRYPTO_BUFFER_EXCEEDED.
@@ -19065,8 +18152,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling
 
 ## REQ-QUIC-RFC9000-S19P6-0012 Unlike STREAM frames, which MUST include a stream ID indicating to which stream the data belo...
 Unlike STREAM frames, which MUST include a stream ID indicating to which stream the data belongs, the CRYPTO frame carries data for a single stream per encryption level.
@@ -19084,7 +18169,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P6-0013 The stream MUST NOT have an explicit end, so CRYPTO frames do not have a FIN bit
 The stream MUST NOT have an explicit end, so CRYPTO frames do not have a FIN bit.
@@ -19102,7 +18186,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P7-0001 The Type field MUST be encoded as a variable-length integer with value 0x07
 The Type field MUST be encoded as a variable-length integer with value 0x07.
@@ -19120,8 +18203,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0001.cs::TryFormatNewTokenFrame_WritesTheFrameTypeField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::FuzzNewTokenFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P7-0002 The Token Length field MUST be encoded as a variable-length integer
 The Token Length field MUST be encoded as a variable-length integer.
@@ -19139,8 +18220,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0002.cs::TryFormatNewTokenFrame_EncodesTheTokenLengthAsAVariableLengthInteger
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::FuzzNewTokenFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P7-0003 NEW_TOKEN frames MUST contain the following fields:
 NEW_TOKEN frames MUST contain the following fields:
@@ -19158,8 +18237,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0003.cs::TryParseNewTokenFrame_RejectsPayloadsThatAreMissingRequiredFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::FuzzNewTokenFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P7-0004 The Token Length field MUST be variable-length integer specifying the length of the token in...
 The Token Length field MUST be variable-length integer specifying the length of the token in bytes.
@@ -19177,8 +18254,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::FuzzNewTokenFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::TryParseNewTokenFrame_UsesTheTokenLengthFieldToRecoverTheWholeToken
 
 ## REQ-QUIC-RFC9000-S19P7-0005 An opaque blob that the client MAY use with a future Initial packet
 An opaque blob that the client MAY use with a future Initial packet.
@@ -19196,8 +18271,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::FuzzNewTokenFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0005.cs::TryFormatNewTokenFrame_PreservesTheOpaqueTokenBytes
 
 ## REQ-QUIC-RFC9000-S19P7-0006 The token MUST NOT be empty
 The token MUST NOT be empty.
@@ -19216,7 +18289,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_RejectsEmptyTokens
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0006.cs::TryFormatNewTokenFrame_RejectsEmptyTokens
 
 ## REQ-QUIC-RFC9000-S19P7-0007 A client MUST treat receipt of a NEW_TOKEN frame with an empty Token field as a connection er...
 A client MUST treat receipt of a NEW_TOKEN frame with an empty Token field as a connection error of type FRAME_ENCODING_ERROR.
@@ -19233,7 +18305,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.7
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_RejectsEmptyTokens
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0007.cs::TryParseNewTokenFrame_RejectsEmptyTokens
 
 ## REQ-QUIC-RFC9000-S19P7-0008 A client might receive multiple NEW_TOKEN frames that MUST contain the same token value if pa...
 A client might receive multiple NEW_TOKEN frames that MUST contain the same token value if packets containing the frame are incorrectly determined to be lost.
@@ -19295,7 +18366,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes
   - tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0001.cs::TryParseStreamFrame_SetsTheOffsetBitWhenOffsetIsPresent
 
 ## REQ-QUIC-RFC9000-S19P8-0002 When set to 0, the Offset field is absent and the Stream Data starts at an offset of 0 (that...
 When set to 0, the Offset field is absent and the Stream Data starts at an offset of 0 (that is, the frame MUST contain the first bytes of the stream, or the end of a stream that includes no data).
@@ -19313,7 +18383,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0002.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent
 
 ## REQ-QUIC-RFC9000-S19P8-0003 The LEN bit (0x02) in the frame type MUST be set to indicate that there is a Length field pre...
 The LEN bit (0x02) in the frame type MUST be set to indicate that there is a Length field present.
@@ -19354,7 +18423,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent
   - tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0004.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent
 
 ## REQ-QUIC-RFC9000-S19P8-0005 If this bit MUST be set to 1, the Length field is present
 If this bit MUST be set to 1, the Length field is present.
@@ -19374,7 +18442,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes
   - tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0005.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets
 
 ## REQ-QUIC-RFC9000-S19P8-0006 The FIN bit (0x01) MUST indicate that the frame marks the end of the stream
 The FIN bit (0x01) MUST indicate that the frame marks the end of the stream.
@@ -19431,7 +18498,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent
   - tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0008.cs::TryParseStreamFrame_RejectsFramesWithNonStreamTypes
 
 ## REQ-QUIC-RFC9000-S19P8-0009 The Stream ID field MUST be encoded as a variable-length integer
 The Stream ID field MUST be encoded as a variable-length integer.
@@ -19453,7 +18519,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent
   - tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0009.cs::TryParseStreamFrame_RejectsTruncatedFixedFields
 
 ## REQ-QUIC-RFC9000-S19P8-0010 The Offset field MUST be encoded as a variable-length integer when present
 The Offset field MUST be encoded as a variable-length integer when present.
@@ -19475,7 +18540,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsTruncatedOffsetField
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes
   - tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0010.cs::TryParseStreamFrame_RejectsTruncatedOffsetField
 
 ## REQ-QUIC-RFC9000-S19P8-0011 The Length field MUST be encoded as a variable-length integer when present
 The Length field MUST be encoded as a variable-length integer when present.
@@ -19628,7 +18692,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeilingWithoutALengthField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0018.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P8-0019 The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT...
 The largest offset delivered on a stream -- the sum of the offset and data length -- MUST NOT exceed 262-1, as it is not possible to provide flow control credit for that data.
@@ -19650,7 +18713,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeilingWithoutALengthField
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeiling
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeilingWithoutALengthField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0019.cs::TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeiling
 
 ## REQ-QUIC-RFC9000-S19P8-0020 Receipt of a frame that exceeds this limit MUST be treated as a connection error of type FRAM...
 Receipt of a frame that exceeds this limit MUST be treated as a connection error of type FRAME_ENCODING_ERROR or FLOW_CONTROL_ERROR.
@@ -19668,7 +18730,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeiling
   - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeilingWithoutALengthField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0020.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeiling
 
 ## REQ-QUIC-RFC9000-S19P9-0001 A MAX_DATA frame (type=0x10) MUST be used in flow control to inform the peer of the maximum a...
 A MAX_DATA frame (type=0x10) MUST be used in flow control to inform the peer of the maximum amount of data that can be sent on the connection as a whole.
@@ -19700,7 +18761,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField
 
 ## REQ-QUIC-RFC9000-S19P9-0003 The Maximum Data field MUST be encoded as a variable-length integer
 The Maximum Data field MUST be encoded as a variable-length integer.
@@ -19718,7 +18778,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::FuzzMaxDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P9-0004 MAX_DATA frames MUST contain the following field:
 MAX_DATA frames MUST contain the following field:
@@ -19736,7 +18795,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::FuzzMaxDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P9-0005 A variable-length integer indicating the maximum amount of data that MAY be sent on the entir...
 A variable-length integer indicating the maximum amount of data that MAY be sent on the entire connection, in units of bytes.
@@ -19754,7 +18812,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::FuzzMaxDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P9-0006 The sum of the final sizes on all streams -- including streams in terminal states -- MUST NOT...
 The sum of the final sizes on all streams -- including streams in terminal states -- MUST NOT exceed the value advertised by a receiver.
@@ -19853,8 +18910,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.10 RFC9000-S19.10-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0004.cs::TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreams
 
 ## REQ-QUIC-RFC9000-S19P10-0005 The Type field MUST be encoded as a variable-length integer with value 0x11
 The Type field MUST be encoded as a variable-length integer with value 0x11.
@@ -19872,8 +18927,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::FuzzMaxStreamDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields
 
 ## REQ-QUIC-RFC9000-S19P10-0006 The Stream ID field MUST be encoded as a variable-length integer
 The Stream ID field MUST be encoded as a variable-length integer.
@@ -19891,7 +18944,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::FuzzMaxStreamDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P10-0007 The Maximum Stream Data field MUST be encoded as a variable-length integer
 The Maximum Stream Data field MUST be encoded as a variable-length integer.
@@ -19909,7 +18961,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::FuzzMaxStreamDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P10-0008 MAX_STREAM_DATA frames MUST contain the following fields:
 MAX_STREAM_DATA frames MUST contain the following fields:
@@ -19927,7 +18978,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::FuzzMaxStreamDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P10-0009 The Stream ID field MUST be stream ID of the affected stream, encoded as a variable-length in...
 The Stream ID field MUST be stream ID of the affected stream, encoded as a variable-length integer.
@@ -19945,7 +18995,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::FuzzMaxStreamDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P10-0010 A variable-length integer indicating the maximum amount of data that MAY be sent on the ident...
 A variable-length integer indicating the maximum amount of data that MAY be sent on the identified stream, in units of bytes.
@@ -19963,7 +19012,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::FuzzMaxStreamDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P10-0011 Loss or reordering can mean that the largest received offset on a stream MAY be greater than...
 Loss or reordering can mean that the largest received offset on a stream MAY be greater than the total size of data received on that stream.
@@ -20037,8 +19085,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
 
 ## REQ-QUIC-RFC9000-S19P11-0002 The Maximum Streams field MUST be encoded as a variable-length integer
 The Maximum Streams field MUST be encoded as a variable-length integer.
@@ -20056,7 +19102,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P11-0003 MAX_STREAMS frames MUST contain the following field:
 MAX_STREAMS frames MUST contain the following field:
@@ -20074,7 +19119,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P11-0004 A count of the cumulative number of streams of the corresponding type that MAY be opened over...
 A count of the cumulative number of streams of the corresponding type that MAY be opened over the lifetime of the connection.
@@ -20092,7 +19136,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P11-0005 This value MUST NOT exceed 260, as it is not possible to encode stream IDs larger than 262-1
 This value MUST NOT exceed 260, as it is not possible to encode stream IDs larger than 262-1.
@@ -20111,7 +19154,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P11-0006 Receipt of a frame that permits opening of a stream larger than this limit MUST be treated as...
 Receipt of a frame that permits opening of a stream larger than this limit MUST be treated as a connection error of type FRAME_ENCODING_ERROR.
@@ -20128,7 +19170,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0006.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit
 
 ## REQ-QUIC-RFC9000-S19P11-0007 Loss or reordering MAY cause an endpoint to receive a MAX_STREAMS frame with a lower stream l...
 Loss or reordering MAY cause an endpoint to receive a MAX_STREAMS frame with a lower stream limit than was previously received.
@@ -20272,7 +19313,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
 
 ## REQ-QUIC-RFC9000-S19P12-0004 The Maximum Data field MUST be encoded as a variable-length integer
 The Maximum Data field MUST be encoded as a variable-length integer.
@@ -20291,8 +19331,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseDataBlockedFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P12-0005 DATA_BLOCKED frames MUST contain the following field:
 DATA_BLOCKED frames MUST contain the following field:
@@ -20311,8 +19349,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseDataBlockedFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P12-0006 The Maximum Data field MUST be variable-length integer indicating the connection-level limit...
 The Maximum Data field MUST be variable-length integer indicating the connection-level limit at which blocking occurred.
@@ -20331,8 +19367,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseDataBlockedFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P13-0001 A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but...
 A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.
@@ -20378,7 +19412,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
 
 ## REQ-QUIC-RFC9000-S19P13-0004 The Stream ID field MUST be encoded as a variable-length integer
 The Stream ID field MUST be encoded as a variable-length integer.
@@ -20397,8 +19430,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P13-0005 The Maximum Stream Data field MUST be encoded as a variable-length integer
 The Maximum Stream Data field MUST be encoded as a variable-length integer.
@@ -20417,8 +19448,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P13-0006 STREAM_DATA_BLOCKED frames MUST contain the following fields:
 STREAM_DATA_BLOCKED frames MUST contain the following fields:
@@ -20437,8 +19466,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P13-0007 The Stream ID field MUST be variable-length integer indicating the stream that is blocked due...
 The Stream ID field MUST be variable-length integer indicating the stream that is blocked due to flow control.
@@ -20457,8 +19484,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P13-0008 The Maximum Stream Data field MUST be variable-length integer indicating the offset of the st...
 The Maximum Stream Data field MUST be variable-length integer indicating the offset of the stream at which the blocking occurred.
@@ -20477,8 +19502,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P14-0001 A sender SHOULD send a STREAMS_BLOCKED frame (type=0x16 or 0x17) when it wishes to open a str...
 A sender SHOULD send a STREAMS_BLOCKED frame (type=0x16 or 0x17) when it wishes to open a stream but is unable to do so due to the maximum stream limit set by its peer; see Section 19.11.
@@ -20511,8 +19534,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
 
 ## REQ-QUIC-RFC9000-S19P14-0003 A STREAMS_BLOCKED frame MUST NOT open the stream, but informs the peer that a new stream was...
 A STREAMS_BLOCKED frame MUST NOT open the stream, but informs the peer that a new stream was needed and the stream limit prevented the creation of the stream.
@@ -20545,8 +19566,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
 
 ## REQ-QUIC-RFC9000-S19P14-0005 The Maximum Streams field MUST be encoded as a variable-length integer
 The Maximum Streams field MUST be encoded as a variable-length integer.
@@ -20565,8 +19584,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
 
 ## REQ-QUIC-RFC9000-S19P14-0006 STREAMS_BLOCKED frames MUST contain the following field:
 STREAMS_BLOCKED frames MUST contain the following field:
@@ -20585,8 +19602,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
 
 ## REQ-QUIC-RFC9000-S19P14-0007 The Maximum Streams field MUST be variable-length integer indicating the maximum number of st...
 The Maximum Streams field MUST be variable-length integer indicating the maximum number of streams allowed at the time the frame was sent.
@@ -20605,8 +19620,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
 
 ## REQ-QUIC-RFC9000-S19P14-0008 This value MUST NOT exceed 260, as it is not possible to encode stream IDs larger than 262-1
 This value MUST NOT exceed 260, as it is not possible to encode stream IDs larger than 262-1.
@@ -20624,8 +19637,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_RejectsValuesAboveTheEncodingLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0009.cs::TryParseStreamsBlockedFrame_RejectsValuesAboveTheEncodingLimit
 
 ## REQ-QUIC-RFC9000-S19P14-0009 Receipt of a frame that encodes a larger stream ID MUST be treated as a connection error of t...
 Receipt of a frame that encodes a larger stream ID MUST be treated as a connection error of type STREAM_LIMIT_ERROR or FRAME_ENCODING_ERROR.
@@ -20642,7 +19653,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_RejectsValuesAboveTheEncodingLimit
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0009.cs::TryParseStreamsBlockedFrame_RejectsValuesAboveTheEncodingLimit
 
 ## REQ-QUIC-RFC9000-S19P15-0001 An endpoint sends a NEW_CONNECTION_ID frame (type=0x18) to provide its peer with alternative...
 An endpoint sends a NEW_CONNECTION_ID frame (type=0x18) to provide its peer with alternative connection IDs that MAY be used to break linkability when migrating connections; see Section 9.5.
@@ -20674,7 +19684,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
 
 ## REQ-QUIC-RFC9000-S19P15-0003 The Sequence Number field MUST be encoded as a variable-length integer
 The Sequence Number field MUST be encoded as a variable-length integer.
@@ -20692,7 +19701,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
 
 ## REQ-QUIC-RFC9000-S19P15-0004 The Retire Prior To field MUST be encoded as a variable-length integer
 The Retire Prior To field MUST be encoded as a variable-length integer.
@@ -20710,7 +19718,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
 
 ## REQ-QUIC-RFC9000-S19P15-0005 The Length field MUST be 8 bits long
 The Length field MUST be 8 bits long.
@@ -20729,8 +19736,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
 
 ## REQ-QUIC-RFC9000-S19P15-0006 The Connection ID field MUST be between 8 and 160 bits long
 The Connection ID field MUST be between 8 and 160 bits long.
@@ -20749,8 +19754,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
 
 ## REQ-QUIC-RFC9000-S19P15-0007 The Stateless Reset Token field MUST be 128 bits long
 The Stateless Reset Token field MUST be 128 bits long.
@@ -20768,7 +19771,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
 
 ## REQ-QUIC-RFC9000-S19P15-0008 NEW_CONNECTION_ID frames MUST contain the following fields:
 NEW_CONNECTION_ID frames MUST contain the following fields:
@@ -20787,8 +19789,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P15-0009 Retire Prior To field
 The Retire Prior To field MUST be a variable-length integer indicating which connection IDs should be retired; see Section 5.1.2.
@@ -20806,7 +19806,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
 
 ## REQ-QUIC-RFC9000-S19P15-0010 The Length field MUST be 8-bit unsigned integer containing the length of the connection ID
 The Length field MUST be 8-bit unsigned integer containing the length of the connection ID.
@@ -20826,9 +19825,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
 
 ## REQ-QUIC-RFC9000-S19P15-0011 Values less than 1 and greater than 20 are invalid and MUST be treated as a connection error...
 Values less than 1 and greater than 20 are invalid and MUST be treated as a connection error of type FRAME_ENCODING_ERROR.
@@ -20846,8 +19842,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
 
 ## REQ-QUIC-RFC9000-S19P15-0012 The Connection ID field MUST be connection ID of the specified length
 The Connection ID field MUST be connection ID of the specified length.
@@ -20868,10 +19862,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
 
 ## REQ-QUIC-RFC9000-S19P15-0013 A 128-bit value that will be used for a stateless reset when the associated connection ID MUS...
 A 128-bit value that will be used for a stateless reset when the associated connection ID MUST be used; see Section 10.3.
@@ -20892,10 +19882,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
 
 ## REQ-QUIC-RFC9000-S19P15-0014 An endpoint MUST NOT send this frame if it currently requires that its peer send packets with...
 An endpoint MUST NOT send this frame if it currently requires that its peer send packets with a zero-length Destination Connection ID.
@@ -20984,8 +19970,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber
 
 ## REQ-QUIC-RFC9000-S19P15-0020 Receiving a value in the Retire Prior To field that is greater than that in the Sequence Numb...
 Receiving a value in the Retire Prior To field that is greater than that in the Sequence Number field MUST be treated as a connection error of type FRAME_ENCODING_ERROR.
@@ -21002,7 +19986,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber
 
 ## REQ-QUIC-RFC9000-S19P15-0021 Once a sender MUST indicate a Retire Prior To value, smaller values sent in subsequent NEW_CO...
 Once a sender MUST indicate a Retire Prior To value, smaller values sent in subsequent NEW_CONNECTION_ID frames have no effect.
@@ -21104,7 +20087,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
 
 ## REQ-QUIC-RFC9000-S19P16-0005 The Sequence Number field MUST be encoded as a variable-length integer
 The Sequence Number field MUST be encoded as a variable-length integer.
@@ -21123,8 +20105,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P16-0006 RETIRE_CONNECTION_ID frames MUST contain the following field:
 RETIRE_CONNECTION_ID frames MUST contain the following field:
@@ -21143,8 +20123,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P16-0007 Receipt of a RETIRE_CONNECTION_ID frame containing a sequence number greater than any previou...
 Receipt of a RETIRE_CONNECTION_ID frame containing a sequence number greater than any previously sent to the peer MUST be treated as a connection error of type PROTOCOL_VIOLATION.
@@ -21247,8 +20225,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P17-0003 The Data field MUST be 64 bits long
 The Data field MUST be 64 bits long.
@@ -21267,8 +20243,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P17-0004 PATH_CHALLENGE frames MUST contain the following field:
 PATH_CHALLENGE frames MUST contain the following field:
@@ -21287,8 +20261,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P17-0005 This 8-byte field MUST contain arbitrary data
 This 8-byte field MUST contain arbitrary data.
@@ -21307,8 +20279,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P17-0006 The recipient of this frame MUST generate a PATH_RESPONSE frame (Section 19.18) containing th...
 The recipient of this frame MUST generate a PATH_RESPONSE frame (Section 19.18) containing the same Data value.
@@ -21341,8 +20311,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0001.cs::TryParsePathResponseFrame_ParsesAndFormatsTheEightBytePayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0002.cs::TryParsePathResponseFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P18-0002 The Data field MUST be 64 bits long
 The Data field MUST be 64 bits long.
@@ -21361,8 +20329,6 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0001.cs::TryParsePathResponseFrame_ParsesAndFormatsTheEightBytePayload
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0002.cs::TryParsePathResponseFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P18-0003 If the content of a PATH_RESPONSE frame does not match the content of a PATH_CHALLENGE frame...
 If the content of a PATH_RESPONSE frame does not match the content of a PATH_CHALLENGE frame previously sent by the endpoint, the endpoint MAY generate a connection error of type PROTOCOL_VIOLATION.
@@ -21391,9 +20357,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::TryParseConnectionCloseFrame_UsesTheTransportCloseFrameType
 
 ## REQ-QUIC-RFC9000-S19P19-0002 The CONNECTION_CLOSE frame with a type of 0x1d MUST be used to signal an error with the appli...
 The CONNECTION_CLOSE frame with a type of 0x1d MUST be used to signal an error with the application that uses QUIC.
@@ -21408,8 +20371,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
 
 ## REQ-QUIC-RFC9000-S19P19-0003 The Type field MUST be encoded as a variable-length integer with value 0x1c..0x1d
 The Type field MUST be encoded as a variable-length integer with value 0x1c..0x1d.
@@ -21424,9 +20385,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B5-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S19P19-0004 The Error Code field MUST be encoded as a variable-length integer
 The Error Code field MUST be encoded as a variable-length integer.
@@ -21441,9 +20399,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B5-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S19P19-0005 The Frame Type field MUST be encoded as a variable-length integer when present
 The Frame Type field MUST be encoded as a variable-length integer when present.
@@ -21458,9 +20413,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B5-P0-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S19P19-0006 The Reason Phrase Length field MUST be encoded as a variable-length integer
 The Reason Phrase Length field MUST be encoded as a variable-length integer.
@@ -21475,9 +20427,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B5-P0-S5
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S19P19-0007 CONNECTION_CLOSE frames MUST contain the following fields:
 CONNECTION_CLOSE frames MUST contain the following fields:
@@ -21492,9 +20441,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B7-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S19P19-0008 A variable-length integer that MUST indicate the reason for closing this connection
 A variable-length integer that MUST indicate the reason for closing this connection.
@@ -21509,9 +20455,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B8-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S19P19-0009 A CONNECTION_CLOSE frame of type 0x1c MUST use codes from the space defined in Section 20.1
 A CONNECTION_CLOSE frame of type 0x1c MUST use codes from the space defined in Section 20.1.
@@ -21526,9 +20469,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B8-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S19P19-0010 A CONNECTION_CLOSE frame of type 0x1d MUST use codes defined by the application protocol; see...
 A CONNECTION_CLOSE frame of type 0x1d MUST use codes defined by the application protocol; see Section 20.2.
@@ -21543,9 +20483,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B8-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S19P19-0011 The Frame Type field MUST be variable-length integer encoding the type of frame that triggere...
 The Frame Type field MUST be variable-length integer encoding the type of frame that triggered the error.
@@ -21560,9 +20497,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B9-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S19P19-0012 A value of 0 (equivalent to the mention of the PADDING frame) MUST be used when the frame typ...
 A value of 0 (equivalent to the mention of the PADDING frame) MUST be used when the frame type is unknown.
@@ -21591,9 +20525,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B9-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S19P19-0014 The Reason Phrase Length field MUST be variable-length integer specifying the length of the r...
 The Reason Phrase Length field MUST be variable-length integer specifying the length of the reason phrase in bytes.
@@ -21608,9 +20539,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B10-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes
 
 ## REQ-QUIC-RFC9000-S19P19-0015 Because a CONNECTION_CLOSE frame MUST NOT be split between packets, any limits on packet size...
 Because a CONNECTION_CLOSE frame MUST NOT be split between packets, any limits on packet size will also limit the space available for a reason phrase.
@@ -21625,8 +20553,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B10-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs::TryFormatConnectionCloseFrame_RejectsTooSmallDestinationBuffers
 
 ## REQ-QUIC-RFC9000-S19P19-0016 This MAY be zero length if the sender chooses not to give details beyond the Error Code value
 This MAY be zero length if the sender chooses not to give details beyond the Error Code value.
@@ -21641,8 +20567,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.19 RFC9000-S19.19-B11-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0016.cs::TryParseConnectionCloseFrame_AllowsEmptyReasonPhrases
 
 ## REQ-QUIC-RFC9000-S19P19-0017 This SHOULD be a UTF-8 encoded string [RFC3629], though the frame does not carry information,...
 This SHOULD be a UTF-8 encoded string [RFC3629], though the frame does not carry information, such as language tags, that would aid comprehension by any entity other than the one that created the text.
@@ -21701,7 +20625,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.20
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs::TryParseHandshakeDoneFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0001.cs::TryParseHandshakeDoneFrame_RecognizesTheHandshakeDoneType
 
 ## REQ-QUIC-RFC9000-S19P20-0002 HANDSHAKE_DONE frames are formatted as shown in Figure 44, which shows that HANDSHAKE_DONE fr...
 HANDSHAKE_DONE frames are formatted as shown in Figure 44, which shows that HANDSHAKE_DONE frames MUST have no content.
@@ -21718,7 +20641,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.20
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs::TryParseHandshakeDoneFrame_ParsesAndFormatsTheTypeOnlyFrame
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0002.cs::TryFormatHandshakeDoneFrame_WritesOnlyTheTypeByte
 
 ## REQ-QUIC-RFC9000-S19P20-0003 The Type field MUST be encoded as a variable-length integer with value 0x1e
 The Type field MUST be encoded as a variable-length integer with value 0x1e.
@@ -21733,8 +20655,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.20 RFC9000-S19.20-B4-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.20
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0003.cs::Fuzz_HandshakeDoneFrame_RoundTripsAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P20-0004 A HANDSHAKE_DONE frame MAY only be sent by the server
 A HANDSHAKE_DONE frame MAY only be sent by the server.
@@ -21808,9 +20728,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.21 RFC9000-S19.21-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0002.cs::TryParseTypeOnlyFrames_ConsumesOnlyTheDeclaredFrameSyntax
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0002.cs::TryParseTypeOnlyFrames_RejectsEmptyAndMismatchedTypes
 
 ## REQ-QUIC-RFC9000-S19P21-0003 This allows for efficient encoding of frames, but it means that an endpoint MUST NOT send a f...
 This allows for efficient encoding of frames, but it means that an endpoint MUST NOT send a frame of a type that is unknown to its peer.
@@ -21825,10 +20742,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.21 RFC9000-S19.21-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0003.cs::TryFormatStreamFrame_PreservesTheBoundaryDefinedTypes
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0003.cs::TryFormatStreamFrame_RejectsUnknownFrameTypeValues
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0003.cs::TryFormatStreamFrame_UsesKnownFrameTypeValues
 
 ## REQ-QUIC-RFC9000-S19P21-0004 An extension to QUIC that wishes to use a new type of frame MUST first ensure that a peer is...
 An extension to QUIC that wishes to use a new type of frame MUST first ensure that a peer is able to understand the frame.
@@ -21955,8 +20868,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §20.1 RFC9000-S20.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001.cs::TransportErrorCodeRegistry_ExposesTheRFC9000Values
 
 ## REQ-QUIC-RFC9000-S20P1-0002 An endpoint MUST use this with CONNECTION_CLOSE to signal that the connection is being closed...
 An endpoint MUST use this with CONNECTION_CLOSE to signal that the connection is being closed abruptly in the absence of any error.
@@ -21971,8 +20882,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §20.1 RFC9000-S20.1-B3-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001.cs::TransportErrorCodeRegistry_ExposesTheRFC9000Values
 
 ## REQ-QUIC-RFC9000-S20P1-0003 The endpoint encountered an internal error and MUST NOT continue with the connection
 The endpoint encountered an internal error and MUST NOT continue with the connection.
@@ -21987,8 +20896,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §20.1 RFC9000-S20.1-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001.cs::TransportErrorCodeRegistry_ExposesTheRFC9000Values
 
 ## REQ-QUIC-RFC9000-S20P1-0004 An endpoint has received more data in CRYPTO frames than it MAY buffer
 An endpoint has received more data in CRYPTO frames than it MAY buffer.
@@ -22003,8 +20910,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §20.1 RFC9000-S20.1-B16-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001.cs::TransportErrorCodeRegistry_ExposesTheRFC9000Values
 
 ## REQ-QUIC-RFC9000-S20P1-0005 An endpoint is unlikely to receive a CONNECTION_CLOSE frame carrying this code except when th...
 An endpoint is unlikely to receive a CONNECTION_CLOSE frame carrying this code except when the path MUST NOT support a large enough MTU.
@@ -22019,8 +20924,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §20.1 RFC9000-S20.1-B19-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001.cs::TransportErrorCodeRegistry_ExposesTheRFC9000Values
 
 ## REQ-QUIC-RFC9000-S20P1-0006 A range of 256 values is reserved for carrying error codes specific to the cryptographic hand...
 A range of 256 values is reserved for carrying error codes specific to the cryptographic handshake that MUST be used.
@@ -22035,8 +20938,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §20.1 RFC9000-S20.1-B20-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001.cs::TransportErrorCodeRegistry_ExposesTheRFC9000Values
 
 ## REQ-QUIC-RFC9000-S20P1-0007 Codes for errors occurring when TLS MUST be used for the cryptographic handshake are describe...
 Codes for errors occurring when TLS MUST be used for the cryptographic handshake are described in Section 4.8 of [QUIC-TLS].
@@ -22051,8 +20952,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §20.1 RFC9000-S20.1-B20-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001.cs::TransportErrorCodeRegistry_ExposesTheRFC9000Values
 
 ## REQ-QUIC-RFC9000-S20P1-0008 Absent either of these conditions, error codes MUST be used to identify a general function of...
 Absent either of these conditions, error codes MUST be used to identify a general function of the stack, like flow control or transport parameter handling.
@@ -22067,8 +20966,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §20.1 RFC9000-S20.1-B22-P3-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001.cs::TransportErrorCodeRegistry_ExposesTheRFC9000Values
 
 ## REQ-QUIC-RFC9000-S20P2-0001 Application protocol error codes MUST be used for the RESET_STREAM frame (Section 19.4), the...
 Application protocol error codes MUST be used for the RESET_STREAM frame (Section 19.4), the STOP_SENDING frame (Section 19.5), and the CONNECTION_CLOSE frame with a type of 0x1d (Section 19.19).
@@ -22083,8 +20980,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §20.2 RFC9000-S20.2-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-20.2
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes
 
 ## REQ-QUIC-RFC9000-S21P1P1P1-0001 Use address validation to confirm receipt capability
 Address validation (Section 8) MUST be used to verify that an entity that claims a given address is able to receive packets at that address.
@@ -22101,7 +20996,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-21.1.1.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs::CanConsiderPeerAddressValidated_RequiresEndpointChosenAndAtLeast64BitsOfEntropy
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P1P1P1-0001.cs::CanConsiderPeerAddressValidated_RequiresEndpointChosenAndAtLeast64BitsOfEntropy
 
 ## REQ-QUIC-RFC9000-S21P1P1P1-0002 Limit bytes sent to unvalidated addresses
 Endpoints MUST NOT send data toward an unvalidated address in excess of three times the data received from that address.
@@ -22116,8 +21010,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §21.1.1.1 RFC9000-S21.1.1.1-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-21.1.1.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P1P1P1-0002.cs::CanSend_TracksTheThreeTimesAmplificationCapUntilValidation
 
 ## REQ-QUIC-RFC9000-S21P2-0001 Disallow address change during handshake
 Addresses MUST NOT change during the handshake.
@@ -22429,8 +21321,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §21.12 RFC9000-S21.12-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-21.12
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions
 
 ## REQ-QUIC-RFC9000-S21P12-0002 Future versions of QUIC that use Version Negotiation packets MUST define a mechanism that is...
 Future versions of QUIC that use Version Negotiation packets MUST define a mechanism that is robust against version downgrade attacks.
@@ -23078,7 +21968,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S22P4-0004 Define Frame Type Name
 The Frame Type Name field MUST be a short mnemonic for the frame type.
@@ -23095,7 +21984,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S22P4-0005 In addition to the advice in Section 22.1, specifications for new permanent registrations SHO...
 In addition to the advice in Section 22.1, specifications for new permanent registrations SHOULD describe the means by which an endpoint might determine that it can send the identified type of frame.
@@ -23126,7 +22014,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
 
 ## REQ-QUIC-RFC9000-S22P5-0001 Use Specification Required for transport error codes
 Permanent registrations in this registry MUST be assigned using the Specification Required policy.
@@ -23169,8 +22056,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §22.5 RFC9000-S22.5-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-22.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001.cs::TransportErrorCodeRegistry_ExposesTheRFC9000Values
 
 ## REQ-QUIC-RFC9000-S22P5-0004 Define Code
 The Code field MUST be a short mnemonic for the parameter.
@@ -23185,8 +22070,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §22.5 RFC9000-S22.5-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-22.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001.cs::TransportErrorCodeRegistry_ExposesTheRFC9000Values
 
 ## REQ-QUIC-RFC9000-S22P5-0005 Define Description
 The Description field MUST be a brief description of the error code semantics.
@@ -23201,8 +22084,6 @@ Trace:
 - Source Refs:
   - RFC 9000 §22.5 RFC9000-S22.5-B6-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-22.5
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001.cs::TransportErrorCodeRegistry_ExposesTheRFC9000Values
 
 Notes:
 - The source sentence allows this to be a summary if a specification reference is provided.

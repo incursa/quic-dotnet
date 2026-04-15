@@ -5,6 +5,18 @@ title: "Incursa.Quic Public API Surface Promotion Work Item"
 domain: "quic"
 status: "planned"
 owner: "quic-maintainers"
+addresses:
+  - "REQ-QUIC-API-0001"
+  - "REQ-QUIC-API-0002"
+  - "REQ-QUIC-API-0003"
+  - "REQ-QUIC-API-0004"
+  - "REQ-QUIC-API-0005"
+  - "REQ-QUIC-API-0006"
+  - "REQ-QUIC-API-0007"
+  - "REQ-QUIC-API-0008"
+  - "REQ-QUIC-API-0009"
+  - "REQ-QUIC-API-0010"
+  - "REQ-QUIC-API-0011"
 design_links:
   - "ARC-QUIC-API-0001"
 verification_links:
@@ -20,6 +32,20 @@ related_artifacts:
 ## Summary
 
 Promote the connection-, listener-, client-entry-, narrow stream-entry-, supported write/completion plus narrow reset/stop-sending abort pair and supported Abort(Both, ...) composition, narrow initial stream-capacity callback, and shared support-marker Incursa.Quic consumer facade, prove the supported positive loopback establishment, stream open/accept, write/completion, read/write/Both abort, and support-marker boundaries, refine lifecycle semantics from Microsoft test evidence, and hide the helper-layer implementation seams.
+
+## Requirements Addressed
+
+- REQ-QUIC-API-0001
+- REQ-QUIC-API-0002
+- REQ-QUIC-API-0003
+- REQ-QUIC-API-0004
+- REQ-QUIC-API-0005
+- REQ-QUIC-API-0006
+- REQ-QUIC-API-0007
+- REQ-QUIC-API-0008
+- REQ-QUIC-API-0009
+- REQ-QUIC-API-0010
+- REQ-QUIC-API-0011
 
 ## Design Inputs
 
@@ -59,7 +85,17 @@ This item keeps the stream-capacity callback narrow and truthful for the initial
 
 Addresses:
 
-
+- REQ-QUIC-API-0001
+- REQ-QUIC-API-0002
+- REQ-QUIC-API-0003
+- REQ-QUIC-API-0004
+- REQ-QUIC-API-0005
+- REQ-QUIC-API-0006
+- REQ-QUIC-API-0007
+- REQ-QUIC-API-0008
+- REQ-QUIC-API-0009
+- REQ-QUIC-API-0010
+- REQ-QUIC-API-0011
 
 Uses Design:
 
@@ -89,12 +125,11 @@ Verified By:
 
 ## Reference Behavioral Evidence
 
-- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs`
-- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs`
-- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamTests.cs`
-- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamConnectedStreamConformanceTests.cs`
-- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicCipherSuitesPolicyTests.cs`
-- `https://github.com/dotnet/runtime/blob/main/src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs`
+- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs`
+- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs`
+- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamTests.cs`
+- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamConnectedStreamConformanceTests.cs`
+- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicCipherSuitesPolicyTests.cs`
+- `C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs`
 
 These reference tests are the behavioral evidence for the initial public surface shape and the lifecycle semantics that are now implemented and proven in the target repo.
-

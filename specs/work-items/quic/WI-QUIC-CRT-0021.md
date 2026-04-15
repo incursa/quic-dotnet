@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0021"
 artifact_type: "work_item"
 title: "QUIC CRT client trust-material and peer-identity validation work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0123"

@@ -24,7 +24,7 @@
     "broader session-management infrastructure",
     "opportunistic refactors unrelated to owned ticket state or explicit gate closure"
   ],
-  "status": "landed",
+  "status": "complete",
   "domain": "quic",
   "summary": "Own opaque resumption-ticket snapshot on the managed client/runtime path and keep early data gated closed until that state exists.",
   "verification_plan": "Run focused requirement-home tests for runtime-owned snapshot capture, absence before ingress, duplicate retention, server-role rejection, explicit early-data closure before and after capture, and the public no-ticket/no-early-data guard; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",

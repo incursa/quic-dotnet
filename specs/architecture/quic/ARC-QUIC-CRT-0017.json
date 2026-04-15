@@ -17,7 +17,7 @@
   ],
   "artifact_id": "ARC-QUIC-CRT-0017",
   "artifact_type": "architecture",
-  "status": "landed",
+  "status": "implemented",
   "purpose": "Describe how the server-role 1-RTT packet-protection publication slice satisfies the CRT requirement that follows the supported Finished proof boundary.",
   "satisfies": [
     "REQ-QUIC-CRT-0103",

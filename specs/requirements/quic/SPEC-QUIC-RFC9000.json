@@ -1374,28 +1374,28 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-        "trace": {
-          "satisfied_by": [
-            "ARC-QUIC-RFC9000-0001"
-          ],
-          "implemented_by": [
-            "WI-QUIC-RFC9000-0001"
-          ],
-          "verified_by": [
-            "VER-QUIC-RFC9000-0001"
-          ],
-          "upstream_refs": [
-            "RFC 9000 §3.1 RFC9000-S3.1-B7-P4-S1",
-            "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
-          ],
-          "x_test_refs": [
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0005.cs::TryReceiveStreamFrame_StartsPeerInitiatedBidirectionalSendersInReady",
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0005.cs::TryReceiveStreamFrame_DoesNotStartPeerInitiatedUnidirectionalSendersInReady"
-          ]
-        }
-      },
-      {
-        "id": "REQ-QUIC-RFC9000-S3P1-0006",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9000-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9000-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9000-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9000 §3.1 RFC9000-S3.1-B7-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0005.cs::TryReceiveStreamFrame_StartsPeerInitiatedBidirectionalSendersInReady",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0005.cs::TryReceiveStreamFrame_DoesNotStartPeerInitiatedUnidirectionalSendersInReady"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S3P1-0006",
       "title": "Transmit and retransmit in Send",
       "statement": "In the Send state, an endpoint MUST transmit and retransmit as necessary stream data in STREAM frames.",
       "coverage": {
@@ -1411,19 +1411,19 @@
         "implemented_by": [
           "WI-QUIC-RFC9000-0001"
         ],
-          "verified_by": [
-            "VER-QUIC-RFC9000-0001"
-          ],
-          "upstream_refs": [
-            "RFC 9000 §3.1 RFC9000-S3.1-B8-P5-S1",
-            "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
-          ],
-          "x_test_refs": [
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0006.cs::TryReserveSendCapacity_TransitionsPeerInitiatedBidirectionalSendersIntoSendAndRetransmits",
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0006.cs::TryReserveSendCapacity_RejectsPeerInitiatedUnidirectionalStreamsWithoutASendPart"
-          ]
-        }
-      },
+        "verified_by": [
+          "VER-QUIC-RFC9000-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9000 §3.1 RFC9000-S3.1-B8-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0006.cs::TryReserveSendCapacity_TransitionsPeerInitiatedBidirectionalSendersIntoSendAndRetransmits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0006.cs::TryReserveSendCapacity_RejectsPeerInitiatedUnidirectionalStreamsWithoutASendPart"
+        ]
+      }
+    },
     {
       "id": "REQ-QUIC-RFC9000-S3P1-0007",
       "title": "Respect peer flow control while sending",
@@ -17694,15 +17694,15 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-      "upstream_refs": [
-        "RFC 9000 §12.4 RFC9000-S12.4-B5-P2-S1",
-        "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
-      ],
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0002.cs::TryParsePaddingFrame_AllowsMultipleFramesAndFrameTypesInTheSamePacketPayload"
-      ]
-    }
-  },
+        "upstream_refs": [
+          "RFC 9000 §12.4 RFC9000-S12.4-B5-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0002.cs::TryParsePaddingFrame_AllowsMultipleFramesAndFrameTypesInTheSamePacketPayload"
+        ]
+      }
+    },
     {
       "id": "REQ-QUIC-RFC9000-S12P4-0003",
       "title": "Require at least one frame in packet payloads",
@@ -18007,17 +18007,17 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-      "upstream_refs": [
-        "RFC 9000 §12.4 RFC9000-S12.4-B41-P0-S1",
-        "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
-      ],
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0013.cs::IsAckElicitingFrameType_RecognizesAckElicitingFrameTypes",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0013.cs::IsAckElicitingFrameType_RejectsNonAckElicitingFrameTypes",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0013.cs::IsAckElicitingFrameType_HandlesTheBoundaryBetweenAckElicitingAndNonAckElicitingTypes"
-      ]
-    }
-  },
+        "upstream_refs": [
+          "RFC 9000 §12.4 RFC9000-S12.4-B41-P0-S1",
+          "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0013.cs::IsAckElicitingFrameType_RecognizesAckElicitingFrameTypes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0013.cs::IsAckElicitingFrameType_RejectsNonAckElicitingFrameTypes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0013.cs::IsAckElicitingFrameType_HandlesTheBoundaryBetweenAckElicitingAndNonAckElicitingTypes"
+        ]
+      }
+    },
     {
       "id": "REQ-QUIC-RFC9000-S12P4-0014",
       "title": "Exclude C-marked packets from bytes in flight",
@@ -18064,16 +18064,16 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-      "upstream_refs": [
-        "RFC 9000 §12.4 RFC9000-S12.4-B43-P0-S1",
-        "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
-      ],
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0015.cs::TryRegisterLoss_DoesNotEnterRecoveryForProbePackets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0015.cs::CanSend_AllowsProbePacketsWhenTheCongestionWindowIsFull"
-      ]
-    }
-  },
+        "upstream_refs": [
+          "RFC 9000 §12.4 RFC9000-S12.4-B43-P0-S1",
+          "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0015.cs::TryRegisterLoss_DoesNotEnterRecoveryForProbePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0015.cs::CanSend_AllowsProbePacketsWhenTheCongestionWindowIsFull"
+        ]
+      }
+    },
     {
       "id": "REQ-QUIC-RFC9000-S12P4-0016",
       "title": "Treat F-marked frame contents as flow controlled",

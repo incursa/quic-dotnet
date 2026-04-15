@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0035"
 artifact_type: "work_item"
 title: "QUIC host-facing qlog capture and serialization work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0138"
@@ -78,8 +78,7 @@ Verified By:
 - [`src/Incursa.Quic.Qlog/QuicQlogCapture.cs`](../../../src/Incursa.Quic.Qlog/QuicQlogCapture.cs)
 - [`src/Incursa.Quic.Qlog/QuicQlogDiagnosticsSink.cs`](../../../src/Incursa.Quic.Qlog/QuicQlogDiagnosticsSink.cs)
 - [`src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj`](../../../src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\QlogFile.cs`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\QlogFile.cs)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\QlogTrace.cs`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\QlogTrace.cs)
-- [`https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\Serialization\Json\QlogJsonSerializer.cs`](https://github.com/incursa/qlog-dotnet/blob/main/src\Incursa.Qlog\Serialization\Json\QlogJsonSerializer.cs)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\QlogFile.cs`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\QlogFile.cs)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\QlogTrace.cs`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\QlogTrace.cs)
+- [`C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\Serialization\Json\QlogJsonSerializer.cs`](C:\src\incursa\qlog-dotnet\src\Incursa.Qlog\Serialization\Json\QlogJsonSerializer.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0138.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0138.cs)
-

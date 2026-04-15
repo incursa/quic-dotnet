@@ -23,6 +23,19 @@
   "verification_links": [
     "VER-QUIC-API-0001"
   ],
+  "addresses": [
+    "REQ-QUIC-API-0001",
+    "REQ-QUIC-API-0002",
+    "REQ-QUIC-API-0003",
+    "REQ-QUIC-API-0004",
+    "REQ-QUIC-API-0005",
+    "REQ-QUIC-API-0006",
+    "REQ-QUIC-API-0007",
+    "REQ-QUIC-API-0008",
+    "REQ-QUIC-API-0009",
+    "REQ-QUIC-API-0010",
+    "REQ-QUIC-API-0011"
+  ],
   "related_artifacts": [
     "SPEC-QUIC-API"
   ],

@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-INT-0004"
 artifact_type: "work_item"
 title: "QUIC Interop Post-Handshake Stream Open/Accept Work Item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-INT-0011"

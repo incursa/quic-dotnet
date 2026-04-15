@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0025"
 artifact_type: "work_item"
 title: "QUIC CRT client resumption-ticket snapshot and early-data gate work item"
 domain: "quic"
-status: "landed"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0127"

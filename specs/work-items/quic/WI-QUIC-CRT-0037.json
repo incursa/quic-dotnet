@@ -8,10 +8,11 @@
     "SPEC-QUIC-CRT"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "status": "landed",
+  "status": "complete",
   "domain": "quic",
   "summary": "Add a narrow internal readiness observation over the dormant detached resumption carrier while keeping early data explicitly closed and the actual 0-RTT packet family separate.",
   "verification_plan": "Run focused requirement-home tests for the REQ-QUIC-CRT-0139 prerequisite regression plus positive readiness, missing-prerequisite negative, the public no-broad-0-RTT guard, and the anti-replay/key-update out-of-scope guard; then run the relevant CRT/API/INT guard set, the full `REQ_QUIC_CRT_` sweep, and SpecTrace render/validation checks.",
+  "planned_changes": "- Add a narrow internal readiness observation that becomes true only when the dormant detached carrier retains both resumption credential material and early-data prerequisite material.\n- Keep the readiness signal internal and explicitly non-committal about actual 0-RTT packet emission or public support.\n- Preserve the existing early-data-closed behavior on paths missing any prerequisite material.\n- Add focused requirement-home coverage for ready versus not-ready observation without widening the packet family.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",

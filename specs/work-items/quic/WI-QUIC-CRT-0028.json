@@ -25,7 +25,7 @@
     "broader session-management infrastructure",
     "opportunistic refactors unrelated to detached handoff or dormant import"
   ],
-  "status": "landed",
+  "status": "complete",
   "domain": "quic",
   "summary": "Export an opaque detached resumption-ticket carrier from the managed client/runtime path and store it as dormant internal state in a later client setup without widening the supported promise.",
   "verification_plan": "Run focused requirement-home tests for detached carrier export, absence before capture, dormant import into later client setup, duplicate-update non-replacement, server-role rejection, explicit early-data closure before and after handoff, the public no-hand-off/no-resumption/no-early-data guard, and unchanged handshake/bootstrap behavior with dormant state present; run the current CRT/API/INT guards and the full `REQ_QUIC_CRT_` sweep; run repo-local SpecTrace validation and render checks after the canonical JSON updates.",

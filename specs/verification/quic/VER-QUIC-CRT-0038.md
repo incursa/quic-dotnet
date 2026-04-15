@@ -6,6 +6,10 @@
 
 Verify that the first client-side 0-RTT packet-emission attempt is admitted only when the dormant detached carrier has both the resumption credential material and the early-data prerequisite material, that the runtime derives distinct 0-RTT packet-protection material for the first protected client application packet, that missing prerequisites or derivation failures fall back cleanly, and that 0-RTT receive handling, anti-replay, key update, transfer/retry, and public API widening remain out of scope.
 
+## Requirements Verified
+
+- REQ-QUIC-CRT-0141
+
 ## Verification Method
 
 Focused requirement-home tests, fuzzing, and BenchmarkDotNet evidence.
@@ -54,7 +58,7 @@ The managed client/runtime path can attempt the first bounded 0-RTT packet emiss
 
 ## Status
 
-landed
+passed
 
 ## Related Artifacts
 
