@@ -6475,6 +6475,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::PacketFromANewAddressStartsPathValidationWhenMigrationIsPermitted
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::RepeatedPacketsDoNotRestartPathValidationWhileTheChallengeIsPending
 
 ## REQ-QUIC-RFC9000-S9P3-0008 Change Sending Address Only on the Highest-Numbered Non-Probing Packet
 An endpoint MUST only change the address to which it sends packets in response to the highest-numbered non-probing packet.

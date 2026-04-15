@@ -120,16 +120,18 @@
   "reference_audit": {
     "source_requirement_refs_found": [],
     "test_requirement_refs_found": [
-      "REQ-QUIC-RFC9000-S9P3P1-0001"
+      "REQ-QUIC-RFC9000-S9P3P1-0001",
+      "REQ-QUIC-RFC9000-S9P3-0007"
     ],
     "source_files_checked_for_requirement_ids": [
       "src/Incursa.Quic"
     ],
     "test_files_with_requirement_traits": [
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs"
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs"
     ],
     "stale_or_wrong_refs_found": [],
-    "notes": "The audited requirement-home file carries the exact in-scope requirement ID on the intended cases. No source-side requirement refs were present in the scoped code, which is consistent with the repository convention for this slice."
+    "notes": "The audited requirement-home files carry the exact in-scope requirement IDs on the intended cases. No source-side requirement refs were present in the scoped code, which is consistent with the repository convention for this slice."
   },
   "requirements": [
     {

@@ -59,9 +59,9 @@
 - Source roots searched: `C:/src/incursa/quic-dotnet/src/Incursa.Quic`
 - Test roots searched: `C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests`
 - In-scope source requirement refs found: none
-- In-scope test requirement refs found: `REQ-QUIC-RFC9000-S9P3P1-0001`
+- In-scope test requirement refs found: `REQ-QUIC-RFC9000-S9P3P1-0001`, `REQ-QUIC-RFC9000-S9P3-0007`
 - Stale or wrong refs found: none
-- Current in-scope test files: `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs`
+- Current in-scope test files: `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P1-0001.cs`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs`
 
 ## Tests Reviewed
 
