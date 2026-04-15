@@ -67,25 +67,32 @@ function Get-RunnerImplementationRegistry {
 
 function Normalize-StringList {
     param(
+        [AllowNull()]
         [Parameter(Mandatory)]
         [AllowEmptyCollection()]
         [object[]]$Values
     )
 
-    return @(
-        foreach ($value in $Values) {
-            if ($null -eq $value) {
-                continue
-            }
+    if ($null -eq $Values) {
+        return @()
+    }
 
-            foreach ($item in ($value -split ',')) {
-                $trimmed = $item.Trim()
-                if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
-                    $trimmed
-                }
+    $normalizedValues = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($value in $Values) {
+        if ($null -eq $value) {
+            continue
+        }
+
+        foreach ($item in ($value -split ',')) {
+            $trimmed = $item.Trim()
+            if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
+                $normalizedValues.Add($trimmed)
             }
         }
-    )
+    }
+
+    return $normalizedValues.ToArray()
 }
 
 function Get-RunnerImplementationRole {
@@ -173,12 +180,12 @@ $dockerBuildContextRoot = Split-Path $repoRootResolved -Parent
 
 $registry = Get-RunnerImplementationRegistry -RunnerRootPath $runnerRootResolved
 $TestCases = Normalize-StringList -Values $TestCases
-if ($TestCases.Count -eq 0) {
+if ($null -eq $TestCases -or @($TestCases).Count -eq 0) {
     throw 'At least one testcase must be requested.'
 }
 
 $PeerImplementationSlots = Normalize-StringList -Values $PeerImplementationSlots
-if ($PeerImplementationSlots.Count -eq 0 -and $LocalRole -ne 'both') {
+if (($null -eq $PeerImplementationSlots -or @($PeerImplementationSlots).Count -eq 0) -and $LocalRole -ne 'both') {
     throw 'PeerImplementationSlots must include at least one implementation when LocalRole is client or server.'
 }
 
@@ -233,7 +240,7 @@ $unsupportedRequestedTestCases = @(
         Where-Object { $_ -notin $runnerSupportedTestCases }
 )
 
-if ($unsupportedRequestedTestCases.Count -gt 0) {
+if (@($unsupportedRequestedTestCases).Count -gt 0) {
     throw "Requested testcase(s) $($unsupportedRequestedTestCases -join ', ') are not part of the runner-recognized local subset for this helper. Supported testcase subset: $($runnerSupportedTestCases -join ', ')."
 }
 

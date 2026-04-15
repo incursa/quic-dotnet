@@ -37,6 +37,7 @@ The helper produces repo-local execution-report artifacts for local runner runs 
 
 - scripts/interop/Invoke-QuicInteropRunner.ps1
 - scripts/interop/README.md
+- tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0013.cs
 - scripts/README.md
 - src/Incursa.Quic.InteropHarness/README.md
 - src/Incursa.Quic.InteropHarness/Dockerfile
@@ -44,7 +45,7 @@ The helper produces repo-local execution-report artifacts for local runner runs 
 
 ## Status
 
-Landed; the local helper built the harness image, invoked the external runner through image replacement, and captured repo-local execution-report bundles while preserving the runner's noncompliant result honestly. The helper now covers both same-slot and split-role local runs, and the harness tolerates empty server-side `REQUESTS` on supported dispatch paths.
+Landed; the local helper built the harness image, invoked the external runner through image replacement, and captured repo-local execution-report bundles while preserving the runner's noncompliant result honestly. The helper now covers both same-slot and split-role local runs, the harness tolerates empty server-side `REQUESTS` on supported dispatch paths, and the requirement-home proof now includes helper-validation coverage for unsupported testcase lists, default local-slot planning, peer-slot compatibility, and empty split-role peer-slot rejection.
 
 ## Related Artifacts
 
