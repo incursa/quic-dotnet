@@ -2047,6 +2047,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.5 RFC9000-S4.5-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryReceiveStreamFrame_CommunicatesFinalSizeWhenTerminatedWithFin
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryReceiveResetStreamFrame_CommunicatesFinalSizeWhenTerminatedWithReset
 
 ## REQ-QUIC-RFC9000-S4P5-0002 Use STREAM FIN to carry final size
 The final size of a stream MUST be the sum of the Offset and Length fields of a STREAM frame with a FIN flag, including any implicit values.

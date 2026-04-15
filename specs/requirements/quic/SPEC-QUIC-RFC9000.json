@@ -3744,6 +3744,10 @@
         "upstream_refs": [
           "RFC 9000 §4.5 RFC9000-S4.5-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryReceiveStreamFrame_CommunicatesFinalSizeWhenTerminatedWithFin",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryReceiveResetStreamFrame_CommunicatesFinalSizeWhenTerminatedWithReset"
         ]
       }
     },
