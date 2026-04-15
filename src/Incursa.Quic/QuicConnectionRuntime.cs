@@ -57,6 +57,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private byte[]? retryToken;
     private bool retryBootstrapPendingReplay;
     private bool zeroRttPacketSent;
+    private bool handshakeDonePacketSent;
     private bool hasSuccessfullyProcessedAnotherPacket;
 
     private int consumerStarted;
@@ -980,6 +981,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             {
                 stateChanged = true;
             }
+
+            stateChanged |= TryFlushHandshakeDonePacket(ref effects);
         }
 
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
@@ -1191,6 +1194,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 stateChanged |= TryFlushInitialPackets(ref effects);
                 stateChanged |= TryFlushZeroRttPackets(ref effects);
                 stateChanged |= TryFlushHandshakePackets(ref effects);
+                stateChanged |= TryFlushHandshakeDonePacket(ref effects);
                 break;
         }
 
@@ -2417,6 +2421,47 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return stateChanged;
     }
 
+    private bool TryFlushHandshakeDonePacket(ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase != QuicConnectionPhase.Active
+            || tlsState.Role != QuicTlsRole.Server
+            || handshakeDonePacketSent
+            || !peerHandshakeTranscriptCompleted
+            || activePath is null
+            || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            return false;
+        }
+
+        if (!TryBuildOutboundHandshakeDonePayload(out byte[] applicationPayload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            applicationPayload,
+            "The connection runtime could not protect the HANDSHAKE_DONE packet.",
+            "The connection cannot send the HANDSHAKE_DONE packet.",
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+        handshakeDonePacketSent = true;
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+        return true;
+    }
+
     private bool TryGetInitialOutboundPath(out QuicConnectionPathIdentity pathIdentity)
     {
         if (activePath is not null)
@@ -2719,6 +2764,21 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         if (frameBytesWritten < buffer.Length)
         {
             buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
+    internal bool TryBuildOutboundHandshakeDonePayload(out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[1];
+        if (!QuicFrameCodec.TryFormatHandshakeDoneFrame(default, buffer, out int frameBytesWritten)
+            || frameBytesWritten != buffer.Length)
+        {
+            return false;
         }
 
         payload = buffer;
@@ -3314,6 +3374,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         stateChanged |= TryFlushHandshakePackets(ref effects);
+        stateChanged |= TryFlushHandshakeDonePacket(ref effects);
 
         if (stateChanged)
         {
@@ -3366,6 +3427,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         UpdatePeerAddressValidationFlag();
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         stateChanged |= TryFlushHandshakePackets(ref effects);
+        stateChanged |= TryFlushHandshakeDonePacket(ref effects);
         return stateChanged;
     }
 
