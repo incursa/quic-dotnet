@@ -56,6 +56,21 @@ internal static class QuicRfc9001KeyPhaseTestSupport
         return true;
     }
 
+    internal static bool TryInstallRuntimeOneRttKeyUpdate(QuicConnectionRuntime runtime)
+    {
+        FieldInfo runtimeBridgeDriverField = typeof(QuicConnectionRuntime).GetField(
+            "tlsBridgeDriver",
+            BindingFlags.NonPublic | BindingFlags.Instance)!;
+        QuicTlsTransportBridgeDriver runtimeBridgeDriver =
+            (QuicTlsTransportBridgeDriver)runtimeBridgeDriverField.GetValue(runtime)!;
+
+        MethodInfo installMethod = typeof(QuicTlsTransportBridgeDriver).GetMethod(
+            "TryInstallOneRttKeyUpdate",
+            BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        return (bool)installMethod.Invoke(runtimeBridgeDriver, [])!;
+    }
+
     internal static byte[] CreateSuccessorPhaseOneApplicationPacket(QuicTlsPacketProtectionMaterial openMaterial)
     {
         QuicHandshakeFlowCoordinator coordinator = CreatePacketCoordinator();
