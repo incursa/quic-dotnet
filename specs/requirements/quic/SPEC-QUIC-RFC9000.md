@@ -2211,7 +2211,9 @@ Trace:
   - RFC 9000 §4.5 RFC9000-S4.5-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.5
 - Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0003.cs::TryParseResetStreamFrame_ParsesAndFormatsTheFinalSizeField
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0003.cs::TryParseResetStreamFrame_RejectsTruncatedInputs
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0003.cs::TryParseResetStreamFrame_RoundTripsTheMaximumFinalSizeValue
 
 ## REQ-QUIC-RFC9000-S4P5-0004 Account final size at connection level
 The receiver MUST use the final size of the stream to account for all bytes sent on the stream in its connection-level flow controller.
