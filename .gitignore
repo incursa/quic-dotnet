@@ -428,3 +428,4 @@ FodyWeavers.xsd
 
 .dotnet/
 .codex-profile/
+.artifacts/
