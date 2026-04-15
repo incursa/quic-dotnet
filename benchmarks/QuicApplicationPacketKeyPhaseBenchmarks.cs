@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using System.Buffers.Binary;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -67,9 +66,9 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
             throw new InvalidOperationException("Failed to prepare the representative successor 1-RTT install state.");
         }
 
-        installedOpenPacketProtectionMaterial = tempDriver.State.OneRttOpenPacketProtectionMaterial?.Value
+        installedOpenPacketProtectionMaterial = tempDriver.State.OneRttOpenPacketProtectionMaterial
             ?? throw new InvalidOperationException("The representative successor 1-RTT open material was not available.");
-        installedProtectPacketProtectionMaterial = tempDriver.State.OneRttProtectPacketProtectionMaterial?.Value
+        installedProtectPacketProtectionMaterial = tempDriver.State.OneRttProtectPacketProtectionMaterial
             ?? throw new InvalidOperationException("The representative successor 1-RTT protect material was not available.");
 
         packetCoordinator = new QuicHandshakeFlowCoordinator(DestinationConnectionId);
