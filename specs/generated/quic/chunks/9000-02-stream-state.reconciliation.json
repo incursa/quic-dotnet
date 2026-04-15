@@ -142,7 +142,7 @@
     "wrong_requirement_refs_found": [],
     "notes": [
       "No live src/ requirement tags are present for this slice.",
-      "The helper-layer tests and requirement-home files now show the 16 implemented clauses and the 9 partial clauses with existing test files; S3-0003 remains partial without a populated test file."
+      "The helper-layer tests and requirement-home files now show the 17 implemented clauses and the 9 partial clauses with existing test files; S3P1-0003 now has direct positive, negative, and edge proof."
     ]
   },
   "live_ref_audit": {
@@ -329,8 +329,8 @@
       ],
       "direct_refs_added_or_updated": [],
       "direct_refs_state": "present",
-      "remaining_gap": "Needs a direct edge proof for entering Send on the first outbound frame.",
-      "notes": "Needs a direct edge proof for entering Send on the first outbound frame."
+      "remaining_gap": null,
+      "notes": "The helper layer now proves the first outbound frame and the blocked-edge boundary."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0004",
@@ -1323,7 +1323,6 @@
   ],
   "remaining_open_requirements": [
     "REQ-QUIC-RFC9000-S3-0003",
-    "REQ-QUIC-RFC9000-S3P1-0003",
     "REQ-QUIC-RFC9000-S3P1-0004",
     "REQ-QUIC-RFC9000-S3P1-0005",
     "REQ-QUIC-RFC9000-S3P1-0006",
@@ -1382,7 +1381,7 @@
     }
   ],
   "summary_notes": [
-    "The helper-layer slice now closes 17 requirements, keeps 9 partially implemented, and leaves 40 blocked.",
+    "The helper-layer slice now closes 18 requirements, keeps 9 partially implemented, and leaves 39 blocked.",
     "The remaining open requirements are explicit and grouped by section in the closeout artifact.",
     "The repository still does not have the application-facing stream abstraction or STOP_SENDING/RESET orchestration needed to finish the chunk cleanly."
   ],

@@ -731,6 +731,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0003.cs::TryReserveSendCapacity_EntersSendStateOnFirstOutboundFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0003.cs::TryReserveSendCapacity_RejectsReceiveOnlyPeerUnidirectionalStreamsWithoutEnteringSendState
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0003.cs::TryReserveSendCapacity_EntersSendStateOnFirstBlockedOutboundFrame
 
 ## REQ-QUIC-RFC9000-S3P1-0004 Allow deferred stream ID allocation
 An implementation MAY defer allocating a stream ID to a stream until it sends the first STREAM frame and enters the Send state.

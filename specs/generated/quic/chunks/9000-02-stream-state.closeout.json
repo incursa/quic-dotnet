@@ -107,10 +107,11 @@
     "covered_requirement_ids": [
       "REQ-QUIC-RFC9000-S3-0001",
       "REQ-QUIC-RFC9000-S3-0002",
-      "REQ-QUIC-RFC9000-S3P1-0001",
-      "REQ-QUIC-RFC9000-S3P1-0002",
-      "REQ-QUIC-RFC9000-S3P1-0007",
-      "REQ-QUIC-RFC9000-S3P1-0008",
+    "REQ-QUIC-RFC9000-S3P1-0001",
+    "REQ-QUIC-RFC9000-S3P1-0002",
+    "REQ-QUIC-RFC9000-S3P1-0003",
+    "REQ-QUIC-RFC9000-S3P1-0007",
+    "REQ-QUIC-RFC9000-S3P1-0008",
       "REQ-QUIC-RFC9000-S3P2-0005",
       "REQ-QUIC-RFC9000-S3P2-0006",
       "REQ-QUIC-RFC9000-S3P2-0008",
@@ -123,10 +124,9 @@
       "REQ-QUIC-RFC9000-S3P2-0024"
     ],
     "partially_implemented_requirement_ids": [
-      "REQ-QUIC-RFC9000-S3-0003",
-      "REQ-QUIC-RFC9000-S3P1-0003",
-      "REQ-QUIC-RFC9000-S3P1-0009",
-      "REQ-QUIC-RFC9000-S3P2-0001",
+    "REQ-QUIC-RFC9000-S3-0003",
+    "REQ-QUIC-RFC9000-S3P1-0009",
+    "REQ-QUIC-RFC9000-S3P2-0001",
       "REQ-QUIC-RFC9000-S3P2-0002",
       "REQ-QUIC-RFC9000-S3P2-0003",
       "REQ-QUIC-RFC9000-S3P2-0007",
@@ -252,7 +252,7 @@
     "wrong_requirement_refs_found": [],
     "notes": [
       "The helper-layer evidence is carried by QuicConnectionStreamState and the requirement-home stream-state tests.",
-      "S3-0003 remains partial without a populated test file; the other partial clauses have direct test evidence but still need stronger edge proof."
+      "S3-0003 remains partial while S3P1-0003 now has direct positive, negative, and edge proof; the other partial clauses have direct test evidence but still need stronger edge proof."
     ]
   },
   "evidence": {
@@ -340,10 +340,6 @@
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3-0003",
       "reason": "Design-level MAY clause; the current repo shape does not cleanly prove alternate stream-state representations."
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0003",
-      "reason": "Needs a direct edge proof for entering Send on the first outbound frame."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P2-0001",
