@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0019",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "landed",
   "title": "QUIC CRT client-role 1-RTT readiness work item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -34,7 +34,7 @@
     "broader 1-RTT data-path ownership",
     "interop harness dispatch"
   ],
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "The client-role 1-RTT readiness slice now publishes OneRtt readiness and directional packet-protection material only after peer Finished verification, keeps the active loopback data path gated, and rejects premature 1-RTT publication.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",

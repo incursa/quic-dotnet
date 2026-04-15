@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0019"
 artifact_type: "work_item"
 title: "QUIC CRT client-role 1-RTT readiness work item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0121"
@@ -59,7 +59,7 @@ Run the new CRT requirement-home tests, the affected API loopback guards, and th
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+The client-role 1-RTT readiness slice now publishes OneRtt readiness and directional packet-protection material only after peer Finished verification, keeps the active loopback data path gated, and rejects premature 1-RTT publication.
 
 ## Trace Links
 

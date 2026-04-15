@@ -52,7 +52,7 @@ Execution, inspection, and benchmark evidence.
 
 ## Status
 
-planned
+Server-role 1-RTT packet-protection publication now has execution, inspection, and regression evidence on the current runtime path.
 
 ## Related Artifacts
 

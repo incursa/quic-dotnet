@@ -15,7 +15,7 @@
     "REQ-QUIC-CRT-0119"
   ],
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "landed",
   "procedure": [
     "Run the requirement-home tests that prove the server-role Finished proof boundary and the new 1-RTT publication slice.",
     "Run the bridge-state rejection tests for premature, repeated, conflicting, and fatal publication attempts.",
@@ -35,6 +35,7 @@
     "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs"
   ],
+  "status_summary": "Server-role 1-RTT packet-protection publication now has execution, inspection, and regression evidence on the current runtime path.",
   "preconditions": [
     "The `Incursa.Quic` solution builds successfully.",
     "The CRT requirement traits are discoverable by the quality inventory.",

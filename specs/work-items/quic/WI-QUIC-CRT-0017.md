@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0017"
 artifact_type: "work_item"
 title: "QUIC CRT server-role 1-RTT publication work item"
 domain: "quic"
-status: "planned"
+status: "landed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0103"
@@ -60,7 +60,7 @@ Keep the proof boundary narrow: publication is valid only after server-role `Pee
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+The server-role 1-RTT publication slice now derives and exposes directional open/protect material only after peer Finished verification, keeps the 1-RTT data path closed, and rejects premature, repeated, conflicting, malformed, or terminal publication.
 
 ## Trace Links
 

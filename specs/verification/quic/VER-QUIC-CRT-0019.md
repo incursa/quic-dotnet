@@ -49,7 +49,7 @@ Execution, inspection, and benchmark evidence.
 
 ## Status
 
-planned
+Client-role 1-RTT readiness now has execution, inspection, and regression evidence on the current runtime path.
 
 ## Related Artifacts
 
