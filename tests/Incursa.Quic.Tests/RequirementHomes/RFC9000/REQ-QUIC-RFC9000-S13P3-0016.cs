@@ -58,4 +58,37 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0016
         Assert.Equal(21UL, secondMaxDataFrame.MaximumData);
         Assert.Equal(21UL, state.ConnectionReceiveLimit);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0016")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryRegisterLoss_QueuesTheMostRecentMaxDataPacketForRepairUntilAcknowledged()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        byte[] packet = QuicFrameTestData.BuildMaxDataFrame(new QuicMaxDataFrame(18));
+        Assert.True(QuicFrameCodec.TryParseMaxDataFrame(packet, out QuicMaxDataFrame frame, out int bytesConsumed));
+        Assert.Equal(packet.Length, bytesConsumed);
+        Assert.Equal(18UL, frame.MaximumData);
+
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: (ulong)packet.Length,
+            SentAtMicros: 100,
+            AckEliciting: true,
+            Retransmittable: true,
+            PacketBytes: packet));
+
+        Assert.True(runtime.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            7,
+            handshakeConfirmed: true));
+
+        Assert.Equal(1, runtime.PendingRetransmissionCount);
+        Assert.True(runtime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan retransmission));
+        Assert.Equal(7UL, retransmission.PacketNumber);
+        Assert.True(packet.AsSpan().SequenceEqual(retransmission.PacketBytes.Span));
+        Assert.False(runtime.TryDequeueRetransmission(out _));
+    }
 }
