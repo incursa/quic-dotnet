@@ -1988,6 +1988,26 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 continue;
             }
 
+            if (QuicFrameCodec.TryParsePathChallengeFrame(remaining, out QuicPathChallengeFrame pathChallengeFrame, out int pathChallengeBytesConsumed))
+            {
+                if (pathChallengeBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (TryHandlePathChallengeFrame(
+                    packetReceivedEvent.PathIdentity,
+                    pathChallengeFrame,
+                    nowTicks,
+                    ref effects))
+                {
+                    stateChanged = true;
+                }
+
+                offset += pathChallengeBytesConsumed;
+                continue;
+            }
+
             if (!QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
             {
                 return false;
@@ -2041,6 +2061,65 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         return processedStreamFrame || processedCryptoFrame || stateChanged;
+    }
+
+    private bool TryHandlePathChallengeFrame(
+        QuicConnectionPathIdentity pathIdentity,
+        QuicPathChallengeFrame pathChallengeFrame,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        Span<byte> responseFrameBuffer = stackalloc byte[16];
+        if (!QuicFrameCodec.TryFormatPathResponseFrame(
+            new QuicPathResponseFrame(pathChallengeFrame.Data),
+            responseFrameBuffer,
+            out int responseFrameBytesWritten))
+        {
+            return false;
+        }
+
+        ReadOnlyMemory<byte> responseDatagram = responseFrameBuffer[..responseFrameBytesWritten].ToArray();
+
+        if (activePath is not null
+            && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity))
+        {
+            QuicConnectionActivePathRecord currentPath = activePath.Value;
+            if (!currentPath.AmplificationState.TryConsumeSendBudget(
+                responseFrameBytesWritten,
+                out QuicConnectionPathAmplificationState updatedAmplificationState))
+            {
+                return false;
+            }
+
+            activePath = currentPath with
+            {
+                LastActivityTicks = nowTicks,
+                AmplificationState = updatedAmplificationState,
+            };
+        }
+        else if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
+        {
+            if (!candidatePath.AmplificationState.TryConsumeSendBudget(
+                responseFrameBytesWritten,
+                out QuicConnectionPathAmplificationState updatedAmplificationState))
+            {
+                return false;
+            }
+
+            candidatePath = candidatePath with
+            {
+                LastActivityTicks = nowTicks,
+                AmplificationState = updatedAmplificationState,
+            };
+            candidatePaths[pathIdentity] = candidatePath;
+        }
+        else
+        {
+            return false;
+        }
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, responseDatagram));
+        return true;
     }
 
     private bool TryFlushInitialPackets(ref List<QuicConnectionEffect>? effects)
