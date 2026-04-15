@@ -14019,6 +14019,10 @@
         "upstream_refs": [
           "RFC 9000 §10.2.1 RFC9000-S10.2.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0008.cs::TryEnterClosingState_EntersClosingStateAfterImmediateClose",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0008.cs::TryEnterClosingState_ReturnsFalseWhenAlreadyClosingOrDraining"
         ]
       }
     },
@@ -14101,6 +14105,10 @@
         "upstream_refs": [
           "RFC 9000 §10.2.2 RFC9000-S10.2.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs::TryEnterDrainingState_DisablesSendingPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs::TryEnterDrainingState_ReturnsFalseWhenAlreadyDraining"
         ]
       }
     },
@@ -14160,6 +14168,10 @@
         "upstream_refs": [
           "RFC 9000 §10.2.2 RFC9000-S10.2.2-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs::TryEnterClosingState_DisablesFurtherPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs::TryEnterClosingState_ReturnsFalseAfterDraining"
         ]
       }
     },
@@ -14186,6 +14198,9 @@
         "upstream_refs": [
           "RFC 9000 §10.2.2 RFC9000-S10.2.2-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0004.cs::TryEnterClosingState_ThenTryEnterDrainingState_ReplacesClosingWithDrainingAndStopsSendingPackets"
         ]
       }
     },

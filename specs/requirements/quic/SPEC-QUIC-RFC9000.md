@@ -7625,6 +7625,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.2.1 RFC9000-S10.2.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0008.cs::TryEnterClosingState_EntersClosingStateAfterImmediateClose
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0008.cs::TryEnterClosingState_ReturnsFalseWhenAlreadyClosingOrDraining
 
 ## REQ-QUIC-RFC9000-S10P2P1-0009 Retain only closing-state essentials
 In the closing state, an endpoint MUST retain only enough information to generate a packet containing a CONNECTION_CLOSE frame and to identify packets as belonging to the connection.
@@ -7653,6 +7656,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.2.1 RFC9000-S10.2.1-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0010.cs::ClosingRuntimeRepliesToAttributedPacketsWithConnectionClose
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0010.cs::DrainingRuntimeDoesNotReplyToAttributedPacketsWithConnectionClose
 
 ## REQ-QUIC-RFC9000-S10P2P2-0001 While otherwise identical to the closing state, an endpoint in the draining state MUST NOT send any packets
 While otherwise identical to the closing state, an endpoint in the draining state MUST NOT send any packets.
@@ -7667,6 +7673,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.2.2 RFC9000-S10.2.2-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs::TryEnterDrainingState_DisablesSendingPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs::TryEnterDrainingState_ReturnsFalseWhenAlreadyDraining
 
 ## REQ-QUIC-RFC9000-S10P2P2-0002 That receives a CONNECTION_CLOSE frame MAY send a single packet containing a CONNECTION_CLOSE frame before entering the draining state, using a NO_ERROR code if appropriate
 An endpoint that receives a CONNECTION_CLOSE frame MAY send a single packet containing a CONNECTION_CLOSE frame before entering the draining state, using a NO_ERROR code if appropriate.
@@ -7701,6 +7710,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.2.2 RFC9000-S10.2.2-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs::TryEnterClosingState_DisablesFurtherPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs::TryEnterClosingState_ReturnsFalseAfterDraining
 
 ## REQ-QUIC-RFC9000-S10P2P2-0004 Enter the draining state from the closing state if it receives a CONNECTION_CLOSE frame, which indicates that the peer is also closing or draining
 An endpoint MAY enter the draining state from the closing state if it receives a CONNECTION_CLOSE frame, which indicates that the peer is also closing or draining.
@@ -7715,6 +7727,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.2.2 RFC9000-S10.2.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0004.cs::TryEnterClosingState_ThenTryEnterDrainingState_ReplacesClosingWithDrainingAndStopsSendingPackets
 
 ## REQ-QUIC-RFC9000-S10P2P2-0005 Enter draining on peer close
 The draining state MUST be entered once an endpoint receives a CONNECTION_CLOSE frame, which indicates that its peer is closing or draining.
