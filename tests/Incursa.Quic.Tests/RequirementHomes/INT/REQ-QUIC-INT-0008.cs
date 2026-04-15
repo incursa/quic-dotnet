@@ -268,28 +268,67 @@ public sealed class REQ_QUIC_INT_0008
     public async Task HarnessHandshakeTestcaseCompletesTheManagedBootstrapPath()
     {
         IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-        string requests = $"https://127.0.0.1:{listenEndPoint.Port}/handshake";
+        string requests = $"https://localhost:{listenEndPoint.Port}/handshake";
         string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+        using X509Certificate2 harnessCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+        using ECDsa harnessPrivateKey = harnessCertificate.GetECDsaPrivateKey()!;
+        string certPath = Path.GetFullPath(InteropHarnessEnvironment.CertificatePath);
+        string privateKeyPath = Path.GetFullPath(InteropHarnessEnvironment.PrivateKeyPath);
+        string? originalCertificatePem = File.Exists(certPath) ? File.ReadAllText(certPath) : null;
+        string? originalPrivateKeyPem = File.Exists(privateKeyPath) ? File.ReadAllText(privateKeyPath) : null;
 
-        await using HarnessProcess serverProcess = HarnessProcess.Start("server", "handshake", requests, harnessDll);
-        await serverProcess.WaitForListeningAsync(TimeSpan.FromSeconds(10));
+        Directory.CreateDirectory(Path.GetDirectoryName(certPath)!);
+        File.WriteAllText(certPath, harnessCertificate.ExportCertificatePem());
+        File.WriteAllText(privateKeyPath, harnessPrivateKey.ExportPkcs8PrivateKeyPem());
 
-        await using HarnessProcess clientProcess = HarnessProcess.Start("client", "handshake", requests, harnessDll);
-        await clientProcess.WaitForStdoutContainsAsync("connecting to", TimeSpan.FromSeconds(10));
-        await WaitForHandshakeExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(10));
+        try
+        {
+            await using HarnessProcess serverProcess = HarnessProcess.Start("server", "handshake", requests, harnessDll);
+            await serverProcess.WaitForListeningAsync(TimeSpan.FromSeconds(10));
 
-        Assert.Contains("role=server, testcase=handshake", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("role=client, testcase=handshake", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("listening on", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("connecting to", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("completed managed listener bootstrap", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("completed managed client bootstrap", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Equal(0, serverProcess.Process.ExitCode);
-        Assert.Equal(0, clientProcess.Process.ExitCode);
-        Assert.DoesNotContain("unsupported", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("unsupported", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("unsupported", serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("unsupported", clientProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+            await using HarnessProcess clientProcess = HarnessProcess.Start("client", "handshake", requests, harnessDll);
+            await clientProcess.WaitForStdoutContainsAsync("connecting to", TimeSpan.FromSeconds(10));
+            await WaitForHandshakeExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(10));
+
+            Assert.Contains("role=server, testcase=handshake", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("role=client, testcase=handshake", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("listening on", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("connecting to", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed listener bootstrap", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed client bootstrap", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Equal(0, serverProcess.Process.ExitCode);
+            Assert.Equal(0, clientProcess.Process.ExitCode);
+            Assert.DoesNotContain("unsupported", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("unsupported", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("unsupported", serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("unsupported", clientProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            if (originalCertificatePem is null)
+            {
+                if (File.Exists(certPath))
+                {
+                    File.Delete(certPath);
+                }
+            }
+            else
+            {
+                File.WriteAllText(certPath, originalCertificatePem);
+            }
+
+            if (originalPrivateKeyPem is null)
+            {
+                if (File.Exists(privateKeyPath))
+                {
+                    File.Delete(privateKeyPath);
+                }
+            }
+            else
+            {
+                File.WriteAllText(privateKeyPath, originalPrivateKeyPem);
+            }
+        }
     }
 
     [Fact]

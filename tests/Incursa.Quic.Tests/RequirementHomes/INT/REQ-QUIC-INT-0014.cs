@@ -252,6 +252,39 @@ public sealed class REQ_QUIC_INT_0014
         Assert.False(accepted);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TransferPathMappingRejectsRootRequests()
+    {
+        Assert.True(InteropHarnessEnvironment.TryCreate(
+            InteropHarnessTestSupport.CreateEnvironment(
+                role: "client",
+                testcase: "transfer",
+                requests: "https://localhost:4242/"),
+            out InteropHarnessEnvironment? clientSettings,
+            out string? errorMessage));
+        Assert.NotNull(clientSettings);
+        Assert.Null(errorMessage);
+
+        InteropHarnessPreflightPlanner planner = new(clientSettings!, TextWriter.Null);
+        Assert.True(planner.TryGetDispatchRequestUri(out Uri? requestUri, out errorMessage));
+        Assert.NotNull(requestUri);
+        Assert.Null(errorMessage);
+
+        Assert.False(InteropHarnessPreflightPlanner.TryGetTransferPaths(
+            requestUri,
+            out string? relativePath,
+            out string? sourcePath,
+            out string? destinationPath,
+            out errorMessage));
+        Assert.Null(relativePath);
+        Assert.Null(sourcePath);
+        Assert.Null(destinationPath);
+        Assert.NotNull(errorMessage);
+        Assert.Contains("non-root path", errorMessage, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static (string CertificatePath, string PrivateKeyPath) CreateServerCertificateFiles(
         TempDirectoryFixture fixture,
         string dnsName)
