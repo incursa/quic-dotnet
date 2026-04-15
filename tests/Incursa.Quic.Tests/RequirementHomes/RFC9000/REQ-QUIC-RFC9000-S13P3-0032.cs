@@ -69,6 +69,35 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0032
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void LossOfAPaddingOnlyPacketDoesNotQueueRepair()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        byte[] paddingPacket = QuicFrameTestData.BuildPaddingFrame();
+
+        Assert.True(QuicFrameCodec.TryParsePaddingFrame(paddingPacket, out int bytesConsumed));
+        Assert.Equal(paddingPacket.Length, bytesConsumed);
+
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: (ulong)paddingPacket.Length,
+            SentAtMicros: 100,
+            AckEliciting: false,
+            Retransmittable: false,
+            PacketBytes: paddingPacket));
+
+        Assert.True(runtime.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            7,
+            handshakeConfirmed: false));
+
+        Assert.Equal(0, runtime.PendingRetransmissionCount);
+        Assert.False(runtime.TryDequeueRetransmission(out _));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RetransmittablePacketLossQueuesRepair()
