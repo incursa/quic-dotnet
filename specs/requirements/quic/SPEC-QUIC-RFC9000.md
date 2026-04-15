@@ -1116,6 +1116,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B8-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0011.cs::TryApplyMaxStreamDataFrame_OpensLowerNumberedPeerStreamsFirst
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0011.cs::TryReceiveStopSendingFrame_OpensLowerNumberedPeerStreamsFirst
 
 ## REQ-QUIC-RFC9000-S3P2-0012 Receive STREAM and STREAM_DATA_BLOCKED in Recv
 In the Recv state, the endpoint MUST receive STREAM and STREAM_DATA_BLOCKED frames.
