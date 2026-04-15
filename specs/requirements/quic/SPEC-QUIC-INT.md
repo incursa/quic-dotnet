@@ -84,6 +84,8 @@ Trace:
   - WI-QUIC-INT-0001
 - Verified By:
   - VER-QUIC-INT-0001
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0003.cs::TlsTransportStateTracksParametersKeysAndHandshakeCompletion
 - Code Refs:
   - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs
@@ -116,6 +118,8 @@ Trace:
   - WI-QUIC-INT-0001
 - Verified By:
   - VER-QUIC-INT-0001
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0005.cs::SenderRuntimeTracksLossRetransmissionAndProbeTimeoutState
 - Code Refs:
   - src/Incursa.Quic.InteropHarness/InteropHarnessEnvironment.cs
   - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
@@ -131,6 +135,8 @@ Trace:
   - WI-QUIC-INT-0002
 - Verified By:
   - VER-QUIC-INT-0002
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs::EndpointHostShellBridgesTheLibraryRuntimeThroughAConnectedUdpSocketAndRoutesInboundHandshakeDatagrams
 - Code Refs:
   - src/Incursa.Quic.InteropHarness/InteropEndpointHost.cs
   - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs

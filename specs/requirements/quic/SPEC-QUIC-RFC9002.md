@@ -45,6 +45,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-2
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0002.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes
 
 ## REQ-QUIC-RFC9002-S2-0003 Acknowledge ack-eliciting packets promptly
 Packets that contain ack-eliciting frames MUST elicit an ACK from the receiver within the maximum acknowledgment delay.
@@ -96,6 +97,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0001.cs::TryParseShortHeader_ReportsThePacketLevelHeader
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
 
 ## REQ-QUIC-RFC9002-S3-0002 Indicate encryption level in packet headers
 The packet-level header MUST indicate the encryption level.
@@ -112,6 +114,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryGetPacketNumberSpace_MapsSupportedHeaderFormsToSpaces
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9002-S3-0003 Carry packet numbers in packet headers
 The packet-level header MUST include a packet sequence number.
@@ -128,6 +131,8 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_PreservesThePacketSequenceNumberBytes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits
 
 ## REQ-QUIC-RFC9002-S3-0004 Map encryption level to packet number space
 The encryption level MUST indicate the packet number space.
@@ -144,6 +149,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs::TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P1-0006.cs::PacketNumberSpaces_AreTrackedIndependently
 
 ## REQ-QUIC-RFC9002-S3-0005 Prohibit packet number reuse
 Packet numbers MUST NOT repeat within a packet number space for the lifetime of a connection.
@@ -246,6 +252,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
 
 ## REQ-QUIC-RFC9002-S3-0012 Delay acknowledgment for non-ack-eliciting packets
 Packets that contain no ack-eliciting frames MUST be acknowledged only along with ack-eliciting packets.
@@ -345,6 +352,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-3-4.4
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0017.cs::RecordProcessedPaddingPacket_DoesNotRequestAnImmediateAck
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0002.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes
 
 ## REQ-QUIC-RFC9002-S5-0001 Compute RTT path values
 An endpoint MUST compute min_rtt, smoothed_rtt, and rttvar for each path.
@@ -1027,6 +1035,7 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0002.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0002.cs::TryComputeProbeTimeoutMicros_UsesTheSameBaseTimeoutAtTheAckDelayBoundary
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0002.cs::ProbeTimeoutSpaceCase
 
 ## REQ-QUIC-RFC9002-S6P2-0003 Do not infer loss from PTO expiration
 A PTO timer expiration MUST NOT cause prior unacknowledged packets to be marked as lost.
@@ -1082,6 +1091,7 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_PreservesMaxAckDelayForApplicationDataSpace
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_ZeroesMaxAckDelayInTheInitialAndHandshakeSpaces
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::EarlySpaceAckDelayCase
 
 ## REQ-QUIC-RFC9002-S6P2P1-0003 Keep PTO above granularity
 The PTO period MUST be at least kGranularity.
@@ -1277,6 +1287,7 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs::TryMeasurePathChallengeRoundTripMicros_DoesNotCreateAnRttSample
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0003.cs::TryMeasurePathChallengeRoundTripMicros_RejectsResponsesThatArriveBeforeTheirChallenge
 
 ## REQ-QUIC-RFC9002-S6P2P2-0004 Do not treat PATH_CHALLENGE/PATH_RESPONSE delay as an RTT sample
 That delay SHOULD NOT be considered an RTT sample.
@@ -1293,6 +1304,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs::TryMeasurePathChallengeRoundTripMicros_DoesNotCreateAnRttSample
 
 ## REQ-QUIC-RFC9002-S6P2P2-0005 Reset timers when keys are discarded
 When Initial or Handshake keys are discarded, the PTO and loss detection timers MUST be reset.
@@ -1720,6 +1732,7 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::TryDetectPersistentCongestion_DiscardsInFlightZeroRttPacketsWhenTheyAreRejected
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::TryDetectPersistentCongestion_DoesNotDiscardRejectedZeroRttPacketsWhenTheyWereNotInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003-KeyLifecycle.cs::RejectZeroRtt_MarksKeysUnavailableAndPreventsFurtherUse
 
 ## REQ-QUIC-RFC9002-S6P4-0004 Discard secrets as soon as the replacement keys exist
 Initial and Handshake secrets MUST be discarded as soon as Handshake and 1-RTT keys are proven to be available to both client and server.
@@ -1752,6 +1765,8 @@ Trace:
 - Source Refs:
   - RFC 9002 §7 RFC9002-S7-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs::TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers
 
 ## REQ-QUIC-RFC9002-S7-0002 Exclude ACK-only packets from bytes in flight
 Packets containing only ACK frames MUST NOT count toward bytes in flight.
@@ -2205,6 +2220,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.5
 - Test Refs:
   - tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P5-0002.cs::RegisterPacketSent_CountsProbePacketsAsAdditionalBytesInFlight
 
 ## REQ-QUIC-RFC9002-S7P6-0001 Declare persistent congestion when all long-duration packets are lost
 When a sender establishes loss of all packets sent over a long enough duration, the network MUST be considered to be experiencing persistent congestion.
@@ -2219,6 +2235,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.6 RFC9002-S7.6-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0001.cs::TryComputePersistentCongestionDurationMicros_UsesTheExpectedFormulaAndReductionHelper
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0001.cs::TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow
 
 ## REQ-QUIC-RFC9002-S7P6P1-0001 Compute persistent congestion duration from RTT and max_ack_delay
 The persistent congestion duration MUST be computed as (smoothed_rtt + max(4*rttvar, kGranularity) + max_ack_delay) * kPersistentCongestionThreshold.
@@ -2234,6 +2253,9 @@ Trace:
   - RFC 9002 §7.6.1 RFC9002-S7.6.1-B2-P1-S1
   - RFC 9002 §7.6.1 RFC9002-S7.6.1-B3-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0001.cs::TryComputePersistentCongestionDurationMicros_UsesTheExpectedFormulaAndReductionHelper
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0001.cs::TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow
 
 ## REQ-QUIC-RFC9002-S7P6P1-0002 Include max_ack_delay in persistent congestion duration
 Unlike PTO computation, this duration MUST include max_ack_delay irrespective of the packet number spaces in which losses are established.
@@ -2248,6 +2270,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.6.1 RFC9002-S7.6.1-B4-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0001.cs::TryComputePersistentCongestionDurationMicros_UsesTheExpectedFormulaAndReductionHelper
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0001.cs::TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow
 
 ## REQ-QUIC-RFC9002-S7P6P1-0003 Recommend a persistent congestion threshold of three
 The RECOMMENDED value for kPersistentCongestionThreshold SHOULD be 3.
@@ -2262,6 +2287,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.6.1 RFC9002-S7.6.1-B7-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0001.cs::TryComputePersistentCongestionDurationMicros_UsesTheExpectedFormulaAndReductionHelper
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0001.cs::TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow
 
 ## REQ-QUIC-RFC9002-S7P6P2-0001 Establish persistent congestion after the full loss test passes
 A sender MUST establish persistent congestion after receipt of an acknowledgment if two ack-eliciting packets are declared lost and the conditions in the following list are all met.
@@ -2279,6 +2307,8 @@ Trace:
   - RFC 9002 §7.6.2 RFC9002-S7.6.2-B4-P0-S1
   - RFC 9002 §7.6.2 RFC9002-S7.6.2-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0001.cs::TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow
 
 ## REQ-QUIC-RFC9002-S7P6P2-0002 Require the two declared-lost packets to be ack-eliciting
 Those two packets MUST be ack-eliciting.
@@ -2327,6 +2357,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0004.cs::TryDetectPersistentCongestion_ConsidersPacketsAcrossPacketNumberSpaces
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0004.cs::PersistentCongestionAcrossSpacesCase
 
 ## REQ-QUIC-RFC9002-S7P6P2-0005 Allow limited packet-number-space state when necessary
 A sender that does not have state for all packet number spaces or cannot compare send times across packet number spaces MAY use state for just the packet number space that was acknowledged.
@@ -2378,6 +2409,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs::TryComputePacingIntervalMicros_ComputesThePacingIntervalForInFlightPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs::TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers
 
 ## REQ-QUIC-RFC9002-S7P7-0002 Either pace or cap bursts
 Senders MUST either use pacing or limit such bursts.
@@ -2394,6 +2426,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0002.cs::TryGetBurstLimitBytes_ReturnsABurstCapWhenTheSenderDoesNotPace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs::TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers
 
 ## REQ-QUIC-RFC9002-S7P7-0003 Limit bursts to the initial congestion window
 Senders SHOULD limit bursts to the initial congestion window.
@@ -2412,6 +2445,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0003.cs::TryGetBurstLimitBytes_CapsTheBurstAtTheInitialCongestionWindow
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0003.cs::TryGetBurstLimitBytes_RejectsZeroInitialCongestionWindowBytes
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0003.cs::TryGetBurstLimitBytes_PreservesTheInitialCongestionWindowWhenTheHigherLimitMatchesIt
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs::TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers
 
 ## REQ-QUIC-RFC9002-S7P7-0004 Allow larger bursts when the path can absorb them
 A sender with knowledge that the network path can absorb larger bursts MAY use a higher limit.
@@ -2428,6 +2462,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0004.cs::TryGetBurstLimitBytes_UsesTheHigherLimitWhenThePathCanAbsorbLargerBursts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs::TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers
 
 ## REQ-QUIC-RFC9002-S7P7-0005 Do not pace pure ACK packets
 Packets containing only ACK frames SHOULD therefore not be paced.
@@ -2444,6 +2479,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0005.cs::TryComputePacingIntervalMicros_DoesNotPaceAckOnlyPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs::TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers
 
 ## REQ-QUIC-RFC9002-S7P8-0001 Do not increase cwnd when underutilized
 When bytes in flight is smaller than the congestion window and sending is not pacing limited, the congestion window SHOULD NOT be increased in either slow start or congestion avoidance.
@@ -2475,6 +2511,8 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.8 RFC9002-S7.8-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.8
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0002.cs::TryProcessAckFrame_GrowsTheCongestionWindowWhenPacingDelayWouldHaveMaskedUtilization
 
 ## REQ-QUIC-RFC9002-S7P8-0003 Allow alternate cwnd-updating mechanisms after underutilization
 A sender MAY implement alternative mechanisms to update its congestion window after periods of underutilization, such as those proposed for TCP in RFC 7661.
@@ -2489,6 +2527,8 @@ Trace:
 - Source Refs:
   - RFC 9002 §7.8 RFC9002-S7.8-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-7.8
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0003.cs::TryRegisterAcknowledgedPacket_DoesNotUseTheCongestionAvoidanceFormulaBeforeTheThresholdIsReached
 
 ## REQ-QUIC-RFC9002-SAP1-0001 Track ack-eliciting packets until resolution
 A QUIC sender MUST track every ack-eliciting packet until the packet is acknowledged or lost.
@@ -3412,6 +3452,8 @@ Trace:
 - Source Refs:
   - RFC 9002 §B.2 RFC9002-SB.2-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-b.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0002.cs::RegisterPacketSent_CountsEligiblePacketsTowardBytesInFlight
 
 ## REQ-QUIC-RFC9002-SBP2-0003 Exclude transport overhead from bytes in flight
 bytes_in_flight accounting MUST exclude IP and UDP overhead but include the QUIC header and AEAD overhead.
@@ -3513,6 +3555,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0001.cs::TryRegisterAcknowledgedPacket_IgnoresPacketsThatAreNotInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0001.cs::TryRegisterAcknowledgedPacket_ProcessesPacketsThatAreInFlight
 
 ## REQ-QUIC-RFC9002-SBP5-0002 Remove acknowledged bytes from bytes in flight
 On packet acknowledgment, the sender MUST subtract the packet's sent_bytes from bytes_in_flight.
@@ -3545,6 +3588,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0003.cs::TryRegisterAcknowledgedPacket_DoesNotGrowTheWindowWhenApplicationOrFlowControlLimited
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0003.cs::TryRegisterAcknowledgedPacket_GrowsTheWindowWhenNotApplicationOrFlowControlLimited
 
 ## REQ-QUIC-RFC9002-SBP5-0004 Suppress window growth during recovery
 On packet acknowledgment, the sender MUST NOT increase congestion_window for packets acknowledged during a recovery period.
@@ -3561,6 +3605,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-b.5
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0004.cs::TryRegisterAcknowledgedPacket_DoesNotGrowTheWindowForPacketsAcknowledgedDuringRecovery
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP5-0004.cs::TryRegisterAcknowledgedPacket_GrowsTheWindowForPacketsAcknowledgedAfterRecoveryStarted
 
 ## REQ-QUIC-RFC9002-SBP5-0005 Grow the congestion window by acknowledged bytes in slow start
 While in slow start, the sender MUST increase congestion_window by the number of acknowledged bytes.

@@ -94,6 +94,8 @@ The QuicConnection type MUST represent a connected QUIC session and expose the l
 Trace:
 - Source Refs:
   - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0003.cs::QuicConnection_ExposesTheApprovedStreamEntryMethods
 
 Notes:
 - The connection object is the consumer's lifecycle anchor for this slice and may be created only by internal wiring, listener accept flow, or the approved client connect flow.
@@ -108,6 +110,8 @@ The QuicStream type MUST derive from Stream and expose the stream identifier, st
 Trace:
 - Source Refs:
   - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs::QuicStream_ExposesTheNarrowAbortAndCompletionSurface
 
 Notes:
 - The public QuicStreamType enum MUST use the direction-only model with Bidirectional and Unidirectional values.
@@ -139,6 +143,8 @@ The library MUST classify terminal and shutdown outcomes through QuicError and Q
 Trace:
 - Source Refs:
   - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\ref\System.Net.Quic.cs
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0006.cs::AbortWrite_OnTheSupportedLoopbackPath_ProjectsResetAndTerminalErrorsHonestly
 
 Notes:
 - Connection shutdown remains available through QuicConnection.CloseAsync(long errorCode, CancellationToken) and DisposeAsync.
@@ -209,6 +215,8 @@ On the supported active loopback path, send-capable QuicStream facades MUST supp
 Trace:
 - Source Refs:
   - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicStreamTests.cs
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs::SupportedLoopbackWriteAndDisposeCompletion_DeliversBytesAndPeerEof
 
 Notes:
 - The supported subset is limited to send-capable streams on the active loopback path and is backed by the existing runtime and stream-state seams.
