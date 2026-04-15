@@ -13770,6 +13770,9 @@
         "upstream_refs": [
           "RFC 9000 §10.2 RFC9000-S10.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0006.cs::LocalCloseRequested_TransitionsTheRuntimeToClosingAndEmitsConnectionClose"
         ]
       }
     },
@@ -13851,6 +13854,11 @@
         "upstream_refs": [
           "RFC 9000 §10.2 RFC9000-S10.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0009.cs::LocalCloseRequested_EmitsApplicationConnectionCloseAndEntersClosing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0009.cs::LocalCloseRequested_WhileAlreadyClosingDoesNotChangeStateAgain",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0009.cs::LocalCloseRequested_WithoutAnActivePathStillTransitionsToClosingWithoutSendingDatagram"
         ]
       }
     },

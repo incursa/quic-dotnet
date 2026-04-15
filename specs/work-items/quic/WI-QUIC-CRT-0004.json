@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0004",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "landed",
   "title": "QUIC Connection Runtime Lifecycle Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -38,7 +38,7 @@
   ],
   "planned_changes": "- Derive the effective idle timeout from the committed transport parameters and the current PTO floor.\n- Keep idle timer restarts limited to allowed peer activity and leave handshake confirmation and terminal lifecycle transitions as non-restart events.\n- Transition to Closing for local immediate close, to Draining for received CONNECTION_CLOSE or accepted stateless reset, and to Discarded when the terminal lifetime expires.\n- Suppress the ordinary close handshake when a valid stateless reset is accepted.\n- Route close datagrams, timer arms, timer cancels, stream notifications, and discard actions through explicit effects instead of inline I/O.\n- Expose phase-derived send legality from the connection runtime so callers do not infer lifecycle policy from helper state.",
   "verification_plan": "Run the lifecycle requirement-home tests and the narrow dotnet test subset that exercises the runtime phase, idle timeout, close/drain, and discard transitions.",
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "The runtime close/drain/lifetime slice is landed. Local immediate close enters Closing, attributed packets in Closing receive a CONNECTION_CLOSE reply, peer close transitions to Draining while preserving the terminal deadline, and close/drain lifetime expiry discards the connection. The narrow proof stays separate from the helper-backed idle-timeout arithmetic and from broader packet-format follow-ons.",
   "out_of_scope": [
     "Endpoint ingress routing and stateless-reset token registry behavior.",
     "Timer scheduler ownership and generation ordering beyond the runtime lifecycle slice."

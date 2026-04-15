@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0004",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "landed",
   "title": "QUIC Connection Runtime Lifecycle Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -35,12 +35,16 @@
   ],
   "procedure": [
     "Run the lifecycle requirement-home tests for REQ-QUIC-CRT-0023, REQ-QUIC-CRT-0025, REQ-QUIC-CRT-0026, REQ-QUIC-CRT-0027, REQ-QUIC-CRT-0030, REQ-QUIC-CRT-0032, REQ-QUIC-CRT-0035, REQ-QUIC-CRT-0055, REQ-QUIC-CRT-0056, and REQ-QUIC-CRT-0084.",
+    "Run the RFC 9000 requirement-home tests for REQ-QUIC-RFC9000-S10P2-0006, REQ-QUIC-RFC9000-S10P2-0009, REQ-QUIC-RFC9000-S10P2P1-0010, REQ-QUIC-RFC9000-S10P2P2-0002, REQ-QUIC-RFC9000-S10P2P2-0005, and REQ-QUIC-RFC9000-S10P2P2-0001.",
+    "Confirm local close enters Closing, repeated local close while already Closing is ignored, and a pathless local close still arms the terminal lifetime without emitting a datagram.",
     "Confirm the close and drain transitions arm the expected terminal-lifetime timer and emit the explicit send, notify-streams, and discard effects required by the lifecycle reducer.",
     "Confirm the runtime keeps the idle timer unchanged for disallowed events and re-arms it only when peer activity is permitted by the helper state.",
     "Confirm accepted stateless reset transitions the runtime to Draining without emitting a close-handshake datagram."
   ],
   "scope": "This slice covers connection lifecycle behavior, idle timeout derivation, close/drain lifetimes, and explicit lifecycle effects. It does not prove endpoint routing, stateless-reset token ownership, or the deadline scheduler itself.",
   "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0023.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0025.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs",

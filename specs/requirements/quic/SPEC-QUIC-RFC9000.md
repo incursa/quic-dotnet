@@ -7838,6 +7838,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.2 RFC9000-S10.2-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0006.cs::LocalCloseRequested_TransitionsTheRuntimeToClosingAndEmitsConnectionClose
 
 ## REQ-QUIC-RFC9000-S10P2-0007 Close all streams on CONNECTION_CLOSE
 A CONNECTION_CLOSE frame MUST cause all streams to immediately become closed.
@@ -7883,6 +7885,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.2 RFC9000-S10.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0009.cs::LocalCloseRequested_EmitsApplicationConnectionCloseAndEntersClosing
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0009.cs::LocalCloseRequested_WhileAlreadyClosingDoesNotChangeStateAgain
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0009.cs::LocalCloseRequested_WithoutAnActivePathStillTransitionsToClosingWithoutSendingDatagram
 
 ## REQ-QUIC-RFC9000-S10P2-0010 Enter draining state after receiving close
 After receiving a CONNECTION_CLOSE frame, endpoints MUST enter the draining state.
