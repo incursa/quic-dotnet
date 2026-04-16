@@ -11169,6 +11169,9 @@
         "upstream_refs": [
           "RFC 9000 §9.3 RFC9000-S9.3-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0001.cs::ValidatedMigrationRoutesLocalClosePacketsToTheMigratedAddress"
         ]
       }
     },
@@ -11299,6 +11302,9 @@
         "upstream_refs": [
           "RFC 9000 §9.3 RFC9000-S9.3-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0006.cs::ValidatedMigrationRoutesConnectionCloseRepliesToTheMigratedAddress"
         ]
       }
     },
@@ -11328,7 +11334,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::PacketFromANewAddressStartsPathValidationWhenMigrationIsPermitted",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::RepeatedPacketsDoNotRestartPathValidationWhileTheChallengeIsPending"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::RepeatedPacketsDoNotRestartPathValidationWhileTheChallengeIsPending",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::ASecondMigratedAddressStartsValidationWhileTheFirstChallengeIsPending"
         ]
       }
     },
@@ -11355,6 +11362,11 @@
         "upstream_refs": [
           "RFC 9000 §9.3 RFC9000-S9.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0008.cs::ValidatedMigrationPromotesTheMigratedPathBeforeTheNextReplyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0008.cs::PathValidationMustCompleteBeforeReplyPacketsSwitchToTheMigratedAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::ASecondMigratedAddressStartsValidationWhileTheFirstChallengeIsPending"
         ]
       }
     },

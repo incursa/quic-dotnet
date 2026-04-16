@@ -13,6 +13,15 @@ internal readonly record struct QuicPathMigrationRecoverySnapshot(
 
 internal static class QuicPathMigrationRecoveryTestSupport
 {
+    internal static QuicConnectionCloseMetadata CreateConnectionCloseMetadata()
+    {
+        return new QuicConnectionCloseMetadata(
+            TransportErrorCode: QuicTransportErrorCode.NoError,
+            ApplicationErrorCode: null,
+            TriggeringFrameType: 0x1c,
+            ReasonPhrase: null);
+    }
+
     internal static QuicConnectionRuntime CreateRuntime()
     {
         return new QuicConnectionRuntime(

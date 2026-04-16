@@ -82,6 +82,47 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0007
         Assert.DoesNotContain(repeatResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S9P3-0008")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void ASecondMigratedAddressStartsValidationWhileTheFirstChallengeIsPending()
+    {
+        FakeMonotonicClock clock = new(0);
+        QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+
+        QuicConnectionPathIdentity activePath = new("203.0.113.82", RemotePort: 443);
+        QuicConnectionPathIdentity firstMigratedPath = new("203.0.113.83", RemotePort: 443);
+        QuicConnectionPathIdentity secondMigratedPath = new("203.0.113.84", RemotePort: 443);
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 5),
+            nowTicks: 5).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 10, activePath, datagram),
+            nowTicks: 10).StateChanged);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 20, firstMigratedPath, datagram),
+            nowTicks: 20).StateChanged);
+
+        QuicConnectionTransitionResult edgeResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 30, secondMigratedPath, datagram),
+            nowTicks: 30);
+
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.True(runtime.CandidatePaths.TryGetValue(firstMigratedPath, out QuicConnectionCandidatePathRecord firstCandidatePath));
+        Assert.True(runtime.CandidatePaths.TryGetValue(secondMigratedPath, out QuicConnectionCandidatePathRecord secondCandidatePath));
+        Assert.Equal(1UL, firstCandidatePath.Validation.ChallengeSendCount);
+        Assert.Equal(1UL, secondCandidatePath.Validation.ChallengeSendCount);
+        Assert.Contains(edgeResult.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect send
+            && send.PathIdentity == secondMigratedPath);
+        Assert.DoesNotContain(edgeResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+    }
+
     private sealed class FakeMonotonicClock : IMonotonicClock
     {
         public FakeMonotonicClock(long ticks)
