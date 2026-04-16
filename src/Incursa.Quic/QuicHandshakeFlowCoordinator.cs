@@ -1103,7 +1103,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        keyPhase = (unmaskedFirstByte & QuicPacketHeaderBits.KeyPhaseBitMask) != 0;
+        bool observedKeyPhase = (unmaskedFirstByte & QuicPacketHeaderBits.KeyPhaseBitMask) != 0;
 
         int unprotectedPacketLength = protectedPacket.Length - QuicInitialPacketProtection.AuthenticationTagLength;
         byte[] openedPacketBuffer = new byte[unprotectedPacketLength];
@@ -1134,6 +1134,8 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
+        // Only publish the observed Key Phase after the packet authenticates successfully.
+        keyPhase = observedKeyPhase;
         openedPacket = openedPacketBuffer;
         payloadOffset = packetNumberOffset + packetNumberLength;
         payloadLength = ciphertextPayloadLength;

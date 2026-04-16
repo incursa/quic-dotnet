@@ -69,6 +69,35 @@ public sealed class REQ_QUIC_RFC9001_S6_0005
         Assert.False(parsedHeader.KeyPhase);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForTamperedPhaseOnePackets()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001KeyPhaseTestSupport.ConfigureKeyPhaseDestinationConnectionId(runtime);
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+            runtime,
+            out QuicTlsPacketProtectionMaterial successorOpenMaterial,
+            out _));
+
+        byte[] protectedPacket = QuicRfc9001KeyPhaseTestSupport.CreateTamperedSuccessorPhaseOneApplicationPacket(successorOpenMaterial);
+
+        QuicHandshakeFlowCoordinator coordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
+
+        Assert.False(coordinator.TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            successorOpenMaterial,
+            out byte[] openedPacket,
+            out _,
+            out _,
+            out bool observedKeyPhase));
+
+        Assert.False(observedKeyPhase);
+        Assert.Empty(openedPacket);
+    }
+
     private static byte[] CreatePingPayload()
     {
         byte[] payload = new byte[1];
