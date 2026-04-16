@@ -1271,6 +1271,84 @@ function Get-LaneTemplateDefinitions {
             repeatable = $false
         }
         [pscustomobject]@{
+            lane_id = "retransmission-scheduler-tail"
+            objective = "Finish the residual resend-scheduler proof tail that still leaves a handful of RFC 9000 S13P3 retransmission rules partially covered."
+            priority = 16
+            prerequisite_lane_ids = @("retransmission-send-scheduler")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicPathValidation.cs",
+                "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0010", "REQ-QUIC-RFC9000-S13P3-0011", "REQ-QUIC-RFC9000-S13P3-0013", "REQ-QUIC-RFC9000-S13P3-0026", "REQ-QUIC-RFC9000-S13P3-0033")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0026|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0026|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+            )
+            success_gates = @(
+                "the remaining retransmission tail becomes proof-backed without widening into migration or interop harness work",
+                "the lane keeps the resend scheduler as the owner of the residual proof, not trace cleanup"
+            )
+            fail_gates = @(
+                "the lane broadens into unrelated migration or TLS message-processing work",
+                "the result is only trace reshaping with no runtime proof"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "flow-control-loss-repair-proof-topoff"
+            objective = "Finish the residual flow-control loss-repair proof for MAX_STREAM_DATA and blocked-signal retry cases that still sit behind the completed flow-control lanes."
+            priority = 17
+            prerequisite_lane_ids = @("flow-control-loss-repair")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionStreamState.cs",
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0018", "REQ-QUIC-RFC9000-S13P3-0019", "REQ-QUIC-RFC9000-S13P3-0024")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024"'
+            )
+            success_gates = @(
+                "the remaining MAX_STREAM_DATA and blocked-frame loss repair is proven with the existing runtime seam",
+                "the lane does not re-open resend-scheduler or migration scope"
+            )
+            fail_gates = @(
+                "the lane turns into trace-only xref cleanup",
+                "it requires a new scheduler surface just to prove the residual flow-control cases"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
             lane_id = "path-migration-recovery-reset"
             objective = "Close the post-switch recovery reset rules that keep old-path traffic from poisoning the new path's congestion and RTT state."
             priority = 16
@@ -1495,6 +1573,45 @@ function Get-LaneTemplateDefinitions {
             fail_gates = @(
                 "the lane broadens into the deferred TLS KeyUpdate prohibition/error path",
                 "the result is trace-only churn without requirement-home proof"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "rfc9001-key-phase-detection-edge-coverage"
+            objective = "Finish the edge coverage around managed RFC 9001 key-phase detection without waiting on the deferred TLS message-processing surface."
+            priority = 22
+            prerequisite_lane_ids = @("rfc9001-key-phase-toggle-detection-floor")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+                "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+                "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001",
+                "specs/requirements/quic/SPEC-QUIC-RFC9001",
+                "specs/architecture/quic/ARC-QUIC-RFC9001",
+                "specs/work-items/quic/WI-QUIC-RFC9001",
+                "specs/verification/quic/VER-QUIC-RFC9001",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9001-S6-0005")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005"'
+            )
+            success_gates = @(
+                "the recipient-detection edge cases for the key-phase floor are fully proven",
+                "the lane stays on the bridge/runtime seam instead of expanding into TLS KeyUpdate processing"
+            )
+            fail_gates = @(
+                "the lane broadens into the deferred TLS KeyUpdate prohibition/error path",
+                "the result is only proof reshaping with no runtime-backed edge coverage"
             )
             repeatable = $false
         }
