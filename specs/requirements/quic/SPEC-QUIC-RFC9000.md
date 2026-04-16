@@ -10814,7 +10814,7 @@ Trace:
   - RFC 9000 §13.2.5 RFC9000-S13.2.5-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.5
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
 
 ## REQ-QUIC-RFC9000-S13P2P6-0001 Carry ACK frames only in the same packet number space
 ACK frames MUST only be carried in a packet that has the same packet number space as the packet being acknowledged.
