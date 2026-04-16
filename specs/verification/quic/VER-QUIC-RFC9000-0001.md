@@ -5,7 +5,7 @@
 ## Scope
 
 This design covers the canonical RFC 9000 transport slice, including packet forms, stream semantics, frame codecs, transport-parameter handling, version negotiation, and the transport-side recovery contracts surfaced in the requirement file.
-The current helper slice is bounded to connection-scoped stream opening, ordered receive buffering, final-size accounting, and MAX_* flow-control application.
+The current flow-control slice spans a connection-scoped helper and runtime path for stream opening, ordered receive buffering, final-size accounting, and MAX_* credit publication/repair.
 It does not define RFC 8999 version-independent invariants or RFC 9001 TLS-protection details as separate concerns, and it does not claim full retransmission-driven send states or STOP_SENDING/RESET orchestration.
 
 ## Requirements Verified
@@ -431,6 +431,8 @@ It does not define RFC 8999 version-independent invariants or RFC 9001 TLS-prote
 - REQ-QUIC-RFC9000-S9P3-0005
 - REQ-QUIC-RFC9000-S9P3-0006
 - REQ-QUIC-RFC9000-S9P3-0007
+- REQ-QUIC-RFC9000-S9P4-0004
+- REQ-QUIC-RFC9000-S9P4-0006
 - REQ-QUIC-RFC9000-S9P3-0008
 - REQ-QUIC-RFC9000-S9P3-0009
 - REQ-QUIC-RFC9000-S9P3-0010
@@ -1466,9 +1468,9 @@ Execution, inspection, fuzzing, and benchmark evidence.
 
 ## Procedure or Approach
 
-- Run the relevant unit and property tests for the bounded stream-helper and flow-control foundation.
-- Run the fuzz suites against the stream parser and any new helper-path boundary cases.
-- Run any available benchmark evidence for the stream helper or existing hot parsing paths.
+- Run the relevant unit and property tests for the bounded stream/runtime flow-control foundation.
+- Run the fuzz suites against the stream parser and any new helper/runtime-path boundary cases.
+- Run any available benchmark evidence for the stream helper/runtime path or existing hot parsing paths.
 - Run the repo-local quality evidence scripts.
 - Re-run the JSON render and validation checks so the downstream trace surface reflects the updated requirement links and bounded exclusions.
 
@@ -1476,7 +1478,7 @@ Execution, inspection, fuzzing, and benchmark evidence.
 
 - The spec requirements carry downstream trace links.
 - The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.
-- The bounded stream-helper slice is visible in the trace plan without implying full sender/recovery or STOP_SENDING/RESET coverage.
+- The bounded stream/runtime flow-control slice is visible in the trace plan without implying full sender/recovery or STOP_SENDING/RESET coverage.
 
 ## Evidence
 
@@ -1502,6 +1504,8 @@ Execution, inspection, fuzzing, and benchmark evidence.
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0037.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0038.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0004.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0006.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0003.cs
 - benchmarks/QuicHeaderParsingBenchmarks.cs
 - benchmarks/QuicFrameCodecBenchmarks.cs
