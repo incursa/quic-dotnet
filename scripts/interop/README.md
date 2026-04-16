@@ -72,10 +72,28 @@ This orchestrator manages the trace-first lane loop for the local QUIC repo chec
 5. Clean up the active worktree after merge.
 6. Supervise the loop so it can continue through the next eligible lane without manual restarts.
 
-Use `-Mode supervise` when you want it to keep chaining through eligible lanes and resuming a half-open active lane until it hits a real blocker:
+Use `-Mode supervise` when you want a bounded watch loop. It now:
+
+- resumes any recorded active lane first
+- merges and cleans up finished lanes through the existing `resume`/`merge`/`cleanup` guardrails
+- sleeps and re-plans when the queue is empty instead of exiting on the first empty poll
+- stops only when work resumes, an idle limit is exceeded, an overall cycle limit is reached, or a real guardrail/error trips
+
+The default supervise settings are conservative (`300` second poll interval, `12` empty polls allowed). Use `-Overnight` to apply a longer unattended preset without removing the safety limits:
 
 ```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-QuicInteropAutopilot.ps1 -Mode supervise
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-QuicInteropAutopilot.ps1 -Mode supervise -Overnight
 ```
 
-Use `-Mode run` for a single bounded lane cycle, `-Mode resume` to continue or reconcile the current active lane, and `-Mode plan` to inspect the next eligible lane without starting Codex.
+Tune the watch behavior when needed:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-QuicInteropAutopilot.ps1 `
+  -Mode supervise `
+  -SupervisorPollIntervalSeconds 120 `
+  -SupervisorMaxIdleCycles 30 `
+  -SupervisorMaxIdleMinutes 180 `
+  -SupervisorMaxCycles 80
+```
+
+Use `-Mode run` for a single bounded lane cycle, `-Mode resume` to continue or reconcile the current active lane, and `-Mode plan` to inspect the next eligible lane without starting Codex. `-Mode smoke` performs a local supervisor decision-logic check without starting a worker lane.

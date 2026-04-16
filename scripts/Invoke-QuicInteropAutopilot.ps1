@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("plan", "prepare", "run", "resume", "merge", "cleanup", "supervise")]
+    [ValidateSet("plan", "prepare", "run", "resume", "merge", "cleanup", "supervise", "smoke")]
     [string]$Mode = "plan",
 
     [string]$RepoRoot = "C:\src\incursa\quic-dotnet",
@@ -38,6 +38,14 @@ param(
 
     [int]$SupervisorMaxCycles = 0,
 
+    [int]$SupervisorPollIntervalSeconds = 300,
+
+    [int]$SupervisorMaxIdleCycles = 12,
+
+    [int]$SupervisorMaxIdleMinutes = 0,
+
+    [switch]$Overnight,
+
     [switch]$Force
 )
 
@@ -62,6 +70,268 @@ function Ensure-Directory {
     }
 
     return (Resolve-Path -LiteralPath $Path).Path
+}
+
+function Resolve-SupervisorSettings {
+    param(
+        [Parameter(Mandatory = $true)][hashtable]$BoundParameters,
+        [Parameter(Mandatory = $true)][int]$PollIntervalSeconds,
+        [Parameter(Mandatory = $true)][int]$MaxIdleCycles,
+        [Parameter(Mandatory = $true)][int]$MaxIdleMinutes,
+        [Parameter(Mandatory = $true)][int]$MaxCycles,
+        [Parameter(Mandatory = $true)][bool]$UseOvernightPreset
+    )
+
+    $resolvedPollIntervalSeconds = $PollIntervalSeconds
+    $resolvedMaxIdleCycles = $MaxIdleCycles
+    $resolvedMaxIdleMinutes = $MaxIdleMinutes
+    $resolvedMaxCycles = $MaxCycles
+
+    if ($UseOvernightPreset) {
+        if (-not $BoundParameters.ContainsKey("SupervisorPollIntervalSeconds")) {
+            $resolvedPollIntervalSeconds = 300
+        }
+
+        if (-not $BoundParameters.ContainsKey("SupervisorMaxIdleCycles")) {
+            $resolvedMaxIdleCycles = 96
+        }
+
+        if (-not $BoundParameters.ContainsKey("SupervisorMaxIdleMinutes")) {
+            $resolvedMaxIdleMinutes = 600
+        }
+
+        if (-not $BoundParameters.ContainsKey("SupervisorMaxCycles")) {
+            $resolvedMaxCycles = 128
+        }
+    }
+
+    if ($resolvedPollIntervalSeconds -lt 1) {
+        throw "-SupervisorPollIntervalSeconds must be at least 1."
+    }
+
+    if ($resolvedMaxIdleCycles -lt 0) {
+        throw "-SupervisorMaxIdleCycles cannot be negative."
+    }
+
+    if ($resolvedMaxIdleMinutes -lt 0) {
+        throw "-SupervisorMaxIdleMinutes cannot be negative."
+    }
+
+    if ($resolvedMaxCycles -lt 0) {
+        throw "-SupervisorMaxCycles cannot be negative."
+    }
+
+    if ($resolvedMaxIdleCycles -eq 0 -and $resolvedMaxIdleMinutes -eq 0) {
+        throw "Supervisor mode requires at least one idle limit. Set -SupervisorMaxIdleCycles or -SupervisorMaxIdleMinutes."
+    }
+
+    return [pscustomobject]@{
+        PollIntervalSeconds = $resolvedPollIntervalSeconds
+        MaxIdleCycles = $resolvedMaxIdleCycles
+        MaxIdleMinutes = $resolvedMaxIdleMinutes
+        MaxCycles = $resolvedMaxCycles
+        UsesOvernightPreset = $UseOvernightPreset
+    }
+}
+
+function Invoke-SupervisorCatalogRefresh {
+    param(
+        [Parameter(Mandatory = $true)][string]$PowerShellExecutable,
+        [Parameter(Mandatory = $true)][string]$ScriptPath,
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$StateDirectory,
+        [Parameter(Mandatory = $true)][string]$TargetBranch,
+        [Parameter(Mandatory = $true)][string]$PlannerModel,
+        [Parameter(Mandatory = $true)][string]$PlannerReasoningEffort,
+        [Parameter(Mandatory = $true)][string]$WorkerModel,
+        [Parameter(Mandatory = $true)][string]$WorkerReasoningEffort,
+        [Parameter(Mandatory = $true)][string]$CatalogPath
+    )
+
+    $planCapture = Invoke-NativeCapture `
+        -FilePath $PowerShellExecutable `
+        -WorkingDirectory $RepoRoot `
+        -ArgumentList @(
+            "-NoProfile"
+            "-ExecutionPolicy"
+            "Bypass"
+            "-File"
+            $ScriptPath
+            "-Mode"
+            "plan"
+            "-RepoRoot"
+            $RepoRoot
+            "-StateDirectory"
+            $StateDirectory
+            "-TargetBranch"
+            $TargetBranch
+            "-PlannerModel"
+            $PlannerModel
+            "-PlannerReasoningEffort"
+            $PlannerReasoningEffort
+            "-WorkerModel"
+            $WorkerModel
+            "-WorkerReasoningEffort"
+            $WorkerReasoningEffort
+        )
+
+    if ($planCapture.ExitCode -ne 0) {
+        throw "Supervisor catalog refresh failed: $($planCapture.StdErr.Trim())"
+    }
+
+    return Get-Content -LiteralPath $CatalogPath -Raw | ConvertFrom-Json -Depth 100
+}
+
+function Get-SupervisorIdleOutcome {
+    param(
+        [Parameter(Mandatory = $true)][int]$IdleCycles,
+        [AllowNull()]$IdleStartedAt,
+        [Parameter(Mandatory = $true)][datetime]$Now,
+        [Parameter(Mandatory = $true)]$Settings
+    )
+
+    $effectiveIdleStartedAt = if ($null -eq $IdleStartedAt) { $Now } else { [datetime]$IdleStartedAt }
+    $nextIdleCycles = $IdleCycles + 1
+    $elapsed = $Now - $effectiveIdleStartedAt
+
+    $idleCycleLimitReached = $Settings.MaxIdleCycles -gt 0 -and $nextIdleCycles -gt $Settings.MaxIdleCycles
+    $idleWallClockLimitReached = $Settings.MaxIdleMinutes -gt 0 -and $elapsed.TotalMinutes -ge $Settings.MaxIdleMinutes
+
+    $reason = ""
+    if ($idleCycleLimitReached) {
+        $reason = "Supervisor reached the configured idle poll limit of $($Settings.MaxIdleCycles) after $nextIdleCycles empty polls."
+    }
+    elseif ($idleWallClockLimitReached) {
+        $reason = "Supervisor reached the configured idle wall-clock limit of $($Settings.MaxIdleMinutes) minutes after $([math]::Round($elapsed.TotalMinutes, 1)) idle minutes."
+    }
+    else {
+        $limitText = if ($Settings.MaxIdleCycles -gt 0) { "$nextIdleCycles/$($Settings.MaxIdleCycles)" } else { "$nextIdleCycles" }
+        $reason = "No eligible lane is currently available. Idle poll $limitText; retrying after $($Settings.PollIntervalSeconds) seconds."
+    }
+
+    return [pscustomobject]@{
+        IdleStartedAt = $effectiveIdleStartedAt
+        IdleCycles = $nextIdleCycles
+        Elapsed = $elapsed
+        ShouldStop = ($idleCycleLimitReached -or $idleWallClockLimitReached)
+        Reason = $reason
+    }
+}
+
+function Get-SupervisorPollAction {
+    param(
+        [Parameter(Mandatory = $true)][bool]$HasActiveLane,
+        [string]$RecommendedLaneId = "",
+        [Parameter(Mandatory = $true)][int]$IdleCycles,
+        [AllowNull()]$IdleStartedAt,
+        [Parameter(Mandatory = $true)][datetime]$Now,
+        [Parameter(Mandatory = $true)]$Settings
+    )
+
+    if ($HasActiveLane) {
+        return [pscustomobject]@{
+            Action = "resume"
+            LaneId = ""
+            ResetIdle = $true
+            IdleCycles = 0
+            IdleStartedAt = $null
+            Reason = "An active lane is recorded and should be resumed or reconciled before planning another lane."
+        }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($RecommendedLaneId)) {
+        return [pscustomobject]@{
+            Action = "run"
+            LaneId = $RecommendedLaneId
+            ResetIdle = $true
+            IdleCycles = 0
+            IdleStartedAt = $null
+            Reason = "An eligible lane is available and should start immediately."
+        }
+    }
+
+    # Empty-queue polls are allowed to repeat for a bounded period so supervise mode can wait for
+    # reconciliation, catalog changes, or newly eligible lanes without becoming an unbounded loop.
+    $idleOutcome = Get-SupervisorIdleOutcome -IdleCycles $IdleCycles -IdleStartedAt $IdleStartedAt -Now $Now -Settings $Settings
+    return [pscustomobject]@{
+        Action = if ($idleOutcome.ShouldStop) { "stop_idle" } else { "sleep" }
+        LaneId = ""
+        ResetIdle = $false
+        IdleCycles = $idleOutcome.IdleCycles
+        IdleStartedAt = $idleOutcome.IdleStartedAt
+        Reason = $idleOutcome.Reason
+    }
+}
+
+function Assert-SupervisorCondition {
+    param(
+        [Parameter(Mandatory = $true)][bool]$Condition,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if (-not $Condition) {
+        throw $Message
+    }
+}
+
+function Invoke-SupervisorSmokeValidation {
+    param([Parameter(Mandatory = $true)]$DefaultSettings)
+
+    $now = [datetime]::SpecifyKind([datetime]"2026-04-16T00:00:00", [System.DateTimeKind]::Utc)
+
+    $emptyQueueAction = Get-SupervisorPollAction `
+        -HasActiveLane:$false `
+        -RecommendedLaneId "" `
+        -IdleCycles 0 `
+        -IdleStartedAt $null `
+        -Now $now `
+        -Settings ([pscustomobject]@{
+            PollIntervalSeconds = 1
+            MaxIdleCycles = 2
+            MaxIdleMinutes = 0
+            MaxCycles = 0
+            UsesOvernightPreset = $false
+        })
+    Assert-SupervisorCondition -Condition ($emptyQueueAction.Action -eq "sleep") -Message "Expected an empty queue to sleep/retry before hitting the idle limit."
+
+    $resumeAction = Get-SupervisorPollAction `
+        -HasActiveLane:$true `
+        -RecommendedLaneId "" `
+        -IdleCycles 2 `
+        -IdleStartedAt $now.AddMinutes(-10) `
+        -Now $now `
+        -Settings $DefaultSettings
+    Assert-SupervisorCondition -Condition ($resumeAction.Action -eq "resume" -and $resumeAction.ResetIdle) -Message "Expected an active lane to resume and reset idle tracking."
+
+    $followOnRunAction = Get-SupervisorPollAction `
+        -HasActiveLane:$false `
+        -RecommendedLaneId "trace-metadata-reconciliation" `
+        -IdleCycles 1 `
+        -IdleStartedAt $now.AddMinutes(-5) `
+        -Now $now `
+        -Settings $DefaultSettings
+    Assert-SupervisorCondition -Condition ($followOnRunAction.Action -eq "run" -and $followOnRunAction.LaneId -eq "trace-metadata-reconciliation" -and $followOnRunAction.ResetIdle) -Message "Expected the next eligible lane to start after merge/cleanup clears the active lane."
+
+    $idleLimitStopAction = Get-SupervisorPollAction `
+        -HasActiveLane:$false `
+        -RecommendedLaneId "" `
+        -IdleCycles 1 `
+        -IdleStartedAt $now.AddMinutes(-1) `
+        -Now $now `
+        -Settings ([pscustomobject]@{
+            PollIntervalSeconds = 1
+            MaxIdleCycles = 1
+            MaxIdleMinutes = 0
+            MaxCycles = 0
+            UsesOvernightPreset = $false
+        })
+    Assert-SupervisorCondition -Condition ($idleLimitStopAction.Action -eq "stop_idle") -Message "Expected supervise mode to stop cleanly after the configured idle limit is exceeded."
+
+    Write-Host "Supervisor smoke validation passed." -ForegroundColor Green
+    Write-Host "  Empty queue sleeps and retries before exit."
+    Write-Host "  Active lanes resume and reset idle tracking."
+    Write-Host "  Post-merge cleanup can hand off to the next eligible lane."
+    Write-Host "  Idle limits stop the loop cleanly."
 }
 
 function Get-ExceptionDetail {
@@ -2335,6 +2605,19 @@ try {
     ($catalog | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $catalogPath -Encoding utf8
 
     switch ($Mode) {
+        "smoke" {
+            $supervisorSettings = Resolve-SupervisorSettings `
+                -BoundParameters $PSBoundParameters `
+                -PollIntervalSeconds $SupervisorPollIntervalSeconds `
+                -MaxIdleCycles $SupervisorMaxIdleCycles `
+                -MaxIdleMinutes $SupervisorMaxIdleMinutes `
+                -MaxCycles $SupervisorMaxCycles `
+                -UseOvernightPreset ([bool]$Overnight)
+
+            Invoke-SupervisorSmokeValidation -DefaultSettings $supervisorSettings
+            break
+        }
+
         "plan" {
             Write-Host "Lane catalog: $catalogPath" -ForegroundColor Green
             Write-Host "Recommended lane: $($catalog.recommended_lane_id)" -ForegroundColor Green
@@ -2572,62 +2855,104 @@ try {
         }
 
         "supervise" {
+            $supervisorSettings = Resolve-SupervisorSettings `
+                -BoundParameters $PSBoundParameters `
+                -PollIntervalSeconds $SupervisorPollIntervalSeconds `
+                -MaxIdleCycles $SupervisorMaxIdleCycles `
+                -MaxIdleMinutes $SupervisorMaxIdleMinutes `
+                -MaxCycles $SupervisorMaxCycles `
+                -UseOvernightPreset ([bool]$Overnight)
+
             $supervisorCycles = 0
+            $idleCycles = 0
+            $idleStartedAt = $null
+
+            Write-Host "Supervisor settings:" -ForegroundColor Green
+            Write-Host "  Poll interval:        $($supervisorSettings.PollIntervalSeconds)s"
+            Write-Host "  Max idle cycles:      $($supervisorSettings.MaxIdleCycles)"
+            Write-Host "  Max idle wall-clock:  $($supervisorSettings.MaxIdleMinutes) minutes"
+            Write-Host "  Max overall cycles:   $($supervisorSettings.MaxCycles)"
+            if ($supervisorSettings.UsesOvernightPreset) {
+                Write-Host "  Preset:               overnight"
+            }
 
             while ($true) {
-                if ($SupervisorMaxCycles -gt 0 -and $supervisorCycles -ge $SupervisorMaxCycles) {
-                    Write-Host "Supervisor reached the configured cycle limit of $SupervisorMaxCycles." -ForegroundColor Yellow
+                if ($supervisorSettings.MaxCycles -gt 0 -and $supervisorCycles -ge $supervisorSettings.MaxCycles) {
+                    Write-Host "Supervisor reached the configured cycle limit of $($supervisorSettings.MaxCycles)." -ForegroundColor Yellow
                     break
                 }
 
+                $shouldStopSupervisor = $false
+
                 $state = Get-OrchestrationState -StatePath $statePath
                 if ($null -ne $state.active_lane) {
+                    $pollAction = Get-SupervisorPollAction `
+                        -HasActiveLane:$true `
+                        -RecommendedLaneId "" `
+                        -IdleCycles $idleCycles `
+                        -IdleStartedAt $idleStartedAt `
+                        -Now (Get-Date) `
+                        -Settings $supervisorSettings
+
+                    Write-Host $pollAction.Reason -ForegroundColor Gray
                     & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode resume -RepoRoot $resolvedRepoRoot -RunnerScriptPath $resolvedRunnerScriptPath -MissionPromptFile $resolvedMissionPromptFile -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -CodexCommand $CodexCommand -Sandbox $Sandbox -PlannerModel $PlannerModel -PlannerReasoningEffort $PlannerReasoningEffort -WorkerModel $WorkerModel -WorkerReasoningEffort $WorkerReasoningEffort -WorkerMaxIterations $WorkerMaxIterations -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn -AutoMerge:$AutoMerge -CleanupAfterMerge:$CleanupAfterMerge -Force:$Force
                     if ($LASTEXITCODE -ne 0) {
                         throw "Supervisor resume step failed."
                     }
+
+                    $idleCycles = 0
+                    $idleStartedAt = $null
                 }
                 else {
-                    $planCapture = Invoke-NativeCapture `
-                        -FilePath $powerShellExecutable `
-                        -WorkingDirectory $resolvedRepoRoot `
-                        -ArgumentList @(
-                            "-NoProfile"
-                            "-ExecutionPolicy"
-                            "Bypass"
-                            "-File"
-                            $PSCommandPath
-                            "-Mode"
-                            "plan"
-                            "-RepoRoot"
-                            $resolvedRepoRoot
-                            "-StateDirectory"
-                            $resolvedStateDirectory
-                            "-TargetBranch"
-                            $TargetBranch
-                            "-PlannerModel"
-                            $PlannerModel
-                            "-PlannerReasoningEffort"
-                            $PlannerReasoningEffort
-                            "-WorkerModel"
-                            $WorkerModel
-                            "-WorkerReasoningEffort"
-                            $WorkerReasoningEffort
-                        )
-                    if ($planCapture.ExitCode -ne 0) {
-                        throw "Supervisor catalog refresh failed: $($planCapture.StdErr.Trim())"
-                    }
+                    $catalog = Invoke-SupervisorCatalogRefresh `
+                        -PowerShellExecutable $powerShellExecutable `
+                        -ScriptPath $PSCommandPath `
+                        -RepoRoot $resolvedRepoRoot `
+                        -StateDirectory $resolvedStateDirectory `
+                        -TargetBranch $TargetBranch `
+                        -PlannerModel $PlannerModel `
+                        -PlannerReasoningEffort $PlannerReasoningEffort `
+                        -WorkerModel $WorkerModel `
+                        -WorkerReasoningEffort $WorkerReasoningEffort `
+                        -CatalogPath $catalogPath
 
-                    $catalog = Get-Content -LiteralPath $catalogPath -Raw | ConvertFrom-Json -Depth 100
-                    if ([string]::IsNullOrWhiteSpace($catalog.recommended_lane_id)) {
-                        Write-Host "Supervisor found no eligible lane remaining." -ForegroundColor Green
-                        break
-                    }
+                    $pollAction = Get-SupervisorPollAction `
+                        -HasActiveLane:$false `
+                        -RecommendedLaneId ([string]$catalog.recommended_lane_id) `
+                        -IdleCycles $idleCycles `
+                        -IdleStartedAt $idleStartedAt `
+                        -Now (Get-Date) `
+                        -Settings $supervisorSettings
 
-                    & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode run -RepoRoot $resolvedRepoRoot -RunnerScriptPath $resolvedRunnerScriptPath -MissionPromptFile $resolvedMissionPromptFile -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -LaneId $catalog.recommended_lane_id -TargetBranch $TargetBranch -CodexCommand $CodexCommand -Sandbox $Sandbox -PlannerModel $PlannerModel -PlannerReasoningEffort $PlannerReasoningEffort -WorkerModel $WorkerModel -WorkerReasoningEffort $WorkerReasoningEffort -WorkerMaxIterations $WorkerMaxIterations -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn -AutoMerge:$AutoMerge -CleanupAfterMerge:$CleanupAfterMerge -Force:$Force
-                    if ($LASTEXITCODE -ne 0) {
-                        throw "Supervisor run step failed."
+                    switch ($pollAction.Action) {
+                        "run" {
+                            Write-Host "Supervisor starting eligible lane '$($pollAction.LaneId)'." -ForegroundColor Green
+                            & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode run -RepoRoot $resolvedRepoRoot -RunnerScriptPath $resolvedRunnerScriptPath -MissionPromptFile $resolvedMissionPromptFile -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -LaneId $pollAction.LaneId -TargetBranch $TargetBranch -CodexCommand $CodexCommand -Sandbox $Sandbox -PlannerModel $PlannerModel -PlannerReasoningEffort $PlannerReasoningEffort -WorkerModel $WorkerModel -WorkerReasoningEffort $WorkerReasoningEffort -WorkerMaxIterations $WorkerMaxIterations -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn -AutoMerge:$AutoMerge -CleanupAfterMerge:$CleanupAfterMerge -Force:$Force
+                            if ($LASTEXITCODE -ne 0) {
+                                throw "Supervisor run step failed."
+                            }
+
+                            $idleCycles = 0
+                            $idleStartedAt = $null
+                        }
+                        "sleep" {
+                            $idleCycles = $pollAction.IdleCycles
+                            $idleStartedAt = $pollAction.IdleStartedAt
+                            Write-Host $pollAction.Reason -ForegroundColor Yellow
+                            Start-Sleep -Seconds $supervisorSettings.PollIntervalSeconds
+                        }
+                        "stop_idle" {
+                            Write-Host $pollAction.Reason -ForegroundColor Yellow
+                            $shouldStopSupervisor = $true
+                        }
+                        default {
+                            throw "Unexpected supervisor poll action '$($pollAction.Action)'."
+                        }
                     }
+                }
+
+                if ($shouldStopSupervisor) {
+                    break
                 }
 
                 $supervisorCycles++
