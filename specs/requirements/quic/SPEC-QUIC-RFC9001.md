@@ -449,7 +449,7 @@ Trace:
   - RFC 9001 §5 RFC9001-S5-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0001.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions
 
 ## REQ-QUIC-RFC9001-S5-0004 Protect Retry packets with AEAD_AES_128_GCM
 Retry packets MUST use AEAD_AES_128_GCM to provide protection against accidental modification and limit the entities that can produce a valid Retry.
