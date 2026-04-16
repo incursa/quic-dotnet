@@ -20,6 +20,7 @@ internal enum QuicConnectionEventKind
     HandshakeBootstrapRequested = 15,
     RetryReceived = 16,
     VersionNegotiationReceived = 17,
+    FlowControlCreditUpdated = 18,
 }
 
 internal enum QuicConnectionEffectKind
@@ -80,6 +81,12 @@ internal sealed record QuicConnectionVersionNegotiationReceivedEvent(
     long ObservedAtTicks,
     ReadOnlyMemory<byte> Datagram)
     : QuicConnectionEvent(QuicConnectionEventKind.VersionNegotiationReceived, ObservedAtTicks);
+
+internal sealed record QuicConnectionFlowControlCreditUpdatedEvent(
+    long ObservedAtTicks,
+    QuicMaxDataFrame? MaxDataFrame = null,
+    QuicMaxStreamDataFrame? MaxStreamDataFrame = null)
+    : QuicConnectionEvent(QuicConnectionEventKind.FlowControlCreditUpdated, ObservedAtTicks);
 
 internal sealed record QuicConnectionLocalCloseRequestedEvent(
     long ObservedAtTicks,

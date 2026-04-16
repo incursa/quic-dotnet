@@ -8,7 +8,7 @@
   "supplemental_sections": [
     {
       "heading": "Scope",
-      "content": "This design covers the canonical RFC 9000 transport slice, including packet forms, stream semantics, frame codecs, transport-parameter handling, version negotiation, and the transport-side recovery contracts surfaced in the requirement file.\nThe current stream-state and flow-control slice is intentionally bounded to a connection-scoped helper for stream opening, receive-side ordered buffering, final-size accounting, and MAX_* limit application.\nIt does not define RFC 8999 version-independent invariants or RFC 9001 TLS-protection details as separate concerns, and it does not claim full retransmission-driven send states or STOP_SENDING/RESET orchestration."
+      "content": "This design covers the canonical RFC 9000 transport slice, including packet forms, stream semantics, frame codecs, transport-parameter handling, version negotiation, and the transport-side recovery contracts surfaced in the requirement file.\nThe current stream-state and flow-control slice spans a connection-scoped helper and runtime path for stream opening, receive-side ordered buffering, final-size accounting, and MAX_* credit publication/repair.\nIt does not define RFC 8999 version-independent invariants or RFC 9001 TLS-protection details as separate concerns, and it does not claim full retransmission-driven send states or STOP_SENDING/RESET orchestration."
     },
     {
       "heading": "Related Artifacts",
@@ -1465,10 +1465,10 @@
     "REQ-QUIC-RFC9000-S22P5-0005"
   ],
   "risks": [
-    "Over-broad shared parsing or stream-state helpers would make it harder to keep RFC 9000 transport semantics separate from RFC 8999 invariants and RFC 9001 packet-protection behavior, or to keep the bounded stream-helper slice from implying full sender orchestration.",
+    "Over-broad shared parsing or stream-state helpers would make it harder to keep RFC 9000 transport semantics separate from RFC 8999 invariants and RFC 9001 packet-protection behavior, or to keep the bounded stream/runtime flow-control slice from implying full sender orchestration.",
     "Shared tests need deliberate requirement tags so overlap coverage is not miscounted."
   ],
-  "design_summary": "The transport stack keeps packet parsing, frame codecs, stream helpers, transport-parameter encoding, and version-negotiation logic explicit so the RFC 9000 rules remain testable and traceable.\nThe stream-state and flow-control foundation is bounded to a connection-scoped helper that can open streams, buffer received bytes in order, track final size, and apply MAX_* credit without pretending to solve the full sender/recovery orchestration.\nShared wire-shape behavior stays narrow enough that overlapping RFC 8999 clauses can be dual-tagged when the same test or proof artifact covers both slices.",
+  "design_summary": "The transport stack keeps packet parsing, frame codecs, stream helpers, transport-parameter encoding, and version-negotiation logic explicit so the RFC 9000 rules remain testable and traceable.\nThe stream-state and flow-control foundation is split between a connection-scoped helper and runtime path that can open streams, buffer received bytes in order, track final size, and publish MAX_* credit without pretending to solve the full sender/recovery orchestration.\nShared wire-shape behavior stays narrow enough that overlapping RFC 8999 clauses can be dual-tagged when the same test or proof artifact covers both slices.",
   "title": "QUIC RFC 9000 Transport Architecture",
   "owner": "quic-maintainers",
   "key_components": [

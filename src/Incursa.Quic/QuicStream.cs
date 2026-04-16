@@ -328,10 +328,20 @@ public sealed class QuicStream : Stream
                 buffer.Span,
                 out int bytesWritten,
                 out bool completed,
-                out _,
-                out _,
+                out QuicMaxDataFrame maxDataFrame,
+                out QuicMaxStreamDataFrame maxStreamDataFrame,
                 out QuicTransportErrorCode errorCode))
             {
+                if (bytesWritten > 0)
+                {
+                    QuicMaxDataFrame? maxDataUpdate = maxDataFrame.MaximumData != 0 ? maxDataFrame : null;
+                    QuicMaxStreamDataFrame? maxStreamDataUpdate = maxStreamDataFrame.MaximumStreamData != 0
+                        ? maxStreamDataFrame
+                        : null;
+
+                    runtime?.TryQueueFlowControlCreditUpdate(maxDataUpdate, maxStreamDataUpdate);
+                }
+
                 if (completed)
                 {
                     readsClosed.TrySetResult(null);

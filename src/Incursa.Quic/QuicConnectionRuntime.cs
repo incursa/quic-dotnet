@@ -413,6 +413,22 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             StreamId: streamId));
     }
 
+    internal void TryQueueFlowControlCreditUpdate(
+        QuicMaxDataFrame? maxDataFrame,
+        QuicMaxStreamDataFrame? maxStreamDataFrame)
+    {
+        if (IsDisposed || terminalState is not null
+            || (!maxDataFrame.HasValue && !maxStreamDataFrame.HasValue))
+        {
+            return;
+        }
+
+        _ = TryPostLocalApiEvent(new QuicConnectionFlowControlCreditUpdatedEvent(
+            clock.Ticks,
+            maxDataFrame,
+            maxStreamDataFrame));
+    }
+
     internal long RegisterStreamObserver(ulong streamId, Action<QuicStreamNotification> observer)
     {
         ArgumentNullException.ThrowIfNull(observer);
@@ -833,6 +849,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 => HandleCryptoFrameReceived(cryptoFrameReceivedEvent, nowTicks, ref effects),
             QuicConnectionStreamActionEvent streamActionEvent
                 => HandleStreamAction(streamActionEvent, nowTicks, ref effects),
+            QuicConnectionFlowControlCreditUpdatedEvent flowControlCreditUpdatedEvent
+                => HandleFlowControlCreditUpdated(flowControlCreditUpdatedEvent, ref effects),
             QuicConnectionPacketReceivedEvent packetReceivedEvent
                 => HandlePacketReceived(packetReceivedEvent, nowTicks, ref effects),
             QuicConnectionVersionNegotiationReceivedEvent versionNegotiationReceivedEvent
@@ -1544,6 +1562,104 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return false;
     }
 
+    private bool TryEmitFlowControlCreditUpdate(
+        QuicMaxDataFrame? maxDataFrame,
+        QuicMaxStreamDataFrame? maxStreamDataFrame,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        bool stateChanged = false;
+
+        if (maxDataFrame.HasValue)
+        {
+            stateChanged |= TrySendFlowControlCreditUpdate(
+                maxDataFrame.Value,
+                "The connection runtime could not protect the MAX_DATA packet.",
+                "The connection cannot send the MAX_DATA packet.",
+                ref effects);
+        }
+
+        if (maxStreamDataFrame.HasValue)
+        {
+            stateChanged |= TrySendFlowControlCreditUpdate(
+                maxStreamDataFrame.Value,
+                "The connection runtime could not protect the MAX_STREAM_DATA packet.",
+                "The connection cannot send the MAX_STREAM_DATA packet.",
+                ref effects);
+        }
+
+        return stateChanged;
+    }
+
+    private bool TrySendFlowControlCreditUpdate(
+        QuicMaxDataFrame frame,
+        string protectFailureMessage,
+        string amplificationFailureMessage,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!TryBuildOutboundMaxDataPayload(frame, out byte[] payload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            payload,
+            protectFailureMessage,
+            amplificationFailureMessage,
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+        return true;
+    }
+
+    private bool TrySendFlowControlCreditUpdate(
+        QuicMaxStreamDataFrame frame,
+        string protectFailureMessage,
+        string amplificationFailureMessage,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!TryBuildOutboundMaxStreamDataPayload(frame, out byte[] payload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            payload,
+            protectFailureMessage,
+            amplificationFailureMessage,
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+        return true;
+    }
+
     private bool TrySendFlowControlBlockedSignal(
         QuicDataBlockedFrame frame,
         string protectFailureMessage,
@@ -1748,6 +1864,16 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ref List<QuicConnectionEffect>? effects)
     {
         return TryReleasePeerStreamCapacity(streamId, ref effects);
+    }
+
+    private bool HandleFlowControlCreditUpdated(
+        QuicConnectionFlowControlCreditUpdatedEvent flowControlCreditUpdatedEvent,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        return TryEmitFlowControlCreditUpdate(
+            flowControlCreditUpdatedEvent.MaxDataFrame,
+            flowControlCreditUpdatedEvent.MaxStreamDataFrame,
+            ref effects);
     }
 
     private bool TryHandleInitialPacketReceived(
@@ -2850,6 +2976,58 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return true;
     }
 
+    private bool TryBuildOutboundMaxDataPayload(
+        QuicMaxDataFrame frame,
+        out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
+        if (!QuicFrameCodec.TryFormatMaxDataFrame(frame, buffer, out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
+    private bool TryBuildOutboundMaxStreamDataPayload(
+        QuicMaxStreamDataFrame frame,
+        out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
+        if (!QuicFrameCodec.TryFormatMaxStreamDataFrame(frame, buffer, out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
     private bool TryBuildOutboundDataBlockedPayload(
         QuicDataBlockedFrame frame,
         out byte[] payload)
@@ -2945,12 +3123,17 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     {
         if (!streamRegistry.Bookkeeping.TryReceiveResetStreamFrame(
             resetStreamFrame,
-            out _,
+            out QuicMaxDataFrame maxDataFrame,
             out QuicTransportErrorCode errorCode,
             suppressResetSignalWhenDataRecvd: true))
         {
             _ = errorCode;
             return false;
+        }
+
+        if (maxDataFrame.MaximumData != 0)
+        {
+            _ = TryEmitFlowControlCreditUpdate(maxDataFrame, default, ref effects);
         }
 
         if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(resetStreamFrame.StreamId, out QuicConnectionStreamSnapshot snapshot)

@@ -90,4 +90,83 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0019
         Assert.True(resetState.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot resetSnapshot));
         Assert.Equal(QuicStreamReceiveState.ResetRecvd, resetSnapshot.ReceiveState);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0019")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ReadAsync_DoesNotEmitAdditionalMaxStreamDataAfterTheStreamHasReachedItsFinalSize()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        AcknowledgeTrackedPackets(runtime);
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+        outboundEffects.Clear();
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0F, (ulong)stream.Id, [0x11, 0x22], offset: 0),
+            out QuicStreamFrame streamFrame));
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        byte[] readBuffer = new byte[2];
+        int bytesRead = await stream.ReadAsync(readBuffer, 0, readBuffer.Length);
+
+        Assert.Equal(2, bytesRead);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot((ulong)stream.Id, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamReceiveState.DataRead, snapshot.ReceiveState);
+        Assert.NotEmpty(outboundEffects);
+        outboundEffects.Clear();
+
+        bytesRead = await stream.ReadAsync(readBuffer, 0, readBuffer.Length);
+
+        Assert.Equal(0, bytesRead);
+
+        bool sawMaxStreamData = false;
+        QuicHandshakeFlowCoordinator coordinator = new(new byte[] { 0x0A, 0x0B, 0x0C });
+        foreach (QuicConnectionEffect effect in outboundEffects)
+        {
+            if (effect is not QuicConnectionSendDatagramEffect sendEffect)
+            {
+                continue;
+            }
+
+            Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+                sendEffect.Datagram.Span,
+                runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength));
+
+            if (QuicFrameCodec.TryParseMaxStreamDataFrame(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                out _,
+                out _))
+            {
+                sawMaxStreamData = true;
+            }
+        }
+
+        Assert.False(sawMaxStreamData);
+    }
+
+    private static void AcknowledgeTrackedPackets(QuicConnectionRuntime runtime)
+    {
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPacket in runtime.SendRuntime.SentPackets.ToArray())
+        {
+            Assert.True(runtime.SendRuntime.TryAcknowledgePacket(
+                sentPacket.Key.PacketNumberSpace,
+                sentPacket.Key.PacketNumber,
+                handshakeConfirmed: true));
+        }
+    }
 }
