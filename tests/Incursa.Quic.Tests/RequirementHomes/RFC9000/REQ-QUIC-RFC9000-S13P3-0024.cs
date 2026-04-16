@@ -82,4 +82,134 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0024
         Assert.Equal(default, streamDataBlockedFrame);
         Assert.Equal(default, errorCode);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0024")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryAcknowledgePacket_DoesNotRetainTheMostRecentBlockedFrameForRepair()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionSendLimit: 1,
+            localBidirectionalSendLimit: 8);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.False(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 2,
+            fin: false,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out QuicTransportErrorCode errorCode));
+
+        Assert.Equal(default, errorCode);
+        Assert.Equal(1UL, dataBlockedFrame.MaximumData);
+        Assert.Equal(default, streamDataBlockedFrame);
+
+        byte[] blockedPacket = QuicFrameTestData.BuildDataBlockedFrame(dataBlockedFrame);
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 8,
+            PayloadBytes: (ulong)blockedPacket.Length,
+            SentAtMicros: 125,
+            AckEliciting: true,
+            Retransmittable: true,
+            PacketBytes: blockedPacket));
+
+        Assert.True(runtime.TryAcknowledgePacket(
+            QuicPacketNumberSpace.ApplicationData,
+            8,
+            handshakeConfirmed: true));
+        Assert.Equal(0, runtime.PendingRetransmissionCount);
+        Assert.False(runtime.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            8,
+            handshakeConfirmed: true));
+        Assert.False(runtime.TryDequeueRetransmission(out _));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0024")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryRegisterLoss_RetainsStreamDataBlockedPacketsAndAllowsAReplacementWhileStillBlocked()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionSendLimit: 32,
+            localBidirectionalSendLimit: 1);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.False(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 2,
+            fin: false,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out QuicTransportErrorCode errorCode));
+
+        Assert.Equal(default, errorCode);
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(1UL, streamDataBlockedFrame.MaximumStreamData);
+
+        byte[] blockedPacket = QuicFrameTestData.BuildStreamDataBlockedFrame(streamDataBlockedFrame);
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 9,
+            PayloadBytes: (ulong)blockedPacket.Length,
+            SentAtMicros: 150,
+            AckEliciting: true,
+            Retransmittable: true,
+            PacketBytes: blockedPacket));
+
+        Assert.True(runtime.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            9,
+            handshakeConfirmed: true));
+        Assert.Equal(1, runtime.PendingRetransmissionCount);
+        Assert.True(runtime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan retransmission));
+        Assert.True(blockedPacket.AsSpan().SequenceEqual(retransmission.PacketBytes.Span));
+        Assert.False(runtime.TryDequeueRetransmission(out _));
+
+        Assert.False(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 2,
+            fin: false,
+            out dataBlockedFrame,
+            out streamDataBlockedFrame,
+            out errorCode));
+
+        Assert.Equal(default, errorCode);
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(1UL, streamDataBlockedFrame.MaximumStreamData);
+
+        Assert.True(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(streamId.Value, 2), out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 2,
+            fin: false,
+            out dataBlockedFrame,
+            out streamDataBlockedFrame,
+            out errorCode));
+
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(default, streamDataBlockedFrame);
+        Assert.Equal(default, errorCode);
+    }
 }

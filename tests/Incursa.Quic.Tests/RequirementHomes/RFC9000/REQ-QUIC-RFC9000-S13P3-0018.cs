@@ -206,6 +206,44 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0018
         Assert.False(runtime.TryDequeueRetransmission(out _));
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0018")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryReadStreamData_LeavesTheCurrentStreamDataOffsetUnchangedAtTheMaximumFlowControlLimit()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: QuicVariableLengthInteger.MaxValue,
+            peerBidirectionalReceiveLimit: QuicVariableLengthInteger.MaxValue);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0E, 1, [0x11, 0x22], offset: 0),
+            out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Span<byte> destination = stackalloc byte[2];
+        Assert.True(state.TryReadStreamData(
+            1,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out QuicMaxDataFrame maxDataFrame,
+            out QuicMaxStreamDataFrame maxStreamDataFrame,
+            out errorCode));
+
+        Assert.Equal(default, errorCode);
+        Assert.Equal(2, bytesWritten);
+        Assert.False(completed);
+        Assert.Equal(default, maxDataFrame);
+        Assert.Equal(default, maxStreamDataFrame);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicVariableLengthInteger.MaxValue, snapshot.ReceiveLimit);
+        Assert.Equal(2UL, snapshot.ReadOffset);
+        Assert.Equal(0, snapshot.BufferedReadableBytes);
+    }
+
     private static void AcknowledgeTrackedPackets(QuicConnectionRuntime runtime)
     {
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPacket in runtime.SendRuntime.SentPackets.ToArray())

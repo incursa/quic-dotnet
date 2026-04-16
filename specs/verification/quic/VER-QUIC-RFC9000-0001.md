@@ -1485,6 +1485,9 @@ Execution, inspection, fuzzing, and benchmark evidence.
 - tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs
 - tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs
 - tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0019.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0024.cs
 - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs
 - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs
 - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs
