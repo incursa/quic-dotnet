@@ -2720,7 +2720,8 @@ function Complete-WorkerLaneMerge {
         [Parameter(Mandatory = $true)][string]$GitExecutable,
         [Parameter(Mandatory = $true)][string]$RepoRoot,
         [Parameter(Mandatory = $true)]$WorkerContract,
-        [Parameter(Mandatory = $true)][string[]]$CommitShas
+        [Parameter(Mandatory = $true)][string[]]$CommitShas,
+        [Parameter(Mandatory = $true)][string]$StateDirectory
     )
 
     foreach ($commitSha in $CommitShas) {
@@ -2730,10 +2731,28 @@ function Complete-WorkerLaneMerge {
         }
     }
 
-    $mergeCheckResults = Invoke-CommandBatch -WorkingDirectory $RepoRoot -Commands $WorkerContract.merge_check_commands -Label "merge"
-    $failed = @($mergeCheckResults | Where-Object { $_.ExitCode -ne 0 } | Select-Object -First 1)
-    if ($failed.Count -gt 0) {
-        throw "Merge checks failed on $($WorkerContract.target_branch): $($failed[0].CommandText)"
+    if (@($WorkerContract.merge_check_commands).Count -eq 0) {
+        return
+    }
+
+    $verificationRoot = Ensure-Directory -Path (Join-Path $StateDirectory "merge-verification")
+    $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+    $branchName = "codex/verify-$($WorkerContract.lane_id)-$timestamp"
+    $worktreePath = Join-Path $verificationRoot "$($WorkerContract.lane_id)-$timestamp"
+    $verificationHead = Get-GitHead -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -Ref "HEAD"
+    $worktreeInfo = Ensure-GitWorktree -GitExecutable $GitExecutable -RepoRoot $RepoRoot -WorktreePath $worktreePath -BranchName $branchName -BaseRef $verificationHead
+
+    try {
+        # Run post-merge verification away from the target worktree so generator-style checks
+        # cannot leave tracked files dirty and block the next supervised lane preparation.
+        $mergeCheckResults = Invoke-CommandBatch -WorkingDirectory $worktreeInfo.WorktreePath -Commands $WorkerContract.merge_check_commands -Label "merge"
+        $failed = @($mergeCheckResults | Where-Object { $_.ExitCode -ne 0 } | Select-Object -First 1)
+        if ($failed.Count -gt 0) {
+            throw "Merge checks failed on $($WorkerContract.target_branch): $($failed[0].CommandText)"
+        }
+    }
+    finally {
+        Remove-GitWorktreeAndBranch -GitExecutable $GitExecutable -RepoRoot $RepoRoot -WorktreePath $worktreeInfo.WorktreePath -BranchName $worktreeInfo.BranchName
     }
 }
 
@@ -3003,7 +3022,7 @@ try {
                 }
 
                 Test-LanePreflightMerge -GitExecutable $gitExecutable -RepoRoot $mergeRepoRoot -WorkerContract $workerContract -CommitShas $commitShas -StateDirectory $resolvedStateDirectory
-                Complete-WorkerLaneMerge -GitExecutable $gitExecutable -RepoRoot $mergeRepoRoot -WorkerContract $workerContract -CommitShas $commitShas
+                Complete-WorkerLaneMerge -GitExecutable $gitExecutable -RepoRoot $mergeRepoRoot -WorkerContract $workerContract -CommitShas $commitShas -StateDirectory $resolvedStateDirectory
             }
             finally {
                 if (-not [string]::IsNullOrWhiteSpace($temporaryMergeWorktreePath)) {
