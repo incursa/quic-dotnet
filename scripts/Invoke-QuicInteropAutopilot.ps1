@@ -2010,6 +2010,182 @@ function Get-LaneTemplateDefinitions {
             )
             repeatable = $true
         }
+        [pscustomobject]@{
+            lane_id = "migration-connection-id-discipline"
+            objective = "Close the RFC 9000 section 9 connection-ID migration discipline tail: CID reuse guards, zero-length CID restrictions, and migration prerequisites on the existing runtime and endpoint surfaces."
+            priority = 25
+            prerequisite_lane_ids = @("path-migration-address-safety-proof")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicClientConnectionHost.cs",
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+                "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+                "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+                "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S9P5-")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P5_"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P5_"'
+            )
+            success_gates = @(
+                "connection-id reuse, zero-length CID restrictions, and migration prerequisites become requirement-home proven on the existing runtime and endpoint seams",
+                "the lane stays on CID and routing discipline instead of widening into broader preferred-address choreography"
+            )
+            fail_gates = @(
+                "the lane becomes a broad migration umbrella instead of a CID-discipline slice",
+                "the result is trace-only churn without focused section 9 proof"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "preferred-address-client-transition"
+            objective = "Close the client-side unexpected-server-address and preferred-address transition floor on the existing transport-parameter and path-validation seams."
+            priority = 26
+            prerequisite_lane_ids = @("migration-connection-id-discipline")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicClientConnectionHost.cs",
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+                "src/Incursa.Quic/QuicPathValidation.cs",
+                "src/Incursa.Quic/QuicPreferredAddress.cs",
+                "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+                "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S9P6-", "REQ-QUIC-RFC9000-S9P6P1-")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P6_|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P6_|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_"'
+            )
+            success_gates = @(
+                "the client-side preferred-address branch becomes requirement-home proven without broadening into server-side path ownership",
+                "unexpected server-address traffic and preferred-address selection stay honest on the existing transport-parameter seam"
+            )
+            fail_gates = @(
+                "the lane widens into generic migration cleanup or interop work",
+                "preferred-address behavior is claimed without focused client-side proof"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "preferred-address-server-transition"
+            objective = "Close the server-side preferred-address migration contract: validation, non-probing gating, and old-address handling on the existing runtime seam."
+            priority = 27
+            prerequisite_lane_ids = @("preferred-address-client-transition")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+                "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+                "src/Incursa.Quic/QuicPathValidation.cs",
+                "src/Incursa.Quic/QuicPreferredAddress.cs",
+                "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+                "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S9P6P2-")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P2_"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P2_"'
+            )
+            success_gates = @(
+                "server-side preferred-address validation and old-address handling become requirement-home proven on the existing runtime seam",
+                "the lane stays on the server transition contract instead of reopening generic CID issuance or TLS transport-parameter work"
+            )
+            fail_gates = @(
+                "the lane broadens into a mixed client/server migration sweep",
+                "proof is added without runtime-backed preferred-address transition behavior"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "preferred-address-dual-validation-safety"
+            objective = "Finish the concurrent-validation and preferred-address safety tail after the basic client and server transition floors are in place."
+            priority = 28
+            prerequisite_lane_ids = @("preferred-address-server-transition")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicClientConnectionHost.cs",
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+                "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+                "src/Incursa.Quic/QuicPathValidation.cs",
+                "src/Incursa.Quic/QuicPreferredAddress.cs",
+                "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+                "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S9P6P3-")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_"'
+            )
+            success_gates = @(
+                "concurrent validation, preferred-address attack protection, and address-family safety become requirement-home proven without broadening beyond the preferred-address tail",
+                "the lane keeps the remaining S9P6P3 work isolated from unrelated migration, interop, or TLS expansion"
+            )
+            fail_gates = @(
+                "the lane becomes a catch-all migration umbrella",
+                "clean S9P6P3 transport-parameter parsing proofs are relitigated instead of closing the remaining runtime tail"
+            )
+            repeatable = $false
+        }
     )
 }
 

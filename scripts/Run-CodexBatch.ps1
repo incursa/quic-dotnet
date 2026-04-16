@@ -264,8 +264,8 @@ Before you finish:
             [void]$psi.ArgumentList.Add("gpt-5.4-mini")
             [void]$psi.ArgumentList.Add("--config")
             [void]$psi.ArgumentList.Add('model_reasoning_effort="xhigh"')
-            [void]$psi.ArgumentList.Add("--config")
-            [void]$psi.ArgumentList.Add('fast_mode=true')
+            # [void]$psi.ArgumentList.Add("--config")
+            # [void]$psi.ArgumentList.Add('fast_mode=true')
 
             $process = New-Object System.Diagnostics.Process
             $process.StartInfo = $psi

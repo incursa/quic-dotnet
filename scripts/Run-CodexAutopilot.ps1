@@ -1472,8 +1472,8 @@ function Invoke-CodexTurn {
         [void]$psi.ArgumentList.Add($Model)
         [void]$psi.ArgumentList.Add("--config")
         [void]$psi.ArgumentList.Add("model_reasoning_effort=""$ReasoningEffort""")
-        [void]$psi.ArgumentList.Add("--config")
-        [void]$psi.ArgumentList.Add('fast_mode=true')
+        # [void]$psi.ArgumentList.Add("--config")
+        # [void]$psi.ArgumentList.Add('fast_mode=true')
 
         $process = New-Object System.Diagnostics.Process
         $process.StartInfo = $psi
