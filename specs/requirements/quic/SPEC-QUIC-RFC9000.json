@@ -3115,6 +3115,9 @@
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0001.cs::TryReadStreamData_AdvertisesTotalBytesPreparedToReceive"
         ]
       }
     },
@@ -3141,6 +3144,9 @@
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReceiveStreamFrame_LimitsThePerStreamReceiveBufferUse"
         ]
       }
     },
@@ -3167,6 +3173,9 @@
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0003.cs::TryReceiveStreamFrame_LimitsTheTotalStreamDataBytesAcrossTheConnection"
         ]
       }
     },
@@ -3193,6 +3202,10 @@
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B5-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0004.cs::TryReserveSendCapacity_RejectsBytesBeyondConnectionSendLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0004.cs::TryReserveSendCapacity_RejectsBytesBeyondStreamSendLimit"
         ]
       }
     },
@@ -3563,6 +3576,9 @@
         "upstream_refs": [
           "RFC 9000 §4.2 RFC9000-S4.2-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0002.cs::TryReadStreamData_UsesApplicationConsumptionAsAutotuningInput"
         ]
       }
     },
@@ -3589,6 +3605,9 @@
         "upstream_refs": [
           "RFC 9000 §4.2 RFC9000-S4.2-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0003.cs::TryReadStreamData_MakesCreditFramesAvailableForOpportunisticSerialization"
         ]
       }
     },
@@ -3615,6 +3634,9 @@
         "upstream_refs": [
           "RFC 9000 §4.2 RFC9000-S4.2-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0004.cs::TryReserveSendCapacity_ResumesAfterCreditRestorationWithoutAnyBlockedSignalExchange"
         ]
       }
     },
@@ -3641,6 +3663,9 @@
         "upstream_refs": [
           "RFC 9000 §4.2 RFC9000-S4.2-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs::TryReadStreamData_SendsCreditWithoutWaitingForBlockedSignals"
         ]
       }
     },

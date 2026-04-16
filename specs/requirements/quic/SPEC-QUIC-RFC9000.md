@@ -1707,6 +1707,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0001.cs::TryReadStreamData_AdvertisesTotalBytesPreparedToReceive
 
 ## REQ-QUIC-RFC9000-S4P1-0002 Limit per-stream receive buffer use
 Stream flow control MUST prevent a single stream from consuming the entire receive buffer for a connection by limiting the amount of data that can be sent on each stream.
@@ -1721,6 +1723,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B3-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReceiveStreamFrame_LimitsThePerStreamReceiveBufferUse
 
 ## REQ-QUIC-RFC9000-S4P1-0003 Limit total stream-data bytes on the connection
 Connection flow control MUST prevent senders from exceeding a receiver's buffer capacity for the connection by limiting the total bytes of stream data sent in STREAM frames on all streams.
@@ -1735,6 +1739,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0003.cs::TryReceiveStreamFrame_LimitsTheTotalStreamDataBytesAcrossTheConnection
 
 ## REQ-QUIC-RFC9000-S4P1-0004 Never send beyond either flow-control limit
 Senders MUST NOT send data in excess of either limit.
@@ -1749,6 +1755,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B5-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0004.cs::TryReserveSendCapacity_RejectsBytesBeyondConnectionSendLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0004.cs::TryReserveSendCapacity_RejectsBytesBeyondStreamSendLimit
 
 ## REQ-QUIC-RFC9000-S4P1-0005 Set initial flow-control limits in transport parameters
 A receiver MUST set initial limits for all streams through transport parameters during the handshake.
@@ -1954,6 +1963,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.2 RFC9000-S4.2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0002.cs::TryReadStreamData_UsesApplicationConsumptionAsAutotuningInput
 
 ## REQ-QUIC-RFC9000-S4P2-0003 Send flow-control frames opportunistically
 An endpoint MAY send frames related to flow control only when there are other frames to send, ensuring that flow control does not cause extra packets to be sent.
@@ -1968,6 +1979,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.2 RFC9000-S4.2-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0003.cs::TryReadStreamData_MakesCreditFramesAvailableForOpportunisticSerialization
 
 ## REQ-QUIC-RFC9000-S4P2-0004 Do not require blocked senders to signal blocking
 A blocked sender MUST NOT be required to send STREAM_DATA_BLOCKED or DATA_BLOCKED frames.
@@ -1982,6 +1995,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.2 RFC9000-S4.2-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0004.cs::TryReserveSendCapacity_ResumesAfterCreditRestorationWithoutAnyBlockedSignalExchange
 
 ## REQ-QUIC-RFC9000-S4P2-0005 Do not wait for blocked signals before sending credit
 A receiver MUST NOT wait for a STREAM_DATA_BLOCKED or DATA_BLOCKED frame before sending a MAX_STREAM_DATA or MAX_DATA frame.
@@ -1996,6 +2011,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.2 RFC9000-S4.2-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs::TryReadStreamData_SendsCreditWithoutWaitingForBlockedSignals
 
 ## REQ-QUIC-RFC9000-S4P4-0001 Tear down state and ignore later data after RESET_STREAM
 On receipt of a RESET_STREAM frame, an endpoint MUST tear down state for the matching stream and ignore further data arriving on that stream.
