@@ -1464,6 +1464,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             }
             else if (dataBlockedFrame.MaximumData != 0 || streamDataBlockedFrame.MaximumStreamData != 0)
             {
+                _ = TryEmitFlowControlBlockedSignal(dataBlockedFrame, streamDataBlockedFrame, ref effects);
                 completion.TrySetException(new NotSupportedException(
                     "Writes that wait for additional flow-control credit are not supported by this slice."));
             }
@@ -1509,6 +1510,109 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         completion.TrySetResult(null);
+        return true;
+    }
+
+    private bool TryEmitFlowControlBlockedSignal(
+        QuicDataBlockedFrame dataBlockedFrame,
+        QuicStreamDataBlockedFrame streamDataBlockedFrame,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (sendRuntime.HasAckElicitingPacketsInFlight || sendRuntime.PendingRetransmissionCount > 0)
+        {
+            return false;
+        }
+
+        if (dataBlockedFrame.MaximumData != 0)
+        {
+            return TrySendFlowControlBlockedSignal(
+                dataBlockedFrame,
+                "The connection runtime could not protect the data-blocked packet.",
+                "The connection cannot send the data-blocked packet.",
+                ref effects);
+        }
+
+        if (streamDataBlockedFrame.MaximumStreamData != 0)
+        {
+            return TrySendFlowControlBlockedSignal(
+                streamDataBlockedFrame,
+                "The connection runtime could not protect the stream-data-blocked packet.",
+                "The connection cannot send the stream-data-blocked packet.",
+                ref effects);
+        }
+
+        return false;
+    }
+
+    private bool TrySendFlowControlBlockedSignal(
+        QuicDataBlockedFrame frame,
+        string protectFailureMessage,
+        string amplificationFailureMessage,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!TryBuildOutboundDataBlockedPayload(frame, out byte[] blockedPayload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            blockedPayload,
+            protectFailureMessage,
+            amplificationFailureMessage,
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+
+        return true;
+    }
+
+    private bool TrySendFlowControlBlockedSignal(
+        QuicStreamDataBlockedFrame frame,
+        string protectFailureMessage,
+        string amplificationFailureMessage,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!TryBuildOutboundStreamDataBlockedPayload(frame, out byte[] blockedPayload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            blockedPayload,
+            protectFailureMessage,
+            amplificationFailureMessage,
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+
         return true;
     }
 
@@ -2728,6 +2832,58 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             new QuicStopSendingFrame(streamId, applicationErrorCode),
             buffer,
             out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
+    private bool TryBuildOutboundDataBlockedPayload(
+        QuicDataBlockedFrame frame,
+        out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
+        if (!QuicFrameCodec.TryFormatDataBlockedFrame(frame, buffer, out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
+    private bool TryBuildOutboundStreamDataBlockedPayload(
+        QuicStreamDataBlockedFrame frame,
+        out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
+        if (!QuicFrameCodec.TryFormatStreamDataBlockedFrame(frame, buffer, out int frameBytesWritten))
         {
             return false;
         }

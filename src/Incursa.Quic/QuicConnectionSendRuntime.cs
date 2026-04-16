@@ -54,6 +54,22 @@ internal sealed class QuicConnectionSendRuntime
 
     public int PendingRetransmissionCount => pendingRetransmissions.Count;
 
+    public bool HasAckElicitingPacketsInFlight
+    {
+        get
+        {
+            foreach (QuicConnectionSentPacket packet in sentPackets.Values)
+            {
+                if (packet.AckEliciting)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
     public void TrackSentPacket(QuicConnectionSentPacket packet)
     {
         ValidateCryptoMetadata(packet);
