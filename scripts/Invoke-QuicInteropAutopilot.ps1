@@ -1116,9 +1116,127 @@ function Get-LaneTemplateDefinitions {
             repeatable = $false
         }
         [pscustomobject]@{
+            lane_id = "flow-control-receiver-contract"
+            objective = "Close the remaining receiver-side flow-control contract for MAX_DATA, MAX_STREAM_DATA, and MAX_STREAMS receipts without reopening the sender-side blocked-feedback lanes."
+            priority = 13
+            prerequisite_lane_ids = @("final-size-and-credit-accounting")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionStreamState.cs",
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicStream.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S4P1", "REQ-QUIC-RFC9000-S4P2")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_"'
+            )
+            success_gates = @(
+                "receiver-side limit advertisement and duplicate-limit suppression remain runtime-backed and narrowly proven",
+                "the lane closes the remaining S4P1 and S4P2 receiver obligations without touching resend scheduling"
+            )
+            fail_gates = @(
+                "the lane turns into trace-only xref cleanup",
+                "blocked-signal or resend-scheduler changes spill into the same commit"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "flow-control-loss-repair"
+            objective = "Repair the remaining flow-control loss and retry path for MAX_DATA, MAX_STREAM_DATA, and blocked signals so the latest published credit is re-issued while still relevant."
+            priority = 14
+            prerequisite_lane_ids = @("flow-control-receiver-contract")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionStreamState.cs",
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+                "src/Incursa.Quic/QuicStream.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S4P1-0015", "REQ-QUIC-RFC9000-S13P3-0018", "REQ-QUIC-RFC9000-S13P3-0019", "REQ-QUIC-RFC9000-S13P3-0024")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024"'
+            )
+            success_gates = @(
+                "loss of the most recent credit or blocked frame produces a replacement only while the endpoint is still blocked",
+                "the lane closes the residual flow-control retry proof without widening the scheduler"
+            )
+            fail_gates = @(
+                "it turns into codec-only tests",
+                "it requires new sender/recovery abstractions just to prove the residual cases"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "retransmission-send-scheduler"
+            objective = "Close the remaining packet and frame resend scheduler for lost STREAM and CRYPTO material, connection-close suppression, path-challenge retry, and HANDSHAKE_DONE retransmission."
+            priority = 15
+            prerequisite_lane_ids = @("flow-control-loss-repair")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicPathValidation.cs",
+                "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0001", "REQ-QUIC-RFC9000-S13P3-0002", "REQ-QUIC-RFC9000-S13P3-0003", "REQ-QUIC-RFC9000-S13P3-0004", "REQ-QUIC-RFC9000-S13P3-0005", "REQ-QUIC-RFC9000-S13P3-0006", "REQ-QUIC-RFC9000-S13P3-0007", "REQ-QUIC-RFC9000-S13P3-0008", "REQ-QUIC-RFC9000-S13P3-0009", "REQ-QUIC-RFC9000-S13P3-0010", "REQ-QUIC-RFC9000-S13P3-0014", "REQ-QUIC-RFC9000-S13P3-0026", "REQ-QUIC-RFC9000-S13P3-0033")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0026|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0026|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+            )
+            success_gates = @(
+                "lost STREAM and CRYPTO material is re-sent through the runtime scheduler instead of being retried only in helpers",
+                "HANDSHAKE_DONE and PATH_CHALLENGE remain in the reliability slice instead of the handshake umbrella"
+            )
+            fail_gates = @(
+                "the lane broadens into migration or interop work",
+                "resend policy is still only expressed through tests without scheduler ownership"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
             lane_id = "trace-metadata-reconciliation"
             objective = "Reconcile xrefs, generated summaries, and proof metadata only after a semantic merge has landed."
-            priority = 13
+            priority = 16
             prerequisite_lane_ids = @()
             blocking_gap_ids = @()
             allowed_path_prefixes = @(
