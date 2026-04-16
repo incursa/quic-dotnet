@@ -15611,6 +15611,10 @@
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B15-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs::CanSendStatelessReset_AllowsResponsesBelowTheThreeTimesAmplificationLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs::CanSendStatelessReset_RejectsResponsesAtTheThreeTimesAmplificationLimit"
         ]
       }
     },
@@ -15854,6 +15858,10 @@
         "upstream_refs": [
           "RFC 9000 §10.3.1 RFC9000-S10.3.1-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs::TryHandlePotentialStatelessReset_EntersDrainingAndStopsSendingOnMatchingToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs::TryHandlePotentialStatelessReset_LeavesTheConnectionSendableWhenTheTokenDoesNotMatch"
         ]
       }
     },
@@ -15939,6 +15947,10 @@
         "upstream_refs": [
           "RFC 9000 §10.3.1 RFC9000-S10.3.1-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs::TryHandlePotentialStatelessReset_TransitionsToDrainingWhenTheTokenMatches",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs::TryHandlePotentialStatelessReset_DoesNotEnterDrainingWhenTheTokenDoesNotMatch"
         ]
       }
     },
@@ -15965,6 +15977,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3.1 RFC9000-S10.3.1-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_DisablesSendingOnAMatchingToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_KeepsSendingEnabledWhenTheTokenDoesNotMatch",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_StaysNonSendableAfterARepeatedMatch"
         ]
       }
     },
