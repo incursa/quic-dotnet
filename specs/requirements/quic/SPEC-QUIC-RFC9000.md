@@ -6120,6 +6120,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0002.cs::UnvalidatedPeerAddressCanReceiveAPathValidationChallengeBeforePromotion
 
 ## REQ-QUIC-RFC9000-S9P3-0003 Protect unvalidated peer-address traffic
 An endpoint MUST protect against potential attacks as described in Sections 9.3.1 and 9.3.2 when it sends data to an unvalidated peer address.
@@ -6134,6 +6136,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0003.cs::PathValidationTrafficToAnUnvalidatedPeerAddressIsPaddedToTheMinimumDatagramSize
 
 ## REQ-QUIC-RFC9000-S9P3-0004 Skip validation of a peer address if that address has been seen recently
 An endpoint MAY skip validation of a peer address if that address has been seen recently.
@@ -6148,6 +6152,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0004.cs::RecentlyValidatedPeerAddressCanBypassAnotherValidationChallenge
 
 ## REQ-QUIC-RFC9000-S9P3-0005 After verifying a new client address, the server SHOULD send new address validation tokens (Section 8) to the client
 After verifying a new client address, the server SHOULD send new address validation tokens (Section 8) to the client.
@@ -6228,6 +6234,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0009.cs::SpoofedPeerAddressTrafficDoesNotReplaceTheLastValidatedAddressBeforeValidationSucceeds
 
 ## REQ-QUIC-RFC9000-S9P3-0010 Allow Abandoning Other Path Validation
 An endpoint MAY abandon any path validation for other addresses after changing the address to which it sends non-probing packets.
@@ -6242,6 +6250,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0010.cs::AStaleCandidatePathCanBeAbandonedAfterTheConnectionHasMovedToAnotherValidatedAddress
 
 ## REQ-QUIC-RFC9000-S9P3-0011 Send New Address Validation Tokens
 After verifying a new client address, the server SHOULD send new address validation tokens to the client.
