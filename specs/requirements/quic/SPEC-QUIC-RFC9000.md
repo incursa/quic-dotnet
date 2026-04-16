@@ -6104,6 +6104,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0001.cs::ValidatedMigrationRoutesLocalClosePacketsToTheMigratedAddress
 
 ## REQ-QUIC-RFC9000-S9P3-0002 Allow data on an unvalidated peer address
 An endpoint MAY send data to an unvalidated peer address.
@@ -6174,6 +6176,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0006.cs::ValidatedMigrationRoutesConnectionCloseRepliesToTheMigratedAddress
 
 ## REQ-QUIC-RFC9000-S9P3-0007 Initiate Path Validation After Permitting Migration
 If the recipient permits the migration, it MUST initiate path validation to verify the peer's ownership of the address if validation is not already underway.
@@ -6191,6 +6195,7 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::PacketFromANewAddressStartsPathValidationWhenMigrationIsPermitted
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::RepeatedPacketsDoNotRestartPathValidationWhileTheChallengeIsPending
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::ASecondMigratedAddressStartsValidationWhileTheFirstChallengeIsPending
 
 ## REQ-QUIC-RFC9000-S9P3-0008 Change Sending Address Only on the Highest-Numbered Non-Probing Packet
 An endpoint MUST only change the address to which it sends packets in response to the highest-numbered non-probing packet.
@@ -6205,6 +6210,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0008.cs::ValidatedMigrationPromotesTheMigratedPathBeforeTheNextReplyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0008.cs::PathValidationMustCompleteBeforeReplyPacketsSwitchToTheMigratedAddress
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::ASecondMigratedAddressStartsValidationWhileTheFirstChallengeIsPending
 
 ## REQ-QUIC-RFC9000-S9P3-0009 Protect Against Address-Spoofing Attacks
 An endpoint MUST protect against potential attacks as described in Sections 9.3.1 and 9.3.2.
