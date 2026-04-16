@@ -1616,6 +1616,97 @@ function Get-LaneTemplateDefinitions {
             repeatable = $false
         }
         [pscustomobject]@{
+            lane_id = "path-migration-routing-proof"
+            objective = "Prove the existing runtime migration routing floor: subsequent packets follow the migrated address, path validation starts, and the highest-numbered non-probing packet gate stays honest."
+            priority = 23
+            prerequisite_lane_ids = @("path-migration-cid-runtime")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+                "src/Incursa.Quic/QuicPathValidation.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @(
+                "REQ-QUIC-RFC9000-S9P3-0001",
+                "REQ-QUIC-RFC9000-S9P3-0006",
+                "REQ-QUIC-RFC9000-S9P3-0007",
+                "REQ-QUIC-RFC9000-S9P3-0008"
+            )
+            verification_commands = @(
+                "dotnet test Incursa.Quic.slnx --filter ""FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0008"""
+            )
+            merge_check_commands = @(
+                "dotnet test Incursa.Quic.slnx --filter ""FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0008"""
+            )
+            success_gates = @(
+                "migration routing and path validation initiation become requirement-home proven on the existing runtime seam",
+                "the lane does not widen into address-validation token emission or other migration families"
+            )
+            fail_gates = @(
+                "the lane becomes a trace-only reshuffle",
+                "the lane drifts into the deferred 0005/0011 token-emission work"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "path-migration-address-safety-proof"
+            objective = "Prove the remaining migration address-safety guards: unvalidated peer-address traffic, recent-address reuse, spoofing protection, and abandonment of stale validation paths."
+            priority = 24
+            prerequisite_lane_ids = @("path-migration-routing-proof")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+                "src/Incursa.Quic/QuicPathValidation.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @(
+                "REQ-QUIC-RFC9000-S9P3-0002",
+                "REQ-QUIC-RFC9000-S9P3-0003",
+                "REQ-QUIC-RFC9000-S9P3-0004",
+                "REQ-QUIC-RFC9000-S9P3-0009",
+                "REQ-QUIC-RFC9000-S9P3-0010"
+            )
+            verification_commands = @(
+                "dotnet test Incursa.Quic.slnx --filter ""FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0010"""
+            )
+            merge_check_commands = @(
+                "dotnet test Incursa.Quic.slnx --filter ""FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0010"""
+            )
+            success_gates = @(
+                "unvalidated-address safety and stale-path abandonment become requirement-home proven on the existing runtime seam",
+                "the lane does not widen into the deferred 0005/0011 token-emission work"
+            )
+            fail_gates = @(
+                "the lane becomes a trace-only reshuffle",
+                "the lane drifts into address-validation token emission instead of the safety floor"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
             lane_id = "trace-metadata-reconciliation"
             objective = "Reconcile xrefs, generated summaries, and proof metadata only after a semantic merge has landed."
             priority = 22
