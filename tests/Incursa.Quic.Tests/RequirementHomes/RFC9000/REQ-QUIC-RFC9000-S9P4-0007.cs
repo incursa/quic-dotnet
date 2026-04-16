@@ -66,4 +66,29 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0007
         Assert.Equal(3_000UL, afterLoss.SlowStartThresholdBytes);
         Assert.Equal(1_300UL, afterLoss.RecoveryStartTimeMicros);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void IsolatedProbePacketLossDoesNotReduceTheCongestionWindow()
+    {
+        QuicCongestionControlState state = new();
+        ulong initialCongestionWindowBytes = state.CongestionWindowBytes;
+        ulong initialSlowStartThresholdBytes = state.SlowStartThresholdBytes;
+
+        state.RegisterPacketSent(
+            sentBytes: 1_200,
+            isProbePacket: true);
+
+        Assert.True(state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 1_300,
+            packetInFlight: true,
+            isProbePacket: true));
+
+        Assert.Equal(0UL, state.BytesInFlightBytes);
+        Assert.Equal(initialCongestionWindowBytes, state.CongestionWindowBytes);
+        Assert.Equal(initialSlowStartThresholdBytes, state.SlowStartThresholdBytes);
+        Assert.Null(state.RecoveryStartTimeMicros);
+    }
 }
