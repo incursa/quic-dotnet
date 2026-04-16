@@ -8211,8 +8211,8 @@ Trace:
   - RFC 9000 §10.3 RFC9000-S10.3-B13-P10-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible
-  - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs::TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs::TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter
 
 ## REQ-QUIC-RFC9000-S10P3-0011 Limit Stateless Reset amplification
 An endpoint MUST NOT send a Stateless Reset that is three times or more larger than the packet it receives.
@@ -8309,7 +8309,7 @@ Trace:
   - RFC 9000 §10.3 RFC9000-S10.3-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0016.cs::TryGenerateStatelessResetToken_BindsTheTokenToTheConnectionId
 
 ## REQ-QUIC-RFC9000-S10P3-0017 Advertise reset tokens in NEW_CONNECTION_ID
 An endpoint MUST issue a stateless reset token by including the value in the Stateless Reset Token field of a NEW_CONNECTION_ID frame.
@@ -8544,7 +8544,7 @@ Trace:
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B1-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs::TryGetTrailingStatelessResetToken_UsesTheTrailingSixteenBytes
 
 ## REQ-QUIC-RFC9000-S10P3P1-0002 Remember recent stateless reset tokens
 An endpoint MUST remember all stateless reset tokens associated with the connection IDs and remote addresses for datagrams it has recently sent.
@@ -8660,7 +8660,7 @@ Trace:
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0009.cs::TryGetTrailingStatelessResetToken_DetectsPotentialResetUsingTheTrailingSixteenBytes
 
 ## REQ-QUIC-RFC9000-S10P3P1-0010 Remember and scope reset tokens
 An endpoint MUST remember all stateless reset tokens associated with connection IDs and remote addresses for datagrams it has recently sent, including Stateless Reset Token field values from NEW_CONNECTION_ID frames and the server's transport parameters, and excluding tokens associated with connection IDs that are unused or retired.
@@ -8899,7 +8899,7 @@ Trace:
   - RFC 9000 §10.3.3 RFC9000-S10.3.3-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.3
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::CanSendStatelessReset_RejectsAmplificationAndLoopingViolations
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P3-0001.cs::CanSendStatelessReset_AllowsShorterResets
 
 ## REQ-QUIC-RFC9000-S10P3P3-0002 Allow a reset-send limit
 An endpoint MAY remember the number of Stateless Resets that it has sent and stop generating new Stateless Resets once a limit is reached.
@@ -8915,7 +8915,7 @@ Trace:
   - RFC 9000 §10.3.3 RFC9000-S10.3.3-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.3
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::CanSendStatelessReset_RejectsAmplificationAndLoopingViolations
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P3-0002.cs::CanSendStatelessReset_AllowsLoopPreventionState
 
 ## REQ-QUIC-RFC9000-S11-0001 that detects an error SHOULD signal the existence of that error to its peer
 An endpoint that detects an error SHOULD signal the existence of that error to its peer.

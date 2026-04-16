@@ -15014,8 +15014,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible",
-          "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs::TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs::TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter"
         ]
       }
     },
@@ -15189,7 +15189,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::TryGenerateStatelessResetToken_GeneratesStable16ByteTokensPerConnectionId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0016.cs::TryGenerateStatelessResetToken_BindsTheTokenToTheConnectionId"
         ]
       }
     },
@@ -15604,7 +15604,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs::TryGetTrailingStatelessResetToken_UsesTheTrailingSixteenBytes"
         ]
       }
     },
@@ -15818,7 +15818,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0009.cs::TryGetTrailingStatelessResetToken_DetectsPotentialResetUsingTheTrailingSixteenBytes"
         ]
       }
     },
@@ -16252,7 +16252,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::CanSendStatelessReset_RejectsAmplificationAndLoopingViolations"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P3-0001.cs::CanSendStatelessReset_AllowsShorterResets"
         ]
       }
     },
@@ -16281,7 +16281,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStatelessResetTests.cs::CanSendStatelessReset_RejectsAmplificationAndLoopingViolations"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P3-0002.cs::CanSendStatelessReset_AllowsLoopPreventionState"
         ]
       }
     },
