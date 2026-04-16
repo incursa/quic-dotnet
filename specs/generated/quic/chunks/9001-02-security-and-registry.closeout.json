@@ -17,9 +17,10 @@
     "S9": 1,
     "S10": 3,
     "total": 18,
-    "implemented_and_tested": 5,
-    "blocked": 11,
+    "implemented_and_tested": 6,
+    "blocked": 9,
     "deferred": 2,
+    "partial": 1,
     "silent_gaps": 0
   },
   "reconciliation_artifact_present": false,
@@ -27,6 +28,7 @@
   "implementation_summary_file": "./specs/generated/quic/chunks/9001-02-security-and-registry.implementation-summary.json",
   "implemented_and_tested_requirements": [
     "REQ-QUIC-RFC9001-S6-0002",
+    "REQ-QUIC-RFC9001-S6-0004",
     "REQ-QUIC-RFC9001-S8-0001",
     "REQ-QUIC-RFC9001-S10-0001",
     "REQ-QUIC-RFC9001-S10-0002",
@@ -35,8 +37,6 @@
   "blocked_requirements": [
     "REQ-QUIC-RFC9001-S6-0001",
     "REQ-QUIC-RFC9001-S6-0003",
-    "REQ-QUIC-RFC9001-S6-0004",
-    "REQ-QUIC-RFC9001-S6-0005",
     "REQ-QUIC-RFC9001-S6-0006",
     "REQ-QUIC-RFC9001-S6-0007",
     "REQ-QUIC-RFC9001-S6-0008",
@@ -52,7 +52,6 @@
   "remaining_open_requirements": [
     "REQ-QUIC-RFC9001-S6-0001",
     "REQ-QUIC-RFC9001-S6-0003",
-    "REQ-QUIC-RFC9001-S6-0004",
     "REQ-QUIC-RFC9001-S6-0005",
     "REQ-QUIC-RFC9001-S6-0006",
     "REQ-QUIC-RFC9001-S6-0007",
@@ -68,6 +67,8 @@
     "source_requirement_refs_found": [],
     "test_requirement_refs_found": [
       "REQ-QUIC-RFC9001-S6-0002",
+      "REQ-QUIC-RFC9001-S6-0004",
+      "REQ-QUIC-RFC9001-S6-0005",
       "REQ-QUIC-RFC9001-S8-0001",
       "REQ-QUIC-RFC9001-S10-0001",
       "REQ-QUIC-RFC9001-S10-0002",
@@ -85,11 +86,13 @@
       "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
       "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
       "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs",
       "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
       "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs"
     ],
     "stale_or_wrong_refs_found": [],
-    "notes": "No in-scope source annotations were present. The scoped test traits use only the expected RFC 9001 IDs, and the implementation summary's blocker notes match the current repo state."
+    "notes": "No in-scope source annotations were present. The scoped test traits now include the S6-0004 and S6-0005 requirement-home tests, and the implementation summary's blocker notes match the current repo state."
   },
   "requirements": [
     {
@@ -138,22 +141,34 @@
     {
       "requirement_id": "REQ-QUIC-RFC9001-S6-0004",
       "title": "Toggle Key Phase on each update",
-      "status": "blocked",
+      "status": "implemented_and_tested",
       "implementation_evidence": [],
-      "test_evidence": [],
-      "direct_refs": [],
-      "remaining_gap": "The repo does not yet have a key-update state machine that can toggle Key Phase across successive updates.",
-      "notes": "This depends on stateful 1-RTT key management."
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeTogglesOutboundKeyPhaseAfterInstallingSuccessorMaterial",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeRejectsRepeatingTheSameOneRttKeyUpdate"
+      ],
+      "direct_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeTogglesOutboundKeyPhaseAfterInstallingSuccessorMaterial -> REQ-QUIC-RFC9001-S6-0004",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeRejectsRepeatingTheSameOneRttKeyUpdate -> REQ-QUIC-RFC9001-S6-0004"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof now covers the outbound key-phase toggle on the supported active client runtime path."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S6-0005",
       "title": "Let Key Phase detect key changes",
-      "status": "blocked",
+      "status": "partially_implemented",
       "implementation_evidence": [],
-      "test_evidence": [],
-      "direct_refs": [],
-      "remaining_gap": "The repo does not yet have a receiver-side key-update state machine that can detect a change in keying material from Key Phase alone.",
-      "notes": "This requires receiver-side 1-RTT packet protection state."
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DetectsTheChangedKeyPhaseWithoutTheTriggeringPacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForPhaseZeroPackets"
+      ],
+      "direct_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DetectsTheChangedKeyPhaseWithoutTheTriggeringPacket -> REQ-QUIC-RFC9001-S6-0005",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForPhaseZeroPackets -> REQ-QUIC-RFC9001-S6-0005"
+      ],
+      "remaining_gap": "The repository now has focused positive and negative proof for key-change detection, but it still lacks required edge proof for this clause.",
+      "notes": "The requirement-home tests cover the supported positive and negative paths, but the edge boundary is still missing."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S6-0006",

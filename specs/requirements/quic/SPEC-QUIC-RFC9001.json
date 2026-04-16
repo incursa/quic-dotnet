@@ -1105,7 +1105,11 @@
           "RFC 9001 §6 RFC9001-S6-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeTogglesOutboundKeyPhaseAfterInstallingSuccessorMaterial",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeRejectsRepeatingTheSameOneRttKeyUpdate"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S6-0005",
@@ -1131,7 +1135,11 @@
           "RFC 9001 §6 RFC9001-S6-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DetectsTheChangedKeyPhaseWithoutTheTriggeringPacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForPhaseZeroPackets"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S6-0006",

@@ -11,13 +11,14 @@
 - Requirements in scope: `18`
 
 ## Outcome
-- Implemented and tested: `5`
-- Blocked: `11`
+- Implemented and tested: `6`
+- Partial: `1`
+- Blocked: `9`
 - Deferred: `2`
 - Silent gaps: `0`
 - Stale or wrong requirement IDs in scope: none found
 
-The helper-backed ceiling is already closed here: `REQ-QUIC-RFC9001-S6-0002`, `REQ-QUIC-RFC9001-S8-0001`, and `REQ-QUIC-RFC9001-S10-0001` through `REQ-QUIC-RFC9001-S10-0003` are the only requirements this repo shape can prove now. The remaining S6/S7/S8/S9 items stay blocked or deferred until handshake-confirmation, key-update, and TLS-authentication support exists.
+The helper-backed ceiling now includes `REQ-QUIC-RFC9001-S6-0004` as closed by requirement-home proof and `REQ-QUIC-RFC9001-S6-0005` as partial; the remaining S6/S7/S8/S9 items stay blocked or deferred until handshake-confirmation, key-update, and TLS-authentication support exists.
 
 ## In-Scope Requirements
 
@@ -26,6 +27,10 @@ The helper-backed ceiling is already closed here: `REQ-QUIC-RFC9001-S6-0002`, `R
   - Code evidence: [QuicShortHeaderPacket.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicShortHeaderPacket.cs), [QuicPacketParser.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicPacketParser.cs)
   - Test evidence: `tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder`, `tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder`, `tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero`
   - Direct refs: all four tests above carry `REQ-QUIC-RFC9001-S6-0002`
+- `REQ-QUIC-RFC9001-S6-0004` `Toggle Key Phase on each update`
+  - Code evidence: requirement-home test coverage only.
+  - Test evidence: `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeTogglesOutboundKeyPhaseAfterInstallingSuccessorMaterial`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeRejectsRepeatingTheSameOneRttKeyUpdate`
+  - Direct refs: both tests above carry `REQ-QUIC-RFC9001-S6-0004`
 - `REQ-QUIC-RFC9001-S8-0001` `Carry QUIC transport parameters`
   - Code evidence: [QuicTransportParametersCodec.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicTransportParametersCodec.cs)
   - Test evidence: `tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence`, `tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient`, `tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress`, `tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation`
@@ -43,15 +48,18 @@ The helper-backed ceiling is already closed here: `REQ-QUIC-RFC9001-S6-0002`, `R
   - Test evidence: `tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata`
   - Direct refs: that test carries `REQ-QUIC-RFC9001-S10-0003`
 
+### Partially Implemented
+- `REQ-QUIC-RFC9001-S6-0005` `Let Key Phase detect key changes`
+  - Code evidence: requirement-home test coverage only.
+  - Test evidence: `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DetectsTheChangedKeyPhaseWithoutTheTriggeringPacket`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForPhaseZeroPackets`
+  - Direct refs: both tests above carry `REQ-QUIC-RFC9001-S6-0005`
+  - Status: partial because the edge boundary is still missing.
+
 ### Blocked
 - `REQ-QUIC-RFC9001-S6-0001` `Allow key update after handshake confirmation`
   - Remaining gap: the repo still lacks handshake-confirmation state and the 1-RTT key-update subsystem needed to initiate a safe key update.
 - `REQ-QUIC-RFC9001-S6-0003` `Initialize Key Phase to zero`
   - Remaining gap: the repo does not yet format 1-RTT packets with a key-update state machine, so the initial Key Phase value is not a live implementation concern yet.
-- `REQ-QUIC-RFC9001-S6-0004` `Toggle Key Phase on each update`
-  - Remaining gap: the repo does not yet have a key-update state machine that can toggle Key Phase across successive updates.
-- `REQ-QUIC-RFC9001-S6-0005` `Let Key Phase detect key changes`
-  - Remaining gap: the repo does not yet have a receiver-side key-update state machine that can detect a change in keying material from Key Phase alone.
 - `REQ-QUIC-RFC9001-S6-0006` `Update keys when Key Phase changes`
   - Remaining gap: the repo does not yet have key-update logic that can swap packet-protection keys when the Key Phase bit changes.
 - `REQ-QUIC-RFC9001-S6-0007` `Decrypt the packet with the changed Key Phase`
@@ -76,8 +84,8 @@ The helper-backed ceiling is already closed here: `REQ-QUIC-RFC9001-S6-0002`, `R
 ## Reference Audit
 - Source files checked for in-scope requirement IDs: [QuicShortHeaderPacket.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicShortHeaderPacket.cs), [QuicPacketParser.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicPacketParser.cs), [QuicTransportParametersCodec.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicTransportParametersCodec.cs), [QuicTransportParameters.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicTransportParameters.cs), [PublicAPI.Unshipped.txt](C:/src/incursa/quic-dotnet/src/Incursa.Quic/PublicAPI.Unshipped.txt)
 - Source requirement refs found: none
-- Test files with requirement traits: [QuicShortHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs), [QuicPacketParserTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicPacketParserTests.cs), [QuicHeaderPropertyTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs), [QuicHeaderFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs), [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs), [QuicTransportParametersFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs)
-- Test requirement refs found: `REQ-QUIC-RFC9001-S6-0002`, `REQ-QUIC-RFC9001-S8-0001`, `REQ-QUIC-RFC9001-S10-0001`, `REQ-QUIC-RFC9001-S10-0002`, `REQ-QUIC-RFC9001-S10-0003`
+- Test files with requirement traits: [QuicShortHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs), [QuicPacketParserTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicPacketParserTests.cs), [QuicHeaderPropertyTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs), [QuicHeaderFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs), [REQ-QUIC-RFC9001-S6-0004.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs), [REQ-QUIC-RFC9001-S6-0005.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs), [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs), [QuicTransportParametersFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs)
+- Test requirement refs found: `REQ-QUIC-RFC9001-S6-0002`, `REQ-QUIC-RFC9001-S6-0004`, `REQ-QUIC-RFC9001-S6-0005`, `REQ-QUIC-RFC9001-S8-0001`, `REQ-QUIC-RFC9001-S10-0001`, `REQ-QUIC-RFC9001-S10-0002`, `REQ-QUIC-RFC9001-S10-0003`
 - Stale or wrong refs found: none
 
 ## Verification

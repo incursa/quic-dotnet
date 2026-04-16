@@ -42,7 +42,7 @@ That missing contract is the TLS wall.
 
 | Chunk | What the requirements are asking for | Current status |
 | --- | --- | --- |
-| `9001-02-security-and-registry` | Key update after peer handshake transcript completion, Key Phase semantics, prohibition and handling of TLS `KeyUpdate` messages, handshake tamper detection, transport-parameter commitment, and TLS registry metadata. | Only 5 helper-backed requirements are closed. The remaining executable security clauses are blocked by missing handshake and key-management surfaces. |
+| `9001-02-security-and-registry` | Key update after peer handshake transcript completion, Key Phase semantics, prohibition and handling of TLS `KeyUpdate` messages, handshake tamper detection, transport-parameter commitment, and TLS registry metadata. | Six helper-backed requirements are closed and one is partial. The remaining executable security clauses are blocked by missing handshake and key-management surfaces. |
 | Cross-seam `9002-03-loss-detection` remainder | Reset PTO and discard recovery state when keys go away. | The timing helpers exist, but key-discard events do not yet exist as live runtime inputs. |
 | Cross-seam `9002-06` appendix remainder | Connection-owned cleanup on key discard. | Still deferred because there is no bridge that exposes key lifecycle transitions to the sender/recovery runtime. |
 

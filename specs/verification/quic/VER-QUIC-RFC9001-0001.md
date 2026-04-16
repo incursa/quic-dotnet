@@ -115,6 +115,8 @@ Execution, inspection, fuzzing, and benchmark evidence.
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0009.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0010.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicInitialPacketProtectionTestData.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicHandshakePacketProtectionTestData.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicRetryPacketRequirementTestData.cs
