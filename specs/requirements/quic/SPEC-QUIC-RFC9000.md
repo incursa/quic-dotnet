@@ -10502,7 +10502,7 @@ Trace:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B11-P8-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::ShouldSendAckImmediately_ForOutOfOrderAndCePackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
 
 ## REQ-QUIC-RFC9000-S13P2P2-0001 determines how frequently to send acknowledgments in response to ack-eliciting packets
 A receiver determines how MUST frequently to send acknowledgments in response to ack-eliciting packets.
