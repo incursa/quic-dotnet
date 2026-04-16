@@ -923,6 +923,82 @@ function Get-LaneTemplateDefinitions {
             repeatable = $false
         }
         [pscustomobject]@{
+            lane_id = "stream-read-reset-disposition"
+            objective = "Close read-side interruption, reset notification, and ResetRead acknowledgement behavior for receive-state stream transitions."
+            priority = 10
+            prerequisite_lane_ids = @("stream-stop-sending-read-abort")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionStreamState.cs",
+                "src/Incursa.Quic/QuicStream.cs",
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S3P2-0022", "REQ-QUIC-RFC9000-S3P2-0023")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0023"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0023"'
+            )
+            success_gates = @(
+                "RESET_STREAM transitions and acknowledgement handling stay runtime-owned and narrowly proven",
+                "the receive-side reset disposition closes without widening the send-side terminal guards"
+            )
+            fail_gates = @(
+                "the lane turns into trace-only xref cleanup",
+                "the same read-side reset blocker still remains after the lane finishes"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "stream-terminal-send-guards"
+            objective = "Close the remaining terminal-state send guards and RESET_STREAM/STOP_SENDING admission rules that still block the stream-state follow-ons."
+            priority = 11
+            prerequisite_lane_ids = @("stream-read-reset-disposition")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionStreamState.cs",
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicStream.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S3P3-0001", "REQ-QUIC-RFC9000-S3P3-0002", "REQ-QUIC-RFC9000-S3P3-0005")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0005"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0005"'
+            )
+            success_gates = @(
+                "terminal send-state transitions reject STREAM, STREAM_DATA_BLOCKED, and RESET_STREAM once the send side is closed",
+                "STOP_SENDING remains admitted only while the receive side still accepts it"
+            )
+            fail_gates = @(
+                "the lane broadens into bidirectional composition before the send guards are proven",
+                "the lane only shuffles traces instead of closing runtime behavior"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
             lane_id = "final-size-and-credit-accounting"
             objective = "Close final-size immutability and connection-level credit accounting rules that gate the remaining stream and flow-control work."
             priority = 10
