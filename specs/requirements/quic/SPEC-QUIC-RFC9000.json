@@ -15113,7 +15113,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseShortHeader_AcceptsAValidShortHeaderPacket",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsEmptyInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseShortHeader_RejectsEmptyInput"
         ]
       }
     },

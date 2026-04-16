@@ -8272,7 +8272,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseShortHeader_AcceptsAValidShortHeaderPacket
-  - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsEmptyInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0012.cs::TryParseShortHeader_RejectsEmptyInput
 
 ## REQ-QUIC-RFC9000-S10P3-0013 Format Stateless Resets with a short header
 Endpoints MUST send Stateless Resets formatted as a packet with a short header.
