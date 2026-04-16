@@ -971,7 +971,7 @@ Trace:
   - RFC 9002 §6.1.2 RFC9002-S6.1.2-B8-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeLossDelayMicros_UsesTheRttAndGranularityThresholds
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0006.cs::RecommendedTimerGranularity_UsesOneMillisecond
 
 ## REQ-QUIC-RFC9002-S6P1P2-0007 Allow alternative time-threshold experiments
 Implementations MAY experiment with absolute thresholds, thresholds from previous connections, adaptive thresholds, or RTT variation.
