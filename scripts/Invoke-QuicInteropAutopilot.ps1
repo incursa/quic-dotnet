@@ -1460,9 +1460,48 @@ function Get-LaneTemplateDefinitions {
             repeatable = $false
         }
         [pscustomobject]@{
+            lane_id = "rfc9001-key-phase-toggle-detection-floor"
+            objective = "Close the managed RFC 9001 client/runtime key-phase toggle and detection floor on the existing bridge seam."
+            priority = 21
+            prerequisite_lane_ids = @()
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+                "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+                "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001",
+                "specs/requirements/quic/SPEC-QUIC-RFC9001",
+                "specs/architecture/quic/ARC-QUIC-RFC9001",
+                "specs/work-items/quic/WI-QUIC-RFC9001",
+                "specs/verification/quic/VER-QUIC-RFC9001",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9001-S6-0004", "REQ-QUIC-RFC9001-S6-0005")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005"'
+            )
+            success_gates = @(
+                "the managed client/runtime can signal a key-phase change and a recipient can observe the change through the existing packet parser",
+                "the empty 0004/0005 requirement homes become runtime-backed without widening into TLS KeyUpdate prohibition or error handling"
+            )
+            fail_gates = @(
+                "the lane broadens into the deferred TLS KeyUpdate prohibition/error path",
+                "the result is trace-only churn without requirement-home proof"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
             lane_id = "trace-metadata-reconciliation"
             objective = "Reconcile xrefs, generated summaries, and proof metadata only after a semantic merge has landed."
-            priority = 21
+            priority = 22
             prerequisite_lane_ids = @()
             blocking_gap_ids = @()
             allowed_path_prefixes = @(
