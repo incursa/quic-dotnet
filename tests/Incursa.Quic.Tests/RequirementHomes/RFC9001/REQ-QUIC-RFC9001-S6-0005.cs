@@ -70,8 +70,8 @@ public sealed class REQ_QUIC_RFC9001_S6_0005
     }
 
     [Fact]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForTamperedPhaseOnePackets()
     {
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();

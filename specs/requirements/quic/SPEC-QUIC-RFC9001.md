@@ -620,6 +620,9 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeTogglesOutboundKeyPhaseAfterInstallingSuccessorMaterial
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeRejectsRepeatingTheSameOneRttKeyUpdate
 
 ## REQ-QUIC-RFC9001-S6-0005 Let Key Phase detect key changes
 The Key Phase bit MUST allow a recipient to detect a change in keying material without needing to receive the first packet that triggered the change.
@@ -634,6 +637,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DetectsTheChangedKeyPhaseWithoutTheTriggeringPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForPhaseZeroPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForTamperedPhaseOnePackets
 
 ## REQ-QUIC-RFC9001-S6-0006 Update keys when Key Phase changes
 An endpoint that notices a changed Key Phase bit MUST update keys.
