@@ -4677,6 +4677,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     private bool TryPromoteFallbackValidatedPath(long nowTicks, ref List<QuicConnectionEffect>? effects)
     {
+        if (!CanPromoteActivePathMigration())
+        {
+            return false;
+        }
+
         if (recentlyValidatedPaths.Count == 0)
         {
             return false;
@@ -4771,7 +4776,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
-        return !transportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration);
+        return !transportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration)
+            && !PeerRequestedZeroLengthConnectionId();
+    }
+
+    private bool PeerRequestedZeroLengthConnectionId()
+    {
+        return tlsState.PeerTransportParameters?.InitialSourceConnectionId is { Length: 0 };
     }
 
     private void UpdatePeerAddressValidationFlag()
