@@ -11614,7 +11614,7 @@ Trace:
   - RFC 9000 §13.4.1 RFC9000-S13.4.1-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P1-0005.cs::TryBuildAckFrame_IncludesEcnCountsInSubsequentAckFrames
 
 ## REQ-QUIC-RFC9000-S13P4P1-0006 Keep separate ECN counts per packet number space
 Each packet number space MUST maintain separate acknowledgment state and separate ECN counts.

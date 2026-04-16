@@ -21193,7 +21193,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P1-0005.cs::TryBuildAckFrame_IncludesEcnCountsInSubsequentAckFrames"
         ]
       }
     },

@@ -5,7 +5,6 @@ public sealed class REQ_QUIC_RFC9000_S13P2P5_0005
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P4P1-0004")]
-    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P1-0014")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0010")]
     [Requirement("REQ-QUIC-RFC9002-S3-0011")]
