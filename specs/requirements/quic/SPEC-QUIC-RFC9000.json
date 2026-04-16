@@ -28244,8 +28244,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0003.cs::TryParseShortHeader_ReportsTheHeaderForm"
         ]
       }
     },
@@ -28274,10 +28273,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0004.cs::TryParseShortHeader_ReportsTheFixedBit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero"
         ]
       }
     },
@@ -28306,10 +28304,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0005.cs::TryParseShortHeader_ReportsTheSpinBit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero"
         ]
       }
     },

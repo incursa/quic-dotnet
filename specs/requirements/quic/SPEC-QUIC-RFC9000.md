@@ -1763,6 +1763,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0005.cs::TryParseAndFormatTransportParameters_PreservesInitialFlowControlLimits
 
 ## REQ-QUIC-RFC9000-S4P1-0006 Advertise larger flow-control limits with MAX frames
 Subsequently, a receiver MUST send MAX_STREAM_DATA or MAX_DATA frames to advertise larger limits.
@@ -1777,6 +1779,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B6-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0006.cs::TryApplyMaxFrames_AdvertisesIncreasingLimits
 
 ## REQ-QUIC-RFC9000-S4P1-0007 Advertise larger stream limits with MAX_STREAM_DATA
 A receiver MAY advertise a larger limit for a stream by sending a MAX_STREAM_DATA frame with the corresponding stream ID.
@@ -1841,6 +1845,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B8-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0010.cs::TryReceiveStreamFrame_TracksConnectionReceivedBytesAcrossStreams
 
 ## REQ-QUIC-RFC9000-S4P1-0011 Ignore smaller advertised limits
 Once a receiver advertises a limit for the connection or a stream, advertising a smaller limit MUST have no effect rather than be treated as an error.
@@ -1901,6 +1907,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B12-P9-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0014.cs::TryReserveSendCapacity_GeneratesBlockedFramesWhenFlowControlLimitsAreReached
 
 ## REQ-QUIC-RFC9000-S4P1-0015 Periodically signal blocking while flow-control limited
 A sender that is flow control limited SHOULD periodically send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame when it has no ack-eliciting packets in flight.
@@ -15537,8 +15545,7 @@ Trace:
   - RFC 9000 §17.3.1 RFC9000-S17.3.1-B3-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit
-  - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0003.cs::TryParseShortHeader_ReportsTheHeaderForm
 
 ## REQ-QUIC-RFC9000-S17P3P1-0004 The Fixed Bit field MUST be 1 bits long with value 1
 The Fixed Bit field MUST be 1 bits long with value 1.
@@ -15554,10 +15561,9 @@ Trace:
   - RFC 9000 §17.3.1 RFC9000-S17.3.1-B3-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero
-  - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
-  - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0004.cs::TryParseShortHeader_ReportsTheFixedBit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero
 
 ## REQ-QUIC-RFC9000-S17P3P1-0005 The Spin Bit field MUST be 1 bits long
 The Spin Bit field MUST be 1 bits long.
@@ -15573,10 +15579,9 @@ Trace:
   - RFC 9000 §17.3.1 RFC9000-S17.3.1-B3-P0-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero
-  - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
-  - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0005.cs::TryParseShortHeader_ReportsTheSpinBit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero
 
 ## REQ-QUIC-RFC9000-S17P3P1-0006 The Reserved Bits field MUST be 2 bits long
 The Reserved Bits field MUST be 2 bits long.
