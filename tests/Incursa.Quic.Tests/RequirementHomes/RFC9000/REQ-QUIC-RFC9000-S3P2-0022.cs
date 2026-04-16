@@ -55,4 +55,54 @@ public sealed class REQ_QUIC_RFC9000_S3P2_0022
         Assert.Equal(0, bytesWritten);
         Assert.False(completed);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReceiveResetStreamFrame_DoesNotPreserveDataRecvdWhenTheResetSignalIsNotSuppressed()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 16,
+            peerBidirectionalReceiveLimit: 8);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0F, streamId: 1, streamData: [0x11, 0x22, 0x33, 0x44], offset: 0),
+            out QuicStreamFrame frame));
+
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot preResetSnapshot));
+        Assert.Equal(QuicStreamReceiveState.DataRecvd, preResetSnapshot.ReceiveState);
+        Assert.Equal(4, preResetSnapshot.BufferedReadableBytes);
+
+        Assert.True(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(streamId: 1, applicationProtocolErrorCode: 0x99, finalSize: 4),
+            out QuicMaxDataFrame maxDataFrame,
+            out errorCode));
+
+        Assert.Equal(default, errorCode);
+        Assert.Equal(20UL, maxDataFrame.MaximumData);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamReceiveState.ResetRecvd, snapshot.ReceiveState);
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(4UL, snapshot.FinalSize);
+        Assert.Equal(0, snapshot.BufferedReadableBytes);
+        Assert.True(snapshot.HasReceiveAbortErrorCode);
+        Assert.Equal(0x99UL, snapshot.ReceiveAbortErrorCode);
+
+        Span<byte> destination = stackalloc byte[4];
+        Assert.False(state.TryReadStreamData(
+            1,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out _,
+            out _,
+            out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(0, bytesWritten);
+        Assert.False(completed);
+    }
 }
