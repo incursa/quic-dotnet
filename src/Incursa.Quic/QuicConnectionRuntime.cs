@@ -3840,9 +3840,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ref List<QuicConnectionEffect>? effects)
     {
         bool stateChanged = false;
-        List<QuicConnectionPathIdentity>? expiredPathIdentities = null;
-
-        foreach (KeyValuePair<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> entry in candidatePaths)
+        foreach (KeyValuePair<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> entry in candidatePaths.ToArray())
         {
             QuicConnectionCandidatePathRecord candidatePath = entry.Value;
             if (candidatePath.Validation.IsValidated
@@ -3855,53 +3853,32 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
             candidatePath = candidatePath with
             {
-                Validation = candidatePath.Validation with
-                {
-                    IsAbandoned = true,
-                    ValidationDeadlineTicks = null,
-                },
                 LastActivityTicks = nowTicks,
             };
-            candidatePaths[entry.Key] = candidatePath;
-            (expiredPathIdentities ??= []).Add(entry.Key);
+
+            if (!TrySendPathValidationChallenge(entry.Key, nowTicks, ref candidatePath, ref effects))
+            {
+                candidatePath = candidatePath with
+                {
+                    Validation = candidatePath.Validation with
+                    {
+                        ValidationDeadlineTicks = SaturatingAdd(
+                            nowTicks,
+                            ConvertMicrosToTicks(currentProbeTimeoutMicros)),
+                    },
+                };
+                candidatePaths[entry.Key] = candidatePath;
+            }
+
             stateChanged = true;
         }
 
-        if (expiredPathIdentities is not null)
+        if (stateChanged)
         {
-            foreach (QuicConnectionPathIdentity expiredPathIdentity in expiredPathIdentities)
-            {
-                if (activePath is not null
-                    && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, expiredPathIdentity))
-                {
-                    if (CanPromoteActivePathMigration()
-                        && TryPromoteFallbackValidatedPath(nowTicks, ref effects))
-                    {
-                        stateChanged = true;
-                    }
-                    else if (activePath is not null)
-                    {
-                        activePath = activePath.Value with
-                        {
-                            IsValidated = false,
-                            RecoverySnapshot = null,
-                            LastActivityTicks = nowTicks,
-                        };
-                    }
-                }
-            }
+            UpdatePeerAddressValidationFlag();
+            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         }
 
-        if (stateChanged && !HasValidatedPath)
-        {
-            if (diagnosticsEnabled)
-            {
-                EmitDiagnostic(ref effects, QuicDiagnostics.PathValidationTimerExpiredNoValidatedPathsRemain());
-            }
-        }
-
-        UpdatePeerAddressValidationFlag();
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return stateChanged;
     }
 
