@@ -20160,6 +20160,9 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B7-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0012.cs::ResetStreamContentChangesWhenTheUnderlyingFrameFieldsChange"
         ]
       }
     },
@@ -20238,6 +20241,9 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B10-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0015.cs::TryReadStreamData_SendsTheCurrentConnectionMaximumData"
         ]
       }
     },
@@ -20264,6 +20270,9 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B10-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryAcknowledgePacket_DoesNotRetainTheMostRecentMaxDataFrameForRepair"
         ]
       }
     },
@@ -20290,6 +20299,9 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B11-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0017.cs::TryReadStreamData_DoesNotEmitStreamCreditWhenNoBytesAreRead"
         ]
       }
     },
@@ -20368,6 +20380,9 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B12-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0020.cs::TryPeekPeerStreamCapacityRelease_OffersTheCurrentBidirectionalStreamLimitAfterThePeerStreamCloses"
         ]
       }
     },
@@ -20394,6 +20409,9 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B12-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0021.cs::TryAcknowledgePacket_DoesNotRetainTheMostRecentMaxStreamsFrameForRepair"
         ]
       }
     },
@@ -20420,6 +20438,9 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0022.cs::TryReserveSendCapacity_CarriesBlockedSignalsInDedicatedFrameTypes"
         ]
       }
     },
@@ -20446,6 +20467,9 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0023.cs::TryReserveSendCapacity_UsesTheCorrectScopeForEachBlockedFrame"
         ]
       }
     },
@@ -20498,6 +20522,9 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0025.cs::TryReserveSendCapacity_CarriesTheCurrentBlockingLimitInEveryBlockedFrame"
         ]
       }
     },
@@ -20552,7 +20579,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::TryGeneratePathChallengeData_RejectsShortDestinations",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::Fuzz_TryGeneratePathChallengeData_ProducesDistinctPayloadsAcrossRepeatedCalls"
         ]
       }
     },

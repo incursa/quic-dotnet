@@ -11030,6 +11030,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B7-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0012.cs::ResetStreamContentChangesWhenTheUnderlyingFrameFieldsChange
 
 ## REQ-QUIC-RFC9000-S13P3-0013 Retransmit STOP_SENDING until the stream reaches a terminal state
 A request to cancel stream transmission, as encoded in a STOP_SENDING frame, MUST be sent until the receiving part of the stream enters either a Data Recvd state or a Reset Recvd state.
@@ -11072,6 +11074,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B10-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0015.cs::TryReadStreamData_SendsTheCurrentConnectionMaximumData
 
 ## REQ-QUIC-RFC9000-S13P3-0016 Send updated MAX_DATA values when the frame is lost or the limit changes
 An updated value MUST be sent in a MAX_DATA frame if the packet containing the most recently sent MAX_DATA frame is declared lost or when the endpoint decides to update the limit.
@@ -11086,6 +11090,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B10-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryAcknowledgePacket_DoesNotRetainTheMostRecentMaxDataFrameForRepair
 
 ## REQ-QUIC-RFC9000-S13P3-0017 Send current stream data offsets in MAX_STREAM_DATA frames
 The current maximum stream data offset MUST be sent in MAX_STREAM_DATA frames.
@@ -11100,6 +11106,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B11-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0017.cs::TryReadStreamData_DoesNotEmitStreamCreditWhenNoBytesAreRead
 
 ## REQ-QUIC-RFC9000-S13P3-0018 Send updated MAX_STREAM_DATA values when the frame is lost or the limit changes
 Like MAX_DATA, an updated value MUST be sent when the packet containing the most recent MAX_STREAM_DATA frame for a stream is lost or when the limit is updated.
@@ -11142,6 +11150,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B12-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0020.cs::TryPeekPeerStreamCapacityRelease_OffersTheCurrentBidirectionalStreamLimitAfterThePeerStreamCloses
 
 ## REQ-QUIC-RFC9000-S13P3-0021 Send updated MAX_STREAMS values when the frame is lost or the limit changes
 Like MAX_DATA, an updated value MUST be sent when a packet containing the most recent MAX_STREAMS for a stream type frame is declared lost or when the limit is updated.
@@ -11156,6 +11166,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B12-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0021.cs::TryAcknowledgePacket_DoesNotRetainTheMostRecentMaxStreamsFrameForRepair
 
 ## REQ-QUIC-RFC9000-S13P3-0022 Carry blocked signals in dedicated frames
 Blocked signals MUST be carried in DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAMS_BLOCKED frames.
@@ -11170,6 +11182,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0022.cs::TryReserveSendCapacity_CarriesBlockedSignalsInDedicatedFrameTypes
 
 ## REQ-QUIC-RFC9000-S13P3-0023 Scope blocked signals appropriately
 DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAMS_BLOCKED frames MUST use connection, stream, and stream-type scope respectively.
@@ -11184,6 +11198,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0023.cs::TryReserveSendCapacity_UsesTheCorrectScopeForEachBlockedFrame
 
 ## REQ-QUIC-RFC9000-S13P3-0024 Send a new blocked frame while blocked and the latest frame is lost
 A new frame MUST be sent if a packet containing the most recent frame for a scope is lost, but only while the endpoint is blocked on the corresponding limit.
@@ -11212,6 +11228,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0025.cs::TryReserveSendCapacity_CarriesTheCurrentBlockingLimitInEveryBlockedFrame
 
 ## REQ-QUIC-RFC9000-S13P3-0026 Send PATH_CHALLENGE periodically until validation completes or is no longer needed
 A liveness or path validation check using PATH_CHALLENGE frames MUST be sent periodically until a matching PATH_RESPONSE frame is received or until there is no remaining need for liveness or path validation checking.
@@ -11241,7 +11259,9 @@ Trace:
   - RFC 9000 §13.3 RFC9000-S13.3-B14-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::TryGeneratePathChallengeData_RejectsShortDestinations
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::Fuzz_TryGeneratePathChallengeData_ProducesDistinctPayloadsAcrossRepeatedCalls
 
 ## REQ-QUIC-RFC9000-S13P3-0028 Send PATH_RESPONSE once
 Responses to path validation using PATH_RESPONSE frames MUST be sent just once.
