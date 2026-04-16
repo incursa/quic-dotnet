@@ -3219,6 +3219,9 @@
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B6-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0005.cs::TryParseAndFormatTransportParameters_PreservesInitialFlowControlLimits"
         ]
       }
     },
@@ -3245,6 +3248,9 @@
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B6-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0006.cs::TryApplyMaxFrames_AdvertisesIncreasingLimits"
         ]
       }
     },
@@ -3360,6 +3366,9 @@
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B8-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0010.cs::TryReceiveStreamFrame_TracksConnectionReceivedBytesAcrossStreams"
         ]
       }
     },
@@ -3469,6 +3478,9 @@
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B12-P9-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0014.cs::TryReserveSendCapacity_GeneratesBlockedFramesWhenFlowControlLimitsAreReached"
         ]
       }
     },
