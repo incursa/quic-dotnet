@@ -22,6 +22,19 @@ public sealed class REQ_QUIC_RFC9002_S6P2P1_0010
             out _));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TrySelectRecoveryTimerMicros_PrefersTheLossDetectionTimerOverPtoTimers()
+    {
+        Assert.True(QuicRecoveryTiming.TrySelectRecoveryTimerMicros(
+            lossDetectionTimerMicros: 2_800,
+            probeTimeoutMicros: 1_500,
+            out ulong selectedTimerMicros));
+
+        Assert.Equal(2_800UL, selectedTimerMicros);
+    }
+
     [Theory]
     [MemberData(nameof(RecoveryTimerTieCases))]
     [CoverageType(RequirementCoverageType.Edge)]

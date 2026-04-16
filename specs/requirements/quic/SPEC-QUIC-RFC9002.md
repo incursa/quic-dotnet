@@ -1222,7 +1222,7 @@ Trace:
   - RFC 9002 §6.2.1 RFC9002-S6.2.1-B13-P11-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TrySelectRecoveryTimerMicros_PrefersLossDetectionTimersOverPtoTimers
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0010.cs::TrySelectRecoveryTimerMicros_PrefersTheLossDetectionTimerOverPtoTimers
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0010.cs::TrySelectRecoveryTimerMicros_ReturnsFalseWhenNoTimersAreAvailable
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0010.cs::TrySelectRecoveryTimerMicros_PrefersTheLossDetectionTimerWhenTheDeadlinesMatch
 
