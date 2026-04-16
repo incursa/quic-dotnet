@@ -11027,6 +11027,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B6-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::TryBuildAckFrame_UsesTheLargestAcknowledgedPacketForAckDelay
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::TryBuildAckFrame_RejectsAnEmptyAckSet
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::Fuzz_TryBuildAckFrame_UsesTheLargestAcknowledgedPacketAcrossRandomOrders
 
 ## REQ-QUIC-RFC9000-S13P3-0011 Retransmit RESET_STREAM until acknowledged or data is acknowledged
 Cancellation of stream transmission, as carried in a RESET_STREAM frame, MUST be sent until acknowledged or until all stream data is acknowledged by the peer.
@@ -11041,6 +11045,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B7-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0011.cs::ResetStreamActionRetainsTheProtectedPacketUntilAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0011.cs::ResetStreamRetransmissionStaysQueuedWhenAnUnrelatedPacketIsAcknowledged
 
 ## REQ-QUIC-RFC9000-S13P3-0012 The content of a RESET_STREAM frame MUST NOT change when it is sent again
 The content of a RESET_STREAM frame MUST NOT change when it is sent again.
@@ -11071,6 +11078,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B8-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0013.cs::StopSendingActionRetainsTheProtectedPacketUntilAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0013.cs::StopSendingRetransmissionStaysQueuedWhenAnUnrelatedPacketIsAcknowledged
 
 ## REQ-QUIC-RFC9000-S13P3-0014 Do not resend connection close signals
 Connection close signals, including packets that contain CONNECTION_CLOSE frames, MUST NOT be sent again when packet loss is detected.
@@ -11269,6 +11279,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B14-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs::PathValidationTimerExpiryRetransmitsTheChallengeWithANewPayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs::ValidatedCandidatePathDoesNotRetransmitAfterTheTimerIsCleared
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs::AbandonedCandidatePathDoesNotRetransmitAfterTheTimerIsCleared
 
 ## REQ-QUIC-RFC9000-S13P3-0027 Use different PATH_CHALLENGE payloads each time
 PATH_CHALLENGE frames MUST include a different payload each time they are sent.

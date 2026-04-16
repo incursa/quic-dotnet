@@ -20145,6 +20145,11 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::TryBuildAckFrame_UsesTheLargestAcknowledgedPacketForAckDelay",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::TryBuildAckFrame_RejectsAnEmptyAckSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::Fuzz_TryBuildAckFrame_UsesTheLargestAcknowledgedPacketAcrossRandomOrders"
         ]
       }
     },
@@ -20171,6 +20176,10 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B7-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0011.cs::ResetStreamActionRetainsTheProtectedPacketUntilAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0011.cs::ResetStreamRetransmissionStaysQueuedWhenAnUnrelatedPacketIsAcknowledged"
         ]
       }
     },
@@ -20226,6 +20235,10 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0013.cs::StopSendingActionRetainsTheProtectedPacketUntilAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0013.cs::StopSendingRetransmissionStaysQueuedWhenAnUnrelatedPacketIsAcknowledged"
         ]
       }
     },
@@ -20588,6 +20601,11 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B14-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs::PathValidationTimerExpiryRetransmitsTheChallengeWithANewPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs::ValidatedCandidatePathDoesNotRetransmitAfterTheTimerIsCleared",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs::AbandonedCandidatePathDoesNotRetransmitAfterTheTimerIsCleared"
         ]
       }
     },
