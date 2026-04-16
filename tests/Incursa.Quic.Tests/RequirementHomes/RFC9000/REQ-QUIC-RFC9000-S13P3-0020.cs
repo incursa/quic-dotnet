@@ -29,4 +29,51 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0020
         Assert.True(state.TryCommitPeerStreamCapacityRelease(3, releaseFrame));
         Assert.Equal(2UL, state.IncomingUnidirectionalStreamLimit);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0020")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryPeekPeerStreamCapacityRelease_OffersTheCurrentBidirectionalStreamLimitAfterThePeerStreamCloses()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            incomingBidirectionalStreamLimit: 1);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0B, streamId: 1, streamData: []),
+            out QuicStreamFrame frame));
+
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryAbortLocalStreamWrites(1, out ulong finalSize, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(0UL, finalSize);
+
+        Assert.True(state.TryPeekPeerStreamCapacityRelease(1, out QuicMaxStreamsFrame maxStreamsFrame));
+        Assert.True(maxStreamsFrame.IsBidirectional);
+        Assert.Equal(2UL, maxStreamsFrame.MaximumStreams);
+
+        Assert.True(state.TryCommitPeerStreamCapacityRelease(1, maxStreamsFrame));
+        Assert.Equal(2UL, state.IncomingBidirectionalStreamLimit);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0020")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryPeekPeerStreamCapacityRelease_ReturnsFalseWhileThePeerBidirectionalStreamIsStillOpen()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            incomingBidirectionalStreamLimit: 1);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0A, streamId: 1, streamData: [0x51]),
+            out QuicStreamFrame frame));
+
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.False(state.TryPeekPeerStreamCapacityRelease(1, out _));
+    }
 }

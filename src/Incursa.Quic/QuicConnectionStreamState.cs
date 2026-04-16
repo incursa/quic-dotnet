@@ -135,8 +135,7 @@ internal sealed class QuicConnectionStreamState
         frame = default;
 
         QuicStreamId streamId = new(streamIdValue);
-        if (!streamId.IsUnidirectional
-            || !IsPeerInitiated(streamId)
+        if (!IsPeerInitiated(streamId)
             || !streams.TryGetValue(streamIdValue, out StreamState? state)
             || state.PeerCapacityReleaseReported
             || !IsPeerStreamFullyClosed(state))
@@ -159,8 +158,7 @@ internal sealed class QuicConnectionStreamState
     public bool TryCommitPeerStreamCapacityRelease(ulong streamIdValue, QuicMaxStreamsFrame frame)
     {
         QuicStreamId streamId = new(streamIdValue);
-        if (!streamId.IsUnidirectional
-            || !IsPeerInitiated(streamId)
+        if (!IsPeerInitiated(streamId)
             || frame.IsBidirectional != streamId.IsBidirectional
             || !streams.TryGetValue(streamIdValue, out StreamState? state)
             || state.PeerCapacityReleaseReported
