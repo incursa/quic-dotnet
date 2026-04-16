@@ -239,19 +239,13 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
-        if (state.SendState is QuicStreamSendState.DataRecvd or QuicStreamSendState.ResetRecvd)
+        if (IsStreamSendClosed(state.SendState))
         {
             errorCode = QuicTransportErrorCode.StreamStateError;
             return false;
         }
 
         ulong endExclusive = offset + (ulong)length;
-        if (state.SendState == QuicStreamSendState.ResetSent)
-        {
-            errorCode = QuicTransportErrorCode.StreamStateError;
-            return false;
-        }
-
         if (state.FinalSize.HasValue)
         {
             if ((fin && endExclusive != state.FinalSize.Value)
@@ -478,9 +472,7 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
-        if (state.SendState is QuicStreamSendState.ResetSent
-            or QuicStreamSendState.DataRecvd
-            or QuicStreamSendState.ResetRecvd)
+        if (IsStreamSendClosed(state.SendState))
         {
             errorCode = QuicTransportErrorCode.StreamStateError;
             return false;

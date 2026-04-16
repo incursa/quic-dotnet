@@ -71,4 +71,84 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0001
         Assert.Equal(default, finalSize);
         Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P3-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReserveSendCapacity_RejectsStreamFramesAfterDataSent()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            localBidirectionalSendLimit: 8,
+            peerBidirectionalStreamLimit: 8);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.True(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 1,
+            fin: true,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(default, streamDataBlockedFrame);
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamSendState.DataSent, snapshot.SendState);
+
+        Assert.False(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 1,
+            fin: false,
+            out dataBlockedFrame,
+            out streamDataBlockedFrame,
+            out errorCode));
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(default, streamDataBlockedFrame);
+        Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P3-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryAbortLocalStreamWrites_RejectsDataSentStreams()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            localBidirectionalSendLimit: 8,
+            peerBidirectionalStreamLimit: 8);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.True(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 1,
+            fin: true,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(default, streamDataBlockedFrame);
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamSendState.DataSent, snapshot.SendState);
+
+        Assert.False(state.TryAbortLocalStreamWrites(streamId.Value, out ulong finalSize, out errorCode));
+        Assert.Equal(default, finalSize);
+        Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+    }
 }
