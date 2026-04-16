@@ -4620,10 +4620,17 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         bool activePathChanged = activePath is null
             || !EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity);
+        bool preserveCurrentRecoveryState = activePath is not null
+            && IsPortOnlyPeerAddressChange(activePath.Value.Identity, pathIdentity);
 
         if (activePathChanged && !CanPromoteActivePathMigration())
         {
             return false;
+        }
+
+        if (activePath is not null && activePathChanged && !preserveCurrentRecoveryState)
+        {
+            ResetRecoveryStateForNewPath();
         }
 
         if (activePath is not null
@@ -4662,7 +4669,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             AppendEffect(ref effects, new QuicConnectionPromoteActivePathEffect(
                 pathIdentity,
-                RestoreSavedState: candidatePath.SavedRecoverySnapshot.HasValue));
+                RestoreSavedState: preserveCurrentRecoveryState));
         }
 
         return true;
@@ -4700,6 +4707,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
+        bool preserveCurrentRecoveryState = activePath is not null
+            && IsPortOnlyPeerAddressChange(activePath.Value.Identity, bestPathIdentity.Value);
+        if (activePath is not null && !preserveCurrentRecoveryState)
+        {
+            ResetRecoveryStateForNewPath();
+        }
+
         QuicConnectionActivePathRecord promotedPath = new(
             bestPathIdentity.Value,
             ActivatedAtTicks: nowTicks,
@@ -4721,8 +4735,28 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         UpdatePeerAddressValidationFlag();
         AppendEffect(ref effects, new QuicConnectionPromoteActivePathEffect(
             bestPathIdentity.Value,
-            RestoreSavedState: bestCandidate.Value.SavedRecoverySnapshot.HasValue));
+            RestoreSavedState: preserveCurrentRecoveryState));
         return true;
+    }
+
+    private void ResetRecoveryStateForNewPath()
+    {
+        // A real peer-address change starts the new path with fresh recovery state so stale
+        // packets from the old path cannot keep influencing congestion or PTO decisions.
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial);
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake);
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData);
+        sendRuntime.FlowController.CongestionControlState.Reset();
+    }
+
+    private static bool IsPortOnlyPeerAddressChange(
+        QuicConnectionPathIdentity currentPathIdentity,
+        QuicConnectionPathIdentity newPathIdentity)
+    {
+        return string.Equals(currentPathIdentity.RemoteAddress, newPathIdentity.RemoteAddress, StringComparison.Ordinal)
+            && currentPathIdentity.RemotePort.HasValue
+            && newPathIdentity.RemotePort.HasValue
+            && currentPathIdentity.RemotePort.Value != newPathIdentity.RemotePort.Value;
     }
 
     private bool CanPromoteActivePathMigration()

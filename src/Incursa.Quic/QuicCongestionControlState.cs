@@ -240,6 +240,16 @@ internal sealed class QuicCongestionControlState
     }
 
     /// <summary>
+    /// Restores the controller to its initial-path state while keeping the negotiated datagram size.
+    /// </summary>
+    internal void Reset()
+    {
+        UpdateMaxDatagramSize(MaxDatagramSizeBytes, resetToInitialWindow: true);
+        BytesInFlightBytes = 0;
+        Array.Clear(ecnCeCounters);
+    }
+
+    /// <summary>
     /// Determines whether a packet may be sent without exceeding the congestion window.
     /// </summary>
     internal bool CanSend(ulong sentBytes, bool isAckOnlyPacket = false, bool isProbePacket = false)
@@ -1013,4 +1023,3 @@ internal sealed class QuicSenderFlowController
         bool InFlight,
         bool IsProbePacket);
 }
-
