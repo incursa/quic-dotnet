@@ -1234,9 +1234,162 @@ function Get-LaneTemplateDefinitions {
             repeatable = $false
         }
         [pscustomobject]@{
+            lane_id = "path-migration-recovery-reset"
+            objective = "Close the post-switch recovery reset rules that keep old-path traffic from poisoning the new path's congestion and RTT state."
+            priority = 16
+            prerequisite_lane_ids = @("path-migration-cid-runtime")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicCongestionControlState.cs",
+                "src/Incursa.Quic/QuicAddressValidation.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0001", "REQ-QUIC-RFC9000-S9P4-0002", "REQ-QUIC-RFC9000-S9P4-0003", "REQ-QUIC-RFC9000-S9P4-0005")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0005"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0005"'
+            )
+            success_gates = @(
+                "old-path packets stop influencing the new path's congestion and RTT state",
+                "peer address confirmation keeps or resets migration state exactly as the requirement family allows"
+            )
+            fail_gates = @(
+                "the lane widens into sender or ECN work that belongs elsewhere",
+                "the result is only trace reshaping with no runtime proof"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "cross-path-ack-coverage"
+            objective = "Close the cross-path ACK coverage rules that remain after path migration."
+            priority = 17
+            prerequisite_lane_ids = @("path-migration-recovery-reset")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0004", "REQ-QUIC-RFC9000-S9P4-0006")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0006"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0006"'
+            )
+            success_gates = @(
+                "ACK frames continue to cover packets received on multiple paths",
+                "path migration does not split ACK ownership by path"
+            )
+            fail_gates = @(
+                "the lane turns into a generic migration cleanup sweep",
+                "the result is only trace reshaping with no runtime proof"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "path-validation-timer-discipline"
+            objective = "Close the PATH_CHALLENGE timer discipline rules that keep validation conservative across retries."
+            priority = 18
+            prerequisite_lane_ids = @("cross-path-ack-coverage")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicPathValidation.cs",
+                "src/Incursa.Quic/QuicRecoveryTiming.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0008", "REQ-QUIC-RFC9000-S9P4-0009", "REQ-QUIC-RFC9000-S9P4-0010", "REQ-QUIC-RFC9000-S9P4-0011")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0011"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0011"'
+            )
+            success_gates = @(
+                "PATH_CHALLENGE timers remain conservative and retry cleanly when PATH_RESPONSE is missing",
+                "path validation stays bounded by the existing recovery timing surface"
+            )
+            fail_gates = @(
+                "timer behavior is changed without path-ack proof",
+                "the lane broadens into sender scheduler work"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
+            lane_id = "path-validation-probe-loss-exception"
+            objective = "Close the probe-packet loss exception rule at the recovery boundary."
+            priority = 19
+            prerequisite_lane_ids = @("retransmission-send-scheduler")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionRuntime.cs",
+                "src/Incursa.Quic/QuicCongestionControlState.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "src/Incursa.Quic/QuicTls",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0007")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0007"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0007"'
+            )
+            success_gates = @(
+                "probe packets stay exempt from normal loss-induced congestion reduction only where the requirement allows",
+                "the recovery/congestion boundary stays narrowly proven"
+            )
+            fail_gates = @(
+                "the lane becomes a second resend-scheduler implementation",
+                "the proof broadens into unrelated migration work"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
             lane_id = "trace-metadata-reconciliation"
             objective = "Reconcile xrefs, generated summaries, and proof metadata only after a semantic merge has landed."
-            priority = 16
+            priority = 20
             prerequisite_lane_ids = @()
             blocking_gap_ids = @()
             allowed_path_prefixes = @(
@@ -2115,18 +2268,37 @@ try {
                     }
                 }
                 else {
-                    $catalog = New-LaneCatalog `
-                        -RepoRoot $resolvedRepoRoot `
-                        -TargetBranch $TargetBranch `
-                        -TriageJson $triageJson `
-                        -OpenGapIds $openGapIds `
-                        -StateObject $state `
-                        -PlannerModel $PlannerModel `
-                        -PlannerReasoningEffort $PlannerReasoningEffort `
-                        -WorkerModel $WorkerModel `
-                        -WorkerReasoningEffort $WorkerReasoningEffort
+                    $planCapture = Invoke-NativeCapture `
+                        -FilePath $powerShellExecutable `
+                        -WorkingDirectory $resolvedRepoRoot `
+                        -ArgumentList @(
+                            "-NoProfile"
+                            "-ExecutionPolicy"
+                            "Bypass"
+                            "-File"
+                            $PSCommandPath
+                            "-Mode"
+                            "plan"
+                            "-RepoRoot"
+                            $resolvedRepoRoot
+                            "-StateDirectory"
+                            $resolvedStateDirectory
+                            "-TargetBranch"
+                            $TargetBranch
+                            "-PlannerModel"
+                            $PlannerModel
+                            "-PlannerReasoningEffort"
+                            $PlannerReasoningEffort
+                            "-WorkerModel"
+                            $WorkerModel
+                            "-WorkerReasoningEffort"
+                            $WorkerReasoningEffort
+                        )
+                    if ($planCapture.ExitCode -ne 0) {
+                        throw "Supervisor catalog refresh failed: $($planCapture.StdErr.Trim())"
+                    }
 
-                    ($catalog | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $catalogPath -Encoding utf8
+                    $catalog = Get-Content -LiteralPath $catalogPath -Raw | ConvertFrom-Json -Depth 100
                     if ([string]::IsNullOrWhiteSpace($catalog.recommended_lane_id)) {
                         Write-Host "Supervisor found no eligible lane remaining." -ForegroundColor Green
                         break
