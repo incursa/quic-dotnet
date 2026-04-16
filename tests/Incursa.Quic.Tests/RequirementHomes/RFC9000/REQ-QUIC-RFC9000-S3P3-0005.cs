@@ -10,6 +10,42 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0005
     [Requirement("REQ-QUIC-RFC9000-S3P3-0005")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void TryReceiveStopSendingFrame_AllowsStopSendingInReadyState()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            localBidirectionalSendLimit: 8,
+            peerBidirectionalStreamLimit: 8);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamSendState.Ready, snapshot.SendState);
+
+        Assert.True(state.TryReceiveStopSendingFrame(
+            new QuicStopSendingFrame(streamId.Value, 0x55),
+            out QuicResetStreamFrame resetStreamFrame,
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(streamId.Value, resetStreamFrame.StreamId);
+        Assert.Equal(0x55UL, resetStreamFrame.ApplicationProtocolErrorCode);
+        Assert.Equal(0UL, resetStreamFrame.FinalSize);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot afterSnapshot));
+        Assert.Equal(QuicStreamSendState.ResetSent, afterSnapshot.SendState);
+        Assert.True(afterSnapshot.HasFinalSize);
+        Assert.Equal(0UL, afterSnapshot.FinalSize);
+        Assert.True(afterSnapshot.HasSendAbortErrorCode);
+        Assert.Equal(0x55UL, afterSnapshot.SendAbortErrorCode);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P3-0005")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryReceiveStopSendingFrame_AllowsStopSendingBeforeResetReception()
     {
         QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
