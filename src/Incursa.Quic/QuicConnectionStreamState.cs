@@ -394,6 +394,13 @@ internal sealed class QuicConnectionStreamState
         QuicResetStreamFrame frame,
         out QuicMaxDataFrame maxDataFrame,
         out QuicTransportErrorCode errorCode)
+        => TryReceiveResetStreamFrame(frame, out maxDataFrame, out errorCode, suppressResetSignalWhenDataRecvd: false);
+
+    internal bool TryReceiveResetStreamFrame(
+        QuicResetStreamFrame frame,
+        out QuicMaxDataFrame maxDataFrame,
+        out QuicTransportErrorCode errorCode,
+        bool suppressResetSignalWhenDataRecvd)
     {
         maxDataFrame = default;
         errorCode = default;
@@ -428,6 +435,11 @@ internal sealed class QuicConnectionStreamState
         {
             errorCode = QuicTransportErrorCode.FlowControlError;
             return false;
+        }
+
+        if (suppressResetSignalWhenDataRecvd && state.ReceiveState == QuicStreamReceiveState.DataRecvd)
+        {
+            return true;
         }
 
         if (state.BufferedReadableBytes > 0)

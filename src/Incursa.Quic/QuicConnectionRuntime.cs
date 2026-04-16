@@ -2790,19 +2790,25 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         if (!streamRegistry.Bookkeeping.TryReceiveResetStreamFrame(
             resetStreamFrame,
             out _,
-            out QuicTransportErrorCode errorCode))
+            out QuicTransportErrorCode errorCode,
+            suppressResetSignalWhenDataRecvd: true))
         {
             _ = errorCode;
             return false;
         }
 
-        NotifyStreamObservers(
-            resetStreamFrame.StreamId,
-            new QuicStreamNotification(
-                QuicStreamNotificationKind.ReadAborted,
-                CreateStreamReadAbortedException(resetStreamFrame.ApplicationProtocolErrorCode)));
+        if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(resetStreamFrame.StreamId, out QuicConnectionStreamSnapshot snapshot)
+            && snapshot.ReceiveState == QuicStreamReceiveState.ResetRecvd)
+        {
+            NotifyStreamObservers(
+                resetStreamFrame.StreamId,
+                new QuicStreamNotification(
+                    QuicStreamNotificationKind.ReadAborted,
+                    CreateStreamReadAbortedException(resetStreamFrame.ApplicationProtocolErrorCode)));
 
-        TryReleasePeerStreamCapacity(resetStreamFrame.StreamId, ref effects);
+            TryReleasePeerStreamCapacity(resetStreamFrame.StreamId, ref effects);
+        }
+
         return true;
     }
 
