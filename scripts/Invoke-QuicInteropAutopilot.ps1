@@ -999,6 +999,43 @@ function Get-LaneTemplateDefinitions {
             repeatable = $false
         }
         [pscustomobject]@{
+            lane_id = "stream-bidirectional-composition"
+            objective = "Close bidirectional stream composition and the acknowledgement-gated closed-state mapping that remains after the send guards land."
+            priority = 11
+            prerequisite_lane_ids = @("stream-terminal-send-guards")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicConnectionStreamState.cs",
+                "src/Incursa.Quic/QuicStream.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9000-S3P4-0001", "REQ-QUIC-RFC9000-S3P4-0002", "REQ-QUIC-RFC9000-S3P4-0003")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P4_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S3P4_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S3P4_0003"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P4_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S3P4_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S3P4_0003"'
+            )
+            success_gates = @(
+                "bidirectional streams continue to be represented as a composite of sending and receiving parts",
+                "the closed-state example mapping stays ack-gated without broadening into public API or interop work"
+            )
+            fail_gates = @(
+                "the lane becomes a general stream-state sweep instead of a bidirectional composition slice",
+                "the result is only trace reshaping without runtime-backed proof"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
             lane_id = "final-size-and-credit-accounting"
             objective = "Close final-size immutability and connection-level credit accounting rules that gate the remaining stream and flow-control work."
             priority = 10
