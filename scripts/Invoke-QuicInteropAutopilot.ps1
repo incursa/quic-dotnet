@@ -1387,9 +1387,45 @@ function Get-LaneTemplateDefinitions {
             repeatable = $false
         }
         [pscustomobject]@{
+            lane_id = "recovery-timer-granularity-floor"
+            objective = "Close the RFC 9002 recovery timing floor and conflicting-timer proof around the shared helper surface."
+            priority = 20
+            prerequisite_lane_ids = @("retransmission-send-scheduler")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "src/Incursa.Quic/QuicRecoveryTiming.cs",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002",
+                "specs/requirements/quic/SPEC-QUIC-RFC9002",
+                "specs/architecture/quic/ARC-QUIC-RFC9002",
+                "specs/work-items/quic/WI-QUIC-RFC9002",
+                "specs/verification/quic/VER-QUIC-RFC9002",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "specs/generated"
+            )
+            requirement_families = @("REQ-QUIC-RFC9002-S6P1P2-0006", "REQ-QUIC-RFC9002-S6P2P1-0010")
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9002_S6P1P2_0006|FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P1_0010"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9002_S6P1P2_0006|FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P1_0010"'
+            )
+            success_gates = @(
+                "the recovery timing helper still honors the one-millisecond floor",
+                "the PTO and loss-detection timer selection proof stays narrow and test-backed"
+            )
+            fail_gates = @(
+                "the lane becomes trace-only xref cleanup",
+                "it drifts into sender or migration behavior outside the timing helper"
+            )
+            repeatable = $false
+        }
+        [pscustomobject]@{
             lane_id = "trace-metadata-reconciliation"
             objective = "Reconcile xrefs, generated summaries, and proof metadata only after a semantic merge has landed."
-            priority = 20
+            priority = 21
             prerequisite_lane_ids = @()
             blocking_gap_ids = @()
             allowed_path_prefixes = @(
