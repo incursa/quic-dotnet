@@ -6688,6 +6688,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.5 RFC9000-S9.5-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0009.cs::EndpointCanRouteAProvidedConnectionIdWhenThePeerSourceAddressChangesAndTheLocalAddressStaysTheSame
 
 ## REQ-QUIC-RFC9000-S9P5-0010 Avoid Migration with Zero-Length Connection IDs
 An endpoint SHOULD NOT initiate migration with a peer that has requested a zero-length connection ID.
@@ -8556,6 +8558,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3 RFC9000-S10.3-B15-P12-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs::CanSendStatelessReset_AllowsResponsesBelowTheThreeTimesAmplificationLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs::CanSendStatelessReset_RejectsResponsesAtTheThreeTimesAmplificationLimit
 
 ## REQ-QUIC-RFC9000-S10P3-0029 Support all negotiated versions in reset generation
 An endpoint that supports multiple versions of QUIC MUST generate a Stateless Reset that will be accepted by peers that support any version that the endpoint might support or might have supported prior to losing state.
@@ -8689,6 +8694,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs::TryHandlePotentialStatelessReset_EntersDrainingAndStopsSendingOnMatchingToken
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs::TryHandlePotentialStatelessReset_LeavesTheConnectionSendableWhenTheTokenDoesNotMatch
 
 ## REQ-QUIC-RFC9000-S10P3P1-0009 Detect potential reset with the last 16 bytes
 An endpoint MUST detect a potential Stateless Reset using the trailing 16 bytes of the UDP datagram.
@@ -8737,6 +8745,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs::TryHandlePotentialStatelessReset_TransitionsToDrainingWhenTheTokenMatches
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs::TryHandlePotentialStatelessReset_DoesNotEnterDrainingWhenTheTokenDoesNotMatch
 
 ## REQ-QUIC-RFC9000-S10P3P1-0012 Stop sending after token match
 If the last 16 bytes of the datagram are identical in value to a stateless reset token, the endpoint MUST NOT send any further packets on this connection.
@@ -8751,6 +8762,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_DisablesSendingOnAMatchingToken
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_KeepsSendingEnabledWhenTheTokenDoesNotMatch
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_StaysNonSendableAfterARepeatedMatch
 
 ## REQ-QUIC-RFC9000-S10P3P2-0001 Be difficult to guess
 The stateless reset token MUST be difficult to guess.
