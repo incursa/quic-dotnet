@@ -18692,6 +18692,10 @@
         "upstream_refs": [
           "RFC 9000 §13 RFC9000-S13-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0001.cs::TryBuildProtectedPackets_KeepTheSuppliedFramePayloadIntact",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0001.cs::TryBuildProtectedPackets_RejectEmptyPayloads"
         ]
       }
     },

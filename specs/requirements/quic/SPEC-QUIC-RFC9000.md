@@ -10282,6 +10282,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13 RFC9000-S13-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0001.cs::TryBuildProtectedPackets_KeepTheSuppliedFramePayloadIntact
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0001.cs::TryBuildProtectedPackets_RejectEmptyPayloads
 
 ## REQ-QUIC-RFC9000-S13-0002 wait for a short period of time to collect multiple frames before sending a packet that is not maximally packed, to avoid sending out large numbers of small packets
 A sender MAY wait for a short period of time to collect multiple frames before sending a packet that is not maximally packed, to avoid sending out large numbers of small packets.
