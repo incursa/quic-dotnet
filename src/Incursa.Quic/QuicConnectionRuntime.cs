@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Security;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
@@ -16,6 +17,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private const ulong TerminalLifetimePtoMultiplier = 3;
     private const ulong MicrosecondsPerSecond = 1_000_000UL;
     private const int DefaultCloseFrameOverheadBytes = 32;
+    private const int PreferredAddressIPv4BytesLength = sizeof(uint);
+    private const int PreferredAddressIPv6BytesLength = 16;
     private const int HandshakeEgressChunkBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
@@ -74,6 +77,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private ulong? peerMaxIdleTimeoutMicros;
     private ulong currentProbeTimeoutMicros;
     private string? lastValidatedRemoteAddress;
+    private QuicConnectionPathIdentity? preferredAddressOldPathIdentity;
     private long? terminalEndTicks;
     private long lastTransitionTicks;
     private ulong transitionSequence;
@@ -4226,6 +4230,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             EmitDiagnostic(ref effects, QuicDiagnostics.AddressChangeClassified(pathIdentity, classification));
         }
 
+        if (preferredAddressOldPathIdentity.HasValue
+            && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(preferredAddressOldPathIdentity.Value, pathIdentity))
+        {
+            return false;
+        }
+
         if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
         {
             return HandleExistingCandidatePath(pathIdentity, payloadBytes, nowTicks, ref candidatePath, ref effects);
@@ -4633,6 +4643,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             ResetRecoveryStateForNewPath();
         }
 
+        MaybeRememberPreferredAddressMigrationSource(pathIdentity);
+
         if (activePath is not null
             && !EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity)
             && activePath.Value.IsValidated)
@@ -4719,6 +4731,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             ResetRecoveryStateForNewPath();
         }
 
+        MaybeRememberPreferredAddressMigrationSource(bestPathIdentity.Value);
+
         QuicConnectionActivePathRecord promotedPath = new(
             bestPathIdentity.Value,
             ActivatedAtTicks: nowTicks,
@@ -4762,6 +4776,49 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             && currentPathIdentity.RemotePort.HasValue
             && newPathIdentity.RemotePort.HasValue
             && currentPathIdentity.RemotePort.Value != newPathIdentity.RemotePort.Value;
+    }
+
+    private void MaybeRememberPreferredAddressMigrationSource(QuicConnectionPathIdentity pathIdentity)
+    {
+        if (preferredAddressOldPathIdentity.HasValue
+            || activePath is null
+            || EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity)
+            || !IsPreferredAddressPath(pathIdentity))
+        {
+            return;
+        }
+
+        preferredAddressOldPathIdentity = activePath.Value.Identity;
+    }
+
+    private bool IsPreferredAddressPath(QuicConnectionPathIdentity pathIdentity)
+    {
+        QuicPreferredAddress? preferredAddress = tlsState.PeerTransportParameters?.PreferredAddress;
+        if (preferredAddress is null)
+        {
+            return false;
+        }
+
+        return MatchesPreferredAddress(pathIdentity, preferredAddress.IPv4Address, preferredAddress.IPv4Port)
+            || MatchesPreferredAddress(pathIdentity, preferredAddress.IPv6Address, preferredAddress.IPv6Port);
+    }
+
+    private static bool MatchesPreferredAddress(
+        QuicConnectionPathIdentity pathIdentity,
+        byte[] addressBytes,
+        ushort port)
+    {
+        if (addressBytes.Length is not (PreferredAddressIPv4BytesLength or PreferredAddressIPv6BytesLength)
+            || !pathIdentity.RemotePort.HasValue
+            || pathIdentity.RemotePort.Value != port)
+        {
+            return false;
+        }
+
+        return string.Equals(
+            new IPAddress(addressBytes).ToString(),
+            pathIdentity.RemoteAddress,
+            StringComparison.Ordinal);
     }
 
     private bool CanPromoteActivePathMigration()
