@@ -18828,6 +18828,11 @@
         "upstream_refs": [
           "RFC 9000 §13.1 RFC9000-S13.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0001.cs::TryOpenProtectedApplicationDataPacket_AcknowledgesThePacketOnlyAfterItsFramesAreProcessed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0001.cs::TryOpenProtectedApplicationDataPacket_RejectsTamperingBeforeAnyReceiptIsRecorded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0001.cs::TryOpenProtectedApplicationDataPacket_ProcessesTrailingPaddingBeforeRecordingAckEligibility"
         ]
       }
     },
@@ -18854,6 +18859,10 @@
         "upstream_refs": [
           "RFC 9000 §13.1 RFC9000-S13.1-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0002.cs::TryReceiveStreamFrame_EnqueuesStreamDataBeforeTheApplicationConsumesIt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0002.cs::TryReadStreamData_WithAnEmptyDestinationLeavesStreamDataBuffered"
         ]
       }
     },
@@ -18880,6 +18889,11 @@
         "upstream_refs": [
           "RFC 9000 §13.1 RFC9000-S13.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0003.cs::TryBuildAckFrame_EmitsAnAckFrameForAProcessedPacketNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0003.cs::TryBuildAckFrame_RejectsAnEmptyAcknowledgmentSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0003.cs::TryBuildAckFrame_PreservesPacketNumberZeroAtTheAckBoundary"
         ]
       }
     },
@@ -18906,6 +18920,11 @@
         "upstream_refs": [
           "RFC 9000 §13.1 RFC9000-S13.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0004.cs::TryAcknowledgePacket_RemovesASentPacketFromTracking",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0004.cs::TryAcknowledgePacket_RejectsAnUnsentPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0004.cs::TryAcknowledgePacket_DoesNotMatchASentPacketAcrossPacketNumberSpaces"
         ]
       }
     },
