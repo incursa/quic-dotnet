@@ -21109,11 +21109,11 @@
           "RFC 9000 §13.4 RFC9000-S13.4-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4"
         ],
-        "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent"
-        ]
-      }
-    },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2-0001.cs::SenderFlowController_ProcessesEcnInAckFrames"
+      ]
+    }
+  },
     {
       "id": "REQ-QUIC-RFC9000-S13P4-0002",
       "title": "Check whether the path and peer support ECN before enabling it",
@@ -21405,7 +21405,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2-0001.cs::SenderFlowController_ProcessesEcnInAckFrames"
         ]
       }
     },
