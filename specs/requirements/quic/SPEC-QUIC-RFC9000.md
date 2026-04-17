@@ -12794,6 +12794,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §16 RFC9000-S16-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-16
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0002.cs::TryParse_DecodesExactWireEncodings
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0002.cs::TryFormat_WritesExactWireEncodings
 
 ## REQ-QUIC-RFC9000-S16-0003 This means that integers are encoded on 1, 2, 4, or 8 bytes and MAY encode 6-, 14-, 30-, or 6...
 This means that integers are encoded on 1, 2, 4, or 8 bytes and MAY encode 6-, 14-, 30-, or 62-bit values, respectively.

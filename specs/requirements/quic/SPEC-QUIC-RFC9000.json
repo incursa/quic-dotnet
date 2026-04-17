@@ -23340,6 +23340,10 @@
         "upstream_refs": [
           "RFC 9000 §16 RFC9000-S16-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-16"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0002.cs::TryParse_DecodesExactWireEncodings",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0002.cs::TryFormat_WritesExactWireEncodings"
         ]
       }
     },
