@@ -19239,6 +19239,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_RemainsFalseForGapFilledNonAckElicitingApplicationDataPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_AllowsTheGapFilledPacketWhenItIsAckEliciting"
         ]
       }
     },

@@ -10324,6 +10324,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13 RFC9000-S13-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0004.cs::TryBuildProtectedApplicationDataPacket_CanCarryMultipleStreamFrames
 
 ## REQ-QUIC-RFC9000-S13-0005 Implementations are advised to include as few streams as necessary in outgoing packets without losing transmission efficiency to underfilled packets
 Implementations are advised to include as few streams as necessary in outgoing packets without losing transmission efficiency to underfilled packets.
@@ -10338,6 +10340,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13 RFC9000-S13-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0005.cs::WriteAsync_EmitsASingleStreamFrameWithPaddingOnlyInTheRemainder
 
 ## REQ-QUIC-RFC9000-S13P1-0001 A packet MUST NOT be acknowledged until packet protection has been successfully removed and all frames contained in the packet have been processed
 A packet MUST NOT be acknowledged until packet protection has been successfully removed and all frames contained in the packet have been processed.
@@ -10352,6 +10356,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.1 RFC9000-S13.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0001.cs::TryOpenProtectedApplicationDataPacket_AcknowledgesThePacketOnlyAfterItsFramesAreProcessed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0001.cs::TryOpenProtectedApplicationDataPacket_RejectsTamperingBeforeAnyReceiptIsRecorded
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0001.cs::TryOpenProtectedApplicationDataPacket_ProcessesTrailingPaddingBeforeRecordingAckEligibility
 
 ## REQ-QUIC-RFC9000-S13P1-0002 For STREAM frames, this means the data has been enqueued in preparation to be received by the application protocol, but it does not require that data be delivered and consumed
 For STREAM frames, this means the data has been enqueued in preparation to be received by the application protocol, but it MUST NOT require that data be delivered and consumed.
@@ -10366,6 +10374,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.1 RFC9000-S13.1-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0002.cs::TryReceiveStreamFrame_EnqueuesStreamDataBeforeTheApplicationConsumesIt
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0002.cs::TryReadStreamData_WithAnEmptyDestinationLeavesStreamDataBuffered
 
 ## REQ-QUIC-RFC9000-S13P1-0003 Acknowledge processed packets with ACK frames
 Once the packet has been fully processed, a receiver MUST acknowledge receipt by sending one or more ACK frames containing the packet number of the received packet.
@@ -10380,6 +10391,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.1 RFC9000-S13.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0003.cs::TryBuildAckFrame_EmitsAnAckFrameForAProcessedPacketNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0003.cs::TryBuildAckFrame_RejectsAnEmptyAcknowledgmentSet
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0003.cs::TryBuildAckFrame_PreservesPacketNumberZeroAtTheAckBoundary
 
 ## REQ-QUIC-RFC9000-S13P1-0004 treat receipt of an acknowledgment for a packet it did not send as a connection error of type PROTOCOL_VIOLATION, if it is able to detect the condition
 An endpoint SHOULD treat receipt of an acknowledgment for a packet it did not send as a connection error of type PROTOCOL_VIOLATION, if it is able to detect the condition.
@@ -10394,6 +10409,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.1 RFC9000-S13.1-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0004.cs::TryAcknowledgePacket_RemovesASentPacketFromTracking
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0004.cs::TryAcknowledgePacket_RejectsAnUnsentPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0004.cs::TryAcknowledgePacket_DoesNotMatchASentPacketAcrossPacketNumberSpaces
 
 ## REQ-QUIC-RFC9000-S13P2-0001 Acknowledge all received and processed packets
 Endpoints MUST acknowledge all packets they receive and process.
@@ -10482,6 +10501,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0002.cs::TryBuildAckFrame_IncludesContiguousAckElicitingAndNonAckElicitingPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0002.cs::TryBuildAckFrame_ReturnsFalseWithoutTrackedPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0002.cs::TryBuildAckFrame_PreservesSparsePacketRanges
 
 ## REQ-QUIC-RFC9000-S13P2P1-0003 uses the receiver's max_ack_delay value in determining timeouts for timer-based retransmission, as detailed in Section 6
 A sender uses the MUST receiver's max_ack_delay value in determining timeouts for timer-based retransmission, as detailed in Section 6.2 of [QUIC-RECOVERY].
@@ -10496,6 +10519,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0003.cs::TryComputeProbeTimeoutMicros_UsesTheReceiverMaxAckDelayForApplicationDataPackets
 
 ## REQ-QUIC-RFC9000-S13P2P1-0004 Acknowledge 0-RTT and 1-RTT packets within max_ack_delay
 An endpoint MUST acknowledge all ack-eliciting 0-RTT and 1-RTT packets within its advertised max_ack_delay.
@@ -10510,6 +10535,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_ReturnsTrueOnceTheApplicationDataAckDelayExpires
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseBeforeTheApplicationDataAckDelayExpires
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_UsesTheExactApplicationDataAckDelayBoundary
 
 ## REQ-QUIC-RFC9000-S13P2P1-0005 Acknowledge Initial and Handshake packets immediately
 An endpoint MUST acknowledge all ack-eliciting Initial and Handshake packets immediately.
@@ -10524,6 +10553,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0005.cs::ShouldSendAckImmediately_ReturnsTrueForAckElicitingInitialAndHandshakePackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0005.cs::ShouldSendAckImmediately_RemainsFalseForNonAckElicitingInitialAndHandshakePackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0005.cs::ShouldSendAckImmediately_ReArmsAfterAnInitialAckFrameIsMarkedSent
 
 ## REQ-QUIC-RFC9000-S13P2P1-0006 Do not send multiple ACK-only packets in response to one ack-eliciting packet
 Since packets containing only ACK frames are not congestion controlled, an endpoint MUST NOT send more than one such packet in response to receiving an ack-eliciting packet.
@@ -10538,6 +10571,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_AllowsTheFirstAckOnlyPacketForAnAckElicitingApplicationDataPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_RejectsASecondAckOnlyPacketForTheSameAckElicitingApplicationDataPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_RearmsAfterTheNextAckElicitingApplicationDataPacketArrives
 
 ## REQ-QUIC-RFC9000-S13P2P1-0007 Do not send non-ack-eliciting packets in response to non-ack-eliciting packets
 An endpoint MUST NOT send a non-ack-eliciting packet in response to a non-ack-eliciting packet, even if there are packet gaps that precede the received packet.
@@ -10552,6 +10589,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_RemainsFalseForGapFilledNonAckElicitingApplicationDataPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_AllowsTheGapFilledPacketWhenItIsAckEliciting
 
 ## REQ-QUIC-RFC9000-S13P2P1-0008 Non-ack-eliciting packets are eventually acknowledged when the endpoint sends an ACK frame in response to other events
 Non-ack-eliciting packets are eventually MUST acknowledged when the endpoint sends an ACK frame in response to other events.
@@ -13623,7 +13663,8 @@ Trace:
   - RFC 9000 §17.2.1 RFC9000-S17.2.1-B5-P0-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesZeroVersionAsVersionNegotiationState
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0005.cs::TryParseLongHeader_ExposesZeroVersionAsVersionNegotiationState
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0005.cs::TryParseVersionNegotiation_RejectsOrdinaryLongHeaders
 
 ## REQ-QUIC-RFC9000-S17P2P1-0006 The Destination Connection ID Length field MUST be 8 bits long
 The Destination Connection ID Length field MUST be 8 bits long.
@@ -17116,9 +17157,9 @@ Trace:
   - RFC 9000 §19.1 RFC9000-S19.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_RejectsEmptyAndNonPaddingTypes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::FuzzPaddingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P1-0005 That is, a PADDING frame MUST consist of the single byte that identifies the frame as a PADDI...
 That is, a PADDING frame MUST consist of the single byte that identifies the frame as a PADDING frame.
@@ -17134,9 +17175,9 @@ Trace:
   - RFC 9000 §19.1 RFC9000-S19.1-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_RejectsEmptyAndNonPaddingTypes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::FuzzPaddingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P1-0006 The Type field MUST be encoded as a variable-length integer with value 0x00
 The Type field MUST be encoded as a variable-length integer with value 0x00.
@@ -17184,9 +17225,9 @@ Trace:
   - RFC 9000 §19.2 RFC9000-S19.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_RejectsEmptyAndNonPingTypes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::FuzzPingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P2-0003 The Type field MUST be encoded as a variable-length integer with value 0x01
 The Type field MUST be encoded as a variable-length integer with value 0x01.
@@ -20972,6 +21013,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.21 RFC9000-S19.21-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0002.cs::TryParseTypeOnlyFrames_ConsumesOnlyTheDeclaredFrameSyntax
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0002.cs::TryParseTypeOnlyFrames_RejectsEmptyAndMismatchedTypes
 
 ## REQ-QUIC-RFC9000-S19P21-0003 This allows for efficient encoding of frames, but it means that an endpoint MUST NOT send a f...
 This allows for efficient encoding of frames, but it means that an endpoint MUST NOT send a frame of a type that is unknown to its peer.
