@@ -103,4 +103,44 @@ internal static class QuicPathMigrationRecoveryTestSupport
                 pathIdentity),
             nowTicks: observedAtTicks);
     }
+
+    internal static void CommitPeerTransportParameters(
+        QuicConnectionRuntime runtime,
+        QuicTransportParameters peerTransportParameters)
+    {
+        QuicTransportTlsBridgeState bridge = runtime.TlsState;
+
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.ServerHello,
+            HandshakeMessageLength: 48,
+            SelectedCipherSuite: QuicTlsCipherSuite.TlsAes128GcmSha256,
+            TranscriptHashAlgorithm: QuicTlsTranscriptHashAlgorithm.Sha256,
+            TranscriptPhase: QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.EncryptedExtensions,
+            HandshakeMessageLength: 48,
+            TransportParameters: peerTransportParameters,
+            TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.CertificateVerify,
+            HandshakeMessageLength: 48,
+            TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificatePolicyAccepted)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.TranscriptProgressed,
+            HandshakeMessageType: QuicTlsHandshakeMessageType.Finished,
+            HandshakeMessageLength: 48,
+            TranscriptPhase: QuicTlsTranscriptPhase.Completed)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerFinishedVerified)));
+        Assert.True(bridge.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.PeerTransportParametersCommitted,
+            TransportParameters: peerTransportParameters)));
+
+        Assert.True(bridge.PeerTransportParametersCommitted);
+        Assert.NotNull(bridge.PeerTransportParameters);
+    }
 }

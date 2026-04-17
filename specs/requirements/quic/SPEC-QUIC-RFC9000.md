@@ -6576,6 +6576,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.5 RFC9000-S9.5-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0001.cs::EndpointCanRegisterDistinctConnectionIdsOnDistinctPaths
 
 ## REQ-QUIC-RFC9000-S9P5-0002 Prevent connection-id reuse across local addresses
 An endpoint MUST NOT reuse a connection ID when sending from more than one local address.
@@ -6830,6 +6832,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.1 RFC9000-S9.6.1-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs::ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails
 
 ## REQ-QUIC-RFC9000-S9P6P1-0006 Convey a Preferred Address in the TLS Handshake
 A server MUST convey a preferred address by including the preferred_address transport parameter in the TLS handshake.
@@ -6872,6 +6876,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.1 RFC9000-S9.6.1-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0008.cs::ClientChoosesThePreferredAddressAfterHandshakeConfirmationAndPromotesItWhenValidationSucceeds
 
 ## REQ-QUIC-RFC9000-S9P6P1-0009 Use an Unused Active Connection ID for Preferred-Address Migration
 A client MUST construct packets using any previously unused active connection ID, taken from either the preferred_address transport parameter or a NEW_CONNECTION_ID frame.
