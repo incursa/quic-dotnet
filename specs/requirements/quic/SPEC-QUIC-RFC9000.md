@@ -10311,8 +10311,8 @@ Trace:
   - RFC 9000 §13 RFC9000-S13-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13
 
-## REQ-QUIC-RFC9000-S13-0004 A single QUIC packet can include multiple STREAM frames from one or more streaMs
-A single QUIC packet MUST can include multiple STREAM frames from one or more streaMs.
+## REQ-QUIC-RFC9000-S13-0004 A single QUIC packet can include multiple STREAM frames from one or more streams
+A single QUIC packet can include multiple STREAM frames from one or more streams.
 
 Trace:
 - Satisfied By:
@@ -10326,7 +10326,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13
 
 ## REQ-QUIC-RFC9000-S13-0005 Implementations are advised to include as few streams as necessary in outgoing packets without losing transmission efficiency to underfilled packets
-Implementations are advised to MUST include as few streams as necessary in outgoing packets without losing transmission efficiency to underfilled packets.
+Implementations are advised to include as few streams as necessary in outgoing packets without losing transmission efficiency to underfilled packets.
 
 Trace:
 - Satisfied By:

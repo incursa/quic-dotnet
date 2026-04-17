@@ -18749,8 +18749,8 @@
     },
     {
       "id": "REQ-QUIC-RFC9000-S13-0004",
-      "title": "A single QUIC packet can include multiple STREAM frames from one or more streaMs",
-      "statement": "A single QUIC packet MUST can include multiple STREAM frames from one or more streaMs.",
+      "title": "A single QUIC packet can include multiple STREAM frames from one or more streams",
+      "statement": "A single QUIC packet can include multiple STREAM frames from one or more streams.",
       "coverage": {
         "positive": "required",
         "negative": "optional",
@@ -18776,7 +18776,7 @@
     {
       "id": "REQ-QUIC-RFC9000-S13-0005",
       "title": "Implementations are advised to include as few streams as necessary in outgoing packets without losing transmission efficiency to underfilled packets",
-      "statement": "Implementations are advised to MUST include as few streams as necessary in outgoing packets without losing transmission efficiency to underfilled packets.",
+      "statement": "Implementations are advised to include as few streams as necessary in outgoing packets without losing transmission efficiency to underfilled packets.",
       "coverage": {
         "positive": "required",
         "negative": "optional",
