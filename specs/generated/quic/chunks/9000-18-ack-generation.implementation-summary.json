@@ -22,7 +22,8 @@
     "src/Incursa.Quic/PublicAPI.Unshipped.txt",
     "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
-    "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs"
+    "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs"
   ],
   "tests_run": [
     {
@@ -318,12 +319,19 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0007",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "There is no send-path rule engine that can prevent non-ack-eliciting packets from being sent in response to non-ack-eliciting packets.",
-      "notes": "The helper does not control packet type selection."
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs"
+      ],
+      "tests_covering_requirement": [
+        "CanSendAckOnlyPacket_RemainsFalseForGapFilledNonAckElicitingApplicationDataPackets",
+        "CanSendAckOnlyPacket_AllowsTheGapFilledPacketWhenItIsAckEliciting"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper-level guard now has requirement-home proof coverage and canonical xrefs."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0008",
@@ -925,7 +933,6 @@
     "REQ-QUIC-RFC9000-S13P1-0002",
     "REQ-QUIC-RFC9000-S13P1-0004",
     "REQ-QUIC-RFC9000-S13P2P1-0003",
-    "REQ-QUIC-RFC9000-S13P2P1-0007",
     "REQ-QUIC-RFC9000-S13P2P1-0009",
     "REQ-QUIC-RFC9000-S13P2P1-0012",
     "REQ-QUIC-RFC9000-S13P2P3-0005",
@@ -937,5 +944,5 @@
     "REQ-QUIC-RFC9000-S13P2P6-0004",
     "REQ-QUIC-RFC9000-S13P2P7-0001"
   ],
-  "notes": "No reconciliation artifact existed for this chunk, so the work was treated as greenfield. The helper now covers ACK generation from processed packets, delayed-ACK thresholds, immediate ACK triggers, ACK range trimming, ACK-ECN frame emission, and per-space tracking. The remaining requirements are split between intentional non-actionable prose/section-marker clauses and blocked send-path, timer, peer-ACK, decryption, and carrier-selection dependencies."
+  "notes": "No reconciliation artifact existed for this chunk, so the work was treated as greenfield. The helper now covers ACK generation from processed packets, delayed-ACK thresholds, immediate ACK triggers, ACK range trimming, ACK-ECN frame emission, per-space tracking, and the one-ACK-only-packet guard. The remaining requirements are split between intentional non-actionable prose/section-marker clauses and blocked send-path, timer, peer-ACK, decryption, and carrier-selection dependencies."
 }

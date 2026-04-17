@@ -2,7 +2,7 @@
 
 ## Audit Result
 - `clean_with_explicit_blockers`
-- In-scope requirements: 54 total, 34 implemented and tested, 16 blocked with explicit notes, 4 deferred with explicit notes.
+- In-scope requirements: 54 total, 35 implemented and tested, 15 blocked with explicit notes, 4 deferred with explicit notes.
 - Stale or wrong requirement IDs: none found.
 - `src/` contains no in-scope requirement refs; all trace refs are in `tests/` and use the correct IDs.
 - No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.
@@ -10,7 +10,7 @@
 ## Requirements Completed
 - `S13P1`: `REQ-QUIC-RFC9000-S13P1-0003`
 - `S13P2`: `REQ-QUIC-RFC9000-S13P2-0001`, `REQ-QUIC-RFC9000-S13P2-0002`, `REQ-QUIC-RFC9000-S13P2-0003`, `REQ-QUIC-RFC9000-S13P2-0004`
-- `S13P2P1`: `REQ-QUIC-RFC9000-S13P2P1-0001`, `REQ-QUIC-RFC9000-S13P2P1-0002`, `REQ-QUIC-RFC9000-S13P2P1-0004`, `REQ-QUIC-RFC9000-S13P2P1-0005`, `REQ-QUIC-RFC9000-S13P2P1-0006`, `REQ-QUIC-RFC9000-S13P2P1-0008`, `REQ-QUIC-RFC9000-S13P2P1-0010`, `REQ-QUIC-RFC9000-S13P2P1-0011`, `REQ-QUIC-RFC9000-S13P2P1-0013`, `REQ-QUIC-RFC9000-S13P2P1-0014`
+- `S13P2P1`: `REQ-QUIC-RFC9000-S13P2P1-0001`, `REQ-QUIC-RFC9000-S13P2P1-0002`, `REQ-QUIC-RFC9000-S13P2P1-0004`, `REQ-QUIC-RFC9000-S13P2P1-0005`, `REQ-QUIC-RFC9000-S13P2P1-0006`, `REQ-QUIC-RFC9000-S13P2P1-0007`, `REQ-QUIC-RFC9000-S13P2P1-0008`, `REQ-QUIC-RFC9000-S13P2P1-0010`, `REQ-QUIC-RFC9000-S13P2P1-0011`, `REQ-QUIC-RFC9000-S13P2P1-0013`, `REQ-QUIC-RFC9000-S13P2P1-0014`
 - `S13P2P2`: `REQ-QUIC-RFC9000-S13P2P2-0001`, `REQ-QUIC-RFC9000-S13P2P2-0002`, `REQ-QUIC-RFC9000-S13P2P2-0003`
 - `S13P2P3`: `REQ-QUIC-RFC9000-S13P2P3-0001`, `REQ-QUIC-RFC9000-S13P2P3-0002`, `REQ-QUIC-RFC9000-S13P2P3-0003`, `REQ-QUIC-RFC9000-S13P2P3-0004`, `REQ-QUIC-RFC9000-S13P2P3-0007`, `REQ-QUIC-RFC9000-S13P2P3-0008`, `REQ-QUIC-RFC9000-S13P2P3-0009`, `REQ-QUIC-RFC9000-S13P2P3-0010`, `REQ-QUIC-RFC9000-S13P2P3-0011`, `REQ-QUIC-RFC9000-S13P2P3-0012`
 - `S13P2P5`: `REQ-QUIC-RFC9000-S13P2P5-0001`, `REQ-QUIC-RFC9000-S13P2P5-0002`, `REQ-QUIC-RFC9000-S13P2P5-0003`, `REQ-QUIC-RFC9000-S13P2P5-0005`
@@ -54,7 +54,6 @@ These are explanatory or section-marker clauses without a separate executable pa
 - `REQ-QUIC-RFC9000-S13P1-0002`
 - `REQ-QUIC-RFC9000-S13P1-0004`
 - `REQ-QUIC-RFC9000-S13P2P1-0003`
-- `REQ-QUIC-RFC9000-S13P2P1-0007`
 - `REQ-QUIC-RFC9000-S13P2P1-0009`
 - `REQ-QUIC-RFC9000-S13P2P1-0012`
 - `REQ-QUIC-RFC9000-S13P2P3-0005`
@@ -71,7 +70,8 @@ These depend on packet assembly, send-path batching, recovery timers, peer-ACK h
 - [tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs): only correct in-scope requirement IDs.
 - [tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs): only correct in-scope requirement IDs.
 - [tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs): only correct in-scope requirement IDs.
+- [tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs): only correct in-scope requirement IDs.
 
 ## Risks Or Follow-Up Notes
-- The chunk is internally consistent, but the remaining 20 open requirements still depend on missing packet-composition, send-path batching, recovery timer, peer-ACK, decryption, and carrier-selection surfaces.
+- The chunk is internally consistent, but the remaining 19 open requirements still depend on missing packet-composition, send-path batching, recovery timer, peer-ACK, decryption, and carrier-selection surfaces.
 - No stale IDs or silent gaps were found in the scoped code or tests.

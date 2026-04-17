@@ -11,6 +11,7 @@
 - `REQ-QUIC-RFC9000-S13P2P1-0004`
 - `REQ-QUIC-RFC9000-S13P2P1-0005`
 - `REQ-QUIC-RFC9000-S13P2P1-0006`
+- `REQ-QUIC-RFC9000-S13P2P1-0007`
 - `REQ-QUIC-RFC9000-S13P2P1-0008`
 - `REQ-QUIC-RFC9000-S13P2P1-0010`
 - `REQ-QUIC-RFC9000-S13P2P1-0011`
@@ -78,7 +79,6 @@
 - `REQ-QUIC-RFC9000-S13P1-0002` - There is no STREAM enqueue / delivery lifecycle surface to distinguish application enqueue from app-consumption.
 - `REQ-QUIC-RFC9000-S13P1-0004` - There is no incoming-ACK validation surface that can raise PROTOCOL_VIOLATION for acknowledgments of unsent packets.
 - `REQ-QUIC-RFC9000-S13P2P1-0003` - There is no recovery timer surface that uses the receiver max_ack_delay in PTO or retransmission timeout calculations.
-- `REQ-QUIC-RFC9000-S13P2P1-0007` - There is no send-path rule engine that can prevent non-ack-eliciting packets from being sent in response to non-ack-eliciting packets.
 - `REQ-QUIC-RFC9000-S13P2P1-0009` - There is no peer-side ACK reception model to show that ACK-only traffic will not itself be acknowledged.
 - `REQ-QUIC-RFC9000-S13P2P1-0012` - There is no feedback-loop model for adding ack-eliciting frames to otherwise non-ack-eliciting packets.
 - `REQ-QUIC-RFC9000-S13P2P3-0005` - There is no peer-ACK lifecycle surface to retire ACK ranges after acknowledgments for an ACK frame are received.

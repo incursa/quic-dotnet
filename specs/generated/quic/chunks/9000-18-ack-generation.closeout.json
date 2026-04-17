@@ -27,8 +27,8 @@
     "S13P2P6": 4,
     "S13P2P7": 1,
     "total": 54,
-    "covered": 34,
-    "blocked": 16,
+    "covered": 35,
+    "blocked": 15,
     "deferred": 4,
     "partial": 0,
     "needs_review": 0
@@ -165,6 +165,7 @@
       "REQ-QUIC-RFC9000-S13P2P1-0004",
       "REQ-QUIC-RFC9000-S13P2P1-0005",
       "REQ-QUIC-RFC9000-S13P2P1-0006",
+      "REQ-QUIC-RFC9000-S13P2P1-0007",
       "REQ-QUIC-RFC9000-S13P2P1-0008",
       "REQ-QUIC-RFC9000-S13P2P1-0010",
       "REQ-QUIC-RFC9000-S13P2P1-0011",
@@ -487,12 +488,19 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0007",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "There is no send-path rule engine that can prevent non-ack-eliciting packets from being sent in response to non-ack-eliciting packets.",
-      "notes": "The helper does not control packet type selection."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs"
+      ],
+      "tests_covering_requirement": [
+        "CanSendAckOnlyPacket_RemainsFalseForGapFilledNonAckElicitingApplicationDataPackets",
+        "CanSendAckOnlyPacket_AllowsTheGapFilledPacketWhenItIsAckEliciting"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs"
+      ],
+      "remaining_gap": "",
+      "notes": "The helper-level guard now has requirement-home proof coverage and canonical xrefs."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0008",
@@ -1094,7 +1102,6 @@
     "REQ-QUIC-RFC9000-S13P1-0002",
     "REQ-QUIC-RFC9000-S13P1-0004",
     "REQ-QUIC-RFC9000-S13P2P1-0003",
-    "REQ-QUIC-RFC9000-S13P2P1-0007",
     "REQ-QUIC-RFC9000-S13P2P1-0009",
     "REQ-QUIC-RFC9000-S13P2P1-0012",
     "REQ-QUIC-RFC9000-S13P2P3-0005",
@@ -1125,12 +1132,14 @@
     "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs",
     "specs/generated/quic/chunks/9000-18-ack-generation.implementation-summary.md",
     "specs/generated/quic/chunks/9000-18-ack-generation.implementation-summary.json"
   ],
   "notes": [
     "No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.",
-    "The helper-level implementation covers ACK state, delayed ACK thresholds, immediate ACK triggers, ACK range trimming, ACK-ECN emission, and per-space tracking.",
+    "The requirement-home proof for REQ-QUIC-RFC9000-S13P2P1-0007 now closes the remaining gap and removes it from the blocked set.",
+    "The helper-level implementation covers ACK state, delayed ACK thresholds, immediate ACK triggers, ACK range trimming, ACK-ECN emission, per-space tracking, and the one-ACK-only-packet guard.",
     "No stale or wrong requirement refs were found in the scoped source or tests."
   ]
 }
