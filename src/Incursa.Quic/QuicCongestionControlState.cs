@@ -839,6 +839,11 @@ internal sealed class QuicSenderFlowController
             }
         }
 
+        foreach (ulong packetNumber in acknowledgedPacketNumbers)
+        {
+            updated = AckGenerationState.TryRetireAcknowledgedAckRanges(packetNumberSpace, packetNumber) || updated;
+        }
+
         if (ackFrame.EcnCounts.HasValue)
         {
             ulong largestSentAtMicros = largestAcknowledgedPacketSentAtMicros == 0
@@ -890,12 +895,13 @@ internal sealed class QuicSenderFlowController
     /// </summary>
     internal bool TryDiscardPacketNumberSpace(QuicPacketNumberSpace packetNumberSpace)
     {
+        bool updated = AckGenerationState.TryDiscardPacketNumberSpace(packetNumberSpace);
+
         if (!TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
         {
-            return false;
+            return updated;
         }
 
-        bool updated = false;
         foreach (SentPacketState sentPacket in sentPackets.Values)
         {
             updated = CongestionControlState.TryDiscardPacket(sentPacket.SentBytes, sentPacket.InFlight) || updated;
@@ -963,6 +969,19 @@ internal sealed class QuicSenderFlowController
     internal void MarkAckFrameSent(QuicPacketNumberSpace packetNumberSpace, ulong sentAtMicros, bool ackOnlyPacket)
     {
         AckGenerationState.MarkAckFrameSent(packetNumberSpace, sentAtMicros, ackOnlyPacket);
+    }
+
+    /// <summary>
+    /// Marks a sent ACK frame so its acknowledged ranges can be retired when the carrier packet is acknowledged.
+    /// </summary>
+    internal void MarkAckFrameSent(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        QuicAckFrame ackFrame,
+        ulong sentAtMicros,
+        bool ackOnlyPacket)
+    {
+        AckGenerationState.MarkAckFrameSent(packetNumberSpace, packetNumber, ackFrame, sentAtMicros, ackOnlyPacket);
     }
 
     private static List<ulong> EnumerateAcknowledgedPacketNumbers(QuicAckFrame ackFrame)

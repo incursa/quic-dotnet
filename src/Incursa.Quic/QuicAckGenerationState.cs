@@ -226,6 +226,58 @@ internal sealed class QuicAckGenerationState
         }
     }
 
+    /// <summary>
+    /// Records the ACK ranges carried in a sent ACK frame so they can be retired once the carrier packet is acknowledged.
+    /// </summary>
+    internal void MarkAckFrameSent(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        QuicAckFrame ackFrame,
+        ulong sentAtMicros,
+        bool ackOnlyPacket)
+    {
+        ArgumentNullException.ThrowIfNull(ackFrame);
+
+        PacketRange[] ackedRanges = BuildAckFrameRanges(ackFrame);
+        MarkAckFrameSent(packetNumberSpace, sentAtMicros, ackOnlyPacket);
+
+        SpaceState state = GetOrCreateSpaceState(packetNumberSpace);
+        state.SentAckFrames[packetNumber] = new SentAckFrameState(ackedRanges);
+    }
+
+    /// <summary>
+    /// Retires the ACK ranges that were carried in a previously sent ACK frame when the carrier packet is acknowledged.
+    /// </summary>
+    internal bool TryRetireAcknowledgedAckRanges(QuicPacketNumberSpace packetNumberSpace, ulong acknowledgedPacketNumber)
+    {
+        if (!TryGetSpaceState(packetNumberSpace, out SpaceState? state)
+            || !state.SentAckFrames.TryGetValue(acknowledgedPacketNumber, out SentAckFrameState sentAckFrame))
+        {
+            return false;
+        }
+
+        state.SentAckFrames.Remove(acknowledgedPacketNumber);
+        foreach (PacketRange range in sentAckFrame.AckedRanges)
+        {
+            RemoveRange(state.Receipts, range);
+        }
+
+        if (state.Receipts.Count == 0)
+        {
+            state.ImmediateAckRequired = false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Discards any retained ACK-generation state for the specified packet number space.
+    /// </summary>
+    internal bool TryDiscardPacketNumberSpace(QuicPacketNumberSpace packetNumberSpace)
+    {
+        return spaces.Remove(packetNumberSpace);
+    }
+
     private static List<PacketRange> BuildRanges(IEnumerable<ulong> packetNumbers)
     {
         List<PacketRange> ranges = [];
@@ -255,6 +307,22 @@ internal sealed class QuicAckGenerationState
 
         ranges.Add(new PacketRange(rangeStart, rangeEnd));
         return ranges;
+    }
+
+    private static PacketRange[] BuildAckFrameRanges(QuicAckFrame frame)
+    {
+        if (frame.FirstAckRange > frame.LargestAcknowledged)
+        {
+            throw new ArgumentException("The ACK frame is invalid.", nameof(frame));
+        }
+
+        List<PacketRange> ranges = [new PacketRange(frame.LargestAcknowledged - frame.FirstAckRange, frame.LargestAcknowledged)];
+        foreach (QuicAckRange additionalRange in frame.AdditionalRanges ?? [])
+        {
+            ranges.Add(new PacketRange(additionalRange.SmallestAcknowledged, additionalRange.LargestAcknowledged));
+        }
+
+        return ranges.ToArray();
     }
 
     private void TrimOldestRangesIfNeeded(SpaceState state)
@@ -334,6 +402,8 @@ internal sealed class QuicAckGenerationState
 
     private readonly record struct PacketRange(ulong Smallest, ulong Largest);
 
+    private readonly record struct SentAckFrameState(PacketRange[] AckedRanges);
+
     private readonly record struct PacketReceipt(
         ulong ReceivedAtMicros,
         bool AckEliciting,
@@ -343,6 +413,7 @@ internal sealed class QuicAckGenerationState
     private sealed class SpaceState
     {
         internal SortedDictionary<ulong, PacketReceipt> Receipts { get; } = new();
+        internal Dictionary<ulong, SentAckFrameState> SentAckFrames { get; } = new();
 
         internal bool ImmediateAckRequired { get; set; }
 
@@ -351,4 +422,3 @@ internal sealed class QuicAckGenerationState
         internal ulong? LastAckOnlyTriggerPacketNumber { get; set; }
     }
 }
-
