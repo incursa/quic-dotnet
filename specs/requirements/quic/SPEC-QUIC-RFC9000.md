@@ -9234,6 +9234,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §11.2 RFC9000-S11.2-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0001.cs::AbortWrite_EmitsResetStreamForTheTargetStream
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0001.cs::AbortWrite_DoesNotSpreadToAnotherWritableStream
 
 ## REQ-QUIC-RFC9000-S11P2-0002 RESET_STREAM MUST only be instigated by the application protocol that uses QUIC
 RESET_STREAM MUST only be instigated by the application protocol that uses QUIC.
@@ -9248,6 +9251,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §11.2 RFC9000-S11.2-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0002.cs::TryAbortLocalStreamWrites_UsesTheApplicationProtocolOwnedResetPath
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0002.cs::TryAbortLocalStreamWrites_RejectsPeerInitiatedStreams
 
 ## REQ-QUIC-RFC9000-S11P2-0003 Allow stream termination only by the application protocol
 A stream MUST only be terminated by the application protocol.
@@ -9262,6 +9268,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §11.2 RFC9000-S11.2-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0003.cs::AbortRead_UsesTheApplicationProtocolDirectApiPath
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0003.cs::AbortRead_RejectsStreamsWithoutReadableSides
 
 ## REQ-QUIC-RFC9000-S11P2-0004 A local instance of the application protocol uses a direct API call, and a remote instance uses the STOP_SENDING frame, which triggers an automatic RESET_STREAM
 A local instance of MUST the application protocol uses a direct API call, and a remote instance uses the STOP_SENDING frame, which triggers an automatic RESET_STREAM.
@@ -9276,6 +9285,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §11.2 RFC9000-S11.2-B4-P3-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0004.cs::TryReceiveStopSendingFrame_ProducesResetStreamForTheLocalApplicationProtocolPath
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0004.cs::TryReceiveStopSendingFrame_RejectsStreamsAlreadyResetByThePeer
 
 ## REQ-QUIC-RFC9000-S11P2-0005 Application protocols SHOULD define rules for handling streams that are prematurely canceled by either endpoint
 Application protocols SHOULD define rules for handling streams that are prematurely canceled by either endpoint.
@@ -9290,6 +9302,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §11.2 RFC9000-S11.2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0005.cs::AbortDirections_ExposeApplicationVisibleCancellationNotifications
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0005.cs::AbortDirections_DoNotEscalateToConnectionTermination
 
 ## REQ-QUIC-RFC9000-S12P1-0001 Version Negotiation packets have no cryptographic protection
 Version Negotiation packets MUST NOT have cryptographic protection; see [QUIC-INVARIANTS].
@@ -9612,6 +9627,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.3 RFC9000-S12.3-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0001.cs::TryOpenInitialPacket_UsesThePacketNumberWhenDerivingTheNonce
 
 ## REQ-QUIC-RFC9000-S12P3-0002 maintains a separate packet number for sending and receiving
 Each endpoint maintains a MUST separate packet number for sending and receiving.
@@ -9626,6 +9643,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.3 RFC9000-S12.3-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0002.cs::SendAndReceivePacketNumbersAdvanceIndependently
 
 ## REQ-QUIC-RFC9000-S12P3-0003 Version Negotiation (Section 17
 Version Negotiation (Section 17.2.1) and Retry (Section 17.2.5) packets MUST NOT include a packet number.
@@ -9657,6 +9676,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.3 RFC9000-S12.3-B10-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0004.cs::InitialPacketsStayBoundToInitialAcknowledgments
 
 ## REQ-QUIC-RFC9000-S12P3-0005 Similarly, Handshake packets are sent at the Handshake encryption level and can only be acknowledged in Handshake packets
 Handshake packets MUST be sent at the Handshake encryption level and be acknowledged only in Handshake packets.
@@ -9671,6 +9692,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.3 RFC9000-S12.3-B10-P6-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0005.cs::HandshakePacketsStayBoundToHandshakeAcknowledgments
 
 ## REQ-QUIC-RFC9000-S12P3-0006 numbers in each space start at packet number 0
 Packet numbers in each MUST space start at packet number 0.
@@ -9685,6 +9708,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.3 RFC9000-S12.3-B11-P7-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0006.cs::PacketNumbersStartAtZeroInEachSpace
 
 ## REQ-QUIC-RFC9000-S12P3-0007 Subsequent packets sent in the same packet number space MUST increase the packet number by at least one
 Subsequent packets sent in the same packet number space MUST increase the packet number by at least one.
@@ -9699,6 +9724,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.3 RFC9000-S12.3-B11-P7-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0007.cs::PacketNumbersIncreaseByAtLeastOneInEachSpace
 
 ## REQ-QUIC-RFC9000-S12P3-0008 A QUIC endpoint MUST NOT reuse a packet number within the same packet number space in one connection
 A QUIC endpoint MUST NOT reuse a packet number within the same packet number space in one connection.

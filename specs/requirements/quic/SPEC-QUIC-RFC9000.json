@@ -17527,6 +17527,9 @@
         "upstream_refs": [
           "RFC 9000 §12.3 RFC9000-S12.3-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0001.cs::TryOpenInitialPacket_UsesThePacketNumberWhenDerivingTheNonce"
         ]
       }
     },
@@ -17553,6 +17556,9 @@
         "upstream_refs": [
           "RFC 9000 §12.3 RFC9000-S12.3-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0002.cs::SendAndReceivePacketNumbersAdvanceIndependently"
         ]
       }
     },
@@ -17609,6 +17615,9 @@
         "upstream_refs": [
           "RFC 9000 §12.3 RFC9000-S12.3-B10-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0004.cs::InitialPacketsStayBoundToInitialAcknowledgments"
         ]
       }
     },
@@ -17635,6 +17644,9 @@
         "upstream_refs": [
           "RFC 9000 §12.3 RFC9000-S12.3-B10-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0005.cs::HandshakePacketsStayBoundToHandshakeAcknowledgments"
         ]
       }
     },
@@ -17661,6 +17673,9 @@
         "upstream_refs": [
           "RFC 9000 §12.3 RFC9000-S12.3-B11-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0006.cs::PacketNumbersStartAtZeroInEachSpace"
         ]
       }
     },
@@ -17687,6 +17702,9 @@
         "upstream_refs": [
           "RFC 9000 §12.3 RFC9000-S12.3-B11-P7-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0007.cs::PacketNumbersIncreaseByAtLeastOneInEachSpace"
         ]
       }
     },
