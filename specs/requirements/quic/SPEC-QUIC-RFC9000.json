@@ -26675,6 +26675,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.4 RFC9000-S17.2.4-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryParseLongHeader_AcceptsHandshakePacketsThatUseLongHeaderTypeTwo",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryGetPacketNumberSpace_DoesNotTreatRetryPacketsAsHandshakePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryParseLongHeader_AcceptsTheShortestValidHandshakePacket"
         ]
       }
     },

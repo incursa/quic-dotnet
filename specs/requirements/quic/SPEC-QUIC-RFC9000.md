@@ -9782,6 +9782,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.3 RFC9000-S12.3-B14-P10-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0011.cs::RecordIncomingPacket_MergesDuplicatePacketNumbersIntoASingleAckRange
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0011.cs::RecordIncomingPacket_KeepsMatchingPacketNumbersSeparatedByPacketNumberSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0011.cs::RecordIncomingPacket_HandlesTheLargestPacketNumberWithoutSplittingTheRange
 
 ## REQ-QUIC-RFC9000-S12P3-0012 Duplicate suppression MUST happen after removing packet protection for the reasons described in Section 9
 Duplicate suppression MUST happen after removing packet protection for the reasons described in Section 9.5 of [QUIC-TLS].
@@ -9796,6 +9800,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.3 RFC9000-S12.3-B14-P10-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0012.cs::TryOpenProtectedApplicationDataPacket_PublishesThePacketNumberOnlyAfterProtectionIsRemoved
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0012.cs::TryOpenProtectedApplicationDataPacket_RejectsTamperedPacketsBeforeAnyReceiptIsRecorded
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0012.cs::TryOpenProtectedApplicationDataPacket_AllowsTheSameOpenedPacketToCollapseToOneReceipt
 
 ## REQ-QUIC-RFC9000-S12P4-0001 Version Negotiation, Stateless Reset, and Retry packets do not contain frames
 Version Negotiation, Stateless Reset, and Retry packets MUST NOT contain frames.
@@ -14710,6 +14718,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.4 RFC9000-S17.2.4-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryParseLongHeader_AcceptsHandshakePacketsThatUseLongHeaderTypeTwo
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryGetPacketNumberSpace_DoesNotTreatRetryPacketsAsHandshakePackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0001.cs::TryParseLongHeader_AcceptsTheShortestValidHandshakePacket
 
 ## REQ-QUIC-RFC9000-S17P2P4-0002 The first byte MUST contain the Reserved and Packet Number Length bits; see Section 17.2
 The first byte MUST contain the Reserved and Packet Number Length bits; see Section 17.2.
