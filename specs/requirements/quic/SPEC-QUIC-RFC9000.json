@@ -18748,6 +18748,9 @@
         "upstream_refs": [
           "RFC 9000 §13 RFC9000-S13-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0003.cs::WriteAsync_UsesTheImmediateSendPathForLargerPayloads"
         ]
       }
     },
