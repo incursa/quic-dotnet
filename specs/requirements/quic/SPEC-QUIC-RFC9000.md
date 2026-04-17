@@ -7124,6 +7124,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.3 RFC9000-S9.6.3-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0004.cs::PreferredAddressPacketsAreClassifiedAsMigrationCandidatesBeforeTheyAreTrusted
 
 ## REQ-QUIC-RFC9000-S9P6P3-0005 Servers SHOULD initiate path validation to the client's new address upon receiving a probe packet from a different address
 Servers SHOULD initiate path validation to the client's new address upon receiving a probe packet from a different address; see Section 8.
@@ -7138,6 +7140,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.3 RFC9000-S9.6.3-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0005.cs::ProbePacketsFromADifferentAddressTriggerPathValidationWithAChallenge
 
 ## REQ-QUIC-RFC9000-S9P6P3-0006 That migrates to a new address SHOULD use a preferred address from the same address family for the server
 A client that migrates to a new address SHOULD use a preferred address from the same address family for the server.
@@ -7198,6 +7202,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.3 RFC9000-S9.6.3-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0009.cs::PreferredAddressPacketsDoNotBypassThePendingValidationState
 
 ## REQ-QUIC-RFC9000-S9P6P3-0010 Validate the Client's New Address on Probe Packets
 Servers SHOULD initiate path validation to the client's new address upon receiving a probe packet from a different address.
@@ -7212,6 +7218,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.3 RFC9000-S9.6.3-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0010.cs::ProbePacketsDoNotPromoteThePreferredAddressBeforeValidationSucceeds
 
 ## REQ-QUIC-RFC9000-S9P6P3-0011 Allow the Preferred-Address Connection ID on Any Path
 The client MAY use the connection ID provided in the preferred_address transport parameter on any path.
@@ -7226,6 +7234,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.3 RFC9000-S9.6.3-B7-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0011.cs::EndpointRoutesThePreferredAddressConnectionIdAcrossPathMigration
 
 ## REQ-QUIC-RFC9000-S9P7-0001 That send data using IPv6 SHOULD apply an IPv6 flow label in compliance with [RFC6437], unless the local API does not allow setting IPv6 flow labels
 Endpoints that send data using IPv6 SHOULD apply an IPv6 flow label in compliance with [RFC6437], unless the local API does not allow setting IPv6 flow labels.

@@ -22,16 +22,19 @@ internal static class QuicPathMigrationRecoveryTestSupport
             ReasonPhrase: null);
     }
 
-    internal static QuicConnectionRuntime CreateRuntime()
+    internal static QuicConnectionRuntime CreateRuntime(IQuicDiagnosticsSink? diagnosticsSink = null)
     {
         return new QuicConnectionRuntime(
             QuicConnectionStreamStateTestHelpers.CreateState(),
-            new FakeMonotonicClock(0));
+            new FakeMonotonicClock(0),
+            diagnosticsSink: diagnosticsSink);
     }
 
-    internal static QuicConnectionRuntime CreateRuntimeWithActivePath(QuicConnectionPathIdentity activePath)
+    internal static QuicConnectionRuntime CreateRuntimeWithActivePath(
+        QuicConnectionPathIdentity activePath,
+        IQuicDiagnosticsSink? diagnosticsSink = null)
     {
-        QuicConnectionRuntime runtime = CreateRuntime();
+        QuicConnectionRuntime runtime = CreateRuntime(diagnosticsSink);
 
         Assert.True(runtime.Transition(
             new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 1),
@@ -142,5 +145,17 @@ internal static class QuicPathMigrationRecoveryTestSupport
 
         Assert.True(bridge.PeerTransportParametersCommitted);
         Assert.NotNull(bridge.PeerTransportParameters);
+    }
+}
+
+internal sealed class QuicRecordingDiagnosticsSink : IQuicDiagnosticsSink
+{
+    public bool IsEnabled => true;
+
+    public List<QuicDiagnosticEvent> Events { get; } = [];
+
+    public void Emit(QuicDiagnosticEvent diagnosticEvent)
+    {
+        Events.Add(diagnosticEvent);
     }
 }

@@ -13046,6 +13046,9 @@
         "upstream_refs": [
           "RFC 9000 §9.6.3 RFC9000-S9.6.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0004.cs::PreferredAddressPacketsAreClassifiedAsMigrationCandidatesBeforeTheyAreTrusted"
         ]
       }
     },
@@ -13072,6 +13075,9 @@
         "upstream_refs": [
           "RFC 9000 §9.6.3 RFC9000-S9.6.3-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0005.cs::ProbePacketsFromADifferentAddressTriggerPathValidationWithAChallenge"
         ]
       }
     },
@@ -13182,6 +13188,9 @@
         "upstream_refs": [
           "RFC 9000 §9.6.3 RFC9000-S9.6.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0009.cs::PreferredAddressPacketsDoNotBypassThePendingValidationState"
         ]
       }
     },
@@ -13208,6 +13217,9 @@
         "upstream_refs": [
           "RFC 9000 §9.6.3 RFC9000-S9.6.3-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0010.cs::ProbePacketsDoNotPromoteThePreferredAddressBeforeValidationSucceeds"
         ]
       }
     },
@@ -13234,6 +13246,9 @@
         "upstream_refs": [
           "RFC 9000 §9.6.3 RFC9000-S9.6.3-B7-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0011.cs::EndpointRoutesThePreferredAddressConnectionIdAcrossPathMigration"
         ]
       }
     },
