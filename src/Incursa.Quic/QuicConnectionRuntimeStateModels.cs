@@ -43,6 +43,7 @@ internal enum QuicConnectionTimerKind
     CloseLifetime = 1,
     DrainLifetime = 2,
     PathValidation = 3,
+    ApplicationSendDelay = 4,
 }
 
 internal enum QuicConnectionStreamOwnership
@@ -245,12 +246,14 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
     QuicConnectionTimerSchedule CloseLifetime,
     QuicConnectionTimerSchedule DrainLifetime,
     QuicConnectionTimerSchedule PathValidation,
+    QuicConnectionTimerSchedule ApplicationSendDelay,
     ulong NextSequence)
 {
     public bool HasAnyDeadline => IdleTimeout.DueTicks.HasValue
         || CloseLifetime.DueTicks.HasValue
         || DrainLifetime.DueTicks.HasValue
-        || PathValidation.DueTicks.HasValue;
+        || PathValidation.DueTicks.HasValue
+        || ApplicationSendDelay.DueTicks.HasValue;
 
     public QuicConnectionTimerPriority CreatePriority(long dueTicks)
     {
@@ -286,6 +289,7 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
             QuicConnectionTimerKind.CloseLifetime => this with { CloseLifetime = schedule },
             QuicConnectionTimerKind.DrainLifetime => this with { DrainLifetime = schedule },
             QuicConnectionTimerKind.PathValidation => this with { PathValidation = schedule },
+            QuicConnectionTimerKind.ApplicationSendDelay => this with { ApplicationSendDelay = schedule },
             _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
         };
     }
@@ -308,6 +312,7 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
             QuicConnectionTimerKind.CloseLifetime => CloseLifetime,
             QuicConnectionTimerKind.DrainLifetime => DrainLifetime,
             QuicConnectionTimerKind.PathValidation => PathValidation,
+            QuicConnectionTimerKind.ApplicationSendDelay => ApplicationSendDelay,
             _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
         };
     }

@@ -19,6 +19,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private const int DefaultCloseFrameOverheadBytes = 32;
     private const int PreferredAddressIPv4BytesLength = sizeof(uint);
     private const int PreferredAddressIPv6BytesLength = 16;
+    private const ulong ApplicationSendDelayMicros = 1_000UL;
+    private const int ApplicationSendDelayThresholdBytes = ApplicationMinimumProtectedPayloadLength;
     private const int HandshakeEgressChunkBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
@@ -33,6 +35,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly ConcurrentDictionary<long, TaskCompletionSource<ulong>> pendingStreamOpenRequests = new();
     private readonly ConcurrentDictionary<long, QuicStreamType> pendingStreamOpenTypes = new();
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingStreamActionRequests = new();
+    private readonly List<PendingApplicationSendRequest> pendingApplicationSendRequests = [];
     private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> streamObservers = new();
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
@@ -86,6 +89,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private Exception? inboundStreamQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Action<int, int>? streamCapacityObserver;
+    private long? pendingApplicationSendDelayDueTicks;
 
     public QuicConnectionRuntime(
         QuicConnectionStreamState bookkeeping,
@@ -1244,8 +1248,6 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        _ = nowTicks;
-
         return streamActionEvent.ActionKind switch
         {
             QuicConnectionStreamActionKind.Open
@@ -1254,6 +1256,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             QuicConnectionStreamActionKind.Write
                 when streamActionEvent.StreamId.HasValue
                 => HandleWriteStreamAction(
+                    nowTicks,
                     streamActionEvent.RequestId,
                     streamActionEvent.StreamId.Value,
                     streamActionEvent.StreamData,
@@ -1262,6 +1265,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             QuicConnectionStreamActionKind.Finish
                 when streamActionEvent.StreamId.HasValue
                 => HandleWriteStreamAction(
+                    nowTicks,
                     streamActionEvent.RequestId,
                     streamActionEvent.StreamId.Value,
                     ReadOnlyMemory<byte>.Empty,
@@ -1431,6 +1435,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     }
 
     private bool HandleWriteStreamAction(
+        long nowTicks,
         long requestId,
         ulong streamId,
         ReadOnlyMemory<byte> streamData,
@@ -1504,6 +1509,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
+        if (ShouldDelayApplicationSend(streamData.Span))
+        {
+            QueuePendingApplicationSend(streamId, streamPayload, nowTicks, ref effects);
+            completion.TrySetResult(null);
+            return true;
+        }
+
         if (!TryProtectAndAccountApplicationPayload(
             streamPayload,
             "The connection runtime could not protect the stream write packet.",
@@ -1533,6 +1545,110 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         completion.TrySetResult(null);
         return true;
+    }
+
+    private bool ShouldDelayApplicationSend(ReadOnlySpan<byte> streamData)
+    {
+        return (activePath?.AmplificationState.IsAddressValidated ?? false)
+            && streamData.Length > 0
+            && (pendingApplicationSendRequests.Count > 0
+                || streamData.Length < ApplicationSendDelayThresholdBytes);
+    }
+
+    private void QueuePendingApplicationSend(
+        ulong streamId,
+        byte[] streamPayload,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        pendingApplicationSendRequests.Add(new PendingApplicationSendRequest(streamId, streamPayload));
+
+        if (pendingApplicationSendRequests.Count == 1)
+        {
+            pendingApplicationSendDelayDueTicks = SaturatingAdd(
+                nowTicks,
+                ConvertMicrosToTicks(ApplicationSendDelayMicros));
+        }
+
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+    }
+
+    private bool FlushPendingApplicationSends(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    {
+        _ = nowTicks;
+
+        if (pendingApplicationSendRequests.Count == 0)
+        {
+            pendingApplicationSendDelayDueTicks = null;
+            return false;
+        }
+
+        PendingApplicationSendRequest[] queuedWrites = pendingApplicationSendRequests.ToArray();
+        pendingApplicationSendRequests.Clear();
+        pendingApplicationSendDelayDueTicks = null;
+
+        int combinedPayloadLength = 0;
+        foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
+        {
+            combinedPayloadLength = checked(combinedPayloadLength + queuedWrite.StreamPayload.Length);
+        }
+
+        byte[] combinedPayload = new byte[combinedPayloadLength];
+        int copyOffset = 0;
+        foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
+        {
+            queuedWrite.StreamPayload.CopyTo(combinedPayload.AsSpan(copyOffset));
+            copyOffset += queuedWrite.StreamPayload.Length;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            combinedPayload,
+            "The connection runtime could not protect the queued stream write packet.",
+            "The connection cannot send the queued stream write packet.",
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+        return true;
+    }
+
+    private void TryRemoveQueuedApplicationSendsForStream(ulong streamId, ref List<QuicConnectionEffect>? effects)
+    {
+        if (pendingApplicationSendRequests.Count == 0)
+        {
+            return;
+        }
+
+        bool removedAny = false;
+        for (int index = pendingApplicationSendRequests.Count - 1; index >= 0; index--)
+        {
+            if (pendingApplicationSendRequests[index].StreamId != streamId)
+            {
+                continue;
+            }
+
+            pendingApplicationSendRequests.RemoveAt(index);
+            removedAny = true;
+        }
+
+        if (removedAny && pendingApplicationSendRequests.Count == 0)
+        {
+            pendingApplicationSendDelayDueTicks = null;
+            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        }
     }
 
     private bool TryEmitFlowControlBlockedSignal(
@@ -1767,6 +1883,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 : new InvalidOperationException("The writable side is already completed."));
             return false;
         }
+
+        TryRemoveQueuedApplicationSendsForStream(streamId, ref effects);
 
         if (!TryBuildOutboundResetPayload(streamId, applicationErrorCode, finalSize, out byte[] streamPayload))
         {
@@ -3239,6 +3357,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         CompleteInboundStreamQueue(completionException);
         CompletePendingStreamOpenRequests(completionException);
         CompletePendingStreamActionRequests(completionException);
+        pendingApplicationSendRequests.Clear();
+        pendingApplicationSendDelayDueTicks = null;
     }
 
     private void CompleteInboundStreamQueue(Exception completionException)
@@ -4065,6 +4185,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             QuicConnectionTimerKind.CloseLifetime => timerState.CloseLifetime,
             QuicConnectionTimerKind.DrainLifetime => timerState.DrainLifetime,
             QuicConnectionTimerKind.PathValidation => timerState.PathValidation,
+            QuicConnectionTimerKind.ApplicationSendDelay => timerState.ApplicationSendDelay,
             _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
         };
     }
@@ -4096,6 +4217,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                     && DiscardConnection(nowTicks, terminalState?.Origin ?? QuicConnectionCloseOrigin.Remote, terminalState?.Close ?? default, ref effects);
             case QuicConnectionTimerKind.PathValidation:
                 return HandlePathValidationTimerExpired(nowTicks, ref effects);
+            case QuicConnectionTimerKind.ApplicationSendDelay:
+                return FlushPendingApplicationSends(nowTicks, ref effects);
             default:
                 throw new ArgumentOutOfRangeException(nameof(timerExpiredEvent), "TimerKind was not recognized.");
         }
@@ -5024,6 +5147,9 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         };
 
         long? pathValidationDueTicks = GetEarliestPathValidationDueTicks();
+        long? applicationSendDelayDueTicks = pendingApplicationSendRequests.Count > 0
+            ? pendingApplicationSendDelayDueTicks
+            : null;
 
         long? closeDueTicks = phase == QuicConnectionPhase.Closing ? terminalEndTicks : null;
         long? drainDueTicks = phase == QuicConnectionPhase.Draining ? terminalEndTicks : null;
@@ -5032,6 +5158,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.CloseLifetime, closeDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.DrainLifetime, drainDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.PathValidation, pathValidationDueTicks));
+        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.ApplicationSendDelay, applicationSendDelayDueTicks));
         return effects.ToArray();
     }
 
@@ -5171,6 +5298,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         return left + right;
     }
+
+    private sealed record PendingApplicationSendRequest(ulong StreamId, byte[] StreamPayload);
 
     private void EmitDiagnostic(ref List<QuicConnectionEffect>? effects, QuicDiagnosticEvent diagnosticEvent)
     {

@@ -110,6 +110,7 @@ public sealed class REQ_QUIC_CRT_0032
             CloseLifetime: new QuicConnectionTimerSchedule(2_000, 10),
             DrainLifetime: new QuicConnectionTimerSchedule(null, 11),
             PathValidation: new QuicConnectionTimerSchedule(3_000, 12),
+            ApplicationSendDelay: new QuicConnectionTimerSchedule(4_000, 13),
             NextSequence: 3);
 
         Assert.Equal("203.0.113.9", activePath.Identity.RemoteAddress);
