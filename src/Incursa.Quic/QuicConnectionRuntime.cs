@@ -2003,6 +2003,17 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 continue;
             }
 
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
+            {
+                if (pingBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                payloadOffset += pingBytesConsumed;
+                continue;
+            }
+
             if (!QuicFrameCodec.TryParseCryptoFrame(remaining, out QuicCryptoFrame cryptoFrame, out int bytesConsumed)
                 || bytesConsumed <= 0)
             {
@@ -2141,6 +2152,17 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 }
 
                 offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
+            {
+                if (pingBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                offset += pingBytesConsumed;
                 continue;
             }
 

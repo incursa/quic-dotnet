@@ -13,6 +13,14 @@ public sealed class REQ_QUIC_RFC9000_S12P5_0002
         0x01, 0x02, 0x03, 0x04,
     ];
 
+    private static readonly byte[] PacketConnectionId =
+    [
+        0x0A, 0x0B, 0x0C,
+    ];
+
+    private static readonly QuicConnectionPathIdentity PacketPathIdentity =
+        new("203.0.113.10", RemotePort: 443);
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -67,6 +75,37 @@ public sealed class REQ_QUIC_RFC9000_S12P5_0002
         Assert.True(applicationPacket.AsSpan(applicationPacket.Length - payload.Length, payload.Length).SequenceEqual(payload));
         Assert.True(QuicFrameCodec.TryParsePingFrame(payload, out int applicationBytesConsumed));
         Assert.Equal(payload.Length, applicationBytesConsumed);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryHandleApplicationPacketReceived_AllowsPingBeforeStreamFramesInApplicationData()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+
+        byte[] applicationPayload =
+        [
+            .. QuicFrameTestData.BuildPingFrame(),
+            .. QuicStreamTestData.BuildStreamFrame(0x0E, 1, [0xAA], offset: 0),
+        ];
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] protectedPacket));
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 1,
+                PacketPathIdentity,
+                protectedPacket),
+            nowTicks: 1);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
     }
 
     [Fact]

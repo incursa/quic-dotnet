@@ -10176,6 +10176,7 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParsePaddingFrame_CarriesTheFrameBytesAcrossEveryPacketNumberSpace
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParsePingFrame_CarriesTheFrameBytesAcrossEveryPacketNumberSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryHandleApplicationPacketReceived_AllowsPingBeforeStreamFramesInApplicationData
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParseCryptoFrame_CarriesTheFrameBytesAcrossEveryPacketNumberSpace
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParsePaddingPingAndCryptoFrames_RejectsTruncatedPayloads
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryFormatCryptoFrame_AllowsTheZeroLengthCryptoPayloadEdge
