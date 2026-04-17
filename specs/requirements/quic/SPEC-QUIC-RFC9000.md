@@ -10817,6 +10817,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_RetiresTrackedAckRangesWhenTheCarrierPacketIsAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_PreservesTrackedAckRangesWhenASeparatePacketNumberSpaceAcknowledgesTheCarrierPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_LeavesTrackedAckRangesInPlaceWhenAnUnrelatedPacketIsAcknowledged
 
 ## REQ-QUIC-RFC9000-S13P2P3-0006 Senders can expect acknowledgments for most packets, but QUIC does not guarantee receipt of an acknowledgment for every packet that the receiver processes
 Senders can expect acknowledgments for most packets, but QUIC MUST NOT guarantee receipt of an acknowledgment for every packet that the receiver processes.
@@ -10831,6 +10835,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B4-P3-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_RetiresTrackedAckRangesWhenTheCarrierPacketIsAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_PreservesTrackedAckRangesWhenASeparatePacketNumberSpaceAcknowledgesTheCarrierPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_LeavesTrackedAckRangesInPlaceWhenAnUnrelatedPacketIsAcknowledged
 
 ## REQ-QUIC-RFC9000-S13P2P3-0007 Allow discarding ACK ranges to limit ACK frame size
 A receiver MAY discard unacknowledged ACK Ranges to limit ACK frame size.
@@ -10929,6 +10937,11 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.3 RFC9000-S13.2.3-B9-P8-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0004.cs::TryBuildAckFrame_TrimsOldestRangesWhenLimitReached
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_RetiresTrackedAckRangesWhenTheCarrierPacketIsAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_PreservesTrackedAckRangesWhenASeparatePacketNumberSpaceAcknowledgesTheCarrierPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_LeavesTrackedAckRangesInPlaceWhenAnUnrelatedPacketIsAcknowledged
 
 ## REQ-QUIC-RFC9000-S13P2P4-0001 In cases with ACK frame loss and reordering, this approach does not guarantee that every acknowledgment is seen by the sender before it is no longer included in the ACK frame
 In cases with ACK frame loss and reordering, this approach MUST NOT guarantee that every acknowledgment is seen by the sender before it is no longer included in the ACK frame.

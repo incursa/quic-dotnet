@@ -7,6 +7,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S13P2P3_0005
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryProcessAckFrame_RetiresTrackedAckRangesWhenTheCarrierPacketIsAcknowledged()
@@ -68,6 +69,78 @@ public sealed class REQ_QUIC_RFC9000_S13P2P3_0005
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0006")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryProcessAckFrame_PreservesTrackedAckRangesWhenASeparatePacketNumberSpaceAcknowledgesTheCarrierPacket()
+    {
+        QuicSenderFlowController sender = new();
+
+        sender.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            ackEliciting: true,
+            receivedAtMicros: 1_000);
+        sender.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 2,
+            ackEliciting: true,
+            receivedAtMicros: 1_010);
+        sender.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 5,
+            ackEliciting: true,
+            receivedAtMicros: 1_020);
+        sender.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 6,
+            ackEliciting: true,
+            receivedAtMicros: 1_030);
+
+        Assert.True(sender.TryBuildAckFrame(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 2_000,
+            out QuicAckFrame ackFrame));
+
+        sender.MarkAckFrameSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 11,
+            ackFrame,
+            sentAtMicros: 2_100,
+            ackOnlyPacket: true);
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 11,
+            sentBytes: 1_200,
+            sentAtMicros: 2_200,
+            ackEliciting: true);
+
+        Assert.True(sender.TryProcessAckFrame(
+            QuicPacketNumberSpace.Initial,
+            new QuicAckFrame
+            {
+                LargestAcknowledged = 11,
+                AckDelay = 0,
+                FirstAckRange = 0,
+                AdditionalRanges = [],
+            },
+            ackReceivedAtMicros: 3_000,
+            pathValidated: true));
+
+        Assert.True(sender.TryBuildAckFrame(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 3_100,
+            out QuicAckFrame survivingFrame));
+        Assert.Equal(ackFrame.LargestAcknowledged, survivingFrame.LargestAcknowledged);
+        Assert.Equal(ackFrame.FirstAckRange, survivingFrame.FirstAckRange);
+        Assert.Equal(ackFrame.AdditionalRanges.Length, survivingFrame.AdditionalRanges.Length);
+        Assert.Equal(ackFrame.AdditionalRanges[0].SmallestAcknowledged, survivingFrame.AdditionalRanges[0].SmallestAcknowledged);
+        Assert.Equal(ackFrame.AdditionalRanges[0].LargestAcknowledged, survivingFrame.AdditionalRanges[0].LargestAcknowledged);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0006")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryProcessAckFrame_LeavesTrackedAckRangesInPlaceWhenAnUnrelatedPacketIsAcknowledged()
