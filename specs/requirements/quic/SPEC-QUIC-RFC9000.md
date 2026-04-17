@@ -10197,6 +10197,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_CarriesTransportCloseAcrossEveryPacketNumberSpace
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedTransportClosePayloads
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_AllowsTransportCloseWithoutAReasonPhrase
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::Fuzz_ConnectionCloseFrame_RoundTripsTransportErrorsAcrossPacketSpaces
 
 ## REQ-QUIC-RFC9000-S12P5-0004 Restrict application-error CONNECTION_CLOSE to application data
 CONNECTION_CLOSE frames signaling application errors MUST only appear in the application data packet number space.
@@ -10215,6 +10216,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_CarriesApplicationCloseInApplicationDataPackets
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_RejectsTruncatedApplicationClosePayloads
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_AllowsApplicationCloseWithoutAReasonPhrase
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::Fuzz_ConnectionCloseFrame_RoundTripsApplicationErrorsInApplicationDataPackets
 
 ## REQ-QUIC-RFC9000-S12P5-0005 Allow ACK in any packet number space but only acknowledge within that space
 ACK frames MAY appear in any packet number space, but they can only acknowledge packets that appeared in that packet number space.

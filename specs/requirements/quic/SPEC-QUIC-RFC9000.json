@@ -818,7 +818,7 @@
         "positive": "optional",
         "negative": "required",
         "edge": "required",
-        "fuzz": "deferred"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
@@ -18543,7 +18543,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_CarriesTransportCloseAcrossEveryPacketNumberSpace",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedTransportClosePayloads",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_AllowsTransportCloseWithoutAReasonPhrase"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_AllowsTransportCloseWithoutAReasonPhrase",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::Fuzz_ConnectionCloseFrame_RoundTripsTransportErrorsAcrossPacketSpaces"
         ]
       }
     },
@@ -18555,7 +18556,7 @@
         "positive": "required",
         "negative": "required",
         "edge": "required",
-        "fuzz": "deferred"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
@@ -18574,7 +18575,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_CarriesApplicationCloseInApplicationDataPackets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_RejectsTruncatedApplicationClosePayloads",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_AllowsApplicationCloseWithoutAReasonPhrase"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_AllowsApplicationCloseWithoutAReasonPhrase",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::Fuzz_ConnectionCloseFrame_RoundTripsApplicationErrorsInApplicationDataPackets"
         ]
       }
     },

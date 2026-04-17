@@ -88,6 +88,64 @@ public sealed class REQ_QUIC_RFC9000_S12P5_0003
         Assert.True(payload.AsSpan().SequenceEqual(destination[..bytesWritten]));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void Fuzz_ConnectionCloseFrame_RoundTripsTransportErrorsAcrossPacketSpaces()
+    {
+        Random random = new(0x5160_2070);
+        Span<byte> destination = stackalloc byte[64];
+
+        for (int iteration = 0; iteration < 128; iteration++)
+        {
+            byte[] reasonPhrase = RandomBytes(random, random.Next(0, 32));
+            ulong errorCode = (ulong)random.Next(0, 1 << 20);
+            ulong triggeringFrameType = (ulong)random.Next(0, 1 << 8);
+
+            QuicConnectionCloseFrame transportFrame = new(
+                errorCode,
+                triggeringFrameType,
+                reasonPhrase);
+
+            byte[] payload = QuicFrameTestData.BuildConnectionCloseFrame(transportFrame);
+
+            byte[] initialPacket = BuildProtectedInitialPacket(payload);
+            Assert.True(QuicPacketParser.TryGetPacketNumberSpace(initialPacket, out QuicPacketNumberSpace initialSpace));
+            Assert.Equal(QuicPacketNumberSpace.Initial, initialSpace);
+
+            byte[] handshakePacket = QuicHandshakePacketRequirementTestData.BuildHandshakePacket(protectedPayload: payload);
+            Assert.True(QuicPacketParser.TryGetPacketNumberSpace(handshakePacket, out QuicPacketNumberSpace handshakeSpace));
+            Assert.Equal(QuicPacketNumberSpace.Handshake, handshakeSpace);
+
+            byte[] applicationPacket = QuicHeaderTestData.BuildShortHeader(0x00, payload);
+            Assert.True(QuicPacketParser.TryGetPacketNumberSpace(applicationPacket, out QuicPacketNumberSpace applicationSpace));
+            Assert.Equal(QuicPacketNumberSpace.ApplicationData, applicationSpace);
+
+            Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(payload, out QuicConnectionCloseFrame parsedFrame, out int bytesConsumed));
+            Assert.False(parsedFrame.IsApplicationError);
+            Assert.Equal((byte)0x1C, parsedFrame.FrameType);
+            Assert.Equal(transportFrame.ErrorCode, parsedFrame.ErrorCode);
+            Assert.Equal(transportFrame.TriggeringFrameType, parsedFrame.TriggeringFrameType);
+            Assert.True(transportFrame.ReasonPhrase.SequenceEqual(parsedFrame.ReasonPhrase));
+            Assert.Equal(payload.Length, bytesConsumed);
+
+            Assert.True(QuicFrameCodec.TryFormatConnectionCloseFrame(parsedFrame, destination, out int bytesWritten));
+            Assert.Equal(payload.Length, bytesWritten);
+            Assert.True(payload.AsSpan().SequenceEqual(destination[..bytesWritten]));
+
+            if (payload.Length > 1)
+            {
+                Assert.False(QuicFrameCodec.TryParseConnectionCloseFrame(payload[..^1], out _, out _));
+            }
+        }
+    }
+
+    private static byte[] RandomBytes(Random random, int length)
+    {
+        byte[] data = new byte[length];
+        random.NextBytes(data);
+        return data;
+    }
+
     private static byte[] BuildProtectedInitialPacket(ReadOnlySpan<byte> payload)
     {
         Assert.True(QuicInitialPacketProtection.TryCreate(
