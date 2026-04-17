@@ -6950,6 +6950,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.2 RFC9000-S9.6.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0003.cs::ServerProbesThePreferredAddressPathWithAPathChallengeFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0003.cs::ServerStopsProbingThePreferredAddressPathAfterValidationCompletes
 
 ## REQ-QUIC-RFC9000-S9P6P2-0004 Drop newer packets for this connection that are received on the old IP address
 The server SHOULD drop newer packets for this connection that are received on the old IP address.
@@ -7062,6 +7065,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.2 RFC9000-S9.6.2-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0011.cs::CurrentConnectionSnapshotsKeepPreferredAddressStateIsolatedFromTheSourceTransportParameters
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0011.cs::SeparateConnectionsKeepDistinctPreferredAddressSnapshots
 
 ## REQ-QUIC-RFC9000-S9P6P3-0001 In this case, the client SHOULD perform path validation to both the original and preferred server address from the client's new address concurrently
 In this case, the client SHOULD perform path validation to both the original and preferred server address from the client's new address concurrently.
