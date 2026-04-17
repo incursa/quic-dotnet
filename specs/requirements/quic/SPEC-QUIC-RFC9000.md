@@ -10706,6 +10706,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.2 RFC9000-S13.2.2-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseAfterOneAckElicitingPacketBeforeTheDelayExpires
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_TurnsTrueOnceTwoAckElicitingPacketsAreTracked
 
 ## REQ-QUIC-RFC9000-S13P2P2-0002 Send ACK after at least two ack-eliciting packets
 A receiver SHOULD send an ACK frame after receiving at least two ack-eliciting packets.
@@ -10720,6 +10723,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.2 RFC9000-S13.2.2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0002.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseAfterOneAckElicitingPacketAndOneNonAckElicitingPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0002.cs::ShouldIncludeAckFrameWithOutgoingPacket_TurnsTrueAfterTheSecondAckElicitingPacketArrives
 
 ## REQ-QUIC-RFC9000-S13P2P2-0003 Allow processing multiple packets before deciding to ACK
 A receiver MAY process multiple available packets before determining whether to send an ACK frame in response.
@@ -10734,6 +10740,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.2 RFC9000-S13.2.2-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0003.cs::TryBuildAckFrame_IncludesPacketsProcessedBeforeTheAckDecisionIsMade
 
 ## REQ-QUIC-RFC9000-S13P2P3-0001 When an ACK frame is sent, one or more ranges of acknowledged packets are included
 When an ACK frame is sent, one or more ranges of acknowledged packets MUST be included.
@@ -13376,7 +13384,6 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0021.cs::TryParseLongHeader_AllowsVersion1DestinationConnectionIdAt20Bytes
-  - tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1DestinationConnectionIdLongerThan20Bytes
 
 ## REQ-QUIC-RFC9000-S17P2-0022 In order to properly form a Version Negotiation packet, servers SHOULD be able to read longer...
 In order to properly form a Version Negotiation packet, servers SHOULD be able to read longer connection IDs from other QUIC versions.

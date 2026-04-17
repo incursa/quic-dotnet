@@ -19454,6 +19454,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.2 RFC9000-S13.2.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseAfterOneAckElicitingPacketBeforeTheDelayExpires",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_TurnsTrueOnceTwoAckElicitingPacketsAreTracked"
         ]
       }
     },
@@ -19480,6 +19484,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.2 RFC9000-S13.2.2-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0002.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseAfterOneAckElicitingPacketAndOneNonAckElicitingPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0002.cs::ShouldIncludeAckFrameWithOutgoingPacket_TurnsTrueAfterTheSecondAckElicitingPacketArrives"
         ]
       }
     },
@@ -19506,6 +19514,9 @@
         "upstream_refs": [
           "RFC 9000 §13.2.2 RFC9000-S13.2.2-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0003.cs::TryBuildAckFrame_IncludesPacketsProcessedBeforeTheAckDecisionIsMade"
         ]
       }
     },
