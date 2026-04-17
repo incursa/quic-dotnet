@@ -20,6 +20,7 @@ public sealed class REQ_QUIC_RFC9000_S11_0005
         Assert.True(endpoint.TryRegisterConnection(handle, runtime));
         Assert.True(endpoint.TryUpdateEndpointBinding(handle, pathIdentity));
         Assert.True(endpoint.TryRegisterStatelessResetToken(handle, 117UL, token));
+        Assert.True(runtime.CanSendOrdinaryPackets);
 
         byte[] datagram = QuicStatelessResetRequirementTestData.FormatDatagram(token);
         datagram[0] = 0x40;
@@ -45,6 +46,7 @@ public sealed class REQ_QUIC_RFC9000_S11_0005
         Assert.Equal(QuicConnectionEndpointHandlingKind.None, result.HandlingKind);
         Assert.Equal(handle, result.Handle);
         Assert.Equal(handle, await observedHandle.Task.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.True(runtime.CanSendOrdinaryPackets);
 
         cancellation.Cancel();
         await consumer;
@@ -66,6 +68,7 @@ public sealed class REQ_QUIC_RFC9000_S11_0005
         Assert.True(endpoint.TryRegisterConnection(handle, runtime));
         Assert.True(endpoint.TryUpdateEndpointBinding(handle, pathIdentity));
         Assert.True(endpoint.TryRegisterStatelessResetToken(handle, 118UL, token));
+        Assert.True(runtime.CanSendOrdinaryPackets);
 
         byte[] datagram = QuicStatelessResetRequirementTestData.FormatDatagram(token);
         datagram[0] = 0x40;
@@ -78,5 +81,6 @@ public sealed class REQ_QUIC_RFC9000_S11_0005
         Assert.Equal(QuicConnectionEndpointHandlingKind.None, result.HandlingKind);
         Assert.Equal(handle, result.Handle);
         Assert.Equal(0UL, runtime.TransitionSequence);
+        Assert.True(runtime.CanSendOrdinaryPackets);
     }
 }
