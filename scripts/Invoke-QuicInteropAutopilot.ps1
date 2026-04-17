@@ -327,11 +327,52 @@ function Invoke-SupervisorSmokeValidation {
         })
     Assert-SupervisorCondition -Condition ($idleLimitStopAction.Action -eq "stop_idle") -Message "Expected supervise mode to stop cleanly after the configured idle limit is exceeded."
 
+    $completedStaticLaneIds = @(
+        Get-LaneTemplateDefinitions |
+        Where-Object { $_.lane_id -ne "trace-metadata-reconciliation" } |
+        ForEach-Object { [string]$_.lane_id }
+    )
+    $mockCatalog = New-LaneCatalog `
+        -RepoRoot "C:\repo" `
+        -TargetBranch "main" `
+        -TriageJson ([pscustomobject]@{
+            requirements = @(
+                [pscustomobject]@{
+                    requirement_id = "REQ-QUIC-RFC9000-S5P1P1-0003"
+                    rfc = "RFC9000"
+                    section_prefix = "S5P1P1"
+                    title = "Assign sequence number 0 to the initial CID"
+                    statement = "The sequence number of the initial connection ID MUST be 0."
+                    state = "uncovered_unblocked"
+                }
+                [pscustomobject]@{
+                    requirement_id = "REQ-QUIC-RFC9000-S5P1P1-0004"
+                    rfc = "RFC9000"
+                    section_prefix = "S5P1P1"
+                    title = "Assign sequence number 1 to the preferred-address CID"
+                    statement = "The preferred-address connection ID MUST use sequence number 1."
+                    state = "uncovered_unblocked"
+                }
+            )
+        }) `
+        -OpenGapIds @() `
+        -StateObject ([pscustomobject]@{
+            completed_lane_ids = @($completedStaticLaneIds)
+            pending_reconciliation_lane_ids = @()
+            active_lane = $null
+        }) `
+        -PlannerModel "gpt-5.4" `
+        -PlannerReasoningEffort "xhigh" `
+        -WorkerModel "gpt-5.4-mini" `
+        -WorkerReasoningEffort "xhigh"
+    Assert-SupervisorCondition -Condition ($mockCatalog.recommended_lane_id -eq "backlog-rfc9000-s5p1p1-b01") -Message "Expected backlog synthesis to recommend a bounded lane when the static catalog is exhausted but uncovered backlog remains."
+
     Write-Host "Supervisor smoke validation passed." -ForegroundColor Green
     Write-Host "  Empty queue sleeps and retries before exit."
     Write-Host "  Active lanes resume and reset idle tracking."
     Write-Host "  Post-merge cleanup can hand off to the next eligible lane."
     Write-Host "  Idle limits stop the loop cleanly."
+    Write-Host "  Exhausted static catalogs synthesize the next bounded backlog lane."
 }
 
 function Get-ExceptionDetail {
@@ -2189,12 +2230,206 @@ function Get-LaneTemplateDefinitions {
     )
 }
 
+function Convert-RequirementIdToTestFilterToken {
+    param([Parameter(Mandatory = $true)][string]$RequirementId)
+
+    return ($RequirementId -replace '[^A-Za-z0-9]', '_')
+}
+
+function Get-SynthesizedLaneSortScore {
+    param([Parameter(Mandatory = $true)]$Requirement)
+
+    $rfc = [string]$Requirement.rfc
+    $score = switch ($rfc.ToUpperInvariant()) {
+        "RFC9000" { 0 }
+        "RFC9001" { 100 }
+        "RFC9002" { 200 }
+        default { 300 }
+    }
+
+    $title = if ($Requirement.PSObject.Properties.Name -contains "title") { [string]$Requirement.title } else { "" }
+    $statement = if ($Requirement.PSObject.Properties.Name -contains "statement") { [string]$Requirement.statement } else { "" }
+    $searchText = ($title + " " + $statement).ToLowerInvariant()
+
+    if ($searchText -match '\b(registration|registry|expert review|iana|provisional|contact information|date field|specification field|status field)\b') {
+        $score += 200
+    }
+    elseif ($searchText -match '\b(policy|guidance|document|procedure)\b') {
+        $score += 80
+    }
+
+    if ($searchText -match '\b(stream|flow[- ]control|retrans|ack|path|migration|address|cid|connection id|token|reset|crypto|key|discard|recovery|congestion|frame|packet|preferred address)\b') {
+        $score -= 20
+    }
+
+    return $score
+}
+
+function Get-SynthesizedLaneAllowedPathPrefixes {
+    param([Parameter(Mandatory = $true)][string]$Rfc)
+
+    switch ($Rfc.ToUpperInvariant()) {
+        "RFC9000" {
+            return @(
+                "src/Incursa.Quic",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+        }
+        "RFC9001" {
+            return @(
+                "src/Incursa.Quic",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001",
+                "specs/requirements/quic/SPEC-QUIC-RFC9001",
+                "specs/architecture/quic/ARC-QUIC-RFC9001",
+                "specs/work-items/quic/WI-QUIC-RFC9001",
+                "specs/verification/quic/VER-QUIC-RFC9001",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+        }
+        "RFC9002" {
+            return @(
+                "src/Incursa.Quic",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002",
+                "specs/requirements/quic/SPEC-QUIC-RFC9002",
+                "specs/architecture/quic/ARC-QUIC-RFC9002",
+                "specs/work-items/quic/WI-QUIC-RFC9002",
+                "specs/verification/quic/VER-QUIC-RFC9002",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+        }
+        default {
+            return @(
+                "src/Incursa.Quic",
+                "tests/Incursa.Quic.Tests/RequirementHomes",
+                "specs/requirements/quic",
+                "specs/architecture/quic",
+                "specs/work-items/quic",
+                "specs/verification/quic",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+        }
+    }
+}
+
+function Get-SynthesizedLaneForbiddenPathPrefixes {
+    param([Parameter(Mandatory = $true)][string]$Rfc)
+
+    return @(
+        "src/Incursa.Quic.InteropHarness",
+        "specs/generated"
+    )
+}
+
+function Get-SynthesizedLaneTemplateDefinitions {
+    param(
+        [Parameter(Mandatory = $true)]$TriageJson,
+        [int]$BatchSize = 6,
+        [int]$MaxLaneCount = 24
+    )
+
+    $requirements = @(
+        @($TriageJson.requirements) |
+        Where-Object {
+            $null -ne $_ -and
+            [string]$_.state -eq "uncovered_unblocked" -and
+            -not [string]::IsNullOrWhiteSpace([string]$_.requirement_id) -and
+            -not [string]::IsNullOrWhiteSpace([string]$_.rfc) -and
+            -not [string]::IsNullOrWhiteSpace([string]$_.section_prefix)
+        }
+    )
+
+    if ($requirements.Count -eq 0) {
+        return @()
+    }
+
+    $candidates = New-Object System.Collections.Generic.List[object]
+    foreach ($group in ($requirements | Group-Object { ([string]$_.rfc).ToUpperInvariant() + "|" + ([string]$_.section_prefix).ToUpperInvariant() })) {
+        $groupRequirements = @($group.Group | Sort-Object requirement_id)
+        if ($groupRequirements.Count -eq 0) {
+            continue
+        }
+
+        $firstRequirement = $groupRequirements[0]
+        $sortScore = Get-SynthesizedLaneSortScore -Requirement $firstRequirement
+        $rfc = [string]$firstRequirement.rfc
+        $sectionPrefix = [string]$firstRequirement.section_prefix
+
+        for ($start = 0; $start -lt $groupRequirements.Count; $start += $BatchSize) {
+            $batchRequirements = @($groupRequirements | Select-Object -Skip $start -First $BatchSize)
+            if ($batchRequirements.Count -eq 0) {
+                continue
+            }
+
+            $batchOrdinal = [int]([math]::Floor($start / $BatchSize)) + 1
+            $requirementIds = @($batchRequirements | ForEach-Object { [string]$_.requirement_id })
+            $filterTokens = @($requirementIds | ForEach-Object { "FullyQualifiedName~$(Convert-RequirementIdToTestFilterToken -RequirementId $_)" })
+            $verificationCommand = "dotnet test Incursa.Quic.slnx --filter `"" + ($filterTokens -join "|") + "`""
+            $firstTitle = [string]$batchRequirements[0].title
+            $batchLabel = "$rfc $sectionPrefix"
+            $laneId = ("backlog-" + $rfc.ToLowerInvariant() + "-" + $sectionPrefix.ToLowerInvariant() + "-b" + $batchOrdinal.ToString("00"))
+
+            [void]$candidates.Add([pscustomobject]@{
+                lane_id = $laneId
+                objective = "Close a bounded $batchLabel backlog slice covering $($requirementIds.Count) currently uncovered requirements starting with '$firstTitle'."
+                priority = 100 + $sortScore + $batchOrdinal
+                prerequisite_lane_ids = @()
+                blocking_gap_ids = @()
+                allowed_path_prefixes = @(Get-SynthesizedLaneAllowedPathPrefixes -Rfc $rfc)
+                forbidden_path_prefixes = @(Get-SynthesizedLaneForbiddenPathPrefixes -Rfc $rfc)
+                requirement_families = @($requirementIds)
+                verification_commands = @($verificationCommand)
+                merge_check_commands = @($verificationCommand)
+                success_gates = @(
+                    "$batchLabel gains focused requirement-backed evidence without widening into an unrelated sweep",
+                    "the batch stays bounded to the listed requirement set and produces real tests or runtime movement"
+                )
+                fail_gates = @(
+                    "the lane turns into generated-only or trace-only churn",
+                    "the lane broadens beyond the current backlog batch without closing any listed requirement"
+                )
+                repeatable = $false
+                sort_score = $sortScore
+                batch_ordinal = $batchOrdinal
+            })
+        }
+    }
+
+    $orderedCandidates = @($candidates | Sort-Object sort_score, batch_ordinal, lane_id | Select-Object -First $MaxLaneCount)
+    $templates = New-Object System.Collections.Generic.List[object]
+    $priority = 100
+    foreach ($candidate in $orderedCandidates) {
+        [void]$templates.Add([pscustomobject]@{
+            lane_id = $candidate.lane_id
+            objective = $candidate.objective
+            priority = $priority
+            prerequisite_lane_ids = @($candidate.prerequisite_lane_ids)
+            blocking_gap_ids = @($candidate.blocking_gap_ids)
+            allowed_path_prefixes = @($candidate.allowed_path_prefixes)
+            forbidden_path_prefixes = @($candidate.forbidden_path_prefixes)
+            requirement_families = @($candidate.requirement_families)
+            verification_commands = @($candidate.verification_commands)
+            merge_check_commands = @($candidate.merge_check_commands)
+            success_gates = @($candidate.success_gates)
+            fail_gates = @($candidate.fail_gates)
+            repeatable = [bool]$candidate.repeatable
+        })
+        $priority++
+    }
+
+    return $templates.ToArray()
+}
+
 function New-LaneCatalog {
     param(
         [Parameter(Mandatory = $true)][string]$RepoRoot,
         [Parameter(Mandatory = $true)][string]$TargetBranch,
         [Parameter(Mandatory = $true)]$TriageJson,
-        [Parameter(Mandatory = $true)][string[]]$OpenGapIds,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][string[]]$OpenGapIds,
         [Parameter(Mandatory = $true)]$StateObject,
         [Parameter(Mandatory = $true)][string]$PlannerModel,
         [Parameter(Mandatory = $true)][string]$PlannerReasoningEffort,
@@ -2207,8 +2442,17 @@ function New-LaneCatalog {
     $activeLaneId = if ($null -ne $StateObject.active_lane -and $StateObject.active_lane.PSObject.Properties.Name -contains "lane_id") { [string]$StateObject.active_lane.lane_id } else { "" }
     $recommendedLaneId = ""
 
+    $laneTemplates = New-Object System.Collections.Generic.List[object]
+    foreach ($template in @(Get-LaneTemplateDefinitions)) {
+        [void]$laneTemplates.Add($template)
+    }
+
+    foreach ($template in @(Get-SynthesizedLaneTemplateDefinitions -TriageJson $TriageJson)) {
+        [void]$laneTemplates.Add($template)
+    }
+
     $lanes = New-Object System.Collections.Generic.List[object]
-    foreach ($template in Get-LaneTemplateDefinitions) {
+    foreach ($template in $laneTemplates) {
         $status = "eligible"
         $statusReason = "ready"
         $prerequisiteIds = @(Get-NormalizedStringList -Items $template.prerequisite_lane_ids)
