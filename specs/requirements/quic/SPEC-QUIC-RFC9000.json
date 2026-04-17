@@ -18475,6 +18475,11 @@
         "upstream_refs": [
           "RFC 9000 §12.5 RFC9000-S12.5-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0001.cs::TryGetPacketNumberSpace_MapsTheSupportedPacketFormsToTheExpectedSpaces",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0001.cs::TryGetPacketNumberSpace_RejectsVersionNegotiationAndRetryPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0001.cs::TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader"
         ]
       }
     },
@@ -18501,6 +18506,13 @@
         "upstream_refs": [
           "RFC 9000 §12.5 RFC9000-S12.5-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParsePaddingFrame_CarriesTheFrameBytesAcrossEveryPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParsePingFrame_CarriesTheFrameBytesAcrossEveryPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParseCryptoFrame_CarriesTheFrameBytesAcrossEveryPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParsePaddingPingAndCryptoFrames_RejectsTruncatedPayloads",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryFormatCryptoFrame_AllowsTheZeroLengthCryptoPayloadEdge"
         ]
       }
     },
@@ -18527,6 +18539,11 @@
         "upstream_refs": [
           "RFC 9000 §12.5 RFC9000-S12.5-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_CarriesTransportCloseAcrossEveryPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedTransportClosePayloads",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_AllowsTransportCloseWithoutAReasonPhrase"
         ]
       }
     },
@@ -18553,6 +18570,11 @@
         "upstream_refs": [
           "RFC 9000 §12.5 RFC9000-S12.5-B4-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_CarriesApplicationCloseInApplicationDataPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_RejectsTruncatedApplicationClosePayloads",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_AllowsApplicationCloseWithoutAReasonPhrase"
         ]
       }
     },
@@ -18579,6 +18601,11 @@
         "upstream_refs": [
           "RFC 9000 §12.5 RFC9000-S12.5-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0005.cs::TryProcessAckFrame_AcknowledgesPacketsOnlyWithinTheMatchingPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0005.cs::TryProcessAckFrame_DoesNotAcknowledgePacketsFromADifferentPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0005.cs::TryProcessAckFrame_AcknowledgesPacketNumberZeroIndependentlyInEachPacketNumberSpace"
         ]
       }
     },
@@ -18605,6 +18632,11 @@
         "upstream_refs": [
           "RFC 9000 §12.5 RFC9000-S12.5-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0006.cs::ServerHandshakeDonePacketLossQueuesRepairUntilAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0006.cs::ClientHandshakeDoneTransitionDoesNotEmitAHandshakeDonePacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0006.cs::TryBuildOutboundHandshakeDonePayload_WritesOnlyTheHandshakeDoneTypeByte"
         ]
       }
     },

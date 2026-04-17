@@ -10155,6 +10155,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.5 RFC9000-S12.5-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0001.cs::TryGetPacketNumberSpace_MapsTheSupportedPacketFormsToTheExpectedSpaces
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0001.cs::TryGetPacketNumberSpace_RejectsVersionNegotiationAndRetryPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0001.cs::TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader
 
 ## REQ-QUIC-RFC9000-S12P5-0002 Allow PADDING, PING, and CRYPTO in any packet number space
 PADDING, PING, and CRYPTO frames MAY appear in any packet number space.
@@ -10169,6 +10173,12 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.5 RFC9000-S12.5-B3-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParsePaddingFrame_CarriesTheFrameBytesAcrossEveryPacketNumberSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParsePingFrame_CarriesTheFrameBytesAcrossEveryPacketNumberSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParseCryptoFrame_CarriesTheFrameBytesAcrossEveryPacketNumberSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryParsePaddingPingAndCryptoFrames_RejectsTruncatedPayloads
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0002.cs::TryFormatCryptoFrame_AllowsTheZeroLengthCryptoPayloadEdge
 
 ## REQ-QUIC-RFC9000-S12P5-0003 Allow QUIC-layer CONNECTION_CLOSE in any packet number space
 CONNECTION_CLOSE frames signaling errors at the QUIC layer MAY appear in any packet number space.
@@ -10183,6 +10193,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.5 RFC9000-S12.5-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_CarriesTransportCloseAcrossEveryPacketNumberSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedTransportClosePayloads
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0003.cs::TryParseConnectionCloseFrame_AllowsTransportCloseWithoutAReasonPhrase
 
 ## REQ-QUIC-RFC9000-S12P5-0004 Restrict application-error CONNECTION_CLOSE to application data
 CONNECTION_CLOSE frames signaling application errors MUST only appear in the application data packet number space.
@@ -10197,6 +10211,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.5 RFC9000-S12.5-B4-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_CarriesApplicationCloseInApplicationDataPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_RejectsTruncatedApplicationClosePayloads
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0004.cs::TryParseConnectionCloseFrame_AllowsApplicationCloseWithoutAReasonPhrase
 
 ## REQ-QUIC-RFC9000-S12P5-0005 Allow ACK in any packet number space but only acknowledge within that space
 ACK frames MAY appear in any packet number space, but they can only acknowledge packets that appeared in that packet number space.
@@ -10211,6 +10229,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.5 RFC9000-S12.5-B5-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0005.cs::TryProcessAckFrame_AcknowledgesPacketsOnlyWithinTheMatchingPacketNumberSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0005.cs::TryProcessAckFrame_DoesNotAcknowledgePacketsFromADifferentPacketNumberSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0005.cs::TryProcessAckFrame_AcknowledgesPacketNumberZeroIndependentlyInEachPacketNumberSpace
 
 ## REQ-QUIC-RFC9000-S12P5-0006 Restrict all other frame types to application data
 All other frame types MUST only be sent in the application data packet number space.
@@ -10225,6 +10247,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §12.5 RFC9000-S12.5-B6-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0006.cs::ServerHandshakeDonePacketLossQueuesRepairUntilAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0006.cs::ClientHandshakeDoneTransitionDoesNotEmitAHandshakeDonePacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0006.cs::TryBuildOutboundHandshakeDonePayload_WritesOnlyTheHandshakeDoneTypeByte
 
 ## REQ-QUIC-RFC9000-S12P5-0007 treat receipt of these frames in 0-RTT packets as a connection error of type PROTOCOL_VIOLATION
 A server MAY treat receipt of these frames in 0-RTT packets as a connection error of type PROTOCOL_VIOLATION.
