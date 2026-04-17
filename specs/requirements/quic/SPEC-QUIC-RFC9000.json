@@ -31034,9 +31034,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::TryParsePingFrame_RejectsEmptyAndNonPingTypes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0002.cs::FuzzPingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -37736,6 +37736,10 @@
         "upstream_refs": [
           "RFC 9000 §19.21 RFC9000-S19.21-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0002.cs::TryParseTypeOnlyFrames_ConsumesOnlyTheDeclaredFrameSyntax",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0002.cs::TryParseTypeOnlyFrames_RejectsEmptyAndMismatchedTypes"
         ]
       }
     },
