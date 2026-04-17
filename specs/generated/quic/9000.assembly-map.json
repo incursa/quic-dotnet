@@ -15999,7 +15999,7 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13-0004",
-      "title": "A single QUIC packet can include multiple STREAM frames from one or more streaMs",
+      "title": "A single QUIC packet can include multiple STREAM frames from one or more streams",
       "source_batches": [
         "11-15"
       ],

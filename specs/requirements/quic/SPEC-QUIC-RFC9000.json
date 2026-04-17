@@ -18770,6 +18770,9 @@
         "upstream_refs": [
           "RFC 9000 §13 RFC9000-S13-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0004.cs::TryBuildProtectedApplicationDataPacket_CanCarryMultipleStreamFrames"
         ]
       }
     },
@@ -18796,6 +18799,9 @@
         "upstream_refs": [
           "RFC 9000 §13 RFC9000-S13-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0005.cs::WriteAsync_EmitsASingleStreamFrameWithPaddingOnlyInTheRemainder"
         ]
       }
     },
