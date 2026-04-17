@@ -9,7 +9,7 @@ Describe how the current transport surface satisfies the RFC 9000 requirements a
 ## Scope
 
 This design covers the canonical RFC 9000 transport slice, including packet forms, stream semantics, frame codecs, transport-parameter handling, version negotiation, and the transport-side recovery contracts surfaced in the requirement file.
-The current stream-state and flow-control slice is intentionally bounded to a connection-scoped helper for stream opening, receive-side ordered buffering, final-size accounting, and MAX_* limit application.
+The current stream-state and flow-control slice spans a connection-scoped helper and runtime path for stream opening, receive-side ordered buffering, final-size accounting, and MAX_* credit publication/repair.
 It does not define RFC 8999 version-independent invariants or RFC 9001 TLS-protection details as separate concerns, and it does not claim full retransmission-driven send states or STOP_SENDING/RESET orchestration.
 
 ## Requirements Satisfied
@@ -1461,7 +1461,7 @@ It does not define RFC 8999 version-independent invariants or RFC 9001 TLS-prote
 ## Design Summary
 
 The transport stack keeps packet parsing, frame codecs, stream helpers, transport-parameter encoding, and version-negotiation logic explicit so the RFC 9000 rules remain testable and traceable.
-The stream-state and flow-control foundation is bounded to a connection-scoped helper that can open streams, buffer received bytes in order, track final size, and apply MAX_* credit without pretending to solve the full sender/recovery orchestration.
+The stream-state and flow-control foundation is split between a connection-scoped helper and runtime path that can open streams, buffer received bytes in order, track final size, and publish MAX_* credit without pretending to solve the full sender/recovery orchestration.
 Shared wire-shape behavior stays narrow enough that overlapping RFC 8999 clauses can be dual-tagged when the same test or proof artifact covers both slices.
 
 ## Key Components
@@ -1477,7 +1477,7 @@ Shared wire-shape behavior stays narrow enough that overlapping RFC 8999 clauses
 
 ## Risks
 
-- Over-broad shared parsing or stream-state helpers would make it harder to keep RFC 9000 transport semantics separate from RFC 8999 invariants and RFC 9001 packet-protection behavior, or to keep the bounded stream-helper slice from implying full sender orchestration.
+- Over-broad shared parsing or stream-state helpers would make it harder to keep RFC 9000 transport semantics separate from RFC 8999 invariants and RFC 9001 packet-protection behavior, or to keep the bounded stream/runtime flow-control slice from implying full sender orchestration.
 - Shared tests need deliberate requirement tags so overlap coverage is not miscounted.
 
 ## Related Artifacts

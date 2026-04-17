@@ -9150,6 +9150,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §11.1 RFC9000-S11.1-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0004.cs::ClosingRuntimeRepliesToAttributedPacketsWithConnectionClose
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0004.cs::DrainingRuntimeDoesNotReplyToAttributedPacketsWithConnectionClose
 
 ## REQ-QUIC-RFC9000-S11P1-0005 Limiting the number of retransmissions and the time over which this final packet is sent limits the effort expended on terminated connections
 Limiting the number of retransmissions and the time over which this final packet MUST be sent limits the effort expended on terminated connections.
@@ -9164,6 +9167,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §11.1 RFC9000-S11.1-B4-P3-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0005.cs::CloseLifetimeExpiryDiscardsTheConnection
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0005.cs::ClosingRuntimeRepliesBeforeTheCloseLifetimeExpires
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0005.cs::PacketsAfterCloseLifetimeExpiryDoNotTriggerAnotherCloseReply
 
 ## REQ-QUIC-RFC9000-S11P1-0006 An endpoint that continues to receive data for a terminated connection MUST attempt the stateless reset process
 An endpoint that continues to receive data for a terminated connection MUST attempt the stateless reset process (Section 10.3).
@@ -9178,6 +9185,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §11.1 RFC9000-S11.1-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0006.cs::ClosingLifecycleStateTransitionsToDrainingWhenAStatelessResetTokenMatches
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0006.cs::ClosingLifecycleStateDoesNotEnterDrainingWhenTheTokenDoesNotMatch
 
 ## REQ-QUIC-RFC9000-S11P1-0007 As the AEAD for Initial packets does not provide strong authentication, an endpoint MAY discard an invalid Initial packet
 As the AEAD for Initial packets does not provide strong authentication, an endpoint MAY discard an invalid Initial packet.
@@ -9192,6 +9202,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §11.1 RFC9000-S11.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeDiscardsClientProtectedInitialPacketWithoutProcessingFrames
 
 ## REQ-QUIC-RFC9000-S11P1-0008 Only discard a packet without processing or after reverting effects
 An endpoint MUST NOT discard a packet unless it does not process the frames in the packet or it reverts the effects of any processing.
@@ -9206,6 +9218,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §11.1 RFC9000-S11.1-B6-P5-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeDoesNotMutateStateWhenATamperedInitialPacketIsDiscarded
 
 ## REQ-QUIC-RFC9000-S11P2-0001 If an application-level error affects a single stream but otherwise leaves the connection in a recoverable state, the endpoint can send a RESET_STREAM frame (Section 19
 If an application-level error MUST affects a single stream but otherwise leaves the connection in a recoverable state, the endpoint can send a RESET_STREAM frame (Section 19.4) with an appropriate error code to terminate just the affected stream.

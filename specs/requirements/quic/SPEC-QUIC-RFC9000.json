@@ -16670,6 +16670,10 @@
         "upstream_refs": [
           "RFC 9000 §11.1 RFC9000-S11.1-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0004.cs::ClosingRuntimeRepliesToAttributedPacketsWithConnectionClose",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0004.cs::DrainingRuntimeDoesNotReplyToAttributedPacketsWithConnectionClose"
         ]
       }
     },
@@ -16696,6 +16700,11 @@
         "upstream_refs": [
           "RFC 9000 §11.1 RFC9000-S11.1-B4-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0005.cs::CloseLifetimeExpiryDiscardsTheConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0005.cs::ClosingRuntimeRepliesBeforeTheCloseLifetimeExpires",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0005.cs::PacketsAfterCloseLifetimeExpiryDoNotTriggerAnotherCloseReply"
         ]
       }
     },
@@ -16722,6 +16731,10 @@
         "upstream_refs": [
           "RFC 9000 §11.1 RFC9000-S11.1-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0006.cs::ClosingLifecycleStateTransitionsToDrainingWhenAStatelessResetTokenMatches",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0006.cs::ClosingLifecycleStateDoesNotEnterDrainingWhenTheTokenDoesNotMatch"
         ]
       }
     },
@@ -16748,6 +16761,9 @@
         "upstream_refs": [
           "RFC 9000 §11.1 RFC9000-S11.1-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeDiscardsClientProtectedInitialPacketWithoutProcessingFrames"
         ]
       }
     },
@@ -16774,6 +16790,9 @@
         "upstream_refs": [
           "RFC 9000 §11.1 RFC9000-S11.1-B6-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeDoesNotMutateStateWhenATamperedInitialPacketIsDiscarded"
         ]
       }
     },
