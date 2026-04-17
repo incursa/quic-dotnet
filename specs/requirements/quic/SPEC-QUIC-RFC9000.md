@@ -10886,7 +10886,7 @@ Trace:
   - RFC 9000 §13.2.6 RFC9000-S13.2.6-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.6
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::PacketNumberSpaces_AreTrackedIndependently
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P1-0006.cs::PacketNumberSpaces_AreTrackedIndependently
 
 ## REQ-QUIC-RFC9000-S13P2P6-0003 Acknowledge client 0-RTT packets with 1-RTT packets
 Packets that a client sends with 0-RTT packet protection MUST be acknowledged by the server in packets protected by 1-RTT keys.
