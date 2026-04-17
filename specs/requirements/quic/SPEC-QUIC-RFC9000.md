@@ -7082,6 +7082,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.3 RFC9000-S9.6.3-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0001.cs::ClientPerformsConcurrentValidationToTheOriginalAndPreferredServerAddressesFromItsNewAddress
 
 ## REQ-QUIC-RFC9000-S9P6P3-0002 If path validation of the server's preferred address succeeds, the client MUST abandon validation of the original address and migrate to using the server's preferred address
 If path validation of the server's preferred address succeeds, the client MUST abandon validation of the original address and migrate to using the server's preferred address.
@@ -7096,6 +7098,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.3 RFC9000-S9.6.3-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0002.cs::PreferredAddressValidationAbandonsTheOriginalServerAddressCandidateBeforePromoting
 
 ## REQ-QUIC-RFC9000-S9P6P3-0003 If path validation of the server's preferred address fails but validation of the server's original address succeeds, the client MAY migrate to its new address and continue sending to the server's original address
 If path validation of the server's preferred address fails but validation of the server's original address succeeds, the client MAY migrate to its new address and continue sending to the server's original address.
@@ -7110,6 +7114,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.3 RFC9000-S9.6.3-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0003.cs::ClientMayContinueSendingToTheOriginalServerAddressWhenPreferredAddressValidationFails
 
 ## REQ-QUIC-RFC9000-S9P6P3-0004 If packets received at the server's preferred address have a different source address than observed from the client during the handshake, the server MUST protect against potential attacks as described in Sections 9
 If packets received at the server's preferred address have a different source address than observed from the client during the handshake, the server MUST protect against potential attacks as described in Sections 9.3.1 and 9.3.2.

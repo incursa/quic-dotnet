@@ -3749,6 +3749,9 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
+        QuicConnectionPathIdentity? originalPathIdentity = activePath?.Identity;
+        bool preferredAddressPathValidated = IsPreferredAddressPath(pathValidationSucceededEvent.PathIdentity);
+
         candidatePath = candidatePath with
         {
             Validation = candidatePath.Validation with
@@ -3767,6 +3770,15 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         lastValidatedRemoteAddress = candidatePath.Identity.RemoteAddress;
 
         bool stateChanged = true;
+        if (preferredAddressPathValidated
+            && originalPathIdentity.HasValue)
+        {
+            stateChanged |= TryAbandonOriginalCandidatePathAfterPreferredAddressValidation(
+                originalPathIdentity.Value,
+                pathValidationSucceededEvent.PathIdentity,
+                nowTicks);
+        }
+
         if (CanPromoteActivePathMigration()
             && TryPromoteValidatedCandidatePath(pathValidationSucceededEvent.PathIdentity, nowTicks, ref effects))
         {
@@ -4756,6 +4768,47 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             bestPathIdentity.Value,
             RestoreSavedState: preserveCurrentRecoveryState));
         return true;
+    }
+
+    private bool TryAbandonOriginalCandidatePathAfterPreferredAddressValidation(
+        QuicConnectionPathIdentity originalPathIdentity,
+        QuicConnectionPathIdentity preferredPathIdentity,
+        long nowTicks)
+    {
+        bool stateChanged = false;
+
+        foreach (KeyValuePair<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> entry in candidatePaths.ToArray())
+        {
+            QuicConnectionCandidatePathRecord candidatePath = entry.Value;
+            if (candidatePath.Validation.IsValidated
+                || candidatePath.Validation.IsAbandoned)
+            {
+                continue;
+            }
+
+            if (!string.Equals(candidatePath.Identity.RemoteAddress, originalPathIdentity.RemoteAddress, StringComparison.Ordinal)
+                || candidatePath.Identity.RemotePort != originalPathIdentity.RemotePort
+                || !string.Equals(candidatePath.Identity.LocalAddress, preferredPathIdentity.LocalAddress, StringComparison.Ordinal)
+                || candidatePath.Identity.LocalPort != preferredPathIdentity.LocalPort)
+            {
+                continue;
+            }
+
+            candidatePath = candidatePath with
+            {
+                Validation = candidatePath.Validation with
+                {
+                    IsAbandoned = true,
+                    ValidationDeadlineTicks = null,
+                },
+                LastActivityTicks = nowTicks,
+            };
+
+            candidatePaths[entry.Key] = candidatePath;
+            stateChanged = true;
+        }
+
+        return stateChanged;
     }
 
     private void ResetRecoveryStateForNewPath()
