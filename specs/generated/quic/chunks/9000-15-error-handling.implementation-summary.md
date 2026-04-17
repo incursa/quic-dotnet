@@ -5,6 +5,7 @@
 - Connection-close wire support for signaling connection-wide errors: `REQ-QUIC-RFC9000-S11-0001`, `REQ-QUIC-RFC9000-S11-0002`, `REQ-QUIC-RFC9000-S11-0003`, `REQ-QUIC-RFC9000-S11-0004`
 - CONNECTION_CLOSE frame type selection and parsing for transport/application closes: `REQ-QUIC-RFC9000-S11P1-0001`, `REQ-QUIC-RFC9000-S11P1-0002`, `REQ-QUIC-RFC9000-S11P1-0003`
 - Connection-close non-ack-eliciting classification fix for application closes: `REQ-QUIC-RFC9000-S11P1-0001`
+- Stateless-reset suppression and runtime routing proof: `REQ-QUIC-RFC9000-S11-0005`
 
 ## Files Changed
 
@@ -22,6 +23,7 @@
 
 - Added `tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs` for transport/application CONNECTION_CLOSE round trips and invalid input rejection.
 - Added `tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs` for randomized CONNECTION_CLOSE round trips and truncation rejection.
+- Added `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0005.cs` for positive and negative stateful-routing proof over the runtime ingress path.
 - Updated `tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs` so `IsAckElicitingFrameType` treats application CONNECTION_CLOSE (`0x1d`) as non-ack-eliciting.
 - Updated `tests/Incursa.Quic.Tests/QuicFrameTestData.cs` with a CONNECTION_CLOSE frame builder.
 
@@ -34,7 +36,6 @@
 
 ## Remaining Open Requirements In Scope
 
-- `REQ-QUIC-RFC9000-S11-0005`
 - `REQ-QUIC-RFC9000-S11P1-0004`
 - `REQ-QUIC-RFC9000-S11P1-0005`
 - `REQ-QUIC-RFC9000-S11P1-0006`
@@ -48,6 +49,6 @@
 
 ## Risks Or Follow-up Notes
 
-- The new CONNECTION_CLOSE codec closes the wire-format gap, but the endpoint lifecycle requirements still need a connection-state machine, terminal packet retransmission policy, and receive-path rollback support.
+- The new CONNECTION_CLOSE codec closes the wire-format gap, and the requirement-home proof now closes `REQ-QUIC-RFC9000-S11-0005`; the remaining endpoint lifecycle requirements still need a connection-state machine, terminal packet retransmission policy, and receive-path rollback support.
 - `REQ-QUIC-RFC9000-S11P2-*` remains blocked by the missing application-protocol abstraction for instigating stream termination and handling STOP_SENDING-driven RESET_STREAM behavior.
 - The repository now rejects application CONNECTION_CLOSE frames as ack-eliciting, which aligns the classifier with RFC 9000 error-handling semantics.

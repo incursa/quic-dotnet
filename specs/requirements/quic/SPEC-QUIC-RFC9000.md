@@ -9085,6 +9085,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §11 RFC9000-S11-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-11
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0005.cs::ReceiveDatagram_RoutesAssociatedPacketsToTheRuntimeInsteadOfStatelessReset
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0005.cs::ReceiveDatagram_DoesNotTreatAssociatedPacketsAsStatelessReset
 
 ## REQ-QUIC-RFC9000-S11P1-0001 Errors that result in the connection being unusable, such as an obvious violation of protocol semantics or corruption of state that affects an entire connection, MUST be signaled using a CONNECTION_CLOSE frame (Section 19
 Errors that result in the connection being unusable, such as an obvious violation of protocol semantics or corruption of state that affects an entire connection, MUST be signaled using a CONNECTION_CLOSE frame (Section 19.19).
@@ -11604,7 +11607,7 @@ Trace:
   - RFC 9000 §13.4 RFC9000-S13.4-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2-0001.cs::SenderFlowController_ProcessesEcnInAckFrames
 
 ## REQ-QUIC-RFC9000-S13P4-0002 Check whether the path and peer support ECN before enabling it
 To enable ECN, a sending QUIC endpoint MUST first determine whether a path supports ECN marking and whether the peer reports the ECN values in received IP headers.
@@ -11764,7 +11767,7 @@ Trace:
   - RFC 9000 §13.4.2 RFC9000-S13.4.2-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2-0001.cs::SenderFlowController_ProcessesEcnInAckFrames
 
 ## REQ-QUIC-RFC9000-S13P4P2-0002 Mark early packets on a new path with ECT(0)
 The endpoint MUST set an ECT(0) codepoint in the IP header of early outgoing packets sent on a new path to the peer.
@@ -16972,9 +16975,9 @@ Trace:
   - RFC 9000 §19.1 RFC9000-S19.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_RejectsEmptyAndNonPaddingTypes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::FuzzPaddingFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P1-0002 PADDING frames MAY be used to increase the size of a packet
 PADDING frames MAY be used to increase the size of a packet.

@@ -16553,6 +16553,10 @@
         "upstream_refs": [
           "RFC 9000 §11 RFC9000-S11-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0005.cs::ReceiveDatagram_RoutesAssociatedPacketsToTheRuntimeInsteadOfStatelessReset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0005.cs::ReceiveDatagram_DoesNotTreatAssociatedPacketsAsStatelessReset"
         ]
       }
     },
