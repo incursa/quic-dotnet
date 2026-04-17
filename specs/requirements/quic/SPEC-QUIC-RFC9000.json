@@ -17809,6 +17809,11 @@
         "upstream_refs": [
           "RFC 9000 §12.3 RFC9000-S12.3-B14-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0011.cs::RecordIncomingPacket_MergesDuplicatePacketNumbersIntoASingleAckRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0011.cs::RecordIncomingPacket_KeepsMatchingPacketNumbersSeparatedByPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0011.cs::RecordIncomingPacket_HandlesTheLargestPacketNumberWithoutSplittingTheRange"
         ]
       }
     },
@@ -17835,6 +17840,11 @@
         "upstream_refs": [
           "RFC 9000 §12.3 RFC9000-S12.3-B14-P10-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0012.cs::TryOpenProtectedApplicationDataPacket_PublishesThePacketNumberOnlyAfterProtectionIsRemoved",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0012.cs::TryOpenProtectedApplicationDataPacket_RejectsTamperedPacketsBeforeAnyReceiptIsRecorded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0012.cs::TryOpenProtectedApplicationDataPacket_AllowsTheSameOpenedPacketToCollapseToOneReceipt"
         ]
       }
     },
