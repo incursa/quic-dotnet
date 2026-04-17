@@ -6826,11 +6826,16 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-        "upstream_refs": [
-          "RFC 9000 §5.2.3 RFC9000-S5.2.3-B5-P2-S2",
-          "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.3"
-        ]
-      }
+      "upstream_refs": [
+        "RFC 9000 §5.2.3 RFC9000-S5.2.3-B5-P2-S2",
+        "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.3"
+      ],
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P3-0005.cs::ServerMigratesToThePreferredAddressAfterValidationEvenWhenDisableActiveMigrationIsSet",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P3-0005.cs::ServerKeepsTheOriginalAddressBeforePreferredAddressValidationCompletesEvenWhenDisableActiveMigrationIsSet",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P3-0005.cs::ServerMigratesToAPortOnlyPreferredAddressEvenWhenDisableActiveMigrationIsSet"
+      ]
+    }
     },
     {
       "id": "REQ-QUIC-RFC9000-S5P2P3-0006",

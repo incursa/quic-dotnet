@@ -3739,6 +3739,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.2.3 RFC9000-S5.2.3-B5-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P3-0005.cs::ServerMigratesToThePreferredAddressAfterValidationEvenWhenDisableActiveMigrationIsSet
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P3-0005.cs::ServerKeepsTheOriginalAddressBeforePreferredAddressValidationCompletesEvenWhenDisableActiveMigrationIsSet
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P3-0005.cs::ServerMigratesToAPortOnlyPreferredAddressEvenWhenDisableActiveMigrationIsSet
 
 ## REQ-QUIC-RFC9000-S5P2P3-0006 Avoid stateless reset oracles in simple load balancing
 Server deployments that use this simple form of load balancing MUST avoid the creation of a stateless reset oracle.
