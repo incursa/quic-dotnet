@@ -6848,6 +6848,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.1 RFC9000-S9.6.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
 
 ## REQ-QUIC-RFC9000-S9P6P1-0007 Allow Per-Family Preferred Addresses
 Servers MAY communicate a preferred address of each address family to allow clients to pick the one most suited to their network attachment.
