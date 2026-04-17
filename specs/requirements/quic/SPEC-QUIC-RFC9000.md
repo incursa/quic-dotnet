@@ -11676,7 +11676,7 @@ Trace:
   - RFC 9000 §13.4.1 RFC9000-S13.4.1-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
 
 ## REQ-QUIC-RFC9000-S13P4P1-0005 Include ECN counts in subsequent ACK frames
 These ECN counts MUST be included in subsequent ACK frames.
