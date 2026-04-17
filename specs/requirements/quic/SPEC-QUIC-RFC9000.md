@@ -14736,6 +14736,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.4 RFC9000-S17.2.4-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_ExposesHandshakeReservedAndPacketNumberLengthBitsFromByteZero
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_RejectsHandshakePacketsWhoseLengthFieldIsShorterThanTheEncodedPacketNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_AcceptsHandshakePacketsWhenBothBitFieldsUseTheirLargestEncodings
 
 ## REQ-QUIC-RFC9000-S17P2P4-0003 It MUST be used to carry cryptographic handshake messages and acknowledgments from the server...
 It MUST be used to carry cryptographic handshake messages and acknowledgments from the server and client.

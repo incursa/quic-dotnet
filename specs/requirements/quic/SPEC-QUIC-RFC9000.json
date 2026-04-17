@@ -26703,12 +26703,17 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-        "upstream_refs": [
-          "RFC 9000 §17.2.4 RFC9000-S17.2.4-B2-P1-S2",
-          "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
-        ]
-      }
-    },
+      "upstream_refs": [
+        "RFC 9000 §17.2.4 RFC9000-S17.2.4-B2-P1-S2",
+        "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.4"
+      ],
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_ExposesHandshakeReservedAndPacketNumberLengthBitsFromByteZero",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_RejectsHandshakePacketsWhoseLengthFieldIsShorterThanTheEncodedPacketNumber",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0002.cs::TryParseLongHeader_AcceptsHandshakePacketsWhenBothBitFieldsUseTheirLargestEncodings"
+      ]
+    }
+  },
     {
       "id": "REQ-QUIC-RFC9000-S17P2P4-0003",
       "title": "It MUST be used to carry cryptographic handshake messages and acknowledgments from the server...",
