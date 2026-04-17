@@ -11199,6 +11199,12 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B11-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryReadStreamData_UpdatesTheCurrentStreamDataOffsetWhenAdditionalBytesAreRead
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryRegisterLoss_QueuesTheMostRecentMaxStreamDataPacketForRepairUntilAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryAcknowledgePacket_DoesNotRetainTheMostRecentMaxStreamDataFrameForRepair
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryReadStreamData_LeavesTheCurrentStreamDataOffsetUnchangedAtTheMaximumFlowControlLimit
 
 ## REQ-QUIC-RFC9000-S13P3-0019 Stop sending MAX_STREAM_DATA once the stream is closed or reset
 An endpoint SHOULD stop sending MAX_STREAM_DATA frames when the receiving part of the stream enters a Size Known or Reset Recvd state.
@@ -11291,6 +11297,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0024.cs::TryRegisterLoss_RetainsBlockedPacketsAndAllowsAReplacementWhileStillBlocked
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0024.cs::TryAcknowledgePacket_DoesNotRetainTheMostRecentBlockedFrameForRepair
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0024.cs::TryRegisterLoss_RetainsStreamDataBlockedPacketsAndAllowsAReplacementWhileStillBlocked
 
 ## REQ-QUIC-RFC9000-S13P3-0025 Include the blocking limit in blocked frames
 These frames MUST always include the limit that is causing blocking at the time that they are transmitted.
