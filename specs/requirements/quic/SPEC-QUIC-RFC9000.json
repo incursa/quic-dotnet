@@ -19086,6 +19086,11 @@
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0002.cs::TryBuildAckFrame_IncludesContiguousAckElicitingAndNonAckElicitingPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0002.cs::TryBuildAckFrame_ReturnsFalseWithoutTrackedPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0002.cs::TryBuildAckFrame_PreservesSparsePacketRanges"
         ]
       }
     },
@@ -19112,6 +19117,9 @@
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0003.cs::TryComputeProbeTimeoutMicros_UsesTheReceiverMaxAckDelayForApplicationDataPackets"
         ]
       }
     },
@@ -19138,6 +19146,11 @@
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_ReturnsTrueOnceTheApplicationDataAckDelayExpires",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseBeforeTheApplicationDataAckDelayExpires",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_UsesTheExactApplicationDataAckDelayBoundary"
         ]
       }
     },
@@ -19164,6 +19177,11 @@
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0005.cs::ShouldSendAckImmediately_ReturnsTrueForAckElicitingInitialAndHandshakePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0005.cs::ShouldSendAckImmediately_RemainsFalseForNonAckElicitingInitialAndHandshakePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0005.cs::ShouldSendAckImmediately_ReArmsAfterAnInitialAckFrameIsMarkedSent"
         ]
       }
     },
@@ -19190,6 +19208,11 @@
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_AllowsTheFirstAckOnlyPacketForAnAckElicitingApplicationDataPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_RejectsASecondAckOnlyPacketForTheSameAckElicitingApplicationDataPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_RearmsAfterTheNextAckElicitingApplicationDataPacketArrives"
         ]
       }
     },
