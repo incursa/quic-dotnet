@@ -12211,8 +12211,6 @@ Trace:
   - RFC 9000 §14.1 RFC9000-S14.1-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs::TryFormatVersion1InitialDatagramPadding_WritesRepeatedPaddingFrames
-  - tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs::TryGetVersion1InitialDatagramPaddingLength_ComputesTheRemainingPadding
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0003.cs::TryFormatVersion1InitialDatagramPadding_AllowsZeroPaddingAtTheMinimumPayloadSize
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0003.cs::TryFormatVersion1InitialDatagramPadding_RejectsNegativePayloadLengths
 
