@@ -21857,7 +21857,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation"
         ]
       }
     },
@@ -21912,7 +21912,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation"
         ]
       }
     },

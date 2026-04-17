@@ -11993,7 +11993,7 @@ Trace:
   - RFC 9000 §13.4.2.2 RFC9000-S13.4.2.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
 
 ## REQ-QUIC-RFC9000-S13P4P2P2-0004 Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable
 Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable.
@@ -12023,7 +12023,7 @@ Trace:
   - RFC 9000 §13.4.2.2 RFC9000-S13.4.2.2-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
 
 ## REQ-QUIC-RFC9000-S14-0001 Allow one or more QUIC packets per UDP datagram
 A UDP datagram MAY include one or more QUIC packets.
