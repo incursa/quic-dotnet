@@ -16819,6 +16819,10 @@
         "upstream_refs": [
           "RFC 9000 §11.2 RFC9000-S11.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0001.cs::AbortWrite_EmitsResetStreamForTheTargetStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0001.cs::AbortWrite_DoesNotSpreadToAnotherWritableStream"
         ]
       }
     },
@@ -16845,6 +16849,10 @@
         "upstream_refs": [
           "RFC 9000 §11.2 RFC9000-S11.2-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0002.cs::TryAbortLocalStreamWrites_UsesTheApplicationProtocolOwnedResetPath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0002.cs::TryAbortLocalStreamWrites_RejectsPeerInitiatedStreams"
         ]
       }
     },
@@ -16871,6 +16879,10 @@
         "upstream_refs": [
           "RFC 9000 §11.2 RFC9000-S11.2-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0003.cs::AbortRead_UsesTheApplicationProtocolDirectApiPath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0003.cs::AbortRead_RejectsStreamsWithoutReadableSides"
         ]
       }
     },
@@ -16897,6 +16909,10 @@
         "upstream_refs": [
           "RFC 9000 §11.2 RFC9000-S11.2-B4-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0004.cs::TryReceiveStopSendingFrame_ProducesResetStreamForTheLocalApplicationProtocolPath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0004.cs::TryReceiveStopSendingFrame_RejectsStreamsAlreadyResetByThePeer"
         ]
       }
     },
@@ -16923,6 +16939,10 @@
         "upstream_refs": [
           "RFC 9000 §11.2 RFC9000-S11.2-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0005.cs::AbortDirections_ExposeApplicationVisibleCancellationNotifications",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0005.cs::AbortDirections_DoNotEscalateToConnectionTermination"
         ]
       }
     },
