@@ -12771,6 +12771,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.4 RFC9000-S14.4-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs::TrackSentPacket_RetainsAckElicitingProbePackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs::TrackSentPacket_RejectsProbePacketsThatAreNotAckEliciting
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs::TrackSentPacket_RejectsProbePacketsThatAreAckOnly
 
 ## REQ-QUIC-RFC9000-S14P4-0002 Do not treat PMTU probe loss as congestion
 Loss of a QUIC packet that is carried in a PMTU probe SHOULD NOT trigger a congestion control reaction.
@@ -12785,6 +12789,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.4 RFC9000-S14.4-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0002.cs::TryRegisterLoss_IgnoresProbePacketLossForCongestionControl
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0007.cs::NonProbePacketLossStillReducesCongestionAtTheSameBoundary
 
 ## REQ-QUIC-RFC9000-S15-0001 Identify versions with 32-bit unsigned numbers
 QUIC versions MUST be identified using a 32-bit unsigned number.
@@ -20667,9 +20674,8 @@ Trace:
   - RFC 9000 §19.18 RFC9000-S19.18-B4-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.18
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0001.cs::TryParsePathResponseFrame_ParsesAndFormatsTheEightBytePayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0002.cs::TryParsePathResponseFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P18-0003 If the content of a PATH_RESPONSE frame does not match the content of a PATH_CHALLENGE frame...
 If the content of a PATH_RESPONSE frame does not match the content of a PATH_CHALLENGE frame previously sent by the endpoint, the endpoint MAY generate a connection error of type PROTOCOL_VIOLATION.

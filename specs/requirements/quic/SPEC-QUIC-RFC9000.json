@@ -37133,9 +37133,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0001.cs::TryParsePathResponseFrame_ParsesAndFormatsTheEightBytePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0002.cs::TryParsePathResponseFrame_RejectsTruncatedInput"
         ]
       }
     },
