@@ -246,6 +246,11 @@
         "upstream_refs": [
           "RFC 9000 §2 RFC9000-S2-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsTruncatedInput",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::FuzzMaxDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
