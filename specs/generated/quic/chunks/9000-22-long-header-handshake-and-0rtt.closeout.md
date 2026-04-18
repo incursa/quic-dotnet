@@ -10,8 +10,8 @@
 
 | Requirement ID | Title | Completion Status | Evidence | Note |
 | --- | --- | --- | --- | --- |
-| `REQ-QUIC-RFC9000-S17P2P1-0001` | The Version Negotiation packet is a response to a client packet that contains a version t... | blocked | explicit blocker note | Blocked by missing Version Negotiation decision, emission, and connection-state surfaces. |
-| `REQ-QUIC-RFC9000-S17P2P1-0002` | It MUST only be sent by servers | blocked | explicit blocker note | Blocked by missing Version Negotiation decision, emission, and connection-state surfaces. |
+| `REQ-QUIC-RFC9000-S17P2P1-0001` | The Version Negotiation packet is a response to a client packet that contains a version t... | implemented and tested | implementation and test evidence | Unsupported-version detection is covered by the requirement-home tests. |
+| `REQ-QUIC-RFC9000-S17P2P1-0002` | It MUST only be sent by servers | implemented and tested | implementation and test evidence | Server-side Version Negotiation formatting is covered by the requirement-home tests. |
 | `REQ-QUIC-RFC9000-S17P2P1-0003` | The Header Form field MUST be 1 bits long with value 1 | implemented and tested | implementation and test evidence | Long headers are classified from the first-byte high bit. |
 | `REQ-QUIC-RFC9000-S17P2P1-0004` | The Unused field MUST be 7 bits long | implemented and tested | implementation and test evidence | Version Negotiation packets preserve the 7-bit unused field without making parse decisions from its value. |
 | `REQ-QUIC-RFC9000-S17P2P1-0005` | The Version field MUST be 32 bits long with value 0 | implemented and tested | implementation and test evidence | Version zero maps to Version Negotiation and is preserved by the parser. |
@@ -19,17 +19,17 @@
 | `REQ-QUIC-RFC9000-S17P2P1-0007` | The Destination Connection ID field MUST be between 0 and 2040 bits long | implemented and tested | implementation and test evidence | Version Negotiation packets can carry longer connection IDs when forming the packet. |
 | `REQ-QUIC-RFC9000-S17P2P1-0008` | The Source Connection ID Length field MUST be 8 bits long | implemented and tested | implementation and test evidence | The connection ID length byte is parsed as an 8-bit field and round-tripped by the parser and tests. |
 | `REQ-QUIC-RFC9000-S17P2P1-0009` | The Source Connection ID field MUST be between 0 and 2040 bits long | implemented and tested | implementation and test evidence | Version Negotiation packets can carry longer connection IDs when forming the packet. |
-| `REQ-QUIC-RFC9000-S17P2P1-0010` | The value in the Unused field MUST be set to an arbitrary value by the server | blocked | explicit blocker note | Blocked by missing Version Negotiation decision, emission, and connection-state surfaces. |
+| `REQ-QUIC-RFC9000-S17P2P1-0010` | The value in the Unused field MUST be set to an arbitrary value by the server | implemented and tested | implementation and test evidence | The unused-field wire image is covered by the requirement-home tests. |
 | `REQ-QUIC-RFC9000-S17P2P1-0011` | Clients MUST ignore the value of this field | implemented and tested | implementation and test evidence | Version Negotiation parsing accepts arbitrary Unused-field values and preserves them without making parse decisions based on those bits. |
-| `REQ-QUIC-RFC9000-S17P2P1-0012` | Where QUIC might be multiplexed with other protocols (see [RFC7983]), servers SHOULD set... | blocked | explicit blocker note | Blocked by missing Version Negotiation decision, emission, and connection-state surfaces. |
+| `REQ-QUIC-RFC9000-S17P2P1-0012` | Where QUIC might be multiplexed with other protocols (see [RFC7983]), servers SHOULD set... | implemented and tested | implementation and test evidence | The most-significant unused bit is covered by the requirement-home tests. |
 | `REQ-QUIC-RFC9000-S17P2P1-0013` | The Version field of a Version Negotiation packet MUST be set to 0x00000000 | implemented and tested | implementation and test evidence | Version zero is parsed as a Version Negotiation packet. |
-| `REQ-QUIC-RFC9000-S17P2P1-0014` | The server MUST include the value from the Source Connection ID field of the packet it re... | blocked | explicit blocker note | Blocked by missing Version Negotiation decision, emission, and connection-state surfaces. |
-| `REQ-QUIC-RFC9000-S17P2P1-0015` | The value for Source Connection ID MUST be copied from the Destination Connection ID of t... | blocked | explicit blocker note | Blocked by missing Version Negotiation decision, emission, and connection-state surfaces. |
-| `REQ-QUIC-RFC9000-S17P2P1-0016` | Version-specific rules for the connection ID therefore MUST NOT influence a decision abou... | blocked | explicit blocker note | Blocked by missing Version Negotiation decision, emission, and connection-state surfaces. |
-| `REQ-QUIC-RFC9000-S17P2P1-0017` | A Version Negotiation packet MUST NOT be acknowledged | blocked | explicit blocker note | Blocked by missing Version Negotiation decision, emission, and connection-state surfaces. |
-| `REQ-QUIC-RFC9000-S17P2P1-0018` | It is only sent in response to a packet that MUST indicate an unsupported version; see Se... | blocked | explicit blocker note | Blocked by missing Version Negotiation decision, emission, and connection-state surfaces. |
+| `REQ-QUIC-RFC9000-S17P2P1-0014` | The server MUST include the value from the Source Connection ID field of the packet it re... | implemented and tested | implementation and test evidence | The response echoes the client's source connection ID into the destination field. |
+| `REQ-QUIC-RFC9000-S17P2P1-0015` | The value for Source Connection ID MUST be copied from the Destination Connection ID of t... | implemented and tested | implementation and test evidence | The response echoes the client's destination connection ID into the source field. |
+| `REQ-QUIC-RFC9000-S17P2P1-0016` | Version-specific rules for the connection ID therefore MUST NOT influence a decision abou... | implemented and tested | implementation and test evidence | Version Negotiation send decisions are independent of version-specific connection-ID rules. |
+| `REQ-QUIC-RFC9000-S17P2P1-0017` | A Version Negotiation packet MUST NOT be acknowledged | implemented and tested | implementation and test evidence | Version Negotiation packets are rejected from packet-number space and cannot be acknowledged. |
+| `REQ-QUIC-RFC9000-S17P2P1-0018` | It is only sent in response to a packet that MUST indicate an unsupported version; see Se... | implemented and tested | implementation and test evidence | Unsupported-version and reserved-version send decisions are covered by the requirement-home tests. |
 | `REQ-QUIC-RFC9000-S17P2P1-0019` | The Version Negotiation packet MUST NOT include the Packet Number and Length fields prese... | implemented and tested | implementation and test evidence | Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits. |
-| `REQ-QUIC-RFC9000-S17P2P1-0020` | A server MUST NOT send more than one Version Negotiation packet in response to a single U... | blocked | explicit blocker note | Blocked by missing Version Negotiation decision, emission, and connection-state surfaces. |
+| `REQ-QUIC-RFC9000-S17P2P1-0020` | A server MUST NOT send more than one Version Negotiation packet in response to a single U... | implemented and tested | implementation and test evidence | The single-response guard is covered by the requirement-home tests. |
 | `REQ-QUIC-RFC9000-S17P2P2-0001` | An Initial packet MUST use long headers with a type value of 0x00 | implemented and tested | implementation and test evidence | The parser and packet view expose the Initial packet envelope fields, including the packet-number-length bits. |
 | `REQ-QUIC-RFC9000-S17P2P2-0002` | The Header Form field MUST be 1 bits long with value 1 | implemented and tested | implementation and test evidence | Long headers are classified from the first-byte high bit. |
 | `REQ-QUIC-RFC9000-S17P2P2-0003` | The Fixed Bit field MUST be 1 bits long with value 1 | implemented and tested | implementation and test evidence | Non-Version Negotiation long headers validate the fixed bit before accepting the packet. |
@@ -89,8 +89,7 @@
 
 ## Remaining Open Requirements
 
-- Blocked: 28 requirements.
-- S17P2P1: `REQ-QUIC-RFC9000-S17P2P1-0001`, `REQ-QUIC-RFC9000-S17P2P1-0002`, `REQ-QUIC-RFC9000-S17P2P1-0010`, `REQ-QUIC-RFC9000-S17P2P1-0012`, `REQ-QUIC-RFC9000-S17P2P1-0014`, `REQ-QUIC-RFC9000-S17P2P1-0015`, `REQ-QUIC-RFC9000-S17P2P1-0016`, `REQ-QUIC-RFC9000-S17P2P1-0017`, `REQ-QUIC-RFC9000-S17P2P1-0018`, `REQ-QUIC-RFC9000-S17P2P1-0020`
+- Blocked: 18 requirements.
 - S17P2P2: `REQ-QUIC-RFC9000-S17P2P2-0018`, `REQ-QUIC-RFC9000-S17P2P2-0019`, `REQ-QUIC-RFC9000-S17P2P2-0020`, `REQ-QUIC-RFC9000-S17P2P2-0021`, `REQ-QUIC-RFC9000-S17P2P2-0022`, `REQ-QUIC-RFC9000-S17P2P2-0023`, `REQ-QUIC-RFC9000-S17P2P2-0024`, `REQ-QUIC-RFC9000-S17P2P2-0025`, `REQ-QUIC-RFC9000-S17P2P2-0026`
 - S17P2P3: `REQ-QUIC-RFC9000-S17P2P3-0003`, `REQ-QUIC-RFC9000-S17P2P3-0004`, `REQ-QUIC-RFC9000-S17P2P3-0017`, `REQ-QUIC-RFC9000-S17P2P3-0018`, `REQ-QUIC-RFC9000-S17P2P3-0019`, `REQ-QUIC-RFC9000-S17P2P3-0020`, `REQ-QUIC-RFC9000-S17P2P3-0021`, `REQ-QUIC-RFC9000-S17P2P3-0022`, `REQ-QUIC-RFC9000-S17P2P3-0023`
 

@@ -15,21 +15,35 @@
   "requirements": [
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0001",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
-      "notes": "Server/client behavior for VN packets is absent."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0001.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0001.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0001.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Unsupported-version detection is covered by the requirement-home tests."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0002",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
-      "notes": "Server/client behavior for VN packets is absent."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0002.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0002.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0002.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Server-side Version Negotiation formatting is covered by the requirement-home tests."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0003",
@@ -138,12 +152,19 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0010",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
-      "notes": "The parser preserves arbitrary unused-bit values, but the repository has no VN emitter or client reaction logic."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0010.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0010.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0010.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The unused-field wire image is covered by the requirement-home tests."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0011",
@@ -160,12 +181,19 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0012",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
-      "notes": "Server/client behavior for VN packets is absent."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0012.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0012.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0012.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The most-significant unused bit is covered by the requirement-home tests."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0013",
@@ -184,48 +212,84 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0014",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
-      "notes": "Server/client behavior for VN packets is absent."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0014.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0014.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0014.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The response echoes the client source connection ID into the destination field."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0015",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
-      "notes": "Server/client behavior for VN packets is absent."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0015.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0015.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0015.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The response echoes the client destination connection ID into the source field."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0016",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
-      "notes": "Server/client behavior for VN packets is absent."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0016.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0016.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0016.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation send decisions are independent of version-specific connection-ID rules."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0017",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
-      "notes": "Server/client behavior for VN packets is absent."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicPacketParser.cs",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0017.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0017.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0017.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Version Negotiation packets are rejected from packet-number space and cannot be acknowledged."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0018",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
-      "notes": "Server/client behavior for VN packets is absent."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0018.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Unsupported-version and reserved-version send decisions are covered by the requirement-home tests."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0019",
@@ -244,12 +308,19 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0020",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Blocked by missing Version Negotiation decision, emission, and connection-state surfaces.",
-      "notes": "Server/client behavior for VN packets is absent."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicVersionNegotiation.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0020.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0020.cs"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0020.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The single-response guard is covered by the requirement-home tests."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0001",

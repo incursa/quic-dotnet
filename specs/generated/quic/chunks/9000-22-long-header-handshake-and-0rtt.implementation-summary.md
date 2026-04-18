@@ -35,16 +35,6 @@
 - Result: 60 passed, 0 failed, 0 skipped
 
 ## Remaining Open Requirements In Scope
-- `REQ-QUIC-RFC9000-S17P2P1-0001`
-- `REQ-QUIC-RFC9000-S17P2P1-0002`
-- `REQ-QUIC-RFC9000-S17P2P1-0010`
-- `REQ-QUIC-RFC9000-S17P2P1-0012`
-- `REQ-QUIC-RFC9000-S17P2P1-0014`
-- `REQ-QUIC-RFC9000-S17P2P1-0015`
-- `REQ-QUIC-RFC9000-S17P2P1-0016`
-- `REQ-QUIC-RFC9000-S17P2P1-0017`
-- `REQ-QUIC-RFC9000-S17P2P1-0018`
-- `REQ-QUIC-RFC9000-S17P2P1-0020`
 - `REQ-QUIC-RFC9000-S17P2P2-0018`
 - `REQ-QUIC-RFC9000-S17P2P2-0019`
 - `REQ-QUIC-RFC9000-S17P2P2-0020`
@@ -66,5 +56,5 @@
 
 ## Risks Or Follow-Up Notes
 - This pass only closes parser-local Version Negotiation, Initial, and 0-RTT requirements that can be proven from raw header bytes.
-- Version Negotiation send-path behavior, Initial token policy, Initial CRYPTO semantics, packet protection, and 0-RTT resend or ACK behavior remain blocked on higher-level endpoint state and packet emission surfaces.
+- Version Negotiation send-path behavior is covered by the requirement-home tests; Initial token policy, Initial CRYPTO semantics, packet protection, and 0-RTT resend or ACK behavior remain blocked on higher-level endpoint state and packet emission surfaces.
 - The long-header public API still exposes version-specific bytes as opaque spans; later chunks may want typed packet views once Handshake, Retry, or protected-payload parsing is introduced.
