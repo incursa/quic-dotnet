@@ -52,6 +52,7 @@ internal sealed class InteropHarnessPreflightPlanner
         string request = settings.Requests[0];
         if (!Uri.TryCreate(request, UriKind.Absolute, out requestUri) || requestUri is null)
         {
+            requestUri = null;
             errorMessage = $"REQUESTS entry '{request}' is not a valid absolute URL.";
             return false;
         }
@@ -205,11 +206,20 @@ internal sealed class InteropHarnessPreflightPlanner
             return false;
         }
 
-        relativePath = Directory.EnumerateFiles(rootFullPath, "*", SearchOption.AllDirectories)
-            .Select(path => Path.GetRelativePath(rootFullPath, path))
-            .Where(path => !string.IsNullOrWhiteSpace(path))
-            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
-            .FirstOrDefault();
+        try
+        {
+            relativePath = Directory.EnumerateFiles(rootFullPath, "*", SearchOption.AllDirectories)
+                .Select(path => Path.GetRelativePath(rootFullPath, path))
+                .Where(path => !string.IsNullOrWhiteSpace(path))
+                .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+                .FirstOrDefault();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or NotSupportedException or PathTooLongException)
+        {
+            relativePath = null;
+            errorMessage = $"Unable to infer a transfer target from an empty REQUESTS list because the mounted source root '{rootFullPath}' could not be enumerated: {ex.Message}";
+            return false;
+        }
 
         if (relativePath is null)
         {
