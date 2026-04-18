@@ -19356,6 +19356,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.10 RFC9000-S19.10-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs::TryReadStreamData_EmitsMaxStreamDataFrameToAdvertiseRecvStateCredit
 
 ## REQ-QUIC-RFC9000-S19P10-0002 A MAX_STREAM_DATA frame MAY be sent for streams in the "Recv" state; see Section 3.2
 A MAX_STREAM_DATA frame MAY be sent for streams in the "Recv" state; see Section 3.2.
@@ -19370,6 +19372,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.10 RFC9000-S19.10-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0002.cs::TryApplyMaxStreamDataFrame_AcceptsCreditForALocalRecvStateStream
 
 ## REQ-QUIC-RFC9000-S19P10-0003 Receiving a MAX_STREAM_DATA frame for a locally initiated stream that has not yet been create...
 Receiving a MAX_STREAM_DATA frame for a locally initiated stream that has not yet been created MUST be treated as a connection error of type STREAM_STATE_ERROR.
@@ -19384,6 +19388,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.10 RFC9000-S19.10-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0003.cs::TryApplyMaxStreamDataFrame_RejectsUncreatedLocallyInitiatedStreams
 
 ## REQ-QUIC-RFC9000-S19P10-0004 An endpoint that receives a MAX_STREAM_DATA frame for a receive-only stream MUST terminate th...
 An endpoint that receives a MAX_STREAM_DATA frame for a receive-only stream MUST terminate the connection with error STREAM_STATE_ERROR.
@@ -19514,6 +19520,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.10 RFC9000-S19.10-B10-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0011.cs::TryReceiveStreamFrame_AllowsTheLargestReceivedOffsetToExceedTheUniqueBytesReceived
 
 ## REQ-QUIC-RFC9000-S19P10-0012 The data sent on a stream MUST NOT exceed the largest maximum stream data value advertised by...
 The data sent on a stream MUST NOT exceed the largest maximum stream data value advertised by the receiver.
@@ -19528,6 +19536,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.10 RFC9000-S19.10-B11-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0012.cs::TryReserveSendCapacity_RejectsBytesBeyondTheLargestAdvertisedStreamCredit
 
 ## REQ-QUIC-RFC9000-S19P10-0013 An endpoint MUST terminate a connection with an error of type FLOW_CONTROL_ERROR if it receiv...
 An endpoint MUST terminate a connection with an error of type FLOW_CONTROL_ERROR if it receives more data than the largest maximum stream data that it has sent for the affected stream.
@@ -19542,6 +19552,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.10 RFC9000-S19.10-B11-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0013.cs::TryReceiveStreamFrame_RejectsBytesBeyondTheAdvertisedStreamCredit
 
 ## REQ-QUIC-RFC9000-S19P10-0014 This MUST include violations of remembered limits in Early Data; see Section 7.4.1
 This MUST include violations of remembered limits in Early Data; see Section 7.4.1.
