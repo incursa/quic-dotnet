@@ -1049,6 +1049,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B5-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0005.cs::TryReceiveStreamFrame_InitializesTheReceivingPartInRecv
 
 ## REQ-QUIC-RFC9000-S3P2-0006 Enter Recv when the peer-side sending part opens
 For a bidirectional stream, the receiving part MUST enter the Recv state when the sending part initiated by the endpoint enters the Ready state.
@@ -1063,6 +1065,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs::TryApplyMaxStreamDataFrame_EntersRecvWhenPeerSideSendingPartOpens
 
 ## REQ-QUIC-RFC9000-S3P2-0007 Open bidirectional streams on peer flow-control or stop-sending frames
 An endpoint MUST open a bidirectional stream when a MAX_STREAM_DATA or STOP_SENDING frame is received from the peer for that stream.
@@ -1304,6 +1308,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B15-P12-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0022.cs::TryReceiveResetStreamFrame_InterruptsPendingDeliveryAndDiscardsUnreadBytes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0022.cs::TryReceiveResetStreamFrame_DoesNotPreserveDataRecvdWhenTheResetSignalIsNotSuppressed
 
 ## REQ-QUIC-RFC9000-S3P2-0023 Remain in Data Recvd when RESET_STREAM is suppressed
 If the RESET_STREAM is suppressed, the receiving part of the stream MUST remain in Data Recvd.
@@ -1318,6 +1325,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B15-P12-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0023.cs::TryReceiveResetStreamFrame_PreservesBufferedDataWhenTheResetSignalIsSuppressed
 
 ## REQ-QUIC-RFC9000-S3P2-0024 Enter Reset Read after the application receives reset notification
 Once the application receives the signal indicating that the stream was reset, the receiving part of the stream MUST transition to the Reset Read state.
@@ -1332,6 +1341,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B16-P13-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0024.cs::TryAcknowledgeReset_EntersResetReadAfterResetNotification
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0024.cs::TryAcknowledgeReset_RejectsRedundantAcknowledgementsAfterResetIsRead
 
 ## REQ-QUIC-RFC9000-S3P3-0001 Forbid terminal-state transmit frames
 A sender MUST NOT send STREAM, STREAM_DATA_BLOCKED, or RESET_STREAM frames from a terminal state.
@@ -1963,6 +1975,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B12-P9-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_DoesNotEmitABlockedSignalWhileAnAckElicitingPacketIsStillInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::TryReserveSendCapacity_ReemitsBlockedFramesWhileTheLimitRemainsClosed
 
 ## REQ-QUIC-RFC9000-S4P2-0001 Allow repeated or early credit advertisements
 A receiver MAY send a MAX_STREAM_DATA or MAX_DATA frame multiple times within a round trip or send it early enough to allow time for loss of the frame and subsequent recovery.
@@ -19573,8 +19589,8 @@ Trace:
   - RFC 9000 §19.11 RFC9000-S19.11-B4-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
 
 ## REQ-QUIC-RFC9000-S19P11-0002 The Maximum Streams field MUST be encoded as a variable-length integer
 The Maximum Streams field MUST be encoded as a variable-length integer.
@@ -19590,8 +19606,8 @@ Trace:
   - RFC 9000 §19.11 RFC9000-S19.11-B4-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
 
 ## REQ-QUIC-RFC9000-S19P11-0003 MAX_STREAMS frames MUST contain the following field:
 MAX_STREAMS frames MUST contain the following field:
@@ -19607,8 +19623,8 @@ Trace:
   - RFC 9000 §19.11 RFC9000-S19.11-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
 
 ## REQ-QUIC-RFC9000-S19P11-0004 A count of the cumulative number of streams of the corresponding type that MAY be opened over...
 A count of the cumulative number of streams of the corresponding type that MAY be opened over the lifetime of the connection.
@@ -19624,8 +19640,8 @@ Trace:
   - RFC 9000 §19.11 RFC9000-S19.11-B7-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
 
 ## REQ-QUIC-RFC9000-S19P11-0005 This value MUST NOT exceed 260, as it is not possible to encode stream IDs larger than 262-1
 This value MUST NOT exceed 260, as it is not possible to encode stream IDs larger than 262-1.
@@ -19641,9 +19657,9 @@ Trace:
   - RFC 9000 §19.11 RFC9000-S19.11-B7-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0006.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit
 
 ## REQ-QUIC-RFC9000-S19P11-0006 Receipt of a frame that permits opening of a stream larger than this limit MUST be treated as...
 Receipt of a frame that permits opening of a stream larger than this limit MUST be treated as a connection error of type FRAME_ENCODING_ERROR.
@@ -19659,7 +19675,7 @@ Trace:
   - RFC 9000 §19.11 RFC9000-S19.11-B7-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0006.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit
 
 ## REQ-QUIC-RFC9000-S19P11-0007 Loss or reordering MAY cause an endpoint to receive a MAX_STREAMS frame with a lower stream l...
 Loss or reordering MAY cause an endpoint to receive a MAX_STREAMS frame with a lower stream limit than was previously received.
@@ -19790,6 +19806,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.12 RFC9000-S19.12-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.12
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0001.cs::TryReserveSendCapacity_ReturnsDataBlockedFrameWhenConnectionCreditIsExhausted
 
 ## REQ-QUIC-RFC9000-S19P12-0002 DATA_BLOCKED frames MAY be used as input to tuning of flow control algorithms; see Section 4.2
 DATA_BLOCKED frames MAY be used as input to tuning of flow control algorithms; see Section 4.2.
@@ -19804,6 +19822,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.12 RFC9000-S19.12-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.12
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0002.cs::TryReserveSendCapacity_ExposesTheCurrentConnectionLimitAsFlowControlTuningInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0002.cs::TryReserveSendCapacity_DoesNotNeedToEmitDataBlockedFramesWhenConnectionCreditRemains
 
 ## REQ-QUIC-RFC9000-S19P12-0003 The Type field MUST be encoded as a variable-length integer with value 0x14
 The Type field MUST be encoded as a variable-length integer with value 0x14.
