@@ -3044,6 +3044,9 @@
         "upstream_refs": [
           "RFC 9000 §4 RFC9000-S4-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0001.cs::TryReceiveStreamFrame_EnforcesPerStreamAndConnectionFlowControl"
         ]
       }
     },
