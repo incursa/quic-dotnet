@@ -1472,6 +1472,8 @@
     "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0002.cs",
     "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs",
     "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs",
     "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs",

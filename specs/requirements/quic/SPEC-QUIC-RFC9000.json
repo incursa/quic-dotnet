@@ -35516,6 +35516,9 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0001.cs::TryReserveSendCapacity_ReturnsDataBlockedFrameWhenConnectionCreditIsExhausted"
+        ],
         "upstream_refs": [
           "RFC 9000 §19.12 RFC9000-S19.12-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.12"
@@ -35541,6 +35544,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0002.cs::TryReserveSendCapacity_ExposesTheCurrentConnectionLimitAsFlowControlTuningInput",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0002.cs::TryReserveSendCapacity_DoesNotNeedToEmitDataBlockedFramesWhenConnectionCreditRemains"
         ],
         "upstream_refs": [
           "RFC 9000 §19.12 RFC9000-S19.12-B2-P1-S2",
