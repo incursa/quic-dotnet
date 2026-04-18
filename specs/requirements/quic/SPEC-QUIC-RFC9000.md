@@ -10976,6 +10976,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.5 RFC9000-S13.2.5-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0001.cs::TryBuildAckFrame_UsesTheLargestPacketReceiptTimeForAckDelay
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0001.cs::TryBuildAckFrame_DoesNotChargeEarlierPacketReceiptTimeWhenTheLargestPacketArrivesLater
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0001.cs::TryBuildAckFrame_ClampsAckDelayToZeroIfTheAckIsSentBeforeTheLargestPacketTimestamp
 
 ## REQ-QUIC-RFC9000-S13P2P5-0002 Encode acknowledgment delay in ACK Delay
 The endpoint MUST encode this acknowledgment delay in the ACK Delay field of an ACK frame.
@@ -11004,6 +11008,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.5 RFC9000-S13.2.5-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0003.cs::TryBuildAckFrame_ExcludesEarlierPacketWaitingTimeFromAckDelay
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0003.cs::TryBuildAckFrame_DoesNotReuseAnEarlierPacketWaitAsTheCurrentAckDelay
 
 ## REQ-QUIC-RFC9000-S13P2P5-0004 Include buffering delays from missing decryption keys
 Endpoints SHOULD include buffering delays caused by unavailability of decryption keys.
@@ -11018,6 +11025,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.5 RFC9000-S13.2.5-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0004.cs::TryBuildAckFrame_IncludesBufferingDelayFromUnavailableDecryptionKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0004.cs::TryBuildAckFrame_DoesNotInventBufferingDelayWhenNoneWasRecorded
 
 ## REQ-QUIC-RFC9000-S13P2P5-0005 Report measured delay when it exceeds max_ack_delay
 When the measured acknowledgment delay is larger than its max_ack_delay, an endpoint SHOULD report the measured delay.
@@ -16319,9 +16329,9 @@ Trace:
   - RFC 9000 §18 RFC9000-S18-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-18
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence
-  - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18-0003 Each transport parameter MUST be encoded as an (identifier, length, value) tuple, as shown in...
 Each transport parameter MUST be encoded as an (identifier, length, value) tuple, as shown in Figure 21:
@@ -16449,9 +16459,9 @@ Trace:
   - RFC 9000 §18.1 RFC9000-S18.1-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-18.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters
-  - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18P2-0001 This transport parameter MUST only be sent by a server
 This transport parameter MUST only be sent by a server.
@@ -16521,10 +16531,10 @@ Trace:
   - RFC 9000 §18.2 RFC9000-S18.2-B7-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient
-  - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer
-  - tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0037.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0038.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress
 
 ## REQ-QUIC-RFC9000-S18P2-0005 Forbid clients from sending stateless_reset_token
 This transport parameter MUST NOT be sent by a client.

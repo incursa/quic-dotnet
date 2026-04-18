@@ -19938,6 +19938,11 @@
         "upstream_refs": [
           "RFC 9000 §13.2.5 RFC9000-S13.2.5-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0001.cs::TryBuildAckFrame_UsesTheLargestPacketReceiptTimeForAckDelay",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0001.cs::TryBuildAckFrame_DoesNotChargeEarlierPacketReceiptTimeWhenTheLargestPacketArrivesLater",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0001.cs::TryBuildAckFrame_ClampsAckDelayToZeroIfTheAckIsSentBeforeTheLargestPacketTimestamp"
         ]
       }
     },
@@ -19990,6 +19995,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.5 RFC9000-S13.2.5-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0003.cs::TryBuildAckFrame_ExcludesEarlierPacketWaitingTimeFromAckDelay",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0003.cs::TryBuildAckFrame_DoesNotReuseAnEarlierPacketWaitAsTheCurrentAckDelay"
         ]
       }
     },
