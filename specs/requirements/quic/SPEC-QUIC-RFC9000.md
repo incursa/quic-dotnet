@@ -16296,6 +16296,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.4 RFC9000-S17.4-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0001.cs::TryMeasureSpinBitToggleInterval_ObservesElapsedTicksBetweenTwoToggleEvents
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0001.cs::TryMeasureSpinBitToggleInterval_RejectsSequencesWithoutTwoToggleEvents
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0001.cs::TryMeasureSpinBitToggleInterval_HandlesTheShortestValid1RttPackets
 
 ## REQ-QUIC-RFC9000-S17P4-0002 The spin bit MUST only be present in 1-RTT packets, since it is possible to measure the initi...
 The spin bit MUST only be present in 1-RTT packets, since it is possible to measure the initial RTT of a connection by observing the handshake.
@@ -16328,6 +16332,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.4 RFC9000-S17.4-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0003.cs::TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForUnsupportedEndpoints
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0003.cs::TryOpenProtectedApplicationDataPacket_IgnoresTheIncomingSpinBitWhenUnsupported
 
 ## REQ-QUIC-RFC9000-S17P4-0004 Implementations MUST allow administrators of clients and servers to disable the spin bit eith...
 Implementations MUST allow administrators of clients and servers to disable the spin bit either globally or on a per-connection basis.
