@@ -20590,6 +20590,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.16 RFC9000-S19.16-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0001.cs::ConnectionIdRetiredEvent_SendsARetireConnectionIdFrameForTheRetiredSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0001.cs::ConnectionIdRetiredEvent_RejectsUnknownConnectionIdsWithoutSendingAFrame
 
 ## REQ-QUIC-RFC9000-S19P16-0002 This MUST include the connection ID provided during the handshake
 This MUST include the connection ID provided during the handshake.
