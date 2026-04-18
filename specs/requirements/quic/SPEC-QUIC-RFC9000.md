@@ -16342,6 +16342,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.4 RFC9000-S17.4-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0004.cs::TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForSeparateConnections
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0004.cs::TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitAcrossRepresentativeConnectionIds
 
 ## REQ-QUIC-RFC9000-S17P4-0005 Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use...
 Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use of the spin bit for a random selection of at least one in every 16 network paths, or for one in every 16 connection IDs, in order to ensure that QUIC connections that disable the spin bit are commonly observed on the network.
