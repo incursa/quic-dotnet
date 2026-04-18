@@ -142,6 +142,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §2 RFC9000-S2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::FuzzMaxDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S2P1-0001 Constrain unidirectional stream direction
 A unidirectional stream MUST carry data only from the initiator of the stream to its peer.
@@ -13061,6 +13065,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.1 RFC9000-S17.1-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0001.cs::TryParseLongHeader_AllowsPacketNumberFieldsFromOneToFourBytes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0001.cs::TryParseShortHeader_AllowsPacketNumberFieldsFromOneToFourBytes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0001.cs::TryParseLongHeader_RejectsPacketsTruncatedBeforeThePacketNumberFieldCompletes
 
 ## REQ-QUIC-RFC9000-S17P1-0002 Prior to receiving an acknowledgment for a packet number space, the full packet number MUST b...
 Prior to receiving an acknowledgment for a packet number space, the full packet number MUST be included; it is not to be truncated, as described below.
@@ -13943,6 +13951,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.1 RFC9000-S17.2.1-B12-P9-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0017.cs::TryParseVersionNegotiation_RecognizesPacketsThatCannotBeAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0017.cs::TryGetPacketNumberSpace_RejectsVersionNegotiationPackets
 
 ## REQ-QUIC-RFC9000-S17P2P1-0018 It is only sent in response to a packet that MUST indicate an unsupported version; see Sectio...
 It is only sent in response to a packet that MUST indicate an unsupported version; see Section 5.2.2.
@@ -21363,7 +21374,7 @@ Trace:
   - RFC 9000 §21.1.1.1 RFC9000-S21.1.1.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-21.1.1.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs::CanConsiderPeerAddressValidated_RequiresEndpointChosenAndAtLeast64BitsOfEntropy
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P1P1P1-0001.cs::CanConsiderPeerAddressValidated_RequiresEndpointChosenAndAtLeast64BitsOfEntropy
 
 ## REQ-QUIC-RFC9000-S21P1P1P1-0002 Limit bytes sent to unvalidated addresses
 Endpoints MUST NOT send data toward an unvalidated address in excess of three times the data received from that address.
