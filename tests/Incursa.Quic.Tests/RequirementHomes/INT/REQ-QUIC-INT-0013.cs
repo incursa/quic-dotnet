@@ -88,12 +88,13 @@ public sealed class REQ_QUIC_INT_0013
         string exceptionMessage = result.ExceptionMessage;
 
         Assert.NotEqual(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(exceptionMessage));
         Assert.Contains(
             "LocalRole 'client' requires the local replacement slot 'chrome' to differ from the peer implementation slot list.",
-            exceptionMessage,
+            output,
             StringComparison.OrdinalIgnoreCase);
         Assert.False(output.Contains("Building Incursa.Quic.InteropHarness image...", StringComparison.OrdinalIgnoreCase));
-        Assert.False(Directory.Exists(fixture.ArtifactsRoot));
+        AssertPreservedFailureEvidence(fixture.ArtifactsRoot);
     }
 
     [Fact]
@@ -121,12 +122,30 @@ public sealed class REQ_QUIC_INT_0013
         string exceptionMessage = result.ExceptionMessage;
 
         Assert.NotEqual(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(exceptionMessage));
         Assert.Contains(
             "Peer implementation slot 'quic-go' is role 'client' which is not compatible with LocalRole 'client'.",
-            exceptionMessage,
+            output,
             StringComparison.OrdinalIgnoreCase);
         Assert.False(output.Contains("Building Incursa.Quic.InteropHarness image...", StringComparison.OrdinalIgnoreCase));
-        Assert.False(Directory.Exists(fixture.ArtifactsRoot));
+        AssertPreservedFailureEvidence(fixture.ArtifactsRoot);
+    }
+
+    private static void AssertPreservedFailureEvidence(string artifactsRoot)
+    {
+        Assert.True(Directory.Exists(artifactsRoot));
+
+        string[] runRoots = Directory.GetDirectories(artifactsRoot);
+        Assert.Single(runRoots);
+
+        string runRoot = runRoots[0];
+        Assert.True(File.Exists(Path.Combine(runRoot, "invocation.txt")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "artifact-tree.txt")));
+        Assert.False(File.Exists(Path.Combine(runRoot, "docker-build.log")));
+        Assert.False(File.Exists(Path.Combine(runRoot, "runner-report.json")));
+        Assert.False(File.Exists(Path.Combine(runRoot, "runner-report.md")));
+        Assert.False(File.Exists(Path.Combine(runRoot, "runner.stderr.log")));
+        Assert.False(Directory.Exists(Path.Combine(runRoot, "runner-logs")));
     }
 
     private sealed class InteropRunnerScriptFixture : IDisposable
@@ -320,6 +339,9 @@ public sealed class REQ_QUIC_INT_0013
                 "\n}\n\n" +
                 "try {\n" +
                 "  & " + QuotePowerShellSingleQuoted(scriptPath) + " @scriptParameters\n" +
+                "  if ($LASTEXITCODE -ne 0) {\n" +
+                "    exit $LASTEXITCODE\n" +
+                "  }\n" +
                 "}\n" +
                 "catch {\n" +
                 "  $exceptionMessage = $_.Exception.Message\n" +
