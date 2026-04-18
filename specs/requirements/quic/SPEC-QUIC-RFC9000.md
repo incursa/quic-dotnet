@@ -20604,6 +20604,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.16 RFC9000-S19.16-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0002.cs::ConnectionIdRetiredEvent_UsesTheHandshakeConnectionIdInTheRetireFrame
 
 ## REQ-QUIC-RFC9000-S19P16-0003 New connection IDs MAY be delivered to a peer using the NEW_CONNECTION_ID frame (Section 19.15)
 New connection IDs MAY be delivered to a peer using the NEW_CONNECTION_ID frame (Section 19.15).
