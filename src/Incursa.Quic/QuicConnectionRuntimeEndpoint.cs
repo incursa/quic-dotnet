@@ -379,6 +379,16 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 null);
         }
 
+        if (longHeader.Version == QuicVersionNegotiation.Version1
+            && longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.Initial
+            && datagram.Length < QuicVersionNegotiation.Version1MinimumDatagramPayloadSize)
+        {
+            return new QuicConnectionIngressResult(
+                QuicConnectionIngressDisposition.Malformed,
+                QuicConnectionEndpointHandlingKind.None,
+                null);
+        }
+
         if (TryLookupExactRoute(longHeader.DestinationConnectionId, out QuicConnectionHandle routedHandle))
         {
             if (TryPostPacketReceived(routedHandle, datagram, pathIdentity))
