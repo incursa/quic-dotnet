@@ -1293,6 +1293,9 @@
         "upstream_refs": [
           "RFC 9000 §3.1 RFC9000-S3.1-B5-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0001.cs::TryOpenLocalStream_InitializesReadyAsANewlyCreatedSendableStream"
         ]
       }
     },
@@ -1319,6 +1322,11 @@
         "upstream_refs": [
           "RFC 9000 §3.1 RFC9000-S3.1-B5-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs::TryReserveSendCapacity_BuffersDataInReadyState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs::TryReserveSendCapacity_BuffersOutOfOrderFragmentsInReadyState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs::Fuzz_TryReserveSendCapacity_ReachesDataSentOnlyAfterOrderedFragments"
         ]
       }
     },
