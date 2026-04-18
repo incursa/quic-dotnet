@@ -663,6 +663,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3 RFC9000-S3-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs::TryOpenLocalStream_UsesSendStateMachineForLocalUnidirectionalStreams
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs::TryReceiveStreamFrame_RejectsLocalUnidirectionalStreamsWithoutReceiveParts
 
 ## REQ-QUIC-RFC9000-S3-0002 Use both state machines for bidirectional streams
 Bidirectional streams MUST use both state machines at both endpoints.
@@ -677,6 +680,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3 RFC9000-S3-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0002.cs::TryOpenLocalStream_UsesBothStateMachinesForLocalBidirectionalStreams
 
 ## REQ-QUIC-RFC9000-S3-0003 Allow alternate stream state machines with consistent behavior
 An implementation MAY define a different stream state machine as long as its behavior is consistent with an implementation that implements these states.
@@ -12955,6 +12960,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §16 RFC9000-S16-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-16
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0001.cs::TryFormat_SetsTheExpectedLengthPrefixBits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0001.cs::TryParse_RejectsTruncatedEncodings
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0001.cs::TryParse_RejectsLengthPrefixesThatPromiseMoreBytesThanArePresent
 
 ## REQ-QUIC-RFC9000-S16-0002 The integer value MUST be encoded on the remaining bits, in network byte order
 The integer value MUST be encoded on the remaining bits, in network byte order.
@@ -13020,6 +13029,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §16 RFC9000-S16-B12-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-16
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0005.cs::TryParseLongHeaderFields_ExposesTheFixedWidthVersionPacketNumberAndConnectionIdFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0005.cs::TryParseLongHeaderFields_RejectsPacketsMissingTheSourceConnectionIdLengthByte
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0005.cs::TryParseLongHeaderFields_AllowsMaximumLengthConnectionIds
 
 ## REQ-QUIC-RFC9000-S17-0001 All numeric values MUST be encoded in network byte order (that is, big endian), and all field...
 All numeric values MUST be encoded in network byte order (that is, big endian), and all field sizes are in bits.

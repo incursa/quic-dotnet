@@ -32,4 +32,45 @@ public sealed class REQ_QUIC_RFC9000_S16_0001
         Assert.Equal(value, parsed);
         Assert.Equal(bytesWritten, bytesConsumed);
     }
+
+    public static TheoryData<ulong, int> TruncatedEncodingCases => new()
+    {
+        { 63UL, 1 },
+        { 64UL, 2 },
+        { 16_384UL, 4 },
+        { 1_073_741_824UL, 8 },
+    };
+
+    [Theory]
+    [MemberData(nameof(TruncatedEncodingCases))]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParse_RejectsTruncatedEncodings(ulong value, int encodedLength)
+    {
+        byte[] encoded = QuicVarintTestData.EncodeWithLength(value, encodedLength);
+
+        Assert.False(QuicVariableLengthInteger.TryParse(encoded[..^1], out _, out _));
+    }
+
+    public static TheoryData<ulong, int, byte> PrefixMismatchCases => new()
+    {
+        { 63UL, 1, 0x40 },
+        { 63UL, 2, 0x80 },
+        { 16_383UL, 4, 0xC0 },
+    };
+
+    [Theory]
+    [MemberData(nameof(PrefixMismatchCases))]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParse_RejectsLengthPrefixesThatPromiseMoreBytesThanArePresent(
+        ulong value,
+        int encodedLength,
+        byte lengthPrefix)
+    {
+        byte[] encoded = QuicVarintTestData.EncodeWithLength(value, encodedLength);
+        encoded[0] = (byte)((encoded[0] & 0x3F) | lengthPrefix);
+
+        Assert.False(QuicVariableLengthInteger.TryParse(encoded, out _, out _));
+    }
 }
