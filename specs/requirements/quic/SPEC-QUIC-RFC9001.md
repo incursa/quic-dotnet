@@ -234,9 +234,8 @@ Trace:
   - RFC 9001 §3 RFC9001-S3-B13-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-3
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes
-  - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent
-  - tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryFormatStreamFrame_RejectsInvalidTypesAndOffsetMismatches
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0012.cs::TryFormatStreamFrame_RoundTripsAValidStreamFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0012.cs::TryFormatStreamFrame_RejectsInvalidTypesAndOffsetMismatches
 
 Notes:
 - The source sentence allows STREAM frames or other frame types; the open set is preserved.
@@ -255,7 +254,7 @@ Trace:
   - RFC 9001 §4 RFC9001-S4-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-4
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0001.cs::RuntimeCarriesPeerHandshakeDataThroughCryptoFramesAndRejectsMalformedProgression
 
 ## REQ-QUIC-RFC9001-S4-0002 Define CRYPTO frame boundaries
 Each CRYPTO frame MUST consist of a contiguous block of handshake data identified by an offset and length.
