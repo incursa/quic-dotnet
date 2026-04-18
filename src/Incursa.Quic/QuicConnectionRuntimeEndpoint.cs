@@ -437,6 +437,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
         return effect switch
         {
+            QuicConnectionSendDatagramEffect => true,
             QuicConnectionPromoteActivePathEffect promoteActivePathEffect
                 => TryUpdateEndpointBinding(handle, promoteActivePathEffect.PathIdentity),
             QuicConnectionUpdateEndpointBindingsEffect updateEndpointBindingsEffect

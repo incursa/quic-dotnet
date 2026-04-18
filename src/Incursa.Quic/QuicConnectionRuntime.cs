@@ -2998,6 +2998,45 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return true;
     }
 
+    private bool TrySendRetireConnectionIdFrame(
+        ulong connectionId,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!TryValidateStreamSendBoundary(out _))
+        {
+            return false;
+        }
+
+        if (!TryBuildOutboundRetireConnectionIdPayload(connectionId, out byte[] payload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            payload,
+            "The connection runtime could not protect the connection ID retirement packet.",
+            "The connection cannot send the connection ID retirement packet.",
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+
+        return true;
+    }
+
     private bool TryProtectAndAccountApplicationPayload(
         ReadOnlySpan<byte> payload,
         string protectFailureMessage,
@@ -3033,6 +3072,33 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         TrackApplicationPacket(packetNumber, protectedPacket);
         exception = null;
+        return true;
+    }
+
+    private bool TryBuildOutboundRetireConnectionIdPayload(ulong sequenceNumber, out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
+        if (!QuicFrameCodec.TryFormatRetireConnectionIdFrame(
+            new QuicRetireConnectionIdFrame(sequenceNumber),
+            buffer,
+            out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
         return true;
     }
 
@@ -4206,8 +4272,14 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         QuicConnectionConnectionIdRetiredEvent connectionIdRetiredEvent,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (!statelessResetTokensByConnectionId.Remove(connectionIdRetiredEvent.ConnectionId))
+        if (!statelessResetTokensByConnectionId.Remove(connectionIdRetiredEvent.ConnectionId, out byte[]? statelessResetToken))
         {
+            return false;
+        }
+
+        if (!TrySendRetireConnectionIdFrame(connectionIdRetiredEvent.ConnectionId, ref effects))
+        {
+            statelessResetTokensByConnectionId.Add(connectionIdRetiredEvent.ConnectionId, statelessResetToken!);
             return false;
         }
 
