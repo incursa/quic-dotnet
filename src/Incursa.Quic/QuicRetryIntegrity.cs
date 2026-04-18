@@ -268,7 +268,8 @@ internal static class QuicRetryIntegrity
             || retryHeader.Version != 1
             || retryHeader.LongPacketTypeBits != QuicLongPacketTypeBits.Retry
             || retryHeader.VersionSpecificData.Length <= RetryIntegrityTagLength
-            || retryHeader.SourceConnectionId.IsEmpty)
+            || retryHeader.SourceConnectionId.IsEmpty
+            || retryHeader.SourceConnectionId.SequenceEqual(originalDestinationConnectionId))
         {
             return false;
         }
