@@ -13,13 +13,19 @@ public class QuicTransportParametersBenchmarks
         ServerBaseline = 0,
         ServerLarge = 1,
         ClientVariant = 2,
+        ClientMinimal = 3,
+        ServerBoundary = 4,
     }
 
     [Params(
         TransportParameterBenchmarkScenario.ServerBaseline,
         TransportParameterBenchmarkScenario.ServerLarge,
-        TransportParameterBenchmarkScenario.ClientVariant)]
+        TransportParameterBenchmarkScenario.ClientVariant,
+        TransportParameterBenchmarkScenario.ClientMinimal,
+        TransportParameterBenchmarkScenario.ServerBoundary)]
     public TransportParameterBenchmarkScenario Scenario { get; set; }
+
+    private const ulong BoundaryVarintValue = 1UL << 60;
 
     private QuicTransportParameters parameters = new();
     private byte[] encoded = [];
@@ -47,6 +53,14 @@ public class QuicTransportParametersBenchmarks
                 CreateBaselineTransportParameters(),
                 QuicTransportParameterRole.Client,
                 QuicTransportParameterRole.Server),
+            TransportParameterBenchmarkScenario.ClientMinimal => (
+                CreateMinimalClientTransportParameters(),
+                QuicTransportParameterRole.Client,
+                QuicTransportParameterRole.Server),
+            TransportParameterBenchmarkScenario.ServerBoundary => (
+                CreateBoundaryTransportParameters(),
+                QuicTransportParameterRole.Server,
+                QuicTransportParameterRole.Client),
             _ => throw new InvalidOperationException($"Unsupported transport-parameter benchmark scenario: {Scenario}."),
         };
 
@@ -139,6 +153,46 @@ public class QuicTransportParametersBenchmarks
             ActiveConnectionIdLimit = 16,
             InitialSourceConnectionId = CreateSequentialBytes(0x50, 8),
             RetrySourceConnectionId = CreateSequentialBytes(0x70, 6),
+        };
+    }
+
+    private static QuicTransportParameters CreateMinimalClientTransportParameters()
+    {
+        return new QuicTransportParameters
+        {
+            ActiveConnectionIdLimit = 2,
+            InitialSourceConnectionId = [0x01],
+        };
+    }
+
+    private static QuicTransportParameters CreateBoundaryTransportParameters()
+    {
+        return new QuicTransportParameters
+        {
+            OriginalDestinationConnectionId = CreateSequentialBytes(0x10, 20),
+            MaxIdleTimeout = BoundaryVarintValue,
+            StatelessResetToken = CreateSequentialBytes(0x20, 16),
+            MaxUdpPayloadSize = BoundaryVarintValue,
+            InitialMaxData = BoundaryVarintValue,
+            InitialMaxStreamDataBidiLocal = BoundaryVarintValue,
+            InitialMaxStreamDataBidiRemote = BoundaryVarintValue,
+            InitialMaxStreamDataUni = BoundaryVarintValue,
+            InitialMaxStreamsBidi = BoundaryVarintValue,
+            InitialMaxStreamsUni = BoundaryVarintValue,
+            MaxAckDelay = BoundaryVarintValue,
+            DisableActiveMigration = true,
+            PreferredAddress = new QuicPreferredAddress
+            {
+                IPv4Address = [198, 51, 100, 1],
+                IPv4Port = 65_535,
+                IPv6Address = CreateSequentialBytes(0x30, 16),
+                IPv6Port = 65_534,
+                ConnectionId = CreateSequentialBytes(0x40, 20),
+                StatelessResetToken = CreateSequentialBytes(0x60, 16),
+            },
+            ActiveConnectionIdLimit = BoundaryVarintValue,
+            InitialSourceConnectionId = CreateSequentialBytes(0x50, 20),
+            RetrySourceConnectionId = CreateSequentialBytes(0x70, 20),
         };
     }
 
