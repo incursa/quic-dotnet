@@ -102,6 +102,28 @@ public sealed class REQ_QUIC_INT_0014
         IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(requestUri);
         Assert.Equal(IPAddress.Any, listenEndPoint.Address);
         Assert.Equal(443, listenEndPoint.Port);
+
+        Assert.True(InteropHarnessEnvironment.TryCreate(
+            InteropHarnessTestSupport.CreateEnvironment(
+                role: "client",
+                testcase: "handshake",
+                requests: "https://localhost:4242/preflight"),
+            out InteropHarnessEnvironment? noQlogSettings,
+            out errorMessage));
+        Assert.NotNull(noQlogSettings);
+        Assert.Null(errorMessage);
+
+        InteropHarnessPreflightPlanner noQlogPlanner = new(noQlogSettings!, TextWriter.Null);
+        using InteropHarnessQlogCaptureScope? noQlogScope = noQlogPlanner.CreateQlogCaptureScope();
+        if (OperatingSystem.IsLinux())
+        {
+            Assert.NotNull(noQlogScope);
+            Assert.Equal("/logs/qlog", Path.GetDirectoryName(noQlogScope!.OutputPath));
+        }
+        else
+        {
+            Assert.Null(noQlogScope);
+        }
     }
 
     [Fact]
@@ -165,7 +187,7 @@ public sealed class REQ_QUIC_INT_0014
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task LocalhostTransferSmokeCompletesWithQlogCapture()
+    public async Task LocalhostTransferSmokeOverwritesPreexistingDestinationFileWithQlogCapture()
     {
         using TempDirectoryFixture fixture = new("incursa-quic-preflight-transfer");
         string qlogDirectory = fixture.CreateSubdirectory("qlog");
@@ -178,14 +200,13 @@ public sealed class REQ_QUIC_INT_0014
         string sourcePath = Path.Combine(sourceRoot, relativePath);
         string destinationPath = Path.Combine(destinationRoot, relativePath);
         byte[] payload = Encoding.UTF8.GetBytes($"preflight transfer payload {Guid.NewGuid():N}");
+        byte[] preexistingPayload = Encoding.UTF8.GetBytes($"preexisting destination payload {Guid.NewGuid():N}");
+        Assert.NotEqual(preexistingPayload, payload);
 
         Directory.CreateDirectory(sourceRoot);
         Directory.CreateDirectory(destinationRoot);
         File.WriteAllBytes(sourcePath, payload);
-        if (File.Exists(destinationPath))
-        {
-            File.Delete(destinationPath);
-        }
+        File.WriteAllBytes(destinationPath, preexistingPayload);
 
         try
         {
@@ -205,6 +226,53 @@ public sealed class REQ_QUIC_INT_0014
 
             string[] qlogFiles = Directory.GetFiles(qlogDirectory, "*.qlog");
             Assert.NotEmpty(qlogFiles);
+        }
+        finally
+        {
+            TryDelete(sourcePath);
+            TryDelete(destinationPath);
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task LocalhostTransferSmokeFailsWhenTheSourceFileIsMissing()
+    {
+        using TempDirectoryFixture fixture = new("incursa-quic-preflight-missing-transfer-source");
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        (string CertificatePath, string PrivateKeyPath) = CreateServerCertificateFiles(fixture, "localhost");
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        string relativePath = $"missing-transfer-source-{Guid.NewGuid():N}.txt";
+        string request = $"https://localhost:{listenEndPoint.Port}/{relativePath}";
+        string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+        string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+        string sourcePath = Path.Combine(sourceRoot, relativePath);
+        string destinationPath = Path.Combine(destinationRoot, relativePath);
+
+        Directory.CreateDirectory(sourceRoot);
+        Directory.CreateDirectory(destinationRoot);
+        TryDelete(sourcePath);
+        TryDelete(destinationPath);
+
+        try
+        {
+            (HarnessRunResult server, HarnessRunResult client) = await RunHarnessPairAsync(
+                "transfer",
+                request,
+                CertificatePath,
+                PrivateKeyPath,
+                qlogDirectory);
+
+            Assert.Equal(1, server.ExitCode);
+            Assert.Equal(1, client.ExitCode);
+            Assert.Contains("missing source file", server.Stderr, StringComparison.OrdinalIgnoreCase);
+            Assert.StartsWith(
+                "interop harness: role=client, testcase=transfer failed:",
+                client.Stderr,
+                StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("completed managed transfer", server.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("completed managed transfer", client.Stdout, StringComparison.OrdinalIgnoreCase);
         }
         finally
         {
@@ -255,6 +323,33 @@ public sealed class REQ_QUIC_INT_0014
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    public async Task MalformedTransferRequestsFailBeforeTransportSuccessIsClaimed()
+    {
+        using TempDirectoryFixture fixture = new("incursa-quic-preflight-malformed-transfer");
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        (string CertificatePath, string PrivateKeyPath) = CreateServerCertificateFiles(fixture, "localhost");
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        string request = $"https://localhost:{listenEndPoint.Port}/";
+
+        (HarnessRunResult server, HarnessRunResult client) = await RunHarnessPairWithoutListeningAsync(
+            "transfer",
+            request,
+            CertificatePath,
+            PrivateKeyPath,
+            qlogDirectory);
+
+        Assert.Equal(1, server.ExitCode);
+        Assert.Equal(1, client.ExitCode);
+        Assert.Empty(server.Stdout);
+        Assert.Empty(client.Stdout);
+        Assert.Contains("must include a non-root path for transfer dispatch.", server.Stderr, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("must include a non-root path for transfer dispatch.", client.Stderr, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void TransferPathMappingRejectsRootRequests()
     {
         Assert.True(InteropHarnessEnvironment.TryCreate(
@@ -300,7 +395,7 @@ public sealed class REQ_QUIC_INT_0014
         string role,
         string testcase,
         string request,
-        string qlogDirectory,
+        string? qlogDirectory,
         string certificatePath,
         string privateKeyPath,
         RecordingTextWriter stdout,
@@ -324,7 +419,7 @@ public sealed class REQ_QUIC_INT_0014
         string request,
         string certificatePath,
         string privateKeyPath,
-        string qlogDirectory)
+        string? qlogDirectory)
     {
         RecordingTextWriter serverStdout = new();
         RecordingTextWriter serverStderr = new();
@@ -335,6 +430,28 @@ public sealed class REQ_QUIC_INT_0014
         await WaitForTextAsync(serverTask, serverStdout, "listening on", TimeSpan.FromSeconds(10)).ConfigureAwait(false);
 
         Task<int> clientTask = StartHarnessRunAsync("client", testcase, request, qlogDirectory, certificatePath, privateKeyPath, clientStdout, clientStderr);
+        await WaitForPairCompletionAsync(serverTask, clientTask, TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+
+        return (
+            new HarnessRunResult(await serverTask.ConfigureAwait(false), serverStdout.ToString(), serverStderr.ToString()),
+            new HarnessRunResult(await clientTask.ConfigureAwait(false), clientStdout.ToString(), clientStderr.ToString()));
+    }
+
+    private static async Task<(HarnessRunResult Server, HarnessRunResult Client)> RunHarnessPairWithoutListeningAsync(
+        string testcase,
+        string request,
+        string certificatePath,
+        string privateKeyPath,
+        string? qlogDirectory)
+    {
+        RecordingTextWriter serverStdout = new();
+        RecordingTextWriter serverStderr = new();
+        RecordingTextWriter clientStdout = new();
+        RecordingTextWriter clientStderr = new();
+
+        Task<int> serverTask = StartHarnessRunAsync("server", testcase, request, qlogDirectory, certificatePath, privateKeyPath, serverStdout, serverStderr);
+        Task<int> clientTask = StartHarnessRunAsync("client", testcase, request, qlogDirectory, certificatePath, privateKeyPath, clientStdout, clientStderr);
+
         await WaitForPairCompletionAsync(serverTask, clientTask, TimeSpan.FromSeconds(30)).ConfigureAwait(false);
 
         return (
