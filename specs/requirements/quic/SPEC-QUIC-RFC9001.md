@@ -806,6 +806,8 @@ Trace:
 - Source Refs:
   - RFC 9001 §10 RFC9001-S10-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-10
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S10-0001.cs::QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata
 
 Notes:
 - The source sentence reports the completed registration in past tense; this clause restates the registry action normatively.
