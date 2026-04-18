@@ -49,6 +49,8 @@ internal static class InteropHarnessRunner
 
     private static int RunClient(InteropHarnessEnvironment settings, TextWriter stdout, TextWriter stderr)
     {
+        WriteSslKeyLogExportNotImplemented(stdout, settings);
+
         return settings.TestCase switch
         {
             "handshake" => RunHandshakeClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
@@ -66,6 +68,8 @@ internal static class InteropHarnessRunner
         string certificatePath,
         string privateKeyPath)
     {
+        WriteSslKeyLogExportNotImplemented(stdout, settings);
+
         return settings.TestCase switch
         {
             "handshake" => RunHandshakeServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
@@ -760,6 +764,20 @@ internal static class InteropHarnessRunner
         WriteLineAndFlush(
             stdout,
             $"interop harness: role={settings.Role.ToString().ToLowerInvariant()}, testcase={settings.TestCase}, qlog capture enabled at {qlogScope.OutputPath}.");
+    }
+
+    private static void WriteSslKeyLogExportNotImplemented(
+        TextWriter stdout,
+        InteropHarnessEnvironment settings)
+    {
+        if (settings.SslKeyLogFile is null)
+        {
+            return;
+        }
+
+        WriteLineAndFlush(
+            stdout,
+            $"interop harness: role={settings.Role.ToString().ToLowerInvariant()}, testcase={settings.TestCase}, SSLKEYLOGFILE is set but keylog export is not yet implemented.");
     }
 
     private static ValueTask<QuicConnection> ConnectWithQlogCaptureAsync(
