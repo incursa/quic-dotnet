@@ -2593,6 +2593,9 @@
         "upstream_refs": [
           "RFC 9000 §3.4 RFC9000-S3.4-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0001.cs::TryOpenLocalStream_CreatesBidirectionalSendAndReceiveParts"
         ]
       }
     },
@@ -2619,6 +2622,9 @@
         "upstream_refs": [
           "RFC 9000 §3.4 RFC9000-S3.4-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0002.cs::TryReceiveStopSendingFrame_PreservesTheReceivePartOnBidirectionalStreams"
         ]
       }
     },
@@ -2645,6 +2651,11 @@
         "upstream_refs": [
           "RFC 9000 §3.4 RFC9000-S3.4-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0003.cs::TryAcknowledgeSendCompletion_EntersDataRecvdAfterAcknowledgeableBidirectionalData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0003.cs::TryAcknowledgeSendCompletion_DoesNotAdvanceBidirectionalStreamWithoutFinalData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0003.cs::TryAcknowledgeSendCompletion_HandlesZeroLengthBidirectionalFin"
         ]
       }
     },

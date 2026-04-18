@@ -1430,6 +1430,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.4 RFC9000-S3.4-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0001.cs::TryOpenLocalStream_CreatesBidirectionalSendAndReceiveParts
 
 ## REQ-QUIC-RFC9000-S3P4-0002 Allow composite stream-state representations
 Implementations MAY represent bidirectional stream states as composites of sending and receiving stream states.
@@ -1444,6 +1446,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.4 RFC9000-S3.4-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0002.cs::TryReceiveStopSendingFrame_PreservesTheReceivePartOnBidirectionalStreams
 
 ## REQ-QUIC-RFC9000-S3P4-0003 Require acknowledgment before closed-state transitions in the example mapping
 Any mapping to a closed or half-closed state MUST require data to be acknowledged before the transition.
@@ -1458,6 +1462,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.4 RFC9000-S3.4-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0003.cs::TryAcknowledgeSendCompletion_EntersDataRecvdAfterAcknowledgeableBidirectionalData
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0003.cs::TryAcknowledgeSendCompletion_DoesNotAdvanceBidirectionalStreamWithoutFinalData
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0003.cs::TryAcknowledgeSendCompletion_HandlesZeroLengthBidirectionalFin
 
 ## REQ-QUIC-RFC9000-S3P5-0001 Allow aborting stream reads with an application error code
 If an application is no longer interested in the data it is receiving on a stream, it MAY abort reading the stream and specify an application error code.
