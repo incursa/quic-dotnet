@@ -40,6 +40,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
     private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
+    private readonly QuicConnectionPeerConnectionIdState peerConnectionIdState = new();
     private readonly long timeOriginTicks;
     private readonly QuicHandshakeFlowCoordinator handshakeFlowCoordinator;
     private readonly QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot;
@@ -204,6 +205,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     public ulong CurrentProbeTimeoutMicros => currentProbeTimeoutMicros;
 
     public string? LastValidatedRemoteAddress => lastValidatedRemoteAddress;
+
+    internal ReadOnlyMemory<byte> CurrentPeerDestinationConnectionId
+        => peerConnectionIdState.CurrentDestinationConnectionId.IsEmpty
+            ? handshakeFlowCoordinator.DestinationConnectionId
+            : peerConnectionIdState.CurrentDestinationConnectionId;
 
     public bool HasValidatedPath
     {
@@ -914,6 +920,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             await processing.ConfigureAwait(false);
         }
+
+        peerConnectionIdState.Clear();
     }
 
     public void Dispose()
@@ -2352,6 +2360,23 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 continue;
             }
 
+            if (QuicFrameCodec.TryParseNewConnectionIdFrame(remaining, out QuicNewConnectionIdFrame newConnectionIdFrame, out int newConnectionIdBytesConsumed))
+            {
+                if (newConnectionIdBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (!TryHandleNewConnectionIdFrame(newConnectionIdFrame, nowTicks, ref effects, out bool newConnectionIdStateChanged))
+                {
+                    return false;
+                }
+
+                stateChanged |= newConnectionIdStateChanged;
+                offset += newConnectionIdBytesConsumed;
+                continue;
+            }
+
             if (QuicFrameCodec.TryParseResetStreamFrame(remaining, out QuicResetStreamFrame resetStreamFrame, out int resetBytesConsumed))
             {
                 if (resetBytesConsumed <= 0)
@@ -2500,6 +2525,43 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, responseDatagram));
+        return true;
+    }
+
+    private bool TryHandleNewConnectionIdFrame(
+        QuicNewConnectionIdFrame newConnectionIdFrame,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects,
+        out bool stateChanged)
+    {
+        stateChanged = false;
+
+        if (!peerConnectionIdState.TryAcceptNewConnectionId(
+            newConnectionIdFrame,
+            PeerRequestedZeroLengthConnectionId(),
+            out QuicTransportErrorCode errorCode,
+            out bool destinationConnectionIdChanged))
+        {
+            _ = HandleFatalTlsSignal(
+                nowTicks,
+                errorCode,
+                "The peer sent an invalid NEW_CONNECTION_ID frame.",
+                ref effects);
+            return false;
+        }
+
+        if (destinationConnectionIdChanged
+            && !TrySetHandshakeDestinationConnectionId(peerConnectionIdState.CurrentDestinationConnectionId.Span))
+        {
+            _ = HandleFatalTlsSignal(
+                nowTicks,
+                QuicTransportErrorCode.ProtocolViolation,
+                "The peer connection ID could not be installed.",
+                ref effects);
+            return false;
+        }
+
+        stateChanged = destinationConnectionIdChanged;
         return true;
     }
 
