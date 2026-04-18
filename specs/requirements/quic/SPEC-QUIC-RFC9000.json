@@ -29472,6 +29472,10 @@
         "upstream_refs": [
           "RFC 9000 §17.4 RFC9000-S17.4-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0003.cs::TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForUnsupportedEndpoints",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0003.cs::TryOpenProtectedApplicationDataPacket_IgnoresTheIncomingSpinBitWhenUnsupported"
         ]
       }
     },
