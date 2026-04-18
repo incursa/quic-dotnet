@@ -289,6 +289,13 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     continue;
                 }
 
+                if (TryParseInitialDatagram(datagram, out _)
+                    && datagram.Length < QuicVersionNegotiation.Version1MinimumDatagramPayloadSize)
+                {
+                    TrySendProtocolViolationCloseResponse(pathIdentity);
+                    continue;
+                }
+
                 if (TryParseInitialDatagram(datagram, out QuicLongHeaderPacket initialHeader))
                 {
                     try
@@ -390,6 +397,25 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
 
         return true;
+    }
+
+    private void TrySendProtocolViolationCloseResponse(QuicConnectionPathIdentity pathIdentity)
+    {
+        byte[] closeDatagram = new byte[32];
+        if (!QuicFrameCodec.TryFormatConnectionCloseFrame(
+            new QuicConnectionCloseFrame(
+                QuicTransportErrorCode.ProtocolViolation,
+                triggeringFrameType: 0,
+                []),
+            closeDatagram,
+            out int bytesWritten))
+        {
+            return;
+        }
+
+        SendDatagram(new QuicConnectionSendDatagramEffect(
+            pathIdentity,
+            closeDatagram.AsMemory(0, bytesWritten)));
     }
 
     private async ValueTask<bool> TryAdmitIncomingInitialConnectionAsync(
