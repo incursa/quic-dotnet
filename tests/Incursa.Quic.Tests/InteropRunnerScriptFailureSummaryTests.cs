@@ -71,6 +71,125 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
+    public async Task RunnerExitZeroAfterValidOutputsButMissingRunnerStderrLogReportsFailureSummary()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("missing-stderr-log");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot);
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(1, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Building Incursa.Quic.InteropHarness image...", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Running quic-interop-runner locally...", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        string invocationPath = Path.Combine(runRoot, "invocation.txt");
+        string artifactTreePath = Path.Combine(runRoot, "artifact-tree.txt");
+        string dockerBuildLogPath = Path.Combine(runRoot, "docker-build.log");
+        string runnerJsonPath = Path.Combine(runRoot, "runner-report.json");
+        string runnerMarkdownPath = Path.Combine(runRoot, "runner-report.md");
+        string runnerStdErrPath = Path.Combine(runRoot, "runner.stderr.log");
+        string runnerLogsPath = Path.Combine(runRoot, "runner-logs");
+        string runnerLogPath = Directory.GetFiles(runnerLogsPath, "*", SearchOption.AllDirectories).Single();
+
+        AssertFailureSummary(
+            output,
+            runRoot,
+            invocationPath,
+            artifactTreePath,
+            runnerStdErrPath,
+            expectedRunnerExitCode: 0,
+            expectedReason: "the runner did not produce the expected JSON, Markdown, or log outputs.",
+            expectedMissingOutputLine: $"Missing outputs: runner stderr log at '{runnerStdErrPath}'");
+
+        Assert.True(File.Exists(dockerBuildLogPath));
+        Assert.True(File.Exists(runnerJsonPath));
+        Assert.True(File.Exists(runnerMarkdownPath));
+        Assert.False(File.Exists(runnerStdErrPath));
+        Assert.True(Directory.Exists(runnerLogsPath));
+
+        Assert.Equal("{\"mode\":\"success\"}", File.ReadAllText(runnerJsonPath).Trim());
+        Assert.Contains("fake-runner sentinel success", File.ReadAllText(runnerMarkdownPath), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("fake-runner mode=success", File.ReadAllText(runnerLogPath), StringComparison.OrdinalIgnoreCase);
+
+        string artifactTree = File.ReadAllText(artifactTreePath);
+        Assert.Contains("docker-build.log", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("invocation.txt", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("runner-report.json", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("runner-report.md", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("runner-logs", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("runner.stderr.log", artifactTree, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task RunnerExitZeroAfterValidOutputsButMissingRunnerLogsDirectoryReportsFailureSummary()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("missing-runner-logs-dir");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot);
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(1, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Building Incursa.Quic.InteropHarness image...", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Running quic-interop-runner locally...", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        string invocationPath = Path.Combine(runRoot, "invocation.txt");
+        string artifactTreePath = Path.Combine(runRoot, "artifact-tree.txt");
+        string dockerBuildLogPath = Path.Combine(runRoot, "docker-build.log");
+        string runnerJsonPath = Path.Combine(runRoot, "runner-report.json");
+        string runnerMarkdownPath = Path.Combine(runRoot, "runner-report.md");
+        string runnerStdErrPath = Path.Combine(runRoot, "runner.stderr.log");
+        string runnerLogsPath = Path.Combine(runRoot, "runner-logs");
+
+        AssertFailureSummary(
+            output,
+            runRoot,
+            invocationPath,
+            artifactTreePath,
+            runnerStdErrPath,
+            expectedRunnerExitCode: 0,
+            expectedReason: "the runner did not produce the expected JSON, Markdown, or log outputs.",
+            expectedMissingOutputLine: $"Missing outputs: runner log directory at '{runnerLogsPath}'");
+
+        Assert.True(File.Exists(dockerBuildLogPath));
+        Assert.True(File.Exists(runnerJsonPath));
+        Assert.True(File.Exists(runnerMarkdownPath));
+        Assert.True(File.Exists(runnerStdErrPath));
+        Assert.False(Directory.Exists(runnerLogsPath));
+
+        Assert.Equal("{\"mode\":\"success\"}", File.ReadAllText(runnerJsonPath).Trim());
+        Assert.Contains("fake-runner sentinel success", File.ReadAllText(runnerMarkdownPath), StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(0, new FileInfo(runnerStdErrPath).Length);
+
+        string artifactTree = File.ReadAllText(artifactTreePath);
+        Assert.Contains("docker-build.log", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("invocation.txt", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("runner-report.json", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("runner-report.md", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("runner.stderr.log", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("runner-logs", artifactTree, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task DockerBuildFailureBeforeRunnerLaunchLeavesRunnerStderrMissingButExplainsTheBuildFailure()
     {
         using InteropRunnerScriptFixture fixture = new();
@@ -127,6 +246,28 @@ public sealed class InteropRunnerScriptFailureSummaryTests
         string[] runRoots = Directory.GetDirectories(artifactsRoot);
         Assert.Single(runRoots);
         return runRoots[0];
+    }
+
+    private static void AssertFailureSummary(
+        string output,
+        string runRoot,
+        string invocationPath,
+        string artifactTreePath,
+        string runnerStdErrPath,
+        int expectedRunnerExitCode,
+        string expectedReason,
+        string expectedMissingOutputLine)
+    {
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains($"Reason: {expectedReason}", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains($"Runner exit code: {expectedRunnerExitCode}", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains($"Run root:        {runRoot}", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains($"Invocation log:  {invocationPath}", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains($"Artifact tree:   {artifactTreePath}", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains($"Runner stderr:   {runnerStdErrPath}", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(expectedMissingOutputLine, output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Output issues:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Evidence was preserved in the run root for post-failure inspection.", output, StringComparison.OrdinalIgnoreCase);
     }
 
     private sealed class InteropRunnerScriptFixture : IDisposable

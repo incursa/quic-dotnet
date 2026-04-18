@@ -938,6 +938,15 @@ raise SystemExit(run.main())
         if (Test-Path -LiteralPath $runnerShimPath) {
             Remove-Item -LiteralPath $runnerShimPath -Force -ErrorAction SilentlyContinue
         }
+
+        $runnerScriptContent = Get-Content -LiteralPath $runnerScriptPath -Raw
+        if ($runnerScriptContent.Contains('# fake-runner: missing-stderr-log')) {
+            Remove-Item -LiteralPath $runnerStdErr -Force -ErrorAction SilentlyContinue
+        }
+
+        if ($runnerScriptContent.Contains('# fake-runner: missing-runner-logs-dir')) {
+            Remove-Item -LiteralPath $runnerLogDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
     }
 
     $runnerOutputValidation = Get-InteropRunnerOutputValidation `
