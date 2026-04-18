@@ -21,9 +21,9 @@
   "audit_result": "trace-consistent-with-explicit-blockers",
   "requirements_in_scope": {
     "total": 70,
-    "implemented_and_tested": 24,
+    "implemented_and_tested": 25,
     "deferred": 1,
-    "blocked": 45,
+    "blocked": 44,
     "silent_gaps": 0,
     "stale_ids": 0,
     "wrong_ids": 0
@@ -225,10 +225,14 @@
       {
         "section_token": "S14P4",
         "requirements": [
+          "REQ-QUIC-RFC9000-S14P4-0001",
           "REQ-QUIC-RFC9000-S14P4-0002"
         ],
         "files": [
+          "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs",
           "src/Incursa.Quic/QuicCongestionControlState.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0002.cs",
           "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
         ]
       }
@@ -341,13 +345,6 @@
         ],
         "reason": "ICMP-based PMTU validation remains blocked by missing probe and path surfaces."
       },
-      {
-        "section_token": "S14P4",
-        "requirements": [
-          "REQ-QUIC-RFC9000-S14P4-0001"
-        ],
-        "reason": "PMTU probe scheduling is not implemented."
-      }
     ]
   },
   "reference_audit": {
@@ -393,6 +390,18 @@
         ]
       },
       {
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs",
+        "ids": [
+          "REQ-QUIC-RFC9000-S14P4-0001"
+        ]
+      },
+      {
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0002.cs",
+        "ids": [
+          "REQ-QUIC-RFC9000-S14P4-0002"
+        ]
+      },
+      {
         "file": "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
         "ids": [
           "REQ-QUIC-RFC9000-S14P1-0001",
@@ -415,5 +424,5 @@
     ],
     "wrong_or_stale_requirement_refs_found": []
   },
-  "conclusion": "Trace is internally consistent. The only remaining open items are explicit blockers and one deferred permissive guidance item, and no silent gaps remain in the scoped requirement set."
+  "conclusion": "Trace is internally consistent. REQ-QUIC-RFC9000-S14P4-0001 is now closed by the requirement-home proof and canonical x_test_refs, the remaining open items are explicit blockers and one deferred permissive guidance item, and no silent gaps remain in the scoped requirement set."
 }

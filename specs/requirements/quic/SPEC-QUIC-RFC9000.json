@@ -23189,6 +23189,11 @@
         "upstream_refs": [
           "RFC 9000 §14.4 RFC9000-S14.4-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs::TrackSentPacket_RetainsAckElicitingProbePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs::TrackSentPacket_RejectsProbePacketsThatAreNotAckEliciting",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs::TrackSentPacket_RejectsProbePacketsThatAreAckOnly"
         ]
       }
     },
@@ -23215,6 +23220,9 @@
         "upstream_refs": [
           "RFC 9000 §14.4 RFC9000-S14.4-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0002.cs::TryRegisterLoss_IgnoresProbePacketLossForCongestionControl"
         ]
       }
     },

@@ -11,9 +11,9 @@
 ## Summary
 
 - Requirements in scope: 70
-- Implemented and test-covered: 24
+- Implemented and test-covered: 25
 - Explicitly deferred: 1
-- Explicitly blocked: 45
+- Explicitly blocked: 44
 - Silent gaps: 0
 - Stale IDs in scope: 0
 - Wrong IDs in tests or source refs: 0
@@ -40,6 +40,7 @@
 - `REQ-QUIC-RFC9000-S13P4P2-0001` and `REQ-QUIC-RFC9000-S13P4P2-0006` are implemented and test-covered in the ECN validation helper and congestion-control tests.
 - `REQ-QUIC-RFC9000-S13P4P2P1-0001` through `REQ-QUIC-RFC9000-S13P4P2P1-0008` are now directly traced by the ECN validation helper tests, including the negative path for zeroed-or-missing ECN counts.
 - `REQ-QUIC-RFC9000-S13P4P2P2-0001`, `REQ-QUIC-RFC9000-S13P4P2P2-0003`, `REQ-QUIC-RFC9000-S13P4P2P2-0004`, and `REQ-QUIC-RFC9000-S13P4P2P2-0005` are implemented and test-covered in the ECN validation helper tests.
+- `REQ-QUIC-RFC9000-S14P4-0001` is implemented and test-covered in [`src/Incursa.Quic/QuicConnectionSendRuntime.cs`](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicConnectionSendRuntime.cs) and [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs).
 - `REQ-QUIC-RFC9000-S14-0003`, `REQ-QUIC-RFC9000-S14-0004`, `REQ-QUIC-RFC9000-S14P1-0001`, `REQ-QUIC-RFC9000-S14P1-0003`, `REQ-QUIC-RFC9000-S14P1-0008`, and `REQ-QUIC-RFC9000-S14P4-0002` are implemented and test-covered by the address-validation, anti-amplification, version-negotiation, and congestion-control tests.
 - `REQ-QUIC-RFC9000-S13P4P2-0005` remains an explicit deferred item because the helper slice does not need a no-op path for the permissive guidance.
 
@@ -52,8 +53,6 @@
 - `REQ-QUIC-RFC9000-S14-0001`, `REQ-QUIC-RFC9000-S14-0002`, `REQ-QUIC-RFC9000-S14-0005`, `REQ-QUIC-RFC9000-S14-0006`, `REQ-QUIC-RFC9000-S14-0007`, `REQ-QUIC-RFC9000-S14-0008`, and `REQ-QUIC-RFC9000-S14-0009` remain blocked because datagram assembly, PMTU discovery, and fragmentation control are not wired into packet management.
 - `REQ-QUIC-RFC9000-S14P1-0002`, `REQ-QUIC-RFC9000-S14P1-0004`, `REQ-QUIC-RFC9000-S14P1-0005`, `REQ-QUIC-RFC9000-S14P1-0006`, and `REQ-QUIC-RFC9000-S14P1-0007` remain blocked by the missing remaining Initial-path and anti-amplification behaviors.
 - `REQ-QUIC-RFC9000-S14P2-0001` through `REQ-QUIC-RFC9000-S14P2-0010`, `REQ-QUIC-RFC9000-S14P2P1-0001` through `REQ-QUIC-RFC9000-S14P2P1-0007`, and `REQ-QUIC-RFC9000-S14P3-0001` through `REQ-QUIC-RFC9000-S14P3-0004` remain blocked because PMTU discovery, ICMP validation, and DPLPMTUD assembly are still absent.
-- `REQ-QUIC-RFC9000-S14P4-0001` remains blocked because PMTU probe scheduling is not implemented.
-
 ## Reference Audit
 
 - In-scope source requirement refs found: none.
@@ -62,6 +61,7 @@
   - [`tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs) - `REQ-QUIC-RFC9000-S13P4P1-0004`, `REQ-QUIC-RFC9000-S13P4P1-0005`, `REQ-QUIC-RFC9000-S13P4P1-0006`
   - [`tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs) - `REQ-QUIC-RFC9000-S13P4P1-0004`, `REQ-QUIC-RFC9000-S13P4P1-0005`
   - [`tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs) - `REQ-QUIC-RFC9000-S13P4-0001`, `REQ-QUIC-RFC9000-S13P4P2-0001`, `REQ-QUIC-RFC9000-S14P4-0002`
+  - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs) - `REQ-QUIC-RFC9000-S14P4-0001`
   - [`tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs) - `REQ-QUIC-RFC9000-S14P1-0001`, `REQ-QUIC-RFC9000-S14P1-0003`
   - [`tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs) - `REQ-QUIC-RFC9000-S14P1-0008`
   - [`tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs) - `REQ-QUIC-RFC9000-S14-0003`, `REQ-QUIC-RFC9000-S14-0004`
@@ -69,4 +69,4 @@
 
 ## Conclusion
 
-The chunk is trace-consistent now. `REQ-QUIC-RFC9000-S13P4P2P1-0003` has direct test trace, `REQ-QUIC-RFC9000-S13P4-0002` is recorded as an explicit blocker, and no silent gaps remain in the scoped requirement set.
+Trace is internally consistent. `REQ-QUIC-RFC9000-S14P4-0001` is now closed by the requirement-home proof and canonical x_test_refs, the remaining open items are explicit blockers and one deferred permissive guidance item, and no silent gaps remain in the scoped requirement set.

@@ -26,6 +26,8 @@
   - `REQ-QUIC-RFC9000-S14P1-0001`
   - `REQ-QUIC-RFC9000-S14P1-0003`
   - `REQ-QUIC-RFC9000-S14P1-0008`
+- PMTU probe floor:
+  - `REQ-QUIC-RFC9000-S14P4-0001`
 - PMTU probe loss:
   - `REQ-QUIC-RFC9000-S14P4-0002`
 
@@ -41,6 +43,11 @@
 - [tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs)
 - [tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs)
 - [tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs)
+- [src/Incursa.Quic/QuicConnectionSendRuntime.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicConnectionSendRuntime.cs)
+- [tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs)
+- [specs/requirements/quic/SPEC-QUIC-RFC9000.json](C:/src/incursa/quic-dotnet/specs/requirements/quic/SPEC-QUIC-RFC9000.json)
+- [specs/generated/quic/quic-requirement-coverage-triage.json](C:/src/incursa/quic-dotnet/specs/generated/quic/quic-requirement-coverage-triage.json)
+- [specs/generated/quic/quic-requirement-coverage-triage.md](C:/src/incursa/quic-dotnet/specs/generated/quic/quic-requirement-coverage-triage.md)
 - [specs/generated/quic/chunks/9000-20-datagram-and-mtu.implementation-summary.md](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9000-20-datagram-and-mtu.implementation-summary.md)
 - [specs/generated/quic/chunks/9000-20-datagram-and-mtu.implementation-summary.json](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9000-20-datagram-and-mtu.implementation-summary.json)
 
@@ -52,6 +59,7 @@
 - [tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs): tagged Initial datagram padding coverage.
 - [tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs): tagged anti-amplification coverage.
 - [tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs): tagged the minimum Initial payload helper coverage.
+- [tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs): added the ack-eliciting PMTU probe floor proof and negative rejection coverage for non-ack-eliciting and ack-only probes.
 
 ## Tests Run And Results
 - `dotnet test .\tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~QuicEcnValidationStateTests|FullyQualifiedName~QuicCongestionControlStateTests|FullyQualifiedName~QuicAckGenerationStateTests|FullyQualifiedName~QuicFrameCodecTests|FullyQualifiedName~QuicAddressValidationTests|FullyQualifiedName~QuicAntiAmplificationBudgetTests|FullyQualifiedName~QuicVersionNegotiationTests"`
@@ -69,11 +77,11 @@
 - `S14P2`: `REQ-QUIC-RFC9000-S14P2-0001` through `REQ-QUIC-RFC9000-S14P2-0010`
 - `S14P2P1`: `REQ-QUIC-RFC9000-S14P2P1-0001` through `REQ-QUIC-RFC9000-S14P2P1-0007`
 - `S14P3`: `REQ-QUIC-RFC9000-S14P3-0001` through `REQ-QUIC-RFC9000-S14P3-0004`
-- `S14P4`: `REQ-QUIC-RFC9000-S14P4-0001`
 - Deferred guidance that remains intentionally unmodeled: `REQ-QUIC-RFC9000-S13P4P2-0005`
 
 ## Risks Or Follow-up Notes
 - The ECN validation work is helper-level and does not yet wire into a full connection state machine that chooses when to mark outgoing packets ECT or when to switch paths.
 - `REQ-QUIC-RFC9000-S13P4-0002` stays blocked until the sender can determine path support and peer ECN support before enabling ECN.
-- PMTU discovery, ICMP validation, fragmentation control, DPLPMTUD probe scheduling, and datagram coalescing remain blocked by missing packet-assembly and path-management surfaces.
+- `REQ-QUIC-RFC9000-S14P4-0001` is now closed by requirement-home proof and canonical x_test_refs.
+- PMTU discovery, ICMP validation, fragmentation control, and datagram coalescing remain blocked by missing packet-assembly and path-management surfaces.
 - `REQ-QUIC-RFC9000-S13P4P2-0005` is permissive guidance and was left as deferred rather than forcing a no-op code path.
