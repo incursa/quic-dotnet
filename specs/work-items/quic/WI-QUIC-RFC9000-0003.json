@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0003",
+  "title": "QUIC RFC 9000 Stateless Reset Versioning Work Item",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0003"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0003",
+    "VER-QUIC-RFC9000-0003"
+  ],
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "out_of_scope": [
+    "RFC 8999 version-independent invariants.",
+    "RFC 9001 TLS-protection details.",
+    "RFC 9002 loss-detection and congestion-control implementation details.",
+    "New QUIC version support."
+  ],
+  "status": "planned",
+  "domain": "quic",
+  "summary": "Keep the RFC 9000 Stateless Reset emission path honest when the runtime endpoint retains a version-profile snapshot instead of assuming version 1 forever.\nThread the retained profile through the reset-generation seam without widening public support claims or changing the wire layout.",
+  "verification_plan": "Run the requirement-home proof that retains the version profile after runtime disposal and the unit test coverage that rejects empty version profiles.\nRun the permanent Stateless Reset benchmark suite so the formatter hot path remains discoverable under the repo's benchmark inventory.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs\n- src/Incursa.Quic/QuicStatelessReset.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0029.cs\n- tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs\n- benchmarks/QuicStatelessResetBenchmarks.cs"
+    }
+  ],
+  "artifact_type": "work_item",
+  "planned_changes": "- Retain each connection's supported-version snapshot at the endpoint so Stateless Reset emission can outlive the runtime shell.\n- Thread that retained profile through the stateless-reset emission path without adding new public API surface or new packet forms.\n- Keep the requirement-home tests and the permanent benchmark aligned with the retained-profile path.\n- Update the canonical trace links so the requirement, architecture, work item, and verification artifacts point at the same slice.",
+  "design_links": [
+    "ARC-QUIC-RFC9000-0003"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S10P3-0029"
+  ]
+}

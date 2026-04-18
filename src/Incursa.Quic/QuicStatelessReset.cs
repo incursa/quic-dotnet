@@ -150,6 +150,26 @@ internal static class QuicStatelessReset
     }
 
     /// <summary>
+    /// Formats a Stateless Reset datagram using a retained version-profile snapshot.
+    /// </summary>
+    internal static bool TryFormatStatelessResetDatagram(
+        ReadOnlySpan<byte> statelessResetToken,
+        ReadOnlySpan<uint> supportedVersions,
+        int datagramLength,
+        Span<byte> destination,
+        out int bytesWritten)
+    {
+        if (supportedVersions.IsEmpty)
+        {
+            bytesWritten = default;
+            return false;
+        }
+
+        // The Stateless Reset wire shape is version-agnostic; the retained profile only guards ownership.
+        return TryFormatStatelessResetDatagram(statelessResetToken, datagramLength, destination, out bytesWritten);
+    }
+
+    /// <summary>
     /// Returns the trailing 16 bytes from a datagram when it is long enough to contain a Stateless Reset token.
     /// </summary>
     internal static bool TryGetTrailingStatelessResetToken(ReadOnlySpan<byte> datagram, out ReadOnlySpan<byte> statelessResetToken)
@@ -200,4 +220,3 @@ internal static class QuicStatelessReset
         return false;
     }
 }
-

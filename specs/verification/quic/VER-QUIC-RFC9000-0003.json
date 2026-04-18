@@ -1,0 +1,18 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "title": "QUIC RFC 9000 Stateless Reset Versioning Verification",
+  "verification_method": "Execution, inspection, and benchmark evidence.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0003",
+    "WI-QUIC-RFC9000-0003"
+  ],
+  "expected_result": "- The endpoint retains a version-profile snapshot after the runtime shell is disposed.\n- Stateless Reset emission still succeeds using the retained profile and keeps the token at the tail.\n- Negative coverage rejects empty version-profile snapshots.\n- The permanent benchmark suite covers the retained-profile formatter path without changing the wire shape.\n- The trace links in the canonical requirement file point at the new 0003 leaf artifacts and requirement-home tests.",
+  "artifact_id": "VER-QUIC-RFC9000-0003",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S10P3-0029"
+  ],
+  "status": "planned",
+  "artifact_type": "verification",
+  "scope": "This verification plan covers the RFC 9000 stateless-reset versioning slice, including retained version-profile evidence, format validation, and the permanent benchmark hook for the retained-profile formatter path.\nIt does not claim new QUIC version support or broader packet-format changes."
+}

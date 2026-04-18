@@ -25,7 +25,6 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
-    private static readonly uint[] ClientSupportedVersions = [QuicVersionNegotiation.Version1];
 
     private readonly IMonotonicClock clock;
     private readonly QuicConnectionSendRuntime sendRuntime;
@@ -49,6 +48,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly bool diagnosticsEnabled;
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
+    private readonly QuicConnectionVersionProfile versionProfile;
     private QuicInitialPacketProtection? initialPacketProtection;
     private QuicConnectionPathIdentity? bootstrapOutboundPathIdentity;
     private byte[]? initialBootstrapClientHelloBytes;
@@ -109,7 +109,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         QuicTlsRole tlsRole = QuicTlsRole.Client,
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
         IQuicDiagnosticsSink? diagnosticsSink = null,
-        bool enableRandomizedSpinBitSelection = false)
+        bool enableRandomizedSpinBitSelection = false,
+        uint[]? supportedVersions = null)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -119,6 +120,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
         this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
         diagnosticsEnabled = this.diagnosticsSink.IsEnabled;
+        uint[] supportedVersionSnapshot = supportedVersions is { Length: > 0 }
+            ? (uint[])supportedVersions.Clone()
+            : [QuicVersionNegotiation.Version1];
+        versionProfile = new QuicConnectionVersionProfile(supportedVersionSnapshot);
         if (detachedResumptionTicketSnapshot is not null && tlsRole != QuicTlsRole.Client)
         {
             throw new ArgumentException("Detached resumption ticket snapshots are only supported for the client role.", nameof(detachedResumptionTicketSnapshot));
@@ -206,6 +211,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     public ulong CurrentProbeTimeoutMicros => currentProbeTimeoutMicros;
 
     public string? LastValidatedRemoteAddress => lastValidatedRemoteAddress;
+
+    internal QuicConnectionVersionProfile VersionProfile => versionProfile;
 
     internal ReadOnlyMemory<byte> CurrentPeerDestinationConnectionId
         => peerConnectionIdState.CurrentDestinationConnectionId.IsEmpty
@@ -1132,8 +1139,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (!QuicVersionNegotiation.ShouldAbandonConnectionAttempt(
                 versionNegotiationPacket,
-                QuicVersionNegotiation.Version1,
-                ClientSupportedVersions,
+                versionProfile.SelectedVersion,
+                versionProfile.SupportedVersions.Span,
                 hasSuccessfullyProcessedAnotherPacket))
         {
             return false;

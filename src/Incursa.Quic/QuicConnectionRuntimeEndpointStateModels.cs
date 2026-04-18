@@ -31,7 +31,14 @@ internal sealed record QuicConnectionStatelessResetBinding(
     QuicConnectionHandle Handle,
     ulong ConnectionId,
     string RemoteAddress,
-    byte[] Token);
+    byte[] Token,
+    QuicConnectionVersionProfile VersionProfile);
+
+internal readonly record struct QuicConnectionVersionProfile(
+    ReadOnlyMemory<uint> SupportedVersions)
+{
+    internal uint SelectedVersion => SupportedVersions.Span[0];
+}
 
 internal enum QuicConnectionStatelessResetEmissionDisposition
 {
