@@ -23,6 +23,24 @@ public class QuicRetryIntegrityBenchmarks
         0x74, 0x6F, 0x6B, 0x65, 0x6E,
     ];
 
+    private static readonly byte[] NonEmptyRetryPacketDestinationConnectionId =
+    [
+        0xCD, 0x41, 0x8F, 0x22, 0xA7, 0x5B, 0x10, 0xE4,
+    ];
+
+    private static readonly byte[] LongerRetryToken =
+    [
+        0x74, 0x6F, 0x6B, 0x65, 0x6E, 0x2D, 0x73, 0x68,
+        0x61, 0x70, 0x65, 0x2D, 0x6C, 0x6F, 0x6E, 0x67,
+        0x65, 0x72, 0x2D, 0x66, 0x6F, 0x72, 0x2D, 0x62,
+        0x65, 0x6E, 0x63, 0x68, 0x6D, 0x61, 0x72, 0x6B,
+    ];
+
+    private static readonly byte[] WrongOriginalDestinationConnectionId =
+    [
+        0x83, 0x94, 0xC8, 0xF0, 0x3E, 0x51, 0x57, 0x09,
+    ];
+
     private static readonly byte[] RetryIntegrityTag =
     [
         0x04, 0xA2, 0x65, 0xBA, 0x2E, 0xFF, 0x4D, 0x82,
@@ -31,6 +49,8 @@ public class QuicRetryIntegrityBenchmarks
 
     private byte[] retryPacketWithoutIntegrityTag = [];
     private byte[] retryPacket = [];
+    private byte[] retryPacketWithLongerTokenWithoutIntegrityTag = [];
+    private byte[] retryPacketWithLongerToken = [];
 
     /// <summary>
     /// Prepares representative Retry packet inputs and reusable buffers.
@@ -52,6 +72,13 @@ public class QuicRetryIntegrityBenchmarks
             retryIntegrityTag: RetryIntegrityTag,
             unusedBits: 0x0F);
 
+        retryPacketWithLongerTokenWithoutIntegrityTag = BuildRetryPacket(
+            destinationConnectionId: NonEmptyRetryPacketDestinationConnectionId,
+            sourceConnectionId: RetrySourceConnectionId,
+            retryToken: LongerRetryToken,
+            retryIntegrityTag: [],
+            unusedBits: 0x0F);
+
         Span<byte> generatedRetryIntegrityTag = stackalloc byte[QuicRetryIntegrity.RetryIntegrityTagLength];
         if (!QuicRetryIntegrity.TryGenerateRetryIntegrityTag(
             ClientInitialDestinationConnectionId,
@@ -61,6 +88,30 @@ public class QuicRetryIntegrityBenchmarks
             || bytesWritten != QuicRetryIntegrity.RetryIntegrityTagLength)
         {
             throw new InvalidOperationException("Failed to prepare a representative Retry integrity tag.");
+        }
+
+        if (!QuicRetryIntegrity.TryGenerateRetryIntegrityTag(
+            ClientInitialDestinationConnectionId,
+            retryPacketWithLongerTokenWithoutIntegrityTag,
+            generatedRetryIntegrityTag,
+            out bytesWritten)
+            || bytesWritten != QuicRetryIntegrity.RetryIntegrityTagLength)
+        {
+            throw new InvalidOperationException("Failed to prepare a longer Retry integrity tag.");
+        }
+
+        retryPacketWithLongerToken = BuildRetryPacket(
+            destinationConnectionId: NonEmptyRetryPacketDestinationConnectionId,
+            sourceConnectionId: RetrySourceConnectionId,
+            retryToken: LongerRetryToken,
+            retryIntegrityTag: generatedRetryIntegrityTag,
+            unusedBits: 0x0F);
+
+        if (!QuicRetryIntegrity.TryValidateRetryPacketIntegrity(
+            ClientInitialDestinationConnectionId,
+            retryPacketWithLongerToken))
+        {
+            throw new InvalidOperationException("Failed to prepare a valid longer Retry packet.");
         }
     }
 
@@ -90,6 +141,35 @@ public class QuicRetryIntegrityBenchmarks
             ClientInitialDestinationConnectionId,
             retryPacket)
             ? retryPacket.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures Retry integrity tag generation for a packet with a non-empty destination connection ID and longer token.
+    /// </summary>
+    [Benchmark]
+    public int GenerateRetryIntegrityTagWithLongerTokenAndDestinationConnectionId()
+    {
+        Span<byte> destination = stackalloc byte[QuicRetryIntegrity.RetryIntegrityTagLength];
+        return QuicRetryIntegrity.TryGenerateRetryIntegrityTag(
+            ClientInitialDestinationConnectionId,
+            retryPacketWithLongerTokenWithoutIntegrityTag,
+            destination,
+            out int bytesWritten)
+            ? bytesWritten
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures Retry integrity tag validation for a packet whose original destination connection ID does not match.
+    /// </summary>
+    [Benchmark]
+    public int ValidateRetryPacketIntegrityWithWrongOriginalDestinationConnectionId()
+    {
+        return QuicRetryIntegrity.TryValidateRetryPacketIntegrity(
+            WrongOriginalDestinationConnectionId,
+            retryPacketWithLongerToken)
+            ? retryPacketWithLongerToken.Length
             : -1;
     }
 
