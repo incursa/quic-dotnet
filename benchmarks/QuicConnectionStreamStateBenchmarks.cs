@@ -6,7 +6,7 @@ namespace Incursa.Quic.Benchmarks;
 public class QuicConnectionStreamStateBenchmarks
 {
     private byte[] tailFrame = [];
-    private byte[] headFrame = [];
+    private byte[] streamData = [];
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -18,13 +18,7 @@ public class QuicConnectionStreamStateBenchmarks
             offset: 32,
             includeLength: true,
             streamData: new byte[32]);
-        headFrame = QuicBenchmarkData.BuildStreamFrame(
-            frameType: 0x0F,
-            streamId: 1,
-            includeOffset: true,
-            offset: 0,
-            includeLength: true,
-            streamData: new byte[32]);
+        streamData = new byte[64];
     }
 
     [Benchmark]
@@ -38,35 +32,98 @@ public class QuicConnectionStreamStateBenchmarks
     }
 
     [Benchmark]
-    public ulong ReceiveHeadAndRead()
+    public ulong ReceiveHeadAndReadPublishesCredit()
     {
         QuicConnectionStreamState state = CreateState();
-        QuicStreamParser.TryParseStreamFrame(tailFrame, out QuicStreamFrame tail);
-        QuicStreamParser.TryParseStreamFrame(headFrame, out QuicStreamFrame head);
-        state.TryReceiveStreamFrame(tail, out _);
-        state.TryReceiveStreamFrame(head, out _);
+        ReadOnlySpan<byte> payload = streamData;
+        QuicStreamFrame frame = new(
+            0x0F,
+            new QuicStreamId(1),
+            hasOffset: true,
+            offset: 0,
+            hasLength: true,
+            length: (ulong)payload.Length,
+            fin: true,
+            payload,
+            payload.Length);
+        state.TryReceiveStreamFrame(frame, out _);
 
         Span<byte> destination = stackalloc byte[64];
-        state.TryReadStreamData(1, destination, out int bytesWritten, out _, out _, out _, out _);
-        return (ulong)bytesWritten;
+        state.TryReadStreamData(
+            1,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out QuicMaxDataFrame maxDataFrame,
+            out QuicMaxStreamDataFrame maxStreamDataFrame,
+            out _);
+        return (ulong)bytesWritten
+            + maxDataFrame.MaximumData
+            + maxStreamDataFrame.MaximumStreamData
+            + (completed ? 1UL : 0UL);
     }
 
-    private static QuicConnectionStreamState CreateState()
+    [Benchmark]
+    public ulong ReceiveResetBufferedDataPublishesCredit()
+    {
+        QuicConnectionStreamState state = CreateState();
+        ReadOnlySpan<byte> payload = streamData;
+        QuicStreamFrame frame = new(
+            0x0E,
+            new QuicStreamId(1),
+            hasOffset: true,
+            offset: 0,
+            hasLength: true,
+            length: (ulong)payload.Length,
+            fin: false,
+            payload,
+            payload.Length);
+        state.TryReceiveStreamFrame(frame, out _);
+
+        state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(1, 0x55, (ulong)payload.Length),
+            out QuicMaxDataFrame maxDataFrame,
+            out _);
+        return maxDataFrame.MaximumData;
+    }
+
+    [Benchmark]
+    public ulong OpenLocalStreamPublishesStreamsBlockedFrame()
+    {
+        QuicConnectionStreamState state = CreateState(peerBidirectionalStreamLimit: 1);
+        state.TryOpenLocalStream(bidirectional: true, out _, out _);
+        state.TryOpenLocalStream(bidirectional: true, out _, out QuicStreamsBlockedFrame blockedFrame);
+        return blockedFrame.MaximumStreams;
+    }
+
+    private static QuicConnectionStreamState CreateState(
+        ulong connectionReceiveLimit = 512,
+        ulong connectionSendLimit = 512,
+        ulong incomingBidirectionalStreamLimit = 4,
+        ulong incomingUnidirectionalStreamLimit = 4,
+        ulong peerBidirectionalStreamLimit = 4,
+        ulong peerUnidirectionalStreamLimit = 4,
+        ulong localBidirectionalReceiveLimit = 128,
+        ulong peerBidirectionalReceiveLimit = 128,
+        ulong peerUnidirectionalReceiveLimit = 128,
+        ulong localBidirectionalSendLimit = 128,
+        ulong localUnidirectionalSendLimit = 128,
+        ulong peerBidirectionalSendLimit = 128)
     {
         return new QuicConnectionStreamState(
             new QuicConnectionStreamStateOptions(
                 IsServer: false,
-                InitialConnectionReceiveLimit: 512,
-                InitialConnectionSendLimit: 512,
-                InitialIncomingBidirectionalStreamLimit: 4,
-                InitialIncomingUnidirectionalStreamLimit: 4,
-                InitialPeerBidirectionalStreamLimit: 4,
-                InitialPeerUnidirectionalStreamLimit: 4,
-                InitialLocalBidirectionalReceiveLimit: 128,
-                InitialPeerBidirectionalReceiveLimit: 128,
-                InitialPeerUnidirectionalReceiveLimit: 128,
-                InitialLocalBidirectionalSendLimit: 128,
-                InitialLocalUnidirectionalSendLimit: 128,
-                InitialPeerBidirectionalSendLimit: 128));
+                InitialConnectionReceiveLimit: connectionReceiveLimit,
+                InitialConnectionSendLimit: connectionSendLimit,
+                InitialIncomingBidirectionalStreamLimit: incomingBidirectionalStreamLimit,
+                InitialIncomingUnidirectionalStreamLimit: incomingUnidirectionalStreamLimit,
+                InitialPeerBidirectionalStreamLimit: peerBidirectionalStreamLimit,
+                InitialPeerUnidirectionalStreamLimit: peerUnidirectionalStreamLimit,
+                InitialLocalBidirectionalReceiveLimit: localBidirectionalReceiveLimit,
+                InitialPeerBidirectionalReceiveLimit: peerBidirectionalReceiveLimit,
+                InitialPeerUnidirectionalReceiveLimit: peerUnidirectionalReceiveLimit,
+                InitialLocalBidirectionalSendLimit: localBidirectionalSendLimit,
+                InitialLocalUnidirectionalSendLimit: localUnidirectionalSendLimit,
+                InitialPeerBidirectionalSendLimit: peerBidirectionalSendLimit));
     }
 }
