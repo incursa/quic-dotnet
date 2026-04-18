@@ -20618,6 +20618,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.16 RFC9000-S19.16-B2-P1-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0003.cs::TryHandleApplicationPacketReceived_UsesNewConnectionIdFramesToInstallThePeerConnectionId
 
 ## REQ-QUIC-RFC9000-S19P16-0004 The Type field MUST be encoded as a variable-length integer with value 0x19
 The Type field MUST be encoded as a variable-length integer with value 0x19.
