@@ -15632,6 +15632,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0001.cs::ClientAcceptsAndProcessesTheFirstRetryPacketForAConnectionAttempt
 
 ## REQ-QUIC-RFC9000-S17P2P5P2-0002 After the client has received and processed an Initial or Retry packet from the server, it MU...
 After the client has received and processed an Initial or Retry packet from the server, it MUST discard any subsequent Retry packets that it receives.
@@ -15646,6 +15648,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0002.cs::ClientDiscardsSubsequentRetryPacketsAfterProcessingTheFirstRetryPacket
 
 ## REQ-QUIC-RFC9000-S17P2P5P2-0003 Clients MUST discard Retry packets that have a Retry Integrity Tag that cannot be validated;...
 Clients MUST discard Retry packets that have a Retry Integrity Tag that cannot be validated; see Section 5.8 of [QUIC-TLS].
@@ -15660,6 +15664,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0003.cs::RetryMetadataParserAcceptsRetryPacketsWithValidIntegrityTags
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0003.cs::RetryMetadataParserRejectsRetryPacketsWithTamperedIntegrityTags
 
 ## REQ-QUIC-RFC9000-S17P2P5P2-0004 A client MUST discard a Retry packet with a zero-length Retry Token field
 A client MUST discard a Retry packet with a zero-length Retry Token field.
@@ -15674,6 +15681,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0004.cs::RetryMetadataParserRejectsRetryPacketsWithZeroLengthRetryTokens
 
 ## REQ-QUIC-RFC9000-S17P2P5P2-0005 The client responds to a Retry packet with an Initial packet that MUST include the provided R...
 The client responds to a Retry packet with an Initial packet that MUST include the provided Retry token to continue connection establishment.
@@ -15688,6 +15697,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0005.cs::ClientIncludesTheRetryTokenWhenItReplaysInitialPackets
 
 ## REQ-QUIC-RFC9000-S17P2P5P2-0006 A client MUST set the Destination Connection ID field of this Initial packet to the value fro...
 A client MUST set the Destination Connection ID field of this Initial packet to the value from the Source Connection ID field in the Retry packet.
@@ -15702,6 +15713,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0006.cs::ClientUsesTheRetrySourceConnectionIdAsTheNextInitialDestinationConnectionId
 
 ## REQ-QUIC-RFC9000-S17P2P5P2-0007 It also MUST set the Token field to the token provided in the Retry packet
 It also MUST set the Token field to the token provided in the Retry packet.
@@ -15800,6 +15813,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0004.cs::ServerRuntimeDiscardsARetryReplayThatCarriesADifferentClientHello
 
 ## REQ-QUIC-RFC9000-S17P2P5P3-0005 A client MAY attempt 0-RTT after receiving a Retry packet by sending 0-RTT packets to the con...
 A client MAY attempt 0-RTT after receiving a Retry packet by sending 0-RTT packets to the connection ID provided by the server.
@@ -15870,6 +15885,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.3 RFC9000-S17.3-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3-0001.cs::TryParseShortHeader_RecognizesThe1RttPacketType
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3-0001.cs::TryParseShortHeader_RejectsVersion1LongHeaders
 
 ## REQ-QUIC-RFC9000-S17P3P1-0001 A 1-RTT packet MUST use a short packet header
 A 1-RTT packet MUST use a short packet header.

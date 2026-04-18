@@ -28678,6 +28678,10 @@
         "upstream_refs": [
           "RFC 9000 §17.3 RFC9000-S17.3-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3-0001.cs::TryParseShortHeader_RecognizesThe1RttPacketType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3-0001.cs::TryParseShortHeader_RejectsVersion1LongHeaders"
         ]
       }
     },
