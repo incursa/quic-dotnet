@@ -28000,6 +28000,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5.1 RFC9000-S17.2.5.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0001.cs::TryBuildRetryPacket_IncludesTheServersChosenSourceConnectionId"
         ]
       }
     },
@@ -28078,6 +28081,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5.1 RFC9000-S17.2.5.1-B3-P2-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0004.cs::RetryMetadataFeedsSubsequentInitialPackets"
         ]
       }
     },

@@ -14822,6 +14822,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.3 RFC9000-S17.2.3-B7-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0018.cs::ZeroRttPacketNumbersAdvanceMonotonicallyAcrossBackToBackEmissions
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0018.cs::ZeroRttPacketBuilderRejectsEmptyPayloadsAndWrongEncryptionLevel
 
 ## REQ-QUIC-RFC9000-S17P2P3-0019 A client MUST NOT send 0-RTT packets once it starts processing 1-RTT packets from the server
 A client MUST NOT send 0-RTT packets once it starts processing 1-RTT packets from the server.
@@ -14850,6 +14853,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.3 RFC9000-S17.2.3-B9-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0020.cs::BootstrapZeroRttPacketsCarryOnlyThePingProbePayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0020.cs::BootstrapZeroRttPacketsDoNotMatchAnAckResponsePayload
 
 ## REQ-QUIC-RFC9000-S17P2P3-0021 For instance, a client MUST NOT send an ACK frame in a 0-RTT packet, because that can only ac...
 For instance, a client MUST NOT send an ACK frame in a 0-RTT packet, because that can only acknowledge a 1-RTT packet.
@@ -15510,6 +15516,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.5.1 RFC9000-S17.2.5.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0001.cs::TryBuildRetryPacket_IncludesTheServersChosenSourceConnectionId
 
 ## REQ-QUIC-RFC9000-S17P2P5P1-0002 This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the...
 This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the client.
@@ -15552,6 +15560,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.5.1 RFC9000-S17.2.5.1-B3-P2-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0004.cs::RetryMetadataFeedsSubsequentInitialPackets
 
 ## REQ-QUIC-RFC9000-S17P2P5P1-0005 A server MAY send Retry packets in response to Initial and 0-RTT packets
 A server MAY send Retry packets in response to Initial and 0-RTT packets.
