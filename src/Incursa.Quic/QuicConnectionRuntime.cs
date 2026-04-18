@@ -1092,6 +1092,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         hasSuccessfullyProcessedAnotherPacket = true;
 
         bool stateChanged = true;
+        stateChanged |= TrySetHandshakeDestinationConnectionId(retryReceivedEvent.RetrySourceConnectionId.Span);
         EmitDiagnostic(ref effects, QuicDiagnostics.RetryReceived(retryReceivedEvent.Datagram.Span));
         stateChanged |= TryFlushInitialPackets(ref effects);
         return stateChanged;

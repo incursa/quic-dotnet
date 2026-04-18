@@ -961,9 +961,9 @@ internal sealed class QuicHandshakeFlowCoordinator
         packetNumberOffset = default;
         packetNumberLength = ApplicationPacketNumberLength;
 
-        if (initialDestinationConnectionId.Length == 0
+        if (destinationConnectionId.Length == 0
             || sourceConnectionId.Length == 0
-            || applicationPayload.Length > int.MaxValue - LongHeaderFixedPrefixLength - LongHeaderConnectionIdLengthFieldsLength - initialDestinationConnectionId.Length - sourceConnectionId.Length - packetNumberLength - ApplicationMinimumProtectedPayloadLength)
+            || applicationPayload.Length > int.MaxValue - LongHeaderFixedPrefixLength - LongHeaderConnectionIdLengthFieldsLength - destinationConnectionId.Length - sourceConnectionId.Length - packetNumberLength - ApplicationMinimumProtectedPayloadLength)
         {
             return false;
         }
@@ -978,7 +978,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         int longHeaderPrefixLength = LongHeaderFixedPrefixLength
             + 1
-            + initialDestinationConnectionId.Length
+            + destinationConnectionId.Length
             + 1
             + sourceConnectionId.Length;
         if (longHeaderPrefixLength > int.MaxValue - lengthFieldBytes - packetNumberLength - paddedPayloadLength)
@@ -1010,7 +1010,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         plaintextPacket = BuildLongHeaderPacket(
             headerControlBits,
             QuicVersionNegotiation.Version1,
-            initialDestinationConnectionId,
+            destinationConnectionId,
             sourceConnectionId,
             token: ReadOnlySpan<byte>.Empty,
             versionSpecificData,

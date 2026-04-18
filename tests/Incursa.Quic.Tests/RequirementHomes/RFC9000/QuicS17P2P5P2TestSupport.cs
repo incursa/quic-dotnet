@@ -47,6 +47,11 @@ internal static class QuicS17P2P5P2TestSupport
         return runtime;
     }
 
+    internal static QuicHandshakeFlowCoordinator CreateClientCoordinator()
+    {
+        return new(OriginalDestinationConnectionId, InitialSourceConnectionId);
+    }
+
     internal static QuicConnectionRetryReceivedEvent CreateRetryReceivedEvent(long observedAtTicks)
     {
         byte[] retryPacket = CreateRetryPacket();
