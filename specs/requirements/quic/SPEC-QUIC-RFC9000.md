@@ -15908,6 +15908,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.3.1 RFC9000-S17.3.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0001.cs::TryBuildProtectedApplicationDataPacket_EmitsAShortHeaderOnceOneRttKeysAreAvailable
 
 ## REQ-QUIC-RFC9000-S17P3P1-0002 It MUST be used after the version and 1-RTT keys are negotiated
 It MUST be used after the version and 1-RTT keys are negotiated.
@@ -15922,6 +15924,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.3.1 RFC9000-S17.3.1-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0002.cs::TryBuildProtectedApplicationDataPacket_RejectsPacketsWithoutOneRttProtectionMaterial
 
 ## REQ-QUIC-RFC9000-S17P3P1-0003 The Header Form field MUST be 1 bits long with value 0
 The Header Form field MUST be 1 bits long with value 0.
@@ -16043,6 +16047,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.3.1 RFC9000-S17.3.1-B3-P0-S8
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0009.cs::TryBuildProtectedApplicationDataPacket_AcceptsTheMaximumConnectionIdLength
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0009.cs::TryBuildProtectedApplicationDataPacket_RejectsConnectionIdsLongerThan160Bits
 
 ## REQ-QUIC-RFC9000-S17P3P1-0010 The Packet Number field MUST be between 8 and 32 bits long
 The Packet Number field MUST be between 8 and 32 bits long.
@@ -16057,6 +16064,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.3.1 RFC9000-S17.3.1-B3-P0-S9
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0010.cs::TryBuildProtectedApplicationDataPacket_UsesAFourBytePacketNumberField
 
 ## REQ-QUIC-RFC9000-S17P3P1-0011 1-RTT packets MUST contain the following fields:
 1-RTT packets MUST contain the following fields:
@@ -16071,6 +16080,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.3.1 RFC9000-S17.3.1-B5-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0011.cs::TryOpenProtectedApplicationDataPacket_PreservesTheRequiredShortHeaderFields
 
 ## REQ-QUIC-RFC9000-S17P3P1-0012 The most significant bit (0x80) of byte 0 MUST be set to 0 for the short header
 The most significant bit (0x80) of byte 0 MUST be set to 0 for the short header.
@@ -16190,6 +16201,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.3.1 RFC9000-S17.3.1-B9-P0-S5
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0018.cs::TryOpenProtectedApplicationDataPacket_RejectsTamperingAfterHeaderProtectionIsRemoved
 
 ## REQ-QUIC-RFC9000-S17P3P1-0019 The next bit (0x04) of byte 0 MUST indicate the key phase, which allows a recipient of a pack...
 The next bit (0x04) of byte 0 MUST indicate the key phase, which allows a recipient of a packet to identify the packet protection keys that are used to protect the packet.

@@ -28716,6 +28716,9 @@
         "upstream_refs": [
           "RFC 9000 §17.3.1 RFC9000-S17.3.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0001.cs::TryBuildProtectedApplicationDataPacket_EmitsAShortHeaderOnceOneRttKeysAreAvailable"
         ]
       }
     },
@@ -28742,6 +28745,9 @@
         "upstream_refs": [
           "RFC 9000 §17.3.1 RFC9000-S17.3.1-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0002.cs::TryBuildProtectedApplicationDataPacket_RejectsPacketsWithoutOneRttProtectionMaterial"
         ]
       }
     },
@@ -28953,6 +28959,10 @@
         "upstream_refs": [
           "RFC 9000 §17.3.1 RFC9000-S17.3.1-B3-P0-S8",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0009.cs::TryBuildProtectedApplicationDataPacket_AcceptsTheMaximumConnectionIdLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0009.cs::TryBuildProtectedApplicationDataPacket_RejectsConnectionIdsLongerThan160Bits"
         ]
       }
     },
@@ -28979,6 +28989,9 @@
         "upstream_refs": [
           "RFC 9000 §17.3.1 RFC9000-S17.3.1-B3-P0-S9",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0010.cs::TryBuildProtectedApplicationDataPacket_UsesAFourBytePacketNumberField"
         ]
       }
     },
@@ -29005,6 +29018,9 @@
         "upstream_refs": [
           "RFC 9000 §17.3.1 RFC9000-S17.3.1-B5-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0011.cs::TryOpenProtectedApplicationDataPacket_PreservesTheRequiredShortHeaderFields"
         ]
       }
     },
@@ -29214,6 +29230,9 @@
         "upstream_refs": [
           "RFC 9000 §17.3.1 RFC9000-S17.3.1-B9-P0-S5",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0018.cs::TryOpenProtectedApplicationDataPacket_RejectsTamperingAfterHeaderProtectionIsRemoved"
         ]
       }
     },

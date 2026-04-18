@@ -12,6 +12,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     private const int HandshakeMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
     private const int ApplicationPacketNumberLength = 4;
+    private const int MaximumConnectionIdLength = 20;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
     private const int LongHeaderConnectionIdLengthFieldsLength = 1 + 1;
@@ -920,7 +921,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         packetNumberOffset = default;
         packetNumberLength = ApplicationPacketNumberLength;
 
-        if (destinationConnectionId.Length == 0
+        if (destinationConnectionId.Length is 0 or > MaximumConnectionIdLength
             || applicationPayload.Length > int.MaxValue - 1 - destinationConnectionId.Length - packetNumberLength - ApplicationMinimumProtectedPayloadLength)
         {
             return false;
@@ -1090,7 +1091,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         if (!TryValidatePacketProtectionMaterial(material)
             || packetNumberLength < 1
             || packetNumberLength > ApplicationPacketNumberLength
-            || destinationConnectionId.Length == 0)
+            || destinationConnectionId.Length is 0 or > MaximumConnectionIdLength)
         {
             return false;
         }
