@@ -37487,6 +37487,10 @@
         "upstream_refs": [
           "RFC 9000 §19.18 RFC9000-S19.18-B6-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.18"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0003.cs::MatchingPathResponseCompletesValidationWithoutClosingTheConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0003.cs::MismatchedPathResponseClosesTheConnectionWithProtocolViolation"
         ]
       }
     },
