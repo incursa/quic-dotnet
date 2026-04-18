@@ -2094,6 +2094,10 @@
         "upstream_refs": [
           "RFC 9000 §3.2 RFC9000-S3.2-B9-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs::TryReceiveStreamDataBlockedFrame_AcceptsPeerInitiatedBidirectionalStreamsInRecv",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs::TryReceiveStreamDataBlockedFrame_RejectsLocallyInitiatedUnidirectionalStreams"
         ]
       }
     },
