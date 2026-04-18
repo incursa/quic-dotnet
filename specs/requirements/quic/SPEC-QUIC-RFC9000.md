@@ -2746,6 +2746,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.1.1 RFC9000-S5.1.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0001.cs::TryParseNewConnectionIdFrame_ExposesTheSequenceNumberOnTheWire
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0001.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0001.cs::TryParseNewConnectionIdFrame_AllowsSequenceNumberZero
 
 ## REQ-QUIC-RFC9000-S5P1P1-0002 Carry the initial CID in the long-header Source CID field
 The initial connection ID issued by an endpoint MUST be sent in the Source Connection ID field of the long packet header during the handshake.
@@ -2760,6 +2764,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §5.1.1 RFC9000-S5.1.1-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0002.cs::TryParseLongHeader_ExposesTheHandshakeSourceConnectionId
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0002.cs::TryParseLongHeader_RejectsHandshakePacketsMissingTheSourceConnectionIdLengthByte
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0002.cs::TryParseLongHeader_AllowsAZeroLengthHandshakeSourceConnectionId
 
 ## REQ-QUIC-RFC9000-S5P1P1-0003 Assign sequence number 0 to the initial CID
 The sequence number of the initial connection ID MUST be 0.
