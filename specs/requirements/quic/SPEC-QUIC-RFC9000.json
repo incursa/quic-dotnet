@@ -35130,8 +35130,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants"
         ]
       }
     },
@@ -35160,8 +35160,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants"
         ]
       }
     },
@@ -35190,8 +35190,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants"
         ]
       }
     },
@@ -35220,8 +35220,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants"
         ]
       }
     },
@@ -35250,9 +35250,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::FuzzMaxStreamsFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0001.cs::TryParseMaxStreamsFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0006.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit"
         ]
       }
     },
@@ -35281,7 +35281,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0006.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit"
         ]
       }
     },
