@@ -740,7 +740,8 @@ internal static class InteropHarnessRunner
 
     private static int ReturnUnsupported(InteropHarnessEnvironment settings, TextWriter stdout, string roleName)
     {
-        stdout.WriteLine(
+        WriteLineAndFlush(
+            stdout,
             $"interop harness: role={roleName}, testcase={settings.TestCase}, requestCount={settings.Requests.Count} is currently unsupported.");
         return UnsupportedExitCode;
     }
