@@ -29558,6 +29558,9 @@
         "upstream_refs": [
           "RFC 9000 §17.4 RFC9000-S17.4-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0006.cs::TryBuildProtectedApplicationDataPacket_UsesTheClearedSpinBitWhenDisabled"
         ]
       }
     },
@@ -29584,6 +29587,9 @@
         "upstream_refs": [
           "RFC 9000 §17.4 RFC9000-S17.4-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0007.cs::TryOpenProtectedApplicationDataPacket_IgnoresTheIncomingSpinBitWhenDisabled"
         ]
       }
     },

@@ -16376,6 +16376,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.4 RFC9000-S17.4-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0006.cs::TryBuildProtectedApplicationDataPacket_UsesTheClearedSpinBitWhenDisabled
 
 ## REQ-QUIC-RFC9000-S17P4-0007 Ignore any incoming spin value when disabled
 When the spin bit is disabled, endpoints MUST ignore any incoming value.
@@ -16390,6 +16392,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.4 RFC9000-S17.4-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0007.cs::TryOpenProtectedApplicationDataPacket_IgnoresTheIncomingSpinBitWhenDisabled
 
 ## REQ-QUIC-RFC9000-S17P4-0008 If the spin bit is enabled for the connection, the endpoint maintains a spin value for each n...
 If the spin bit is enabled for the connection, the endpoint maintains a spin value for each network path and MUST set the spin bit in the packet header to the currently stored value when a 1-RTT packet is sent on that path.
