@@ -398,6 +398,26 @@ internal sealed class QuicHandshakeFlowCoordinator
         out int payloadOffset,
         out int payloadLength)
     {
+        return TryOpenInitialPacket(
+            protectedPacket,
+            protection,
+            requireZeroTokenLength: false,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength);
+    }
+
+    /// <summary>
+    /// Opens a protected Initial packet and returns the unprotected packet bytes plus payload layout.
+    /// </summary>
+    public bool TryOpenInitialPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicInitialPacketProtection protection,
+        bool requireZeroTokenLength,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
         openedPacket = [];
         payloadOffset = default;
         payloadLength = default;
@@ -411,6 +431,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         openedPacket = openedPacketBuffer.AsSpan(0, openedBytesWritten).ToArray();
         return TryParseInitialPayloadLayout(
             openedPacket,
+            requireZeroTokenLength,
             out payloadOffset,
             out payloadLength);
     }
@@ -839,6 +860,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
     private static bool TryParseInitialPayloadLayout(
         ReadOnlySpan<byte> openedPacket,
+        bool requireZeroTokenLength,
         out int payloadOffset,
         out int payloadLength)
     {
@@ -854,7 +876,8 @@ internal sealed class QuicHandshakeFlowCoordinator
             out ReadOnlySpan<byte> versionSpecificData)
             || version != QuicVersionNegotiation.Version1
             || ((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.Initial
-            || !QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong tokenLength, out int tokenLengthBytes))
+            || !QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong tokenLength, out int tokenLengthBytes)
+            || (requireZeroTokenLength && tokenLength != 0))
         {
             return false;
         }

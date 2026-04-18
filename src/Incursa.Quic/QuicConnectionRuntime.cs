@@ -2015,6 +2015,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             || !handshakeFlowCoordinator.TryOpenInitialPacket(
                 datagram,
                 initialPacketProtection,
+                requireZeroTokenLength: tlsState.Role == QuicTlsRole.Client,
                 out byte[] openedPacket,
                 out int payloadOffset,
                 out int payloadLength))
