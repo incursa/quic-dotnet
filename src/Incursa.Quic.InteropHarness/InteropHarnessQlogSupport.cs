@@ -185,9 +185,21 @@ internal static class InteropHarnessQlogWriter
 
     private static string SanitizeFileStem(string value)
     {
-        return value
-            .Replace(Path.DirectorySeparatorChar, '-')
-            .Replace(Path.AltDirectorySeparatorChar, '-')
-            .Replace(':', '-');
+        char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
+        char[] sanitized = value.ToCharArray();
+
+        for (int i = 0; i < sanitized.Length; i++)
+        {
+            char current = sanitized[i];
+            if (current == Path.DirectorySeparatorChar ||
+                current == Path.AltDirectorySeparatorChar ||
+                current == ':' ||
+                Array.IndexOf(invalidFileNameChars, current) >= 0)
+            {
+                sanitized[i] = '-';
+            }
+        }
+
+        return new string(sanitized);
     }
 }
