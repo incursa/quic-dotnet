@@ -20782,6 +20782,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryFormatPathChallengeFrame_UsesTheMinimumNineByteBoundary
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P17-0003 The Data field MUST be 64 bits long
