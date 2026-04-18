@@ -16204,6 +16204,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0018.cs::TryOpenProtectedApplicationDataPacket_RejectsTamperingAfterHeaderProtectionIsRemoved
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0018.cs::TryOpenProtectedApplicationDataPacket_RejectsTamperingAtTheShortestPacketNumberFieldLength
 
 ## REQ-QUIC-RFC9000-S17P3P1-0019 The next bit (0x04) of byte 0 MUST indicate the key phase, which allows a recipient of a pack...
 The next bit (0x04) of byte 0 MUST indicate the key phase, which allows a recipient of a packet to identify the packet protection keys that are used to protect the packet.
