@@ -16,8 +16,8 @@ public sealed class REQ_QUIC_RFC9000_S14P1_0007
     private static readonly byte[] SourceConnectionId = [0x20];
 
     [Fact]
-    [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public async Task ListenerHostClosesUndersizedInitialDatagramsWithProtocolViolation()
     {
         IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();

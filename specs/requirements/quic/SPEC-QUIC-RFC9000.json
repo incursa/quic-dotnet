@@ -22413,6 +22413,10 @@
         "upstream_refs": [
           "RFC 9000 §14.1 RFC9000-S14.1-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0002.cs::TryParseLongHeader_AllowsAValidInitialPacketToBeCoalescedWithAnInvalidTrailingPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0002.cs::TryParseShortHeader_RejectsTheInvalidCoalescedPacketOnItsOwn"
         ]
       }
     },
@@ -22469,6 +22473,10 @@
         "upstream_refs": [
           "RFC 9000 §14.1 RFC9000-S14.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0004.cs::TryFormatPathValidationDatagramPadding_ExpandsTheProbePayloadWhenBudgetPermits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0004.cs::TryFormatPathValidationDatagramPadding_RejectsExpansionWhenAmplificationBudgetIsTooSmall"
         ]
       }
     },
@@ -22495,6 +22503,10 @@
         "upstream_refs": [
           "RFC 9000 §14.1 RFC9000-S14.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0005.cs::TryBuildProtectedInitialPacket_AllowsAnOversizedDatagramWhenThePayloadGrowsPastTheRFCMinimum",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0005.cs::TryBuildProtectedInitialPacket_RejectsEmptyCryptoPayloads"
         ]
       }
     },
@@ -22521,6 +22533,11 @@
         "upstream_refs": [
           "RFC 9000 §14.1 RFC9000-S14.1-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0006.cs::ReceiveDatagram_DiscardsUndersizedInitialDatagramsEvenWhenTheyMatchARegisteredRoute",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0006.cs::ReceiveDatagram_RoutesSubMinimumHandshakeDatagrams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0006.cs::ReceiveDatagram_AllowsInitialDatagramsAtTheMinimumSize"
         ]
       }
     },
@@ -22547,6 +22564,11 @@
         "upstream_refs": [
           "RFC 9000 §14.1 RFC9000-S14.1-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0007.cs::ListenerHostClosesUndersizedInitialDatagramsWithProtocolViolation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0006.cs::ReceiveDatagram_DiscardsUndersizedInitialDatagramsEvenWhenTheyMatchARegisteredRoute",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0006.cs::ReceiveDatagram_AllowsInitialDatagramsAtTheMinimumSize"
         ]
       }
     },

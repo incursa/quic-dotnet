@@ -12340,6 +12340,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.1 RFC9000-S14.1-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0002.cs::TryParseLongHeader_AllowsAValidInitialPacketToBeCoalescedWithAnInvalidTrailingPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0002.cs::TryParseShortHeader_RejectsTheInvalidCoalescedPacketOnItsOwn
 
 ## REQ-QUIC-RFC9000-S14P1-0003 Pad server Initial datagrams to 1200 bytes
 A server MUST expand the payload of all UDP datagrams carrying ack-eliciting Initial packets to at least the smallest allowed maximum datagram size of 1200 bytes.
@@ -12371,6 +12374,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.1 RFC9000-S14.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0004.cs::TryFormatPathValidationDatagramPadding_ExpandsTheProbePayloadWhenBudgetPermits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0004.cs::TryFormatPathValidationDatagramPadding_RejectsExpansionWhenAmplificationBudgetIsTooSmall
 
 ## REQ-QUIC-RFC9000-S14P1-0005 Allow oversized Initial datagrams when the path and peer support them
 Datagrams containing Initial packets MAY exceed 1200 bytes if the sender believes that the network path and peer both support the size that it chooses.
@@ -12385,6 +12391,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.1 RFC9000-S14.1-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0005.cs::TryBuildProtectedInitialPacket_AllowsAnOversizedDatagramWhenThePayloadGrowsPastTheRFCMinimum
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0005.cs::TryBuildProtectedInitialPacket_RejectsEmptyCryptoPayloads
 
 ## REQ-QUIC-RFC9000-S14P1-0006 Discard undersized Initial packets at the server
 A server MUST discard an Initial packet that is carried in a UDP datagram with a payload that is smaller than the smallest allowed maximum datagram size of 1200 bytes.
@@ -12399,6 +12408,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.1 RFC9000-S14.1-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0006.cs::ReceiveDatagram_DiscardsUndersizedInitialDatagramsEvenWhenTheyMatchARegisteredRoute
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0006.cs::ReceiveDatagram_RoutesSubMinimumHandshakeDatagrams
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0006.cs::ReceiveDatagram_AllowsInitialDatagramsAtTheMinimumSize
 
 ## REQ-QUIC-RFC9000-S14P1-0007 Allow servers to close on undersized Initial packets
 A server MAY also immediately close the connection by sending a CONNECTION_CLOSE frame with an error code of PROTOCOL_VIOLATION.
@@ -12413,6 +12426,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.1 RFC9000-S14.1-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0007.cs::ListenerHostClosesUndersizedInitialDatagramsWithProtocolViolation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0006.cs::ReceiveDatagram_DiscardsUndersizedInitialDatagramsEvenWhenTheyMatchARegisteredRoute
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0006.cs::ReceiveDatagram_AllowsInitialDatagramsAtTheMinimumSize
 
 ## REQ-QUIC-RFC9000-S14P1-0008 Limit bytes sent before validating the client address
 The server MUST also limit the number of bytes it sends before validating the address of the client.

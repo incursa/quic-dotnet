@@ -17,8 +17,8 @@ public sealed class REQ_QUIC_RFC9000_S14P1_0005
     ];
 
     [Fact]
-    [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void TryBuildProtectedInitialPacket_AllowsAnOversizedDatagramWhenThePayloadGrowsPastTheRFCMinimum()
     {
         byte[] cryptoPayload = new byte[1400];
