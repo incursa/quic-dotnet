@@ -23,8 +23,8 @@
     "partial": 1,
     "silent_gaps": 0
   },
-  "reconciliation_artifact_present": false,
-  "reconciliation_artifact_file": null,
+  "reconciliation_artifact_present": true,
+  "reconciliation_artifact_file": "./specs/generated/quic/chunks/9001-02-security-and-registry.reconciliation.json",
   "implementation_summary_file": "./specs/generated/quic/chunks/9001-02-security-and-registry.implementation-summary.json",
   "implemented_and_tested_requirements": [
     "REQ-QUIC-RFC9001-S6-0002",

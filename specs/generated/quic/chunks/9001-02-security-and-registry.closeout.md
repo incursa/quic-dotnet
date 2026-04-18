@@ -2,7 +2,7 @@
 
 ## Audit Result
 - `clean_with_explicit_blockers`
-- Reconciliation artifact: not present on disk at the requested path
+- Reconciliation artifact: [9001-02-security-and-registry.reconciliation.json](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9001-02-security-and-registry.reconciliation.json)
 - Implementation summary: [9001-02-security-and-registry.implementation-summary.json](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9001-02-security-and-registry.implementation-summary.json)
 
 ## Scope
