@@ -19910,6 +19910,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.13 RFC9000-S19.13-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.13
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0001.cs::TryReserveSendCapacity_GeneratesStreamDataBlockedWhenBlockedByStreamFlowControl
 
 ## REQ-QUIC-RFC9000-S19P13-0002 An endpoint that receives a STREAM_DATA_BLOCKED frame for a send-only stream MUST terminate t...
 An endpoint that receives a STREAM_DATA_BLOCKED frame for a send-only stream MUST terminate the connection with error STREAM_STATE_ERROR.
