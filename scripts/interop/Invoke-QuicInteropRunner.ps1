@@ -292,6 +292,148 @@ function Write-ArtifactTree {
     $lines | Set-Content -LiteralPath $OutputPath
 }
 
+function Write-InteropRunnerInvocation {
+    param(
+        [Parameter(Mandatory)]
+        [pscustomobject]$Plan,
+
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $runnerArgsLines = $Plan.RunnerArgs | ForEach-Object { "  $_" }
+
+    @"
+RepoRoot: $($Plan.RepoRoot)
+RunnerRoot: $($Plan.RunnerRoot)
+LocalRole: $($Plan.LocalRole)
+LocalImplementationSlot: $($Plan.LocalImplementationSlot)
+PeerImplementationSlots: $($Plan.PeerImplementationSlots -join ',')
+ImageTag: $($Plan.ImageTag)
+TestCases: $($Plan.TestCases -join ',')
+ArtifactsRoot: $($Plan.ArtifactRoot)
+RunRoot: $($Plan.RunRoot)
+RunnerJson: $($Plan.RunnerJson)
+RunnerMarkdown: $($Plan.RunnerMarkdown)
+RunnerStdErr: $($Plan.RunnerStdErr)
+RunnerLogDir: $($Plan.RunnerLogDir)
+ArtifactTreeLog: $($Plan.ArtifactTreeLog)
+RunnerShim: $($Plan.RunnerShimPath)
+RunnerArgs:
+$($runnerArgsLines -join [Environment]::NewLine)
+"@ | Set-Content -LiteralPath $Path -Encoding utf8
+}
+
+function Get-InteropRunnerOutputValidation {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RunnerJson,
+
+        [Parameter(Mandatory)]
+        [string]$RunnerMarkdown,
+
+        [Parameter(Mandatory)]
+        [string]$RunnerStdErr,
+
+        [Parameter(Mandatory)]
+        [string]$RunnerLogDir
+    )
+
+    $missing = [System.Collections.Generic.List[string]]::new()
+    $problems = [System.Collections.Generic.List[string]]::new()
+
+    if (-not (Test-Path -LiteralPath $RunnerJson)) {
+        $missing.Add("runner JSON at '$RunnerJson'")
+    }
+    else {
+        $jsonItem = Get-Item -LiteralPath $RunnerJson
+        if ($jsonItem.Length -le 0) {
+            $problems.Add("runner JSON at '$RunnerJson' was empty")
+        }
+        else {
+            try {
+                $null = Get-Content -LiteralPath $RunnerJson -Raw | ConvertFrom-Json -ErrorAction Stop
+            }
+            catch {
+                $problems.Add("runner JSON at '$RunnerJson' was not valid JSON: $($_.Exception.Message)")
+            }
+        }
+    }
+
+    if (-not (Test-Path -LiteralPath $RunnerMarkdown)) {
+        $missing.Add("runner Markdown at '$RunnerMarkdown'")
+    }
+    else {
+        $markdownItem = Get-Item -LiteralPath $RunnerMarkdown
+        if ($markdownItem.Length -le 0) {
+            $problems.Add("runner Markdown at '$RunnerMarkdown' was empty")
+        }
+    }
+
+    if (-not (Test-Path -LiteralPath $RunnerStdErr)) {
+        $missing.Add("runner stderr log at '$RunnerStdErr'")
+    }
+
+    if (-not (Test-Path -LiteralPath $RunnerLogDir)) {
+        $missing.Add("runner log directory at '$RunnerLogDir'")
+    }
+    else {
+        $runnerLogFiles = Get-ChildItem -LiteralPath $RunnerLogDir -File -Recurse -ErrorAction SilentlyContinue
+        if (@($runnerLogFiles).Count -eq 0) {
+            $problems.Add("runner log directory at '$RunnerLogDir' did not contain any files")
+        }
+    }
+
+    return [pscustomobject]@{
+        Success = ($missing.Count -eq 0 -and $problems.Count -eq 0)
+        Missing = $missing.ToArray()
+        Problems = $problems.ToArray()
+    }
+}
+
+function Write-InteropRunnerFailureSummary {
+    param(
+        [Parameter(Mandatory)]
+        [pscustomobject]$Plan,
+
+        [Parameter()]
+        [pscustomobject]$OutputValidation,
+
+        [Parameter()]
+        [Nullable[int]]$RunnerExitCode,
+
+        [Parameter()]
+        [string]$Reason
+    )
+
+    Write-Host ''
+    Write-Host 'Interop runner helper failed.' -ForegroundColor Red
+
+    if (-not [string]::IsNullOrWhiteSpace($Reason)) {
+        Write-Host "  Reason: $Reason"
+    }
+
+    if ($null -ne $RunnerExitCode) {
+        Write-Host "  Runner exit code: $RunnerExitCode"
+    }
+
+    Write-Host "  Run root:        $($Plan.RunRoot)"
+    Write-Host "  Invocation log:  $($Plan.InvocationLog)"
+    Write-Host "  Artifact tree:   $($Plan.ArtifactTreeLog)"
+
+    if ($null -ne $OutputValidation) {
+        if (@($OutputValidation.Missing).Count -gt 0) {
+            Write-Host "  Missing outputs: $($OutputValidation.Missing -join ', ')"
+        }
+
+        if (@($OutputValidation.Problems).Count -gt 0) {
+            Write-Host "  Output issues:   $($OutputValidation.Problems -join ' | ')"
+        }
+    }
+
+    Write-Host '  Evidence was preserved in the run root for post-failure inspection.'
+}
+
 $runnerSupportedTestCases = @(
     'handshake',
     'retry',
@@ -357,91 +499,98 @@ $executionPlan = Get-InteropRunnerExecutionPlan `
     -ImageTag $ImageTag `
     -RunStamp $runStamp
 
-$dockerfilePath = $executionPlan.DockerfilePath
-if (-not (Test-Path -LiteralPath $dockerfilePath)) {
-    throw "Harness Dockerfile was not found at '$dockerfilePath'."
-}
-
 if ($DryRun) {
     Write-InteropRunnerPlan -Plan $executionPlan
     exit 0
 }
 
-Assert-CommandAvailable -Name 'docker'
+$null = New-Item -Path $artifactRootResolved -ItemType Directory -Force
+New-Item -Path $executionPlan.RunRoot -ItemType Directory -Force | Out-Null
 
-$pythonCommand = @('python', 'python3', 'py') |
-    ForEach-Object { Get-Command $_ -ErrorAction SilentlyContinue } |
-    Select-Object -First 1
-
-if ($null -eq $pythonCommand) {
-    throw 'python is required but was not found on PATH.'
-}
-
-if (-not (Test-Path -LiteralPath $runnerRootResolved)) {
-    throw "Interop runner checkout was not found at '$runnerRootResolved'."
-}
-
-$registry = Get-RunnerImplementationRegistry -RunnerRootPath $runnerRootResolved
-
-$localRoleCompatibleSlots = switch ($LocalRole) {
-    'both' { @('both') }
-    'client' { @('both', 'client') }
-    'server' { @('both', 'server') }
-}
-
-$peerRoleCompatibleSlots = switch ($LocalRole) {
-    'both' { @('both') }
-    'client' { @('both', 'server') }
-    'server' { @('both', 'client') }
-}
-
-$localImplementationRole = Get-RunnerImplementationRole -RegistryData $registry.Data -SlotName $ImplementationSlot
-if ($null -eq $localImplementationRole) {
-    throw "Implementation slot '$ImplementationSlot' was not found in '$($registry.Path)'."
-}
-
-if ($localImplementationRole -notin $localRoleCompatibleSlots) {
-    throw "Implementation slot '$ImplementationSlot' is role '$localImplementationRole' which is not compatible with LocalRole '$LocalRole'."
-}
-
-if ($LocalRole -ne 'both') {
-    foreach ($peerImplementationSlot in $PeerImplementationSlots) {
-        if ($peerImplementationSlot -eq $ImplementationSlot) {
-            throw "LocalRole '$LocalRole' requires the local replacement slot '$ImplementationSlot' to differ from the peer implementation slot list."
-        }
-
-        $peerImplementationRole = Get-RunnerImplementationRole -RegistryData $registry.Data -SlotName $peerImplementationSlot
-        if ($null -eq $peerImplementationRole) {
-            throw "Peer implementation slot '$peerImplementationSlot' was not found in '$($registry.Path)'."
-        }
-
-        if ($peerImplementationRole -notin $peerRoleCompatibleSlots) {
-            throw "Peer implementation slot '$peerImplementationSlot' is role '$peerImplementationRole' which is not compatible with LocalRole '$LocalRole'."
-        }
-    }
-}
-
-$runnerScriptPath = $executionPlan.RunnerScriptPath
-if (-not (Test-Path -LiteralPath $runnerScriptPath)) {
-    throw "Interop runner entry point was not found at '$runnerScriptPath'."
-}
-
+$runRoot = $executionPlan.RunRoot
 $runnerLogDir = $executionPlan.RunnerLogDir
 $dockerBuildLog = $executionPlan.DockerBuildLog
 $runnerMarkdown = $executionPlan.RunnerMarkdown
 $runnerStdErr = $executionPlan.RunnerStdErr
 $runnerJson = $executionPlan.RunnerJson
-$invocationLog = $executionPlan.InvocationLog
 $artifactTreeLog = $executionPlan.ArtifactTreeLog
 $runnerShimPath = $executionPlan.RunnerShimPath
 $dockerBuildStageRoot = $executionPlan.DockerBuildStageRoot
 $runnerArgs = $executionPlan.RunnerArgs
-$runRoot = $executionPlan.RunRoot
 
-$null = New-Item -Path $artifactRootResolved -ItemType Directory -Force
-New-Item -Path $runRoot -ItemType Directory -Force | Out-Null
+$runnerExitCode = $null
+$runnerOutputValidation = $null
+$runnerFailureReason = $null
+$runnerFailureExitCode = 0
 
-$runnerShimContent = @'
+try {
+    Write-InteropRunnerInvocation -Plan $executionPlan -Path $executionPlan.InvocationLog
+
+    $dockerfilePath = $executionPlan.DockerfilePath
+    if (-not (Test-Path -LiteralPath $dockerfilePath)) {
+        throw "Harness Dockerfile was not found at '$dockerfilePath'."
+    }
+
+    Assert-CommandAvailable -Name 'docker'
+
+    $pythonCommand = @('python', 'python3', 'py') |
+        ForEach-Object { Get-Command $_ -ErrorAction SilentlyContinue } |
+        Select-Object -First 1
+
+    if ($null -eq $pythonCommand) {
+        throw 'python is required but was not found on PATH.'
+    }
+
+    if (-not (Test-Path -LiteralPath $runnerRootResolved)) {
+        throw "Interop runner checkout was not found at '$runnerRootResolved'."
+    }
+
+    $registry = Get-RunnerImplementationRegistry -RunnerRootPath $runnerRootResolved
+
+    $localRoleCompatibleSlots = switch ($LocalRole) {
+        'both' { @('both') }
+        'client' { @('both', 'client') }
+        'server' { @('both', 'server') }
+    }
+
+    $peerRoleCompatibleSlots = switch ($LocalRole) {
+        'both' { @('both') }
+        'client' { @('both', 'server') }
+        'server' { @('both', 'client') }
+    }
+
+    $localImplementationRole = Get-RunnerImplementationRole -RegistryData $registry.Data -SlotName $ImplementationSlot
+    if ($null -eq $localImplementationRole) {
+        throw "Implementation slot '$ImplementationSlot' was not found in '$($registry.Path)'."
+    }
+
+    if ($localImplementationRole -notin $localRoleCompatibleSlots) {
+        throw "Implementation slot '$ImplementationSlot' is role '$localImplementationRole' which is not compatible with LocalRole '$LocalRole'."
+    }
+
+    if ($LocalRole -ne 'both') {
+        foreach ($peerImplementationSlot in $PeerImplementationSlots) {
+            if ($peerImplementationSlot -eq $ImplementationSlot) {
+                throw "LocalRole '$LocalRole' requires the local replacement slot '$ImplementationSlot' to differ from the peer implementation slot list."
+            }
+
+            $peerImplementationRole = Get-RunnerImplementationRole -RegistryData $registry.Data -SlotName $peerImplementationSlot
+            if ($null -eq $peerImplementationRole) {
+                throw "Peer implementation slot '$peerImplementationSlot' was not found in '$($registry.Path)'."
+            }
+
+            if ($peerImplementationRole -notin $peerRoleCompatibleSlots) {
+                throw "Peer implementation slot '$peerImplementationSlot' is role '$peerImplementationRole' which is not compatible with LocalRole '$LocalRole'."
+            }
+        }
+    }
+
+    $runnerScriptPath = $executionPlan.RunnerScriptPath
+    if (-not (Test-Path -LiteralPath $runnerScriptPath)) {
+        throw "Interop runner entry point was not found at '$runnerScriptPath'."
+    }
+
+    $runnerShimContent = @'
 import os
 import random
 import shutil
@@ -727,39 +876,26 @@ import run
 raise SystemExit(run.main())
 '@
 
-Set-Content -LiteralPath $runnerShimPath -Value $runnerShimContent -Encoding utf8
+    Set-Content -LiteralPath $runnerShimPath -Value $runnerShimContent -Encoding utf8
 
-@"
-RepoRoot: $repoRootResolved
-RunnerRoot: $runnerRootResolved
-LocalRole: $LocalRole
-LocalImplementationSlot: $ImplementationSlot
-PeerImplementationSlots: $($PeerImplementationSlots -join ',')
-ImageTag: $ImageTag
-TestCases: $($TestCases -join ',')
-ArtifactsRoot: $artifactRootResolved
-RunRoot: $runRoot
-RunnerShim: $runnerShimPath
-"@ | Set-Content -LiteralPath $invocationLog
+    $dockerBuildStageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "interop-runner-build-$runStamp"
+    New-Item -Path $dockerBuildStageRoot -ItemType Directory -Force | Out-Null
+    $stagingExcludes = @(
+        '.git',
+        'artifacts',
+        'bin',
+        'obj',
+        '.vs',
+        'TestResults',
+        'node_modules'
+    )
 
-$dockerBuildStageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "interop-runner-build-$runStamp"
-New-Item -Path $dockerBuildStageRoot -ItemType Directory -Force | Out-Null
-$stagingExcludes = @(
-    '.git',
-    'artifacts',
-    'bin',
-    'obj',
-    '.vs',
-    'TestResults',
-    'node_modules'
-)
+    & robocopy $repoRootResolved (Join-Path $dockerBuildStageRoot 'quic-dotnet') /MIR /NFL /NDL /NJH /NJS /NP /XD @stagingExcludes | Out-Null
+    if ($LASTEXITCODE -ge 8) {
+        throw "Failed to stage the quic-dotnet build context copy with robocopy exit code $LASTEXITCODE."
+    }
 
-& robocopy $repoRootResolved (Join-Path $dockerBuildStageRoot 'quic-dotnet') /MIR /NFL /NDL /NJH /NJS /NP /XD @stagingExcludes | Out-Null
-if ($LASTEXITCODE -ge 8) {
-    throw "Failed to stage the quic-dotnet build context copy with robocopy exit code $LASTEXITCODE."
-}
-
-@"
+    @"
 **/.git
 **/bin
 **/obj
@@ -771,74 +907,75 @@ if ($LASTEXITCODE -ge 8) {
 **/*.suo
 "@ | Set-Content -LiteralPath (Join-Path $dockerBuildStageRoot '.dockerignore')
 
-$dockerBuildContextRoot = $dockerBuildStageRoot
+    $dockerBuildContextRoot = $dockerBuildStageRoot
 
-Write-Host "Building Incursa.Quic.InteropHarness image..." -ForegroundColor Cyan
-$dockerBuildArgs = @(
-    'build'
-    '--progress'
-    'plain'
-    '--file'
-    $dockerfilePath
-    '--tag'
-    $ImageTag
-    $dockerBuildContextRoot
-)
-
-& docker @dockerBuildArgs 2>&1 | Tee-Object -FilePath $dockerBuildLog
-if ($LASTEXITCODE -ne 0) {
-    throw "docker build failed with exit code $LASTEXITCODE. See '$dockerBuildLog'."
-}
-
-Push-Location $runnerRootResolved
-try {
-    Write-Host "Running quic-interop-runner locally..." -ForegroundColor Cyan
-    $runnerExitCode = 1
-    if ($LocalRole -eq 'both') {
-        $runnerClientImplementations = @($ImplementationSlot)
-        $runnerServerImplementations = @($ImplementationSlot)
-    }
-    elseif ($LocalRole -eq 'client') {
-        $runnerClientImplementations = @($ImplementationSlot)
-        $runnerServerImplementations = @($PeerImplementationSlots)
-    }
-    else {
-        $runnerClientImplementations = @($PeerImplementationSlots)
-        $runnerServerImplementations = @($ImplementationSlot)
-    }
-
-    $runnerArgs = @(
-        '-p'
-        'quic'
-        '-s'
-        ($runnerServerImplementations -join ',')
-        '-c'
-        ($runnerClientImplementations -join ',')
-        '-t'
-        ($TestCases -join ',')
-        '-r'
-        "$ImplementationSlot=$ImageTag"
-        '-l'
-        $runnerLogDir
-        '-j'
-        $runnerJson
-        '-m'
+    Write-Host "Building Incursa.Quic.InteropHarness image..." -ForegroundColor Cyan
+    $dockerBuildArgs = @(
+        'build'
+        '--progress'
+        'plain'
+        '--file'
+        $dockerfilePath
+        '--tag'
+        $ImageTag
+        $dockerBuildContextRoot
     )
 
-    & $pythonCommand -X utf8 $runnerShimPath @runnerArgs 1> $runnerMarkdown 2> $runnerStdErr
-    $runnerExitCode = $LASTEXITCODE
+    & docker @dockerBuildArgs 2>&1 | Tee-Object -FilePath $dockerBuildLog
+    if ($LASTEXITCODE -ne 0) {
+        throw "docker build failed with exit code $LASTEXITCODE. See '$dockerBuildLog'."
+    }
+
+    Push-Location $runnerRootResolved
+    try {
+        Write-Host "Running quic-interop-runner locally..." -ForegroundColor Cyan
+        & $pythonCommand -X utf8 $runnerShimPath @runnerArgs 1> $runnerMarkdown 2> $runnerStdErr
+        $runnerExitCode = $LASTEXITCODE
+    }
+    finally {
+        Pop-Location
+        if (Test-Path -LiteralPath $runnerShimPath) {
+            Remove-Item -LiteralPath $runnerShimPath -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    $runnerOutputValidation = Get-InteropRunnerOutputValidation `
+        -RunnerJson $runnerJson `
+        -RunnerMarkdown $runnerMarkdown `
+        -RunnerStdErr $runnerStdErr `
+        -RunnerLogDir $runnerLogDir
+
+    if (-not $runnerOutputValidation.Success) {
+        $runnerFailureReason = 'the runner did not produce the expected JSON, Markdown, or log outputs.'
+        $runnerFailureExitCode = 1
+    }
+    elseif ($runnerExitCode -ne 0) {
+        $runnerFailureReason = 'the runner exited non-zero after producing the expected outputs.'
+        $runnerFailureExitCode = $runnerExitCode
+    }
+}
+catch {
+    if ($null -eq $runnerFailureReason) {
+        $runnerFailureReason = $_.Exception.Message
+    }
+
+    if ($runnerFailureExitCode -eq 0) {
+        $runnerFailureExitCode = 1
+    }
 }
 finally {
-    Pop-Location
-    if (Test-Path -LiteralPath $runnerShimPath) {
-        Remove-Item -LiteralPath $runnerShimPath -Force -ErrorAction SilentlyContinue
+    if (Test-Path -LiteralPath $runRoot) {
+        Write-ArtifactTree -RootPath $runRoot -OutputPath $artifactTreeLog
     }
 }
 
-Write-ArtifactTree -RootPath $runRoot -OutputPath $artifactTreeLog
-
-if (-not (Test-Path -LiteralPath $runnerJson)) {
-    throw "quic-interop-runner did not produce '$runnerJson'. Check '$runnerMarkdown' and '$runnerStdErr' for details."
+if ($null -ne $runnerFailureReason) {
+    Write-InteropRunnerFailureSummary `
+        -Plan $executionPlan `
+        -OutputValidation $runnerOutputValidation `
+        -RunnerExitCode $runnerExitCode `
+        -Reason $runnerFailureReason
+    exit $runnerFailureExitCode
 }
 
 Write-Host ''
@@ -852,4 +989,4 @@ Write-Host "  Log directory:  $runnerLogDir"
 Write-Host "  Build log:      $dockerBuildLog"
 Write-Host "  Tree summary:   $artifactTreeLog"
 
-exit $runnerExitCode
+exit 0
