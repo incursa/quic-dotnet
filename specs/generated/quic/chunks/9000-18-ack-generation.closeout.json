@@ -27,8 +27,8 @@
     "S13P2P6": 4,
     "S13P2P7": 1,
     "total": 54,
-    "covered": 35,
-    "blocked": 15,
+    "covered": 36,
+    "blocked": 14,
     "deferred": 4,
     "partial": 0,
     "needs_review": 0
@@ -997,12 +997,21 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0004",
-      "completion_status": "blocked",
-      "files_changed": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "There is no decryption-key buffering state to add uncontrolled key-wait latency into ACK Delay.",
-      "notes": "The helper only models locally measured receive-to-send delay."
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicAckGenerationState.cs",
+        "src/Incursa.Quic/QuicCongestionControlState.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0004.cs"
+      ],
+      "tests_covering_requirement": [
+        "TryBuildAckFrame_IncludesBufferingDelayFromUnavailableDecryptionKeys",
+        "TryBuildAckFrame_DoesNotInventBufferingDelayWhenNoneWasRecorded"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0004.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "The helper now adds buffering delay from unavailable decryption keys into ACK Delay without inventing delay when none was recorded."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0005",
@@ -1108,7 +1117,6 @@
     "REQ-QUIC-RFC9000-S13P2P3-0006",
     "REQ-QUIC-RFC9000-S13P2P3-0013",
     "REQ-QUIC-RFC9000-S13P2P4-0001",
-    "REQ-QUIC-RFC9000-S13P2P5-0004",
     "REQ-QUIC-RFC9000-S13P2P6-0003",
     "REQ-QUIC-RFC9000-S13P2P6-0004",
     "REQ-QUIC-RFC9000-S13P2P7-0001"
@@ -1128,17 +1136,20 @@
   "files_changed": [
     "src/Incursa.Quic/QuicPacketNumberSpace.cs",
     "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
     "src/Incursa.Quic/PublicAPI.Unshipped.txt",
     "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0004.cs",
     "specs/generated/quic/chunks/9000-18-ack-generation.implementation-summary.md",
     "specs/generated/quic/chunks/9000-18-ack-generation.implementation-summary.json"
   ],
   "notes": [
     "No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.",
     "The requirement-home proof for REQ-QUIC-RFC9000-S13P2P1-0007 now closes the remaining gap and removes it from the blocked set.",
+    "The requirement-home proof for REQ-QUIC-RFC9000-S13P2P5-0004 now closes the decryption-key buffering-delay gap and keeps the remaining blocked set focused on packet assembly, timing, peer-ACK, and carrier-selection work.",
     "The helper-level implementation covers ACK state, delayed ACK thresholds, immediate ACK triggers, ACK range trimming, ACK-ECN emission, per-space tracking, and the one-ACK-only-packet guard.",
     "No stale or wrong requirement refs were found in the scoped source or tests."
   ]

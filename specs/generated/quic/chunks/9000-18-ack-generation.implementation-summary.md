@@ -30,6 +30,7 @@
 - `REQ-QUIC-RFC9000-S13P2P3-0010`
 - `REQ-QUIC-RFC9000-S13P2P3-0011`
 - `REQ-QUIC-RFC9000-S13P2P3-0012`
+- `REQ-QUIC-RFC9000-S13P2P5-0004`
 - `REQ-QUIC-RFC9000-S13P2P5-0001`
 - `REQ-QUIC-RFC9000-S13P2P5-0002`
 - `REQ-QUIC-RFC9000-S13P2P5-0003`
@@ -40,10 +41,12 @@
 ## Files Changed
 - `src/Incursa.Quic/QuicPacketNumberSpace.cs`
 - `src/Incursa.Quic/QuicAckGenerationState.cs`
+- `src/Incursa.Quic/QuicCongestionControlState.cs`
 - `src/Incursa.Quic/PublicAPI.Unshipped.txt`
 - `tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0004.cs`
 
 ## Tests Added or Updated
 - Added or updated `TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay`.
@@ -56,6 +59,7 @@
 - Added or updated `TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed`.
 - Added or updated `TryParseAckFrame_RoundTripsRangesAndEcnCounts`.
 - Added or updated `Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation`.
+- Added or updated `TryBuildAckFrame_IncludesBufferingDelayFromUnavailableDecryptionKeys` and `TryBuildAckFrame_DoesNotInventBufferingDelayWhenNoneWasRecorded`.
 
 ## Tests Run and Results
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~QuicAckGenerationStateTests|FullyQualifiedName~QuicFrameCodecTests|FullyQualifiedName~QuicFrameCodecFuzzTests"`
@@ -82,11 +86,10 @@
 - `REQ-QUIC-RFC9000-S13P2P1-0009` - There is no peer-side ACK reception model to show that ACK-only traffic will not itself be acknowledged.
 - `REQ-QUIC-RFC9000-S13P2P1-0012` - There is no feedback-loop model for adding ack-eliciting frames to otherwise non-ack-eliciting packets.
 - `REQ-QUIC-RFC9000-S13P2P3-0005` - There is no peer-ACK lifecycle surface to retire ACK ranges after acknowledgments for an ACK frame are received.
-- `REQ-QUIC-RFC9000-S13P2P5-0004` - There is no decryption-key buffering state to add uncontrolled key-wait latency into ACK Delay.
 - `REQ-QUIC-RFC9000-S13P2P6-0003` - There is no carrier-selection surface that can force client 0-RTT acknowledgments onto 1-RTT packets.
 - `REQ-QUIC-RFC9000-S13P2P7-0001` - There is no periodic non-PADDING probe / send-ack-eliciting-frames scheduler.
 
 ## Risks or Follow-up Notes
 - The implementation is helper-level and does not yet own packet assembly, recovery timers, peer ACK validation, or carrier selection for 0-RTT versus 1-RTT acknowledgment delivery.
 - ACK range trimming is bounded by `maximumRetainedAckRanges`; the peer-ACK lifecycle needed to retire ranges after received acknowledgments is still missing.
-- No reconciliation artifact existed for this chunk, so the work was treated as greenfield and the remaining gaps were left explicit rather than inferred.
+- No reconciliation artifact existed for this chunk when the earlier slice landed, so the work was treated as greenfield and the remaining gaps were left explicit rather than inferred. The follow-on proof for `REQ-QUIC-RFC9000-S13P2P5-0004` now closes the decryption-key buffering-delay gap without changing the explicit blocker set.
