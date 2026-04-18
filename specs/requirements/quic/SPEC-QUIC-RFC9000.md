@@ -14563,6 +14563,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.3 RFC9000-S17.2.3-B2-P1-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0004.cs::ServerCanAcceptEarlyDataAndRetainZeroRttMaterial
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0004.cs::ServerCanRejectEarlyDataAndDiscardZeroRttMaterial
 
 ## REQ-QUIC-RFC9000-S17P2P3-0005 The Header Form field MUST be 1 bits long with value 1
 The Header Form field MUST be 1 bits long with value 1.
