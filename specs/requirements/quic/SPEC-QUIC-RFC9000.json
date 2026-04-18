@@ -23707,6 +23707,11 @@
         "upstream_refs": [
           "RFC 9000 §17.1 RFC9000-S17.1-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0001.cs::TryParseLongHeader_AllowsPacketNumberFieldsFromOneToFourBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0001.cs::TryParseShortHeader_AllowsPacketNumberFieldsFromOneToFourBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0001.cs::TryParseLongHeader_RejectsPacketsTruncatedBeforeThePacketNumberFieldCompletes"
         ]
       }
     },
