@@ -714,6 +714,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B5-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0001.cs::TryOpenLocalStream_InitializesReadyAsANewlyCreatedSendableStream
 
 ## REQ-QUIC-RFC9000-S3P1-0002 Permit buffering in Ready
 An implementation MAY buffer stream data in the Ready state in preparation for sending.
@@ -728,6 +730,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B5-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs::TryReserveSendCapacity_BuffersDataInReadyState
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs::TryReserveSendCapacity_BuffersOutOfOrderFragmentsInReadyState
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0002.cs::Fuzz_TryReserveSendCapacity_ReachesDataSentOnlyAfterOrderedFragments
 
 ## REQ-QUIC-RFC9000-S3P1-0003 Enter Send state on first outbound stream frame
 Sending the first STREAM or STREAM_DATA_BLOCKED frame MUST cause a sending part of a stream to enter the Send state.
@@ -6535,6 +6541,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.4 RFC9000-S9.4-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0007.cs::ProbePacketLossLeavesRecoveryStateUnchangedAtThePathValidationBoundary
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0007.cs::NonProbePacketLossStillReducesCongestionAtTheSameBoundary
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0007.cs::IsolatedProbePacketLossDoesNotReduceTheCongestionWindow
 
 ## REQ-QUIC-RFC9000-S9P4-0008 Allow a Separate PATH_CHALLENGE Timer
 An endpoint MAY set a separate timer when a PATH_CHALLENGE is sent, and the timer is canceled if the corresponding PATH_RESPONSE is received.
@@ -16067,6 +16077,8 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0010.cs::TryBuildProtectedApplicationDataPacket_UsesAFourBytePacketNumberField
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0010.cs::TryOpenProtectedApplicationDataPacket_AcceptsTheBoundaryPacketNumberFieldLengths
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0010.cs::TryOpenProtectedApplicationDataPacket_RejectsPacketNumberLengthMismatches
 
 ## REQ-QUIC-RFC9000-S17P3P1-0011 1-RTT packets MUST contain the following fields:
 1-RTT packets MUST contain the following fields:

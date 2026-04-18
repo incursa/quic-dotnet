@@ -30291,7 +30291,10 @@
           "RFC 9000 §18.2 RFC9000-S18.2-B15-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs::TryOpenLocalStream_BlocksBidirectionalStreamsUntilPeerMaxStreamsIncreases"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0012",
@@ -30377,7 +30380,10 @@
           "RFC 9000 §18.2 RFC9000-S18.2-B16-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs::TryOpenLocalStream_BlocksUnidirectionalStreamsUntilPeerMaxStreamsIncreases"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0015",
@@ -30463,7 +30469,10 @@
           "RFC 9000 §18.2 RFC9000-S18.2-B19-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs::ServerKeepsTheOriginalAddressBeforePreferredAddressValidationCompletes"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0018",
@@ -30489,7 +30498,10 @@
           "RFC 9000 §18.2 RFC9000-S18.2-B19-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::ServerMigratesToThePreferredAddressAfterValidationEvenWhenDisableActiveMigrationIsSet"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0019",
@@ -30679,7 +30691,10 @@
           "RFC 9000 §18.2 RFC9000-S18.2-B22-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs::EndpointRoutesThePreferredAddressConnectionIdAcrossPathMigration"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0025",
@@ -30767,7 +30782,10 @@
           "RFC 9000 §18.2 RFC9000-S18.2-B23-P0-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0027.cs::TryParseTransportParameters_RejectsInvalidPreferredAddressWhenParsingAsClient"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0028",
