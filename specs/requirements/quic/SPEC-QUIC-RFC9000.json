@@ -1667,6 +1667,10 @@
         "upstream_refs": [
           "RFC 9000 §3.1 RFC9000-S3.1-B11-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0014.cs::TryAbortLocalStreamWrites_AllowsApplicationAbandonmentFromReadySendAndDataSentStates",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0014.cs::TryAbortLocalStreamWrites_RejectsPeerInitiatedStreams"
         ]
       }
     },
@@ -1693,6 +1697,10 @@
         "upstream_refs": [
           "RFC 9000 §3.1 RFC9000-S3.1-B11-P8-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0015.cs::TryAbortLocalStreamWrites_EntersResetSentAfterAbandoningTransmission",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0015.cs::TryAbortLocalStreamWrites_RejectsRedundantAbandonmentAfterResetSent"
         ]
       }
     },

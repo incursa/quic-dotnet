@@ -923,6 +923,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B11-P8-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0014.cs::TryAbortLocalStreamWrites_AllowsApplicationAbandonmentFromReadySendAndDataSentStates
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0014.cs::TryAbortLocalStreamWrites_RejectsPeerInitiatedStreams
 
 ## REQ-QUIC-RFC9000-S3P1-0015 Send RESET_STREAM when abandoning transmission
 In either case, the endpoint MUST send a RESET_STREAM frame, which causes the stream to enter the Reset Sent state.
@@ -937,6 +940,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.1 RFC9000-S3.1-B11-P8-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0015.cs::TryAbortLocalStreamWrites_EntersResetSentAfterAbandoningTransmission
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0015.cs::TryAbortLocalStreamWrites_RejectsRedundantAbandonmentAfterResetSent
 
 ## REQ-QUIC-RFC9000-S3P1-0016 Permit RESET_STREAM as the first frame
 An endpoint MAY send a RESET_STREAM as the first frame that mentions a stream, causing the sending part of that stream to open and then immediately transition to the Reset Sent state.
