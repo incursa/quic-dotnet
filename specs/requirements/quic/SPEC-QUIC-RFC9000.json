@@ -1203,6 +1203,10 @@
         "upstream_refs": [
           "RFC 9000 §3 RFC9000-S3-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs::TryOpenLocalStream_UsesSendStateMachineForLocalUnidirectionalStreams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs::TryReceiveStreamFrame_RejectsLocalUnidirectionalStreamsWithoutReceiveParts"
         ]
       }
     },
@@ -1229,6 +1233,9 @@
         "upstream_refs": [
           "RFC 9000 §3 RFC9000-S3-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0002.cs::TryOpenLocalStream_UsesBothStateMachinesForLocalBidirectionalStreams"
         ]
       }
     },
