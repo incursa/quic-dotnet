@@ -37869,6 +37869,11 @@
         "upstream_refs": [
           "RFC 9000 §19.21 RFC9000-S19.21-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0003.cs::TryFormatStreamFrame_UsesKnownFrameTypeValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0003.cs::TryFormatStreamFrame_PreservesTheBoundaryDefinedTypes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0003.cs::TryFormatStreamFrame_RejectsUnknownFrameTypeValues"
         ]
       }
     },

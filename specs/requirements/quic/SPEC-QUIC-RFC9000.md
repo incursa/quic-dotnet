@@ -21068,6 +21068,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.21 RFC9000-S19.21-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0003.cs::TryFormatStreamFrame_UsesKnownFrameTypeValues
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0003.cs::TryFormatStreamFrame_PreservesTheBoundaryDefinedTypes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0003.cs::TryFormatStreamFrame_RejectsUnknownFrameTypeValues
 
 ## REQ-QUIC-RFC9000-S19P21-0004 An extension to QUIC that wishes to use a new type of frame MUST first ensure that a peer is...
 An extension to QUIC that wishes to use a new type of frame MUST first ensure that a peer is able to understand the frame.
