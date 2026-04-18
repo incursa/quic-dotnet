@@ -37142,6 +37142,10 @@
         "upstream_refs": [
           "RFC 9000 §19.16 RFC9000-S19.16-B10-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0008.cs::RetireConnectionIdFrame_RejectsThePacketDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0009.cs::RetireConnectionIdFrame_TreatsThePacketDestinationConnectionIdAsAProtocolViolation"
         ]
       }
     },

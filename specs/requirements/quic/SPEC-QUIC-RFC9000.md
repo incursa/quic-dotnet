@@ -20718,6 +20718,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.16 RFC9000-S19.16-B10-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0008.cs::RetireConnectionIdFrame_RejectsThePacketDestinationConnectionId
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0009.cs::RetireConnectionIdFrame_TreatsThePacketDestinationConnectionIdAsAProtocolViolation
 
 ## REQ-QUIC-RFC9000-S19P16-0010 An endpoint MUST NOT send this frame if it was provided with a zero-length connection ID by i...
 An endpoint MUST NOT send this frame if it was provided with a zero-length connection ID by its peer.
