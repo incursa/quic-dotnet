@@ -59,6 +59,12 @@ internal static class QuicRetryIntegrity
             return false;
         }
 
+        if (originalDestinationConnectionId.SequenceEqual(retrySourceConnectionId))
+        {
+            // Retry packets must not reuse the client's Initial DCID as their Source CID.
+            return false;
+        }
+
         long packetLengthLong =
             1L
             + sizeof(uint)

@@ -658,6 +658,19 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         return connectionId;
     }
 
+    internal static byte[] GenerateDistinctServerSourceConnectionId(ReadOnlySpan<byte> disallowedConnectionId)
+    {
+        byte[] connectionId;
+
+        do
+        {
+            connectionId = GenerateServerSourceConnectionId();
+        }
+        while (connectionId.AsSpan().SequenceEqual(disallowedConnectionId));
+
+        return connectionId;
+    }
+
     private bool TryIssueRetryBootstrapResponse(
         QuicConnectionPathIdentity pathIdentity,
         ReadOnlySpan<byte> originalDestinationConnectionId,
@@ -668,7 +681,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return false;
         }
 
-        byte[] retrySourceConnectionId = GenerateServerSourceConnectionId();
+        byte[] retrySourceConnectionId = GenerateDistinctServerSourceConnectionId(originalDestinationConnectionId);
         byte[] retryToken = new byte[RetryBootstrapTokenLength];
         RandomNumberGenerator.Fill(retryToken);
 
