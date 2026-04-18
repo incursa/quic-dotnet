@@ -14362,6 +14362,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.2 RFC9000-S17.2.2-B6-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0018.cs::TryOpenInitialPacket_ForClientReceipt_AllowsZeroTokenLength
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0018.cs::TryOpenInitialPacket_ForClientReceipt_RejectsNonZeroTokenLength
 
 ## REQ-QUIC-RFC9000-S17P2P2-0019 Set Token Length to 0 for server Initial packets
 Initial packets sent by the server MUST set the Token Length field to 0.
@@ -14376,6 +14379,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.2 RFC9000-S17.2.2-B6-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0019.cs::TryBuildProtectedInitialPacketForHandshakeDestination_EncodesZeroTokenLength
 
 ## REQ-QUIC-RFC9000-S17P2P2-0020 This protection does not provide confidentiality or integrity against attackers that can obse...
 This protection does not provide confidentiality or integrity against attackers that can observe packets, but it does prevent attackers that MUST NOT observe packets from spoofing Initial packets.
@@ -14390,6 +14395,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.2 RFC9000-S17.2.2-B8-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0020.cs::TryOpenInitialPacket_RejectsPacketsProtectedWithTheWrongInitialDcid
 
 ## REQ-QUIC-RFC9000-S17P2P2-0021 The client and server use the Initial packet type for any packet that MUST contain an initial...
 The client and server use the Initial packet type for any packet that MUST contain an initial cryptographic handshake message.
@@ -14404,6 +14411,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.2 RFC9000-S17.2.2-B9-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0021.cs::TryBuildProtectedInitialPackets_UseTheInitialPacketTypeForClientAndServerInitialCryptoMessages
 
 ## REQ-QUIC-RFC9000-S17P2P2-0022 This MUST include all cases where a new packet containing the initial cryptographic message n...
 This MUST include all cases where a new packet containing the initial cryptographic message needs to be created, such as the packets sent after receiving a Retry packet; see Section 17.2.5.
@@ -14418,6 +14427,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.2 RFC9000-S17.2.2-B9-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0022.cs::TryBuildProtectedInitialPacket_AfterRetry_UsesTheInitialPacketTypeAndRetryToken
 
 ## REQ-QUIC-RFC9000-S17P2P2-0023 A server MAY send multiple Initial packets
 A server MAY send multiple Initial packets.
@@ -14432,6 +14443,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.2.2 RFC9000-S17.2.2-B10-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0023.cs::TryBuildProtectedInitialPacketForHandshakeDestination_AllowsTheServerToSendMultipleInitialPackets
 
 ## REQ-QUIC-RFC9000-S17P2P2-0024 The payload of an Initial packet MUST include a CRYPTO frame (or frames) containing a cryptog...
 The payload of an Initial packet MUST include a CRYPTO frame (or frames) containing a cryptographic handshake message, ACK frames, or both.

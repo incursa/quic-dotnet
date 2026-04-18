@@ -25968,6 +25968,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2.2 RFC9000-S17.2.2-B6-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0018.cs::TryOpenInitialPacket_ForClientReceipt_AllowsZeroTokenLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0018.cs::TryOpenInitialPacket_ForClientReceipt_RejectsNonZeroTokenLength"
         ]
       }
     },
@@ -25994,6 +25998,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.2 RFC9000-S17.2.2-B6-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0019.cs::TryBuildProtectedInitialPacketForHandshakeDestination_EncodesZeroTokenLength"
         ]
       }
     },
@@ -26020,6 +26027,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.2 RFC9000-S17.2.2-B8-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0020.cs::TryOpenInitialPacket_RejectsPacketsProtectedWithTheWrongInitialDcid"
         ]
       }
     },
@@ -26046,6 +26056,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.2 RFC9000-S17.2.2-B9-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0021.cs::TryBuildProtectedInitialPackets_UseTheInitialPacketTypeForClientAndServerInitialCryptoMessages"
         ]
       }
     },
@@ -26072,6 +26085,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.2 RFC9000-S17.2.2-B9-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0022.cs::TryBuildProtectedInitialPacket_AfterRetry_UsesTheInitialPacketTypeAndRetryToken"
         ]
       }
     },
@@ -26098,6 +26114,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.2 RFC9000-S17.2.2-B10-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0023.cs::TryBuildProtectedInitialPacketForHandshakeDestination_AllowsTheServerToSendMultipleInitialPackets"
         ]
       }
     },
