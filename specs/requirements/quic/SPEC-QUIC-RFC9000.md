@@ -20429,8 +20429,8 @@ Trace:
   - RFC 9000 §19.16 RFC9000-S19.16-B5-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P16-0005 The Sequence Number field MUST be encoded as a variable-length integer
 The Sequence Number field MUST be encoded as a variable-length integer.
@@ -20446,9 +20446,8 @@ Trace:
   - RFC 9000 §19.16 RFC9000-S19.16-B5-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P16-0006 RETIRE_CONNECTION_ID frames MUST contain the following field:
 RETIRE_CONNECTION_ID frames MUST contain the following field:
@@ -20464,9 +20463,8 @@ Trace:
   - RFC 9000 §19.16 RFC9000-S19.16-B7-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P16-0007 Receipt of a RETIRE_CONNECTION_ID frame containing a sequence number greater than any previou...
 Receipt of a RETIRE_CONNECTION_ID frame containing a sequence number greater than any previously sent to the peer MUST be treated as a connection error of type PROTOCOL_VIOLATION.
@@ -20566,9 +20564,8 @@ Trace:
   - RFC 9000 §19.17 RFC9000-S19.17-B4-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P17-0003 The Data field MUST be 64 bits long
 The Data field MUST be 64 bits long.
@@ -20584,9 +20581,8 @@ Trace:
   - RFC 9000 §19.17 RFC9000-S19.17-B4-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P17-0004 PATH_CHALLENGE frames MUST contain the following field:
 PATH_CHALLENGE frames MUST contain the following field:
@@ -20602,9 +20598,8 @@ Trace:
   - RFC 9000 §19.17 RFC9000-S19.17-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P17-0005 This 8-byte field MUST contain arbitrary data
 This 8-byte field MUST contain arbitrary data.
@@ -20620,9 +20615,8 @@ Trace:
   - RFC 9000 §19.17 RFC9000-S19.17-B7-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput
 
 ## REQ-QUIC-RFC9000-S19P17-0006 The recipient of this frame MUST generate a PATH_RESPONSE frame (Section 19.18) containing th...
 The recipient of this frame MUST generate a PATH_RESPONSE frame (Section 19.18) containing the same Data value.

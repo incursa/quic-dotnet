@@ -36697,8 +36697,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput"
         ]
       }
     },
@@ -36727,9 +36727,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput"
         ]
       }
     },
@@ -36758,9 +36757,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput"
         ]
       }
     },
@@ -36945,9 +36943,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput"
         ]
       }
     },
@@ -36976,9 +36973,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput"
         ]
       }
     },
@@ -37007,9 +37003,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput"
         ]
       }
     },
@@ -37038,9 +37033,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0002.cs::TryParsePathChallengeFrame_ParsesAndFormatsTheEightBytePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0003.cs::TryParsePathChallengeFrame_RejectsTruncatedInput"
         ]
       }
     },
