@@ -12019,6 +12019,9 @@
         "upstream_refs": [
           "RFC 9000 §9.4 RFC9000-S9.4-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0008.cs::ValidatingANewPathArmsASeparatePathValidationTimerThatCancelsOnSuccess"
         ]
       }
     },
@@ -12045,6 +12048,10 @@
         "upstream_refs": [
           "RFC 9000 §9.4 RFC9000-S9.4-B6-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0009.cs::TimerExpiryAtTheDeadlineRetransmitsAChallengeAndRearmsTheTimer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0009.cs::StaleTimerAfterTheResponseDoesNotRetransmit"
         ]
       }
     },
@@ -12071,6 +12078,9 @@
         "upstream_refs": [
           "RFC 9000 §9.4 RFC9000-S9.4-B6-P5-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0010.cs::InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget"
         ]
       }
     },
@@ -12097,6 +12107,10 @@
         "upstream_refs": [
           "RFC 9000 §9.4 RFC9000-S9.4-B6-P5-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0011.cs::TimerRetryRearmsTheNextDeadlineAfterTheCurrentDeadline",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0011.cs::TimerRetryDoesNotShortenTheInitialInterval"
         ]
       }
     },
