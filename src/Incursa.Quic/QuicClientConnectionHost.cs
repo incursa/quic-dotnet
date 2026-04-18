@@ -330,7 +330,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             remoteCertificateValidationCallback: options.ClientAuthenticationOptions.RemoteCertificateValidationCallback,
             clientAuthenticationOptions: options.ClientAuthenticationOptions,
             detachedResumptionTicketSnapshot: settings.DetachedResumptionTicketSnapshot,
-            diagnosticsSink: diagnosticsSink);
+            diagnosticsSink: diagnosticsSink,
+            enableRandomizedSpinBitSelection: true);
     }
 
     private static QuicTransportParameters CreateLocalTransportParameters(

@@ -953,7 +953,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         return new QuicConnectionRuntime(
             bookkeeping,
             tlsRole: QuicTlsRole.Server,
-            diagnosticsSink: QuicDiagnostics.ResolveConnectionSink(diagnosticsSink));
+            diagnosticsSink: QuicDiagnostics.ResolveConnectionSink(diagnosticsSink),
+            enableRandomizedSpinBitSelection: true);
     }
 
     private sealed class PendingConnectionState

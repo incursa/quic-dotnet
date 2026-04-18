@@ -106,13 +106,14 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         SslClientAuthenticationOptions? clientAuthenticationOptions = null,
         QuicTlsRole tlsRole = QuicTlsRole.Client,
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
-        IQuicDiagnosticsSink? diagnosticsSink = null)
+        IQuicDiagnosticsSink? diagnosticsSink = null,
+        bool enableRandomizedSpinBitSelection = false)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
         sendRuntime = new QuicConnectionSendRuntime();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
-        handshakeFlowCoordinator = new QuicHandshakeFlowCoordinator();
+        handshakeFlowCoordinator = new QuicHandshakeFlowCoordinator(enableRandomizedSpinBitSelection: enableRandomizedSpinBitSelection);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
         this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
         diagnosticsEnabled = this.diagnosticsSink.IsEnabled;

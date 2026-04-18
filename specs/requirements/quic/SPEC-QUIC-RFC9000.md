@@ -16359,6 +16359,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §17.4 RFC9000-S17.4-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs::TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForOneInSixteenConnectionIds
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs::TryBuildProtectedApplicationDataPacket_LeavesTheSpinBitEnabledOutsideTheSelectionFloor
 
 ## REQ-QUIC-RFC9000-S17P4-0006 Allow any spin value when disabled
 When the spin bit is disabled, endpoints MAY set the spin bit to any value.

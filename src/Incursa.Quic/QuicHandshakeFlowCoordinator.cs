@@ -17,6 +17,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
     private const int LongHeaderConnectionIdLengthFieldsLength = 1 + 1;
     private const int HeaderProtectionMaskLength = QuicInitialPacketProtection.HeaderProtectionSampleLength;
+    private const byte SpinBitSelectionMask = 0x0F;
     private const int LongHeaderFormLength = 1;
     private const int LongHeaderVersionLength = sizeof(uint);
     private const int LongHeaderFixedPrefixLength = LongHeaderFormLength + LongHeaderVersionLength;
@@ -27,16 +28,19 @@ internal sealed class QuicHandshakeFlowCoordinator
     private byte[] initialDestinationConnectionId;
     private byte[] destinationConnectionId;
     private byte[] sourceConnectionId;
+    private readonly bool enableRandomizedSpinBitSelection;
     private ulong nextPacketNumber;
     private ulong nextApplicationPacketNumber;
 
     public QuicHandshakeFlowCoordinator(
         ReadOnlyMemory<byte> initialDestinationConnectionId = default,
-        ReadOnlyMemory<byte> sourceConnectionId = default)
+        ReadOnlyMemory<byte> sourceConnectionId = default,
+        bool enableRandomizedSpinBitSelection = false)
     {
         this.initialDestinationConnectionId = initialDestinationConnectionId.ToArray();
         this.destinationConnectionId = initialDestinationConnectionId.ToArray();
         this.sourceConnectionId = sourceConnectionId.ToArray();
+        this.enableRandomizedSpinBitSelection = enableRandomizedSpinBitSelection;
     }
 
     internal bool TrySetDestinationConnectionId(ReadOnlySpan<byte> connectionId)
@@ -929,10 +933,12 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         int paddedPayloadLength = Math.Max(applicationPayload.Length, ApplicationMinimumProtectedPayloadLength);
         packetNumberOffset = 1 + destinationConnectionId.Length;
+        bool spinBitEnabled = enableRandomizedSpinBitSelection && !ShouldDisableSpinBit(destinationConnectionId);
 
         byte[] packet = new byte[packetNumberOffset + packetNumberLength + paddedPayloadLength];
         packet[0] = (byte)(
             QuicPacketHeaderBits.FixedBitMask
+            | (spinBitEnabled ? QuicPacketHeaderBits.SpinBitMask : 0)
             | (keyPhase ? QuicPacketHeaderBits.KeyPhaseBitMask : 0)
             | (packetNumberLength - 1));
         destinationConnectionId.CopyTo(packet.AsSpan(1));
@@ -1319,6 +1325,11 @@ internal sealed class QuicHandshakeFlowCoordinator
             && material.AeadKey.Length == expectedAeadKeyLength
             && material.AeadIv.Length == expectedAeadIvLength
             && material.HeaderProtectionKey.Length == expectedHeaderProtectionKeyLength;
+    }
+
+    private static bool ShouldDisableSpinBit(ReadOnlySpan<byte> connectionId)
+    {
+        return connectionId.IsEmpty || (connectionId[0] & SpinBitSelectionMask) == 0;
     }
 
     private static bool TrySetConnectionId(ref byte[] target, ReadOnlySpan<byte> connectionId, bool allowOverwrite)
