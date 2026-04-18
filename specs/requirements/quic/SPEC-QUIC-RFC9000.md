@@ -20842,6 +20842,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.17 RFC9000-S19.17-B9-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0028.cs::ReceivedPathChallengeOnACandidatePathEmitsExactlyOnePathResponseDatagram
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0028.cs::TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse
 
 ## REQ-QUIC-RFC9000-S19P18-0001 The Type field MUST be encoded as a variable-length integer with value 0x1b
 The Type field MUST be encoded as a variable-length integer with value 0x1b.

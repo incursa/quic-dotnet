@@ -2,8 +2,10 @@ namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P3-0028">Responses to path validation using PATH_RESPONSE frames MUST be sent just once.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P17-0006">The recipient of this frame MUST generate a PATH_RESPONSE frame (Section 19.18) containing the same Data value.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S13P3-0028")]
+[Requirement("REQ-QUIC-RFC9000-S19P17-0006")]
 public sealed class REQ_QUIC_RFC9000_S13P3_0028
 {
     private static readonly byte[] PacketConnectionId =
@@ -19,6 +21,7 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0028
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0028")]
+    [Requirement("REQ-QUIC-RFC9000-S19P17-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ReceivedPathChallengeOnACandidatePathEmitsExactlyOnePathResponseDatagram()
@@ -82,8 +85,10 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0028
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0028")]
+    [Requirement("REQ-QUIC-RFC9000-S19P17-0006")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    [Trait("Category", "Edge")]
     public void TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse()
     {
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
