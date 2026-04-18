@@ -6,29 +6,33 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S19P14-0003")]
 public sealed class REQ_QUIC_RFC9000_S19P14_0003
 {
-    [Fact]
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked()
+    public void TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked(bool bidirectional)
     {
-        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(peerBidirectionalStreamLimit: 1);
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            peerBidirectionalStreamLimit: bidirectional ? 1UL : 4UL,
+            peerUnidirectionalStreamLimit: bidirectional ? 4UL : 1UL);
 
         Assert.True(state.TryOpenLocalStream(
-            bidirectional: true,
+            bidirectional,
             out QuicStreamId firstStreamId,
             out QuicStreamsBlockedFrame firstBlockedFrame));
         Assert.Equal(default, firstBlockedFrame);
-        Assert.Equal(0UL, firstStreamId.Value);
+        Assert.Equal(bidirectional ? 0UL : 2UL, firstStreamId.Value);
 
         Assert.True(state.TryGetStreamSnapshot(firstStreamId.Value, out QuicConnectionStreamSnapshot initialSnapshot));
         Assert.Equal(QuicStreamSendState.Ready, initialSnapshot.SendState);
 
         Assert.False(state.TryOpenLocalStream(
-            bidirectional: true,
+            bidirectional,
             out QuicStreamId blockedStreamId,
             out QuicStreamsBlockedFrame blockedFrame));
         Assert.Equal(default, blockedStreamId);
-        Assert.True(blockedFrame.IsBidirectional);
+        Assert.Equal(bidirectional, blockedFrame.IsBidirectional);
         Assert.Equal(1UL, blockedFrame.MaximumStreams);
 
         Assert.True(state.TryGetStreamSnapshot(firstStreamId.Value, out QuicConnectionStreamSnapshot afterSnapshot));
