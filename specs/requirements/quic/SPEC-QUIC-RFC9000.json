@@ -29509,9 +29509,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
         ]
       }
     },
@@ -29730,9 +29730,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
         ]
       }
     },
@@ -29854,10 +29854,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0037.cs::TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0038.cs::TryParseTransportParameters_RejectsServerOnlyParametersWhenReceivingAsServer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
         ]
       }
     },
