@@ -306,7 +306,7 @@ Trace:
   - RFC 9000 §2.1 RFC9000-S2.1-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicStreamIdTests.cs::TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0011.cs::TryParseStreamIdentifier_UsesTheSecondLeastSignificantBitToDistinguishDirection
 
 ## REQ-QUIC-RFC9000-S2P1-0012 Start each stream space at its minimum value
 The stream space for each type MUST begin at its minimum value.

@@ -546,7 +546,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs::TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0011.cs::TryParseStreamIdentifier_UsesTheSecondLeastSignificantBitToDistinguishDirection"
         ]
       }
     },
