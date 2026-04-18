@@ -36772,9 +36772,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_ParsesRetirePriorToLessThanSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_AcceptsRetirePriorToEqualToSequenceNumber"
         ]
       }
     },
@@ -36803,7 +36804,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_ParsesRetirePriorToLessThanSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_AcceptsRetirePriorToEqualToSequenceNumber"
         ]
       }
     },

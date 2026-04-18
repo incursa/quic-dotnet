@@ -20511,9 +20511,10 @@ Trace:
   - RFC 9000 §19.15 RFC9000-S19.15-B15-P7-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_ParsesRetirePriorToLessThanSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_AcceptsRetirePriorToEqualToSequenceNumber
 
 ## REQ-QUIC-RFC9000-S19P15-0020 Receiving a value in the Retire Prior To field that is greater than that in the Sequence Numb...
 Receiving a value in the Retire Prior To field that is greater than that in the Sequence Number field MUST be treated as a connection error of type FRAME_ENCODING_ERROR.
@@ -20529,7 +20530,10 @@ Trace:
   - RFC 9000 §19.15 RFC9000-S19.15-B15-P7-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_ParsesRetirePriorToLessThanSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_AcceptsRetirePriorToEqualToSequenceNumber
 
 ## REQ-QUIC-RFC9000-S19P15-0021 Once a sender MUST indicate a Retire Prior To value, smaller values sent in subsequent NEW_CO...
 Once a sender MUST indicate a Retire Prior To value, smaller values sent in subsequent NEW_CONNECTION_ID frames have no effect.

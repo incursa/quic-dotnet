@@ -17,6 +17,7 @@ public sealed class REQ_QUIC_RFC9000_S19P15_0008
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0012">The Connection ID field MUST be connection ID of the specified length.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0013">A 128-bit value that will be used for a stateless reset when the associated connection ID MUST be used; see Section 10.3.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0019">The value in the Retire Prior To field MUST be less than or equal to the value in the Sequence Number field.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0020">Receiving a value in the Retire Prior To field that is greater than that in the Sequence Number field MUST be treated as a connection error of type FRAME_ENCODING_ERROR.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0003">A stateless reset token MUST be 16 bytes long and difficult to guess.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0017">An endpoint MUST issue a stateless reset token by including the value in the Stateless Reset Token field of a NEW_CONNECTION_ID frame.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P2-0008">An endpoint MAY cause its peer to retire connection IDs by sending a NEW_CONNECTION_ID frame with an increased Retire Prior To field.</workbench-requirement>
@@ -34,6 +35,7 @@ public sealed class REQ_QUIC_RFC9000_S19P15_0008
     [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0019")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0020")]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0003")]
     [Requirement("REQ-QUIC-RFC9000-S10P3-0017")]
     [Requirement("REQ-QUIC-RFC9000-S5P1P2-0008")]
