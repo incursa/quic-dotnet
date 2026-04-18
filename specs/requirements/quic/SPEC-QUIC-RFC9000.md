@@ -11090,7 +11090,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.6
 
 ## REQ-QUIC-RFC9000-S13P2P6-0004 This can mean that the client is unable to use these acknowledgments if the server cryptographic handshake messages are delayed or lost
-This can mean that MUST the client is unable to use these acknowledgments if the server cryptographic handshake messages are delayed or lost.
+This can mean that the client is unable to use these acknowledgments if the server cryptographic handshake messages are delayed or lost.
 
 Trace:
 - Satisfied By:
