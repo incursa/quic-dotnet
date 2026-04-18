@@ -10313,6 +10313,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13 RFC9000-S13-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0003.cs::WriteAsync_UsesTheImmediateSendPathForLargerPayloads
 
 ## REQ-QUIC-RFC9000-S13-0004 A single QUIC packet can include multiple STREAM frames from one or more streams
 A single QUIC packet can include multiple STREAM frames from one or more streams.
@@ -15860,10 +15862,9 @@ Trace:
   - RFC 9000 §17.3.1 RFC9000-S17.3.1-B3-P0-S5
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero
-  - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
-  - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0007.cs::TryParseShortHeader_ReportsTheKeyPhaseBit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero
 
 ## REQ-QUIC-RFC9000-S17P3P1-0007 The Key Phase field MUST be 1 bits long
 The Key Phase field MUST be 1 bits long.
@@ -16047,6 +16048,7 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
   - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsReservedBitsNonZero
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs::TryParseShortHeader_RejectsPacketsWithNonZeroReservedBits
 
 ## REQ-QUIC-RFC9000-S17P3P1-0018 Discarding such a packet after only removing header protection MAY expose the endpoint to att...
 Discarding such a packet after only removing header protection MAY expose the endpoint to attacks; see Section 9.5 of [QUIC-TLS].
