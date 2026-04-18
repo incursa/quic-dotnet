@@ -34763,6 +34763,9 @@
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0002.cs::TryApplyMaxStreamDataFrame_AcceptsCreditForALocalRecvStateStream"
         ]
       }
     },
