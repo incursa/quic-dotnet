@@ -10958,6 +10958,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.4 RFC9000-S13.2.4-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P4-0001.cs::TryBuildAckFrame_PreservesTheTrackedAckRangesBeforeNewerPacketsArrive
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P4-0001.cs::TryBuildAckFrame_DropsTheOldestAckRangeAfterTheWindowAdvances
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P4-0001.cs::TryBuildAckFrame_WithASingleRangeLimitKeepsOnlyTheNewestAckRange
 
 ## REQ-QUIC-RFC9000-S13P2P5-0001 Measure intentional acknowledgment delays
 An endpoint MUST measure the delays intentionally introduced between the time the packet with the largest packet number is received and the time an acknowledgment is sent.
