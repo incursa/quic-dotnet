@@ -28992,7 +28992,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0010.cs::TryBuildProtectedApplicationDataPacket_UsesAFourBytePacketNumberField"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0010.cs::TryBuildProtectedApplicationDataPacket_UsesAFourBytePacketNumberField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0010.cs::TryOpenProtectedApplicationDataPacket_AcceptsTheBoundaryPacketNumberFieldLengths",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0010.cs::TryOpenProtectedApplicationDataPacket_RejectsPacketNumberLengthMismatches"
         ]
       }
     },
