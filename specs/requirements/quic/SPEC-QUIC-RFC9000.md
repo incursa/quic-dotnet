@@ -12462,6 +12462,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0001.cs::TryBuildProtectedPackets_ProducePacketHeadersAndProtectedPayloads
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0001.cs::TryBuildProtectedPackets_RejectEmptyPayloads
 
 ## REQ-QUIC-RFC9000-S14P2-0002 The largest UDP payload an endpoint sends at any given time is referred to as the endpoint's maximum datagram size
 The largest UDP payload MUST an endpoint sends at any given time is referred to as the endpoint's maximum datagram size.
