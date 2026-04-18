@@ -14,9 +14,9 @@
 | trace_clean | 582 |
 | covered_but_missing_xrefs | 84 |
 | covered_but_proof_too_broad | 179 |
-| partially_covered | 289 |
+| partially_covered | 295 |
 | uncovered_blocked | 149 |
-| uncovered_unblocked | 453 |
+| uncovered_unblocked | 447 |
 
 | Work queue tag | Count |
 | --- | ---: |
@@ -38,6 +38,6 @@
 | RFC | Total | trace_clean | missing_xrefs | proof_too_broad | partially_covered | uncovered_blocked | uncovered_unblocked |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | RFC8999 | 8 | 8 | 0 | 0 | 0 | 0 | 0 |
-| RFC9000 | 1443 | 389 | 56 | 178 | 246 | 122 | 452 |
+| RFC9000 | 1443 | 389 | 56 | 178 | 252 | 122 | 446 |
 | RFC9001 | 61 | 13 | 16 | 0 | 15 | 17 | 0 |
 | RFC9002 | 224 | 172 | 12 | 1 | 28 | 10 | 1 |
