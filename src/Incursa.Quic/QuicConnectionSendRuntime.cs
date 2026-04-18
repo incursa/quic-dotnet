@@ -72,6 +72,11 @@ internal sealed class QuicConnectionSendRuntime
 
     public void TrackSentPacket(QuicConnectionSentPacket packet)
     {
+        if (packet.ProbePacket && !packet.AckEliciting)
+        {
+            throw new ArgumentException("Probe packets must be ack-eliciting packets.", nameof(packet));
+        }
+
         ValidateCryptoMetadata(packet);
         QuicConnectionSentPacketKey key = new(packet.PacketNumberSpace, packet.PacketNumber);
         sentPackets[key] = packet;
