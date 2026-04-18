@@ -913,12 +913,14 @@ internal sealed class QuicSenderFlowController
 
     /// <summary>
     /// Records a received packet and drives ACK scheduling logic.
+    /// The optional buffering delay captures time spent waiting for decryption keys before processing.
     /// </summary>
     internal void RecordIncomingPacket(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,
         bool ackEliciting,
         ulong receivedAtMicros,
+        ulong bufferingDelayMicros = 0,
         bool congestionExperienced = false,
         QuicEcnCounts? ecnCounts = null)
     {
@@ -927,6 +929,7 @@ internal sealed class QuicSenderFlowController
             packetNumber,
             ackEliciting,
             receivedAtMicros,
+            bufferingDelayMicros,
             congestionExperienced,
             ecnCounts);
     }

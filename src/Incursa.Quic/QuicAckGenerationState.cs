@@ -54,12 +54,14 @@ internal sealed class QuicAckGenerationState
 
     /// <summary>
     /// Records a processed packet for later ACK generation.
+    /// The optional buffering delay captures time spent waiting for decryption keys before processing.
     /// </summary>
     internal void RecordProcessedPacket(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,
         bool ackEliciting,
         ulong receivedAtMicros,
+        ulong bufferingDelayMicros = 0,
         bool congestionExperienced = false,
         QuicEcnCounts? ecnCounts = null)
     {
@@ -74,7 +76,12 @@ internal sealed class QuicAckGenerationState
             }
         }
 
-        state.Receipts[packetNumber] = new PacketReceipt(receivedAtMicros, ackEliciting, congestionExperienced, ecnCounts);
+        state.Receipts[packetNumber] = new PacketReceipt(
+            receivedAtMicros,
+            bufferingDelayMicros,
+            ackEliciting,
+            congestionExperienced,
+            ecnCounts);
 
         if (ackEliciting && (packetNumberSpace == QuicPacketNumberSpace.Initial || packetNumberSpace == QuicPacketNumberSpace.Handshake))
         {
@@ -202,7 +209,7 @@ internal sealed class QuicAckGenerationState
         {
             FrameType = ecnCounts.HasValue ? AckEcnFrameType : AckFrameType,
             LargestAcknowledged = newestRange.Largest,
-            AckDelay = GetElapsedMicros(nowMicros, state.Receipts[newestRange.Largest].ReceivedAtMicros),
+            AckDelay = GetAckDelayMicros(nowMicros, state.Receipts[newestRange.Largest]),
             FirstAckRange = newestRange.Largest - newestRange.Smallest,
             AdditionalRanges = additionalRanges.ToArray(),
             EcnCounts = ecnCounts,
@@ -400,12 +407,27 @@ internal sealed class QuicAckGenerationState
         return laterMicros >= earlierMicros ? laterMicros - earlierMicros : 0;
     }
 
+    private static ulong GetAckDelayMicros(ulong nowMicros, PacketReceipt receipt)
+    {
+        ulong elapsedMicros = GetElapsedMicros(nowMicros, receipt.ReceivedAtMicros);
+        return receipt.BufferingDelayMicros == 0
+            ? elapsedMicros
+            : SaturatingAdd(elapsedMicros, receipt.BufferingDelayMicros);
+    }
+
+    private static ulong SaturatingAdd(ulong left, ulong right)
+    {
+        ulong sum = left + right;
+        return sum < left ? ulong.MaxValue : sum;
+    }
+
     private readonly record struct PacketRange(ulong Smallest, ulong Largest);
 
     private readonly record struct SentAckFrameState(PacketRange[] AckedRanges);
 
     private readonly record struct PacketReceipt(
         ulong ReceivedAtMicros,
+        ulong BufferingDelayMicros,
         bool AckEliciting,
         bool CongestionExperienced,
         QuicEcnCounts? EcnCounts);
