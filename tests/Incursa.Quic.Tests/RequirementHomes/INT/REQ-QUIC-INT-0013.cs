@@ -131,6 +131,183 @@ public sealed class REQ_QUIC_INT_0013
         AssertPreservedFailureEvidence(fixture.ArtifactsRoot);
     }
 
+    [Theory]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    [MemberData(nameof(GetDryRunPlanCases))]
+    public async Task HelperDryRunPrintsTheExpectedPlanForDefaultAndExplicitSlotMatrices(
+        string localRole,
+        string? implementationSlot,
+        string? peerImplementationSlots,
+        string? testCases,
+        string expectedLocalImplementationSlot,
+        string expectedPeerImplementationSlots,
+        string expectedRunnerClientImplementations,
+        string expectedRunnerServerImplementations,
+        string expectedTestCases)
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            CreateDryRunArguments(
+                fixture.RepoRoot,
+                fixture.RunnerRoot,
+                fixture.ArtifactsRoot,
+                localRole,
+                implementationSlot,
+                peerImplementationSlots,
+                testCases));
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner plan-only.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "Plan-only mode completed without Docker build, runner checkout validation, or runner launch.",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(Path.GetFullPath(fixture.RepoRoot), GetPlanValue(output, "Repo root"));
+        Assert.Equal(Path.GetFullPath(fixture.RunnerRoot), GetPlanValue(output, "Runner root"));
+        Assert.Equal(localRole, GetPlanValue(output, "Local role"));
+        Assert.Equal(expectedLocalImplementationSlot, GetPlanValue(output, "Local implementation slot"));
+        Assert.Equal(expectedPeerImplementationSlots, GetPlanValue(output, "Peer implementation slots"));
+        Assert.Equal(expectedRunnerClientImplementations, GetPlanValue(output, "Runner client implementations"));
+        Assert.Equal(expectedRunnerServerImplementations, GetPlanValue(output, "Runner server implementations"));
+        Assert.Equal(expectedTestCases, GetPlanValue(output, "Test cases"));
+
+        string artifactRoot = Path.GetFullPath(fixture.ArtifactsRoot);
+        string runRoot = GetPlanValue(output, "Run root");
+
+        Assert.Equal(artifactRoot, GetPlanValue(output, "Artifact root"));
+        Assert.StartsWith(artifactRoot, runRoot, StringComparison.OrdinalIgnoreCase);
+        Assert.EndsWith($"{localRole}-{expectedLocalImplementationSlot}", runRoot, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(
+            Path.Combine(Path.GetFullPath(fixture.RepoRoot), "src", "Incursa.Quic.InteropHarness", "Dockerfile"),
+            GetPlanValue(output, "Dockerfile"));
+        Assert.Equal(Path.Combine(Path.GetFullPath(fixture.RunnerRoot), "run.py"), GetPlanValue(output, "Runner script"));
+        Assert.Equal(Path.Combine(runRoot, "docker-build.log"), GetPlanValue(output, "Docker build log"));
+        Assert.Equal(Path.Combine(runRoot, "invocation.txt"), GetPlanValue(output, "Invocation log"));
+        Assert.Equal(Path.Combine(runRoot, "runner-report.json"), GetPlanValue(output, "Runner JSON"));
+        Assert.Equal(Path.Combine(runRoot, "runner-report.md"), GetPlanValue(output, "Runner Markdown"));
+        Assert.Equal(Path.Combine(runRoot, "runner.stderr.log"), GetPlanValue(output, "Runner stderr"));
+        Assert.Equal(Path.Combine(runRoot, "runner-logs"), GetPlanValue(output, "Runner logs"));
+        Assert.Equal(Path.Combine(runRoot, "artifact-tree.txt"), GetPlanValue(output, "Artifact tree"));
+        Assert.Equal(Path.Combine(runRoot, "runner-shim.py"), GetPlanValue(output, "Runner shim"));
+    }
+
+    public static IEnumerable<object[]> GetDryRunPlanCases()
+    {
+        yield return
+        [
+            "both",
+            null!,
+            null!,
+            null!,
+            "quic-go",
+            "quic-go,msquic",
+            "quic-go",
+            "quic-go",
+            "handshake,retry,transfer"
+        ];
+
+        yield return
+        [
+            "client",
+            null!,
+            null!,
+            null!,
+            "chrome",
+            "quic-go,msquic",
+            "chrome",
+            "quic-go,msquic",
+            "handshake,retry,transfer"
+        ];
+
+        yield return
+        [
+            "server",
+            null!,
+            null!,
+            null!,
+            "nginx",
+            "quic-go,msquic",
+            "quic-go,msquic",
+            "nginx",
+            "handshake,retry,transfer"
+        ];
+
+        yield return
+        [
+            "client",
+            null!,
+            "msquic,quic-go",
+            "transfer,handshake",
+            "chrome",
+            "msquic,quic-go",
+            "chrome",
+            "msquic,quic-go",
+            "transfer,handshake"
+        ];
+    }
+
+    private static object?[] CreateDryRunArguments(
+        string repoRoot,
+        string runnerRoot,
+        string artifactsRoot,
+        string localRole,
+        string? implementationSlot = null,
+        string? peerImplementationSlots = null,
+        string? testCases = null)
+    {
+        List<object?> arguments =
+        [
+            "-DryRun",
+            true,
+            "-RepoRoot",
+            repoRoot,
+            "-RunnerRoot",
+            runnerRoot,
+            "-ArtifactsRoot",
+            artifactsRoot,
+            "-LocalRole",
+            localRole
+        ];
+
+        if (implementationSlot is not null)
+        {
+            arguments.Add("-ImplementationSlot");
+            arguments.Add(implementationSlot);
+        }
+
+        if (peerImplementationSlots is not null)
+        {
+            arguments.Add("-PeerImplementationSlots");
+            arguments.Add(peerImplementationSlots);
+        }
+
+        if (testCases is not null)
+        {
+            arguments.Add("-TestCases");
+            arguments.Add(testCases);
+        }
+
+        return [.. arguments];
+    }
+
+    private static string GetPlanValue(string output, string label)
+    {
+        string prefix = $"{label}:";
+        string? line = output
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault(candidate => candidate.TrimStart().StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+
+        Assert.NotNull(line);
+        int colonIndex = line!.IndexOf(':');
+        Assert.True(colonIndex >= 0, $"Expected a '{label}' line in the plan output.\n{output}");
+        return line[(colonIndex + 1)..].Trim();
+    }
+
     private static void AssertPreservedFailureEvidence(string artifactsRoot)
     {
         Assert.True(Directory.Exists(artifactsRoot));
@@ -201,7 +378,7 @@ public sealed class REQ_QUIC_INT_0013
 
         public string ToolRoot { get; }
 
-        public async Task<ScriptRunResult> RunAsync(params string[] arguments)
+        public async Task<ScriptRunResult> RunAsync(params object?[] arguments)
         {
             ProcessStartInfo startInfo = new(powerShellExecutable)
             {
@@ -310,7 +487,7 @@ public sealed class REQ_QUIC_INT_0013
         private static string BuildCommandText(
             string scriptPath,
             string exceptionMessagePath,
-            IReadOnlyList<string> arguments)
+            IReadOnlyList<object?> arguments)
         {
             if ((arguments.Count & 1) != 0)
             {
@@ -322,8 +499,8 @@ public sealed class REQ_QUIC_INT_0013
                 Enumerable.Range(0, arguments.Count / 2)
                     .Select(index =>
                     {
-                        string name = arguments[index * 2];
-                        string value = arguments[index * 2 + 1];
+                        string name = arguments[index * 2] as string ?? throw new ArgumentException("Helper script arguments must use non-empty parameter names.", nameof(arguments));
+                        object? value = arguments[index * 2 + 1];
                         if (string.IsNullOrWhiteSpace(name))
                         {
                             throw new ArgumentException("Helper script arguments must use non-empty parameter names.", nameof(arguments));
@@ -351,9 +528,15 @@ public sealed class REQ_QUIC_INT_0013
                 "}\n";
         }
 
-        private static string FormatPowerShellValue(string? value)
+        private static string FormatPowerShellValue(object? value)
         {
-            return value is null ? "$null" : QuotePowerShellSingleQuoted(value);
+            return value switch
+            {
+                null => "$null",
+                bool boolValue => boolValue ? "$true" : "$false",
+                string stringValue => QuotePowerShellSingleQuoted(stringValue),
+                _ => QuotePowerShellSingleQuoted(value.ToString() ?? string.Empty),
+            };
         }
 
         private static string QuotePowerShellSingleQuoted(string value)
