@@ -34,9 +34,10 @@ internal sealed record InteropHarnessEnvironment(
             return false;
         }
 
-        if (!TryParseRole(roleValue, out InteropHarnessRole role))
+        string normalizedRoleValue = roleValue.Trim();
+        if (!TryParseRole(normalizedRoleValue, out InteropHarnessRole role))
         {
-            errorMessage = $"Unsupported ROLE value '{roleValue}'. Expected client or server.";
+            errorMessage = $"Unsupported ROLE value '{normalizedRoleValue}'. Expected client or server.";
             return false;
         }
 
@@ -58,13 +59,21 @@ internal sealed record InteropHarnessEnvironment(
 
     internal static bool TryParseRole(string value, out InteropHarnessRole role)
     {
-        if (string.Equals(value, "client", StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            role = default;
+            return false;
+        }
+
+        string normalizedValue = value.Trim();
+
+        if (string.Equals(normalizedValue, "client", StringComparison.OrdinalIgnoreCase))
         {
             role = InteropHarnessRole.Client;
             return true;
         }
 
-        if (string.Equals(value, "server", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(normalizedValue, "server", StringComparison.OrdinalIgnoreCase))
         {
             role = InteropHarnessRole.Server;
             return true;
@@ -82,7 +91,7 @@ internal sealed record InteropHarnessEnvironment(
         }
 
         return requestsValue
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .ToArray();
     }
 
