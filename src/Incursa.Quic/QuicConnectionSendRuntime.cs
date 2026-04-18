@@ -72,7 +72,7 @@ internal sealed class QuicConnectionSendRuntime
 
     public void TrackSentPacket(QuicConnectionSentPacket packet)
     {
-        if (packet.ProbePacket && !packet.AckEliciting)
+        if (packet.ProbePacket && (packet.AckOnlyPacket || !packet.AckEliciting))
         {
             throw new ArgumentException("Probe packets must be ack-eliciting packets.", nameof(packet));
         }

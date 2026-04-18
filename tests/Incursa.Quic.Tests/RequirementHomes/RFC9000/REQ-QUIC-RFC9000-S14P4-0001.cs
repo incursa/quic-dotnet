@@ -53,4 +53,28 @@ public sealed class REQ_QUIC_RFC9000_S14P4_0001
         Assert.Empty(runtime.SentPackets);
         Assert.False(runtime.HasAckElicitingPacketsInFlight);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TrackSentPacket_RejectsProbePacketsThatAreAckOnly()
+    {
+        QuicConnectionSendRuntime runtime = new();
+
+        ArgumentException exception = Assert.Throws<ArgumentException>(() =>
+            runtime.TrackSentPacket(new QuicConnectionSentPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                PacketNumber: 8,
+                PayloadBytes: 1_200,
+                SentAtMicros: 200,
+                AckEliciting: true,
+                AckOnlyPacket: true,
+                ProbePacket: true,
+                Retransmittable: false)));
+
+        Assert.Equal("packet", exception.ParamName);
+        Assert.Contains("Probe packets must be ack-eliciting packets.", exception.Message);
+        Assert.Empty(runtime.SentPackets);
+        Assert.False(runtime.HasAckElicitingPacketsInFlight);
+    }
 }
