@@ -431,6 +431,7 @@ function Write-InteropRunnerFailureSummary {
         }
     }
 
+    Write-Host "  Runner stderr:   $($Plan.RunnerStdErr)"
     Write-Host '  Evidence was preserved in the run root for post-failure inspection.'
 }
 
