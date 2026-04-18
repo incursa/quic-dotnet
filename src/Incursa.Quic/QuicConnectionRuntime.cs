@@ -4960,10 +4960,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private void ResetRecoveryStateForNewPath()
     {
         // A real peer-address change starts the new path with fresh recovery state so stale
-        // packets from the old path cannot keep influencing congestion or PTO decisions.
-        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial);
-        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake);
-        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData);
+        // packets from the old path cannot keep influencing congestion or PTO decisions, but ACK
+        // history must survive so previously received packets still drive ACK generation.
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, discardAckGenerationState: false);
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, discardAckGenerationState: false);
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData, discardAckGenerationState: false);
         sendRuntime.FlowController.CongestionControlState.Reset();
     }
 

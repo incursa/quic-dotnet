@@ -239,7 +239,7 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
-        if (IsStreamSendClosed(state.SendState))
+        if (IsStreamSendClosedForNewFrames(state.SendState))
         {
             errorCode = QuicTransportErrorCode.StreamStateError;
             return false;
@@ -267,7 +267,8 @@ internal sealed class QuicConnectionStreamState
             state.SendState = QuicStreamSendState.Send;
         }
 
-        if (endExclusive > state.SendLimit)
+        if (state.SendState != QuicStreamSendState.DataSent
+            && endExclusive > state.SendLimit)
         {
             streamDataBlockedFrame = new QuicStreamDataBlockedFrame(streamIdValue, state.SendLimit);
             return false;
@@ -472,7 +473,7 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
-        if (IsStreamSendClosed(state.SendState))
+        if (IsStreamSendClosedForNewFrames(state.SendState))
         {
             errorCode = QuicTransportErrorCode.StreamStateError;
             return false;
@@ -936,6 +937,13 @@ internal sealed class QuicConnectionStreamState
     {
         return sendState is QuicStreamSendState.DataSent
             or QuicStreamSendState.DataRecvd
+            or QuicStreamSendState.ResetSent
+            or QuicStreamSendState.ResetRecvd;
+    }
+
+    private static bool IsStreamSendClosedForNewFrames(QuicStreamSendState sendState)
+    {
+        return sendState is QuicStreamSendState.DataRecvd
             or QuicStreamSendState.ResetSent
             or QuicStreamSendState.ResetRecvd;
     }

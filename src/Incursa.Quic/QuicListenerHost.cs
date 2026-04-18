@@ -563,7 +563,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     CreateLocalTransportParameters(
                         selectedOptions,
                         serverSourceConnectionId,
-                        retryBootstrapOriginalDestinationConnectionId is null ? ReadOnlySpan<byte>.Empty : retryBootstrapOriginalDestinationConnectionId,
+                        retryBootstrapOriginalDestinationConnectionId is null
+                            ? initialDestinationConnectionId
+                            : retryBootstrapOriginalDestinationConnectionId,
                         retryBootstrapSourceConnectionId is null ? ReadOnlySpan<byte>.Empty : retryBootstrapSourceConnectionId))))
             {
                 return false;

@@ -103,6 +103,10 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0001
         Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
         Assert.Equal(QuicStreamSendState.DataSent, snapshot.SendState);
 
+        Assert.True(state.TryAcknowledgeSendCompletion(streamId.Value));
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out snapshot));
+        Assert.Equal(QuicStreamSendState.DataRecvd, snapshot.SendState);
+
         Assert.False(state.TryReserveSendCapacity(
             streamId.Value,
             offset: 0,
@@ -146,6 +150,10 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0001
 
         Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
         Assert.Equal(QuicStreamSendState.DataSent, snapshot.SendState);
+
+        Assert.True(state.TryAcknowledgeSendCompletion(streamId.Value));
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out snapshot));
+        Assert.Equal(QuicStreamSendState.DataRecvd, snapshot.SendState);
 
         Assert.False(state.TryAbortLocalStreamWrites(streamId.Value, out ulong finalSize, out errorCode));
         Assert.Equal(default, finalSize);

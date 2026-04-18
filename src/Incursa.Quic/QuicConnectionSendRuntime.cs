@@ -147,9 +147,11 @@ internal sealed class QuicConnectionSendRuntime
         return removed;
     }
 
-    public bool TryDiscardPacketNumberSpace(QuicPacketNumberSpace packetNumberSpace)
+    public bool TryDiscardPacketNumberSpace(
+        QuicPacketNumberSpace packetNumberSpace,
+        bool discardAckGenerationState = true)
     {
-        bool updated = flowController.TryDiscardPacketNumberSpace(packetNumberSpace);
+        bool updated = flowController.TryDiscardPacketNumberSpace(packetNumberSpace, discardAckGenerationState);
 
         List<QuicConnectionSentPacketKey>? removedKeys = null;
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)

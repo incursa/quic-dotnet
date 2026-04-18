@@ -438,6 +438,7 @@ internal static class QuicPostHandshakeTicketTestSupport
         {
             MaxIdleTimeout = 21,
             DisableActiveMigration = true,
+            OriginalDestinationConnectionId = [0x0A, 0x0B, 0x0C],
             InitialSourceConnectionId = [0x0A, 0x0B, 0x0C],
         };
     }

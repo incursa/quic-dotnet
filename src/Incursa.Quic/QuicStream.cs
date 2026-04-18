@@ -166,14 +166,14 @@ public sealed class QuicStream : Stream
                 throw new NotSupportedException("Aborting both sides requires the supported connection runtime path.");
             }
 
-            if (!writesClosed.Task.IsCompleted)
-            {
-                runtime.AbortStreamWritesAsync(streamId, checked((ulong)errorCode)).GetAwaiter().GetResult();
-            }
-
             if (!readsClosed.Task.IsCompleted)
             {
                 runtime.AbortStreamReadsAsync(streamId, checked((ulong)errorCode)).GetAwaiter().GetResult();
+            }
+
+            if (!writesClosed.Task.IsCompleted)
+            {
+                runtime.AbortStreamWritesAsync(streamId, checked((ulong)errorCode)).GetAwaiter().GetResult();
             }
 
             return;

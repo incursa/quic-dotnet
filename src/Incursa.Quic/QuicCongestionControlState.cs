@@ -893,9 +893,12 @@ internal sealed class QuicSenderFlowController
     /// <summary>
     /// Discards all retained packets in the specified packet number space.
     /// </summary>
-    internal bool TryDiscardPacketNumberSpace(QuicPacketNumberSpace packetNumberSpace)
+    internal bool TryDiscardPacketNumberSpace(
+        QuicPacketNumberSpace packetNumberSpace,
+        bool discardAckGenerationState = true)
     {
-        bool updated = AckGenerationState.TryDiscardPacketNumberSpace(packetNumberSpace);
+        bool updated = discardAckGenerationState
+            && AckGenerationState.TryDiscardPacketNumberSpace(packetNumberSpace);
 
         if (!TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
         {
