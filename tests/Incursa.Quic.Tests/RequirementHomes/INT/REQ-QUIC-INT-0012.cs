@@ -24,16 +24,25 @@ public sealed class REQ_QUIC_INT_0012
 
             await using HarnessProcess clientProcess = HarnessProcess.Start("client", "retry", requests, harnessDll);
 
-            await clientProcess.WaitForStdoutContainsAsync("observed exactly one Retry transition", TimeSpan.FromSeconds(15));
-            await serverProcess.WaitForStdoutContainsAsync("issued exactly one Retry", TimeSpan.FromSeconds(15));
+            await WaitForRetryLifecycleAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(15));
             await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
 
             Assert.Equal(0, clientProcess.Process.ExitCode);
             Assert.Equal(0, serverProcess.Process.ExitCode);
+            Assert.Empty(clientProcess.Stderr);
+            Assert.Empty(serverProcess.Stderr);
             Assert.Contains("testcase=retry", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("observed exactly one Retry transition", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            AssertContainsInOrder(
+                clientProcess.Stdout,
+                "connecting to",
+                "observed exactly one Retry transition (token=",
+                "observed exactly one Retry transition and completed managed client bootstrap.");
             Assert.Contains("testcase=retry", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("issued exactly one Retry", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            AssertContainsInOrder(
+                serverProcess.Stdout,
+                "listening on",
+                "issued exactly one Retry (token=",
+                "issued exactly one Retry and completed managed listener bootstrap.");
         });
     }
 
@@ -49,6 +58,7 @@ public sealed class REQ_QUIC_INT_0012
         await serverProcess.WaitForStdoutContainsAsync("retry contract enabled", TimeSpan.FromSeconds(10));
         Assert.Contains("requestCount=0", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("listening on", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(serverProcess.Stderr);
     }
 
     private static async Task WaitForExitAsync(
@@ -69,6 +79,51 @@ public sealed class REQ_QUIC_INT_0012
 
         throw new TimeoutException(
             $"Harness retry did not complete within {timeout}.\nSERVER STDOUT:\n{serverProcess.Stdout}\nSERVER STDERR:\n{serverProcess.Stderr}\nCLIENT STDOUT:\n{clientProcess.Stdout}\nCLIENT STDERR:\n{clientProcess.Stderr}");
+    }
+
+    private static async Task WaitForRetryLifecycleAsync(
+        HarnessProcess serverProcess,
+        HarnessProcess clientProcess,
+        TimeSpan timeout)
+    {
+        DateTime deadline = DateTime.UtcNow + timeout;
+
+        while (DateTime.UtcNow < deadline)
+        {
+            bool serverObserved = serverProcess.Stdout.Contains("issued exactly one Retry (token=", StringComparison.OrdinalIgnoreCase);
+            bool clientObserved = clientProcess.Stdout.Contains("observed exactly one Retry transition (token=", StringComparison.OrdinalIgnoreCase);
+            if (serverObserved && clientObserved)
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(50)).ConfigureAwait(false);
+        }
+
+        throw new TimeoutException(
+            $"Harness retry did not observe the expected client/server Retry lifecycle markers within {timeout}.\nSERVER STDOUT:\n{serverProcess.Stdout}\nSERVER STDERR:\n{serverProcess.Stderr}\nCLIENT STDOUT:\n{clientProcess.Stdout}\nCLIENT STDERR:\n{clientProcess.Stderr}");
+    }
+
+    private static void AssertContainsInOrder(string stdout, params string[] markers)
+    {
+        string[] lines = stdout.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+        int searchStart = 0;
+
+        foreach (string marker in markers)
+        {
+            int foundIndex = -1;
+            for (int i = searchStart; i < lines.Length; i++)
+            {
+                if (lines[i].Contains(marker, StringComparison.OrdinalIgnoreCase))
+                {
+                    foundIndex = i;
+                    break;
+                }
+            }
+
+            Assert.True(foundIndex >= 0, $"Expected to find '{marker}' after line {searchStart} in stdout:\n{stdout}");
+            searchStart = foundIndex + 1;
+        }
     }
 
     private sealed class HarnessProcess : IAsyncDisposable

@@ -24,16 +24,17 @@ public sealed class REQ_QUIC_INT_0011
 
             await using HarnessProcess clientProcess = HarnessProcess.Start("client", "post-handshake-stream", requests, harnessDll);
 
-            await clientProcess.WaitForStdoutContainsAsync("opened stream", TimeSpan.FromSeconds(10));
-            await serverProcess.WaitForStdoutContainsAsync("accepted stream", TimeSpan.FromSeconds(10));
+            await WaitForStreamLifecycleAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(10));
             await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(15));
 
             Assert.Equal(0, clientProcess.Process.ExitCode);
             Assert.Equal(0, serverProcess.Process.ExitCode);
+            Assert.Empty(clientProcess.Stderr);
+            Assert.Empty(serverProcess.Stderr);
             Assert.Contains("testcase=post-handshake-stream", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("opened stream", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            AssertContainsInOrder(clientProcess.Stdout, "connecting to", "opened stream");
             Assert.Contains("testcase=post-handshake-stream", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("accepted stream", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+            AssertContainsInOrder(serverProcess.Stdout, "listening on", "accepted stream");
         });
     }
 
@@ -55,6 +56,51 @@ public sealed class REQ_QUIC_INT_0011
 
         throw new TimeoutException(
             $"Harness post-handshake stream did not complete within {timeout}.\nSERVER STDOUT:\n{serverProcess.Stdout}\nSERVER STDERR:\n{serverProcess.Stderr}\nCLIENT STDOUT:\n{clientProcess.Stdout}\nCLIENT STDERR:\n{clientProcess.Stderr}");
+    }
+
+    private static async Task WaitForStreamLifecycleAsync(
+        HarnessProcess serverProcess,
+        HarnessProcess clientProcess,
+        TimeSpan timeout)
+    {
+        DateTime deadline = DateTime.UtcNow + timeout;
+
+        while (DateTime.UtcNow < deadline)
+        {
+            bool serverObserved = serverProcess.Stdout.Contains("accepted stream", StringComparison.OrdinalIgnoreCase);
+            bool clientObserved = clientProcess.Stdout.Contains("opened stream", StringComparison.OrdinalIgnoreCase);
+            if (serverObserved && clientObserved)
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(50)).ConfigureAwait(false);
+        }
+
+        throw new TimeoutException(
+            $"Harness post-handshake stream did not observe the expected client/server stream lifecycle markers within {timeout}.\nSERVER STDOUT:\n{serverProcess.Stdout}\nSERVER STDERR:\n{serverProcess.Stderr}\nCLIENT STDOUT:\n{clientProcess.Stdout}\nCLIENT STDERR:\n{clientProcess.Stderr}");
+    }
+
+    private static void AssertContainsInOrder(string stdout, params string[] markers)
+    {
+        string[] lines = stdout.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+        int searchStart = 0;
+
+        foreach (string marker in markers)
+        {
+            int foundIndex = -1;
+            for (int i = searchStart; i < lines.Length; i++)
+            {
+                if (lines[i].Contains(marker, StringComparison.OrdinalIgnoreCase))
+                {
+                    foundIndex = i;
+                    break;
+                }
+            }
+
+            Assert.True(foundIndex >= 0, $"Expected to find '{marker}' after line {searchStart} in stdout:\n{stdout}");
+            searchStart = foundIndex + 1;
+        }
     }
 
     private sealed class HarnessProcess : IAsyncDisposable
