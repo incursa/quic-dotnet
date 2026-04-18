@@ -28962,6 +28962,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0009.cs::TryBuildProtectedApplicationDataPacket_AcceptsTheMaximumConnectionIdLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0009.cs::TryBuildProtectedApplicationDataPacket_AllowsAZeroLengthDestinationConnectionId",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0009.cs::TryBuildProtectedApplicationDataPacket_RejectsConnectionIdsLongerThan160Bits"
         ]
       }

@@ -16049,6 +16049,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0009.cs::TryBuildProtectedApplicationDataPacket_AcceptsTheMaximumConnectionIdLength
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0009.cs::TryBuildProtectedApplicationDataPacket_AllowsAZeroLengthDestinationConnectionId
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0009.cs::TryBuildProtectedApplicationDataPacket_RejectsConnectionIdsLongerThan160Bits
 
 ## REQ-QUIC-RFC9000-S17P3P1-0010 The Packet Number field MUST be between 8 and 32 bits long

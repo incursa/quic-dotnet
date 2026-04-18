@@ -228,7 +228,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         packetNumber = default;
 
         if (applicationPayload.IsEmpty
-            || destinationConnectionId.Length == 0
+            || destinationConnectionId.Length > MaximumConnectionIdLength
             || material.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt)
         {
             return false;
@@ -353,7 +353,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         payloadLength = default;
         keyPhase = default;
 
-        if (destinationConnectionId.Length == 0
+        if (destinationConnectionId.Length > MaximumConnectionIdLength
             || material.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt)
         {
             return false;
@@ -921,7 +921,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         packetNumberOffset = default;
         packetNumberLength = ApplicationPacketNumberLength;
 
-        if (destinationConnectionId.Length is 0 or > MaximumConnectionIdLength
+        if (destinationConnectionId.Length > MaximumConnectionIdLength
             || applicationPayload.Length > int.MaxValue - 1 - destinationConnectionId.Length - packetNumberLength - ApplicationMinimumProtectedPayloadLength)
         {
             return false;
@@ -1091,7 +1091,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         if (!TryValidatePacketProtectionMaterial(material)
             || packetNumberLength < 1
             || packetNumberLength > ApplicationPacketNumberLength
-            || destinationConnectionId.Length is 0 or > MaximumConnectionIdLength)
+            || destinationConnectionId.Length > MaximumConnectionIdLength)
         {
             return false;
         }
