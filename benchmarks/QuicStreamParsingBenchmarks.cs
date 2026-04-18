@@ -8,9 +8,10 @@ namespace Incursa.Quic.Benchmarks;
 [MemoryDiagnoser]
 public class QuicStreamParsingBenchmarks
 {
-    private byte[] streamIdentifier = [];
-    private byte[] streamFrameWithLength = [];
-    private byte[] streamFrameToEnd = [];
+    private byte[] bidirectionalStreamIdentifier = [];
+    private byte[] unidirectionalStreamIdentifier = [];
+    private byte[] offsetHeavyStreamFrame = [];
+    private byte[] largeRemainderStreamFrame = [];
 
     /// <summary>
     /// Prepares representative stream payloads.
@@ -18,53 +19,66 @@ public class QuicStreamParsingBenchmarks
     [GlobalSetup]
     public void GlobalSetup()
     {
-        streamIdentifier = QuicBenchmarkData.EncodeVarInt(0x1234);
-        streamFrameWithLength = QuicBenchmarkData.BuildStreamFrame(
+        bidirectionalStreamIdentifier = QuicBenchmarkData.EncodeVarInt(0x1234UL);
+        unidirectionalStreamIdentifier = QuicBenchmarkData.EncodeVarInt(0x1236UL);
+
+        offsetHeavyStreamFrame = QuicBenchmarkData.BuildStreamFrame(
             frameType: 0x0F,
-            streamId: 0x1234,
+            streamId: 0x1234UL,
             includeOffset: true,
-            offset: 0x20,
+            offset: 0x1234_5678_9ABC_DEF0UL,
             includeLength: true,
             streamData: [0x10, 0x11, 0x12, 0x13]);
 
-        streamFrameToEnd = QuicBenchmarkData.BuildStreamFrame(
+        largeRemainderStreamFrame = QuicBenchmarkData.BuildStreamFrame(
             frameType: 0x08,
-            streamId: 0x1234,
+            streamId: 0x1236UL,
             includeOffset: false,
             offset: 0,
             includeLength: false,
-            streamData: [0x20, 0x21, 0x22, 0x23, 0x24, 0x25]);
+            streamData: new byte[128]);
     }
 
     /// <summary>
-    /// Measures stream identifier decoding.
+    /// Measures bidirectional stream identifier decoding.
     /// </summary>
     [Benchmark]
-    public int ParseStreamIdentifier()
+    public int ParseBidirectionalStreamIdentifier()
     {
-        return QuicStreamParser.TryParseStreamIdentifier(streamIdentifier, out QuicStreamId streamId, out int bytesConsumed)
+        return QuicStreamParser.TryParseStreamIdentifier(bidirectionalStreamIdentifier, out QuicStreamId streamId, out int bytesConsumed)
             ? unchecked((int)streamId.Value) ^ bytesConsumed
             : -1;
     }
 
     /// <summary>
-    /// Measures STREAM frame parsing when the frame includes offset and length fields.
+    /// Measures unidirectional stream identifier decoding.
     /// </summary>
     [Benchmark]
-    public int ParseStreamFrameWithLength()
+    public int ParseUnidirectionalStreamIdentifier()
     {
-        return QuicStreamParser.TryParseStreamFrame(streamFrameWithLength, out QuicStreamFrame frame)
+        return QuicStreamParser.TryParseStreamIdentifier(unidirectionalStreamIdentifier, out QuicStreamId streamId, out int bytesConsumed)
+            ? unchecked((int)streamId.Value) ^ bytesConsumed
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures STREAM frame parsing when the frame includes a large offset and length.
+    /// </summary>
+    [Benchmark]
+    public int ParseOffsetHeavyStreamFrame()
+    {
+        return QuicStreamParser.TryParseStreamFrame(offsetHeavyStreamFrame, out QuicStreamFrame frame)
             ? frame.StreamDataLength ^ frame.ConsumedLength ^ unchecked((int)frame.Offset) ^ (int)frame.StreamType
             : -1;
     }
 
     /// <summary>
-    /// Measures STREAM frame parsing when Stream Data consumes the remainder of the packet.
+    /// Measures STREAM frame parsing when Stream Data consumes a larger remainder of the packet.
     /// </summary>
     [Benchmark]
-    public int ParseStreamFrameToEnd()
+    public int ParseLargeRemainderStreamFrame()
     {
-        return QuicStreamParser.TryParseStreamFrame(streamFrameToEnd, out QuicStreamFrame frame)
+        return QuicStreamParser.TryParseStreamFrame(largeRemainderStreamFrame, out QuicStreamFrame frame)
             ? frame.StreamDataLength ^ frame.ConsumedLength ^ (int)frame.StreamType
             : -1;
     }
