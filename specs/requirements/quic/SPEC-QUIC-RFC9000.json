@@ -23635,6 +23635,11 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0005.cs::TryParseLongHeaderFields_ExposesTheFixedWidthVersionPacketNumberAndConnectionIdFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0005.cs::TryParseLongHeaderFields_RejectsPacketsMissingTheSourceConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S16-0005.cs::TryParseLongHeaderFields_AllowsMaximumLengthConnectionIds"
+        ],
         "upstream_refs": [
           "RFC 9000 §16 RFC9000-S16-B12-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-16"
