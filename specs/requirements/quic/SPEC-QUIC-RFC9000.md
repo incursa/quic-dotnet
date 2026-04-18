@@ -20965,7 +20965,7 @@ Trace:
   - RFC 9000 §19.20 RFC9000-S19.20-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.20
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs::TryParseHandshakeDoneFrame_ParsesAndFormatsTheTypeOnlyFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0001.cs::TryParseHandshakeDoneFrame_RecognizesTheHandshakeDoneType
 
 ## REQ-QUIC-RFC9000-S19P20-0002 HANDSHAKE_DONE frames are formatted as shown in Figure 44, which shows that HANDSHAKE_DONE fr...
 HANDSHAKE_DONE frames are formatted as shown in Figure 44, which shows that HANDSHAKE_DONE frames MUST have no content.
@@ -20981,7 +20981,8 @@ Trace:
   - RFC 9000 §19.20 RFC9000-S19.20-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.20
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs::TryParseHandshakeDoneFrame_ParsesAndFormatsTheTypeOnlyFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0002.cs::TryFormatHandshakeDoneFrame_WritesOnlyTheTypeByte
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0002.cs::QuicHandshakeDoneFrame_ExposesTheWireFrameType
 
 ## REQ-QUIC-RFC9000-S19P20-0003 The Type field MUST be encoded as a variable-length integer with value 0x1e
 The Type field MUST be encoded as a variable-length integer with value 0x1e.

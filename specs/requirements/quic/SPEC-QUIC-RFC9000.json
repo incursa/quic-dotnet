@@ -37675,7 +37675,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.20"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs::TryParseHandshakeDoneFrame_ParsesAndFormatsTheTypeOnlyFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0001.cs::TryParseHandshakeDoneFrame_RecognizesTheHandshakeDoneType"
         ]
       }
     },
@@ -37704,7 +37704,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.20"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHandshakeDoneFrameTests.cs::TryParseHandshakeDoneFrame_ParsesAndFormatsTheTypeOnlyFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0002.cs::TryFormatHandshakeDoneFrame_WritesOnlyTheTypeByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0002.cs::QuicHandshakeDoneFrame_ExposesTheWireFrameType"
         ]
       }
     },
