@@ -38406,7 +38406,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.1.1.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs::CanConsiderPeerAddressValidated_RequiresEndpointChosenAndAtLeast64BitsOfEntropy"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P1P1P1-0001.cs::CanConsiderPeerAddressValidated_RequiresEndpointChosenAndAtLeast64BitsOfEntropy"
         ]
       }
     },
