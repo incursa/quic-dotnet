@@ -3562,6 +3562,11 @@
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B12-P9-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_DoesNotEmitABlockedSignalWhileAnAckElicitingPacketIsStillInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::TryReserveSendCapacity_ReemitsBlockedFramesWhileTheLimitRemainsClosed"
         ]
       }
     },
