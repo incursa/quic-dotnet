@@ -15879,10 +15879,9 @@ Trace:
   - RFC 9000 §17.3.1 RFC9000-S17.3.1-B3-P0-S6
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero
-  - tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
-  - tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits
-  - tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0007.cs::TryParseShortHeader_ReportsTheKeyPhaseBit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::TryParseShortHeader_PreservesOpaqueRemainder
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0013.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero
 
 ## REQ-QUIC-RFC9000-S17P3P1-0008 The Packet Number Length field MUST be 2 bits long
 The Packet Number Length field MUST be 2 bits long.
