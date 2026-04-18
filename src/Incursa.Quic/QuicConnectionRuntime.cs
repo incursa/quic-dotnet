@@ -66,6 +66,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private bool zeroRttPacketSent;
     private bool handshakeDonePacketSent;
     private bool hasSuccessfullyProcessedAnotherPacket;
+    private ulong highestConnectionIdIssuedToPeer;
 
     private int consumerStarted;
     private int disposed;
@@ -922,6 +923,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         peerConnectionIdState.Clear();
+        highestConnectionIdIssuedToPeer = 0;
     }
 
     public void Dispose()
@@ -2377,6 +2379,23 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 continue;
             }
 
+            if (QuicFrameCodec.TryParseRetireConnectionIdFrame(remaining, out QuicRetireConnectionIdFrame retireConnectionIdFrame, out int retireConnectionIdBytesConsumed))
+            {
+                if (retireConnectionIdBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (!TryHandleRetireConnectionIdFrame(retireConnectionIdFrame, nowTicks, ref effects))
+                {
+                    return false;
+                }
+
+                stateChanged = true;
+                offset += retireConnectionIdBytesConsumed;
+                continue;
+            }
+
             if (QuicFrameCodec.TryParseResetStreamFrame(remaining, out QuicResetStreamFrame resetStreamFrame, out int resetBytesConsumed))
             {
                 if (resetBytesConsumed <= 0)
@@ -2562,6 +2581,33 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         stateChanged = destinationConnectionIdChanged;
+        return true;
+    }
+
+    private bool TryHandleRetireConnectionIdFrame(
+        QuicRetireConnectionIdFrame retireConnectionIdFrame,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (retireConnectionIdFrame.SequenceNumber > highestConnectionIdIssuedToPeer)
+        {
+            return HandleFatalTlsSignal(
+                nowTicks,
+                QuicTransportErrorCode.ProtocolViolation,
+                "The peer retired an unknown connection ID.",
+                ref effects);
+        }
+
+        if (peerConnectionIdState.CurrentDestinationConnectionIdSequence.HasValue
+            && retireConnectionIdFrame.SequenceNumber == peerConnectionIdState.CurrentDestinationConnectionIdSequence.Value)
+        {
+            return HandleFatalTlsSignal(
+                nowTicks,
+                QuicTransportErrorCode.ProtocolViolation,
+                "The peer retired the packet destination connection ID.",
+                ref effects);
+        }
+
         return true;
     }
 
@@ -4264,6 +4310,11 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         byte[] token = connectionIdIssuedEvent.StatelessResetToken.ToArray();
         statelessResetTokensByConnectionId.Add(connectionIdIssuedEvent.ConnectionId, token);
+        if (connectionIdIssuedEvent.ConnectionId > highestConnectionIdIssuedToPeer)
+        {
+            highestConnectionIdIssuedToPeer = connectionIdIssuedEvent.ConnectionId;
+        }
+
         AppendEffect(ref effects, new QuicConnectionRegisterStatelessResetTokenEffect(connectionIdIssuedEvent.ConnectionId, token));
         return true;
     }
