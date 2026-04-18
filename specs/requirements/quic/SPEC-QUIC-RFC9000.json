@@ -28214,6 +28214,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0001.cs::ClientAcceptsAndProcessesTheFirstRetryPacketForAConnectionAttempt"
         ]
       }
     },
@@ -28240,6 +28243,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0002.cs::ClientDiscardsSubsequentRetryPacketsAfterProcessingTheFirstRetryPacket"
         ]
       }
     },
@@ -28266,6 +28272,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0003.cs::RetryMetadataParserAcceptsRetryPacketsWithValidIntegrityTags",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0003.cs::RetryMetadataParserRejectsRetryPacketsWithTamperedIntegrityTags"
         ]
       }
     },
@@ -28292,6 +28302,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0004.cs::RetryMetadataParserRejectsRetryPacketsWithZeroLengthRetryTokens"
         ]
       }
     },
@@ -28318,6 +28331,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0005.cs::ClientIncludesTheRetryTokenWhenItReplaysInitialPackets"
         ]
       }
     },
@@ -28344,6 +28360,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0006.cs::ClientUsesTheRetrySourceConnectionIdAsTheNextInitialDestinationConnectionId"
         ]
       }
     },
