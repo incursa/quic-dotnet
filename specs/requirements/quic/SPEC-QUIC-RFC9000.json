@@ -35958,6 +35958,9 @@
         "upstream_refs": [
           "RFC 9000 §19.14 RFC9000-S19.14-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::TryOpenLocalStream_ReturnsStreamsBlockedWhenThePeerLimitIsReached"
         ]
       }
     },
@@ -36015,6 +36018,9 @@
         "upstream_refs": [
           "RFC 9000 §19.14 RFC9000-S19.14-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked"
         ]
       }
     },

@@ -20047,6 +20047,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.14 RFC9000-S19.14-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::TryOpenLocalStream_ReturnsStreamsBlockedWhenThePeerLimitIsReached
 
 ## REQ-QUIC-RFC9000-S19P14-0002 A STREAMS_BLOCKED frame of type 0x16 MUST be used to indicate reaching the bidirectional stre...
 A STREAMS_BLOCKED frame of type 0x16 MUST be used to indicate reaching the bidirectional stream limit, and a STREAMS_BLOCKED frame of type 0x17 is used to indicate reaching the unidirectional stream limit.
@@ -20079,6 +20081,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.14 RFC9000-S19.14-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked
 
 ## REQ-QUIC-RFC9000-S19P14-0004 The Type field MUST be encoded as a variable-length integer with value 0x16..0x17
 The Type field MUST be encoded as a variable-length integer with value 0x16..0x17.
