@@ -578,6 +578,8 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0001.cs::HandshakeConfirmedClientRuntimeCanDeriveSuccessorOneRttKeyUpdateMaterial
 
 ## REQ-QUIC-RFC9001-S6-0002 Identify packet protection keys with Key Phase
 The Key Phase bit MUST indicate which packet protection keys are used to protect the packet.
@@ -592,6 +594,8 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0002.cs::TryParseShortHeader_ReportsTheKeyPhaseBit
 
 ## REQ-QUIC-RFC9001-S6-0003 Initialize Key Phase to zero
 The Key Phase bit MUST initially be set to 0 for the first set of 1-RTT packets.
@@ -606,6 +610,8 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0003.cs::TryBuildProtectedApplicationDataPacket_DefaultsTheFirstOneRttPacketToKeyPhaseZero
 
 ## REQ-QUIC-RFC9001-S6-0004 Toggle Key Phase on each update
 The Key Phase bit MUST be toggled to signal each subsequent key update.

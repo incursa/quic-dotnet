@@ -1026,6 +1026,9 @@
         "upstream_refs": [
           "RFC 9001 §6 RFC9001-S6-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0001.cs::HandshakeConfirmedClientRuntimeCanDeriveSuccessorOneRttKeyUpdateMaterial"
         ]
       }
     },
@@ -1052,6 +1055,9 @@
         "upstream_refs": [
           "RFC 9001 §6 RFC9001-S6-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0002.cs::TryParseShortHeader_ReportsTheKeyPhaseBit"
         ]
       }
     },
@@ -1078,6 +1084,9 @@
         "upstream_refs": [
           "RFC 9001 §6 RFC9001-S6-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0003.cs::TryBuildProtectedApplicationDataPacket_DefaultsTheFirstOneRttPacketToKeyPhaseZero"
         ]
       }
     },
