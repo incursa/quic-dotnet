@@ -459,7 +459,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs::TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0008.cs::TryParseStreamIdentifier_UsesTheLeastSignificantBitToIdentifyTheInitiator"
         ]
       }
     },
@@ -486,6 +486,9 @@
         "upstream_refs": [
           "RFC 9000 §2.1 RFC9000-S2.1-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0009.cs::TryParseStreamIdentifier_RecognizesClientInitiatedEvenStreamIds"
         ]
       }
     },
@@ -514,7 +517,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamIdTests.cs::TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0010.cs::TryParseStreamIdentifier_RecognizesServerInitiatedOddStreamIds"
         ]
       }
     },

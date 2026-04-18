@@ -258,7 +258,7 @@ Trace:
   - RFC 9000 §2.1 RFC9000-S2.1-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicStreamIdTests.cs::TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0008.cs::TryParseStreamIdentifier_UsesTheLeastSignificantBitToIdentifyTheInitiator
 
 ## REQ-QUIC-RFC9000-S2P1-0009 Use even IDs for client-initiated streams
 Client-initiated streams MUST have even-numbered stream IDs with the least significant bit set to 0.
@@ -273,6 +273,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §2.1 RFC9000-S2.1-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0009.cs::TryParseStreamIdentifier_RecognizesClientInitiatedEvenStreamIds
 
 ## REQ-QUIC-RFC9000-S2P1-0010 Use odd IDs for server-initiated streams
 Server-initiated streams MUST have odd-numbered stream IDs with the least significant bit set to 1.
@@ -288,7 +290,7 @@ Trace:
   - RFC 9000 §2.1 RFC9000-S2.1-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicStreamIdTests.cs::TryParseStreamIdentifier_AcceptsTheMaximumRepresentableStreamId
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0010.cs::TryParseStreamIdentifier_RecognizesServerInitiatedOddStreamIds
 
 ## REQ-QUIC-RFC9000-S2P1-0011 Use the second low bit to distinguish stream direction
 The second least significant bit of a stream ID MUST distinguish bidirectional streams from unidirectional streams, with 0 indicating bidirectional and 1 indicating unidirectional.
@@ -11088,6 +11090,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §13.2.6 RFC9000-S13.2.6-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0003.cs::ZeroRttPacketsAreAcknowledgedInOneRttProtectedApplicationDataPackets
 
 ## REQ-QUIC-RFC9000-S13P2P6-0004 This can mean that the client is unable to use these acknowledgments if the server cryptographic handshake messages are delayed or lost
 This can mean that the client is unable to use these acknowledgments if the server cryptographic handshake messages are delayed or lost.
