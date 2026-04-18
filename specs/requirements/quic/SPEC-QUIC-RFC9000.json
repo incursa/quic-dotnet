@@ -35308,6 +35308,10 @@
         "upstream_refs": [
           "RFC 9000 §19.11 RFC9000-S19.11-B8-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0007.cs::TryApplyMaxStreamsFrame_IgnoresALowerLimitAfterAHigherLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0007.cs::TryApplyMaxStreamsFrame_LeavesAStaleLowerLimitUnchanged"
         ]
       }
     },
@@ -35334,6 +35338,11 @@
         "upstream_refs": [
           "RFC 9000 §19.11 RFC9000-S19.11-B8-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0007.cs::TryApplyMaxStreamsFrame_IgnoresALowerLimitAfterAHigherLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0007.cs::TryApplyMaxStreamsFrame_LeavesAStaleLowerLimitUnchanged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0008.cs::TryApplyMaxStreamsFrame_IgnoresAnEqualLimit"
         ]
       }
     },
@@ -35360,6 +35369,10 @@
         "upstream_refs": [
           "RFC 9000 §19.11 RFC9000-S19.11-B9-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0009.cs::TryOpenLocalStream_AllowsOpeningWithinThePeerLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0009.cs::TryOpenLocalStream_BlocksOpeningPastThePeerLimit"
         ]
       }
     },
@@ -35386,6 +35399,10 @@
         "upstream_refs": [
           "RFC 9000 §19.11 RFC9000-S19.11-B9-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0010.cs::TryReceiveStreamFrame_AllowsTheFirstPeerInitiatedStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0010.cs::TryReceiveStreamFrame_RejectsAPeerInitiatedStreamThatExceedsTheLimit"
         ]
       }
     },
@@ -35412,6 +35429,9 @@
         "upstream_refs": [
           "RFC 9000 §19.11 RFC9000-S19.11-B9-P5-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0011.cs::TryOpenLocalStream_ContinuesToHonorTheRememberedLimitAfterTheFirstStreamIsClosed"
         ]
       }
     },
@@ -35438,6 +35458,10 @@
         "upstream_refs": [
           "RFC 9000 §19.11 RFC9000-S19.11-B10-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0012.cs::TryPeekPeerStreamCapacityRelease_OffersMoreCreditAfterThePeerStreamCloses",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0012.cs::TryPeekPeerStreamCapacityRelease_ReturnsFalseWhileThePeerStreamIsStillOpen"
         ]
       }
     },

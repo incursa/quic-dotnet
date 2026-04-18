@@ -19674,6 +19674,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.11 RFC9000-S19.11-B8-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0007.cs::TryApplyMaxStreamsFrame_IgnoresALowerLimitAfterAHigherLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0007.cs::TryApplyMaxStreamsFrame_LeavesAStaleLowerLimitUnchanged
 
 ## REQ-QUIC-RFC9000-S19P11-0008 MAX_STREAMS frames that do not increase the stream limit MUST be ignored
 MAX_STREAMS frames that do not increase the stream limit MUST be ignored.
@@ -19688,6 +19691,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.11 RFC9000-S19.11-B8-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0007.cs::TryApplyMaxStreamsFrame_IgnoresALowerLimitAfterAHigherLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0007.cs::TryApplyMaxStreamsFrame_LeavesAStaleLowerLimitUnchanged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0008.cs::TryApplyMaxStreamsFrame_IgnoresAnEqualLimit
 
 ## REQ-QUIC-RFC9000-S19P11-0009 An endpoint MUST NOT open more streams than permitted by the current stream limit set by its...
 An endpoint MUST NOT open more streams than permitted by the current stream limit set by its peer.
@@ -19702,6 +19709,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.11 RFC9000-S19.11-B9-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0009.cs::TryOpenLocalStream_AllowsOpeningWithinThePeerLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0009.cs::TryOpenLocalStream_BlocksOpeningPastThePeerLimit
 
 ## REQ-QUIC-RFC9000-S19P11-0010 An endpoint MUST terminate a connection with an error of type STREAM_LIMIT_ERROR if a peer op...
 An endpoint MUST terminate a connection with an error of type STREAM_LIMIT_ERROR if a peer opens more streams than was permitted.
@@ -19716,6 +19726,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.11 RFC9000-S19.11-B9-P5-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0010.cs::TryReceiveStreamFrame_AllowsTheFirstPeerInitiatedStream
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0010.cs::TryReceiveStreamFrame_RejectsAPeerInitiatedStreamThatExceedsTheLimit
 
 ## REQ-QUIC-RFC9000-S19P11-0011 This MUST include violations of remembered limits in Early Data; see Section 7.4.1
 This MUST include violations of remembered limits in Early Data; see Section 7.4.1.
@@ -19730,6 +19743,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.11 RFC9000-S19.11-B9-P5-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0011.cs::TryOpenLocalStream_ContinuesToHonorTheRememberedLimitAfterTheFirstStreamIsClosed
 
 ## REQ-QUIC-RFC9000-S19P11-0012 Note that these frames (and the corresponding transport parameters) MUST NOT describe the num...
 Note that these frames (and the corresponding transport parameters) MUST NOT describe the number of streams that can be opened concurrently.
@@ -19744,6 +19759,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.11 RFC9000-S19.11-B10-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.11
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0012.cs::TryPeekPeerStreamCapacityRelease_OffersMoreCreditAfterThePeerStreamCloses
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P11-0012.cs::TryPeekPeerStreamCapacityRelease_ReturnsFalseWhileThePeerStreamIsStillOpen
 
 ## REQ-QUIC-RFC9000-S19P11-0013 The limit MUST include streams that have been closed as well as those that are open
 The limit MUST include streams that have been closed as well as those that are open.
