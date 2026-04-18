@@ -3,18 +3,21 @@ using BenchmarkDotNet.Attributes;
 namespace Incursa.Quic.Benchmarks;
 
 /// <summary>
-/// Benchmarks the CRYPTO frame parse and format hot path, plus STREAM frame formatting.
+/// Benchmarks the CRYPTO, ACK, and STREAM frame parse and format hot paths.
 /// </summary>
 [MemoryDiagnoser]
 public class QuicFrameCodecBenchmarks
 {
+    private byte[] ackFrame = [];
+    private QuicAckFrame ackTemplate = new();
     private byte[] cryptoFrame = [];
     private byte[] cryptoData = [];
+    private byte[] largeStreamData = [];
     private byte[] streamData = [];
     private byte[] destination = [];
 
     /// <summary>
-    /// Prepares representative CRYPTO frame bytes and output buffers.
+    /// Prepares representative ACK, CRYPTO, and STREAM payloads plus output buffers.
     /// </summary>
     [GlobalSetup]
     public void GlobalSetup()
@@ -22,7 +25,58 @@ public class QuicFrameCodecBenchmarks
         cryptoData = [0xAA, 0xBB, 0xCC, 0xDD];
         cryptoFrame = QuicBenchmarkData.BuildCryptoFrame(0x1122_3344, cryptoData);
         streamData = [0x10, 0x11, 0x12, 0x13];
-        destination = new byte[64];
+        largeStreamData = new byte[512];
+        for (int i = 0; i < largeStreamData.Length; i++)
+        {
+            largeStreamData[i] = (byte)i;
+        }
+
+        ackTemplate = new QuicAckFrame
+        {
+            FrameType = 0x02,
+            LargestAcknowledged = 0x1234,
+            AckDelay = 0x20,
+            FirstAckRange = 3,
+            AdditionalRanges =
+            [
+                new QuicAckRange(1, 2, 0x122C, 0x122E),
+                new QuicAckRange(0, 0, 0x122A, 0x122A),
+            ],
+        };
+
+        byte[] ackDestination = new byte[64];
+        if (!QuicFrameCodec.TryFormatAckFrame(ackTemplate, ackDestination, out int bytesWritten))
+        {
+            throw new InvalidOperationException("Failed to prepare an ACK frame benchmark payload.");
+        }
+
+        ackFrame = ackDestination[..bytesWritten].ToArray();
+        destination = new byte[2048];
+    }
+
+    /// <summary>
+    /// Measures ACK frame parsing.
+    /// </summary>
+    [Benchmark]
+    public int ParseAckFrame()
+    {
+        return QuicFrameCodec.TryParseAckFrame(ackFrame, out QuicAckFrame frame, out int bytesConsumed)
+            ? bytesConsumed
+                ^ unchecked((int)frame.LargestAcknowledged)
+                ^ (int)frame.AckDelay
+                ^ frame.AdditionalRanges.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures ACK frame formatting.
+    /// </summary>
+    [Benchmark]
+    public int FormatAckFrame()
+    {
+        return QuicFrameCodec.TryFormatAckFrame(ackTemplate, destination, out int bytesWritten)
+            ? bytesWritten
+            : -1;
     }
 
     /// <summary>
@@ -44,6 +98,23 @@ public class QuicFrameCodecBenchmarks
     {
         QuicCryptoFrame frame = new(0x1122_3344, cryptoData);
         return QuicFrameCodec.TryFormatCryptoFrame(frame, destination, out int bytesWritten)
+            ? bytesWritten
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures STREAM frame formatting with a larger payload.
+    /// </summary>
+    [Benchmark]
+    public int FormatLargeStreamFrame()
+    {
+        return QuicFrameCodec.TryFormatStreamFrame(
+            0x0F,
+            0x1234,
+            0x20,
+            largeStreamData,
+            destination,
+            out int bytesWritten)
             ? bytesWritten
             : -1;
     }
