@@ -131,6 +131,100 @@ public sealed class REQ_QUIC_INT_0013
         AssertPreservedFailureEvidence(fixture.ArtifactsRoot);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task LocalHelperCapturesExpectedArtifactsForSameSlotBothRoleRuns()
+    {
+        using InteropRunnerScriptFixture fixture = new(quicGoRole: "both");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "both",
+            "-ImplementationSlot",
+            "quic-go");
+
+        AssertSuccessfulHelperRunAsync(
+            fixture.ArtifactsRoot,
+            result,
+            expectedLocalRole: "both",
+            expectedLocalImplementationSlot: "quic-go",
+            expectedPeerImplementationSlots: "quic-go,msquic",
+            expectedRunnerServerImplementations: "quic-go",
+            expectedRunnerClientImplementations: "quic-go",
+            expectedReplacement: "quic-go=incursa-quic-interop-harness:local");
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task LocalHelperCapturesExpectedArtifactsForSplitClientRoleRunsAgainstServerPeers()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "msquic");
+
+        AssertSuccessfulHelperRunAsync(
+            fixture.ArtifactsRoot,
+            result,
+            expectedLocalRole: "client",
+            expectedLocalImplementationSlot: "chrome",
+            expectedPeerImplementationSlots: "msquic",
+            expectedRunnerServerImplementations: "msquic",
+            expectedRunnerClientImplementations: "chrome",
+            expectedReplacement: "chrome=incursa-quic-interop-harness:local");
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task LocalHelperCapturesExpectedArtifactsForSplitServerRoleRunsAgainstClientPeers()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "nginx",
+            "-PeerImplementationSlots",
+            "quic-go");
+
+        AssertSuccessfulHelperRunAsync(
+            fixture.ArtifactsRoot,
+            result,
+            expectedLocalRole: "server",
+            expectedLocalImplementationSlot: "nginx",
+            expectedPeerImplementationSlots: "quic-go",
+            expectedRunnerServerImplementations: "nginx",
+            expectedRunnerClientImplementations: "quic-go",
+            expectedReplacement: "nginx=incursa-quic-interop-harness:local");
+    }
+
     [Theory]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -417,6 +511,149 @@ public sealed class REQ_QUIC_INT_0013
             File.ReadAllText(Path.Combine(runRoot, "runner-report.md")),
             StringComparison.OrdinalIgnoreCase);
         Assert.Empty(Directory.GetFiles(Path.Combine(runRoot, "runner-logs"), "*", SearchOption.AllDirectories));
+    }
+
+    private static void AssertSuccessfulHelperRunAsync(
+        string artifactsRoot,
+        ScriptRunResult result,
+        string expectedLocalRole,
+        string expectedLocalImplementationSlot,
+        string expectedPeerImplementationSlots,
+        string expectedRunnerServerImplementations,
+        string expectedRunnerClientImplementations,
+        string expectedReplacement,
+        string expectedTestCases = "handshake,retry,transfer")
+    {
+        Assert.True(
+            result.ExitCode == 0,
+            $"Helper exit code was {result.ExitCode}.\nException message:\n{result.ExceptionMessage}\nSTDOUT:\n{result.Stdout}\nSTDERR:\n{result.Stderr}");
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+
+        string[] runRoots = Directory.GetDirectories(artifactsRoot);
+        Assert.Single(runRoots);
+
+        string runRoot = runRoots[0];
+        string invocationPath = Path.Combine(runRoot, "invocation.txt");
+        string artifactTreePath = Path.Combine(runRoot, "artifact-tree.txt");
+        string dockerBuildLogPath = Path.Combine(runRoot, "docker-build.log");
+        string runnerReportJsonPath = Path.Combine(runRoot, "runner-report.json");
+        string runnerReportMarkdownPath = Path.Combine(runRoot, "runner-report.md");
+        string runnerStdErrPath = Path.Combine(runRoot, "runner.stderr.log");
+        string runnerLogDir = Path.Combine(runRoot, "runner-logs");
+
+        Assert.True(File.Exists(invocationPath));
+        Assert.True(File.Exists(artifactTreePath));
+        Assert.True(File.Exists(dockerBuildLogPath));
+        Assert.True(File.Exists(runnerReportJsonPath));
+        Assert.True(File.Exists(runnerReportMarkdownPath));
+        Assert.True(File.Exists(runnerStdErrPath));
+        Assert.True(Directory.Exists(runnerLogDir));
+        Assert.NotEmpty(Directory.GetFiles(runnerLogDir, "*", SearchOption.AllDirectories));
+
+        string invocationText = File.ReadAllText(invocationPath);
+        string artifactTreeText = File.ReadAllText(artifactTreePath);
+        string dockerBuildLogText = File.ReadAllText(dockerBuildLogPath);
+        string runnerReportJsonText = File.ReadAllText(runnerReportJsonPath);
+        string runnerReportMarkdownText = File.ReadAllText(runnerReportMarkdownPath);
+
+        Assert.Equal(expectedLocalRole, GetInvocationFieldValue(invocationText, "LocalRole"));
+        Assert.Equal(expectedLocalImplementationSlot, GetInvocationFieldValue(invocationText, "LocalImplementationSlot"));
+        Assert.Equal(expectedPeerImplementationSlots, GetInvocationFieldValue(invocationText, "PeerImplementationSlots"));
+
+        string[] expectedRunnerArgs = CreateExpectedRunnerArgs(
+            expectedRunnerServerImplementations,
+            expectedRunnerClientImplementations,
+            expectedReplacement,
+            runnerLogDir,
+            runnerReportJsonPath,
+            expectedTestCases);
+
+        Assert.Equal(expectedRunnerArgs, GetInvocationRunnerArgs(invocationText));
+        Assert.Contains("\"mode\":\"success\"", runnerReportJsonText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("fake-runner sentinel success", runnerReportMarkdownText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("fake docker build", dockerBuildLogText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("invocation.txt", artifactTreeText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("docker-build.log", artifactTreeText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("runner-report.json", artifactTreeText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("runner-report.md", artifactTreeText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("runner.stderr.log", artifactTreeText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("runner-logs", artifactTreeText, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetInvocationFieldValue(string invocationText, string fieldName)
+    {
+        string prefix = $"{fieldName}:";
+        foreach (string line in GetLines(invocationText))
+        {
+            if (line.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                return line.Substring(prefix.Length).Trim();
+            }
+        }
+
+        throw new InvalidOperationException($"Invocation summary did not contain a '{fieldName}' field.");
+    }
+
+    private static string[] GetInvocationRunnerArgs(string invocationText)
+    {
+        string[] lines = GetLines(invocationText);
+        int runnerArgsIndex = Array.FindIndex(lines, line => string.Equals(line, "RunnerArgs:", StringComparison.Ordinal));
+        if (runnerArgsIndex < 0)
+        {
+            throw new InvalidOperationException("Invocation summary did not contain a RunnerArgs section.");
+        }
+
+        List<string> runnerArgs = new();
+        for (int index = runnerArgsIndex + 1; index < lines.Length; index++)
+        {
+            string line = lines[index];
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                break;
+            }
+
+            if (!line.StartsWith("  ", StringComparison.Ordinal))
+            {
+                break;
+            }
+
+            runnerArgs.Add(line.Trim());
+        }
+
+        return runnerArgs.ToArray();
+    }
+
+    private static string[] CreateExpectedRunnerArgs(
+        string expectedRunnerServerImplementations,
+        string expectedRunnerClientImplementations,
+        string expectedReplacement,
+        string expectedRunnerLogDir,
+        string expectedRunnerJsonPath,
+        string expectedTestCases)
+    {
+        return
+        [
+            "-p",
+            "quic",
+            "-s",
+            expectedRunnerServerImplementations,
+            "-c",
+            expectedRunnerClientImplementations,
+            "-t",
+            expectedTestCases,
+            "-r",
+            expectedReplacement,
+            "-l",
+            expectedRunnerLogDir,
+            "-j",
+            expectedRunnerJsonPath,
+            "-m",
+        ];
+    }
+
+    private static string[] GetLines(string text)
+    {
+        return text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
     }
 
     private static void AssertPreservedFailureEvidence(string artifactsRoot)
