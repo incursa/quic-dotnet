@@ -20,7 +20,7 @@ Unsupported testcases return `127`.
 
 ```bash
 dotnet build Incursa.Quic.slnx -c Release
-docker build -f src/Incursa.Quic.InteropHarness/Dockerfile -t incursa-quic-interop-harness .
+pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1
 ```
 
 ## Local Interop Runner Loop
