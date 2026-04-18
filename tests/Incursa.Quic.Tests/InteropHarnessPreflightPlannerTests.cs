@@ -2,6 +2,7 @@ using System.Net;
 
 namespace Incursa.Quic.Tests;
 
+[Collection(nameof(InteropHarnessPreflightPlannerTestsCollection))]
 public sealed class InteropHarnessPreflightPlannerTests
 {
     [Theory]
@@ -49,6 +50,27 @@ public sealed class InteropHarnessPreflightPlannerTests
         Assert.True(planner.TryGetDispatchRequestUri(out requestUri, out errorMessage, allowEmptyRequests: true));
         Assert.Null(requestUri);
         Assert.Null(errorMessage);
+    }
+
+    [Fact]
+    public void TryGetTransferPathsReportsAnEmptyMountedSourceRootWhenRequestsAreEmpty()
+    {
+        WithTemporarilyEmptyMountedSourceRoot(() =>
+        {
+            Assert.False(InteropHarnessPreflightPlanner.TryGetTransferPaths(
+                null,
+                out string? relativePath,
+                out string? sourcePath,
+                out string? destinationPath,
+                out string? errorMessage));
+
+            Assert.Null(relativePath);
+            Assert.Null(sourcePath);
+            Assert.Null(destinationPath);
+            Assert.NotNull(errorMessage);
+            Assert.Contains("empty REQUESTS list", errorMessage, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("contains no files", errorMessage, StringComparison.OrdinalIgnoreCase);
+        });
     }
 
     [Fact]
@@ -142,6 +164,78 @@ public sealed class InteropHarnessPreflightPlannerTests
     }
 
     [Fact]
+    public void TryGetTransferPathsRejectsRootPaths()
+    {
+        Uri requestUri = new("https://localhost:443/");
+
+        Assert.False(InteropHarnessPreflightPlanner.TryGetTransferPaths(
+            requestUri,
+            out string? relativePath,
+            out string? sourcePath,
+            out string? destinationPath,
+            out string? errorMessage));
+        Assert.Null(relativePath);
+        Assert.Null(sourcePath);
+        Assert.Null(destinationPath);
+        Assert.NotNull(errorMessage);
+        Assert.Contains("non-root path", errorMessage, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void TryGetTransferPathsRejectsInvalidTransferPathSegments()
+    {
+        Uri requestUri = new("https://localhost:443/bad%00segment/payload.txt");
+
+        Assert.False(InteropHarnessPreflightPlanner.TryGetTransferPaths(
+            requestUri,
+            out string? relativePath,
+            out string? sourcePath,
+            out string? destinationPath,
+            out string? errorMessage));
+        Assert.Null(relativePath);
+        Assert.Null(sourcePath);
+        Assert.Null(destinationPath);
+        Assert.NotNull(errorMessage);
+        Assert.Contains("invalid transfer path segment", errorMessage, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void TryGetTransferPathsKeepsDecodedSlashInsideTheMountRoot()
+    {
+        Uri requestUri = new("https://localhost:443/encoded%2Fchild/payload.txt");
+        string expectedRelativePath = Path.Combine("encoded", "child", "payload.txt");
+
+        Assert.True(InteropHarnessPreflightPlanner.TryGetTransferPaths(
+            requestUri,
+            out string? relativePath,
+            out string? sourcePath,
+            out string? destinationPath,
+            out string? errorMessage));
+        Assert.Equal(expectedRelativePath, relativePath);
+        Assert.Equal(Path.GetFullPath(Path.Combine(InteropHarnessEnvironment.WwwDirectory, expectedRelativePath)), sourcePath);
+        Assert.Equal(Path.GetFullPath(Path.Combine(InteropHarnessEnvironment.DownloadsDirectory, expectedRelativePath)), destinationPath);
+        Assert.Null(errorMessage);
+    }
+
+    [Fact]
+    public void TryGetTransferPathsKeepsDoubleEncodedTraversalInsideTheMountRoot()
+    {
+        Uri requestUri = new("https://localhost:443/%252e%252e/payload.txt");
+        string expectedRelativePath = Path.Combine("%2e%2e", "payload.txt");
+
+        Assert.True(InteropHarnessPreflightPlanner.TryGetTransferPaths(
+            requestUri,
+            out string? relativePath,
+            out string? sourcePath,
+            out string? destinationPath,
+            out string? errorMessage));
+        Assert.Equal(expectedRelativePath, relativePath);
+        Assert.Equal(Path.GetFullPath(Path.Combine(InteropHarnessEnvironment.WwwDirectory, expectedRelativePath)), sourcePath);
+        Assert.Equal(Path.GetFullPath(Path.Combine(InteropHarnessEnvironment.DownloadsDirectory, expectedRelativePath)), destinationPath);
+        Assert.Null(errorMessage);
+    }
+
+    [Fact]
     public void TryGetTransferPathsRejectsEscapingRequestPaths()
     {
         Uri requestUri = new("https://localhost:443/foo/..%2fescape.txt");
@@ -181,6 +275,17 @@ public sealed class InteropHarnessPreflightPlannerTests
         Assert.Equal(9443, ipv6ListenEndPoint.Port);
     }
 
+    [Fact]
+    public async Task ResolveHandshakeListenEndPointAsyncUsesTheDefaultPortWhenOmitted()
+    {
+        Uri requestUri = new("https://127.0.0.1/dispatch");
+
+        IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(requestUri);
+
+        Assert.Equal(IPAddress.Loopback, listenEndPoint.Address);
+        Assert.Equal(443, listenEndPoint.Port);
+    }
+
     private static InteropHarnessPreflightPlanner CreatePlanner(
         string role,
         string testcase,
@@ -194,6 +299,39 @@ public sealed class InteropHarnessPreflightPlannerTests
         Assert.Null(errorMessage);
 
         return new InteropHarnessPreflightPlanner(settings!, TextWriter.Null);
+    }
+
+    private static void WithTemporarilyEmptyMountedSourceRoot(Action action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+        Directory.CreateDirectory(sourceRoot);
+
+        using TempDirectoryFixture backup = new("incursa-quic-preflight-planner-empty-root");
+        List<(string OriginalPath, string BackupPath)> movedFiles = [];
+
+        try
+        {
+            foreach (string sourceFilePath in Directory.EnumerateFiles(sourceRoot, "*", SearchOption.AllDirectories).ToArray())
+            {
+                string relativePath = Path.GetRelativePath(sourceRoot, sourceFilePath);
+                string backupPath = Path.Combine(backup.RootDirectory, relativePath);
+                Directory.CreateDirectory(Path.GetDirectoryName(backupPath)!);
+                File.Move(sourceFilePath, backupPath, overwrite: true);
+                movedFiles.Add((sourceFilePath, backupPath));
+            }
+
+            action();
+        }
+        finally
+        {
+            foreach ((string originalPath, string backupPath) in movedFiles)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(originalPath)!);
+                File.Move(backupPath, originalPath, overwrite: true);
+            }
+        }
     }
 
     private static void TryDeleteDirectory(string path)
@@ -225,4 +363,9 @@ public sealed class InteropHarnessPreflightPlannerTests
             // Best-effort cleanup only.
         }
     }
+}
+
+[CollectionDefinition(nameof(InteropHarnessPreflightPlannerTestsCollection), DisableParallelization = true)]
+public sealed class InteropHarnessPreflightPlannerTestsCollection
+{
 }
