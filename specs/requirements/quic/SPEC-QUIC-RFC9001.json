@@ -27,13 +27,13 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9001-0001"
+          "ARC-QUIC-RFC9001-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9001-0001"
+          "WI-QUIC-RFC9001-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9001-0001"
+          "VER-QUIC-RFC9001-0002"
         ],
         "upstream_refs": [
           "RFC 9001 §2 RFC9001-S2-B2-P1-S1",
@@ -59,13 +59,13 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9001-0001"
+          "ARC-QUIC-RFC9001-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9001-0001"
+          "WI-QUIC-RFC9001-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9001-0001"
+          "VER-QUIC-RFC9001-0002"
         ],
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B2-P1-S1",
