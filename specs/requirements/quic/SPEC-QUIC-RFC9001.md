@@ -19,11 +19,11 @@ Uppercase BCP 14 keywords in this document MUST be interpreted as described in R
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9001-0002
+  - ARC-QUIC-RFC9001-0001
 - Implemented By:
-  - WI-QUIC-RFC9001-0002
+  - WI-QUIC-RFC9001-0001
 - Verified By:
-  - VER-QUIC-RFC9001-0002
+  - VER-QUIC-RFC9001-0001
 - Source Refs:
   - RFC 9001 §2 RFC9001-S2-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-2
@@ -38,11 +38,11 @@ QUIC MUST assume responsibility for the confidentiality and integrity protection
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9001-0002
+  - ARC-QUIC-RFC9001-0001
 - Implemented By:
-  - WI-QUIC-RFC9001-0002
+  - WI-QUIC-RFC9001-0001
 - Verified By:
-  - VER-QUIC-RFC9001-0002
+  - VER-QUIC-RFC9001-0001
 - Source Refs:
   - RFC 9001 §3 RFC9001-S3-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-3
