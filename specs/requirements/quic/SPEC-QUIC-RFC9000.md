@@ -20445,6 +20445,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B12-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0015.cs::TryAcceptNewConnectionId_RejectsWhenZeroLengthDestinationConnectionIdIsRequired
 
 ## REQ-QUIC-RFC9000-S19P15-0016 Receipt of the same frame multiple times MUST NOT be treated as a connection error
 Receipt of the same frame multiple times MUST NOT be treated as a connection error.
@@ -20459,6 +20461,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B13-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0016.cs::TryAcceptNewConnectionId_AllowsAnExactDuplicateFrame
 
 ## REQ-QUIC-RFC9000-S19P15-0017 A receiver MAY use the sequence number supplied in the NEW_CONNECTION_ID frame to handle rece...
 A receiver MAY use the sequence number supplied in the NEW_CONNECTION_ID frame to handle receiving the same NEW_CONNECTION_ID frame multiple times.
@@ -20473,6 +20477,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B13-P5-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0017.cs::TryHandleApplicationPacketReceived_UsesSequenceNumbersToKeepTheLatestNewConnectionId
 
 ## REQ-QUIC-RFC9000-S19P15-0018 If an endpoint receives a NEW_CONNECTION_ID frame that repeats a previously issued connection...
 If an endpoint receives a NEW_CONNECTION_ID frame that repeats a previously issued connection ID with a different Stateless Reset Token field value or a different Sequence Number field value, or if a sequence number is used for different connection IDs, the endpoint MAY treat that receipt as a connection error of type PROTOCOL_VIOLATION.
@@ -20487,6 +20493,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B14-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0018.cs::TryAcceptNewConnectionId_RejectsTheSameSequenceNumberForDifferentConnectionIds
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0018.cs::TryAcceptNewConnectionId_RejectsTheSameConnectionIdWithADifferentSequenceNumberOrToken
 
 ## REQ-QUIC-RFC9000-S19P15-0019 The value in the Retire Prior To field MUST be less than or equal to the value in the Sequenc...
 The value in the Retire Prior To field MUST be less than or equal to the value in the Sequence Number field.

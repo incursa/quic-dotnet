@@ -36653,6 +36653,9 @@
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B12-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0015.cs::TryAcceptNewConnectionId_RejectsWhenZeroLengthDestinationConnectionIdIsRequired"
         ]
       }
     },
@@ -36679,6 +36682,9 @@
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B13-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0016.cs::TryAcceptNewConnectionId_AllowsAnExactDuplicateFrame"
         ]
       }
     },
@@ -36705,6 +36711,9 @@
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B13-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0017.cs::TryHandleApplicationPacketReceived_UsesSequenceNumbersToKeepTheLatestNewConnectionId"
         ]
       }
     },
@@ -36731,6 +36740,10 @@
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B14-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0018.cs::TryAcceptNewConnectionId_RejectsTheSameSequenceNumberForDifferentConnectionIds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0018.cs::TryAcceptNewConnectionId_RejectsTheSameConnectionIdWithADifferentSequenceNumberOrToken"
         ]
       }
     },
