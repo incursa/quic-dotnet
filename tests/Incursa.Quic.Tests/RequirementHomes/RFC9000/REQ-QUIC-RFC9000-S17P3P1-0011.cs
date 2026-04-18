@@ -30,7 +30,11 @@ public sealed class REQ_QUIC_RFC9000_S17P3P1_0011
         Assert.True(QuicPacketParser.TryParseShortHeader(openedPacket, out QuicShortHeaderPacket header));
         Assert.Equal(QuicHeaderForm.Short, header.HeaderForm);
         Assert.True(header.FixedBit);
+        Assert.False(header.SpinBit);
+        Assert.Equal((byte)0, header.ReservedBits);
+        Assert.False(header.KeyPhase);
         Assert.Equal(4, header.PacketNumberLengthBits + 1);
+        Assert.Equal((byte)3, header.PacketNumberLengthBits);
         Assert.True(openedPacket.AsSpan(1, destinationConnectionId.Length).SequenceEqual(destinationConnectionId));
         Assert.Equal(1 + destinationConnectionId.Length + 4, payloadOffset);
         Assert.True(payloadLength >= payload.Length);
