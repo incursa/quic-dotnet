@@ -263,6 +263,64 @@ function Get-SupervisorPollAction {
     }
 }
 
+function Get-SupervisorStateSummary {
+    param(
+        [Parameter(Mandatory = $true)]$StateObject
+    )
+
+    $completedLaneIds = @(Get-NormalizedStringList -Items $StateObject.completed_lane_ids)
+    $pendingReconciliationLaneIds = @(Get-NormalizedStringList -Items $StateObject.pending_reconciliation_lane_ids)
+
+    $activeLaneId = ""
+    $activeLaneBranch = ""
+    $activeLaneDetails = New-Object System.Collections.Generic.List[string]
+    if ($null -ne $StateObject.active_lane) {
+        if ($StateObject.active_lane.PSObject.Properties.Name -contains "lane_id") {
+            $activeLaneId = [string]$StateObject.active_lane.lane_id
+        }
+
+        if ($StateObject.active_lane.PSObject.Properties.Name -contains "branch_name") {
+            $activeLaneBranch = [string]$StateObject.active_lane.branch_name
+        }
+
+        if ($StateObject.active_lane.PSObject.Properties.Name -contains "merged" -and [bool]$StateObject.active_lane.merged) {
+            [void]$activeLaneDetails.Add("merged")
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($activeLaneBranch)) {
+            [void]$activeLaneDetails.Add("branch=$activeLaneBranch")
+        }
+    }
+
+    $activeLaneDisplay = if ([string]::IsNullOrWhiteSpace($activeLaneId)) {
+        "(none)"
+    }
+    elseif ($activeLaneDetails.Count -gt 0) {
+        "$activeLaneId (" + ($activeLaneDetails -join "; ") + ")"
+    }
+    else {
+        $activeLaneId
+    }
+
+    $pendingReconciliationDisplay = if ($pendingReconciliationLaneIds.Count -eq 0) {
+        "(none)"
+    }
+    elseif ($pendingReconciliationLaneIds.Count -eq 1) {
+        "1 lane: $($pendingReconciliationLaneIds[0])"
+    }
+    else {
+        "$($pendingReconciliationLaneIds.Count) lanes: " + ($pendingReconciliationLaneIds -join ", ")
+    }
+
+    return [pscustomobject]@{
+        ActiveLaneId = $activeLaneId
+        ActiveLaneDisplay = $activeLaneDisplay
+        PendingReconciliationLaneIds = @($pendingReconciliationLaneIds)
+        PendingReconciliationDisplay = $pendingReconciliationDisplay
+        CompletedLaneCount = $completedLaneIds.Count
+    }
+}
+
 function Assert-SupervisorCondition {
     param(
         [Parameter(Mandatory = $true)][bool]$Condition,
@@ -332,6 +390,23 @@ function Invoke-SupervisorSmokeValidation {
         Where-Object { $_.lane_id -ne "trace-metadata-reconciliation" } |
         ForEach-Object { [string]$_.lane_id }
     )
+    $activeLaneSummary = Get-SupervisorStateSummary -StateObject ([pscustomobject]@{
+        completed_lane_ids = @($completedStaticLaneIds)
+        pending_reconciliation_lane_ids = @()
+        active_lane = [pscustomobject]@{
+            lane_id = "trace-metadata-reconciliation"
+            branch_name = "codex/trace-metadata-reconciliation-20260416-000000"
+        }
+    })
+    Assert-SupervisorCondition -Condition ($activeLaneSummary.ActiveLaneDisplay -eq "trace-metadata-reconciliation (branch=codex/trace-metadata-reconciliation-20260416-000000)" -and $activeLaneSummary.PendingReconciliationDisplay -eq "(none)") -Message "Expected an active lane summary to name the lane and show empty pending reconciliation."
+
+    $pendingReconciliationSummary = Get-SupervisorStateSummary -StateObject ([pscustomobject]@{
+        completed_lane_ids = @($completedStaticLaneIds)
+        pending_reconciliation_lane_ids = @("trace-metadata-reconciliation", "backlog-rfc9000-s5p1p1-b01")
+        active_lane = $null
+    })
+    Assert-SupervisorCondition -Condition ($pendingReconciliationSummary.ActiveLaneDisplay -eq "(none)" -and $pendingReconciliationSummary.PendingReconciliationDisplay -eq "2 lanes: trace-metadata-reconciliation, backlog-rfc9000-s5p1p1-b01") -Message "Expected pending reconciliation lanes to be summarized explicitly."
+
     $mockCatalog = New-LaneCatalog `
         -RepoRoot "C:\repo" `
         -TargetBranch "main" `
@@ -368,11 +443,9 @@ function Invoke-SupervisorSmokeValidation {
     Assert-SupervisorCondition -Condition ($mockCatalog.recommended_lane_id -eq "backlog-rfc9000-s5p1p1-b01") -Message "Expected backlog synthesis to recommend a bounded lane when the static catalog is exhausted but uncovered backlog remains."
 
     Write-Host "Supervisor smoke validation passed." -ForegroundColor Green
-    Write-Host "  Empty queue sleeps and retries before exit."
-    Write-Host "  Active lanes resume and reset idle tracking."
-    Write-Host "  Post-merge cleanup can hand off to the next eligible lane."
-    Write-Host "  Idle limits stop the loop cleanly."
-    Write-Host "  Exhausted static catalogs synthesize the next bounded backlog lane."
+    Write-Host "  Active lane summary: $($activeLaneSummary.ActiveLaneDisplay)"
+    Write-Host "  Pending reconciliation summary: $($pendingReconciliationSummary.PendingReconciliationDisplay)"
+    Write-Host "  Decision summary: empty queue -> $($emptyQueueAction.Action); active lane -> $($resumeAction.Action); follow-on lane -> $($followOnRunAction.LaneId); idle limit -> $($idleLimitStopAction.Action); backlog -> $($mockCatalog.recommended_lane_id)"
 }
 
 function Get-ExceptionDetail {
@@ -3324,6 +3397,14 @@ try {
                 $shouldStopSupervisor = $false
 
                 $state = Get-OrchestrationState -StatePath $statePath
+                $stateSummary = Get-SupervisorStateSummary -StateObject $state
+                Write-Host "Supervisor state:" -ForegroundColor Green
+                Write-Host "  Active lane: $($stateSummary.ActiveLaneDisplay)" -ForegroundColor Gray
+                Write-Host "  Pending reconciliation: $($stateSummary.PendingReconciliationDisplay)" -ForegroundColor Gray
+                if ($stateSummary.CompletedLaneCount -gt 0) {
+                    Write-Host "  Completed lanes: $($stateSummary.CompletedLaneCount)" -ForegroundColor Gray
+                }
+
                 if ($null -ne $state.active_lane) {
                     $pollAction = Get-SupervisorPollAction `
                         -HasActiveLane:$true `
@@ -3333,7 +3414,7 @@ try {
                         -Now (Get-Date) `
                         -Settings $supervisorSettings
 
-                    Write-Host $pollAction.Reason -ForegroundColor Gray
+                    Write-Host "Supervisor resume: $($pollAction.Reason)" -ForegroundColor Gray
                     & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode resume -RepoRoot $resolvedRepoRoot -RunnerScriptPath $resolvedRunnerScriptPath -MissionPromptFile $resolvedMissionPromptFile -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -CodexCommand $CodexCommand -Sandbox $Sandbox -PlannerModel $PlannerModel -PlannerReasoningEffort $PlannerReasoningEffort -WorkerModel $WorkerModel -WorkerReasoningEffort $WorkerReasoningEffort -WorkerMaxIterations $WorkerMaxIterations -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn -AutoMerge:$AutoMerge -CleanupAfterMerge:$CleanupAfterMerge -Force:$Force
                     if ($LASTEXITCODE -ne 0) {
                         throw "Supervisor resume step failed."
@@ -3354,6 +3435,10 @@ try {
                         -WorkerModel $WorkerModel `
                         -WorkerReasoningEffort $WorkerReasoningEffort `
                         -CatalogPath $catalogPath
+
+                    if (-not [string]::IsNullOrWhiteSpace([string]$catalog.recommended_lane_id)) {
+                        Write-Host "  Recommended lane: $($catalog.recommended_lane_id)" -ForegroundColor Gray
+                    }
 
                     $pollAction = Get-SupervisorPollAction `
                         -HasActiveLane:$false `
@@ -3377,11 +3462,11 @@ try {
                         "sleep" {
                             $idleCycles = $pollAction.IdleCycles
                             $idleStartedAt = $pollAction.IdleStartedAt
-                            Write-Host $pollAction.Reason -ForegroundColor Yellow
+                            Write-Host "Supervisor idle: $($pollAction.Reason)" -ForegroundColor Yellow
                             Start-Sleep -Seconds $supervisorSettings.PollIntervalSeconds
                         }
                         "stop_idle" {
-                            Write-Host $pollAction.Reason -ForegroundColor Yellow
+                            Write-Host "Supervisor idle: $($pollAction.Reason)" -ForegroundColor Yellow
                             $shouldStopSupervisor = $true
                         }
                         default {

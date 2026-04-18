@@ -90,6 +90,7 @@ Use `-Mode supervise` when you want a bounded watch loop. It now:
 - resumes any recorded active lane first
 - merges and cleans up finished lanes through the existing `resume`/`merge`/`cleanup` guardrails
 - sleeps and re-plans when the queue is empty instead of exiting on the first empty poll
+- prints the current active lane, pending reconciliation lanes, and completed lane count before each supervise decision
 - stops only when work resumes, an idle limit is exceeded, an overall cycle limit is reached, or a real guardrail/error trips
 
 The default supervise settings are conservative (`300` second poll interval, `12` empty polls allowed). Use `-Overnight` to apply a longer unattended preset without removing the safety limits:
@@ -109,4 +110,4 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-QuicInteropAutopilo
   -SupervisorMaxCycles 80
 ```
 
-Use `-Mode run` for a single bounded lane cycle, `-Mode resume` to continue or reconcile the current active lane, and `-Mode plan` to inspect the next eligible lane without starting Codex. `-Mode smoke` performs a local supervisor decision-logic check without starting a worker lane.
+Use `-Mode run` for a single bounded lane cycle, `-Mode resume` to continue or reconcile the current active lane, and `-Mode plan` to inspect the next eligible lane without starting Codex. `-Mode smoke` performs a local supervisor decision-logic check, then prints a compact result summary covering the active-lane, pending-reconciliation, empty-queue, idle-stop, and backlog-synthesis cases without starting a worker lane.
