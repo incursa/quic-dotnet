@@ -41,6 +41,19 @@ The helper defaults to a mode-appropriate local slot so the same checkout can ru
 Use `-ImplementationSlot` to override the local-side slot and `-PeerImplementationSlots` to choose the established peer slots.
 The helper stays on runner-supported QUIC testcases so it can produce the runner's JSON and Markdown execution reports without needing any registry changes in the runner repo.
 
+Plan-only mode:
+
+- `-DryRun` is aliased as `-PlanOnly`.
+- It resolves the effective repo root, runner root, slot selection, testcase list, artifact paths, and runner arguments.
+- It prints the plan and exits `0` without building the image or launching the runner.
+- It does not require Docker or a live `quic-interop-runner` checkout.
+
+Example:
+
+```powershell
+pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 -DryRun
+```
+
 ## Artifact Layout
 
 Each run creates a timestamped directory containing:

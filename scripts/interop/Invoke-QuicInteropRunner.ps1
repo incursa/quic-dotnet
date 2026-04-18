@@ -15,7 +15,9 @@ param(
         'retry',
         'transfer'
     ),
-    [string]$ArtifactsRoot
+    [string]$ArtifactsRoot,
+    [Alias('PlanOnly')]
+    [switch]$DryRun
 )
 
 Set-StrictMode -Version Latest
@@ -112,6 +114,159 @@ function Get-RunnerImplementationRole {
     return [string]$slot.Value.role
 }
 
+function Get-EffectivePath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    try {
+        return (Resolve-Path -LiteralPath $Path -ErrorAction Stop).Path
+    }
+    catch {
+        return $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+    }
+}
+
+function Get-InteropRunnerExecutionPlan {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRootResolved,
+
+        [Parameter(Mandatory)]
+        [string]$RunnerRootResolved,
+
+        [Parameter(Mandatory)]
+        [string]$ArtifactRootResolved,
+
+        [Parameter(Mandatory)]
+        [string]$LocalRole,
+
+        [Parameter(Mandatory)]
+        [string]$ImplementationSlot,
+
+        [Parameter(Mandatory)]
+        [string[]]$PeerImplementationSlots,
+
+        [Parameter(Mandatory)]
+        [string[]]$TestCases,
+
+        [Parameter(Mandatory)]
+        [string]$ImageTag,
+
+        [Parameter(Mandatory)]
+        [string]$RunStamp
+    )
+
+    $runnerClientImplementations = @()
+    $runnerServerImplementations = @()
+
+    if ($LocalRole -eq 'both') {
+        $runnerClientImplementations = @($ImplementationSlot)
+        $runnerServerImplementations = @($ImplementationSlot)
+    }
+    elseif ($LocalRole -eq 'client') {
+        $runnerClientImplementations = @($ImplementationSlot)
+        $runnerServerImplementations = @($PeerImplementationSlots)
+    }
+    else {
+        $runnerClientImplementations = @($PeerImplementationSlots)
+        $runnerServerImplementations = @($ImplementationSlot)
+    }
+
+    $safeSlotName = "$LocalRole-$ImplementationSlot" -replace '[^A-Za-z0-9_.-]', '-'
+    $runRoot = Join-Path $ArtifactRootResolved "$RunStamp-$safeSlotName"
+    $runnerLogDir = Join-Path $runRoot 'runner-logs'
+    $dockerBuildLog = Join-Path $runRoot 'docker-build.log'
+    $runnerMarkdown = Join-Path $runRoot 'runner-report.md'
+    $runnerStdErr = Join-Path $runRoot 'runner.stderr.log'
+    $runnerJson = Join-Path $runRoot 'runner-report.json'
+    $invocationLog = Join-Path $runRoot 'invocation.txt'
+    $artifactTreeLog = Join-Path $runRoot 'artifact-tree.txt'
+    $runnerShimPath = Join-Path $runRoot 'runner-shim.py'
+    $dockerBuildStageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "interop-runner-build-$RunStamp"
+
+    return [pscustomobject]@{
+        RepoRoot = $RepoRootResolved
+        RunnerRoot = $RunnerRootResolved
+        LocalRole = $LocalRole
+        LocalImplementationSlot = $ImplementationSlot
+        PeerImplementationSlots = $PeerImplementationSlots
+        RunnerClientImplementations = $runnerClientImplementations
+        RunnerServerImplementations = $runnerServerImplementations
+        ImageTag = $ImageTag
+        TestCases = $TestCases
+        ArtifactRoot = $ArtifactRootResolved
+        RunRoot = $runRoot
+        RunnerLogDir = $runnerLogDir
+        DockerBuildLog = $dockerBuildLog
+        RunnerMarkdown = $runnerMarkdown
+        RunnerStdErr = $runnerStdErr
+        RunnerJson = $runnerJson
+        InvocationLog = $invocationLog
+        ArtifactTreeLog = $artifactTreeLog
+        RunnerShimPath = $runnerShimPath
+        DockerfilePath = Join-Path $RepoRootResolved 'src\Incursa.Quic.InteropHarness\Dockerfile'
+        RunnerScriptPath = Join-Path $RunnerRootResolved 'run.py'
+        DockerBuildStageRoot = $dockerBuildStageRoot
+        RunnerArgs = @(
+            '-p'
+            'quic'
+            '-s'
+            ($runnerServerImplementations -join ',')
+            '-c'
+            ($runnerClientImplementations -join ',')
+            '-t'
+            ($TestCases -join ',')
+            '-r'
+            "$ImplementationSlot=$ImageTag"
+            '-l'
+            $runnerLogDir
+            '-j'
+            $runnerJson
+            '-m'
+        )
+    }
+}
+
+function Write-InteropRunnerPlan {
+    param(
+        [Parameter(Mandatory)]
+        [pscustomobject]$Plan
+    )
+
+    Write-Host ''
+    Write-Host 'Interop runner plan-only.' -ForegroundColor Green
+    Write-Host "  Repo root:                    $($Plan.RepoRoot)"
+    Write-Host "  Runner root:                  $($Plan.RunnerRoot)"
+    Write-Host "  Local role:                   $($Plan.LocalRole)"
+    Write-Host "  Local implementation slot:     $($Plan.LocalImplementationSlot)"
+    Write-Host "  Peer implementation slots:     $($Plan.PeerImplementationSlots -join ',')"
+    Write-Host "  Runner client implementations: $($Plan.RunnerClientImplementations -join ',')"
+    Write-Host "  Runner server implementations: $($Plan.RunnerServerImplementations -join ',')"
+    Write-Host "  Test cases:                   $($Plan.TestCases -join ',')"
+    Write-Host "  Artifact root:                $($Plan.ArtifactRoot)"
+    Write-Host "  Run root:                     $($Plan.RunRoot)"
+    Write-Host "  Dockerfile:                   $($Plan.DockerfilePath)"
+    Write-Host "  Runner script:                $($Plan.RunnerScriptPath)"
+    Write-Host "  Image tag:                    $($Plan.ImageTag)"
+    Write-Host '  Artifact files:'
+    Write-Host "    Docker build log:           $($Plan.DockerBuildLog)"
+    Write-Host "    Invocation log:             $($Plan.InvocationLog)"
+    Write-Host "    Runner JSON:                $($Plan.RunnerJson)"
+    Write-Host "    Runner Markdown:            $($Plan.RunnerMarkdown)"
+    Write-Host "    Runner stderr:              $($Plan.RunnerStdErr)"
+    Write-Host "    Runner logs:                $($Plan.RunnerLogDir)"
+    Write-Host "    Artifact tree:              $($Plan.ArtifactTreeLog)"
+    Write-Host "    Runner shim:                $($Plan.RunnerShimPath)"
+    Write-Host '  Runner args:'
+    foreach ($arg in $Plan.RunnerArgs) {
+        Write-Host "    $arg"
+    }
+    Write-Host ''
+    Write-Host 'Plan-only mode completed without Docker build, runner checkout validation, or runner launch.' -ForegroundColor Yellow
+}
+
 function Write-ArtifactTree {
     param(
         [Parameter(Mandatory)]
@@ -143,42 +298,24 @@ $runnerSupportedTestCases = @(
     'transfer'
 )
 
-Assert-CommandAvailable -Name 'docker'
-
-$pythonCommand = @('python', 'python3', 'py') |
-    ForEach-Object { Get-Command $_ -ErrorAction SilentlyContinue } |
-    Select-Object -First 1
-
-if ($null -eq $pythonCommand) {
-    throw 'python is required but was not found on PATH.'
-}
-
 if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
     $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-}
-
-if ([string]::IsNullOrWhiteSpace($RunnerRoot)) {
-    $RunnerRoot = Join-Path (Split-Path (Split-Path $RepoRoot -Parent) -Parent) 'quic-interop\quic-interop-runner'
-}
-
-if ([string]::IsNullOrWhiteSpace($ArtifactsRoot)) {
-    $ArtifactsRoot = Join-Path $RepoRoot 'artifacts\interop-runner'
 }
 
 if (-not (Test-Path -LiteralPath $RepoRoot)) {
     throw "Repository root was not found at '$RepoRoot'."
 }
 
-if (-not (Test-Path -LiteralPath $RunnerRoot)) {
-    throw "Interop runner checkout was not found at '$RunnerRoot'."
+$repoRootResolved = (Resolve-Path -LiteralPath $RepoRoot).Path
+
+if ([string]::IsNullOrWhiteSpace($RunnerRoot)) {
+    $RunnerRoot = Join-Path (Split-Path (Split-Path $repoRootResolved -Parent) -Parent) 'quic-interop\quic-interop-runner'
 }
 
-$repoRootResolved = (Resolve-Path -LiteralPath $RepoRoot).Path
-$runnerRootResolved = (Resolve-Path -LiteralPath $RunnerRoot).Path
-$artifactRootResolved = [System.IO.Path]::GetFullPath($ArtifactsRoot)
-$dockerBuildContextRoot = Split-Path $repoRootResolved -Parent
+if ([string]::IsNullOrWhiteSpace($ArtifactsRoot)) {
+    $ArtifactsRoot = Join-Path $repoRootResolved 'artifacts\interop-runner'
+}
 
-$registry = Get-RunnerImplementationRegistry -RunnerRootPath $runnerRootResolved
 $TestCases = Normalize-StringList -Values $TestCases
 if ($null -eq $TestCases -or @($TestCases).Count -eq 0) {
     throw 'At least one testcase must be requested.'
@@ -196,6 +333,55 @@ if ([string]::IsNullOrWhiteSpace($ImplementationSlot)) {
         'server' { 'nginx' }
     }
 }
+
+$unsupportedRequestedTestCases = @(
+    $TestCases |
+        Where-Object { $_ -notin $runnerSupportedTestCases }
+)
+
+if (@($unsupportedRequestedTestCases).Count -gt 0) {
+    throw "Requested testcase(s) $($unsupportedRequestedTestCases -join ', ') are not part of the runner-recognized local subset for this helper. Supported testcase subset: $($runnerSupportedTestCases -join ', ')."
+}
+
+$runnerRootResolved = Get-EffectivePath -Path $RunnerRoot
+$artifactRootResolved = Get-EffectivePath -Path $ArtifactsRoot
+$runStamp = Get-Date -Format 'yyyyMMdd-HHmmssfff'
+$executionPlan = Get-InteropRunnerExecutionPlan `
+    -RepoRootResolved $repoRootResolved `
+    -RunnerRootResolved $runnerRootResolved `
+    -ArtifactRootResolved $artifactRootResolved `
+    -LocalRole $LocalRole `
+    -ImplementationSlot $ImplementationSlot `
+    -PeerImplementationSlots $PeerImplementationSlots `
+    -TestCases $TestCases `
+    -ImageTag $ImageTag `
+    -RunStamp $runStamp
+
+$dockerfilePath = $executionPlan.DockerfilePath
+if (-not (Test-Path -LiteralPath $dockerfilePath)) {
+    throw "Harness Dockerfile was not found at '$dockerfilePath'."
+}
+
+if ($DryRun) {
+    Write-InteropRunnerPlan -Plan $executionPlan
+    exit 0
+}
+
+Assert-CommandAvailable -Name 'docker'
+
+$pythonCommand = @('python', 'python3', 'py') |
+    ForEach-Object { Get-Command $_ -ErrorAction SilentlyContinue } |
+    Select-Object -First 1
+
+if ($null -eq $pythonCommand) {
+    throw 'python is required but was not found on PATH.'
+}
+
+if (-not (Test-Path -LiteralPath $runnerRootResolved)) {
+    throw "Interop runner checkout was not found at '$runnerRootResolved'."
+}
+
+$registry = Get-RunnerImplementationRegistry -RunnerRootPath $runnerRootResolved
 
 $localRoleCompatibleSlots = switch ($LocalRole) {
     'both' { @('both') }
@@ -235,40 +421,25 @@ if ($LocalRole -ne 'both') {
     }
 }
 
-$unsupportedRequestedTestCases = @(
-    $TestCases |
-        Where-Object { $_ -notin $runnerSupportedTestCases }
-)
-
-if (@($unsupportedRequestedTestCases).Count -gt 0) {
-    throw "Requested testcase(s) $($unsupportedRequestedTestCases -join ', ') are not part of the runner-recognized local subset for this helper. Supported testcase subset: $($runnerSupportedTestCases -join ', ')."
-}
-
-$dockerfilePath = Join-Path $repoRootResolved 'src\Incursa.Quic.InteropHarness\Dockerfile'
-if (-not (Test-Path -LiteralPath $dockerfilePath)) {
-    throw "Harness Dockerfile was not found at '$dockerfilePath'."
-}
-
-$runnerScriptPath = Join-Path $runnerRootResolved 'run.py'
+$runnerScriptPath = $executionPlan.RunnerScriptPath
 if (-not (Test-Path -LiteralPath $runnerScriptPath)) {
     throw "Interop runner entry point was not found at '$runnerScriptPath'."
 }
 
+$runnerLogDir = $executionPlan.RunnerLogDir
+$dockerBuildLog = $executionPlan.DockerBuildLog
+$runnerMarkdown = $executionPlan.RunnerMarkdown
+$runnerStdErr = $executionPlan.RunnerStdErr
+$runnerJson = $executionPlan.RunnerJson
+$invocationLog = $executionPlan.InvocationLog
+$artifactTreeLog = $executionPlan.ArtifactTreeLog
+$runnerShimPath = $executionPlan.RunnerShimPath
+$dockerBuildStageRoot = $executionPlan.DockerBuildStageRoot
+$runnerArgs = $executionPlan.RunnerArgs
+$runRoot = $executionPlan.RunRoot
+
 $null = New-Item -Path $artifactRootResolved -ItemType Directory -Force
-$runStamp = Get-Date -Format 'yyyyMMdd-HHmmssfff'
-$safeSlotName = "$LocalRole-$ImplementationSlot" -replace '[^A-Za-z0-9_.-]', '-'
-$runRoot = Join-Path $artifactRootResolved "$runStamp-$safeSlotName"
 New-Item -Path $runRoot -ItemType Directory -Force | Out-Null
-
-$runnerLogDir = Join-Path $runRoot 'runner-logs'
-
-$dockerBuildLog = Join-Path $runRoot 'docker-build.log'
-$runnerMarkdown = Join-Path $runRoot 'runner-report.md'
-$runnerStdErr = Join-Path $runRoot 'runner.stderr.log'
-$runnerJson = Join-Path $runRoot 'runner-report.json'
-$invocationLog = Join-Path $runRoot 'invocation.txt'
-$artifactTreeLog = Join-Path $runRoot 'artifact-tree.txt'
-$runnerShimPath = Join-Path $runRoot 'runner-shim.py'
 
 $runnerShimContent = @'
 import os
