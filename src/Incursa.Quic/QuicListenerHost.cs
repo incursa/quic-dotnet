@@ -315,6 +315,13 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                         // Admission failures remain local to the listener shell.
                     }
                 }
+
+                if (retryBootstrapEnabled
+                    && Volatile.Read(ref retryBootstrapIssued) == 0
+                    && TryIssueRetryBootstrapResponseFromZeroRttDatagram(datagram, pathIdentity))
+                {
+                    continue;
+                }
             }
         }
         finally
@@ -726,6 +733,23 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         retryBootstrapTokenHex = Convert.ToHexString(retryToken);
         Interlocked.Exchange(ref retryBootstrapIssued, 1);
         return true;
+    }
+
+    private bool TryIssueRetryBootstrapResponseFromZeroRttDatagram(
+        ReadOnlySpan<byte> datagram,
+        QuicConnectionPathIdentity pathIdentity)
+    {
+        if (!QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket longHeader)
+            || longHeader.Version != 1
+            || longHeader.LongPacketTypeBits != QuicLongPacketTypeBits.ZeroRtt)
+        {
+            return false;
+        }
+
+        return TryIssueRetryBootstrapResponse(
+            pathIdentity,
+            longHeader.DestinationConnectionId,
+            longHeader.SourceConnectionId);
     }
 
     private bool TryValidateRetryBootstrapReplay(ReadOnlySpan<byte> datagram)

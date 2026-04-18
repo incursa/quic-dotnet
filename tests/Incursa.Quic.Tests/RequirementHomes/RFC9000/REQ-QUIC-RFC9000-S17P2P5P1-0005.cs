@@ -74,4 +74,63 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0005
         Assert.NotEmpty(retryMetadata.RetryToken);
         Assert.Equal(Convert.ToHexString(retryMetadata.RetryToken), listenerHost.RetryBootstrapTokenHex);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P5P1-0005">A server MAY send Retry packets in response to Initial and 0-RTT packets.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P1-0005")]
+    public async Task ListenerHostCanIssueRetryPacketsInResponseToZeroRttDatagrams()
+    {
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        TaskCompletionSource<bool> callbackEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        await using QuicListenerHost listenerHost = new(
+            listenEndPoint,
+            [SslApplicationProtocol.Http3],
+            (_, _, _) =>
+            {
+                callbackEntered.TrySetResult(true);
+                throw new InvalidOperationException("The retry-issuance slice must not admit the connection callback.");
+            },
+            listenBacklog: 1,
+            retryBootstrapEnabled: true);
+
+        using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        clientSocket.Connect(listenEndPoint);
+
+        _ = listenerHost.RunAsync();
+        await Task.Yield();
+
+        byte[] initialDestinationConnectionId = QuicS17P2P2TestSupport.InitialDestinationConnectionId;
+        byte[] initialSourceConnectionId = QuicS17P2P2TestSupport.InitialSourceConnectionId;
+        QuicTlsPacketProtectionMaterial zeroRttMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.ZeroRtt);
+        QuicHandshakeFlowCoordinator coordinator = new(initialDestinationConnectionId, initialSourceConnectionId);
+
+        Assert.True(coordinator.TryBuildProtectedZeroRttApplicationPacket(
+            QuicS17P2P3TestSupport.CreatePingPayload(),
+            zeroRttMaterial,
+            out byte[] zeroRttPacket));
+
+        int bytesSent = clientSocket.Send(zeroRttPacket);
+        Assert.Equal(zeroRttPacket.Length, bytesSent);
+
+        byte[] responseBuffer = new byte[256];
+        using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
+        int bytesReceived = await clientSocket.ReceiveAsync(responseBuffer.AsMemory(), SocketFlags.None, receiveTimeout.Token);
+
+        Assert.True(listenerHost.RetryBootstrapIssued);
+        Assert.False(callbackEntered.Task.IsCompleted);
+        Assert.True(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+            initialDestinationConnectionId,
+            responseBuffer.AsSpan(0, bytesReceived),
+            out QuicRetryBootstrapMetadata retryMetadata));
+        Assert.NotEmpty(retryMetadata.RetrySourceConnectionId);
+        Assert.NotEmpty(retryMetadata.RetryToken);
+        Assert.Equal(Convert.ToHexString(retryMetadata.RetryToken), listenerHost.RetryBootstrapTokenHex);
+    }
 }
