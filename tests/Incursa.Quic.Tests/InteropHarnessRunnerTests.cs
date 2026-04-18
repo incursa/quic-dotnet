@@ -11,7 +11,9 @@ public sealed class InteropHarnessRunnerTests
     [InlineData("server")]
     public void UnsupportedTestcasesReturn127ForEitherRole(string role)
     {
-        IDictionary environment = CreateEnvironment(role, "multipath");
+        using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        IDictionary environment = CreateEnvironment(role, "multipath", qlogDir: qlogDirectory);
 
         using StringWriter stdout = new();
         using StringWriter stderr = new();
@@ -23,14 +25,14 @@ public sealed class InteropHarnessRunnerTests
             $"interop harness: role={role}, testcase=multipath, requestCount=0 is currently unsupported.{Environment.NewLine}",
             stdout.ToString());
         Assert.Equal(string.Empty, stderr.ToString());
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
     }
 
     [Theory]
-    [InlineData("retry", true, null, null)]
+    [InlineData("handshake", false, "not-a-url", "REQUESTS entry 'not-a-url' is not a valid absolute URL.")]
     [InlineData("retry", true, "not-a-url", "REQUESTS entry 'not-a-url' is not a valid absolute URL.")]
-    [InlineData("transfer", false, null, "REQUESTS must contain at least one URL for testcase dispatch.")]
-    [InlineData("post-handshake-stream", false, "http://localhost:443/dispatch", "REQUESTS entry 'http://localhost:443/dispatch' must use https for testcase dispatch.")]
-    public void RunnerDispatchRequestUriContractCoversClientRetryTransferAndPostHandshakeStream(
+    [InlineData("post-handshake-stream", true, "http://localhost:443/dispatch", "REQUESTS entry 'http://localhost:443/dispatch' must use https for testcase dispatch.")]
+    public void RunnerDispatchRequestUriContractCoversClientHandshakeRetryAndPostHandshakeStream(
         string testcase,
         bool allowEmptyRequests,
         string? requests,
@@ -55,13 +57,48 @@ public sealed class InteropHarnessRunnerTests
     }
 
     [Theory]
+    [InlineData("server", "handshake", true, null)]
+    [InlineData("server", "post-handshake-stream", true, null)]
+    [InlineData("server", "retry", true, null)]
+    [InlineData("server", "transfer", true, null)]
+    [InlineData("client", "handshake", false, "REQUESTS must contain at least one URL for testcase dispatch.")]
+    [InlineData("client", "post-handshake-stream", false, "REQUESTS must contain at least one URL for testcase dispatch.")]
+    [InlineData("client", "retry", false, "REQUESTS must contain at least one URL for testcase dispatch.")]
+    [InlineData("client", "transfer", false, "REQUESTS must contain at least one URL for testcase dispatch.")]
+    public void SupportedServerPathsAllowEmptyRequestsWhileClientPathsRejectThem(
+        string role,
+        string testcase,
+        bool allowEmptyRequests,
+        string? expectedErrorMessage)
+    {
+        Assert.True(InteropHarnessEnvironment.TryCreate(
+            CreateEnvironment(role, testcase),
+            out InteropHarnessEnvironment? environment,
+            out string? creationError));
+
+        Assert.NotNull(environment);
+        Assert.Null(creationError);
+
+        bool success = InteropHarnessRunner.TryGetDispatchRequestUri(
+            environment!,
+            out Uri? requestUri,
+            out string? errorMessage,
+            allowEmptyRequests);
+
+        Assert.Equal(expectedErrorMessage is null, success);
+        Assert.Null(requestUri);
+        Assert.Equal(expectedErrorMessage, errorMessage);
+    }
+
+    [Theory]
     [InlineData("handshake", TlsMaterialScenario.MissingCertificate)]
     [InlineData("retry", TlsMaterialScenario.MissingPrivateKey)]
     [InlineData("post-handshake-stream", TlsMaterialScenario.InvalidPem)]
     public void ServerDispatchReportsTlsMaterialFailuresBeforeBootstrap(string testcase, TlsMaterialScenario scenario)
     {
-        IDictionary environment = CreateEnvironment("server", testcase);
         using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        IDictionary environment = CreateEnvironment("server", testcase, qlogDir: qlogDirectory);
 
         string certificatePath;
         string privateKeyPath;
@@ -97,6 +134,8 @@ public sealed class InteropHarnessRunnerTests
 
         Assert.Equal(1, exitCode);
         Assert.Equal(string.Empty, stdout.ToString());
+        Assert.DoesNotContain("qlog capture enabled", stdout.ToString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
 
         string stderrText = stderr.ToString();
         if (expectedErrorMessage is null)
@@ -111,27 +150,26 @@ public sealed class InteropHarnessRunnerTests
     }
 
     [Theory]
-    [InlineData(false, "REQUESTS must contain at least one URL for testcase dispatch.")]
-    [InlineData(true, null)]
-    public void RequestValidationForwardingHonorsTheAllowEmptyRequestsFlag(bool allowEmptyRequests, string? expectedErrorMessage)
+    [InlineData("transfer", "https://localhost:443/", "REQUESTS entry 'https://localhost/' must include a non-root path for transfer dispatch.")]
+    public void ClientTransferDispatchFailuresDoNotAdvertiseSuccessOrQlogCapture(
+        string testcase,
+        string requests,
+        string expectedErrorMessage)
     {
-        Assert.True(InteropHarnessEnvironment.TryCreate(
-            CreateEnvironment("server", "handshake"),
-            out InteropHarnessEnvironment? environment,
-            out string? creationError));
+        using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        IDictionary environment = CreateEnvironment("client", testcase, requests, qlogDirectory);
 
-        Assert.NotNull(environment);
-        Assert.Null(creationError);
+        using StringWriter stdout = new();
+        using StringWriter stderr = new();
 
-        bool success = InteropHarnessRunner.TryGetDispatchRequestUri(
-            environment!,
-            out Uri? requestUri,
-            out string? errorMessage,
-            allowEmptyRequests);
+        int exitCode = InteropHarnessRunner.Run(environment, stdout, stderr);
 
-        Assert.Equal(allowEmptyRequests, success);
-        Assert.Null(requestUri);
-        Assert.Equal(expectedErrorMessage, errorMessage);
+        Assert.Equal(1, exitCode);
+        Assert.Equal(string.Empty, stdout.ToString());
+        Assert.DoesNotContain("qlog capture enabled", stdout.ToString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(expectedErrorMessage + Environment.NewLine, stderr.ToString());
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
     }
 
     [Fact]
@@ -149,7 +187,11 @@ public sealed class InteropHarnessRunnerTests
         Assert.Equal("ROLE must be set to client or server." + Environment.NewLine, stderr.ToString());
     }
 
-    private static IDictionary CreateEnvironment(string? role, string testcase, string? requests = null)
+    private static IDictionary CreateEnvironment(
+        string? role,
+        string testcase,
+        string? requests = null,
+        string? qlogDir = null)
     {
         Hashtable environment = new(StringComparer.OrdinalIgnoreCase);
 
@@ -163,6 +205,11 @@ public sealed class InteropHarnessRunnerTests
         if (requests is not null)
         {
             environment["REQUESTS"] = requests;
+        }
+
+        if (qlogDir is not null)
+        {
+            environment["QLOGDIR"] = qlogDir;
         }
 
         return environment;
