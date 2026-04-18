@@ -2433,6 +2433,42 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 continue;
             }
 
+            if (QuicFrameCodec.TryParsePathResponseFrame(remaining, out QuicPathResponseFrame pathResponseFrame, out int pathResponseBytesConsumed))
+            {
+                if (pathResponseBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (!TryGetCandidatePath(packetReceivedEvent.PathIdentity, out QuicConnectionCandidatePathRecord candidatePath)
+                    || candidatePath.Validation.IsAbandoned
+                    || candidatePath.Validation.IsValidated)
+                {
+                    offset += pathResponseBytesConsumed;
+                    continue;
+                }
+
+                if (!candidatePath.Validation.ChallengePayload.Span.SequenceEqual(pathResponseFrame.Data))
+                {
+                    return HandleFatalTlsSignal(
+                        nowTicks,
+                        QuicTransportErrorCode.ProtocolViolation,
+                        "The peer sent a PATH_RESPONSE frame that did not match the outstanding challenge.",
+                        ref effects);
+                }
+
+                if (HandlePathValidationSucceeded(
+                    new QuicConnectionPathValidationSucceededEvent(nowTicks, packetReceivedEvent.PathIdentity),
+                    nowTicks,
+                    ref effects))
+                {
+                    stateChanged = true;
+                }
+
+                offset += pathResponseBytesConsumed;
+                continue;
+            }
+
             if (!QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
             {
                 return false;
