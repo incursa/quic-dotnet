@@ -8,9 +8,24 @@ namespace Incursa.Quic.Benchmarks;
 [MemoryDiagnoser]
 public class QuicTransportParametersBenchmarks
 {
+    public enum TransportParameterBenchmarkScenario
+    {
+        ServerBaseline = 0,
+        ServerLarge = 1,
+        ClientVariant = 2,
+    }
+
+    [Params(
+        TransportParameterBenchmarkScenario.ServerBaseline,
+        TransportParameterBenchmarkScenario.ServerLarge,
+        TransportParameterBenchmarkScenario.ClientVariant)]
+    public TransportParameterBenchmarkScenario Scenario { get; set; }
+
     private QuicTransportParameters parameters = new();
     private byte[] encoded = [];
     private byte[] destination = [];
+    private QuicTransportParameterRole senderRole;
+    private QuicTransportParameterRole receiverRole;
 
     /// <summary>
     /// Prepares representative transport parameters and their encoded form.
@@ -18,26 +33,27 @@ public class QuicTransportParametersBenchmarks
     [GlobalSetup]
     public void GlobalSetup()
     {
-        parameters = new QuicTransportParameters
+        (parameters, senderRole, receiverRole) = Scenario switch
         {
-            MaxIdleTimeout = 25,
-            MaxUdpPayloadSize = 1200,
-            InitialMaxData = 4096,
-            InitialMaxStreamDataBidiLocal = 2048,
-            InitialMaxStreamDataBidiRemote = 4096,
-            InitialMaxStreamDataUni = 1024,
-            InitialMaxStreamsBidi = 6,
-            InitialMaxStreamsUni = 7,
-            MaxAckDelay = 33,
-            DisableActiveMigration = true,
-            ActiveConnectionIdLimit = 8,
-            InitialSourceConnectionId = [0x11, 0x22],
+            TransportParameterBenchmarkScenario.ServerBaseline => (
+                CreateBaselineTransportParameters(),
+                QuicTransportParameterRole.Server,
+                QuicTransportParameterRole.Client),
+            TransportParameterBenchmarkScenario.ServerLarge => (
+                CreateServerLargeTransportParameters(),
+                QuicTransportParameterRole.Server,
+                QuicTransportParameterRole.Client),
+            TransportParameterBenchmarkScenario.ClientVariant => (
+                CreateBaselineTransportParameters(),
+                QuicTransportParameterRole.Client,
+                QuicTransportParameterRole.Server),
+            _ => throw new InvalidOperationException($"Unsupported transport-parameter benchmark scenario: {Scenario}."),
         };
 
-        destination = new byte[256];
+        destination = new byte[1024];
         if (!QuicTransportParametersCodec.TryFormatTransportParameters(
                 parameters,
-                QuicTransportParameterRole.Server,
+                senderRole,
                 destination,
                 out int bytesWritten))
         {
@@ -55,7 +71,7 @@ public class QuicTransportParametersBenchmarks
     {
         return QuicTransportParametersCodec.TryParseTransportParameters(
             encoded,
-            QuicTransportParameterRole.Client,
+            receiverRole,
             out QuicTransportParameters parsed)
             ? (int)(parsed.InitialMaxData ?? 0)
             : -1;
@@ -69,10 +85,71 @@ public class QuicTransportParametersBenchmarks
     {
         return QuicTransportParametersCodec.TryFormatTransportParameters(
             parameters,
-            QuicTransportParameterRole.Server,
+            senderRole,
             destination,
             out int bytesWritten)
             ? bytesWritten
             : -1;
+    }
+
+    private static QuicTransportParameters CreateBaselineTransportParameters()
+    {
+        return new QuicTransportParameters
+        {
+            MaxIdleTimeout = 25,
+            MaxUdpPayloadSize = 1200,
+            InitialMaxData = 4096,
+            InitialMaxStreamDataBidiLocal = 2048,
+            InitialMaxStreamDataBidiRemote = 4096,
+            InitialMaxStreamDataUni = 1024,
+            InitialMaxStreamsBidi = 6,
+            InitialMaxStreamsUni = 7,
+            MaxAckDelay = 33,
+            DisableActiveMigration = true,
+            ActiveConnectionIdLimit = 8,
+            InitialSourceConnectionId = [0x11, 0x22],
+        };
+    }
+
+    private static QuicTransportParameters CreateServerLargeTransportParameters()
+    {
+        return new QuicTransportParameters
+        {
+            OriginalDestinationConnectionId = CreateSequentialBytes(0x10, 4),
+            MaxIdleTimeout = 120,
+            StatelessResetToken = CreateSequentialBytes(0x20, 16),
+            MaxUdpPayloadSize = 1350,
+            InitialMaxData = 65_535,
+            InitialMaxStreamDataBidiLocal = 32_768,
+            InitialMaxStreamDataBidiRemote = 65_535,
+            InitialMaxStreamDataUni = 16_384,
+            InitialMaxStreamsBidi = 24,
+            InitialMaxStreamsUni = 20,
+            MaxAckDelay = 50,
+            DisableActiveMigration = true,
+            PreferredAddress = new QuicPreferredAddress
+            {
+                IPv4Address = [192, 0, 2, 10],
+                IPv4Port = 9_443,
+                IPv6Address = CreateSequentialBytes(0x30, 16),
+                IPv6Port = 9_553,
+                ConnectionId = CreateSequentialBytes(0x40, 20),
+                StatelessResetToken = CreateSequentialBytes(0x60, 16),
+            },
+            ActiveConnectionIdLimit = 16,
+            InitialSourceConnectionId = CreateSequentialBytes(0x50, 8),
+            RetrySourceConnectionId = CreateSequentialBytes(0x70, 6),
+        };
+    }
+
+    private static byte[] CreateSequentialBytes(byte startValue, int length)
+    {
+        byte[] bytes = new byte[length];
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            bytes[i] = unchecked((byte)(startValue + i));
+        }
+
+        return bytes;
     }
 }
