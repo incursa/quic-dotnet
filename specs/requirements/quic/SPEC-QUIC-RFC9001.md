@@ -660,6 +660,9 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0006.cs::ActiveClientRuntimeInstallsSuccessorKeysWhenTheFirstObservedPacketRequiresRetryingWithPhaseOneMaterial
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0006.cs::ActiveClientRuntimeLeavesTheOneRttKeyScheduleUnchangedWhenTheRetryPacketCannotBeAuthenticated
 
 ## REQ-QUIC-RFC9001-S6-0007 Decrypt the packet with the changed Key Phase
 An endpoint that notices a changed Key Phase bit MUST decrypt the packet that contains the changed value.
@@ -674,6 +677,9 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0007.cs::TryOpenProtectedApplicationDataPacket_DecryptsTheFirstObservedPhaseOnePacketWithSuccessorMaterial
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0007.cs::TryOpenProtectedApplicationDataPacket_DoesNotDecryptATamperedSuccessorPacket
 
 ## REQ-QUIC-RFC9001-S6-0008 Update both endpoints on key update
 Initiating a key update MUST result in both endpoints updating keys.
@@ -688,6 +694,9 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs::ActiveClientRuntimeInstallsSuccessorMaterialWhenItInitiatesAKeyUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs::ActiveClientRuntimeRejectsRepeatingTheSameKeyUpdate
 
 ## REQ-QUIC-RFC9001-S6-0009 Prohibit TLS KeyUpdate messages
 Endpoints MUST NOT send a TLS KeyUpdate message.
