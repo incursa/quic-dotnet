@@ -8441,6 +8441,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3 RFC9000-S10.3-B17-P14-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0014.cs::ReceiveDatagram_TreatsPacketsEndingInAValidResetTokenAsStatelessReset
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0014.cs::ReceiveDatagram_DoesNotTreatPacketsEndingInANonMatchingResetTokenAsStatelessReset
 
 ## REQ-QUIC-RFC9000-S10P3-0015 Allow Stateless Reset in response to long-header packets
 An endpoint MAY send a Stateless Reset in response to a packet with a long header.
