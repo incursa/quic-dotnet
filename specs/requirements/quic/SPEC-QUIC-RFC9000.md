@@ -6222,14 +6222,17 @@ After verifying a new client address, the server SHOULD send new address validat
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0002
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0002
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0002
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs::TryBuildOutboundNewTokenPayload_WritesANewTokenFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs::ServerValidationOfANewClientAddressEmitsANewTokenForTheValidatedPath
 
 ## REQ-QUIC-RFC9000-S9P3-0006 Send Subsequent Packets to the Migrated Address
 If the recipient permits the migration, it MUST send subsequent packets to the new peer address.
@@ -6320,14 +6323,17 @@ After verifying a new client address, the server SHOULD send new address validat
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0002
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0002
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0002
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::ClientValidationOfANewAddressDoesNotEmitANewToken
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::RevalidatingTheSameAddressDoesNotEmitAnotherNewToken
 
 ## REQ-QUIC-RFC9000-S9P3P1-0001 Limit Sending Until Address Validation
 Until a peer's address is deemed valid, an endpoint MUST limit the amount of data it sends to that address.
