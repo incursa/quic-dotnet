@@ -22882,6 +22882,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0005.cs::CanSend_AllowsProbePacketsAboveTheCurrentMaximumDatagramSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0005.cs::CanSend_RejectsProbePacketsAtTheCurrentMaximumDatagramSize",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0005.cs::CanSend_AllowsProbePacketsToExceedTheCurrentMaximumDatagramSize"
         ]
       }

@@ -7,6 +7,28 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S14P2_0005
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void CanSend_AllowsProbePacketsAboveTheCurrentMaximumDatagramSize()
+    {
+        QuicConnectionPathMaximumDatagramSizeState state =
+            QuicConnectionPathMaximumDatagramSizeState.CreateInitial().WithMaximumDatagramSize(1_350);
+
+        Assert.True(state.CanSend(1_351, isProbePacket: true));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void CanSend_RejectsProbePacketsAtTheCurrentMaximumDatagramSize()
+    {
+        QuicConnectionPathMaximumDatagramSizeState state =
+            QuicConnectionPathMaximumDatagramSizeState.CreateInitial().WithMaximumDatagramSize(1_350);
+
+        Assert.False(state.CanSend(1_350, isProbePacket: true));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void CanSend_AllowsProbePacketsToExceedTheCurrentMaximumDatagramSize()
