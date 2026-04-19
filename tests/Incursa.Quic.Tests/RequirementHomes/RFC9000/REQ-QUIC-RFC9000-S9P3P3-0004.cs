@@ -82,6 +82,44 @@ public sealed class REQ_QUIC_RFC9000_S9P3P3_0004
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S9P3P3-0004")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void AMigratedAddressIsClassifiedAsNoiseWhenTheCandidateBudgetIsZero()
+    {
+        QuicRecordingDiagnosticsSink diagnosticsSink = new();
+        QuicConnectionPathIdentity activePath = new("203.0.113.96", RemotePort: 443);
+        QuicConnectionPathIdentity migratedPath = new("203.0.113.97", RemotePort: 443);
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+        QuicConnectionRuntime runtime = CreateRuntimeWithActivePathAndCandidateBudget(activePath, diagnosticsSink, maximumCandidatePaths: 0);
+        string? initialLastValidatedRemoteAddress = runtime.LastValidatedRemoteAddress;
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 4,
+                migratedPath,
+                datagram),
+            nowTicks: 4);
+
+        Assert.Contains(diagnosticsSink.Events, diagnosticEvent =>
+            diagnosticEvent.Kind == QuicDiagnosticKind.AddressChangeClassified
+            && diagnosticEvent.PathIdentity == migratedPath
+            && diagnosticEvent.PathClassification == QuicConnectionPathClassification.MigrationCandidate);
+        Assert.Contains(diagnosticsSink.Events, diagnosticEvent =>
+            diagnosticEvent.Kind == QuicDiagnosticKind.CandidatePathBudgetExhausted
+            && diagnosticEvent.PathIdentity == migratedPath
+            && diagnosticEvent.PathClassification == QuicConnectionPathClassification.NoiseOrAttack);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.Equal(initialLastValidatedRemoteAddress, runtime.LastValidatedRemoteAddress);
+        Assert.Empty(runtime.CandidatePaths);
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+        Assert.DoesNotContain(result.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+            && sendDatagramEffect.PathIdentity == migratedPath);
+    }
+
     private static QuicConnectionRuntime CreateRuntimeWithActivePathAndCandidateBudget(
         QuicConnectionPathIdentity activePath,
         QuicRecordingDiagnosticsSink diagnosticsSink,
