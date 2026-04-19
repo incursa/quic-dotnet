@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9002-0004",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9002 PTO Timer Discipline Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9002",
+    "ARC-QUIC-RFC9002-0004",
+    "WI-QUIC-RFC9002-0004"
+  ],
+  "verification_method": "Focused requirement-home tests and inspection evidence from the recovery-timing, send-runtime, handshake-validation, and path-validation seams.",
+  "verifies": [
+    "REQ-QUIC-RFC9002-S6P2-0003",
+    "REQ-QUIC-RFC9002-S6P2P1-0006",
+    "REQ-QUIC-RFC9002-S6P2P1-0008",
+    "REQ-QUIC-RFC9002-S6P2P1-0009",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0002",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0003",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0004",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0006"
+  ],
+  "scope": "This verification covers the RFC 9002 PTO timer discipline slice for arming, restart, backoff reset, and validation-aware pre-confirmation gating. It keeps PTO expiry as scheduler state only and does not claim probe composition, retry reset, migration path switching, or packet-loss declaration on PTO expiry.",
+  "expected_result": "The runtime arms PTO from packet-space recovery state, restarts and resets PTO backoff on the supported send, acknowledgment, and key-discard transitions, suppresses pre-confirmation PTO where validation is incomplete, and leaves PTO expiration to schedule probe work without marking packets lost.",
+  "procedure": [
+    "Run the requirement-home tests for the 10 targeted RFC 9002 clauses.",
+    "Inspect the recovery-timing and send-runtime helpers to confirm PTO arming, restart, and backoff reset flow through packet-space recovery state.",
+    "Confirm the validation seam gates pre-confirmation PTO without widening into probe composition or loss declaration."
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The targeted RFC 9002 requirement-home tests are discoverable by the test runner."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "src/Incursa.Quic/QuicPathValidation.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs"
+  ]
+}
