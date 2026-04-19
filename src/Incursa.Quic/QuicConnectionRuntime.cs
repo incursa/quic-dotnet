@@ -3062,7 +3062,6 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             return false;
         }
-
         if (!TryBuildOutboundNewTokenPayload(emissionRecord.Token, out byte[] payload))
         {
             return false;
@@ -3312,7 +3311,6 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             exception = new InvalidOperationException(protectFailureMessage);
             return false;
         }
-
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             payload,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
@@ -3385,7 +3383,6 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         SyncActivePathMaximumDatagramSize(updatedActivePath.MaximumDatagramSizeState);
         return true;
     }
-
     private bool TryBuildOutboundRetireConnectionIdPayload(ulong sequenceNumber, out byte[] payload)
     {
         payload = [];
