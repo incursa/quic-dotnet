@@ -3366,7 +3366,6 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         exception = null;
         return true;
     }
-
     internal bool TrySetActivePathMaximumDatagramSize(ulong maximumDatagramSizeBytes)
     {
         if (activePath is null)
