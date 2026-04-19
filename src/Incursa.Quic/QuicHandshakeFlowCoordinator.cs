@@ -50,7 +50,18 @@ internal sealed class QuicHandshakeFlowCoordinator
 
     internal bool TrySetInitialDestinationConnectionId(ReadOnlySpan<byte> connectionId)
     {
-        return TrySetConnectionId(ref initialDestinationConnectionId, connectionId, allowOverwrite: false);
+        if (!TrySetConnectionId(ref initialDestinationConnectionId, connectionId, allowOverwrite: false))
+        {
+            return false;
+        }
+
+        if (destinationConnectionId.Length == 0
+            && !TrySetConnectionId(ref destinationConnectionId, connectionId, allowOverwrite: false))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     internal bool TrySetHandshakeDestinationConnectionId(ReadOnlySpan<byte> connectionId)

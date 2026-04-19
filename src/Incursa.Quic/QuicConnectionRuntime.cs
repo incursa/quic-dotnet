@@ -4621,19 +4621,17 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         QuicConnectionConnectionIdRetiredEvent connectionIdRetiredEvent,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (!statelessResetTokensByConnectionId.Remove(connectionIdRetiredEvent.ConnectionId, out byte[]? statelessResetToken))
+        if (!statelessResetTokensByConnectionId.Remove(connectionIdRetiredEvent.ConnectionId, out _))
         {
-            return false;
-        }
-
-        if (!TrySendRetireConnectionIdFrame(connectionIdRetiredEvent.ConnectionId, ref effects))
-        {
-            statelessResetTokensByConnectionId.Add(connectionIdRetiredEvent.ConnectionId, statelessResetToken!);
             return false;
         }
 
         AppendEffect(ref effects, new QuicConnectionRetireStatelessResetTokenEffect(connectionIdRetiredEvent.ConnectionId));
-        return true;
+
+        // Token retirement is locally actionable even when no path is available to emit RETIRE_CONNECTION_ID yet.
+        bool stateChanged = true;
+        stateChanged |= TrySendRetireConnectionIdFrame(connectionIdRetiredEvent.ConnectionId, ref effects);
+        return stateChanged;
     }
 
     private bool HandleConnectionIdAcknowledged(QuicConnectionConnectionIdAcknowledgedEvent connectionIdAcknowledgedEvent)
