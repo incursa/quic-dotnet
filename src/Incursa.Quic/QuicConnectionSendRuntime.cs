@@ -38,13 +38,21 @@ internal sealed class QuicConnectionSendRuntime
     private readonly Dictionary<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPackets = [];
     private readonly Queue<QuicConnectionRetransmissionPlan> pendingRetransmissions = [];
     private readonly QuicSenderFlowController flowController;
+    private readonly QuicRttEstimator rttEstimator;
+    private readonly QuicEcnValidationState ecnValidationState;
 
     public QuicConnectionSendRuntime(QuicSenderFlowController? flowController = null)
     {
         this.flowController = flowController ?? new QuicSenderFlowController();
+        rttEstimator = new QuicRttEstimator();
+        ecnValidationState = new QuicEcnValidationState();
     }
 
     public QuicSenderFlowController FlowController => flowController;
+
+    internal QuicRttEstimator RttEstimator => rttEstimator;
+
+    internal QuicEcnValidationState EcnValidationState => ecnValidationState;
 
     public IReadOnlyDictionary<QuicConnectionSentPacketKey, QuicConnectionSentPacket> SentPackets => sentPackets;
 
@@ -53,6 +61,23 @@ internal sealed class QuicConnectionSendRuntime
     public int ProbeTimeoutCount { get; private set; }
 
     public int PendingRetransmissionCount => pendingRetransmissions.Count;
+
+    internal QuicConnectionPathRecoverySnapshot CapturePathRecoverySnapshot()
+    {
+        return new QuicConnectionPathRecoverySnapshot(
+            SmoothedRttMicros: rttEstimator.SmoothedRttMicros,
+            RttVarMicros: rttEstimator.RttVarMicros,
+            CongestionWindowBytes: flowController.CongestionControlState.CongestionWindowBytes,
+            BytesInFlightBytes: flowController.CongestionControlState.BytesInFlightBytes,
+            EcnValidated: ecnValidationState.IsEcnEnabled);
+    }
+
+    internal void ResetPathRecoveryState()
+    {
+        rttEstimator.Reset();
+        ecnValidationState.ReenableEcn();
+        flowController.CongestionControlState.Reset();
+    }
 
     public bool HasAckElicitingPacketsInFlight
     {

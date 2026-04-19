@@ -5308,7 +5308,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (activePath is not null && activePathChanged && !preserveCurrentRecoveryState)
         {
-            ResetRecoveryStateForNewPath();
+            ResetRecoveryStateForNewPath(candidatePath.MaximumDatagramSizeState);
         }
 
         MaybeRememberPreferredAddressMigrationSource(pathIdentity);
@@ -5400,7 +5400,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             && IsPortOnlyPeerAddressChange(activePath.Value.Identity, bestPathIdentity.Value);
         if (activePath is not null && !preserveCurrentRecoveryState)
         {
-            ResetRecoveryStateForNewPath();
+            ResetRecoveryStateForNewPath(bestCandidate.Value.MaximumDatagramSizeState);
         }
 
         MaybeRememberPreferredAddressMigrationSource(bestPathIdentity.Value);
@@ -5474,15 +5474,20 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return stateChanged;
     }
 
-    private void ResetRecoveryStateForNewPath()
+    private void ResetRecoveryStateForNewPath(QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState)
     {
         // A real peer-address change starts the new path with fresh recovery state so stale
         // packets from the old path cannot keep influencing congestion or PTO decisions, but ACK
         // history must survive so previously received packets still drive ACK generation.
+        sendRuntime.ResetPathRecoveryState();
+        // Recompute the initial congestion window from the promoted path's size, not the path we
+        // just abandoned.
+        sendRuntime.FlowController.CongestionControlState.UpdateMaxDatagramSize(
+            maximumDatagramSizeState.MaximumDatagramSizeBytes,
+            resetToInitialWindow: true);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, discardAckGenerationState: false);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, discardAckGenerationState: false);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData, discardAckGenerationState: false);
-        sendRuntime.FlowController.CongestionControlState.Reset();
     }
 
     private static bool IsPortOnlyPeerAddressChange(
