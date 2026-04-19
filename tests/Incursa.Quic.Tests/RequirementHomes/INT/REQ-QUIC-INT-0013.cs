@@ -1,10 +1,105 @@
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-INT-0013")]
 public sealed class REQ_QUIC_INT_0013
 {
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task LocalHelperCapturesExpectedArtifactsForSameSlotBothRoleRuns()
+    {
+        using InteropRunnerScriptFixture fixture = new(quicGoRole: "both");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "both",
+            "-ImplementationSlot",
+            "quic-go");
+
+        await AssertSuccessfulHelperRunAsync(
+            fixture.ArtifactsRoot,
+            result,
+            expectedLocalRole: "both",
+            expectedLocalImplementationSlot: "quic-go",
+            expectedPeerImplementationSlots: "quic-go,msquic",
+            expectedRunnerServerImplementations: "quic-go",
+            expectedRunnerClientImplementations: "quic-go",
+            expectedReplacement: "quic-go=incursa-quic-interop-harness:local");
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task LocalHelperCapturesExpectedArtifactsForSplitClientRoleRunsAgainstServerPeers()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "msquic");
+
+        await AssertSuccessfulHelperRunAsync(
+            fixture.ArtifactsRoot,
+            result,
+            expectedLocalRole: "client",
+            expectedLocalImplementationSlot: "chrome",
+            expectedPeerImplementationSlots: "msquic",
+            expectedRunnerServerImplementations: "msquic",
+            expectedRunnerClientImplementations: "chrome",
+            expectedReplacement: "chrome=incursa-quic-interop-harness:local");
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task LocalHelperCapturesExpectedArtifactsForSplitServerRoleRunsAgainstClientPeers()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "nginx",
+            "-PeerImplementationSlots",
+            "quic-go");
+
+        await AssertSuccessfulHelperRunAsync(
+            fixture.ArtifactsRoot,
+            result,
+            expectedLocalRole: "server",
+            expectedLocalImplementationSlot: "nginx",
+            expectedPeerImplementationSlots: "quic-go",
+            expectedRunnerServerImplementations: "nginx",
+            expectedRunnerClientImplementations: "quic-go",
+            expectedReplacement: "nginx=incursa-quic-interop-harness:local");
+    }
+
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -41,17 +136,17 @@ public sealed class REQ_QUIC_INT_0013
     {
         using InteropRunnerScriptFixture fixture = new();
 
-            ScriptRunResult result = await fixture.RunAsync(
-                "-RepoRoot",
-                fixture.RepoRoot,
-                "-RunnerRoot",
-                fixture.RunnerRoot,
-                "-ArtifactsRoot",
-                fixture.ArtifactsRoot,
-                "-LocalRole",
-                "client",
-                "-PeerImplementationSlots",
-                null!);
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-PeerImplementationSlots",
+            null!);
 
         string output = result.CombinedOutput;
         string exceptionMessage = result.ExceptionMessage;
@@ -513,7 +608,7 @@ public sealed class REQ_QUIC_INT_0013
         Assert.Empty(Directory.GetFiles(Path.Combine(runRoot, "runner-logs"), "*", SearchOption.AllDirectories));
     }
 
-    private static void AssertSuccessfulHelperRunAsync(
+    private static Task AssertSuccessfulHelperRunAsync(
         string artifactsRoot,
         ScriptRunResult result,
         string expectedLocalRole,
@@ -559,6 +654,7 @@ public sealed class REQ_QUIC_INT_0013
         Assert.Equal(expectedLocalRole, GetInvocationFieldValue(invocationText, "LocalRole"));
         Assert.Equal(expectedLocalImplementationSlot, GetInvocationFieldValue(invocationText, "LocalImplementationSlot"));
         Assert.Equal(expectedPeerImplementationSlots, GetInvocationFieldValue(invocationText, "PeerImplementationSlots"));
+        Assert.Equal("incursa-quic-interop-harness:local", GetInvocationFieldValue(invocationText, "ImageTag"));
 
         string[] expectedRunnerArgs = CreateExpectedRunnerArgs(
             expectedRunnerServerImplementations,
@@ -578,6 +674,7 @@ public sealed class REQ_QUIC_INT_0013
         Assert.Contains("runner-report.md", artifactTreeText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runner.stderr.log", artifactTreeText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runner-logs", artifactTreeText, StringComparison.OrdinalIgnoreCase);
+        return Task.CompletedTask;
     }
 
     private static string GetInvocationFieldValue(string invocationText, string fieldName)
@@ -856,6 +953,95 @@ public sealed class REQ_QUIC_INT_0013
 
         private static void CreateCommandStubs(string toolRoot)
         {
+            File.WriteAllText(
+                Path.Combine(toolRoot, "fake-docker.ps1"),
+                """
+                [Console]::Out.WriteLine("fake docker build: $env:FAKE_COMMAND_ARGS")
+                exit 0
+                """);
+
+            File.WriteAllText(
+                Path.Combine(toolRoot, "fake-python.ps1"),
+                """
+                $rawInvocationArgs = $env:FAKE_COMMAND_ARGS
+                $InvocationArgs = @()
+                if (-not [string]::IsNullOrWhiteSpace($rawInvocationArgs)) {
+                    $InvocationArgs = $rawInvocationArgs.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
+                }
+
+                function Get-ArgumentValue {
+                    param(
+                        [Parameter(Mandatory)]
+                        [string[]]$Arguments,
+
+                        [Parameter(Mandatory)]
+                        [string]$Name
+                    )
+
+                    for ($index = 0; $index -lt $Arguments.Count; $index++) {
+                        if ($Arguments[$index] -eq $Name) {
+                            if ($index + 1 -ge $Arguments.Count) {
+                                throw "The fake runner did not receive a value for '$Name'."
+                            }
+
+                            return [string]$Arguments[$index + 1]
+                        }
+                    }
+
+                    throw "The fake runner did not receive '$Name'."
+                }
+
+                $runnerShimIndex = -1
+                for ($index = 0; $index -lt $InvocationArgs.Count; $index++) {
+                    if ($InvocationArgs[$index] -like '*.py') {
+                        $runnerShimIndex = $index
+                        break
+                    }
+                }
+
+                if ($runnerShimIndex -lt 0) {
+                    throw 'The fake runner did not receive the runner shim path.'
+                }
+
+                $runnerArgs = @()
+                if ($runnerShimIndex + 1 -lt $InvocationArgs.Count) {
+                    $runnerArgs = $InvocationArgs[($runnerShimIndex + 1)..($InvocationArgs.Count - 1)]
+                }
+
+                $runnerLogDir = Get-ArgumentValue -Arguments $runnerArgs -Name '-l'
+                $runnerJsonPath = Get-ArgumentValue -Arguments $runnerArgs -Name '-j'
+                $serverImplementations = Get-ArgumentValue -Arguments $runnerArgs -Name '-s'
+                $clientImplementations = Get-ArgumentValue -Arguments $runnerArgs -Name '-c'
+                $replacement = Get-ArgumentValue -Arguments $runnerArgs -Name '-r'
+                $testCases = Get-ArgumentValue -Arguments $runnerArgs -Name '-t'
+
+                New-Item -Path $runnerLogDir -ItemType Directory -Force | Out-Null
+                $receivedArgsPath = Join-Path $runnerLogDir 'received-args.txt'
+                $runnerArgs | Set-Content -LiteralPath $receivedArgsPath -Encoding utf8
+
+                $payload = [ordered]@{
+                    runnerShim = $InvocationArgs[$runnerShimIndex]
+                    args = @($runnerArgs)
+                    serverImplementations = $serverImplementations
+                    clientImplementations = $clientImplementations
+                    replacement = $replacement
+                    testcases = $testCases
+                    runnerLogDir = $runnerLogDir
+                    runnerJsonPath = $runnerJsonPath
+                }
+
+                $payload | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $runnerJsonPath -Encoding utf8
+
+                [Console]::Out.WriteLine('# Fake runner report')
+                [Console]::Out.WriteLine('')
+                [Console]::Out.WriteLine("serverImplementations: $serverImplementations")
+                [Console]::Out.WriteLine("clientImplementations: $clientImplementations")
+                [Console]::Out.WriteLine("replacement: $replacement")
+                [Console]::Out.WriteLine("testcases: $testCases")
+                [Console]::Error.WriteLine('fake runner stderr')
+                exit 0
+                """);
+
             if (OperatingSystem.IsWindows())
             {
                 CreateWindowsStub(Path.Combine(toolRoot, "docker.cmd"), GetDockerStubContent());
@@ -1137,8 +1323,8 @@ public sealed class REQ_QUIC_INT_0013
         private static string ResolvePowerShellExecutable()
         {
             string[] candidates = OperatingSystem.IsWindows()
-                ? ["pwsh.exe", "pwsh", "powershell.exe", "powershell"]
-                : ["pwsh", "pwsh.exe"];
+                ? new[] { "pwsh.exe", "pwsh", "powershell.exe", "powershell" }
+                : new[] { "pwsh", "pwsh.exe" };
 
             foreach (string candidate in candidates)
             {
