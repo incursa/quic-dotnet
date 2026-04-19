@@ -79,6 +79,16 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+try {
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    [Console]::InputEncoding = $utf8NoBom
+    [Console]::OutputEncoding = $utf8NoBom
+    $OutputEncoding = $utf8NoBom
+}
+catch {
+    # Best-effort console normalization only; continue if the host refuses it.
+}
+
 function Resolve-ExistingPath {
     param(
         [Parameter(Mandatory = $true)]
@@ -201,6 +211,46 @@ function Get-LimitedText {
     return $value.Substring(0, $headLength) + $marker
 }
 
+function Test-CodexBenignStderrLine {
+    param(
+        [AllowEmptyString()]
+        [Parameter(Mandatory = $true)]
+        [string]$Line
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Line)) {
+        return $false
+    }
+
+    $trimmed = $Line.TrimStart()
+    if (
+        $trimmed.StartsWith("<", [System.StringComparison]::Ordinal) -or
+        $trimmed.Contains("__cf_chl_", [System.StringComparison]::OrdinalIgnoreCase) -or
+        $trimmed.Contains("Enable JavaScript and cookies to continue", [System.StringComparison]::OrdinalIgnoreCase)
+    ) {
+        return $true
+    }
+
+    $knownBenignFragments = @(
+        "prompt must be at most 128 characters",
+        "maximum of 3 prompts is supported",
+        "unknown feature key in config: powershell_utf8",
+        "Shell snapshot not supported yet for PowerShell",
+        "skipping subagent thread analytics: missing inherited client metadata",
+        "startup remote plugin sync failed; will retry on next app-server start",
+        "failed to refresh curated plugin cache after sync",
+        "events failed with status 403 Forbidden"
+    )
+
+    foreach ($fragment in $knownBenignFragments) {
+        if ($Line.Contains($fragment, [System.StringComparison]::OrdinalIgnoreCase)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
 function Write-CodexStreamLine {
     param(
         [Parameter(Mandatory = $true)]
@@ -303,7 +353,14 @@ function Write-CodexStreamLine {
         $summary = $summary.Substring(0, 217) + "..."
     }
 
-    Write-Host "  $summary" -ForegroundColor $color
+    $echoToConsole = $true
+    if ($StreamName -eq "stderr" -and (Test-CodexBenignStderrLine -Line $Line)) {
+        $echoToConsole = $false
+    }
+
+    if ($echoToConsole) {
+        Write-Host "  $summary" -ForegroundColor $color
+    }
 }
 
 function Invoke-NativeCapture {
@@ -1350,6 +1407,10 @@ Core operating rules:
 - Keep runtime/code work, proof/test work, and trace/design work clearly separated.
 - Prefer runtime, requirement-home, and canonical SpecTrace JSON work over generated-report churn.
 - Treat `specs/generated/` updates as follow-through, not as the primary slice, unless they reconcile already-changed canonical/runtime/test work or restore repo honesty.
+- Keep reads and command outputs surgically small. Prefer `rg`, `Select-Object -First/-Skip`, and focused snippets over dumping full ledgers, full specs, or large source files.
+- Do not read all of `REQUIREMENT-GAPS.md`, full canonical specs, or large runtime files unless the relevant answer is not visible in a small excerpt.
+- Stay single-agent for unattended execution. Do not use `spawn_agent`, `send_input`, `wait_agent`, `close_agent`, `resume_agent`, `delivery_director`, `explorer`, `worker`, or any delegation/collaboration tool.
+- If you think triage or exploration is needed, do that work yourself with small local reads/commands instead of handing it to another agent.
 - If you make useful changes, run the most relevant checks you can, then create a local git commit.
 - Keep the turn to one bounded slice and one commit; leave the next slice for the next turn.
 - Recent turn verdicts matter. If the recent turns are trace-only, generated-only, or otherwise missing src/tests movement, pivot to a higher-value lane or stop.
