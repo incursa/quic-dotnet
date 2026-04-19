@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9002-0003",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9002 Retry Recovery Reset Verification",
+  "domain": "quic",
+  "status": "planned",
+  "owner": "quic-maintainers",
+  "scope": "This verification covers the RFC 9002 Section 6.3 Retry slice: the client treats Retry as a connection-establishment reroute, resets congestion and loss-recovery state, and preserves the TLS handshake transcript needed to replay the bootstrap ClientHello.\nIt does not claim RTT-estimation policy beyond Retry receipt or broader Retry handling outside the three Section 6.3 requirements.",
+  "verification_method": "Execution and inspection evidence.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9002",
+    "ARC-QUIC-RFC9002-0003",
+    "WI-QUIC-RFC9002-0003"
+  ],
+  "expected_result": "- Retry is not treated as ACK.\n- Retry resets client congestion and loss-recovery state, including pending PTO state.\n- Retry preserves the bootstrap handshake transcript so the replay path can resend the same ClientHello bytes.",
+  "preconditions": [
+    "The `Incursa.Quic` solution builds successfully.",
+    "The RFC9002 Retry requirement homes are discoverable by the local test inventory.",
+    "The Retry integrity unit tests and targeted requirement-home tests are runnable in the local workbench flow."
+  ],
+  "procedure": [
+    "Run the targeted dotnet test slice for the RFC 9002 Retry family and the Retry integrity unit tests.",
+    "Inspect the runtime Retry path and the requirement-home assertions for recovery reset and handshake transcript retention.",
+    "Render the trace markdown siblings from the canonical JSON artifacts so the downstream reports stay in sync."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs",
+    "tests/Incursa.Quic.Tests/QuicRetryIntegrityUnitTests.cs"
+  ],
+  "verifies": [
+    "REQ-QUIC-RFC9002-S6P3-0001",
+    "REQ-QUIC-RFC9002-S6P3-0002",
+    "REQ-QUIC-RFC9002-S6P3-0003"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionSendRuntime.cs\n- src/Incursa.Quic/QuicCongestionControlState.cs\n- src/Incursa.Quic/QuicRecoveryTiming.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs\n- tests/Incursa.Quic.Tests/QuicRetryIntegrityUnitTests.cs"
+    }
+  ]
+}

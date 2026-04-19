@@ -1108,6 +1108,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
+        ResetRecoveryStateForRetry();
         retrySourceConnectionId = retryReceivedEvent.RetrySourceConnectionId.ToArray();
         retryToken = retryReceivedEvent.RetryToken.ToArray();
         retryBootstrapPendingReplay = true;
@@ -5511,6 +5512,16 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, discardAckGenerationState: false);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, discardAckGenerationState: false);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData, discardAckGenerationState: false);
+    }
+
+    private void ResetRecoveryStateForRetry()
+    {
+        // Retry restarts the connection attempt, so discard the sender's packet-number-space
+        // recovery state and ACK history while leaving the TLS bridge untouched.
+        sendRuntime.ResetPathRecoveryState();
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, discardAckGenerationState: true);
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, discardAckGenerationState: true);
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData, discardAckGenerationState: true);
     }
 
     private static bool IsPortOnlyPeerAddressChange(
