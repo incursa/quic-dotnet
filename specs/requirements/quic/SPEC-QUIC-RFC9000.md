@@ -8485,6 +8485,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0016.cs::TryGenerateStatelessResetToken_BindsTheTokenToTheConnectionId
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0016.cs::TryGenerateStatelessResetToken_DoesNotProduceTheSameTokenForDifferentSecrets
 
 ## REQ-QUIC-RFC9000-S10P3-0017 Advertise reset tokens in NEW_CONNECTION_ID
 An endpoint MUST issue a stateless reset token by including the value in the Stateless Reset Token field of a NEW_CONNECTION_ID frame.
