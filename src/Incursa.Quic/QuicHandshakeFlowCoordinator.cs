@@ -50,18 +50,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
     internal bool TrySetInitialDestinationConnectionId(ReadOnlySpan<byte> connectionId)
     {
-        if (!TrySetConnectionId(ref initialDestinationConnectionId, connectionId, allowOverwrite: false))
-        {
-            return false;
-        }
-
-        if (destinationConnectionId.Length == 0
-            && !TrySetConnectionId(ref destinationConnectionId, connectionId, allowOverwrite: false))
-        {
-            return false;
-        }
-
-        return true;
+        return TrySetConnectionId(ref initialDestinationConnectionId, connectionId, allowOverwrite: false);
     }
 
     internal bool TrySetHandshakeDestinationConnectionId(ReadOnlySpan<byte> connectionId)
@@ -979,9 +968,13 @@ internal sealed class QuicHandshakeFlowCoordinator
         packetNumberOffset = default;
         packetNumberLength = ApplicationPacketNumberLength;
 
-        if (destinationConnectionId.Length == 0
+        ReadOnlySpan<byte> effectiveDestinationConnectionId = destinationConnectionId.Length == 0
+            ? initialDestinationConnectionId
+            : destinationConnectionId;
+
+        if (effectiveDestinationConnectionId.Length == 0
             || sourceConnectionId.Length == 0
-            || applicationPayload.Length > int.MaxValue - LongHeaderFixedPrefixLength - LongHeaderConnectionIdLengthFieldsLength - destinationConnectionId.Length - sourceConnectionId.Length - packetNumberLength - ApplicationMinimumProtectedPayloadLength)
+            || applicationPayload.Length > int.MaxValue - LongHeaderFixedPrefixLength - LongHeaderConnectionIdLengthFieldsLength - effectiveDestinationConnectionId.Length - sourceConnectionId.Length - packetNumberLength - ApplicationMinimumProtectedPayloadLength)
         {
             return false;
         }
@@ -996,7 +989,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         int longHeaderPrefixLength = LongHeaderFixedPrefixLength
             + 1
-            + destinationConnectionId.Length
+            + effectiveDestinationConnectionId.Length
             + 1
             + sourceConnectionId.Length;
         if (longHeaderPrefixLength > int.MaxValue - lengthFieldBytes - packetNumberLength - paddedPayloadLength)
@@ -1028,7 +1021,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         plaintextPacket = BuildLongHeaderPacket(
             headerControlBits,
             QuicVersionNegotiation.Version1,
-            destinationConnectionId,
+            effectiveDestinationConnectionId,
             sourceConnectionId,
             token: ReadOnlySpan<byte>.Empty,
             versionSpecificData,
