@@ -6337,6 +6337,7 @@ Trace:
   - RFC 9000 §9.3 RFC9000-S9.3-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
 - Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::ServerValidationOfANewClientAddressEmitsANewTokenForTheValidatedPath
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::ClientValidationOfANewAddressDoesNotEmitANewToken
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::RevalidatingTheSameAddressDoesNotEmitAnotherNewToken
 

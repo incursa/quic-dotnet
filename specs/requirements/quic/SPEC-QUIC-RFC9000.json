@@ -11559,6 +11559,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::ServerValidationOfANewClientAddressEmitsANewTokenForTheValidatedPath",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::ClientValidationOfANewAddressDoesNotEmitANewToken",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::RevalidatingTheSameAddressDoesNotEmitAnotherNewToken"
         ]
