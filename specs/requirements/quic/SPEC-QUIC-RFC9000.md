@@ -8867,6 +8867,10 @@ Trace:
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S2
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0010.cs::TryCommitLocalTransportParameters_ClonesTheServerStatelessResetTokenValue
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0010.cs::ConnectionIdIssuedEvent_RegistersTheIssuedStatelessResetTokenForEmission
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0010.cs::ConnectionIdRetiredEvent_RemovesTheRetiredStatelessResetTokenFromEmission
 
 Notes:
 - This sentence pair is treated as one atomic memory-scope requirement.
