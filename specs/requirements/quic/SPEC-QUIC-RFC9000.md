@@ -8744,6 +8744,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0002.cs::TryCreateStatelessResetDatagram_UsesTheRememberedTokenForTheCurrentRemoteAddress
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0002.cs::TryCreateStatelessResetDatagram_ReturnsTokenUnavailableAfterTheTokenIsRetired
 
 ## REQ-QUIC-RFC9000-S10P3P1-0003 Compare the remote-address token set to classify Stateless Reset
 An endpoint MUST identify a received datagram as a Stateless Reset by comparing the last 16 bytes of the datagram with all stateless reset tokens associated with the remote address on which the datagram was received.
@@ -12632,6 +12635,8 @@ Trace:
   - RFC 9000 §14.2 RFC9000-S14.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
 - Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0005.cs::CanSend_AllowsProbePacketsAboveTheCurrentMaximumDatagramSize
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0005.cs::CanSend_RejectsProbePacketsAtTheCurrentMaximumDatagramSize
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0005.cs::CanSend_AllowsProbePacketsToExceedTheCurrentMaximumDatagramSize
 
 ## REQ-QUIC-RFC9000-S14P2-0006 Size non-PMTU-probe packets to fit within the maximum datagram size
@@ -12668,7 +12673,6 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::WriteAsync_SucceedsWhenTheActivePathSupportsTheRFCMinimum
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::WriteAsync_FailsWhenTheActivePathDropsBelowTheRFCMinimum
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::LocalCloseRequested_StillEmitsConnectionCloseWhenTheActivePathDropsBelowTheRFCMinimum
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtTheRFCMinimum
 
 ## REQ-QUIC-RFC9000-S14P2-0008 Allow terminating the connection when no alternative path exists
