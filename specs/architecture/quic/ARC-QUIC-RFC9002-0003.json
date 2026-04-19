@@ -1,0 +1,30 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9002-0003",
+  "artifact_type": "architecture",
+  "title": "QUIC RFC 9002 Retry Recovery Reset Architecture",
+  "domain": "quic",
+  "status": "draft",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9002",
+    "WI-QUIC-RFC9002-0003",
+    "VER-QUIC-RFC9002-0003"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers the RFC 9002 Section 6.3 Retry slice: the client treats Retry as a connection-establishment reroute, resets congestion and loss-recovery state, and preserves the TLS handshake transcript needed to replay the bootstrap ClientHello.\nIt does not claim RTT-estimation policy beyond Retry receipt or broader Retry handling outside the three Section 6.3 requirements."
+    },
+    {
+      "heading": "Related Artifacts",
+      "content": "- SPEC-QUIC-RFC9002\n- WI-QUIC-RFC9002-0003\n- VER-QUIC-RFC9002-0003"
+    }
+  ],
+  "purpose": "Describe how the Retry-recovery reset slice satisfies the remaining RFC 9002 Section 6.3 requirements by clearing client congestion and loss-recovery state while preserving the handshake transcript for the replay path.",
+  "satisfies": [
+    "REQ-QUIC-RFC9002-S6P3-0001",
+    "REQ-QUIC-RFC9002-S6P3-0002",
+    "REQ-QUIC-RFC9002-S6P3-0003"
+  ]
+}

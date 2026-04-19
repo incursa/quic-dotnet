@@ -1108,6 +1108,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
+        ResetRecoveryStateForRetry();
         retrySourceConnectionId = retryReceivedEvent.RetrySourceConnectionId.ToArray();
         retryToken = retryReceivedEvent.RetryToken.ToArray();
         retryBootstrapPendingReplay = true;
@@ -5483,9 +5484,21 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         // A real peer-address change starts the new path with fresh recovery state so stale
         // packets from the old path cannot keep influencing congestion or PTO decisions, but ACK
         // history must survive so previously received packets still drive ACK generation.
-        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, discardAckGenerationState: false);
-        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, discardAckGenerationState: false);
-        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData, discardAckGenerationState: false);
+        ResetRecoveryState(discardAckGenerationState: false);
+    }
+
+    private void ResetRecoveryStateForRetry()
+    {
+        // Retry restarts the connection attempt, so discard the sender's packet-number-space
+        // recovery state and ACK history while leaving the TLS bridge untouched.
+        ResetRecoveryState(discardAckGenerationState: true);
+    }
+
+    private void ResetRecoveryState(bool discardAckGenerationState)
+    {
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, discardAckGenerationState);
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, discardAckGenerationState);
+        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData, discardAckGenerationState);
         sendRuntime.FlowController.CongestionControlState.Reset();
     }
 
