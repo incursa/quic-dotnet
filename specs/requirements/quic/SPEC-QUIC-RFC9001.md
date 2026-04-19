@@ -733,6 +733,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs::KeyUpdateViolationsBecomeConnectionErrors
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs::ServerRoleRuntimeConvertsTLSKeyUpdateIntoConnectionErrors
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs::KeyUpdateViolationsStillBecomeConnectionErrorsAfterAPostHandshakeTicketHasBeenStored
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs::ClientRoleDriverKeepsNewSessionTicketProcessingSeparateFromTLSKeyUpdateProhibition
 

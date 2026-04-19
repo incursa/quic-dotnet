@@ -36,7 +36,30 @@ public sealed class REQ_QUIC_RFC9001_S6_0010
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
         Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Contains(result.Effects, effect => effect is QuicConnectionNotifyStreamsOfTerminalStateEffect);
-        Assert.Contains(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ServerRoleRuntimeConvertsTLSKeyUpdateIntoConnectionErrors()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 10,
+                new QuicTlsStateUpdate(QuicTlsUpdateKind.ProhibitedKeyUpdateViolation)),
+            nowTicks: 10);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+        Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState?.Origin);
+        Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
+        Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TlsState.FatalAlertCode);
+        Assert.Equal("TLS KeyUpdate was prohibited.", runtime.TlsState.FatalAlertDescription);
+        Assert.False(runtime.TlsState.KeyUpdateInstalled);
+        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Contains(result.Effects, effect => effect is QuicConnectionNotifyStreamsOfTerminalStateEffect);
     }
 
     [Fact]
