@@ -31,6 +31,29 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void HandshakeConfirmedServerRuntimeCanDeriveSuccessorOneRttKeyUpdateMaterial()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
+        Assert.True(runtime.TlsState.OneRttKeysAvailable);
+        Assert.False(runtime.TlsState.KeyUpdateInstalled);
+        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+            runtime,
+            out QuicTlsPacketProtectionMaterial successorOpenMaterial,
+            out QuicTlsPacketProtectionMaterial successorProtectMaterial));
+
+        Assert.Equal(QuicTlsEncryptionLevel.OneRtt, successorOpenMaterial.EncryptionLevel);
+        Assert.Equal(QuicTlsEncryptionLevel.OneRtt, successorProtectMaterial.EncryptionLevel);
+        Assert.False(runtime.TlsState.KeyUpdateInstalled);
+        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void EstablishingClientRuntimeCannotDeriveSuccessorOneRttKeyUpdateMaterialBeforeHandshakeConfirmation()

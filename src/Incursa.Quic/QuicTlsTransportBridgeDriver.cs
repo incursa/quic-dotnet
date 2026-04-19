@@ -396,8 +396,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         openMaterial = default;
         protectMaterial = default;
 
-        if (Role != QuicTlsRole.Client
-            || keySchedule is null
+        if (keySchedule is null
             || !bridgeState.PeerHandshakeTranscriptCompleted
             || !bridgeState.OneRttKeysAvailable
             || bridgeState.KeyUpdateInstalled
