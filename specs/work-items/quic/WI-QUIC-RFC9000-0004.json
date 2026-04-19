@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0004",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 PMTU Path-State Work Item",
+  "domain": "quic",
+  "status": "planned",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0004",
+    "VER-QUIC-RFC9000-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S14P2-0003",
+    "REQ-QUIC-RFC9000-S14P2-0005",
+    "REQ-QUIC-RFC9000-S14P2-0007",
+    "REQ-QUIC-RFC9000-S14P2-0008",
+    "REQ-QUIC-RFC9000-S14P2-0009"
+  ],
+  "summary": "Keep the RFC 9000 PMTU discovery slice traceable while the runtime grows explicit path-owned maximum datagram size state and active-path projection.",
+  "planned_changes": "- Add path-owned maximum-datagram-size state to the active, candidate, and recently validated path records.\n- Carry that state through validation success and active-path promotion.\n- Project the active path's maximum datagram size into the sender flow controller.\n- Leave PMTU probe classification, probe-vs-ordinary send gating, and connection termination for follow-on packets.",
+  "verification_plan": "Run the RFC 9000 requirement-home tests for the path-state slice and keep the proof scope honest while the remaining PMTU clauses stay deferred.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0004"
+  ],
+  "out_of_scope": [
+    "PMTU probe generation and probe-vs-ordinary send gating.",
+    "Termination when no alternative path exists."
+  ],
+  "completion_notes": "This packet currently proves only REQ-QUIC-RFC9000-S14P2-0009. The remaining PMTU clauses stay deferred until the sender-side probe and gating work lands."
+}

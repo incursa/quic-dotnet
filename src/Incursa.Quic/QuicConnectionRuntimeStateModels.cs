@@ -73,6 +73,33 @@ internal readonly record struct QuicConnectionPathRecoverySnapshot(
     ulong BytesInFlightBytes,
     bool EcnValidated);
 
+internal readonly record struct QuicConnectionPathMaximumDatagramSizeState
+{
+    internal const ulong MinimumAllowedMaximumDatagramSizeBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
+
+    internal QuicConnectionPathMaximumDatagramSizeState(ulong maximumDatagramSizeBytes)
+    {
+        if (maximumDatagramSizeBytes == 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maximumDatagramSizeBytes));
+        }
+
+        MaximumDatagramSizeBytes = maximumDatagramSizeBytes;
+    }
+
+    internal ulong MaximumDatagramSizeBytes { get; init; } = MinimumAllowedMaximumDatagramSizeBytes;
+
+    internal static QuicConnectionPathMaximumDatagramSizeState CreateInitial()
+    {
+        return new QuicConnectionPathMaximumDatagramSizeState(MinimumAllowedMaximumDatagramSizeBytes);
+    }
+
+    internal QuicConnectionPathMaximumDatagramSizeState WithMaximumDatagramSize(ulong maximumDatagramSizeBytes)
+    {
+        return new QuicConnectionPathMaximumDatagramSizeState(maximumDatagramSizeBytes);
+    }
+}
+
 internal readonly record struct QuicConnectionPathAmplificationState(
     ulong ReceivedPayloadBytes,
     ulong SentPayloadBytes,
@@ -173,6 +200,8 @@ internal readonly record struct QuicConnectionActivePathRecord(
     QuicConnectionPathRecoverySnapshot? RecoverySnapshot)
 {
     public QuicConnectionPathAmplificationState AmplificationState { get; init; }
+
+    public QuicConnectionPathMaximumDatagramSizeState MaximumDatagramSizeState { get; init; } = QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
 }
 
 internal readonly record struct QuicConnectionCandidatePathRecord(
@@ -183,6 +212,8 @@ internal readonly record struct QuicConnectionCandidatePathRecord(
     QuicConnectionPathRecoverySnapshot? SavedRecoverySnapshot)
 {
     public QuicConnectionPathAmplificationState AmplificationState { get; init; }
+
+    public QuicConnectionPathMaximumDatagramSizeState MaximumDatagramSizeState { get; init; } = QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
 }
 
 internal readonly record struct QuicConnectionValidatedPathRecord(
@@ -193,6 +224,8 @@ internal readonly record struct QuicConnectionValidatedPathRecord(
     public long LastActivityTicks { get; init; }
 
     public QuicConnectionPathAmplificationState AmplificationState { get; init; }
+
+    public QuicConnectionPathMaximumDatagramSizeState MaximumDatagramSizeState { get; init; } = QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
 }
 
 internal readonly record struct QuicConnectionCloseMetadata(

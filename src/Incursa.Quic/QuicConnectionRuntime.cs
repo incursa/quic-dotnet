@@ -4121,7 +4121,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         };
         candidatePaths[pathValidationSucceededEvent.PathIdentity] = candidatePath;
 
-        AppendRecentlyValidatedPath(candidatePath.Identity, nowTicks, candidatePath.SavedRecoverySnapshot, candidatePath.AmplificationState);
+        AppendRecentlyValidatedPath(
+            candidatePath.Identity,
+            nowTicks,
+            candidatePath.SavedRecoverySnapshot,
+            candidatePath.AmplificationState,
+            candidatePath.MaximumDatagramSizeState);
         lastValidatedRemoteAddress = candidatePath.Identity.RemoteAddress;
 
         bool stateChanged = true;
@@ -4539,6 +4544,9 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         bool trustedReuse = TryGetRecentlyValidatedPath(pathIdentity, out QuicConnectionValidatedPathRecord recentlyValidatedPath);
+        QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState = trustedReuse
+            ? recentlyValidatedPath.MaximumDatagramSizeState
+            : QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
         if (trustedReuse)
         {
             amplificationState = amplificationState.MarkAddressValidated();
@@ -4552,7 +4560,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             RecoverySnapshot: trustedReuse ? recentlyValidatedPath.SavedRecoverySnapshot : null)
         {
             AmplificationState = amplificationState,
+            MaximumDatagramSizeState = maximumDatagramSizeState,
         };
+
+        SyncActivePathMaximumDatagramSize(maximumDatagramSizeState);
 
         if (activePath.Value.IsValidated)
         {
@@ -4732,19 +4743,25 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             LastActivityTicks: nowTicks,
             Validation: new QuicConnectionPathValidationState(
                 Generation: 0,
-                IsValidated: true,
-                IsAbandoned: false,
-                ChallengeSendCount: 0,
-                ChallengeSentAtTicks: null,
-                ValidationDeadlineTicks: null,
-                ChallengePayload: ReadOnlyMemory<byte>.Empty),
+            IsValidated: true,
+            IsAbandoned: false,
+            ChallengeSendCount: 0,
+            ChallengeSentAtTicks: null,
+            ValidationDeadlineTicks: null,
+            ChallengePayload: ReadOnlyMemory<byte>.Empty),
             SavedRecoverySnapshot: recentlyValidatedPath.SavedRecoverySnapshot)
         {
             AmplificationState = updatedAmplificationState.MarkAddressValidated(),
+            MaximumDatagramSizeState = recentlyValidatedPath.MaximumDatagramSizeState,
         };
 
         candidatePaths[pathIdentity] = candidatePath;
-        AppendRecentlyValidatedPath(pathIdentity, nowTicks, recentlyValidatedPath.SavedRecoverySnapshot, candidatePath.AmplificationState);
+        AppendRecentlyValidatedPath(
+            pathIdentity,
+            nowTicks,
+            recentlyValidatedPath.SavedRecoverySnapshot,
+            candidatePath.AmplificationState,
+            candidatePath.MaximumDatagramSizeState);
         lastValidatedRemoteAddress = pathIdentity.RemoteAddress;
 
         if (CanPromoteActivePathMigration())
@@ -4775,6 +4792,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             amplificationState = amplificationState.MarkAddressValidated();
         }
 
+        QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState = isTrustedReuse
+            ? recentlyValidatedPath!.Value.MaximumDatagramSizeState
+            : QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
+
         QuicConnectionCandidatePathRecord candidatePath = new(
             pathIdentity,
             DiscoveredAtTicks: nowTicks,
@@ -4790,6 +4811,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             SavedRecoverySnapshot: recentlyValidatedPath?.SavedRecoverySnapshot)
         {
             AmplificationState = amplificationState,
+            MaximumDatagramSizeState = maximumDatagramSizeState,
         };
 
         candidatePaths[pathIdentity] = candidatePath;
@@ -4801,7 +4823,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
         else
         {
-            AppendRecentlyValidatedPath(pathIdentity, nowTicks, recentlyValidatedPath?.SavedRecoverySnapshot, candidatePath.AmplificationState);
+            AppendRecentlyValidatedPath(
+                pathIdentity,
+                nowTicks,
+                recentlyValidatedPath?.SavedRecoverySnapshot,
+                candidatePath.AmplificationState,
+                candidatePath.MaximumDatagramSizeState);
         }
 
         if (isTrustedReuse)
@@ -4926,7 +4953,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         QuicConnectionPathIdentity pathIdentity,
         long nowTicks,
         QuicConnectionPathRecoverySnapshot? savedRecoverySnapshot,
-        QuicConnectionPathAmplificationState amplificationState)
+        QuicConnectionPathAmplificationState amplificationState,
+        QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState)
     {
         if (MaximumRecentlyValidatedPaths == 0)
         {
@@ -4940,6 +4968,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             LastActivityTicks = nowTicks,
             AmplificationState = amplificationState.MarkAddressValidated(),
+            MaximumDatagramSizeState = maximumDatagramSizeState,
         };
 
         if (recentlyValidatedPaths.Count <= MaximumRecentlyValidatedPaths)
@@ -4967,6 +4996,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             recentlyValidatedPaths.Remove(candidateToRemove.Value);
         }
+    }
+
+    private void SyncActivePathMaximumDatagramSize(QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState)
+    {
+        sendRuntime.FlowController.CongestionControlState.UpdateMaxDatagramSize(
+            maximumDatagramSizeState.MaximumDatagramSizeBytes,
+            resetToInitialWindow: false);
     }
 
     private bool TryPromoteValidatedCandidatePath(long nowTicks, ref List<QuicConnectionEffect>? effects)
@@ -5034,14 +5070,16 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 activePath.Value.Identity,
                 nowTicks,
                 activePath.Value.RecoverySnapshot,
-                activePath.Value.AmplificationState);
+                activePath.Value.AmplificationState,
+                activePath.Value.MaximumDatagramSizeState);
         }
 
         AppendRecentlyValidatedPath(
             pathIdentity,
             nowTicks,
             candidatePath.SavedRecoverySnapshot,
-            candidatePath.AmplificationState);
+            candidatePath.AmplificationState,
+            candidatePath.MaximumDatagramSizeState);
 
         QuicConnectionActivePathRecord updatedActivePath = new(
             pathIdentity,
@@ -5051,11 +5089,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             RecoverySnapshot: candidatePath.SavedRecoverySnapshot)
         {
             AmplificationState = candidatePath.AmplificationState.MarkAddressValidated(),
+            MaximumDatagramSizeState = candidatePath.MaximumDatagramSizeState,
         };
 
         activePath = updatedActivePath;
         candidatePaths.Remove(pathIdentity);
         lastValidatedRemoteAddress = pathIdentity.RemoteAddress;
+        SyncActivePathMaximumDatagramSize(updatedActivePath.MaximumDatagramSizeState);
         UpdatePeerAddressValidationFlag();
 
         if (activePathChanged)
@@ -5122,16 +5162,19 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             RecoverySnapshot: bestCandidate.Value.SavedRecoverySnapshot)
         {
             AmplificationState = bestCandidate.Value.AmplificationState.MarkAddressValidated(),
+            MaximumDatagramSizeState = bestCandidate.Value.MaximumDatagramSizeState,
         };
 
         AppendRecentlyValidatedPath(
             bestPathIdentity.Value,
             nowTicks,
             bestCandidate.Value.SavedRecoverySnapshot,
-            bestCandidate.Value.AmplificationState);
+            bestCandidate.Value.AmplificationState,
+            bestCandidate.Value.MaximumDatagramSizeState);
 
         activePath = promotedPath;
         lastValidatedRemoteAddress = bestPathIdentity.Value.RemoteAddress;
+        SyncActivePathMaximumDatagramSize(promotedPath.MaximumDatagramSizeState);
         UpdatePeerAddressValidationFlag();
         AppendEffect(ref effects, new QuicConnectionPromoteActivePathEffect(
             bestPathIdentity.Value,

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0004",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 PMTU Path-State Verification",
+  "domain": "quic",
+  "status": "planned",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0004",
+    "WI-QUIC-RFC9000-0004"
+  ],
+  "verification_method": "Execution and inspection of the path-state runtime plus the requirement-home proof for the path-owned maximum datagram size slice.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S14P2-0009"
+  ],
+  "scope": "This verification covers the PMTU path-state slice for RFC 9000 Section 14.2.\nIt checks that the runtime carries maximum datagram size state on path records and that the active path projects that state into sender congestion-control state.\nIt does not claim PMTU probe generation, probe-vs-ordinary send gating, or connection termination when no alternative path exists.",
+  "expected_result": "The path records carry maximum datagram size state, the active path mirrors that state into the sender flow controller, and the requirement-home proof stays limited to the path-owned state clause.",
+  "procedure": [
+    "Run the requirement-home tests for REQ-QUIC-RFC9000-S14P2-0009.",
+    "Inspect the active-path runtime state and congestion-control projection for the path-owned maximum datagram size value.",
+    "Keep the remaining PMTU clauses deferred until the sender-side probe and gating work lands."
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The RFC 9000 path-state requirement home is populated."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0009.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs"
+  ]
+}
