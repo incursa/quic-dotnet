@@ -120,6 +120,71 @@ public sealed class REQ_QUIC_RFC9000_S9P3P3_0004
             && sendDatagramEffect.PathIdentity == migratedPath);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S9P3P3-0004")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void ARecentlyValidatedAddressIsReusedEvenWhenAnotherCandidateOccupiesTheBudget()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            maximumCandidatePaths: 1);
+        Assert.True(runtime.ActivePath.HasValue);
+
+        QuicConnectionPathIdentity activePath = runtime.ActivePath!.Value.Identity;
+        QuicConnectionPathIdentity migratedPath = new("203.0.113.99", RemotePort: 443);
+        QuicConnectionPathIdentity budgetOccupyingPath = new("203.0.113.100", RemotePort: 443);
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 3,
+                migratedPath,
+                datagram),
+            nowTicks: 3).StateChanged);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            migratedPath,
+            observedAtTicks: 4);
+
+        Assert.True(validationResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(migratedPath, runtime.ActivePath!.Value.Identity);
+        Assert.True(runtime.RecentlyValidatedPaths.ContainsKey(activePath));
+
+        QuicConnectionTransitionResult budgetOccupyingResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 5,
+                budgetOccupyingPath,
+                datagram),
+            nowTicks: 5);
+
+        Assert.True(budgetOccupyingResult.StateChanged);
+
+        Assert.True(runtime.CandidatePaths.TryGetValue(budgetOccupyingPath, out QuicConnectionCandidatePathRecord budgetOccupyingCandidatePath));
+        Assert.False(budgetOccupyingCandidatePath.Validation.IsValidated);
+        Assert.False(budgetOccupyingCandidatePath.Validation.IsAbandoned);
+
+        QuicConnectionTransitionResult reuseResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 6,
+                activePath,
+                datagram),
+            nowTicks: 6);
+
+        Assert.True(reuseResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.Equal(activePath.RemoteAddress, runtime.LastValidatedRemoteAddress);
+        Assert.True(runtime.RecentlyValidatedPaths.ContainsKey(activePath));
+        Assert.True(runtime.CandidatePaths.TryGetValue(budgetOccupyingPath, out budgetOccupyingCandidatePath));
+        Assert.DoesNotContain(runtime.CandidatePaths, entry => entry.Key.Equals(activePath));
+        Assert.Contains(reuseResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promote
+            && promote.PathIdentity == activePath
+            && !promote.RestoreSavedState);
+    }
+
     private static QuicConnectionRuntime CreateRuntimeWithActivePathAndCandidateBudget(
         QuicConnectionPathIdentity activePath,
         QuicRecordingDiagnosticsSink diagnosticsSink,

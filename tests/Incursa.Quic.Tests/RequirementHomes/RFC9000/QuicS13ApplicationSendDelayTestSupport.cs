@@ -18,7 +18,9 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         new("203.0.113.10", RemotePort: 443);
 
     internal static QuicConnectionRuntime CreateFinishedClientRuntimeWithValidatedActivePath(
-        ulong localBidirectionalSendLimit = 32)
+        ulong localBidirectionalSendLimit = 32,
+        int maximumCandidatePaths = 8,
+        int maximumRecentlyValidatedPaths = 8)
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTransportParameters localTransportParameters = QuicPostHandshakeTicketTestSupport.CreateBootstrapLocalTransportParameters();
@@ -36,6 +38,8 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         QuicConnectionRuntime runtime = new(
             QuicConnectionStreamStateTestHelpers.CreateState(localBidirectionalSendLimit: localBidirectionalSendLimit),
             new FakeMonotonicClock(0),
+            maximumCandidatePaths: maximumCandidatePaths,
+            maximumRecentlyValidatedPaths: maximumRecentlyValidatedPaths,
             tlsRole: QuicTlsRole.Client,
             localHandshakePrivateKey: localHandshakePrivateKey,
             pinnedPeerLeafCertificateSha256: pinnedPeerLeafCertificateSha256);
