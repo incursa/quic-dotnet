@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0043",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC remaining-work program partition and autopilot reset work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Record the current remaining QUIC work as three bounded programs, leave the stopped synthesized backlog lane isolated until a later cleanup decision, and retune the autopilot planner so it prefers those hard-gap programs over generic backlog harvesting.",
+  "related_artifacts": [
+    "SPEC-QUIC-API",
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-RFC9000",
+    "SPEC-QUIC-RFC9001",
+    "SPEC-QUIC-RFC9002"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0041"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0043"
+  ],
+  "addresses": [
+    "REQ-QUIC-API-0001",
+    "REQ-QUIC-API-0011",
+    "REQ-QUIC-INT-0003",
+    "REQ-QUIC-INT-0010"
+  ],
+  "planned_changes": "- Record the 2026-04-18 state snapshot, the outstanding strategic gap families, and the isolated stopped worker lane as non-canonical pending work.\n- Partition the remaining work into Program A (post-resumption key lifecycle and 0-RTT truthfulness), Program B (sender/runtime path model), and Program C (stream/public/interop widening gated on A and B).\n- Update `prompts/mission.md` so generic backlog synthesis and trace-metadata reconciliation stay subordinate to the remaining hard-gap programs.\n- Update `scripts/Invoke-QuicInteropAutopilot.ps1` so the planner exposes a repeatable hard-gap lane and suppresses synthesized backlog lanes while the strategic gap set remains open.\n- Refresh the architecture/work-item/verification indexes and generated markdown views so the new planning slice is discoverable from the canonical repo docs.",
+  "verification_plan": "Validate the new canonical JSON artifacts, render their markdown siblings, regenerate the autopilot plan output, and confirm the recommended lane moves away from synthesized `backlog-*` batches while the current strategic gaps remain open.",
+  "out_of_scope": [
+    "merging, deleting, or rewriting the isolated stopped worker branch and worktree",
+    "implementing TLS KeyUpdate, 0-RTT receive or anti-replay, PMTU discovery, token emission, or multi-version stateless reset behavior themselves",
+    "widening the public API or interop support claims",
+    "counting the isolated synthesized backlog lane as completed progress"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Program Ownership",
+      "content": "- Program A keeps the remaining key lifecycle, 0-RTT truthfulness, and discard timing work on one support-honest track.\n- Program B keeps the sender/runtime path model gaps together so migration, PMTU, and reset-versioning are treated as one runtime frontier instead of scattered backlog shards.\n- Program C stays downstream and must not widen `IsSupported`, transfer expectations, or interop claims until Programs A and B have earned that widening."
+    },
+    {
+      "heading": "Related Code And Inputs",
+      "content": "- [`prompts/mission.md`](../../../prompts/mission.md)\n- [`scripts/Invoke-QuicInteropAutopilot.ps1`](../../../scripts/Invoke-QuicInteropAutopilot.ps1)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)\n- [`specs/generated/quic/quic-requirement-coverage-triage.json`](../../../specs/generated/quic/quic-requirement-coverage-triage.json)\n- [`.artifacts/interop-autopilot/lane-catalog.json`](../../../.artifacts/interop-autopilot/lane-catalog.json)\n- [`.artifacts/interop-autopilot/orchestration-state.json`](../../../.artifacts/interop-autopilot/orchestration-state.json)"
+    }
+  ],
+  "completion_notes": "This is a planning and truthfulness slice only. It records the remaining split and resets the planner heuristic without claiming new protocol behavior."
+}

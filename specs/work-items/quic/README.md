@@ -14,7 +14,11 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-INT-0007.json`](WI-QUIC-INT-0007.json): canonical local harness preflight planning and localhost smoke work item
 - [`WI-QUIC-RFC8999-0001.json`](WI-QUIC-RFC8999-0001.json): canonical RFC 8999 work-item source
 - [`WI-QUIC-RFC9000-0001.json`](WI-QUIC-RFC9000-0001.json): canonical RFC 9000 work-item source
+- [`WI-QUIC-RFC9000-0002.json`](WI-QUIC-RFC9000-0002.json): canonical RFC 9000 migration address-validation token emission work-item source
+- [`WI-QUIC-RFC9000-0003.json`](WI-QUIC-RFC9000-0003.json): canonical RFC 9000 multi-version stateless reset generation work-item source
+- [`WI-QUIC-RFC9000-0004.json`](WI-QUIC-RFC9000-0004.json): canonical RFC 9000 PMTU discovery path-state work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
+- [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9002-0001.json`](WI-QUIC-RFC9002-0001.json): canonical RFC 9002 work-item source
 - [`WI-QUIC-CRT-0002.json`](WI-QUIC-CRT-0002.json): canonical CRT deadline-scheduling work item
 - [`WI-QUIC-CRT-0003.json`](WI-QUIC-CRT-0003.json): canonical CRT endpoint-ingress work item
@@ -55,7 +59,11 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0036.json`](WI-QUIC-CRT-0036.json): canonical CRT internal early-data prerequisite capture work item
 - [`WI-QUIC-CRT-0037.json`](WI-QUIC-CRT-0037.json): canonical CRT dormant early-data attempt readiness work item
 - [`WI-QUIC-CRT-0038.json`](WI-QUIC-CRT-0038.json): canonical CRT first client-side 0-RTT packet-emission attempt work item
+- [`WI-QUIC-CRT-0039.json`](WI-QUIC-CRT-0039.json): canonical CRT client-side 0-RTT rejection cleanup work item
+- [`WI-QUIC-CRT-0040.json`](WI-QUIC-CRT-0040.json): canonical CRT client-side peer early-data disposition work item
+- [`WI-QUIC-CRT-0041.json`](WI-QUIC-CRT-0041.json): canonical CRT client-side 1-RTT Key Phase observation work item
 - [`WI-QUIC-CRT-0042.json`](WI-QUIC-CRT-0042.json): canonical CRT client-side successor 1-RTT Key Phase install work item
+- [`WI-QUIC-CRT-0043.json`](WI-QUIC-CRT-0043.json): canonical CRT remaining-work program partition and autopilot reset work item
 
 ## Notes
 

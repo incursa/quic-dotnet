@@ -23,7 +23,11 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-INT-0007.json`](ARC-QUIC-INT-0007.json): canonical local harness preflight planning and localhost smoke design source
 - [`ARC-QUIC-RFC8999-0001.json`](ARC-QUIC-RFC8999-0001.json): canonical RFC 8999 design source
 - [`ARC-QUIC-RFC9000-0001.json`](ARC-QUIC-RFC9000-0001.json): canonical RFC 9000 design source
+- [`ARC-QUIC-RFC9000-0002.json`](ARC-QUIC-RFC9000-0002.json): canonical RFC 9000 migration address-validation token emission design source
+- [`ARC-QUIC-RFC9000-0003.json`](ARC-QUIC-RFC9000-0003.json): canonical RFC 9000 multi-version stateless reset generation design source
+- [`ARC-QUIC-RFC9000-0004.json`](ARC-QUIC-RFC9000-0004.json): canonical RFC 9000 PMTU discovery path-state design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
+- [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9002-0001.json`](ARC-QUIC-RFC9002-0001.json): canonical RFC 9002 design source
 - [`ARC-QUIC-CRT-0001.json`](ARC-QUIC-CRT-0001.json): canonical CRT design source
 - [`ARC-QUIC-CRT-0002.json`](ARC-QUIC-CRT-0002.json): canonical CRT deadline-scheduling design source
@@ -63,7 +67,9 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0034.json`](ARC-QUIC-CRT-0034.json): canonical CRT internal early-data prerequisite capture design source
 - [`ARC-QUIC-CRT-0035.json`](ARC-QUIC-CRT-0035.json): canonical CRT dormant early-data attempt readiness design source
 - [`ARC-QUIC-CRT-0036.json`](ARC-QUIC-CRT-0036.json): canonical CRT client-side 0-RTT packet-emission attempt design source
+- [`ARC-QUIC-CRT-0039.json`](ARC-QUIC-CRT-0039.json): canonical CRT client-side 1-RTT Key Phase observation design source
 - [`ARC-QUIC-CRT-0040.json`](ARC-QUIC-CRT-0040.json): canonical CRT client-side successor 1-RTT Key Phase install design source
+- [`ARC-QUIC-CRT-0041.json`](ARC-QUIC-CRT-0041.json): canonical CRT remaining-work program partition and autopilot reset design source
 
 ## Notes
 

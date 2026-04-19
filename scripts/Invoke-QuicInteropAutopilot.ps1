@@ -1069,6 +1069,64 @@ function Get-LaneTemplateDefinitions {
             repeatable = $false
         }
         [pscustomobject]@{
+            lane_id = "remaining-hard-gap-programs"
+            objective = "Work one bounded slice from the remaining hard-gap programs: post-resumption key lifecycle and 0-RTT truthfulness or the sender/runtime path model, while keeping stream/public/interop widening gated."
+            priority = 4
+            prerequisite_lane_ids = @("runtime-backbone")
+            blocking_gap_ids = @()
+            allowed_path_prefixes = @(
+                "prompts/mission.md",
+                "scripts/Invoke-QuicInteropAutopilot.ps1",
+                "src/Incursa.Quic",
+                "tests/Incursa.Quic.Tests/RequirementHomes/CRT",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001",
+                "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002",
+                "specs/requirements/quic/SPEC-QUIC-CRT",
+                "specs/requirements/quic/SPEC-QUIC-RFC9000",
+                "specs/requirements/quic/SPEC-QUIC-RFC9001",
+                "specs/requirements/quic/SPEC-QUIC-RFC9002",
+                "specs/architecture/quic/ARC-QUIC-CRT",
+                "specs/architecture/quic/ARC-QUIC-RFC9000",
+                "specs/architecture/quic/ARC-QUIC-RFC9001",
+                "specs/architecture/quic/ARC-QUIC-RFC9002",
+                "specs/work-items/quic/WI-QUIC-CRT",
+                "specs/work-items/quic/WI-QUIC-RFC9000",
+                "specs/work-items/quic/WI-QUIC-RFC9001",
+                "specs/work-items/quic/WI-QUIC-RFC9002",
+                "specs/verification/quic/VER-QUIC-CRT",
+                "specs/verification/quic/VER-QUIC-RFC9000",
+                "specs/verification/quic/VER-QUIC-RFC9001",
+                "specs/verification/quic/VER-QUIC-RFC9002",
+                "specs/requirements/quic/REQUIREMENT-GAPS.md"
+            )
+            forbidden_path_prefixes = @(
+                "src/Incursa.Quic.InteropHarness",
+                "specs/generated"
+            )
+            requirement_families = @(
+                "REQ-QUIC-RFC9000-S9P3",
+                "REQ-QUIC-RFC9000-S10P3",
+                "REQ-QUIC-RFC9000-S14P2",
+                "REQ-QUIC-RFC9001-S6"
+            )
+            verification_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0009|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0009"'
+            )
+            merge_check_commands = @(
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0009|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0009"'
+            )
+            success_gates = @(
+                "one bounded slice from Program A or Program B lands with real runtime, proof, and trace movement",
+                "the repo becomes more honest about the remaining support boundary instead of broadening public or interop claims"
+            )
+            fail_gates = @(
+                "the lane broadens into synthesized backlog harvesting or trace-only churn",
+                "stream/public/interop widening is attempted while the same hard-gap families still govern support honesty"
+            )
+            repeatable = $true
+        }
+        [pscustomobject]@{
             lane_id = "interop-testcase-expansion"
             objective = "Expand one honest interop testcase or materially strengthen one existing testcase after the runtime prerequisites are merged."
             priority = 4
@@ -2401,9 +2459,31 @@ function Get-SynthesizedLaneForbiddenPathPrefixes {
 function Get-SynthesizedLaneTemplateDefinitions {
     param(
         [Parameter(Mandatory = $true)]$TriageJson,
+        [AllowNull()][string[]]$OpenGapIds = @(),
         [int]$BatchSize = 6,
         [int]$MaxLaneCount = 24
     )
+
+    $strategicGapIds = @(
+        "9001-05-handshake-orchestration",
+        "9002-06-key-discard-lifecycle",
+        "9000-19-retransmission-and-frame-reliability",
+        "9000-02-stream-state",
+        "9000-03-flow-control",
+        "9000-11-migration-core",
+        "9000-14-stateless-reset",
+        "9000-14-pmtu-discovery",
+        "9001-02-security-and-registry",
+        "interop-harness"
+    )
+    $openStrategicGapIds = @(
+        @(Get-NormalizedStringList -Items $OpenGapIds) |
+        Where-Object { $strategicGapIds -contains $_ }
+    )
+
+    if ($openStrategicGapIds.Count -gt 0) {
+        return @()
+    }
 
     $requirements = @(
         @($TriageJson.requirements) |
@@ -2520,7 +2600,7 @@ function New-LaneCatalog {
         [void]$laneTemplates.Add($template)
     }
 
-    foreach ($template in @(Get-SynthesizedLaneTemplateDefinitions -TriageJson $TriageJson)) {
+    foreach ($template in @(Get-SynthesizedLaneTemplateDefinitions -TriageJson $TriageJson -OpenGapIds $OpenGapIds)) {
         [void]$laneTemplates.Add($template)
     }
 

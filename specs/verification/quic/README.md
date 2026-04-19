@@ -23,7 +23,11 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-INT-0007.json`](VER-QUIC-INT-0007.json): canonical local harness preflight planning and localhost smoke verification source
 - [`VER-QUIC-RFC8999-0001.json`](VER-QUIC-RFC8999-0001.json): canonical RFC 8999 verification source
 - [`VER-QUIC-RFC9000-0001.json`](VER-QUIC-RFC9000-0001.json): canonical RFC 9000 verification source
+- [`VER-QUIC-RFC9000-0002.json`](VER-QUIC-RFC9000-0002.json): canonical RFC 9000 migration address-validation token emission verification source
+- [`VER-QUIC-RFC9000-0003.json`](VER-QUIC-RFC9000-0003.json): canonical RFC 9000 multi-version stateless reset generation verification source
+- [`VER-QUIC-RFC9000-0004.json`](VER-QUIC-RFC9000-0004.json): canonical RFC 9000 PMTU discovery path-state verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
+- [`VER-QUIC-RFC9001-0002.json`](VER-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition verification source
 - [`VER-QUIC-RFC9002-0001.json`](VER-QUIC-RFC9002-0001.json): canonical RFC 9002 verification source
 - [`VER-QUIC-CRT-0001.json`](VER-QUIC-CRT-0001.json): canonical CRT verification source
 - [`VER-QUIC-CRT-0002.json`](VER-QUIC-CRT-0002.json): canonical CRT deadline-scheduling verification source
@@ -69,6 +73,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0040.json`](VER-QUIC-CRT-0040.json): canonical CRT client-side peer early-data disposition verification source
 - [`VER-QUIC-CRT-0041.json`](VER-QUIC-CRT-0041.json): canonical CRT client-side 1-RTT Key Phase observation verification source
 - [`VER-QUIC-CRT-0042.json`](VER-QUIC-CRT-0042.json): canonical CRT client-side successor 1-RTT Key Phase install verification source
+- [`VER-QUIC-CRT-0043.json`](VER-QUIC-CRT-0043.json): canonical CRT remaining-work program partition and autopilot reset verification source
 
 ## Notes
 

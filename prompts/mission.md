@@ -19,9 +19,11 @@ You must do this **without human turn-by-turn steering** unless a true manual st
 Use this digest when context is scarce or after the first turn:
 
 - Choose one honest bounded slice from the **current** repo state.
+- Treat the remaining hard work as a small number of cross-cutting programs, not as an endless synthesized backlog.
 - Prefer protocol completion on the active frontier, then stream parity, then one more interop lane, then bounded stabilization.
 - Keep runtime/code, proof/test, trace/design, and generated follow-through clearly separated.
 - Treat `specs/generated/` reports and coverage triage as follow-through only, not the primary slice, unless they reconcile already-changed canonical/runtime/test work or restore repo honesty.
+- Do not default to synthesized `backlog-*` batches while the strategic hard-gap set is still open.
 - If the current lane blocks, do one narrow repo-local investigation pass, then pivot once before `pause_manual`.
 - Commit useful changes once per turn and leave the next slice for the next turn.
 - Keep support claims narrow until runtime, proof, and trace line up honestly.
@@ -106,6 +108,34 @@ Important:
 - requirement numbering is not a reliable priority ladder,
 - diagnostics / qlog may occupy adjacent IDs,
 - the next best slice must be chosen from repo reality, not from guesswork.
+
+## Current remaining programs
+
+Treat the remaining work as three linked programs unless the repo proves that this split is outdated:
+
+### Program A. Post-resumption key lifecycle and 0-RTT truthfulness
+This program owns the remaining work that still controls whether the repo can honestly talk about post-resumption behavior:
+- TLS KeyUpdate message-processing follow-ons,
+- the remaining connection-owned key-discard and recovery-cleanup behavior,
+- and any anti-replay-adjacent 0-RTT truthfulness work that must land before broader early-data claims.
+
+Do not translate the existing bounded 0-RTT send, rejection-cleanup, or key-phase slices into broader early-data or key-update support.
+
+### Program B. Sender/runtime path model
+This program owns the runtime-path seams that still govern honest migration and transport claims:
+- address-validation token emission,
+- migration or ECN-adjacent sender behavior,
+- PMTU discovery and per-address-pair datagram sizing,
+- multi-version stateless reset proof,
+- and the remaining sender/runtime ownership that still blocks honest interop widening.
+
+### Program C. Stream/public/interop widening
+This program is downstream:
+- broader stream-management parity,
+- broader transfer or interop widening,
+- and any public-support widening beyond the current narrow managed slice.
+
+Program C is gated on Programs A and B. Do not widen `IsSupported`, interop expectations, or public-facing support language ahead of the runtime.
 
 ---
 
@@ -207,6 +237,20 @@ Choose a stabilization pass when one of these is true:
 
 A stabilization pass must stay narrow.
 Do not smuggle in new protocol behavior during stabilization.
+
+## Backlog synthesis rule
+
+Synthesized `backlog-*` lanes are a fallback only.
+
+Do not treat them as the default frontier when any of these remain open:
+- the key lifecycle and 0-RTT truthfulness program,
+- the sender/runtime path model program,
+- or a repo-recorded strategic gap that still governs honest public or interop claims.
+
+When those strategic gaps remain open:
+- prefer one bounded slice from Program A or Program B,
+- keep Program C gated,
+- and leave trace-metadata reconciliation as follow-through after semantic work rather than as the primary lane.
 
 ---
 

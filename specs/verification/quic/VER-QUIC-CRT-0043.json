@@ -1,0 +1,64 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0043",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC remaining-work program partition and autopilot reset verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Inspection, SpecTrace validation, markdown render, and autopilot plan regeneration.",
+  "related_artifacts": [
+    "SPEC-QUIC-API",
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-RFC9000",
+    "SPEC-QUIC-RFC9001",
+    "SPEC-QUIC-RFC9002",
+    "ARC-QUIC-CRT-0041",
+    "WI-QUIC-CRT-0043"
+  ],
+  "verifies": [
+    "REQ-QUIC-API-0001",
+    "REQ-QUIC-API-0011",
+    "REQ-QUIC-INT-0003",
+    "REQ-QUIC-INT-0010"
+  ],
+  "preconditions": [
+    "The working tree is clean or the current edits are limited to the planning, trace, and planner-heuristic files for this slice.",
+    "The gap ledger and coverage triage snapshot still reflect the current strategic open-gap set.",
+    "The last stopped synthesized backlog lane remains isolated in its own worktree and branch rather than being merged into the current checkout."
+  ],
+  "scope": "Verify that the repository now records the real remaining QUIC work as three bounded programs, treats the stopped synthesized backlog lane as isolated pending work instead of landed support, and regenerates the autopilot plan so a repeatable hard-gap lane is preferred over synthesized backlog batches while the strategic gap set remains open.",
+  "procedure": [
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/Validate-SpecTraceJson.ps1`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-QuicInteropAutopilot.ps1 -Mode plan`.",
+    "Inspect `.artifacts/interop-autopilot/lane-catalog.json` and confirm the recommended lane is the repeatable hard-gap lane rather than a synthesized `backlog-*` lane while the strategic gap set remains open.",
+    "Confirm the QUIC architecture, work-item, and verification README indexes now list the new artifact IDs."
+  ],
+  "expected_result": "The planning artifacts validate and render cleanly, the repository records the remaining work split and isolated stopped lane honestly, and the regenerated autopilot plan now prefers a hard-gap program lane instead of the generic synthesized backlog tail.",
+  "evidence": [
+    "prompts/mission.md",
+    "scripts/Invoke-QuicInteropAutopilot.ps1",
+    "scripts/Validate-SpecTraceJson.ps1",
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/generated/quic/quic-requirement-coverage-triage.json",
+    "specs/architecture/quic/ARC-QUIC-CRT-0041.json",
+    "specs/work-items/quic/WI-QUIC-CRT-0043.json",
+    "specs/verification/quic/VER-QUIC-CRT-0043.json",
+    ".artifacts/interop-autopilot/lane-catalog.json",
+    ".artifacts/interop-autopilot/orchestration-state.json"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- The new canonical planning artifacts validate against the SpecTrace schema and render into markdown siblings.\n- The planning slice records the remaining work as Programs A, B, and C rather than one generic backlog.\n- The last stopped synthesized backlog lane remains explicitly isolated rather than being counted as landed support.\n- The regenerated autopilot plan recommends the repeatable hard-gap lane while the strategic gap set remains open."
+    },
+    {
+      "heading": "Planner Assertions",
+      "content": "- Synthesized `backlog-*` lanes stay suppressed while the strategic gap set is still open.\n- `trace-metadata-reconciliation` stays a follow-through lane rather than becoming the default frontier.\n- Stream/public/interop widening remains downstream of the hard-gap programs."
+    }
+  ],
+  "status_summary": "Planned; this verification slice proves the repo's remaining-work partition and planner reset without claiming that the remaining protocol behavior has already landed."
+}
