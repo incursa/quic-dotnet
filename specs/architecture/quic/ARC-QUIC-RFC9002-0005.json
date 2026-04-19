@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9002-0005",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9002 PTO Probe Send Scheduler Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the runtime-owned PTO probe scheduler that re-arms recovery from real application sends, falls back to a PING when no queued stream data is available, and keeps recovery timer recompute close to the send path.",
+  "scope": "This design covers the sender-recovery timer, the PTO fallback packet, and the runtime recompute hooks needed for stream-open, stream-write, and application-delay flushes.\nIt does not define new congestion control behavior, public APIs, or RFC 9000/RFC 9001 packet formats outside the send scheduler path.",
+  "design_summary": "The runtime records ack-eliciting application sends in QuicRecoveryController, selects a recovery deadline through the existing timer scheduler, and emits a single PING probe when the timer expires without queued application data.\nQueued stream writes still flush as ordinary application packets, while the send path recomputes lifecycle timers after each actual send so the recovery deadline remains aligned with the in-flight packet set.",
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0002.cs"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9002-S6P2-0001",
+    "REQ-QUIC-RFC9002-S6P2P3-0001",
+    "REQ-QUIC-RFC9002-S6P2P4-0001",
+    "REQ-QUIC-RFC9002-S6P2P4-0002",
+    "REQ-QUIC-RFC9002-S6P2P4-0003",
+    "REQ-QUIC-RFC9002-S6P2P4-0004",
+    "REQ-QUIC-RFC9002-S6P2P4-0005",
+    "REQ-QUIC-RFC9002-S6P2P4-0006",
+    "REQ-QUIC-RFC9002-S6P2P4-0007",
+    "REQ-QUIC-RFC9002-S6P2P4-0008",
+    "REQ-QUIC-RFC9002-S6P2P4-0009",
+    "REQ-QUIC-RFC9002-S7P7-0001",
+    "REQ-QUIC-RFC9002-S7P7-0002",
+    "REQ-QUIC-RFC9002-S7P7-0003",
+    "REQ-QUIC-RFC9002-S7P7-0004",
+    "REQ-QUIC-RFC9002-S7P7-0005",
+    "REQ-QUIC-RFC9002-S7P8-0002"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9002",
+    "WI-QUIC-RFC9002-0005",
+    "VER-QUIC-RFC9002-0005"
+  ],
+  "risks": [
+    "The PTO fallback must stay tied to real in-flight packets so the probe timer does not drift away from the scheduler state.",
+    "Recovery timer recompute has to stay attached to actual send effects, or the runtime can stop arming PTO after a direct application send."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers the sender-recovery timer, the PTO fallback packet, and the runtime recompute hooks needed for stream-open, stream-write, and application-delay flushes.\nIt does not define new congestion control behavior, public APIs, or RFC 9000/RFC 9001 packet formats outside the send scheduler path."
+    },
+    {
+      "heading": "Related Artifacts",
+      "content": "- SPEC-QUIC-RFC9002\n- WI-QUIC-RFC9002-0005\n- VER-QUIC-RFC9002-0005"
+    }
+  ]
+}
