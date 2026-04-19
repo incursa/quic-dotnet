@@ -39,6 +39,32 @@ public sealed class REQ_QUIC_RFC9001_S6_0010
         Assert.Contains(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void KeyUpdateViolationsStopLaterPostHandshakeMessagesFromBeingProcessed()
+    {
+        QuicTlsTransportBridgeDriver driver = QuicPostHandshakeTicketTestSupport.CreateFinishedClientDriver();
+        byte[] combinedMessages =
+        [
+            ..QuicPostHandshakeTicketTestSupport.CreateMalformedKeyUpdatePostHandshakeMessage(),
+            ..QuicPostHandshakeTicketTestSupport.CreatePostHandshakeTicketMessage(
+                [0xDE, 0xAD, 0xBE, 0xEF],
+                [0x01, 0x02]),
+        ];
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(QuicTlsEncryptionLevel.OneRtt, combinedMessages);
+
+        Assert.Single(updates);
+        Assert.Equal(QuicTlsUpdateKind.ProhibitedKeyUpdateViolation, updates[0].Kind);
+        Assert.True(driver.State.IsTerminal);
+        Assert.Equal(QuicTransportErrorCode.KeyUpdateError, driver.State.FatalAlertCode);
+        Assert.Equal("TLS KeyUpdate was prohibited.", driver.State.FatalAlertDescription);
+        Assert.False(driver.State.HasPostHandshakeTicket);
+        Assert.False(driver.State.KeyUpdateInstalled);
+        Assert.Equal(0U, driver.State.CurrentOneRttKeyPhase);
+    }
+
     private static QuicConnectionRuntime CreateRuntimeWithActivePath()
     {
         FakeMonotonicClock clock = new(0);
