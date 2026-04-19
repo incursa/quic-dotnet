@@ -5,8 +5,8 @@
 ## Scope
 
 This verification covers the PMTU path-state and sender-admissibility slice for RFC 9000 Section 14.2.
-It checks that the runtime carries maximum datagram size state on path records, that the active path projects that state into sender congestion-control state, that ordinary sends stop below the RFC minimum, and that probe-sized datagrams remain admissible above the current maximum.
-It does not claim automatic alternative-path search or termination policy.
+It checks that the runtime carries maximum datagram size state on path records, that the active path projects that state into sender congestion-control state, that ordinary sends stop below the RFC minimum, that probe-sized datagrams remain admissible above the current maximum, and that path-validation failure discards the connection when no validated path remains.
+It does not claim automatic alternative-path search.
 
 ## Requirements Verified
 
@@ -33,7 +33,7 @@ Execution and inspection of the path-state and sender-admissibility runtime plus
 
 ## Expected Result
 
-The path records carry maximum datagram size state, the active path mirrors that state into the sender flow controller, ordinary sends are gated below 1200 bytes, probe-sized datagrams remain admissible above the current maximum, and the requirement-home proof stays limited to the bounded PMTU slice.
+The path records carry maximum datagram size state, the active path mirrors that state into the sender flow controller, ordinary sends are gated below 1200 bytes, probe-sized datagrams remain admissible above the current maximum, path-validation failure discards the connection when no validated path remains, and the requirement-home proof stays limited to the bounded PMTU slice.
 
 ## Evidence
 

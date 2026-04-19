@@ -8231,6 +8231,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §10.3 RFC9000-S10.3-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0002.cs::LocalCloseRequested_EmitsConnectionCloseWhenTheEndpointCanStillSend
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0002.cs::LocalCloseRequested_WithoutAnActivePathDoesNotEmitAConnectionCloseDatagram
 
 ## REQ-QUIC-RFC9000-S10P3-0003 Use a hard-to-guess 16-byte stateless reset token
 A stateless reset token MUST be 16 bytes long and difficult to guess.
@@ -12579,11 +12582,11 @@ An endpoint SHOULD use DPLPMTUD or PMTUD to determine whether the path to a dest
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0004
+  - ARC-QUIC-RFC9000-0001
 - Implemented By:
-  - WI-QUIC-RFC9000-0004
+  - WI-QUIC-RFC9000-0001
 - Verified By:
-  - VER-QUIC-RFC9000-0004
+  - VER-QUIC-RFC9000-0001
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
@@ -12613,11 +12616,11 @@ Both DPLPMTUD and PMTUD MUST send datagrams that are larger than the current max
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0004
+  - ARC-QUIC-RFC9000-0001
 - Implemented By:
-  - WI-QUIC-RFC9000-0004
+  - WI-QUIC-RFC9000-0001
 - Verified By:
-  - VER-QUIC-RFC9000-0004
+  - VER-QUIC-RFC9000-0001
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
@@ -12647,11 +12650,11 @@ If a QUIC endpoint determines that the PMTU between any pair of local and remote
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0004
+  - ARC-QUIC-RFC9000-0001
 - Implemented By:
-  - WI-QUIC-RFC9000-0004
+  - WI-QUIC-RFC9000-0001
 - Verified By:
-  - VER-QUIC-RFC9000-0004
+  - VER-QUIC-RFC9000-0001
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
@@ -12665,27 +12668,28 @@ An endpoint MAY terminate the connection if an alternative path cannot be found.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0004
+  - ARC-QUIC-RFC9000-0001
 - Implemented By:
-  - WI-QUIC-RFC9000-0004
+  - WI-QUIC-RFC9000-0001
 - Verified By:
-  - VER-QUIC-RFC9000-0004
+  - VER-QUIC-RFC9000-0001
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0008.cs::LocalCloseRequested_StillEmitsConnectionCloseWhenTheActivePathCannotSendOrdinaryPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0008.cs::PathValidationFailureWithoutAnyValidatedPathDiscardsTheConnection
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0008.cs::PathValidationFailureDoesNotDiscardWhileAValidatedPathRemainsAvailable
 
 ## REQ-QUIC-RFC9000-S14P2-0009 Maintain a maximum datagram size per address pair when doing PMTU discovery
 QUIC implementations that implement any kind of PMTU discovery SHOULD maintain a maximum datagram size for each combination of local and remote IP addresses.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0004
+  - ARC-QUIC-RFC9000-0001
 - Implemented By:
-  - WI-QUIC-RFC9000-0004
+  - WI-QUIC-RFC9000-0001
 - Verified By:
-  - VER-QUIC-RFC9000-0004
+  - VER-QUIC-RFC9000-0001
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2

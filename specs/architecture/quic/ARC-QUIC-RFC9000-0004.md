@@ -4,32 +4,39 @@
 
 ## Purpose
 
-Describe how the runtime owns per-address-pair maximum-datagram-size state on path records and projects the active path's size into sender congestion-control state while leaving probe-gating and termination follow-ons deferred.
+Describe how the runtime owns per-address-pair maximum-datagram-size state on path records, projects the active path's size into sender congestion-control state, distinguishes ordinary from probe-sized sends, and discards the connection when path validation failure leaves no validated path, while leaving automatic alternative-path search separate.
 
 ## Scope
 
-This design covers the PMTU path-state slice for RFC 9000 Section 14.2.
+This design covers the PMTU path-state and send-admissibility slice for RFC 9000 Section 14.2.
 The runtime owns per-address-pair maximum datagram size state on the path records it already uses for active-path, candidate-path, and recently validated-path bookkeeping.
-It does not claim PMTU probe generation, probe-vs-ordinary send gating, or connection termination when no alternative path exists.
+It distinguishes ordinary packets from probe-sized datagrams, projects the active path's state into sender congestion-control state, and stops ordinary sending once the active path drops below the RFC minimum.
+When path validation failure leaves no validated path, the runtime discards the connection.
+It does not claim automatic alternative-path search.
 
 ## Requirements Satisfied
 
+- REQ-QUIC-RFC9000-S14P2-0003
+- REQ-QUIC-RFC9000-S14P2-0005
+- REQ-QUIC-RFC9000-S14P2-0007
+- REQ-QUIC-RFC9000-S14P2-0008
 - REQ-QUIC-RFC9000-S14P2-0009
 
 ## Design Summary
 
-The runtime now carries a maximum datagram size state on active, candidate, and recently validated path records.
-Active-path creation and promotion project that state into the sender flow controller so the connection has a single path-owned source of truth for the currently preferred datagram size.
+The runtime now carries a maximum datagram size state on active, candidate, and recently validated path records. Active-path creation and promotion project that state into the sender flow controller, and the path-state helper distinguishes ordinary packets from probe-sized datagrams so the active path can stop ordinary sends below the RFC 9000 minimum while still admitting PMTU probe sizing above the current maximum.
 
 ## Key Components
 
 - src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs
+- src/Incursa.Quic/QuicConnectionSendRuntime.cs
+- src/Incursa.Quic/QuicCongestionControlState.cs
 
 ## Risks
 
-- Probe-vs-ordinary send gating, probe classification, and no-alternative-path termination remain intentionally out of scope for this packet.
-- The active-path projection currently synchronizes the sender flow controller from path state but does not yet connect wire-level PMTU discovery signals.
+- Probe generation itself remains a separate sender feature; this slice only proves the path-state admissibility and 1200-byte floor behavior.
+- Automatic alternative-path search remains a separate lifecycle decision and is not claimed here.
 
 ## Related Artifacts
 

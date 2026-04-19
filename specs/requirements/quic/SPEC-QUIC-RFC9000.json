@@ -22965,8 +22965,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0008.cs::LocalCloseRequested_StillEmitsConnectionCloseWhenTheActivePathCannotSendOrdinaryPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0002.cs::LocalCloseRequested_WithoutAnActivePathDoesNotEmitAConnectionCloseDatagram"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0008.cs::PathValidationFailureWithoutAnyValidatedPathDiscardsTheConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0008.cs::PathValidationFailureDoesNotDiscardWhileAValidatedPathRemainsAvailable"
         ]
       }
     },

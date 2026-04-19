@@ -9,41 +9,55 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void LocalCloseRequested_StillEmitsConnectionCloseWhenTheActivePathCannotSendOrdinaryPackets()
+    public void PathValidationFailureWithoutAnyValidatedPathDiscardsTheConnection()
     {
-        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntime();
+        QuicConnectionPathIdentity failedPath = new("203.0.113.208", RemotePort: 443);
 
-        ulong reducedMaximumDatagramSizeBytes = QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes - 1;
-        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(reducedMaximumDatagramSizeBytes));
-        Assert.True(runtime.ActivePath.HasValue);
-        Assert.False(runtime.ActivePath.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets);
-
-        QuicConnectionCloseMetadata closeMetadata = new(
-            TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
-            ApplicationErrorCode: null,
-            TriggeringFrameType: 0x1c,
-            ReasonPhrase: null);
+        Assert.False(runtime.HasValidatedPath);
+        Assert.Null(runtime.ActivePath);
 
         QuicConnectionTransitionResult result = runtime.Transition(
-            new QuicConnectionLocalCloseRequestedEvent(
-                ObservedAtTicks: 0,
-                closeMetadata),
-            nowTicks: 0);
+            new QuicConnectionPathValidationFailedEvent(
+                ObservedAtTicks: 20,
+                failedPath,
+                IsAbandoned: true),
+            nowTicks: 20);
 
-        QuicConnectionCloseFrame expectedClose = new(
-            QuicTransportErrorCode.ProtocolViolation,
-            triggeringFrameType: 0x1c,
-            []);
-        byte[] expectedDatagram = QuicFrameTestData.BuildConnectionCloseFrame(expectedClose);
-        QuicConnectionSendDatagramEffect send = Assert.Single(
-            result.Effects.OfType<QuicConnectionSendDatagramEffect>());
-
-        Assert.Equal(runtime.ActivePath!.Value.Identity, send.PathIdentity);
-        Assert.True(expectedDatagram.AsSpan().SequenceEqual(send.Datagram.Span));
-        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
-        Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
+        Assert.Equal(QuicConnectionSendingMode.None, runtime.SendingMode);
         Assert.False(runtime.CanSendOrdinaryPackets);
-        Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState?.Origin);
-        Assert.Equal(closeMetadata, runtime.TerminalState?.Close);
+        Assert.True(runtime.TerminalState.HasValue);
+        Assert.Equal(QuicConnectionPhase.Discarded, runtime.TerminalState.Value.Phase);
+        Assert.Equal(QuicConnectionCloseOrigin.Remote, runtime.TerminalState.Value.Origin);
+        Assert.Contains(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void PathValidationFailureDoesNotDiscardWhileAValidatedPathRemainsAvailable()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        QuicConnectionPathIdentity failedPath = new("203.0.113.210", RemotePort: 443);
+
+        Assert.True(runtime.HasValidatedPath);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.True(runtime.ActivePath.HasValue);
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPathValidationFailedEvent(
+                ObservedAtTicks: 30,
+                failedPath,
+                IsAbandoned: true),
+            nowTicks: 30);
+
+        Assert.False(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Equal(QuicConnectionSendingMode.Ordinary, runtime.SendingMode);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Null(runtime.TerminalState);
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
     }
 }
