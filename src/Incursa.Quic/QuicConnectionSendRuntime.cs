@@ -117,7 +117,7 @@ internal sealed class QuicConnectionSendRuntime
             packet.AckOnlyPacket,
             packet.ProbePacket,
             packet.PacketProtectionLevel);
-        if (packet.AckEliciting)
+        if (packet.AckEliciting && !packet.ProbePacket)
         {
             ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
                 ProbeTimeoutCount,

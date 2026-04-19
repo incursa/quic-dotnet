@@ -155,7 +155,7 @@ public sealed class REQ_QUIC_CRT_0122
             }
         }
 
-        Assert.True(initialPacketCountAfterRetry > initialPacketCountBeforeRetry);
+        Assert.Equal(replayDatagrams.Length, initialPacketCountAfterRetry);
         Assert.True(observedTrackedReplayPacket);
 
         QuicConnectionTransitionResult duplicateRetryResult = runtime.Transition(
