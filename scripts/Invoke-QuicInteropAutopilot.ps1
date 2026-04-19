@@ -263,6 +263,272 @@ function Get-SupervisorPollAction {
     }
 }
 
+function Get-BlockedLaneIds {
+    param([Parameter(Mandatory = $true)]$StateObject)
+
+    return @(
+        @(Get-NormalizedBlockedLaneRecords -BlockedLanes (Get-ObjectNotePropertyValue -Object $StateObject -Name "blocked_lanes" -DefaultValue @())) |
+        ForEach-Object { [string]$_.lane_id }
+    )
+}
+
+function Get-BlockedLaneRecord {
+    param(
+        [Parameter(Mandatory = $true)]$StateObject,
+        [Parameter(Mandatory = $true)][string]$LaneId
+    )
+
+    return @(
+        @(Get-NormalizedBlockedLaneRecords -BlockedLanes (Get-ObjectNotePropertyValue -Object $StateObject -Name "blocked_lanes" -DefaultValue @())) |
+        Where-Object { $_.lane_id -eq $LaneId } |
+        Select-Object -First 1
+    ) | Select-Object -First 1
+}
+
+function Remove-BlockedLaneRecord {
+    param(
+        [Parameter(Mandatory = $true)]$StateObject,
+        [Parameter(Mandatory = $true)][string]$LaneId
+    )
+
+    $remaining = @(
+        @(Get-NormalizedBlockedLaneRecords -BlockedLanes (Get-ObjectNotePropertyValue -Object $StateObject -Name "blocked_lanes" -DefaultValue @())) |
+        Where-Object { $_.lane_id -ne $LaneId }
+    )
+    Set-ObjectNoteProperty -Object $StateObject -Name "blocked_lanes" -Value $remaining
+}
+
+function Add-BlockedLaneRecord {
+    param(
+        [Parameter(Mandatory = $true)]$StateObject,
+        [Parameter(Mandatory = $true)][string]$LaneId,
+        [Parameter(Mandatory = $true)][string]$Classification,
+        [Parameter(Mandatory = $true)][string]$Reason,
+        [string]$BranchName = "",
+        [string]$TargetBranch = "",
+        [bool]$PreservedBranch = $false,
+        [string]$LastWorkerHead = ""
+    )
+
+    Remove-BlockedLaneRecord -StateObject $StateObject -LaneId $LaneId
+    $blockedLanes = @(
+        @(Get-NormalizedBlockedLaneRecords -BlockedLanes (Get-ObjectNotePropertyValue -Object $StateObject -Name "blocked_lanes" -DefaultValue @())) +
+        @([pscustomobject]@{
+            lane_id = $LaneId
+            classification = $Classification
+            reason = $Reason
+            blocked_at = (Get-Date).ToString("o")
+            branch_name = $BranchName
+            target_branch = $TargetBranch
+            preserved_branch = $PreservedBranch
+            last_worker_head = $LastWorkerHead
+        })
+    )
+
+    Set-ObjectNoteProperty -Object $StateObject -Name "blocked_lanes" -Value $blockedLanes
+}
+
+function Complete-LaneInState {
+    param(
+        [Parameter(Mandatory = $true)]$StateObject,
+        [Parameter(Mandatory = $true)][string]$LaneId
+    )
+
+    if ($LaneId -eq "trace-metadata-reconciliation") {
+        Set-ObjectNoteProperty -Object $StateObject -Name "pending_reconciliation_lane_ids" -Value @()
+    }
+    else {
+        Set-ObjectNoteProperty -Object $StateObject -Name "completed_lane_ids" -Value @($StateObject.completed_lane_ids + @($LaneId))
+        Set-ObjectNoteProperty -Object $StateObject -Name "pending_reconciliation_lane_ids" -Value @($StateObject.pending_reconciliation_lane_ids + @($LaneId))
+    }
+
+    Set-ObjectNoteProperty -Object $StateObject -Name "completed_lane_ids" -Value @(Get-NormalizedStringList -Items $StateObject.completed_lane_ids)
+    Set-ObjectNoteProperty -Object $StateObject -Name "pending_reconciliation_lane_ids" -Value @(Get-NormalizedStringList -Items $StateObject.pending_reconciliation_lane_ids)
+    Remove-BlockedLaneRecord -StateObject $StateObject -LaneId $LaneId
+}
+
+function Set-ActiveLaneStateMetadata {
+    param(
+        [Parameter(Mandatory = $true)]$StateObject,
+        [string]$LanePhase = "",
+        [string]$LastSuccessfulAction = "",
+        [string]$LastHeartbeatTime = "",
+        [string]$LastErrorClassification = "",
+        [Nullable[int]]$RetryCount = $null,
+        [string]$LastWorkerState = "",
+        [string]$LastWorkerSummary = "",
+        [string]$LastWorkerManualReason = "",
+        [string]$LastWorkerNextStep = "",
+        [string]$LastWorkerHead = "",
+        [Nullable[int]]$LastWorkerCommitCount = $null
+    )
+
+    if ($null -eq $StateObject.active_lane) {
+        return
+    }
+
+    $activeLane = $StateObject.active_lane
+    if (-not [string]::IsNullOrWhiteSpace($LanePhase)) {
+        Set-ObjectNoteProperty -Object $activeLane -Name "lane_phase" -Value $LanePhase
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($LastSuccessfulAction)) {
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_successful_action" -Value $LastSuccessfulAction
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($LastHeartbeatTime)) {
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_heartbeat_time" -Value $LastHeartbeatTime
+    }
+
+    if ($PSBoundParameters.ContainsKey("LastErrorClassification")) {
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_error_classification" -Value $LastErrorClassification
+    }
+
+    if ($null -ne $RetryCount) {
+        Set-ObjectNoteProperty -Object $activeLane -Name "retry_count" -Value ([int]$RetryCount)
+    }
+
+    if ($PSBoundParameters.ContainsKey("LastWorkerState")) {
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_state" -Value $LastWorkerState
+    }
+
+    if ($PSBoundParameters.ContainsKey("LastWorkerSummary")) {
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_summary" -Value $LastWorkerSummary
+    }
+
+    if ($PSBoundParameters.ContainsKey("LastWorkerManualReason")) {
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_manual_reason" -Value $LastWorkerManualReason
+    }
+
+    if ($PSBoundParameters.ContainsKey("LastWorkerNextStep")) {
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_next_step" -Value $LastWorkerNextStep
+    }
+
+    if ($PSBoundParameters.ContainsKey("LastWorkerHead")) {
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_head" -Value $LastWorkerHead
+    }
+
+    if ($null -ne $LastWorkerCommitCount) {
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_commit_count" -Value ([int]$LastWorkerCommitCount)
+    }
+}
+
+function Get-WorkerHeartbeatInfo {
+    param([string]$OutputDirectory = "")
+
+    $blankResult = [pscustomobject]@{
+        LastHeartbeatTime = ""
+        LastHeartbeatFile = ""
+        HasAnyOutput = $false
+    }
+
+    if ([string]::IsNullOrWhiteSpace($OutputDirectory) -or -not (Test-Path -LiteralPath $OutputDirectory)) {
+        return $blankResult
+    }
+
+    $artifactPaths = @(
+        Join-Path $OutputDirectory "autopilot-transcript.log"
+        Join-Path $OutputDirectory "autopilot-journal.jsonl"
+        Join-Path $OutputDirectory "autopilot-summary.csv"
+    )
+
+    $latestArtifact = @(
+        $artifactPaths |
+        Where-Object { Test-Path -LiteralPath $_ } |
+        ForEach-Object { Get-Item -LiteralPath $_ } |
+        Sort-Object -Property LastWriteTimeUtc -Descending |
+        Select-Object -First 1
+    )
+
+    if ($latestArtifact.Count -eq 0) {
+        return $blankResult
+    }
+
+    return [pscustomobject]@{
+        LastHeartbeatTime = $latestArtifact[0].LastWriteTimeUtc.ToString("o")
+        LastHeartbeatFile = $latestArtifact[0].FullName
+        HasAnyOutput = $true
+    }
+}
+
+function Get-ActiveLaneCommitSnapshot {
+    param(
+        [Parameter(Mandatory = $true)]$StateObject,
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot
+    )
+
+    $blank = [pscustomobject]@{
+        BranchExists = $false
+        WorktreeExists = $false
+        HeadRef = ""
+        HeadSha = ""
+        CommitShas = @()
+        CommitCount = 0
+        HeadOnTargetBranch = $false
+    }
+
+    if ($null -eq $StateObject.active_lane) {
+        return $blank
+    }
+
+    $activeLane = $StateObject.active_lane
+    $branchName = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "branch_name" -DefaultValue "")
+    $worktreePath = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "worktree_path" -DefaultValue "")
+    $baseRef = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "base_ref" -DefaultValue "")
+    $targetBranch = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "target_branch" -DefaultValue "")
+    $lastWorkerHead = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "last_worker_head" -DefaultValue "")
+
+    $branchExists = Test-GitBranchExists -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -BranchName $branchName
+    $worktreeExists = Test-GitWorktreeExists -WorktreePath $worktreePath
+
+    $headRef = ""
+    if ($branchExists) {
+        $headRef = $branchName
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($lastWorkerHead) -and (Test-GitObjectExists -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -Ref $lastWorkerHead)) {
+        $headRef = $lastWorkerHead
+    }
+    elseif ($worktreeExists) {
+        $headRef = Get-GitHead -GitExecutable $GitExecutable -RepositoryRoot $worktreePath -Ref "HEAD"
+    }
+
+    if ([string]::IsNullOrWhiteSpace($headRef)) {
+        return [pscustomobject]@{
+            BranchExists = $branchExists
+            WorktreeExists = $worktreeExists
+            HeadRef = ""
+            HeadSha = ""
+            CommitShas = @()
+            CommitCount = 0
+            HeadOnTargetBranch = $false
+        }
+    }
+
+    $headSha = Get-GitHead -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -Ref $headRef
+    $commitShas = if ([string]::IsNullOrWhiteSpace($baseRef) -or $headSha -eq $baseRef) {
+        @()
+    }
+    else {
+        @(Get-CommitRange -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -FromRef $baseRef -ToRef $headSha)
+    }
+
+    $headOnTargetBranch = $false
+    if (-not [string]::IsNullOrWhiteSpace($targetBranch) -and (Test-GitObjectExists -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -Ref $targetBranch)) {
+        $headOnTargetBranch = Test-GitAncestor -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -AncestorRef $headSha -DescendantRef $targetBranch
+    }
+
+    return [pscustomobject]@{
+        BranchExists = $branchExists
+        WorktreeExists = $worktreeExists
+        HeadRef = $headRef
+        HeadSha = $headSha
+        CommitShas = $commitShas
+        CommitCount = @($commitShas).Count
+        HeadOnTargetBranch = $headOnTargetBranch
+    }
+}
+
 function Get-SupervisorStateSummary {
     param(
         [Parameter(Mandatory = $true)]$StateObject
@@ -270,6 +536,7 @@ function Get-SupervisorStateSummary {
 
     $completedLaneIds = @(Get-NormalizedStringList -Items $StateObject.completed_lane_ids)
     $pendingReconciliationLaneIds = @(Get-NormalizedStringList -Items $StateObject.pending_reconciliation_lane_ids)
+    $blockedLaneIds = @(Get-BlockedLaneIds -StateObject $StateObject)
 
     $activeLaneId = ""
     $activeLaneBranch = ""
@@ -312,11 +579,23 @@ function Get-SupervisorStateSummary {
         "$($pendingReconciliationLaneIds.Count) lanes: " + ($pendingReconciliationLaneIds -join ", ")
     }
 
+    $blockedLaneDisplay = if ($blockedLaneIds.Count -eq 0) {
+        "(none)"
+    }
+    elseif ($blockedLaneIds.Count -eq 1) {
+        "1 lane: $($blockedLaneIds[0])"
+    }
+    else {
+        "$($blockedLaneIds.Count) lanes: " + ($blockedLaneIds -join ", ")
+    }
+
     return [pscustomobject]@{
         ActiveLaneId = $activeLaneId
         ActiveLaneDisplay = $activeLaneDisplay
         PendingReconciliationLaneIds = @($pendingReconciliationLaneIds)
         PendingReconciliationDisplay = $pendingReconciliationDisplay
+        BlockedLaneIds = @($blockedLaneIds)
+        BlockedLaneDisplay = $blockedLaneDisplay
         CompletedLaneCount = $completedLaneIds.Count
     }
 }
@@ -332,8 +611,110 @@ function Assert-SupervisorCondition {
     }
 }
 
+function Invoke-SmokeGitCommand {
+    param(
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [Parameter(Mandatory = $true)][string[]]$Arguments
+    )
+
+    $argumentList = @("-C", $RepositoryRoot) + $Arguments
+    $result = Invoke-NativeCapture -FilePath $GitExecutable -WorkingDirectory $RepositoryRoot -ArgumentList $argumentList
+    if ($result.ExitCode -ne 0) {
+        throw "Smoke git command failed: git $($Arguments -join ' ') | $($result.StdErr.Trim())"
+    }
+
+    return $result
+}
+
+function New-SmokeGitRepository {
+    param([Parameter(Mandatory = $true)][string]$GitExecutable)
+
+    $repoRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("quic-interop-smoke-" + [guid]::NewGuid().ToString("N"))
+    Ensure-Directory -Path $repoRoot | Out-Null
+    Invoke-SmokeGitCommand -GitExecutable $GitExecutable -RepositoryRoot $repoRoot -Arguments @("init", "-b", "main") | Out-Null
+    Invoke-SmokeGitCommand -GitExecutable $GitExecutable -RepositoryRoot $repoRoot -Arguments @("config", "user.email", "smoke@example.test") | Out-Null
+    Invoke-SmokeGitCommand -GitExecutable $GitExecutable -RepositoryRoot $repoRoot -Arguments @("config", "user.name", "Smoke Test") | Out-Null
+    Set-Content -LiteralPath (Join-Path $repoRoot "README.md") -Value "smoke" -Encoding utf8
+    Invoke-SmokeGitCommand -GitExecutable $GitExecutable -RepositoryRoot $repoRoot -Arguments @("add", ".") | Out-Null
+    Invoke-SmokeGitCommand -GitExecutable $GitExecutable -RepositoryRoot $repoRoot -Arguments @("commit", "-m", "initial") | Out-Null
+    return $repoRoot
+}
+
+function New-SmokeActiveLaneFixture {
+    param(
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$StatePath,
+        [Parameter(Mandatory = $true)][string]$LaneId,
+        [string]$DecisionState = "",
+        [string]$ManualReason = "",
+        [string]$Summary = "",
+        [bool]$CreateCommit = $false,
+        [bool]$MarkMerged = $false
+    )
+
+    $baseRef = Get-GitHead -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -Ref "main"
+    $branchName = "codex/$LaneId"
+    $worktreePath = Join-Path $RepoRoot ".smoke-$LaneId"
+    $outputDirectory = Ensure-Directory -Path (Join-Path $RepoRoot ".smoke-output-$LaneId")
+    Ensure-GitWorktree -GitExecutable $GitExecutable -RepoRoot $RepoRoot -WorktreePath $worktreePath -BranchName $branchName -BaseRef $baseRef | Out-Null
+
+    if ($CreateCommit) {
+        Set-Content -LiteralPath (Join-Path $worktreePath "$LaneId.txt") -Value $LaneId -Encoding utf8
+        Invoke-SmokeGitCommand -GitExecutable $GitExecutable -RepositoryRoot $worktreePath -Arguments @("add", ".") | Out-Null
+        Invoke-SmokeGitCommand -GitExecutable $GitExecutable -RepositoryRoot $worktreePath -Arguments @("commit", "-m", "smoke $LaneId") | Out-Null
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($DecisionState)) {
+        @([pscustomobject]@{
+            State = $DecisionState
+            Summary = $Summary
+            ManualReason = $ManualReason
+            NextStep = ""
+            CommitSha = ""
+        }) | Export-Csv -LiteralPath (Join-Path $outputDirectory "autopilot-summary.csv") -NoTypeInformation
+    }
+
+    $contractPath = Join-Path (Split-Path -Path $StatePath -Parent) "$LaneId.contract.json"
+    ([pscustomobject]@{
+        lane_id = $LaneId
+        branch_name = $branchName
+        worktree_path = $worktreePath
+        output_directory = $outputDirectory
+        base_ref = $baseRef
+        target_branch = "main"
+        merge_check_commands = @()
+    } | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $contractPath -Encoding utf8
+
+    $state = New-OrchestrationState
+    $state.active_lane = [pscustomobject]@{
+        lane_id = $LaneId
+        branch_name = $branchName
+        worktree_path = $worktreePath
+        contract_path = $contractPath
+        output_directory = $outputDirectory
+        base_ref = $baseRef
+        target_branch = "main"
+        lane_phase = if ([string]::IsNullOrWhiteSpace($DecisionState)) { "worker_running" } else { "awaiting_reconciliation" }
+        merged = $MarkMerged
+    }
+    Save-OrchestrationState -StatePath $StatePath -StateObject $state
+
+    return [pscustomobject]@{
+        State = $state
+        BranchName = $branchName
+        WorktreePath = $worktreePath
+        OutputDirectory = $outputDirectory
+        ContractPath = $contractPath
+    }
+}
+
 function Invoke-SupervisorSmokeValidation {
-    param([Parameter(Mandatory = $true)]$DefaultSettings)
+    param(
+        [Parameter(Mandatory = $true)]$DefaultSettings,
+        [Parameter(Mandatory = $true)][string]$GitExecutable
+    )
 
     $now = [datetime]::SpecifyKind([datetime]"2026-04-16T00:00:00", [System.DateTimeKind]::Utc)
 
@@ -440,7 +821,86 @@ function Invoke-SupervisorSmokeValidation {
         -PlannerReasoningEffort "xhigh" `
         -WorkerModel "gpt-5.4-mini" `
         -WorkerReasoningEffort "xhigh"
-    Assert-SupervisorCondition -Condition ($mockCatalog.recommended_lane_id -eq "backlog-rfc9000-s5p1p1-b01") -Message "Expected backlog synthesis to recommend a bounded lane when the static catalog is exhausted but uncovered backlog remains."
+    $backlogLane = @($mockCatalog.lanes | Where-Object { $_.lane_id -eq "backlog-rfc9000-s5p1p1-b01" } | Select-Object -First 1)
+    Assert-SupervisorCondition -Condition ($backlogLane.Count -eq 1 -and $backlogLane[0].status -eq "eligible" -and -not [string]::IsNullOrWhiteSpace([string]$mockCatalog.recommended_lane_id)) -Message "Expected backlog synthesis to keep a bounded backlog lane eligible once uncovered backlog remains."
+
+    $smokeRoots = New-Object System.Collections.Generic.List[string]
+    try {
+        $staleRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
+        [void]$smokeRoots.Add($staleRepo)
+        $staleStatePath = Join-Path $staleRepo ".state\orchestration-state.json"
+        Ensure-Directory -Path (Split-Path -Path $staleStatePath -Parent) | Out-Null
+        $staleOutput = Ensure-Directory -Path (Join-Path $staleRepo ".stale-output")
+        Set-Content -LiteralPath (Join-Path $staleOutput "autopilot-transcript.log") -Value "stale" -Encoding utf8
+        $staleState = New-OrchestrationState
+        $staleState.active_lane = [pscustomobject]@{
+            lane_id = "stale-lane"
+            branch_name = "codex/stale-lane"
+            worktree_path = (Join-Path $staleRepo ".missing-worktree")
+            contract_path = (Join-Path $staleRepo ".missing-contract.json")
+            output_directory = $staleOutput
+            base_ref = Get-GitHead -GitExecutable $GitExecutable -RepositoryRoot $staleRepo -Ref "main"
+            target_branch = "main"
+            lane_phase = "prepared"
+        }
+        Save-OrchestrationState -StatePath $staleStatePath -StateObject $staleState
+        $staleRepair = Repair-OrchestrationState -StatePath $staleStatePath -StateObject (Get-OrchestrationState -StatePath $staleStatePath) -GitExecutable $GitExecutable -RepoRoot $staleRepo
+        Assert-SupervisorCondition -Condition ($null -eq $staleRepair.StateObject.active_lane) -Message "Expected repair to clear a stale active lane when the worktree, branch, and contract are gone."
+
+        $mergedRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
+        [void]$smokeRoots.Add($mergedRepo)
+        $mergedStatePath = Join-Path $mergedRepo ".state\orchestration-state.json"
+        Ensure-Directory -Path (Split-Path -Path $mergedStatePath -Parent) | Out-Null
+        $mergedFixture = New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $mergedRepo -StatePath $mergedStatePath -LaneId "merged-lane" -MarkMerged:$true
+        $mergedRepair = Repair-OrchestrationState -StatePath $mergedStatePath -StateObject (Get-OrchestrationState -StatePath $mergedStatePath) -GitExecutable $GitExecutable -RepoRoot $mergedRepo
+        Assert-SupervisorCondition -Condition ($null -eq $mergedRepair.StateObject.active_lane -and -not (Test-GitBranchExists -GitExecutable $GitExecutable -RepositoryRoot $mergedRepo -BranchName $mergedFixture.BranchName) -and -not (Test-Path -LiteralPath $mergedFixture.WorktreePath)) -Message "Expected repair to clean up a merged lane that still had leftover branch/worktree state."
+
+        $pauseRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
+        [void]$smokeRoots.Add($pauseRepo)
+        $pauseStatePath = Join-Path $pauseRepo ".state\orchestration-state.json"
+        Ensure-Directory -Path (Split-Path -Path $pauseStatePath -Parent) | Out-Null
+        New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $pauseRepo -StatePath $pauseStatePath -LaneId "pause-merge-lane" -DecisionState "pause_manual" -ManualReason "Need a quick human review of the wording." -Summary "Manual review requested." -CreateCommit:$true | Out-Null
+        $pauseDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $pauseStatePath) -GitExecutable $GitExecutable -RepoRoot $pauseRepo
+        Assert-SupervisorCondition -Condition ($pauseDisposition.Action -eq "merge") -Message "Expected pause_manual with semantic commits and no blocked-lane reason to merge and continue."
+
+        $verifyRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
+        [void]$smokeRoots.Add($verifyRepo)
+        $verifyStatePath = Join-Path $verifyRepo ".state\orchestration-state.json"
+        Ensure-Directory -Path (Split-Path -Path $verifyStatePath -Parent) | Out-Null
+        New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $verifyRepo -StatePath $verifyStatePath -LaneId "verify-lane" -DecisionState "pause_manual" -ManualReason "Verification command failed for lane 'verify-lane'." -Summary "Targeted verification failed." -CreateCommit:$true | Out-Null
+        $verifyDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $verifyStatePath) -GitExecutable $GitExecutable -RepoRoot $verifyRepo
+        Assert-SupervisorCondition -Condition ($verifyDisposition.Action -eq "block") -Message "Expected verification failure after semantic commits to block the lane instead of stopping the supervisor."
+
+        $branchRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
+        [void]$smokeRoots.Add($branchRepo)
+        Invoke-SmokeGitCommand -GitExecutable $GitExecutable -RepositoryRoot $branchRepo -Arguments @("checkout", "-b", "dev") | Out-Null
+        $branchGuardFailed = $false
+        try {
+            Assert-RepositoryReadyForPrepare -GitExecutable $GitExecutable -RepoRoot $branchRepo -TargetBranch "main" -Force:$false
+        }
+        catch {
+            $branchGuardFailed = $_.Exception.Message -match "Checkout 'main'"
+        }
+        Assert-SupervisorCondition -Condition $branchGuardFailed -Message "Expected prepare-time branch validation to fail when the repository is not on the target branch."
+
+        $restartRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
+        [void]$smokeRoots.Add($restartRepo)
+        $restartStatePath = Join-Path $restartRepo ".state\orchestration-state.json"
+        Ensure-Directory -Path (Split-Path -Path $restartStatePath -Parent) | Out-Null
+        $restartFixture = New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $restartRepo -StatePath $restartStatePath -LaneId "restart-lane"
+        $heartbeatPath = Join-Path $restartFixture.OutputDirectory "autopilot-journal.jsonl"
+        Set-Content -LiteralPath $heartbeatPath -Value "{}" -Encoding utf8
+        (Get-Item -LiteralPath $heartbeatPath).LastWriteTimeUtc = (Get-Date).ToUniversalTime().AddMinutes(-45)
+        $restartDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $restartStatePath) -GitExecutable $GitExecutable -RepoRoot $restartRepo
+        Assert-SupervisorCondition -Condition ($restartDisposition.Action -eq "resume") -Message "Expected crash/restart recovery to treat a stale worker heartbeat as resumable lane state."
+    }
+    finally {
+        foreach ($smokeRoot in $smokeRoots) {
+            if (Test-Path -LiteralPath $smokeRoot) {
+                Remove-Item -LiteralPath $smokeRoot -Recurse -Force -ErrorAction SilentlyContinue
+            }
+        }
+    }
 
     Write-Host "Supervisor smoke validation passed." -ForegroundColor Green
     Write-Host "  Active lane summary: $($activeLaneSummary.ActiveLaneDisplay)"
@@ -592,20 +1052,130 @@ function Get-OpenGapIds {
     return @(Get-NormalizedStringList -Items $gapIds.ToArray())
 }
 
+function Set-ObjectNoteProperty {
+    param(
+        [Parameter(Mandatory = $true)]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        $Value
+    )
+
+    if ($Object.PSObject.Properties.Name -contains $Name) {
+        $Object.$Name = $Value
+    }
+    else {
+        $Object | Add-Member -NotePropertyName $Name -NotePropertyValue $Value -Force
+    }
+}
+
+function Get-ObjectNotePropertyValue {
+    param(
+        [Parameter(Mandatory = $true)]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        $DefaultValue = $null
+    )
+
+    if ($null -eq $Object) {
+        return $DefaultValue
+    }
+
+    if ($Object.PSObject.Properties.Name -contains $Name) {
+        return $Object.$Name
+    }
+
+    return $DefaultValue
+}
+
+function New-OrchestrationState {
+    return [pscustomobject]@{
+        schema_version = 2
+        last_updated = ""
+        completed_lane_ids = @()
+        pending_reconciliation_lane_ids = @()
+        blocked_lanes = @()
+        active_lane = $null
+    }
+}
+
+function Get-NormalizedBlockedLaneRecords {
+    param([AllowNull()]$BlockedLanes = @())
+
+    $recordsByLaneId = @{}
+    foreach ($entry in @($BlockedLanes)) {
+        if ($null -eq $entry) {
+            continue
+        }
+
+        $laneId = [string](Get-ObjectNotePropertyValue -Object $entry -Name "lane_id" -DefaultValue "")
+        if ([string]::IsNullOrWhiteSpace($laneId)) {
+            continue
+        }
+
+        $recordsByLaneId[$laneId] = [pscustomobject]@{
+            lane_id = $laneId
+            classification = [string](Get-ObjectNotePropertyValue -Object $entry -Name "classification" -DefaultValue "")
+            reason = [string](Get-ObjectNotePropertyValue -Object $entry -Name "reason" -DefaultValue "")
+            blocked_at = [string](Get-ObjectNotePropertyValue -Object $entry -Name "blocked_at" -DefaultValue "")
+            branch_name = [string](Get-ObjectNotePropertyValue -Object $entry -Name "branch_name" -DefaultValue "")
+            target_branch = [string](Get-ObjectNotePropertyValue -Object $entry -Name "target_branch" -DefaultValue "")
+            preserved_branch = [bool](Get-ObjectNotePropertyValue -Object $entry -Name "preserved_branch" -DefaultValue $false)
+            last_worker_head = [string](Get-ObjectNotePropertyValue -Object $entry -Name "last_worker_head" -DefaultValue "")
+        }
+    }
+
+    return @(
+        $recordsByLaneId.Keys |
+        Sort-Object |
+        ForEach-Object { $recordsByLaneId[$_] }
+    )
+}
+
+function ConvertTo-NormalizedOrchestrationState {
+    param([AllowNull()]$StateObject)
+
+    $state = if ($null -eq $StateObject) {
+        New-OrchestrationState
+    }
+    else {
+        $StateObject
+    }
+
+    Set-ObjectNoteProperty -Object $state -Name "schema_version" -Value 2
+    Set-ObjectNoteProperty -Object $state -Name "last_updated" -Value ([string](Get-ObjectNotePropertyValue -Object $state -Name "last_updated" -DefaultValue ""))
+    Set-ObjectNoteProperty -Object $state -Name "completed_lane_ids" -Value @(Get-NormalizedStringList -Items (Get-ObjectNotePropertyValue -Object $state -Name "completed_lane_ids" -DefaultValue @()))
+    Set-ObjectNoteProperty -Object $state -Name "pending_reconciliation_lane_ids" -Value @(Get-NormalizedStringList -Items (Get-ObjectNotePropertyValue -Object $state -Name "pending_reconciliation_lane_ids" -DefaultValue @()))
+    Set-ObjectNoteProperty -Object $state -Name "blocked_lanes" -Value @(Get-NormalizedBlockedLaneRecords -BlockedLanes (Get-ObjectNotePropertyValue -Object $state -Name "blocked_lanes" -DefaultValue @()))
+    if (-not ($state.PSObject.Properties.Name -contains "active_lane")) {
+        $state | Add-Member -NotePropertyName active_lane -NotePropertyValue $null -Force
+    }
+
+    if ($null -ne $state.active_lane) {
+        $activeLane = $state.active_lane
+        $defaultPhase = if ([bool](Get-ObjectNotePropertyValue -Object $activeLane -Name "merged" -DefaultValue $false)) { "cleanup_pending" } else { "prepared" }
+
+        Set-ObjectNoteProperty -Object $activeLane -Name "lane_phase" -Value ([string](Get-ObjectNotePropertyValue -Object $activeLane -Name "lane_phase" -DefaultValue $defaultPhase))
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_successful_action" -Value ([string](Get-ObjectNotePropertyValue -Object $activeLane -Name "last_successful_action" -DefaultValue ""))
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_heartbeat_time" -Value ([string](Get-ObjectNotePropertyValue -Object $activeLane -Name "last_heartbeat_time" -DefaultValue ""))
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_error_classification" -Value ([string](Get-ObjectNotePropertyValue -Object $activeLane -Name "last_error_classification" -DefaultValue ""))
+        Set-ObjectNoteProperty -Object $activeLane -Name "retry_count" -Value ([int](Get-ObjectNotePropertyValue -Object $activeLane -Name "retry_count" -DefaultValue 0))
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_state" -Value ([string](Get-ObjectNotePropertyValue -Object $activeLane -Name "last_worker_state" -DefaultValue ""))
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_summary" -Value ([string](Get-ObjectNotePropertyValue -Object $activeLane -Name "last_worker_summary" -DefaultValue ""))
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_manual_reason" -Value ([string](Get-ObjectNotePropertyValue -Object $activeLane -Name "last_worker_manual_reason" -DefaultValue ""))
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_next_step" -Value ([string](Get-ObjectNotePropertyValue -Object $activeLane -Name "last_worker_next_step" -DefaultValue ""))
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_head" -Value ([string](Get-ObjectNotePropertyValue -Object $activeLane -Name "last_worker_head" -DefaultValue ""))
+        Set-ObjectNoteProperty -Object $activeLane -Name "last_worker_commit_count" -Value ([int](Get-ObjectNotePropertyValue -Object $activeLane -Name "last_worker_commit_count" -DefaultValue 0))
+    }
+
+    return $state
+}
+
 function Get-OrchestrationState {
     param([Parameter(Mandatory = $true)][string]$StatePath)
 
     if (-not (Test-Path -LiteralPath $StatePath)) {
-        return [pscustomobject]@{
-            schema_version = 1
-            last_updated = ""
-            completed_lane_ids = @()
-            pending_reconciliation_lane_ids = @()
-            active_lane = $null
-        }
+        return New-OrchestrationState
     }
 
-    return Get-Content -LiteralPath $StatePath -Raw | ConvertFrom-Json -Depth 100
+    return ConvertTo-NormalizedOrchestrationState -StateObject (Get-Content -LiteralPath $StatePath -Raw | ConvertFrom-Json -Depth 100)
 }
 
 function Save-OrchestrationState {
@@ -615,14 +1185,39 @@ function Save-OrchestrationState {
     )
 
     $directory = Split-Path -Path $StatePath -Parent
-    if (-not [string]::IsNullOrWhiteSpace($directory)) {
-        Ensure-Directory -Path $directory | Out-Null
+    if ([string]::IsNullOrWhiteSpace($directory)) {
+        $directory = (Get-Location).Path
     }
+    Ensure-Directory -Path $directory | Out-Null
 
+    $StateObject = ConvertTo-NormalizedOrchestrationState -StateObject $StateObject
     $StateObject.last_updated = (Get-Date).ToString("o")
     $StateObject.completed_lane_ids = @(Get-NormalizedStringList -Items $StateObject.completed_lane_ids)
     $StateObject.pending_reconciliation_lane_ids = @(Get-NormalizedStringList -Items $StateObject.pending_reconciliation_lane_ids)
-    ($StateObject | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $StatePath -Encoding utf8
+    $StateObject.blocked_lanes = @(Get-NormalizedBlockedLaneRecords -BlockedLanes $StateObject.blocked_lanes)
+
+    $json = $StateObject | ConvertTo-Json -Depth 100
+    $tempPath = Join-Path $directory ([System.IO.Path]::GetRandomFileName() + ".tmp")
+    $backupPath = Join-Path $directory ([System.IO.Path]::GetRandomFileName() + ".bak")
+    Set-Content -LiteralPath $tempPath -Value $json -Encoding utf8
+
+    try {
+        if (Test-Path -LiteralPath $StatePath) {
+            [System.IO.File]::Replace($tempPath, $StatePath, $backupPath, $true)
+        }
+        else {
+            [System.IO.File]::Move($tempPath, $StatePath)
+        }
+    }
+    finally {
+        if (Test-Path -LiteralPath $tempPath) {
+            Remove-Item -LiteralPath $tempPath -Force -ErrorAction SilentlyContinue
+        }
+
+        if (Test-Path -LiteralPath $backupPath) {
+            Remove-Item -LiteralPath $backupPath -Force -ErrorAction SilentlyContinue
+        }
+    }
 }
 
 function Test-GitWorktreeExists {
@@ -841,6 +1436,52 @@ function Get-CommitRange {
         $result.StdOut -split '\r?\n' |
         Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
     )
+}
+
+function Test-GitBranchExists {
+    param(
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [Parameter(Mandatory = $true)][string]$BranchName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($BranchName)) {
+        return $false
+    }
+
+    $result = Invoke-NativeCapture -FilePath $GitExecutable -ArgumentList @("-C", $RepositoryRoot, "show-ref", "--verify", "--quiet", "refs/heads/$BranchName")
+    return $result.ExitCode -eq 0
+}
+
+function Test-GitObjectExists {
+    param(
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [Parameter(Mandatory = $true)][string]$Ref
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Ref)) {
+        return $false
+    }
+
+    $result = Invoke-NativeCapture -FilePath $GitExecutable -ArgumentList @("-C", $RepositoryRoot, "cat-file", "-e", "$Ref^{commit}")
+    return $result.ExitCode -eq 0
+}
+
+function Test-GitAncestor {
+    param(
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [Parameter(Mandatory = $true)][string]$AncestorRef,
+        [Parameter(Mandatory = $true)][string]$DescendantRef
+    )
+
+    if ([string]::IsNullOrWhiteSpace($AncestorRef) -or [string]::IsNullOrWhiteSpace($DescendantRef)) {
+        return $false
+    }
+
+    $result = Invoke-NativeCapture -FilePath $GitExecutable -ArgumentList @("-C", $RepositoryRoot, "merge-base", "--is-ancestor", $AncestorRef, $DescendantRef)
+    return $result.ExitCode -eq 0
 }
 
 function Invoke-CommandBatch {
@@ -2592,6 +3233,7 @@ function New-LaneCatalog {
 
     $completedLaneIds = @(Get-NormalizedStringList -Items $StateObject.completed_lane_ids)
     $pendingReconciliationLaneIds = @(Get-NormalizedStringList -Items $StateObject.pending_reconciliation_lane_ids)
+    $blockedLaneIds = @(Get-BlockedLaneIds -StateObject $StateObject)
     $activeLaneId = if ($null -ne $StateObject.active_lane -and $StateObject.active_lane.PSObject.Properties.Name -contains "lane_id") { [string]$StateObject.active_lane.lane_id } else { "" }
     $recommendedLaneId = ""
 
@@ -2623,6 +3265,16 @@ function New-LaneCatalog {
         elseif (-not [string]::IsNullOrWhiteSpace($activeLaneId) -and $activeLaneId -eq $template.lane_id) {
             $status = "active"
             $statusReason = "currently assigned to the worker worktree"
+        }
+        elseif ($blockedLaneIds -contains $template.lane_id) {
+            $blockedRecord = Get-BlockedLaneRecord -StateObject $StateObject -LaneId $template.lane_id
+            $status = "blocked_manual"
+            $statusReason = if ($null -ne $blockedRecord -and -not [string]::IsNullOrWhiteSpace([string]$blockedRecord.reason)) {
+                [string]$blockedRecord.reason
+            }
+            else {
+                "blocked for manual follow-up"
+            }
         }
         else {
             $missingPrerequisites = @($prerequisiteIds | Where-Object { $completedLaneIds -notcontains $_ })
@@ -2686,6 +3338,7 @@ function New-LaneCatalog {
         open_gap_ids = @($OpenGapIds)
         completed_lane_ids = @($completedLaneIds)
         pending_reconciliation_lane_ids = @($pendingReconciliationLaneIds)
+        blocked_lane_ids = @($blockedLaneIds)
         active_lane_id = $activeLaneId
         recommended_lane_id = $recommendedLaneId
         lanes = $lanes.ToArray()
@@ -2849,6 +3502,92 @@ function Get-WorkerFinalDecision {
     return @($rows)[-1]
 }
 
+function Get-WorkerDecisionSnapshot {
+    param([string]$OutputDirectory = "")
+
+    $heartbeat = Get-WorkerHeartbeatInfo -OutputDirectory $OutputDirectory
+    $decision = $null
+    if (-not [string]::IsNullOrWhiteSpace($OutputDirectory) -and (Test-Path -LiteralPath $OutputDirectory)) {
+        $decision = Get-WorkerFinalDecision -OutputDirectory $OutputDirectory
+    }
+
+    $getDecisionField = {
+        param([string]$Name)
+
+        if ($null -eq $decision) {
+            return ""
+        }
+
+        if ($decision.PSObject.Properties.Name -contains $Name) {
+            return [string]$decision.$Name
+        }
+
+        return ""
+    }
+
+    return [pscustomobject]@{
+        Decision = $decision
+        DecisionState = & $getDecisionField "State"
+        Summary = & $getDecisionField "Summary"
+        ManualReason = & $getDecisionField "ManualReason"
+        NextStep = & $getDecisionField "NextStep"
+        CommitSha = & $getDecisionField "CommitSha"
+        LastHeartbeatTime = [string]$heartbeat.LastHeartbeatTime
+        LastHeartbeatFile = [string]$heartbeat.LastHeartbeatFile
+        HasAnyOutput = [bool]$heartbeat.HasAnyOutput
+    }
+}
+
+function Get-WorkerHeartbeatStatus {
+    param(
+        [string]$HeartbeatTime = "",
+        [int]$FreshMinutes = 15
+    )
+
+    if ([string]::IsNullOrWhiteSpace($HeartbeatTime)) {
+        return [pscustomobject]@{
+            HasHeartbeat = $false
+            IsFresh = $false
+            AgeMinutes = [double]::PositiveInfinity
+        }
+    }
+
+    $parsedHeartbeat = [datetime]$HeartbeatTime
+    $age = (Get-Date).ToUniversalTime() - $parsedHeartbeat.ToUniversalTime()
+    return [pscustomobject]@{
+        HasHeartbeat = $true
+        IsFresh = $age.TotalMinutes -le $FreshMinutes
+        AgeMinutes = [math]::Round($age.TotalMinutes, 2)
+    }
+}
+
+function Get-ManualLaneOutcomeClassification {
+    param(
+        [string]$DecisionState = "",
+        [string]$ManualReason = "",
+        [string]$Summary = ""
+    )
+
+    if ($DecisionState -notin @("pause_manual", "stuck")) {
+        return ""
+    }
+
+    $reasonText = (($ManualReason.Trim() + " " + $Summary.Trim()).Trim())
+    if ([string]::IsNullOrWhiteSpace($reasonText)) {
+        return if ($DecisionState -eq "stuck") { "blocked" } else { "manual_review" }
+    }
+
+    if ($reasonText -match '(?i)blocked gap|blocking gap|path scope|path violation|outside the assigned|outside the lane|requirement family|verification command failed|failing verification command|progress guardrail|lane contract|open gaps') {
+        return "blocked"
+    }
+
+    if ($DecisionState -eq "stuck") {
+        return "blocked"
+    }
+
+    return "manual_review"
+}
+
 function Get-ActiveLaneDisposition {
     param(
         [Parameter(Mandatory = $true)]$StateObject,
@@ -2865,7 +3604,14 @@ function Get-ActiveLaneDisposition {
         }
     }
 
-    if ($StateObject.active_lane.PSObject.Properties.Name -contains "merged" -and [bool]$StateObject.active_lane.merged) {
+    $activeLane = $StateObject.active_lane
+    $laneId = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "lane_id" -DefaultValue "")
+    $lanePhase = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "lane_phase" -DefaultValue "")
+    $contractPath = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "contract_path" -DefaultValue "")
+    $outputDirectory = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "output_directory" -DefaultValue "")
+    $merged = [bool](Get-ObjectNotePropertyValue -Object $activeLane -Name "merged" -DefaultValue $false)
+
+    if ($merged) {
         return [pscustomobject]@{
             Action        = "cleanup"
             Reason        = "The active lane has already been merged and only cleanup remains."
@@ -2874,94 +3620,108 @@ function Get-ActiveLaneDisposition {
         }
     }
 
-    $contractPath = [string]$StateObject.active_lane.contract_path
-    if ([string]::IsNullOrWhiteSpace($contractPath) -or -not (Test-Path -LiteralPath $contractPath)) {
-        return [pscustomobject]@{
-            Action        = "cleanup"
-            Reason        = "The active lane contract is missing; cleanup is the only safe recovery."
-            DecisionState = ""
-            CommitCount   = 0
-        }
+    $workerContract = $null
+    $contractExists = -not [string]::IsNullOrWhiteSpace($contractPath) -and (Test-Path -LiteralPath $contractPath)
+    if ($contractExists) {
+        $workerContract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json -Depth 100
     }
 
-    $workerContract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json -Depth 100
-    if ([string]::IsNullOrWhiteSpace($workerContract.worktree_path) -or -not (Test-Path -LiteralPath $workerContract.worktree_path)) {
-        return [pscustomobject]@{
-            Action        = "cleanup"
-            Reason        = "The active lane worktree is missing; cleanup is the only safe recovery."
-            DecisionState = ""
-            CommitCount   = 0
-            WorkerContract = $workerContract
-        }
-    }
-
-    $workerDecision = Get-WorkerFinalDecision -OutputDirectory $workerContract.output_directory
-    $workerHead = Get-GitHead -GitExecutable $GitExecutable -RepositoryRoot $workerContract.worktree_path -Ref "HEAD"
-    $commitShas = @(Get-CommitRange -GitExecutable $GitExecutable -RepositoryRoot $workerContract.worktree_path -FromRef $workerContract.base_ref -ToRef $workerHead)
-    $commitCount = $commitShas.Count
-    $decisionState = ""
-
-    if ($null -ne $workerDecision) {
-        if ($workerDecision.PSObject.Properties.Name -contains "State") {
-            $decisionState = [string]$workerDecision.State
-        }
-        elseif ($workerDecision.PSObject.Properties.Name -contains "state") {
-            $decisionState = [string]$workerDecision.state
-        }
-    }
+    $commitSnapshot = Get-ActiveLaneCommitSnapshot -StateObject $StateObject -GitExecutable $GitExecutable -RepoRoot $RepoRoot
+    $workerSnapshot = Get-WorkerDecisionSnapshot -OutputDirectory $outputDirectory
+    $heartbeatStatus = Get-WorkerHeartbeatStatus -HeartbeatTime $workerSnapshot.LastHeartbeatTime
+    $decisionState = [string]$workerSnapshot.DecisionState
+    $manualClassification = Get-ManualLaneOutcomeClassification -DecisionState $decisionState -ManualReason $workerSnapshot.ManualReason -Summary $workerSnapshot.Summary
 
     $action = "resume"
-    $reason = "The active lane has not reached a terminal decision yet."
+    $reason = "The active lane remains resumable."
 
-    switch ($decisionState) {
-        "continue" {
-            if ($commitCount -gt 0) {
-                $action = "merge"
-                $reason = "The active lane produced commits and requested another autonomous turn."
-            }
-            else {
-                $action = "resume"
-                $reason = "The active lane requested another autonomous turn and has not produced commits yet."
-            }
+    if (-not $contractExists) {
+        if ($commitSnapshot.CommitCount -gt 0) {
+            $action = "block"
+            $reason = "The active lane contract is missing while unmerged commits still exist; preserving the branch for manual recovery."
         }
-        "complete" {
-            if ($commitCount -gt 0) {
-                $action = "merge"
-                $reason = "The active lane completed and has commits ready to merge."
-            }
-            else {
-                $action = "cleanup"
-                $reason = "The active lane completed without commits; cleanup only."
-            }
+        else {
+            $action = "cleanup"
+            $reason = "The active lane contract is missing and there are no recoverable commits; cleanup only."
         }
-        "pause_manual" {
-            if ($commitCount -gt 0) {
-                $action = "merge"
-                $reason = "The active lane requested manual review, but it produced commits and will be merged under supervisor mode."
-            }
-            else {
-                $action = "cleanup"
-                $reason = "The active lane requested manual review without commits; cleanup only."
-            }
+    }
+    elseif (-not $commitSnapshot.WorktreeExists -and -not $commitSnapshot.BranchExists) {
+        if ($commitSnapshot.HeadOnTargetBranch) {
+            $action = "cleanup"
+            $reason = "The active lane no longer has a live worktree or branch, and its head is already reachable from the target branch."
         }
-        "stuck" {
-            if ($commitCount -gt 0) {
-                $action = "stop"
-                $reason = "The active lane is stuck and has commits present."
-            }
-            else {
-                $action = "cleanup"
-                $reason = "The active lane is stuck without commits; cleanup only."
-            }
+        elseif ($commitSnapshot.CommitCount -gt 0) {
+            $action = "block"
+            $reason = "The active lane lost its worktree and branch while still owning unmerged commits; preserving it as blocked."
         }
-        default {
-            if ($commitCount -gt 0) {
-                $action = "merge"
-                $reason = "The active lane has commits and no terminal worker decision summary."
+        else {
+            $action = "cleanup"
+            $reason = "The active lane no longer has a live worktree or branch and no commits remain to recover."
+        }
+    }
+    else {
+        switch ($decisionState) {
+            "continue" {
+                if ($commitSnapshot.CommitCount -gt 0) {
+                    $action = "merge"
+                    $reason = "The active lane produced commits and requested another autonomous turn."
+                }
+                else {
+                    $action = "resume"
+                    $reason = "The active lane requested another autonomous turn and has not produced commits yet."
+                }
             }
-            else {
-                $action = "resume"
-                $reason = "The active lane has no terminal summary and no commits yet."
+            "complete" {
+                if ($commitSnapshot.CommitCount -gt 0) {
+                    $action = "merge"
+                    $reason = "The active lane completed and has commits ready to merge."
+                }
+                else {
+                    $action = "cleanup"
+                    $reason = "The active lane completed without commits; cleanup only."
+                }
+            }
+            "pause_manual" {
+                if ($manualClassification -eq "blocked") {
+                    $action = "block"
+                    $reason = "The active lane requested manual follow-up for a blocked or off-lane condition."
+                }
+                elseif ($commitSnapshot.CommitCount -gt 0) {
+                    $action = "merge"
+                    $reason = "The active lane requested manual review, but it produced mergeable commits."
+                }
+                else {
+                    $action = "cleanup"
+                    $reason = "The active lane requested manual review without commits; cleanup only."
+                }
+            }
+            "stuck" {
+                if ($commitSnapshot.CommitCount -gt 0) {
+                    $action = "block"
+                    $reason = "The active lane is stuck after producing commits; preserving the branch for manual follow-up."
+                }
+                else {
+                    $action = "cleanup"
+                    $reason = "The active lane is stuck without commits; cleanup only."
+                }
+            }
+            default {
+                if ($lanePhase -eq "worker_running" -and $heartbeatStatus.HasHeartbeat -and $heartbeatStatus.IsFresh) {
+                    $action = "wait"
+                    $reason = "The active lane is still producing worker output and should not be resumed yet."
+                }
+                elseif ($lanePhase -eq "worker_running" -and $heartbeatStatus.HasHeartbeat -and -not $heartbeatStatus.IsFresh) {
+                    $action = "resume"
+                    $reason = "The active lane heartbeat is stale and the worker appears to have stopped; resuming the lane."
+                }
+                elseif ($commitSnapshot.CommitCount -gt 0 -and $lanePhase -eq "awaiting_reconciliation") {
+                    $action = "merge"
+                    $reason = "The active lane is awaiting reconciliation and has commits ready to merge."
+                }
+                else {
+                    $action = "resume"
+                    $reason = "The active lane has no terminal summary and remains resumable."
+                }
             }
         }
     }
@@ -2970,9 +3730,95 @@ function Get-ActiveLaneDisposition {
         Action        = $action
         Reason        = $reason
         DecisionState = $decisionState
-        CommitCount   = $commitCount
-        WorkerDecision = $workerDecision
+        CommitCount   = $commitSnapshot.CommitCount
+        ManualClassification = $manualClassification
+        WorkerDecision = $workerSnapshot.Decision
         WorkerContract = $workerContract
+        CommitShas = @($commitSnapshot.CommitShas)
+        WorkerHead = [string]$commitSnapshot.HeadSha
+        WorktreeExists = [bool]$commitSnapshot.WorktreeExists
+        BranchExists = [bool]$commitSnapshot.BranchExists
+        HeartbeatTime = [string]$workerSnapshot.LastHeartbeatTime
+        HeartbeatFile = [string]$workerSnapshot.LastHeartbeatFile
+        HeartbeatAgeMinutes = $heartbeatStatus.AgeMinutes
+        LanePhase = $lanePhase
+        ManualReason = [string]$workerSnapshot.ManualReason
+        Summary = [string]$workerSnapshot.Summary
+        TargetBranchContainsHead = [bool]$commitSnapshot.HeadOnTargetBranch
+        LaneId = $laneId
+    }
+}
+
+function Repair-OrchestrationState {
+    param(
+        [Parameter(Mandatory = $true)][string]$StatePath,
+        [Parameter(Mandatory = $true)]$StateObject,
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot
+    )
+
+    $state = ConvertTo-NormalizedOrchestrationState -StateObject $StateObject
+    $beforeJson = $state | ConvertTo-Json -Depth 100
+    $notes = New-Object System.Collections.Generic.List[string]
+
+    if ($null -ne $state.active_lane) {
+        $activeLane = $state.active_lane
+        $laneId = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "lane_id" -DefaultValue "")
+        $branchName = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "branch_name" -DefaultValue "")
+        $worktreePath = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "worktree_path" -DefaultValue "")
+        $contractPath = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "contract_path" -DefaultValue "")
+        $outputDirectory = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "output_directory" -DefaultValue "")
+        $targetBranch = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "target_branch" -DefaultValue "")
+        $merged = [bool](Get-ObjectNotePropertyValue -Object $activeLane -Name "merged" -DefaultValue $false)
+
+        $heartbeat = Get-WorkerHeartbeatInfo -OutputDirectory $outputDirectory
+        if (-not [string]::IsNullOrWhiteSpace($heartbeat.LastHeartbeatTime)) {
+            Set-ActiveLaneStateMetadata -StateObject $state -LastHeartbeatTime $heartbeat.LastHeartbeatTime
+        }
+
+        $commitSnapshot = Get-ActiveLaneCommitSnapshot -StateObject $state -GitExecutable $GitExecutable -RepoRoot $RepoRoot
+        if (-not [string]::IsNullOrWhiteSpace($commitSnapshot.HeadSha)) {
+            Set-ActiveLaneStateMetadata -StateObject $state -LastWorkerHead $commitSnapshot.HeadSha -LastWorkerCommitCount $commitSnapshot.CommitCount
+        }
+
+        if ($merged) {
+            Remove-GitWorktreeAndBranch -GitExecutable $GitExecutable -RepoRoot $RepoRoot -WorktreePath $worktreePath -BranchName $branchName
+            $state.active_lane = $null
+            [void]$notes.Add("Cleaned up merged lane '$laneId' and cleared stale active state.")
+        }
+        elseif (-not [string]::IsNullOrWhiteSpace($worktreePath) -and -not $commitSnapshot.WorktreeExists -and $commitSnapshot.BranchExists) {
+            if ((Test-Path -LiteralPath $worktreePath) -and -not (Test-GitWorktreeExists -WorktreePath $worktreePath)) {
+                Remove-Item -LiteralPath $worktreePath -Recurse -Force -ErrorAction SilentlyContinue
+            }
+
+            Add-ExistingBranchWorktree -GitExecutable $GitExecutable -RepoRoot $RepoRoot -WorktreePath $worktreePath -BranchName $branchName | Out-Null
+            [void]$notes.Add("Reattached missing worktree for active lane '$laneId' from branch '$branchName'.")
+        }
+        elseif ($commitSnapshot.HeadOnTargetBranch -and -not $commitSnapshot.WorktreeExists -and -not $commitSnapshot.BranchExists) {
+            Complete-LaneInState -StateObject $state -LaneId $laneId
+            $state.active_lane = $null
+            [void]$notes.Add("Cleared stale active lane '$laneId' because its commits are already reachable from '$targetBranch'.")
+        }
+        elseif (-not $commitSnapshot.WorktreeExists -and -not $commitSnapshot.BranchExists -and $commitSnapshot.CommitCount -eq 0) {
+            $state.active_lane = $null
+            [void]$notes.Add("Cleared stale active lane '$laneId' because neither a live worktree nor recoverable commits remain.")
+        }
+        elseif (([string]::IsNullOrWhiteSpace($contractPath) -or -not (Test-Path -LiteralPath $contractPath)) -and -not $commitSnapshot.WorktreeExists -and -not $commitSnapshot.BranchExists) {
+            $state.active_lane = $null
+            [void]$notes.Add("Cleared stale active lane '$laneId' because the contract, branch, and worktree are all missing.")
+        }
+    }
+
+    $afterJson = $state | ConvertTo-Json -Depth 100
+    $changed = $beforeJson -ne $afterJson
+    if ($changed) {
+        Save-OrchestrationState -StatePath $StatePath -StateObject $state
+    }
+
+    return [pscustomobject]@{
+        StateObject = $state
+        Changed = $changed
+        Notes = $notes.ToArray()
     }
 }
 
@@ -3070,6 +3916,419 @@ function Resolve-WorkerExecutionResult {
     return [pscustomobject]@{
         Decision   = $decision
         CommitShas = $commitShas
+    }
+}
+
+function Assert-RepositoryReadyForPrepare {
+    param(
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$TargetBranch,
+        [Parameter(Mandatory = $true)][bool]$Force
+    )
+
+    $currentBranch = Get-GitCurrentBranch -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot
+    if ($currentBranch -ne $TargetBranch -and -not $Force) {
+        throw "Current branch is '$currentBranch'. Checkout '$TargetBranch' before preparing a worker lane."
+    }
+
+    if (-not (Test-GitClean -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot) -and -not $Force) {
+        throw "Repository must be clean before preparing a worker lane."
+    }
+}
+
+function Invoke-OrchestrationCleanup {
+    param(
+        [Parameter(Mandatory = $true)][string]$StatePath,
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [bool]$PreserveBranch = $false
+    )
+
+    $state = Get-OrchestrationState -StatePath $StatePath
+    if ($null -eq $state.active_lane) {
+        Write-Host "No active lane to clean up." -ForegroundColor Yellow
+        return [pscustomobject]@{
+            Status = "noop"
+        }
+    }
+
+    $activeLane = $state.active_lane
+    $worktreePath = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "worktree_path" -DefaultValue "")
+    $branchName = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "branch_name" -DefaultValue "")
+
+    if ($PreserveBranch) {
+        Remove-GitWorktreeOnly -GitExecutable $GitExecutable -RepoRoot $RepoRoot -WorktreePath $worktreePath
+    }
+    else {
+        Remove-GitWorktreeAndBranch -GitExecutable $GitExecutable -RepoRoot $RepoRoot -WorktreePath $worktreePath -BranchName $branchName
+    }
+
+    $state.active_lane = $null
+    Save-OrchestrationState -StatePath $StatePath -StateObject $state
+    Write-Host "Removed active worker worktree and cleared orchestration state." -ForegroundColor Green
+
+    return [pscustomobject]@{
+        Status = "cleaned"
+        PreservedBranch = $PreserveBranch
+    }
+}
+
+function Invoke-OrchestrationBlockActiveLane {
+    param(
+        [Parameter(Mandatory = $true)][string]$StatePath,
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$Classification,
+        [Parameter(Mandatory = $true)][string]$Reason
+    )
+
+    $state = Get-OrchestrationState -StatePath $StatePath
+    if ($null -eq $state.active_lane) {
+        return [pscustomobject]@{
+            Status = "noop"
+        }
+    }
+
+    $activeLane = $state.active_lane
+    $laneId = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "lane_id" -DefaultValue "")
+    $branchName = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "branch_name" -DefaultValue "")
+    $targetBranch = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "target_branch" -DefaultValue "")
+    $commitSnapshot = Get-ActiveLaneCommitSnapshot -StateObject $state -GitExecutable $GitExecutable -RepoRoot $RepoRoot
+    $preserveBranch = $commitSnapshot.CommitCount -gt 0
+
+    Add-BlockedLaneRecord `
+        -StateObject $state `
+        -LaneId $laneId `
+        -Classification $Classification `
+        -Reason $Reason `
+        -BranchName $branchName `
+        -TargetBranch $targetBranch `
+        -PreservedBranch:$preserveBranch `
+        -LastWorkerHead $commitSnapshot.HeadSha
+
+    Save-OrchestrationState -StatePath $StatePath -StateObject $state
+    Invoke-OrchestrationCleanup -StatePath $StatePath -GitExecutable $GitExecutable -RepoRoot $RepoRoot -PreserveBranch:$preserveBranch | Out-Null
+    Write-Host "Blocked lane '$laneId': $Reason" -ForegroundColor Yellow
+
+    return [pscustomobject]@{
+        Status = "blocked"
+        LaneId = $laneId
+        PreservedBranch = $preserveBranch
+        Classification = $Classification
+        Reason = $Reason
+    }
+}
+
+function Invoke-OrchestrationPrepare {
+    param(
+        [Parameter(Mandatory = $true)][string]$StatePath,
+        [Parameter(Mandatory = $true)]$Catalog,
+        [Parameter(Mandatory = $true)][string]$LaneId,
+        [Parameter(Mandatory = $true)][string]$ContractsDirectory,
+        [Parameter(Mandatory = $true)][string]$WorktreeRoot,
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$TargetBranch,
+        [Parameter(Mandatory = $true)][string]$PlannerModel,
+        [Parameter(Mandatory = $true)][string]$PlannerReasoningEffort,
+        [Parameter(Mandatory = $true)][string]$WorkerModel,
+        [Parameter(Mandatory = $true)][string]$WorkerReasoningEffort,
+        [Parameter(Mandatory = $true)][bool]$Force
+    )
+
+    $state = Get-OrchestrationState -StatePath $StatePath
+    if ($null -ne $state.active_lane) {
+        throw "An active worker lane already exists. Use merge/cleanup first."
+    }
+
+    Assert-RepositoryReadyForPrepare -GitExecutable $GitExecutable -RepoRoot $RepoRoot -TargetBranch $TargetBranch -Force:$Force
+
+    $lane = Get-CatalogLane -Catalog $Catalog -LaneId $LaneId
+    if ($lane.status -notin @("eligible", "blocked_manual") -and -not $Force) {
+        throw "Lane '$LaneId' is not eligible: $($lane.status_reason)"
+    }
+
+    $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+    $branchName = "codex/$LaneId-$timestamp"
+    $worktreePath = Join-Path $WorktreeRoot "$LaneId-$timestamp"
+    $outputDirectory = Ensure-Directory -Path (Join-Path $WorktreeRoot ".runs\$LaneId-$timestamp")
+    $baseRef = Get-GitHead -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -Ref $TargetBranch
+    $workerContract = New-WorkerContract `
+        -Lane $lane `
+        -RepoRoot $RepoRoot `
+        -WorktreePath $worktreePath `
+        -BranchName $branchName `
+        -BaseRef $baseRef `
+        -OutputDirectory $outputDirectory `
+        -TargetBranch $TargetBranch `
+        -PlannerModel $PlannerModel `
+        -PlannerReasoningEffort $PlannerReasoningEffort `
+        -WorkerModel $WorkerModel `
+        -WorkerReasoningEffort $WorkerReasoningEffort
+
+    Ensure-GitWorktree -GitExecutable $GitExecutable -RepoRoot $RepoRoot -WorktreePath $worktreePath -BranchName $branchName -BaseRef $baseRef | Out-Null
+    $contractPath = Join-Path $ContractsDirectory "$LaneId-$timestamp.json"
+    ($workerContract | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $contractPath -Encoding utf8
+
+    Remove-BlockedLaneRecord -StateObject $state -LaneId $LaneId
+    $state.active_lane = [pscustomobject]@{
+        lane_id = $workerContract.lane_id
+        branch_name = $workerContract.branch_name
+        worktree_path = $workerContract.worktree_path
+        contract_path = $contractPath
+        output_directory = $workerContract.output_directory
+        base_ref = $workerContract.base_ref
+        target_branch = $TargetBranch
+        started_at = (Get-Date).ToString("o")
+        lane_phase = "prepared"
+        last_successful_action = "prepare"
+        last_heartbeat_time = ""
+        last_error_classification = ""
+        retry_count = 0
+        last_worker_state = ""
+        last_worker_summary = ""
+        last_worker_manual_reason = ""
+        last_worker_next_step = ""
+        last_worker_head = ""
+        last_worker_commit_count = 0
+    }
+    Save-OrchestrationState -StatePath $StatePath -StateObject $state
+
+    Write-Host "Prepared lane: $($workerContract.lane_id)" -ForegroundColor Green
+    Write-Host "  Contract: $contractPath"
+    Write-Host "  Branch:   $($workerContract.branch_name)"
+    Write-Host "  Worktree: $($workerContract.worktree_path)"
+    Write-Host "  Output:   $($workerContract.output_directory)"
+
+    return $workerContract
+}
+
+function Invoke-OrchestrationMerge {
+    param(
+        [Parameter(Mandatory = $true)][string]$StatePath,
+        [Parameter(Mandatory = $true)][string]$StateDirectory,
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$TargetBranch,
+        [Parameter(Mandatory = $true)][bool]$Force
+    )
+
+    $state = Get-OrchestrationState -StatePath $StatePath
+    if ($null -eq $state.active_lane) {
+        throw "No active worker lane is recorded."
+    }
+
+    $contractPath = Resolve-ExistingPath -Path $state.active_lane.contract_path
+    $workerContract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json -Depth 100
+    $currentBranch = Get-GitCurrentBranch -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot
+
+    if (-not (Test-GitClean -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot) -and -not $Force) {
+        throw "Repository must be clean before merging."
+    }
+
+    $commitSnapshot = Get-ActiveLaneCommitSnapshot -StateObject $state -GitExecutable $GitExecutable -RepoRoot $RepoRoot
+    $commitShas = @($commitSnapshot.CommitShas)
+    if ($commitShas.Count -eq 0) {
+        throw "No commits are available to cherry-pick for lane '$($workerContract.lane_id)'."
+    }
+
+    $mergeRepoRoot = $RepoRoot
+    $temporaryMergeWorktreePath = ""
+    try {
+        if ($currentBranch -ne $workerContract.target_branch) {
+            $mergeTargetsRoot = Ensure-Directory -Path (Join-Path $StateDirectory "merge-targets")
+            $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+            $temporaryMergeWorktreePath = Join-Path $mergeTargetsRoot "$($workerContract.lane_id)-target-$timestamp"
+            $mergeRepoRoot = Add-ExistingBranchWorktree -GitExecutable $GitExecutable -RepoRoot $RepoRoot -WorktreePath $temporaryMergeWorktreePath -BranchName $workerContract.target_branch
+        }
+
+        Test-LanePreflightMerge -GitExecutable $GitExecutable -RepoRoot $mergeRepoRoot -WorkerContract $workerContract -CommitShas $commitShas -StateDirectory $StateDirectory
+        Complete-WorkerLaneMerge -GitExecutable $GitExecutable -RepoRoot $mergeRepoRoot -WorkerContract $workerContract -CommitShas $commitShas -StateDirectory $StateDirectory
+    }
+    catch {
+        $detail = Get-ExceptionDetail -Exception $_.Exception
+        if ($detail -match '^Preflight merge checks failed:') {
+            return Invoke-OrchestrationBlockActiveLane -StatePath $StatePath -GitExecutable $GitExecutable -RepoRoot $RepoRoot -Classification "merge_verification_failed" -Reason $detail
+        }
+
+        throw
+    }
+    finally {
+        if (-not [string]::IsNullOrWhiteSpace($temporaryMergeWorktreePath)) {
+            Remove-GitWorktreeOnly -GitExecutable $GitExecutable -RepoRoot $RepoRoot -WorktreePath $temporaryMergeWorktreePath
+        }
+    }
+
+    Complete-LaneInState -StateObject $state -LaneId $workerContract.lane_id
+    if ($null -eq $state.active_lane) {
+        $state.active_lane = [pscustomobject]@{}
+    }
+
+    Set-ObjectNoteProperty -Object $state.active_lane -Name "merged" -Value $true
+    Set-ObjectNoteProperty -Object $state.active_lane -Name "merged_at" -Value ((Get-Date).ToString("o"))
+    Set-ActiveLaneStateMetadata -StateObject $state -LanePhase "cleanup_pending" -LastSuccessfulAction "merge" -LastErrorClassification "" -RetryCount 0
+    Save-OrchestrationState -StatePath $StatePath -StateObject $state
+
+    Write-Host "Merged lane '$($workerContract.lane_id)' to $($workerContract.target_branch). Cleanup is still required to remove the active worktree." -ForegroundColor Green
+    return [pscustomobject]@{
+        Status = "merged"
+        LaneId = $workerContract.lane_id
+    }
+}
+
+function Invoke-OrchestrationResume {
+    param(
+        [Parameter(Mandatory = $true)][string]$StatePath,
+        [Parameter(Mandatory = $true)][string]$StateDirectory,
+        [Parameter(Mandatory = $true)][string]$RunnerScriptPath,
+        [Parameter(Mandatory = $true)][string]$MissionPromptFile,
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$PowerShellExecutable,
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$TargetBranch,
+        [Parameter(Mandatory = $true)][string]$CodexCommand,
+        [Parameter(Mandatory = $true)][string]$Sandbox,
+        [Parameter(Mandatory = $true)][string]$WorkerModel,
+        [Parameter(Mandatory = $true)][string]$WorkerReasoningEffort,
+        [Parameter(Mandatory = $true)][int]$WorkerMaxIterations,
+        [Parameter(Mandatory = $true)][int]$WorkerMaxRescueAttemptsPerTurn,
+        [Parameter(Mandatory = $true)][bool]$AutoMerge,
+        [Parameter(Mandatory = $true)][bool]$CleanupAfterMerge,
+        [Parameter(Mandatory = $true)][bool]$Force
+    )
+
+    $state = Get-OrchestrationState -StatePath $StatePath
+    if ($null -eq $state.active_lane) {
+        throw "No active worker lane is recorded."
+    }
+
+    $disposition = Get-ActiveLaneDisposition -StateObject $state -GitExecutable $GitExecutable -RepoRoot $RepoRoot
+    Write-Host "Active lane disposition: $($disposition.Action)" -ForegroundColor Green
+    Write-Host "  Reason: $($disposition.Reason)" -ForegroundColor Gray
+
+    switch ($disposition.Action) {
+        "merge" {
+            $mergeResult = Invoke-OrchestrationMerge -StatePath $StatePath -StateDirectory $StateDirectory -GitExecutable $GitExecutable -RepoRoot $RepoRoot -TargetBranch $TargetBranch -Force:$Force
+            if ($CleanupAfterMerge -and $mergeResult.Status -eq "merged") {
+                Invoke-OrchestrationCleanup -StatePath $StatePath -GitExecutable $GitExecutable -RepoRoot $RepoRoot | Out-Null
+            }
+
+            return $mergeResult
+        }
+        "cleanup" {
+            return Invoke-OrchestrationCleanup -StatePath $StatePath -GitExecutable $GitExecutable -RepoRoot $RepoRoot
+        }
+        "block" {
+            $classification = if ([string]::IsNullOrWhiteSpace($disposition.ManualClassification)) { "manual_follow_up" } else { [string]$disposition.ManualClassification }
+            return Invoke-OrchestrationBlockActiveLane -StatePath $StatePath -GitExecutable $GitExecutable -RepoRoot $RepoRoot -Classification $classification -Reason $disposition.Reason
+        }
+        "wait" {
+            Write-Host "Active lane heartbeat is fresh. Waiting for the existing worker output to settle before resuming." -ForegroundColor Yellow
+            return [pscustomobject]@{
+                Status = "waiting"
+            }
+        }
+    }
+
+    $contractPath = Resolve-ExistingPath -Path $state.active_lane.contract_path
+    $workerContract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json -Depth 100
+    $heartbeat = Get-WorkerHeartbeatInfo -OutputDirectory $workerContract.output_directory
+    $retryCount = [int](Get-ObjectNotePropertyValue -Object $state.active_lane -Name "retry_count" -DefaultValue 0) + 1
+    Set-ActiveLaneStateMetadata -StateObject $state -LanePhase "worker_running" -LastSuccessfulAction "resume" -LastHeartbeatTime $heartbeat.LastHeartbeatTime -LastErrorClassification "" -RetryCount $retryCount
+    Save-OrchestrationState -StatePath $StatePath -StateObject $state
+
+    try {
+        $execution = Resolve-WorkerExecutionResult -Execution (Invoke-WorkerLaneExecution `
+            -PowerShellExecutable $PowerShellExecutable `
+            -RunnerScriptPath $RunnerScriptPath `
+            -MissionPromptFile $MissionPromptFile `
+            -WorkerContract $workerContract `
+            -GitExecutable $GitExecutable `
+            -CodexCommand $CodexCommand `
+            -Sandbox $Sandbox `
+            -WorkerModel $WorkerModel `
+            -WorkerReasoningEffort $WorkerReasoningEffort `
+            -WorkerMaxIterations $WorkerMaxIterations `
+            -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn)
+    }
+    catch {
+        $detail = Get-ExceptionDetail -Exception $_.Exception
+        $state = Get-OrchestrationState -StatePath $StatePath
+        if ($null -ne $state.active_lane) {
+            $commitSnapshot = Get-ActiveLaneCommitSnapshot -StateObject $state -GitExecutable $GitExecutable -RepoRoot $RepoRoot
+            $latestHeartbeat = Get-WorkerHeartbeatInfo -OutputDirectory ([string](Get-ObjectNotePropertyValue -Object $state.active_lane -Name "output_directory" -DefaultValue ""))
+            Set-ActiveLaneStateMetadata -StateObject $state -LanePhase "prepared" -LastHeartbeatTime $latestHeartbeat.LastHeartbeatTime -LastErrorClassification "worker_process_failed" -LastWorkerHead $commitSnapshot.HeadSha -LastWorkerCommitCount $commitSnapshot.CommitCount
+            Save-OrchestrationState -StatePath $StatePath -StateObject $state
+
+            if ($commitSnapshot.CommitCount -gt 0) {
+                return Invoke-OrchestrationBlockActiveLane -StatePath $StatePath -GitExecutable $GitExecutable -RepoRoot $RepoRoot -Classification "worker_process_failed" -Reason "Worker lane runner failed after producing commits. $detail"
+            }
+
+            Invoke-OrchestrationCleanup -StatePath $StatePath -GitExecutable $GitExecutable -RepoRoot $RepoRoot | Out-Null
+            Write-Warning $detail
+            return [pscustomobject]@{
+                Status = "cleaned_after_worker_failure"
+                Reason = $detail
+            }
+        }
+
+        throw
+    }
+
+    $state = Get-OrchestrationState -StatePath $StatePath
+    $commitSnapshot = Get-ActiveLaneCommitSnapshot -StateObject $state -GitExecutable $GitExecutable -RepoRoot $RepoRoot
+    $workerSnapshot = Get-WorkerDecisionSnapshot -OutputDirectory $workerContract.output_directory
+    Set-ActiveLaneStateMetadata `
+        -StateObject $state `
+        -LanePhase "awaiting_reconciliation" `
+        -LastSuccessfulAction "worker_completed" `
+        -LastHeartbeatTime $workerSnapshot.LastHeartbeatTime `
+        -LastErrorClassification "" `
+        -LastWorkerState ([string]$workerSnapshot.DecisionState) `
+        -LastWorkerSummary ([string]$workerSnapshot.Summary) `
+        -LastWorkerManualReason ([string]$workerSnapshot.ManualReason) `
+        -LastWorkerNextStep ([string]$workerSnapshot.NextStep) `
+        -LastWorkerHead $commitSnapshot.HeadSha `
+        -LastWorkerCommitCount $commitSnapshot.CommitCount
+    Save-OrchestrationState -StatePath $StatePath -StateObject $state
+
+    $postDisposition = Get-ActiveLaneDisposition -StateObject $state -GitExecutable $GitExecutable -RepoRoot $RepoRoot
+    switch ($postDisposition.Action) {
+        "merge" {
+            if ($AutoMerge) {
+                $mergeResult = Invoke-OrchestrationMerge -StatePath $StatePath -StateDirectory $StateDirectory -GitExecutable $GitExecutable -RepoRoot $RepoRoot -TargetBranch $TargetBranch -Force:$Force
+                if ($CleanupAfterMerge -and $mergeResult.Status -eq "merged") {
+                    Invoke-OrchestrationCleanup -StatePath $StatePath -GitExecutable $GitExecutable -RepoRoot $RepoRoot | Out-Null
+                }
+
+                return $mergeResult
+            }
+
+            Write-Warning "Worker lane produced commits, but auto-merge is disabled."
+            return [pscustomobject]@{
+                Status = "awaiting_manual_merge"
+            }
+        }
+        "cleanup" {
+            return Invoke-OrchestrationCleanup -StatePath $StatePath -GitExecutable $GitExecutable -RepoRoot $RepoRoot
+        }
+        "block" {
+            $classification = if ([string]::IsNullOrWhiteSpace($postDisposition.ManualClassification)) { "manual_follow_up" } else { [string]$postDisposition.ManualClassification }
+            return Invoke-OrchestrationBlockActiveLane -StatePath $StatePath -GitExecutable $GitExecutable -RepoRoot $RepoRoot -Classification $classification -Reason $postDisposition.Reason
+        }
+        "wait" {
+            return [pscustomobject]@{
+                Status = "waiting"
+            }
+        }
+        default {
+            return [pscustomobject]@{
+                Status = "resumed"
+                DecisionState = $postDisposition.DecisionState
+                CommitCount = $postDisposition.CommitCount
+            }
+        }
     }
 }
 
@@ -3183,6 +4442,14 @@ try {
     $openGapIds = Get-OpenGapIds -Path $resolvedRequirementGapsPath
     $state = Get-OrchestrationState -StatePath $statePath
 
+    if ($Mode -in @("plan", "prepare", "run", "resume", "merge", "supervise")) {
+        $repairResult = Repair-OrchestrationState -StatePath $statePath -StateObject $state -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot
+        $state = $repairResult.StateObject
+        foreach ($repairNote in @($repairResult.Notes)) {
+            Write-Host "State repair: $repairNote" -ForegroundColor Yellow
+        }
+    }
+
     $catalog = New-LaneCatalog `
         -RepoRoot $resolvedRepoRoot `
         -TargetBranch $TargetBranch `
@@ -3206,7 +4473,7 @@ try {
                 -MaxCycles $SupervisorMaxCycles `
                 -UseOvernightPreset ([bool]$Overnight)
 
-            Invoke-SupervisorSmokeValidation -DefaultSettings $supervisorSettings
+            Invoke-SupervisorSmokeValidation -DefaultSettings $supervisorSettings -GitExecutable $gitExecutable
             break
         }
 
@@ -3220,229 +4487,100 @@ try {
         }
 
         "prepare" {
-            if ($null -ne $state.active_lane -and -not $Force) {
-                throw "An active worker lane is already recorded. Use -Force to override or run cleanup/merge first."
-            }
-
             $selectedLaneId = if ([string]::IsNullOrWhiteSpace($LaneId)) { [string]$catalog.recommended_lane_id } else { $LaneId }
             if ([string]::IsNullOrWhiteSpace($selectedLaneId)) {
                 throw "No eligible lane is available."
             }
 
-            $lane = Get-CatalogLane -Catalog $catalog -LaneId $selectedLaneId
-            if ($lane.status -ne "eligible" -and -not $Force) {
-                throw "Lane '$selectedLaneId' is not eligible: $($lane.status_reason)"
-            }
-
-            $currentBranch = Get-GitCurrentBranch -GitExecutable $gitExecutable -RepositoryRoot $resolvedRepoRoot
-            if ($currentBranch -ne $TargetBranch -and -not $Force) {
-                throw "Repository must be on '$TargetBranch' before preparing a worker lane. Current branch: $currentBranch"
-            }
-
-            if (-not (Test-GitClean -GitExecutable $gitExecutable -RepositoryRoot $resolvedRepoRoot) -and -not $Force) {
-                throw "Repository must be clean before preparing a worker lane."
-            }
-
-            $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-            $branchName = "codex/$($lane.lane_id)-$timestamp"
-            $worktreePath = Join-Path $resolvedWorktreeRoot "$($lane.lane_id)-$timestamp"
-            $outputDirectory = Join-Path $resolvedStateDirectory ("runs\" + $lane.lane_id + "-" + $timestamp)
-            Ensure-Directory -Path $outputDirectory | Out-Null
-            $baseRef = Get-GitHead -GitExecutable $gitExecutable -RepositoryRoot $resolvedRepoRoot -Ref $TargetBranch
-            $worktreeInfo = Ensure-GitWorktree -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot -WorktreePath $worktreePath -BranchName $branchName -BaseRef $baseRef
-            $workerContract = New-WorkerContract `
-                -Lane $lane `
+            Invoke-OrchestrationPrepare `
+                -StatePath $statePath `
+                -Catalog $catalog `
+                -LaneId $selectedLaneId `
+                -ContractsDirectory $contractsDirectory `
+                -WorktreeRoot $resolvedWorktreeRoot `
+                -GitExecutable $gitExecutable `
                 -RepoRoot $resolvedRepoRoot `
-                -WorktreePath $worktreeInfo.WorktreePath `
-                -BranchName $worktreeInfo.BranchName `
-                -BaseRef $worktreeInfo.BaseRef `
-                -OutputDirectory $outputDirectory `
                 -TargetBranch $TargetBranch `
                 -PlannerModel $PlannerModel `
                 -PlannerReasoningEffort $PlannerReasoningEffort `
                 -WorkerModel $WorkerModel `
-                -WorkerReasoningEffort $WorkerReasoningEffort
-            $contractPath = Join-Path $contractsDirectory ("worker-contract-" + $lane.lane_id + "-" + $timestamp + ".json")
-            ($workerContract | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $contractPath -Encoding utf8
-
-            $state.active_lane = [pscustomobject]@{
-                lane_id = $workerContract.lane_id
-                branch_name = $workerContract.branch_name
-                worktree_path = $workerContract.worktree_path
-                contract_path = $contractPath
-                output_directory = $workerContract.output_directory
-                base_ref = $workerContract.base_ref
-                target_branch = $TargetBranch
-                started_at = (Get-Date).ToString("o")
-            }
-            Save-OrchestrationState -StatePath $statePath -StateObject $state
-
-            Write-Host "Prepared lane: $($workerContract.lane_id)" -ForegroundColor Green
-            Write-Host "  Contract: $contractPath"
-            Write-Host "  Branch:   $($workerContract.branch_name)"
-            Write-Host "  Worktree: $($workerContract.worktree_path)"
-            Write-Host "  Output:   $($workerContract.output_directory)"
+                -WorkerReasoningEffort $WorkerReasoningEffort `
+                -Force:$Force | Out-Null
             break
         }
 
         "run" {
-            if ($null -ne $state.active_lane) {
-                throw "An active worker lane already exists. Use merge/cleanup first."
+            $selectedLaneId = if ([string]::IsNullOrWhiteSpace($LaneId)) { [string]$catalog.recommended_lane_id } else { $LaneId }
+            if ([string]::IsNullOrWhiteSpace($selectedLaneId)) {
+                throw "No eligible lane is available."
             }
 
-            & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode prepare -RepoRoot $resolvedRepoRoot -RunnerScriptPath $resolvedRunnerScriptPath -MissionPromptFile $resolvedMissionPromptFile -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -LaneId $LaneId -TargetBranch $TargetBranch -PlannerModel $PlannerModel -PlannerReasoningEffort $PlannerReasoningEffort -WorkerModel $WorkerModel -WorkerReasoningEffort $WorkerReasoningEffort -Force:$Force
-            if ($LASTEXITCODE -ne 0) {
-                throw "Failed to prepare worker lane."
-            }
+            Invoke-OrchestrationPrepare `
+                -StatePath $statePath `
+                -Catalog $catalog `
+                -LaneId $selectedLaneId `
+                -ContractsDirectory $contractsDirectory `
+                -WorktreeRoot $resolvedWorktreeRoot `
+                -GitExecutable $gitExecutable `
+                -RepoRoot $resolvedRepoRoot `
+                -TargetBranch $TargetBranch `
+                -PlannerModel $PlannerModel `
+                -PlannerReasoningEffort $PlannerReasoningEffort `
+                -WorkerModel $WorkerModel `
+                -WorkerReasoningEffort $WorkerReasoningEffort `
+                -Force:$Force | Out-Null
 
-            $state = Get-OrchestrationState -StatePath $statePath
-            if ($null -eq $state.active_lane) {
-                throw "Prepare step did not record an active lane."
-            }
-
-            & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode resume -RepoRoot $resolvedRepoRoot -RunnerScriptPath $resolvedRunnerScriptPath -MissionPromptFile $resolvedMissionPromptFile -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -CodexCommand $CodexCommand -Sandbox $Sandbox -PlannerModel $PlannerModel -PlannerReasoningEffort $PlannerReasoningEffort -WorkerModel $WorkerModel -WorkerReasoningEffort $WorkerReasoningEffort -WorkerMaxIterations $WorkerMaxIterations -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn -AutoMerge:$AutoMerge -CleanupAfterMerge:$CleanupAfterMerge -Force:$Force
-            if ($LASTEXITCODE -ne 0) {
-                throw "Failed to resume worker lane."
-            }
+            $shouldMerge = if ($PSBoundParameters.ContainsKey("AutoMerge")) { [bool]$AutoMerge } else { $true }
+            $shouldCleanup = if ($PSBoundParameters.ContainsKey("CleanupAfterMerge")) { [bool]$CleanupAfterMerge } else { $true }
+            Invoke-OrchestrationResume `
+                -StatePath $statePath `
+                -StateDirectory $resolvedStateDirectory `
+                -RunnerScriptPath $resolvedRunnerScriptPath `
+                -MissionPromptFile $resolvedMissionPromptFile `
+                -GitExecutable $gitExecutable `
+                -PowerShellExecutable $powerShellExecutable `
+                -RepoRoot $resolvedRepoRoot `
+                -TargetBranch $TargetBranch `
+                -CodexCommand $CodexCommand `
+                -Sandbox $Sandbox `
+                -WorkerModel $WorkerModel `
+                -WorkerReasoningEffort $WorkerReasoningEffort `
+                -WorkerMaxIterations $WorkerMaxIterations `
+                -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn `
+                -AutoMerge:$shouldMerge `
+                -CleanupAfterMerge:$shouldCleanup `
+                -Force:$Force | Out-Null
 
             break
         }
 
         "resume" {
-            if ($null -eq $state.active_lane) {
-                throw "No active worker lane is recorded."
-            }
-
-            $disposition = Get-ActiveLaneDisposition -StateObject $state -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot
-            Write-Host "Active lane disposition: $($disposition.Action)" -ForegroundColor Green
-            Write-Host "  Reason: $($disposition.Reason)" -ForegroundColor Gray
-
-            switch ($disposition.Action) {
-                "merge" {
-                    & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode merge -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -Force:$Force
-                    if ($LASTEXITCODE -ne 0) {
-                        throw "Merge step failed."
-                    }
-
-                    $shouldCleanup = if ($PSBoundParameters.ContainsKey("CleanupAfterMerge")) { [bool]$CleanupAfterMerge } else { $true }
-                    if ($shouldCleanup) {
-                        & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode cleanup -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -Force:$Force
-                        if ($LASTEXITCODE -ne 0) {
-                            throw "Cleanup step failed."
-                        }
-                    }
-                }
-                "cleanup" {
-                    & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode cleanup -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -Force:$Force
-                    if ($LASTEXITCODE -ne 0) {
-                        throw "Cleanup step failed."
-                    }
-                }
-                "stop" {
-                    throw $disposition.Reason
-                }
-                default {
-                    $contractPath = Resolve-ExistingPath -Path $state.active_lane.contract_path
-                    $workerContract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json -Depth 100
-                    $execution = Resolve-WorkerExecutionResult -Execution (Invoke-WorkerLaneExecution `
-                        -PowerShellExecutable $powerShellExecutable `
-                        -RunnerScriptPath $resolvedRunnerScriptPath `
-                        -MissionPromptFile $resolvedMissionPromptFile `
-                        -WorkerContract $workerContract `
-                        -GitExecutable $gitExecutable `
-                        -CodexCommand $CodexCommand `
-                        -Sandbox $Sandbox `
-                        -WorkerModel $WorkerModel `
-                        -WorkerReasoningEffort $WorkerReasoningEffort `
-                        -WorkerMaxIterations $WorkerMaxIterations `
-                        -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn)
-
-                    $shouldMerge = if ($PSBoundParameters.ContainsKey("AutoMerge")) { [bool]$AutoMerge } else { $true }
-                    $hasCommits = @($execution.CommitShas).Count -gt 0
-                    $workerState = if ($null -ne $execution.Decision -and $execution.Decision.PSObject.Properties.Name -contains "State") { [string]$execution.Decision.State } else { "" }
-                    $executionShouldMerge = $hasCommits -and ($workerState -notin @("pause_manual", "stuck"))
-
-                    if ($executionShouldMerge -and $shouldMerge) {
-                        & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode merge -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -Force:$Force
-                        if ($LASTEXITCODE -ne 0) {
-                            throw "Merge step failed."
-                        }
-
-                        $shouldCleanup = if ($PSBoundParameters.ContainsKey("CleanupAfterMerge")) { [bool]$CleanupAfterMerge } else { $true }
-                        if ($shouldCleanup) {
-                            & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode cleanup -RepoRoot $resolvedRepoRoot -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -Force:$Force
-                            if ($LASTEXITCODE -ne 0) {
-                                throw "Cleanup step failed."
-                            }
-                        }
-                    }
-                    elseif ($executionShouldMerge -and -not $shouldMerge) {
-                        Write-Warning "Worker lane produced commits, but auto-merge is disabled."
-                    }
-                    elseif (-not $executionShouldMerge) {
-                        Write-Warning "Worker lane was not auto-merged. Inspect the worktree and run merge or cleanup manually."
-                    }
-                }
-            }
+            $shouldMerge = if ($PSBoundParameters.ContainsKey("AutoMerge")) { [bool]$AutoMerge } else { $true }
+            $shouldCleanup = if ($PSBoundParameters.ContainsKey("CleanupAfterMerge")) { [bool]$CleanupAfterMerge } else { $true }
+            Invoke-OrchestrationResume `
+                -StatePath $statePath `
+                -StateDirectory $resolvedStateDirectory `
+                -RunnerScriptPath $resolvedRunnerScriptPath `
+                -MissionPromptFile $resolvedMissionPromptFile `
+                -GitExecutable $gitExecutable `
+                -PowerShellExecutable $powerShellExecutable `
+                -RepoRoot $resolvedRepoRoot `
+                -TargetBranch $TargetBranch `
+                -CodexCommand $CodexCommand `
+                -Sandbox $Sandbox `
+                -WorkerModel $WorkerModel `
+                -WorkerReasoningEffort $WorkerReasoningEffort `
+                -WorkerMaxIterations $WorkerMaxIterations `
+                -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn `
+                -AutoMerge:$shouldMerge `
+                -CleanupAfterMerge:$shouldCleanup `
+                -Force:$Force | Out-Null
 
             break
         }
 
         "merge" {
-            $state = Get-OrchestrationState -StatePath $statePath
-            if ($null -eq $state.active_lane) {
-                throw "No active worker lane is recorded."
-            }
-
-            $contractPath = Resolve-ExistingPath -Path $state.active_lane.contract_path
-            $workerContract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json -Depth 100
-            $currentBranch = Get-GitCurrentBranch -GitExecutable $gitExecutable -RepositoryRoot $resolvedRepoRoot
-
-            if (-not (Test-GitClean -GitExecutable $gitExecutable -RepositoryRoot $resolvedRepoRoot) -and -not $Force) {
-                throw "Repository must be clean before merging."
-            }
-
-            $workerHead = Get-GitHead -GitExecutable $gitExecutable -RepositoryRoot $workerContract.worktree_path -Ref "HEAD"
-            $commitShas = @(Get-CommitRange -GitExecutable $gitExecutable -RepositoryRoot $workerContract.worktree_path -FromRef $workerContract.base_ref -ToRef $workerHead)
-            if ($commitShas.Count -eq 0) {
-                throw "No commits are available to cherry-pick for lane '$($workerContract.lane_id)'."
-            }
-
-            $mergeRepoRoot = $resolvedRepoRoot
-            $temporaryMergeWorktreePath = ""
-            try {
-                if ($currentBranch -ne $workerContract.target_branch) {
-                    $mergeTargetsRoot = Ensure-Directory -Path (Join-Path $resolvedStateDirectory "merge-targets")
-                    $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-                    $temporaryMergeWorktreePath = Join-Path $mergeTargetsRoot "$($workerContract.lane_id)-target-$timestamp"
-                    $mergeRepoRoot = Add-ExistingBranchWorktree -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot -WorktreePath $temporaryMergeWorktreePath -BranchName $workerContract.target_branch
-                }
-
-                Test-LanePreflightMerge -GitExecutable $gitExecutable -RepoRoot $mergeRepoRoot -WorkerContract $workerContract -CommitShas $commitShas -StateDirectory $resolvedStateDirectory
-                Complete-WorkerLaneMerge -GitExecutable $gitExecutable -RepoRoot $mergeRepoRoot -WorkerContract $workerContract -CommitShas $commitShas -StateDirectory $resolvedStateDirectory
-            }
-            finally {
-                if (-not [string]::IsNullOrWhiteSpace($temporaryMergeWorktreePath)) {
-                    Remove-GitWorktreeOnly -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot -WorktreePath $temporaryMergeWorktreePath
-                }
-            }
-
-            if ($workerContract.lane_id -eq "trace-metadata-reconciliation") {
-                $state.pending_reconciliation_lane_ids = @()
-            }
-            else {
-                $state.completed_lane_ids = @($state.completed_lane_ids + @($workerContract.lane_id))
-                $state.pending_reconciliation_lane_ids = @($state.pending_reconciliation_lane_ids + @($workerContract.lane_id))
-            }
-
-            if ($null -eq $state.active_lane) {
-                $state.active_lane = [pscustomobject]@{}
-            }
-            $state.active_lane | Add-Member -NotePropertyName merged -NotePropertyValue $true -Force
-            $state.active_lane | Add-Member -NotePropertyName merged_at -NotePropertyValue (Get-Date).ToString("o") -Force
-            Save-OrchestrationState -StatePath $statePath -StateObject $state
-
-            Write-Host "Merged lane '$($workerContract.lane_id)' to $($workerContract.target_branch). Cleanup is still required to remove the active worktree." -ForegroundColor Green
+            Invoke-OrchestrationMerge -StatePath $statePath -StateDirectory $resolvedStateDirectory -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot -TargetBranch $TargetBranch -Force:$Force | Out-Null
             break
         }
 
@@ -3481,6 +4619,7 @@ try {
                 Write-Host "Supervisor state:" -ForegroundColor Green
                 Write-Host "  Active lane: $($stateSummary.ActiveLaneDisplay)" -ForegroundColor Gray
                 Write-Host "  Pending reconciliation: $($stateSummary.PendingReconciliationDisplay)" -ForegroundColor Gray
+                Write-Host "  Blocked lanes: $($stateSummary.BlockedLaneDisplay)" -ForegroundColor Gray
                 if ($stateSummary.CompletedLaneCount -gt 0) {
                     Write-Host "  Completed lanes: $($stateSummary.CompletedLaneCount)" -ForegroundColor Gray
                 }
@@ -3495,10 +4634,26 @@ try {
                         -Settings $supervisorSettings
 
                     Write-Host "Supervisor resume: $($pollAction.Reason)" -ForegroundColor Gray
-                    & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode resume -RepoRoot $resolvedRepoRoot -RunnerScriptPath $resolvedRunnerScriptPath -MissionPromptFile $resolvedMissionPromptFile -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -TargetBranch $TargetBranch -CodexCommand $CodexCommand -Sandbox $Sandbox -PlannerModel $PlannerModel -PlannerReasoningEffort $PlannerReasoningEffort -WorkerModel $WorkerModel -WorkerReasoningEffort $WorkerReasoningEffort -WorkerMaxIterations $WorkerMaxIterations -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn -AutoMerge:$AutoMerge -CleanupAfterMerge:$CleanupAfterMerge -Force:$Force
-                    if ($LASTEXITCODE -ne 0) {
-                        throw "Supervisor resume step failed."
-                    }
+                    $shouldMerge = if ($PSBoundParameters.ContainsKey("AutoMerge")) { [bool]$AutoMerge } else { $true }
+                    $shouldCleanup = if ($PSBoundParameters.ContainsKey("CleanupAfterMerge")) { [bool]$CleanupAfterMerge } else { $true }
+                    Invoke-OrchestrationResume `
+                        -StatePath $statePath `
+                        -StateDirectory $resolvedStateDirectory `
+                        -RunnerScriptPath $resolvedRunnerScriptPath `
+                        -MissionPromptFile $resolvedMissionPromptFile `
+                        -GitExecutable $gitExecutable `
+                        -PowerShellExecutable $powerShellExecutable `
+                        -RepoRoot $resolvedRepoRoot `
+                        -TargetBranch $TargetBranch `
+                        -CodexCommand $CodexCommand `
+                        -Sandbox $Sandbox `
+                        -WorkerModel $WorkerModel `
+                        -WorkerReasoningEffort $WorkerReasoningEffort `
+                        -WorkerMaxIterations $WorkerMaxIterations `
+                        -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn `
+                        -AutoMerge:$shouldMerge `
+                        -CleanupAfterMerge:$shouldCleanup `
+                        -Force:$Force | Out-Null
 
                     $idleCycles = 0
                     $idleStartedAt = $null
@@ -3531,10 +4686,41 @@ try {
                     switch ($pollAction.Action) {
                         "run" {
                             Write-Host "Supervisor starting eligible lane '$($pollAction.LaneId)'." -ForegroundColor Green
-                            & $powerShellExecutable -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Mode run -RepoRoot $resolvedRepoRoot -RunnerScriptPath $resolvedRunnerScriptPath -MissionPromptFile $resolvedMissionPromptFile -WorktreeRoot $resolvedWorktreeRoot -StateDirectory $resolvedStateDirectory -LaneId $pollAction.LaneId -TargetBranch $TargetBranch -CodexCommand $CodexCommand -Sandbox $Sandbox -PlannerModel $PlannerModel -PlannerReasoningEffort $PlannerReasoningEffort -WorkerModel $WorkerModel -WorkerReasoningEffort $WorkerReasoningEffort -WorkerMaxIterations $WorkerMaxIterations -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn -AutoMerge:$AutoMerge -CleanupAfterMerge:$CleanupAfterMerge -Force:$Force
-                            if ($LASTEXITCODE -ne 0) {
-                                throw "Supervisor run step failed."
-                            }
+                            $shouldMerge = if ($PSBoundParameters.ContainsKey("AutoMerge")) { [bool]$AutoMerge } else { $true }
+                            $shouldCleanup = if ($PSBoundParameters.ContainsKey("CleanupAfterMerge")) { [bool]$CleanupAfterMerge } else { $true }
+                            Invoke-OrchestrationPrepare `
+                                -StatePath $statePath `
+                                -Catalog $catalog `
+                                -LaneId $pollAction.LaneId `
+                                -ContractsDirectory $contractsDirectory `
+                                -WorktreeRoot $resolvedWorktreeRoot `
+                                -GitExecutable $gitExecutable `
+                                -RepoRoot $resolvedRepoRoot `
+                                -TargetBranch $TargetBranch `
+                                -PlannerModel $PlannerModel `
+                                -PlannerReasoningEffort $PlannerReasoningEffort `
+                                -WorkerModel $WorkerModel `
+                                -WorkerReasoningEffort $WorkerReasoningEffort `
+                                -Force:$Force | Out-Null
+
+                            Invoke-OrchestrationResume `
+                                -StatePath $statePath `
+                                -StateDirectory $resolvedStateDirectory `
+                                -RunnerScriptPath $resolvedRunnerScriptPath `
+                                -MissionPromptFile $resolvedMissionPromptFile `
+                                -GitExecutable $gitExecutable `
+                                -PowerShellExecutable $powerShellExecutable `
+                                -RepoRoot $resolvedRepoRoot `
+                                -TargetBranch $TargetBranch `
+                                -CodexCommand $CodexCommand `
+                                -Sandbox $Sandbox `
+                                -WorkerModel $WorkerModel `
+                                -WorkerReasoningEffort $WorkerReasoningEffort `
+                                -WorkerMaxIterations $WorkerMaxIterations `
+                                -WorkerMaxRescueAttemptsPerTurn $WorkerMaxRescueAttemptsPerTurn `
+                                -AutoMerge:$shouldMerge `
+                                -CleanupAfterMerge:$shouldCleanup `
+                                -Force:$Force | Out-Null
 
                             $idleCycles = 0
                             $idleStartedAt = $null
@@ -3566,16 +4752,7 @@ try {
         }
 
         "cleanup" {
-            $state = Get-OrchestrationState -StatePath $statePath
-            if ($null -eq $state.active_lane) {
-                Write-Host "No active lane to clean up." -ForegroundColor Yellow
-                break
-            }
-
-            Remove-GitWorktreeAndBranch -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot -WorktreePath $state.active_lane.worktree_path -BranchName $state.active_lane.branch_name
-            $state.active_lane = $null
-            Save-OrchestrationState -StatePath $statePath -StateObject $state
-            Write-Host "Removed active worker worktree and cleared orchestration state." -ForegroundColor Green
+            Invoke-OrchestrationCleanup -StatePath $statePath -GitExecutable $gitExecutable -RepoRoot $resolvedRepoRoot | Out-Null
             break
         }
     }
