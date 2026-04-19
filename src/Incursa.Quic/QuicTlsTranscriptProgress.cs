@@ -340,15 +340,6 @@ internal sealed class QuicTlsTranscriptProgress
 
             if (messageType == QuicTlsHandshakeMessageType.KeyUpdate)
             {
-                int index = 0;
-                if (handshakeMessageBodyLength != 1
-                    || !TryReadUInt8(handshakeMessageBody, ref index, out _)
-                    || index != handshakeMessageBody.Length)
-                {
-                    ConsumePostHandshakeBytes(totalMessageLength);
-                    continue;
-                }
-
                 ConsumePostHandshakeBytes(totalMessageLength);
                 step = new QuicTlsTranscriptStep(
                     QuicTlsTranscriptStepKind.ProhibitedKeyUpdateViolation,

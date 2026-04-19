@@ -428,6 +428,11 @@ internal static class QuicPostHandshakeTicketTestSupport
         return WrapHandshakeMessage((QuicTlsHandshakeMessageType)0x18, [0x00]);
     }
 
+    internal static byte[] CreateMalformedKeyUpdatePostHandshakeMessage()
+    {
+        return WrapHandshakeMessage((QuicTlsHandshakeMessageType)0x18, [0x00, 0x01]);
+    }
+
     internal static QuicTransportParameters CreateBootstrapLocalTransportParameters()
     {
         return new QuicTransportParameters
