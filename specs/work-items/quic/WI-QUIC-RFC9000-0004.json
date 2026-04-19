@@ -14,13 +14,14 @@
   "addresses": [
     "REQ-QUIC-RFC9000-S14P2-0003",
     "REQ-QUIC-RFC9000-S14P2-0005",
+    "REQ-QUIC-RFC9000-S14P2-0006",
     "REQ-QUIC-RFC9000-S14P2-0007",
     "REQ-QUIC-RFC9000-S14P2-0008",
     "REQ-QUIC-RFC9000-S14P2-0009"
   ],
-  "summary": "Keep the RFC 9000 PMTU discovery slice traceable while the runtime grows explicit path-owned maximum datagram size state, probe-vs-ordinary send admissibility, and the 1200-byte ordinary-send floor.",
-  "planned_changes": "- Add path-owned maximum-datagram-size state to the active, candidate, and recently validated path records.\n- Add an internal active-path update helper that keeps the sender flow controller in sync with the path-owned maximum datagram size.\n- Distinguish ordinary sends from PMTU probes so probe-sized datagrams can exceed the current maximum while ordinary sends stop below the RFC minimum.\n- Prove that path-validation failure discards the connection when no validated path remains, while leaving automatic alternative-path search separate.",
-  "verification_plan": "Run the RFC 9000 requirement-home tests for the ordinary, probe, 1200-byte floor, no-valid-path termination, and path-state clauses, then inspect the active-path projection into the sender flow controller.",
+  "summary": "Keep the RFC 9000 PMTU discovery slice traceable while the runtime grows explicit path-owned maximum datagram size state, ordinary packet sizing, probe-vs-ordinary send admissibility, and the 1200-byte ordinary-send floor.",
+  "planned_changes": "- Add path-owned maximum-datagram-size state to the active, candidate, and recently validated path records.\n- Add an internal active-path update helper that keeps the sender flow controller in sync with the path-owned maximum datagram size.\n- Distinguish ordinary sends from PMTU probes so probe-sized datagrams can exceed the current maximum while ordinary sends stay within the active path maximum datagram size and stop below the RFC minimum.\n- Prove that path-validation failure discards the connection when no validated path remains, while leaving automatic alternative-path search separate.",
+  "verification_plan": "Run the RFC 9000 requirement-home tests for the ordinary-sizing, probe, 1200-byte floor, no-valid-path termination, and path-state clauses, then inspect the active-path projection into the sender flow controller.",
   "verification_links": [
     "VER-QUIC-RFC9000-0004"
   ],
@@ -28,5 +29,5 @@
     "Automatic alternative-path search.",
     "Probe generation beyond the admissibility helper."
   ],
-  "completion_notes": "This packet now proves REQ-QUIC-RFC9000-S14P2-0003, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0007, REQ-QUIC-RFC9000-S14P2-0008, and REQ-QUIC-RFC9000-S14P2-0009. Automatic alternative-path search remains a separate lifecycle slice and is not claimed here."
+  "completion_notes": "This packet now proves REQ-QUIC-RFC9000-S14P2-0003, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0006, REQ-QUIC-RFC9000-S14P2-0007, REQ-QUIC-RFC9000-S14P2-0008, and REQ-QUIC-RFC9000-S14P2-0009. Automatic alternative-path search remains a separate lifecycle slice and is not claimed here."
 }

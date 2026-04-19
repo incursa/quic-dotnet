@@ -5,13 +5,14 @@
 ## Scope
 
 This verification covers the PMTU path-state and sender-admissibility slice for RFC 9000 Section 14.2.
-It checks that the runtime carries maximum datagram size state on path records, that the active path projects that state into sender congestion-control state, that ordinary sends stop below the RFC minimum, that probe-sized datagrams remain admissible above the current maximum, and that path-validation failure discards the connection when no validated path remains.
+It checks that the runtime carries maximum datagram size state on path records, that the active path projects that state into sender congestion-control state, that ordinary packets stay within the active path maximum datagram size, that ordinary sends stop below the RFC minimum, that probe-sized datagrams remain admissible above the current maximum, and that path-validation failure discards the connection when no validated path remains.
 It does not claim automatic alternative-path search.
 
 ## Requirements Verified
 
 - REQ-QUIC-RFC9000-S14P2-0003
 - REQ-QUIC-RFC9000-S14P2-0005
+- REQ-QUIC-RFC9000-S14P2-0006
 - REQ-QUIC-RFC9000-S14P2-0007
 - REQ-QUIC-RFC9000-S14P2-0008
 - REQ-QUIC-RFC9000-S14P2-0009
@@ -28,18 +29,19 @@ Execution and inspection of the path-state and sender-admissibility runtime plus
 
 ## Procedure or Approach
 
-- Run the requirement-home tests for REQ-QUIC-RFC9000-S14P2-0003, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0007, REQ-QUIC-RFC9000-S14P2-0008, REQ-QUIC-RFC9000-S14P2-0009, and REQ-QUIC-RFC9000-S14P2-0010.
+- Run the requirement-home tests for REQ-QUIC-RFC9000-S14P2-0003, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0006, REQ-QUIC-RFC9000-S14P2-0007, REQ-QUIC-RFC9000-S14P2-0008, REQ-QUIC-RFC9000-S14P2-0009, and REQ-QUIC-RFC9000-S14P2-0010.
 - Inspect the active-path runtime state and congestion-control projection for the path-owned maximum datagram size value.
 - Confirm that ordinary sends fail below the RFC minimum while probe-sized datagrams and CONNECTION_CLOSE remain admissible through the bounded helpers.
 
 ## Expected Result
 
-The path records carry maximum datagram size state, the active path mirrors that state into the sender flow controller, ordinary sends are gated below 1200 bytes, conservative estimates above the minimum stay admissible and continue to project into the send runtime, probe-sized datagrams remain admissible above the current maximum, path-validation failure discards the connection when no validated path remains, and the requirement-home proof stays limited to the bounded PMTU slice.
+The path records carry maximum datagram size state, the active path mirrors that state into the sender flow controller, ordinary packets stay within the active path maximum datagram size, ordinary sends are gated below 1200 bytes, conservative estimates above the minimum stay admissible and continue to project into the send runtime, probe-sized datagrams remain admissible above the current maximum, path-validation failure discards the connection when no validated path remains, and the requirement-home proof stays limited to the bounded PMTU slice.
 
 ## Evidence
 
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0005.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0006.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0008.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0009.cs
@@ -51,7 +53,7 @@ The path records carry maximum datagram size state, the active path mirrors that
 
 ## Status
 
-This verification artifact records the landed PMTU path-state slice, including conservative-estimate coverage, and points at the requirement-home and runtime evidence in the working tree.
+This verification artifact records the landed PMTU path-state slice, including ordinary packet sizing and conservative-estimate coverage, and points at the requirement-home and runtime evidence in the working tree.
 
 ## Related Artifacts
 
