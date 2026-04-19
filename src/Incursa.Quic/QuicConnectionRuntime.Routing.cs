@@ -140,9 +140,16 @@ internal sealed partial class QuicConnectionRuntime
             if (HasValidatedPath)
             {
                 AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                return false;
             }
 
-            return false;
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.PathValidationFailedNoValidatedPathsRemain(pathValidationFailedEvent.PathIdentity));
+            }
+
+            UpdatePeerAddressValidationFlag();
+            return DiscardConnection(nowTicks, QuicConnectionCloseOrigin.Remote, default, ref effects);
         }
 
         candidatePath = candidatePath with
@@ -182,6 +189,9 @@ internal sealed partial class QuicConnectionRuntime
             {
                 EmitDiagnostic(ref effects, QuicDiagnostics.PathValidationFailedNoValidatedPathsRemain(pathValidationFailedEvent.PathIdentity));
             }
+
+            UpdatePeerAddressValidationFlag();
+            return DiscardConnection(nowTicks, QuicConnectionCloseOrigin.Remote, default, ref effects);
         }
 
         UpdatePeerAddressValidationFlag();
