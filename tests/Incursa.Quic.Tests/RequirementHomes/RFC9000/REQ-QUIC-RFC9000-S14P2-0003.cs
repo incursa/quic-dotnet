@@ -13,12 +13,31 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0003
     {
         QuicConnectionPathMaximumDatagramSizeState state = QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
 
-        Assert.True(state.CanSend(QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes));
-        Assert.False(state.CanSend(1350));
-
         QuicConnectionPathMaximumDatagramSizeState updated = state.WithMaximumDatagramSize(1350);
 
         Assert.True(updated.CanSend(1350));
         Assert.False(updated.CanSend(1351));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void CanSend_RejectsADesiredMaximumDatagramSizeAboveTheInitialEstimate()
+    {
+        QuicConnectionPathMaximumDatagramSizeState state = QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
+
+        Assert.False(state.CanSend(1350));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void CanSend_UsesTheRfcMinimumAsTheBoundaryForOrdinaryPackets()
+    {
+        QuicConnectionPathMaximumDatagramSizeState state = QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
+        ulong minimumAllowedMaximumDatagramSizeBytes = QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes;
+
+        Assert.True(state.CanSend(minimumAllowedMaximumDatagramSizeBytes));
+        Assert.False(state.CanSend(minimumAllowedMaximumDatagramSizeBytes + 1));
     }
 }
