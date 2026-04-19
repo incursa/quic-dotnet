@@ -11264,7 +11264,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0001.cs::ValidatedMigrationRoutesLocalClosePacketsToTheMigratedAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0001.cs::ValidatedMigrationRoutesLocalClosePacketsToTheMigratedAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0001.cs::PathValidationMustCompleteBeforeLocalClosePacketsSwitchToTheMigratedAddress"
         ]
       }
     },

@@ -6173,6 +6173,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0001.cs::ValidatedMigrationRoutesLocalClosePacketsToTheMigratedAddress
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0001.cs::PathValidationMustCompleteBeforeLocalClosePacketsSwitchToTheMigratedAddress
 
 ## REQ-QUIC-RFC9000-S9P3-0002 Allow data on an unvalidated peer address
 An endpoint MAY send data to an unvalidated peer address.
