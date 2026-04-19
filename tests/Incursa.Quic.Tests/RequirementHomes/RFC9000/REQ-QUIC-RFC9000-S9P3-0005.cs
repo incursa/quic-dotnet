@@ -22,6 +22,17 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0005
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryBuildOutboundNewTokenPayload_RejectsEmptyTokens()
+    {
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntime();
+
+        Assert.False(runtime.TryBuildOutboundNewTokenPayload(Array.Empty<byte>(), out byte[] payload));
+        Assert.Empty(payload);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ServerValidationOfANewClientAddressEmitsANewTokenForTheValidatedPath()
