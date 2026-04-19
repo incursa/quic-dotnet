@@ -12653,7 +12653,9 @@ Trace:
   - RFC 9000 §14.2 RFC9000-S14.2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
 - Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::WriteAsync_SucceedsWhenTheActivePathSupportsTheRFCMinimum
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::WriteAsync_FailsWhenTheActivePathDropsBelowTheRFCMinimum
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtTheRFCMinimum
 
 ## REQ-QUIC-RFC9000-S14P2-0008 Allow terminating the connection when no alternative path exists
 An endpoint MAY terminate the connection if an alternative path cannot be found.

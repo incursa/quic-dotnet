@@ -7,6 +7,40 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S14P2_0007
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task WriteAsync_SucceedsWhenTheActivePathSupportsTheRFCMinimum()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        Assert.True(runtime.ActivePath.HasValue);
+
+        ulong minimumAllowedMaximumDatagramSizeBytes = QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes;
+        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(minimumAllowedMaximumDatagramSizeBytes));
+        Assert.Equal(minimumAllowedMaximumDatagramSizeBytes, runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
+        Assert.True(runtime.ActivePath.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets);
+        Assert.Equal(minimumAllowedMaximumDatagramSizeBytes, runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        outboundEffects.Clear();
+
+        byte[] payload = Enumerable.Range(0, 21).Select(value => (byte)value).ToArray();
+
+        await stream.WriteAsync(payload, 0, payload.Length);
+
+        Assert.Contains(outboundEffects, effect => effect is QuicConnectionSendDatagramEffect);
+        await stream.DisposeAsync();
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task WriteAsync_FailsWhenTheActivePathDropsBelowTheRFCMinimum()
@@ -42,5 +76,21 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0007
         Assert.NotNull(exception.Message);
         Assert.Empty(outboundEffects);
         await stream.DisposeAsync();
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtTheRFCMinimum()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+
+        ulong minimumAllowedMaximumDatagramSizeBytes = QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes;
+
+        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(minimumAllowedMaximumDatagramSizeBytes));
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(minimumAllowedMaximumDatagramSizeBytes, runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
+        Assert.True(runtime.ActivePath.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets);
+        Assert.Equal(minimumAllowedMaximumDatagramSizeBytes, runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
     }
 }
