@@ -26,7 +26,8 @@
   "preconditions": [
     "The working tree is clean or the current edits are limited to the planning, trace, and planner-heuristic files for this slice.",
     "The gap ledger and coverage triage snapshot still reflect the current strategic open-gap set.",
-    "The last stopped synthesized backlog lane remains isolated in its own worktree and branch rather than being merged into the current checkout."
+    "The last stopped synthesized backlog lane remains isolated in its own worktree and branch rather than being merged into the current checkout.",
+    "Repo-wide SpecTrace validation remains a follow-up gate; treat the lane-catalog result and rendered markdown as the current proof boundary for this planning slice."
   ],
   "scope": "Verify that the repository now records the real remaining QUIC work as three bounded programs, treats the stopped synthesized backlog lane as isolated pending work instead of landed support, and regenerates the autopilot plan so a repeatable hard-gap lane is preferred over synthesized backlog batches while the strategic gap set remains open.",
   "procedure": [
@@ -60,5 +61,5 @@
       "content": "- Synthesized `backlog-*` lanes stay suppressed while the strategic gap set is still open.\n- `trace-metadata-reconciliation` stays a follow-through lane rather than becoming the default frontier.\n- Stream/public/interop widening remains downstream of the hard-gap programs."
     }
   ],
-  "status_summary": "Planned; this verification slice proves the repo's remaining-work partition and planner reset without claiming that the remaining protocol behavior has already landed."
+  "status_summary": "Planned; this verification slice proves the repo's remaining-work partition and planner reset at the lane-catalog and render boundary without claiming that the remaining protocol behavior has already landed."
 }

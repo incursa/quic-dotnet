@@ -22,6 +22,7 @@ Inspection, SpecTrace validation, markdown render, and autopilot plan regenerati
 - The working tree is clean or the current edits are limited to the planning, trace, and planner-heuristic files for this slice.
 - The gap ledger and coverage triage snapshot still reflect the current strategic open-gap set.
 - The last stopped synthesized backlog lane remains isolated in its own worktree and branch rather than being merged into the current checkout.
+- Repo-wide SpecTrace validation remains a follow-up gate; treat the lane-catalog result and rendered markdown as the current proof boundary for this planning slice.
 
 ## Procedure or Approach
 
@@ -51,7 +52,7 @@ The planning artifacts validate and render cleanly, the repository records the r
 
 ## Status
 
-Planned; this verification slice proves the repo's remaining-work partition and planner reset without claiming that the remaining protocol behavior has already landed.
+Planned; this verification slice proves the repo's remaining-work partition and planner reset at the lane-catalog and render boundary without claiming that the remaining protocol behavior has already landed.
 
 ## Related Artifacts
 

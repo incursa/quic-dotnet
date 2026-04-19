@@ -1652,24 +1652,22 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0002.cs::ResetProbeTimeoutBackoffCount_ResetsTheBackoffWhenRetryDiscardsKeys
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0002.cs::ClientRetryReceivedResetsCongestionControlStateAndPendingTimers
 
 ## REQ-QUIC-RFC9002-S6P3-0003 Retain cryptographic handshake state across Retry
 Clients MUST retain other connection state, in particular cryptographic handshake messages.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9002-0003
+  - ARC-QUIC-RFC9002-0001
 - Implemented By:
-  - WI-QUIC-RFC9002-0003
+  - WI-QUIC-RFC9002-0001
 - Verified By:
-  - VER-QUIC-RFC9002-0003
+  - VER-QUIC-RFC9002-0001
 - Source Refs:
   - RFC 9002 §6.3 RFC9002-S6.3-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs::TryValidateConnectionIdBindings_AcceptsMatchingRetrySourceConnectionIdAfterRetry
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs::ClientRetryReplayInitialPacketsPreserveTheOriginalHandshakeMessageBytes
 
 ## REQ-QUIC-RFC9002-S6P3-0004 Permit RTT estimation from Retry timing
 The client MAY compute an RTT estimate to the server as the time period from when the first Initial packet was sent to when a Retry or Version Negotiation packet is received.

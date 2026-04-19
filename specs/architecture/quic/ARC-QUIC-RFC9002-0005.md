@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Describe the runtime-owned PTO probe scheduler that re-arms recovery from real application sends, falls back to a PING when no queued stream data is available, and keeps recovery timer recompute close to the send path.
+Describe the runtime-owned PTO probe scheduler that re-arms recovery from real sends, prefers the packet-number space selected by recovery, falls back across other in-flight packet-number spaces, and only uses a PING when no better probe exists.
 
 ## Scope
 
@@ -33,19 +33,20 @@ It does not define new congestion control behavior, public APIs, or RFC 9000/RFC
 
 ## Design Summary
 
-The runtime records ack-eliciting application sends in `QuicRecoveryController`, selects a recovery deadline through the existing timer scheduler, and emits a single PING probe when the timer expires without queued application data.
+The runtime records ack-eliciting sends in QuicRecoveryController, re-selects the recovery packet-number space when PTO expires, and attempts the selected space before falling back to other in-flight packet-number spaces and then a PING probe.
 Queued stream writes still flush as ordinary application packets, while the send path recomputes lifecycle timers after each actual send so the recovery deadline remains aligned with the in-flight packet set.
 
 ## Key Components
 
-- `src/Incursa.Quic/QuicConnectionRuntime.cs`
-- `src/Incursa.Quic/QuicRecoveryTiming.cs`
-- `src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs`
-- `src/Incursa.Quic/QuicConnectionSendRuntime.cs`
-- `src/Incursa.Quic/QuicCongestionControlState.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0002.cs`
+- src/Incursa.Quic/QuicConnectionRuntime.cs
+- src/Incursa.Quic/QuicRecoveryTiming.cs
+- src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs
+- src/Incursa.Quic/QuicConnectionSendRuntime.cs
+- src/Incursa.Quic/QuicCongestionControlState.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0002.cs
 
 ## Risks
 
