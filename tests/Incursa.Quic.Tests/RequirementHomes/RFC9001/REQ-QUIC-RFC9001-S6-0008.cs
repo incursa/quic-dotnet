@@ -32,6 +32,30 @@ public sealed class REQ_QUIC_RFC9001_S6_0008
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ActiveServerRuntimeInstallsSuccessorMaterialWhenItInitiatesAKeyUpdate()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+
+        QuicTlsPacketProtectionMaterial priorOpenMaterial = runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+        QuicTlsPacketProtectionMaterial priorProtectMaterial = runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+            runtime,
+            out QuicTlsPacketProtectionMaterial successorOpenMaterial,
+            out QuicTlsPacketProtectionMaterial successorProtectMaterial));
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
+        Assert.True(runtime.TlsState.KeyUpdateInstalled);
+        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.True(successorOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
+        Assert.True(successorProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
+        Assert.False(priorOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
+        Assert.False(priorProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ActiveClientRuntimeRejectsRepeatingTheSameKeyUpdate()

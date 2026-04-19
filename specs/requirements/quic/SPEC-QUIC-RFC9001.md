@@ -698,6 +698,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs::ActiveClientRuntimeInstallsSuccessorMaterialWhenItInitiatesAKeyUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs::ActiveServerRuntimeInstallsSuccessorMaterialWhenItInitiatesAKeyUpdate
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs::ActiveClientRuntimeRejectsRepeatingTheSameKeyUpdate
 
 ## REQ-QUIC-RFC9001-S6-0009 Prohibit TLS KeyUpdate messages
