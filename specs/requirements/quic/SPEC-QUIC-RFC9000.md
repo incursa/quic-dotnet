@@ -12661,6 +12661,7 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::WriteAsync_SucceedsWhenTheActivePathSupportsTheRFCMinimum
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::WriteAsync_FailsWhenTheActivePathDropsBelowTheRFCMinimum
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::LocalCloseRequested_StillEmitsConnectionCloseWhenTheActivePathDropsBelowTheRFCMinimum
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtTheRFCMinimum
 
 ## REQ-QUIC-RFC9000-S14P2-0008 Allow terminating the connection when no alternative path exists
