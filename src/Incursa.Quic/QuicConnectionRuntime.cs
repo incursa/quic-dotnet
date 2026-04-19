@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Security;
+using System.Security.Cryptography;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -17,6 +18,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private const ulong TerminalLifetimePtoMultiplier = 3;
     private const ulong MicrosecondsPerSecond = 1_000_000UL;
     private const int DefaultCloseFrameOverheadBytes = 32;
+    private const int NewTokenBytesLength = 16;
     private const int PreferredAddressIPv4BytesLength = sizeof(uint);
     private const int PreferredAddressIPv6BytesLength = 16;
     private const ulong ApplicationSendDelayMicros = 1_000UL;
@@ -25,7 +27,6 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
-    private static readonly uint[] ClientSupportedVersions = [QuicVersionNegotiation.Version1];
 
     private readonly IMonotonicClock clock;
     private readonly QuicConnectionSendRuntime sendRuntime;
@@ -40,6 +41,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
     private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
+    private readonly Dictionary<string, QuicConnectionNewTokenEmissionRecord> newTokenEmissionsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly QuicConnectionPeerConnectionIdState peerConnectionIdState = new();
     private readonly long timeOriginTicks;
     private readonly QuicHandshakeFlowCoordinator handshakeFlowCoordinator;
@@ -49,6 +51,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private readonly bool diagnosticsEnabled;
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
+    private readonly QuicConnectionVersionProfile versionProfile;
     private QuicInitialPacketProtection? initialPacketProtection;
     private QuicConnectionPathIdentity? bootstrapOutboundPathIdentity;
     private byte[]? initialBootstrapClientHelloBytes;
@@ -109,7 +112,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         QuicTlsRole tlsRole = QuicTlsRole.Client,
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
         IQuicDiagnosticsSink? diagnosticsSink = null,
-        bool enableRandomizedSpinBitSelection = false)
+        bool enableRandomizedSpinBitSelection = false,
+        uint[]? supportedVersions = null)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -119,6 +123,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
         this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
         diagnosticsEnabled = this.diagnosticsSink.IsEnabled;
+        uint[] supportedVersionSnapshot = supportedVersions is { Length: > 0 }
+            ? (uint[])supportedVersions.Clone()
+            : [QuicVersionNegotiation.Version1];
+        versionProfile = new QuicConnectionVersionProfile(supportedVersionSnapshot);
         if (detachedResumptionTicketSnapshot is not null && tlsRole != QuicTlsRole.Client)
         {
             throw new ArgumentException("Detached resumption ticket snapshots are only supported for the client role.", nameof(detachedResumptionTicketSnapshot));
@@ -206,6 +214,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     public ulong CurrentProbeTimeoutMicros => currentProbeTimeoutMicros;
 
     public string? LastValidatedRemoteAddress => lastValidatedRemoteAddress;
+
+    internal QuicConnectionVersionProfile VersionProfile => versionProfile;
 
     internal ReadOnlyMemory<byte> CurrentPeerDestinationConnectionId
         => peerConnectionIdState.CurrentDestinationConnectionId.IsEmpty
@@ -1020,6 +1030,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             }
 
             stateChanged |= TryFlushHandshakeDonePacket(ref effects);
+            stateChanged |= TryFlushNewTokenEmissions(nowTicks, ref effects);
         }
 
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
@@ -1132,8 +1143,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         if (!QuicVersionNegotiation.ShouldAbandonConnectionAttempt(
                 versionNegotiationPacket,
-                QuicVersionNegotiation.Version1,
-                ClientSupportedVersions,
+                versionProfile.SelectedVersion,
+                versionProfile.SupportedVersions.Span,
                 hasSuccessfullyProcessedAnotherPacket))
         {
             return false;
@@ -1233,6 +1244,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 stateChanged |= TryFlushZeroRttPackets(ref effects);
                 stateChanged |= TryFlushHandshakePackets(ref effects);
                 stateChanged |= TryFlushHandshakeDonePacket(ref effects);
+                stateChanged |= TryFlushNewTokenEmissions(nowTicks, ref effects);
                 break;
         }
 
@@ -2983,6 +2995,114 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         return true;
     }
 
+    private bool TryFlushNewTokenEmissions(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase != QuicConnectionPhase.Active
+            || tlsState.Role != QuicTlsRole.Server
+            || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue
+            || newTokenEmissionsByRemoteAddress.Count == 0)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        foreach (KeyValuePair<string, QuicConnectionNewTokenEmissionRecord> entry in newTokenEmissionsByRemoteAddress.ToArray())
+        {
+            if (entry.Value.IsEmitted)
+            {
+                continue;
+            }
+
+            stateChanged |= TryFlushNewTokenEmission(entry.Value, nowTicks, ref effects);
+        }
+
+        return stateChanged;
+    }
+
+    private bool TryQueueNewTokenEmission(
+        QuicConnectionPathIdentity pathIdentity,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (tlsState.Role != QuicTlsRole.Server)
+        {
+            return false;
+        }
+
+        string remoteAddress = pathIdentity.RemoteAddress;
+        if (newTokenEmissionsByRemoteAddress.TryGetValue(remoteAddress, out QuicConnectionNewTokenEmissionRecord? emissionRecord))
+        {
+            if (emissionRecord.IsEmitted)
+            {
+                return false;
+            }
+
+            emissionRecord.PathIdentity = pathIdentity;
+        }
+        else
+        {
+            emissionRecord = new QuicConnectionNewTokenEmissionRecord(pathIdentity, CreateAddressValidationToken());
+            newTokenEmissionsByRemoteAddress.Add(remoteAddress, emissionRecord);
+        }
+
+        return TryFlushNewTokenEmission(emissionRecord, nowTicks, ref effects);
+    }
+
+    private bool TryFlushNewTokenEmission(
+        QuicConnectionNewTokenEmissionRecord emissionRecord,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (emissionRecord.IsEmitted)
+        {
+            return false;
+        }
+
+        if (!tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            return false;
+        }
+
+        if (!TryBuildOutboundNewTokenPayload(emissionRecord.Token, out byte[] payload))
+        {
+            return false;
+        }
+
+        QuicConnectionPathIdentity sendPathIdentity;
+        if (TryGetCandidatePath(emissionRecord.PathIdentity, out QuicConnectionCandidatePathRecord candidatePath)
+            && candidatePath.Validation.IsValidated
+            && !candidatePath.Validation.IsAbandoned)
+        {
+            sendPathIdentity = candidatePath.Identity;
+        }
+        else if (activePath.HasValue)
+        {
+            sendPathIdentity = activePath.Value.Identity;
+        }
+        else
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayloadOnPath(
+            sendPathIdentity,
+            payload,
+            "The connection runtime could not protect the NEW_TOKEN packet.",
+            "The connection cannot send the NEW_TOKEN packet.",
+            out QuicConnectionPathIdentity actualPathIdentity,
+            out byte[] protectedPacket,
+            out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        emissionRecord.IsEmitted = true;
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(actualPathIdentity, protectedPacket));
+        _ = nowTicks;
+        return true;
+    }
+
     private bool TryGetInitialOutboundPath(out QuicConnectionPathIdentity pathIdentity)
     {
         if (activePath is not null)
@@ -3026,6 +3146,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
         {
             exception = new InvalidOperationException("The connection is not ready to send application stream data.");
+            return false;
+        }
+
+        if (!activePath.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets)
+        {
+            exception = new InvalidOperationException("The active path cannot send ordinary packets.");
             return false;
         }
 
@@ -3132,6 +3258,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         updatedAmplificationState = default;
         protectedPacket = [];
 
+        currentPath = activePath!.Value;
+        if (!currentPath.MaximumDatagramSizeState.CanSendOrdinaryPackets)
+        {
+            exception = new InvalidOperationException("The active path cannot send ordinary packets.");
+            return false;
+        }
+
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             payload,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
@@ -3143,7 +3276,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
-        currentPath = activePath!.Value;
+        if (!currentPath.MaximumDatagramSizeState.CanSend((ulong)protectedPacket.Length))
+        {
+            exception = new InvalidOperationException("The active path cannot send an ordinary packet.");
+            return false;
+        }
+
         if (!currentPath.AmplificationState.TryConsumeSendBudget(
             protectedPacket.Length,
             out updatedAmplificationState))
@@ -3154,6 +3292,97 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         TrackApplicationPacket(packetNumber, protectedPacket);
         exception = null;
+        return true;
+    }
+
+    private bool TryProtectAndAccountApplicationPayloadOnPath(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> payload,
+        string protectFailureMessage,
+        string amplificationFailureMessage,
+        out QuicConnectionPathIdentity sendPathIdentity,
+        out byte[] protectedPacket,
+        out Exception? exception)
+    {
+        sendPathIdentity = default;
+        protectedPacket = [];
+
+        if (!tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            exception = new InvalidOperationException(protectFailureMessage);
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
+            payload,
+            tlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            tlsState.CurrentOneRttKeyPhase == 1,
+            out ulong packetNumber,
+            out protectedPacket))
+        {
+            exception = new InvalidOperationException(protectFailureMessage);
+            return false;
+        }
+
+        if (activePath is not null
+            && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity))
+        {
+            QuicConnectionActivePathRecord currentPath = activePath.Value;
+            if (!currentPath.AmplificationState.TryConsumeSendBudget(
+                protectedPacket.Length,
+                out QuicConnectionPathAmplificationState updatedAmplificationState))
+            {
+                exception = new InvalidOperationException(amplificationFailureMessage);
+                return false;
+            }
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+        }
+        else if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
+        {
+            if (!candidatePath.AmplificationState.TryConsumeSendBudget(
+                protectedPacket.Length,
+                out QuicConnectionPathAmplificationState updatedAmplificationState))
+            {
+                exception = new InvalidOperationException(amplificationFailureMessage);
+                return false;
+            }
+
+            candidatePath = candidatePath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+            candidatePaths[pathIdentity] = candidatePath;
+        }
+        else
+        {
+            exception = new InvalidOperationException(amplificationFailureMessage);
+            return false;
+        }
+
+        TrackApplicationPacket(packetNumber, protectedPacket);
+        sendPathIdentity = pathIdentity;
+        exception = null;
+        return true;
+    }
+
+    internal bool TrySetActivePathMaximumDatagramSize(ulong maximumDatagramSizeBytes)
+    {
+        if (activePath is null)
+        {
+            return false;
+        }
+
+        QuicConnectionActivePathRecord updatedActivePath = activePath.Value with
+        {
+            MaximumDatagramSizeState = activePath.Value.MaximumDatagramSizeState.WithMaximumDatagramSize(maximumDatagramSizeBytes),
+        };
+
+        activePath = updatedActivePath;
+        SyncActivePathMaximumDatagramSize(updatedActivePath.MaximumDatagramSizeState);
         return true;
     }
 
@@ -3470,6 +3699,31 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             || frameBytesWritten != buffer.Length)
         {
             return false;
+        }
+
+        payload = buffer;
+        return true;
+    }
+
+    internal bool TryBuildOutboundNewTokenPayload(ReadOnlySpan<byte> token, out byte[] payload)
+    {
+        payload = [];
+
+        if (token.IsEmpty)
+        {
+            return false;
+        }
+
+        int bufferLength = Math.Max(ApplicationMinimumProtectedPayloadLength, token.Length + 32);
+        byte[] buffer = new byte[bufferLength];
+        if (!QuicFrameCodec.TryFormatNewTokenFrame(new QuicNewTokenFrame(token), buffer, out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
         }
 
         payload = buffer;
@@ -4079,6 +4333,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         stateChanged |= TryFlushHandshakePackets(ref effects);
         stateChanged |= TryFlushHandshakeDonePacket(ref effects);
+        stateChanged |= TryFlushNewTokenEmissions(nowTicks, ref effects);
 
         if (stateChanged)
         {
@@ -4121,7 +4376,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         };
         candidatePaths[pathValidationSucceededEvent.PathIdentity] = candidatePath;
 
-        AppendRecentlyValidatedPath(candidatePath.Identity, nowTicks, candidatePath.SavedRecoverySnapshot, candidatePath.AmplificationState);
+        AppendRecentlyValidatedPath(
+            candidatePath.Identity,
+            nowTicks,
+            candidatePath.SavedRecoverySnapshot,
+            candidatePath.AmplificationState,
+            candidatePath.MaximumDatagramSizeState);
         lastValidatedRemoteAddress = candidatePath.Identity.RemoteAddress;
 
         bool stateChanged = true;
@@ -4141,6 +4401,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         UpdatePeerAddressValidationFlag();
+        stateChanged |= TryQueueNewTokenEmission(pathValidationSucceededEvent.PathIdentity, nowTicks, ref effects);
+        stateChanged |= TryFlushNewTokenEmissions(nowTicks, ref effects);
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         stateChanged |= TryFlushHandshakePackets(ref effects);
         stateChanged |= TryFlushHandshakeDonePacket(ref effects);
@@ -4539,6 +4801,9 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         bool trustedReuse = TryGetRecentlyValidatedPath(pathIdentity, out QuicConnectionValidatedPathRecord recentlyValidatedPath);
+        QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState = trustedReuse
+            ? recentlyValidatedPath.MaximumDatagramSizeState
+            : QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
         if (trustedReuse)
         {
             amplificationState = amplificationState.MarkAddressValidated();
@@ -4552,7 +4817,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             RecoverySnapshot: trustedReuse ? recentlyValidatedPath.SavedRecoverySnapshot : null)
         {
             AmplificationState = amplificationState,
+            MaximumDatagramSizeState = maximumDatagramSizeState,
         };
+
+        SyncActivePathMaximumDatagramSize(maximumDatagramSizeState);
 
         if (activePath.Value.IsValidated)
         {
@@ -4732,19 +5000,25 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             LastActivityTicks: nowTicks,
             Validation: new QuicConnectionPathValidationState(
                 Generation: 0,
-                IsValidated: true,
-                IsAbandoned: false,
-                ChallengeSendCount: 0,
-                ChallengeSentAtTicks: null,
-                ValidationDeadlineTicks: null,
-                ChallengePayload: ReadOnlyMemory<byte>.Empty),
+            IsValidated: true,
+            IsAbandoned: false,
+            ChallengeSendCount: 0,
+            ChallengeSentAtTicks: null,
+            ValidationDeadlineTicks: null,
+            ChallengePayload: ReadOnlyMemory<byte>.Empty),
             SavedRecoverySnapshot: recentlyValidatedPath.SavedRecoverySnapshot)
         {
             AmplificationState = updatedAmplificationState.MarkAddressValidated(),
+            MaximumDatagramSizeState = recentlyValidatedPath.MaximumDatagramSizeState,
         };
 
         candidatePaths[pathIdentity] = candidatePath;
-        AppendRecentlyValidatedPath(pathIdentity, nowTicks, recentlyValidatedPath.SavedRecoverySnapshot, candidatePath.AmplificationState);
+        AppendRecentlyValidatedPath(
+            pathIdentity,
+            nowTicks,
+            recentlyValidatedPath.SavedRecoverySnapshot,
+            candidatePath.AmplificationState,
+            candidatePath.MaximumDatagramSizeState);
         lastValidatedRemoteAddress = pathIdentity.RemoteAddress;
 
         if (CanPromoteActivePathMigration())
@@ -4775,6 +5049,10 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             amplificationState = amplificationState.MarkAddressValidated();
         }
 
+        QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState = isTrustedReuse
+            ? recentlyValidatedPath!.Value.MaximumDatagramSizeState
+            : QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
+
         QuicConnectionCandidatePathRecord candidatePath = new(
             pathIdentity,
             DiscoveredAtTicks: nowTicks,
@@ -4790,6 +5068,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             SavedRecoverySnapshot: recentlyValidatedPath?.SavedRecoverySnapshot)
         {
             AmplificationState = amplificationState,
+            MaximumDatagramSizeState = maximumDatagramSizeState,
         };
 
         candidatePaths[pathIdentity] = candidatePath;
@@ -4801,7 +5080,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
         else
         {
-            AppendRecentlyValidatedPath(pathIdentity, nowTicks, recentlyValidatedPath?.SavedRecoverySnapshot, candidatePath.AmplificationState);
+            AppendRecentlyValidatedPath(
+                pathIdentity,
+                nowTicks,
+                recentlyValidatedPath?.SavedRecoverySnapshot,
+                candidatePath.AmplificationState,
+                candidatePath.MaximumDatagramSizeState);
         }
 
         if (isTrustedReuse)
@@ -4926,7 +5210,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         QuicConnectionPathIdentity pathIdentity,
         long nowTicks,
         QuicConnectionPathRecoverySnapshot? savedRecoverySnapshot,
-        QuicConnectionPathAmplificationState amplificationState)
+        QuicConnectionPathAmplificationState amplificationState,
+        QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState)
     {
         if (MaximumRecentlyValidatedPaths == 0)
         {
@@ -4940,6 +5225,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             LastActivityTicks = nowTicks,
             AmplificationState = amplificationState.MarkAddressValidated(),
+            MaximumDatagramSizeState = maximumDatagramSizeState,
         };
 
         if (recentlyValidatedPaths.Count <= MaximumRecentlyValidatedPaths)
@@ -4967,6 +5253,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             recentlyValidatedPaths.Remove(candidateToRemove.Value);
         }
+    }
+
+    private void SyncActivePathMaximumDatagramSize(QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState)
+    {
+        sendRuntime.FlowController.CongestionControlState.UpdateMaxDatagramSize(
+            maximumDatagramSizeState.MaximumDatagramSizeBytes,
+            resetToInitialWindow: false);
     }
 
     private bool TryPromoteValidatedCandidatePath(long nowTicks, ref List<QuicConnectionEffect>? effects)
@@ -5034,14 +5327,16 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 activePath.Value.Identity,
                 nowTicks,
                 activePath.Value.RecoverySnapshot,
-                activePath.Value.AmplificationState);
+                activePath.Value.AmplificationState,
+                activePath.Value.MaximumDatagramSizeState);
         }
 
         AppendRecentlyValidatedPath(
             pathIdentity,
             nowTicks,
             candidatePath.SavedRecoverySnapshot,
-            candidatePath.AmplificationState);
+            candidatePath.AmplificationState,
+            candidatePath.MaximumDatagramSizeState);
 
         QuicConnectionActivePathRecord updatedActivePath = new(
             pathIdentity,
@@ -5051,11 +5346,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             RecoverySnapshot: candidatePath.SavedRecoverySnapshot)
         {
             AmplificationState = candidatePath.AmplificationState.MarkAddressValidated(),
+            MaximumDatagramSizeState = candidatePath.MaximumDatagramSizeState,
         };
 
         activePath = updatedActivePath;
         candidatePaths.Remove(pathIdentity);
         lastValidatedRemoteAddress = pathIdentity.RemoteAddress;
+        SyncActivePathMaximumDatagramSize(updatedActivePath.MaximumDatagramSizeState);
         UpdatePeerAddressValidationFlag();
 
         if (activePathChanged)
@@ -5122,16 +5419,19 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             RecoverySnapshot: bestCandidate.Value.SavedRecoverySnapshot)
         {
             AmplificationState = bestCandidate.Value.AmplificationState.MarkAddressValidated(),
+            MaximumDatagramSizeState = bestCandidate.Value.MaximumDatagramSizeState,
         };
 
         AppendRecentlyValidatedPath(
             bestPathIdentity.Value,
             nowTicks,
             bestCandidate.Value.SavedRecoverySnapshot,
-            bestCandidate.Value.AmplificationState);
+            bestCandidate.Value.AmplificationState,
+            bestCandidate.Value.MaximumDatagramSizeState);
 
         activePath = promotedPath;
         lastValidatedRemoteAddress = bestPathIdentity.Value.RemoteAddress;
+        SyncActivePathMaximumDatagramSize(promotedPath.MaximumDatagramSizeState);
         UpdatePeerAddressValidationFlag();
         AppendEffect(ref effects, new QuicConnectionPromoteActivePathEffect(
             bestPathIdentity.Value,
@@ -5526,6 +5826,21 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     private sealed record PendingApplicationSendRequest(ulong StreamId, byte[] StreamPayload);
 
+    private sealed class QuicConnectionNewTokenEmissionRecord
+    {
+        internal QuicConnectionNewTokenEmissionRecord(QuicConnectionPathIdentity pathIdentity, byte[] token)
+        {
+            PathIdentity = pathIdentity;
+            Token = token;
+        }
+
+        internal QuicConnectionPathIdentity PathIdentity { get; set; }
+
+        internal byte[] Token { get; }
+
+        internal bool IsEmitted { get; set; }
+    }
+
     private void EmitDiagnostic(ref List<QuicConnectionEffect>? effects, QuicDiagnosticEvent diagnosticEvent)
     {
         diagnosticsSink.Emit(diagnosticEvent);
@@ -5546,5 +5861,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         effects ??= [];
         effects.AddRange(additionalEffects);
+    }
+
+    private static byte[] CreateAddressValidationToken()
+    {
+        byte[] token = new byte[NewTokenBytesLength];
+        RandomNumberGenerator.Fill(token);
+        return token;
     }
 }

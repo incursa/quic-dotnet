@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0004",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 PMTU Path-State Verification",
+  "domain": "quic",
+  "status": "planned",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0004",
+    "WI-QUIC-RFC9000-0004"
+  ],
+  "verification_method": "Execution and inspection of the path-state and sender-admissibility runtime plus the requirement-home proof for the RFC 9000 PMTU slice.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S14P2-0003",
+    "REQ-QUIC-RFC9000-S14P2-0005",
+    "REQ-QUIC-RFC9000-S14P2-0007",
+    "REQ-QUIC-RFC9000-S14P2-0008",
+    "REQ-QUIC-RFC9000-S14P2-0009"
+  ],
+  "scope": "This verification covers the PMTU path-state and sender-admissibility slice for RFC 9000 Section 14.2.\nIt checks that the runtime carries maximum datagram size state on path records, that the active path projects that state into sender congestion-control state, that ordinary sends stop below the RFC minimum, and that probe-sized datagrams remain admissible above the current maximum.\nIt does not claim automatic alternative-path search or termination policy.",
+  "expected_result": "The path records carry maximum datagram size state, the active path mirrors that state into the sender flow controller, ordinary sends are gated below 1200 bytes, probe-sized datagrams remain admissible above the current maximum, and the requirement-home proof stays limited to the bounded PMTU slice.",
+  "procedure": [
+    "Run the requirement-home tests for REQ-QUIC-RFC9000-S14P2-0003, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0007, REQ-QUIC-RFC9000-S14P2-0008, and REQ-QUIC-RFC9000-S14P2-0009.",
+    "Inspect the active-path runtime state and congestion-control projection for the path-owned maximum datagram size value.",
+    "Confirm that ordinary sends fail below the RFC minimum while probe-sized datagrams and CONNECTION_CLOSE remain admissible through the bounded helpers."
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The RFC 9000 path-state requirement home is populated."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0009.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs"
+  ]
+}

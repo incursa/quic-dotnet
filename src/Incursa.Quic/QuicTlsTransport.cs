@@ -33,6 +33,7 @@ internal enum QuicTlsHandshakeMessageType : byte
     CertificateRequest = 0x0D,
     CertificateVerify = 0x0F,
     Finished = 0x14,
+    KeyUpdate = 0x18,
 }
 
 /// <summary>

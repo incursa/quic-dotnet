@@ -418,7 +418,12 @@ internal static class QuicPostHandshakeTicketTestSupport
         return transcript;
     }
 
-    internal static byte[] CreateUnsupportedPostHandshakeMessage()
+    internal static byte[] CreateUnknownPostHandshakeMessage()
+    {
+        return WrapHandshakeMessage((QuicTlsHandshakeMessageType)0x19, [0x00]);
+    }
+
+    internal static byte[] CreateProhibitedKeyUpdatePostHandshakeMessage()
     {
         return WrapHandshakeMessage((QuicTlsHandshakeMessageType)0x18, [0x00]);
     }

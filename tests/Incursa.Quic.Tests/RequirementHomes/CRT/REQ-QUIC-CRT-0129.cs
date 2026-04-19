@@ -100,7 +100,7 @@ public sealed class REQ_QUIC_CRT_0129
 
         IReadOnlyList<QuicTlsStateUpdate> unsupportedPostHandshakeUpdates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.OneRtt,
-            QuicPostHandshakeTicketTestSupport.CreateUnsupportedPostHandshakeMessage());
+            QuicPostHandshakeTicketTestSupport.CreateUnknownPostHandshakeMessage());
 
         Assert.Empty(unsupportedPostHandshakeUpdates);
         Assert.False(driver.State.HasPostHandshakeTicket);

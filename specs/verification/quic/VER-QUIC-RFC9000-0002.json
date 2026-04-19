@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0002",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "RFC 9000 Address-Validation Token Emission Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused unit tests plus runtime inspection around path-validation transitions and NEW_TOKEN frame formatting.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0002",
+    "WI-QUIC-RFC9000-0002"
+  ],
+  "expected_result": "Server-role validation of a new address emits a protected NEW_TOKEN datagram exactly once per address, client-role validation does not emit NEW_TOKEN traffic, and the internal helper formats a valid NEW_TOKEN frame payload that round-trips through the codec.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S9P3-0005",
+    "REQ-QUIC-RFC9000-S9P3-0011"
+  ],
+  "procedure": [
+    "Run the two requirement-home tests for the token-emission slice.",
+    "Confirm the helper payload round-trips through QuicFrameCodec.TryParseNewTokenFrame.",
+    "Confirm repeated validation of the same address does not create a second NEW_TOKEN send effect."
+  ],
+  "scope": "This slice covers server-only address-validation token emission and the proof that repeated validation transitions do not create duplicate NEW_TOKEN traffic. It does not claim Retry-token generation or client-side token handling.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicNewTokenFrame.cs"
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The RFC 9000 token-emission requirement homes are discoverable by the test runner.",
+    "The runtime keeps server-only NEW_TOKEN emission internal to the repository."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicFrameCodec.cs\n- src/Incursa.Quic/QuicNewTokenFrame.cs"
+    }
+  ]
+}

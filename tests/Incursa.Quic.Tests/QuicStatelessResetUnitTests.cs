@@ -46,6 +46,29 @@ public sealed class QuicStatelessResetUnitTests
         Assert.True(token.AsSpan().SequenceEqual(trailingToken));
     }
 
+    [Fact]
+    public void TryFormatStatelessResetDatagram_UsesTheRetainedVersionProfileSnapshot()
+    {
+        byte[] token = CreateToken(0x40);
+        byte[] datagram = new byte[QuicStatelessReset.MinimumDatagramLength];
+        uint[] supportedVersions =
+        [
+            QuicVersionNegotiation.Version1,
+            0x11223344u,
+        ];
+
+        Assert.True(QuicStatelessReset.TryFormatStatelessResetDatagram(
+            token,
+            supportedVersions,
+            datagram.Length,
+            datagram,
+            out int bytesWritten));
+        Assert.Equal(datagram.Length, bytesWritten);
+        Assert.True(QuicStatelessReset.IsPotentialStatelessReset(datagram));
+        Assert.True(QuicStatelessReset.TryGetTrailingStatelessResetToken(datagram, out ReadOnlySpan<byte> trailingToken));
+        Assert.True(token.AsSpan().SequenceEqual(trailingToken));
+    }
+
     [Theory]
     [MemberData(nameof(UndersizedFormatCases))]
     public void TryFormatStatelessResetDatagram_RejectsUndersizedDestinationOrDatagramLength(
@@ -65,6 +88,21 @@ public sealed class QuicStatelessResetUnitTests
         byte[] datagram = CreateBytes(QuicStatelessReset.StatelessResetTokenLength - 1, 0x10);
 
         Assert.False(QuicStatelessReset.TryGetTrailingStatelessResetToken(datagram, out _));
+    }
+
+    [Fact]
+    public void TryFormatStatelessResetDatagram_RejectsEmptyVersionProfileSnapshots()
+    {
+        byte[] token = CreateToken(0x44);
+        byte[] datagram = new byte[QuicStatelessReset.MinimumDatagramLength];
+
+        Assert.False(QuicStatelessReset.TryFormatStatelessResetDatagram(
+            token,
+            ReadOnlySpan<uint>.Empty,
+            datagram.Length,
+            datagram,
+            out int bytesWritten));
+        Assert.Equal(0, bytesWritten);
     }
 
     [Fact]

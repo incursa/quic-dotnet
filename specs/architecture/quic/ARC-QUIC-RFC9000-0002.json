@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0002",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "RFC 9000 Address-Validation Token Emission Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the connection runtime issues server-only NEW_TOKEN frames after validating a new client address, retains per-address emission state, and keeps repeated validation transitions from spamming duplicate emissions.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "WI-QUIC-RFC9000-0002",
+    "VER-QUIC-RFC9000-0002"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S9P3-0005",
+    "REQ-QUIC-RFC9000-S9P3-0011"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicNewTokenFrame.cs"
+  ],
+  "design_summary": "The runtime owns a server-only emission table keyed by remote address.\nPath-validation success creates or refreshes a pending token record, then attempts to flush it through the existing 1-RTT application send path once the connection is active and protected packet material exists.\nNEW_TOKEN formatting stays internal to the runtime and uses the existing frame codec; repeated validation transitions for the same address reuse the stored emission record instead of creating duplicate frames.",
+  "risks": [
+    "Token emission must remain server-only so client-role validation events do not produce NEW_TOKEN traffic.",
+    "A validated path that is not yet active may need to defer emission until the runtime can send a protected 1-RTT packet.",
+    "Repeated validation transitions must not bypass the emission table and create duplicate NEW_TOKEN frames."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Emission Model",
+      "content": "Each validated remote address owns one emission record.\nA new record carries opaque token bytes and starts in a pending state.\nOnce the runtime can send a protected application packet, the record is flushed and then stays remembered so later validation transitions for the same address do not emit another NEW_TOKEN frame."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicFrameCodec.cs\n- src/Incursa.Quic/QuicNewTokenFrame.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0004",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 PMTU Path-State Work Item",
+  "domain": "quic",
+  "status": "planned",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0004",
+    "VER-QUIC-RFC9000-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S14P2-0003",
+    "REQ-QUIC-RFC9000-S14P2-0005",
+    "REQ-QUIC-RFC9000-S14P2-0007",
+    "REQ-QUIC-RFC9000-S14P2-0008",
+    "REQ-QUIC-RFC9000-S14P2-0009"
+  ],
+  "summary": "Keep the RFC 9000 PMTU discovery slice traceable while the runtime grows explicit path-owned maximum datagram size state, probe-vs-ordinary send admissibility, and the 1200-byte ordinary-send floor.",
+  "planned_changes": "- Add path-owned maximum-datagram-size state to the active, candidate, and recently validated path records.\n- Add an internal active-path update helper that keeps the sender flow controller in sync with the path-owned maximum datagram size.\n- Distinguish ordinary sends from PMTU probes so probe-sized datagrams can exceed the current maximum while ordinary sends stop below the RFC minimum.\n- Keep CONNECTION_CLOSE sendable on the gated path without claiming automatic alternative-path search or termination policy.",
+  "verification_plan": "Run the RFC 9000 requirement-home tests for the ordinary, probe, 1200-byte floor, close-path, and path-state clauses, then inspect the active-path projection into the sender flow controller.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0004"
+  ],
+  "out_of_scope": [
+    "Automatic alternative-path search or termination policy.",
+    "Probe generation beyond the admissibility helper."
+  ],
+  "completion_notes": "This packet now proves REQ-QUIC-RFC9000-S14P2-0003, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0007, REQ-QUIC-RFC9000-S14P2-0008, and REQ-QUIC-RFC9000-S14P2-0009. Automatic alternative-path search remains a separate lifecycle slice and is not claimed here."
+}

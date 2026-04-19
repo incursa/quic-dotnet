@@ -16,6 +16,7 @@ This directory contains permanent BenchmarkDotNet suites for `Incursa.Quic`.
 - `QuicApplicationPacketKeyPhaseBenchmarks`
 - `QuicTlsClientZeroRttEmissionBenchmarks`
 - `QuicTlsClientZeroRttRejectionCleanupBenchmarks`
+- `QuicStatelessResetBenchmarks`
 
 ## Run
 
@@ -35,6 +36,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationPacketKeyPhaseBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsClientZeroRttEmissionBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsClientZeroRttRejectionCleanupBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicStatelessResetBenchmarks*"
 ```
 
 Use `--filter` to narrow to a subset of benchmarks when iterating locally.

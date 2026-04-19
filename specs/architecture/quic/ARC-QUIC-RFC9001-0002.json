@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9001-0002",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC RFC 9001 TLS KeyUpdate Classifier Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the narrow post-handshake TLS KeyUpdate classifier seam that turns prohibited TLS KeyUpdate messages into the existing KeyUpdateError close path without widening into general post-handshake TLS support.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "WI-QUIC-RFC9001-0002",
+    "VER-QUIC-RFC9001-0002"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9001-S6-0009",
+    "REQ-QUIC-RFC9001-S6-0010"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs"
+  ],
+  "design_summary": "The transcript owner classifies post-handshake TLS bytes before bridge publication. A TLS KeyUpdate message is recognized as a dedicated post-handshake classifier outcome, published through the existing prohibited-update path, and then closed by QuicConnectionRuntime as KeyUpdateError. The internal QuicTlsUpdateKind.KeyUpdateInstalled and key-phase install path remain separate so managed QUIC key updates do not masquerade as TLS KeyUpdate support.",
+  "edge_cases_and_constraints": [
+    "Only the TLS KeyUpdate post-handshake shape is classified here.",
+    "NewSessionTicket remains the only supported positive post-handshake publication path in this slice.",
+    "Internal QUIC key-phase successor installation is not a TLS KeyUpdate and must stay on the separate QuicTlsUpdateKind.KeyUpdateInstalled path."
+  ],
+  "risks": [
+    "If the classifier starts handling unrelated post-handshake TLS messages, the RFC 9001 proof surface will widen beyond this lane.",
+    "If the key-phase install path is conflated with TLS KeyUpdate handling, the prohibition proof will become ambiguous."
+  ]
+}

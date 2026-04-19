@@ -72,11 +72,11 @@ TLS handshake and alert messages MUST be carried directly over the QUIC transpor
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0002
 - Implemented By:
-  - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0002
 - Verified By:
-  - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0002
 - Source Refs:
   - RFC 9001 §3 RFC9001-S3-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-3
@@ -89,11 +89,11 @@ QUIC transport MUST take over the responsibilities of the TLS record layer.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0002
 - Implemented By:
-  - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0002
 - Verified By:
-  - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0002
 - Source Refs:
   - RFC 9001 §3 RFC9001-S3-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-3
@@ -106,11 +106,11 @@ QUIC MUST rely on TLS for authentication and negotiation of parameters that are 
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0002
 - Implemented By:
-  - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0002
 - Verified By:
-  - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0002
 - Source Refs:
   - RFC 9001 §3 RFC9001-S3-B5-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-3
@@ -694,11 +694,11 @@ Endpoints MUST NOT send a TLS KeyUpdate message.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0002
 - Implemented By:
-  - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0002
 - Verified By:
-  - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0002
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
@@ -708,11 +708,11 @@ Endpoints MUST treat the receipt of a TLS KeyUpdate message as a connection erro
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0002
 - Implemented By:
-  - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0002
 - Verified By:
-  - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0002
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B6-P5-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6

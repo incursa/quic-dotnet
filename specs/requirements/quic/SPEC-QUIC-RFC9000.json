@@ -3,7 +3,10 @@
   "related_artifacts": [
     "ARC-QUIC-RFC9000-0001",
     "WI-QUIC-RFC9000-0001",
-    "VER-QUIC-RFC9000-0001"
+    "VER-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0003",
+    "WI-QUIC-RFC9000-0003",
+    "VER-QUIC-RFC9000-0003"
   ],
   "artifact_id": "SPEC-QUIC-RFC9000",
   "scope": "This specification covers the reviewed RFC 9000 transport extraction outputs across all temporary batch ranges while collapsing duplicate batch coverage into one canonical RFC-level specification.",
@@ -11364,17 +11367,21 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0002"
         ],
         "upstream_refs": [
           "RFC 9000 §9.3 RFC9000-S9.3-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs::TryBuildOutboundNewTokenPayload_WritesANewTokenFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs::ServerValidationOfANewClientAddressEmitsANewTokenForTheValidatedPath"
         ]
       }
     },
@@ -11539,17 +11546,21 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0002"
         ],
         "upstream_refs": [
           "RFC 9000 §9.3 RFC9000-S9.3-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::ClientValidationOfANewAddressDoesNotEmitANewToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::RevalidatingTheSameAddressDoesNotEmitAnotherNewToken"
         ]
       }
     },
@@ -15786,21 +15797,28 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0003"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0003"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0003"
         ],
         "upstream_refs": [
           "RFC 9000 §10.3 RFC9000-S10.3-B23-P18-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0029.cs::TryCreateStatelessResetDatagram_RetainsTheConnectionVersionProfileAfterRuntimeDisposal",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0029.cs::TryGetRetainedVersionProfile_ReturnsFalseBeforeConnectionRegistration",
+          "tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_UsesTheRetainedVersionProfileSnapshot",
+          "tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_RejectsEmptyVersionProfileSnapshots"
         ]
       },
       "notes": [
-        "A faithful normative restatement here is version-specific and easy to overstate."
+        "A faithful normative restatement here is version-specific and easy to overstate.",
+        "The endpoint-owned version-profile snapshot keeps the emission path honest after the runtime shell has been disposed."
       ]
     },
     {

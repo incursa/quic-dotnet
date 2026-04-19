@@ -1,0 +1,23 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "title": "QUIC RFC 9000 Stateless Reset Versioning Architecture",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "WI-QUIC-RFC9000-0003",
+    "VER-QUIC-RFC9000-0003"
+  ],
+  "artifact_id": "ARC-QUIC-RFC9000-0003",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "purpose": "Describe how the endpoint-owned version-profile snapshot keeps RFC 9000 Stateless Reset generation acceptable after connection-state loss.",
+  "scope": "This design covers the narrow RFC 9000 stateless-reset versioning slice. The runtime endpoint retains an immutable version-profile snapshot alongside the token and path state so a later Stateless Reset emission can still be framed from the connection's supported-version history after the connection runtime is disposed.\nIt does not widen supported versions, add new packet formats, or claim version-specific on-wire fields beyond the existing short-header Stateless Reset layout.",
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S10P3-0029"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Artifacts",
+      "content": "- SPEC-QUIC-RFC9000\n- WI-QUIC-RFC9000-0003\n- VER-QUIC-RFC9000-0003"
+    }
+  ]
+}

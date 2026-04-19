@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9001-0002",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9001 TLS KeyUpdate Classifier Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "status": "planned",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "ARC-QUIC-RFC9001-0002",
+    "WI-QUIC-RFC9001-0002"
+  ],
+  "scope": "Prove that a real post-handshake TLS KeyUpdate message is classified as prohibited and reaches the existing KeyUpdateError close path, while NewSessionTicket remains separately supported and the managed key-phase install path stays distinct.",
+  "preconditions": [
+    "The solution builds successfully.",
+    "The RFC 9001 requirement-home tests can be discovered and executed locally."
+  ],
+  "verification_method": "Requirement-home tests plus focused execution and trace inspection.",
+  "verifies": [
+    "REQ-QUIC-RFC9001-S6-0009",
+    "REQ-QUIC-RFC9001-S6-0010"
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs"
+  ],
+  "procedure": [
+    "Run the RFC 9001 Section 6 requirement-home tests for the prohibited TLS KeyUpdate and connection-error clauses.",
+    "Confirm the real TLS message-processing seam emits the prohibited-update state for a TLS KeyUpdate message and still emits post-handshake ticket publication for NewSessionTicket.",
+    "Render the RFC 9001 SpecTrace markdown siblings and validate the JSON artifacts so the downstream trace reflects the new 0002 leaf slice."
+  ],
+  "expected_result": "The requirement-home tests prove a real post-handshake TLS KeyUpdate is classified and closed through the existing KeyUpdateError path, NewSessionTicket remains separately supported, and the managed key-phase install path is still distinct.",
+  "status_summary": "This verification slice proves the classifier seam plus the existing KeyUpdateError close path while keeping ticket publication and key-phase installation distinct.",
+  "supplemental_sections": [
+    {
+      "heading": "Deferred Coverage",
+      "content": "Broad TLS post-handshake behavior, beyond the KeyUpdate classifier and NewSessionTicket support already exercised here, remains out of scope."
+    }
+  ]
+}

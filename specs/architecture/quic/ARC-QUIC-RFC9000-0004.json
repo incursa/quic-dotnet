@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0004",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 PMTU Path-State Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the runtime owns per-address-pair maximum-datagram-size state on path records, projects the active path's size into sender congestion-control state, and distinguishes ordinary from probe-sized sends while leaving automatic alternative-path termination separate.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "WI-QUIC-RFC9000-0004",
+    "VER-QUIC-RFC9000-0004"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S14P2-0003",
+    "REQ-QUIC-RFC9000-S14P2-0005",
+    "REQ-QUIC-RFC9000-S14P2-0007",
+    "REQ-QUIC-RFC9000-S14P2-0008",
+    "REQ-QUIC-RFC9000-S14P2-0009"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs"
+  ],
+  "risks": [
+    "Probe generation itself remains a separate sender feature; this slice only proves the path-state admissibility and 1200-byte floor behavior.",
+    "Automatic alternative-path search or termination remains a separate lifecycle decision and is not claimed here."
+  ],
+  "design_summary": "The runtime now carries a maximum datagram size state on active, candidate, and recently validated path records. Active-path creation and promotion project that state into the sender flow controller, and the path-state helper distinguishes ordinary packets from probe-sized datagrams so the active path can stop ordinary sends below the RFC 9000 minimum while still admitting PMTU probe sizing above the current maximum.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers the PMTU path-state and send-admissibility slice for RFC 9000 Section 14.2.\nThe runtime owns per-address-pair maximum datagram size state on the path records it already uses for active-path, candidate-path, and recently validated-path bookkeeping.\nIt distinguishes ordinary packets from probe-sized datagrams, projects the active path's state into sender congestion-control state, and stops ordinary sending once the active path drops below the RFC minimum.\nIt does not claim automatic alternative-path search or termination policy."
+    },
+    {
+      "heading": "Related Artifacts",
+      "content": "- SPEC-QUIC-RFC9000\n- WI-QUIC-RFC9000-0004\n- VER-QUIC-RFC9000-0004"
+    }
+  ]
+}

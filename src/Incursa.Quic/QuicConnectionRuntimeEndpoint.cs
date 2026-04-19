@@ -16,6 +16,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<QuicConnectionHandle, ConcurrentDictionary<ulong, byte>> statelessResetTokenIdsByHandle = new();
     private readonly ConcurrentDictionary<QuicConnectionStatelessResetMatchKey, QuicConnectionStatelessResetBinding> statelessResetBindingsByMatchKey = new();
     private readonly ConcurrentDictionary<ulong, QuicConnectionStatelessResetBinding> statelessResetBindingsByConnectionId = new();
+    private readonly ConcurrentDictionary<QuicConnectionHandle, QuicConnectionVersionProfile> versionProfilesByHandle = new();
     private readonly ConcurrentDictionary<string, int> statelessResetEmissionCountsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly int maximumStatelessResetEmissionsPerRemoteAddress;
 
@@ -66,6 +67,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             return false;
         }
 
+        versionProfilesByHandle[handle] = runtime.VersionProfile;
+
         return true;
     }
 
@@ -83,6 +86,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
         registeredHandles.TryRemove(handle, out _);
         pathByHandle.TryRemove(handle, out _);
+        versionProfilesByHandle.TryRemove(handle, out _);
 
         if (routeIdsByHandle.TryRemove(handle, out ConcurrentDictionary<QuicConnectionIdKey, byte>? routeIds))
         {
@@ -195,7 +199,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
     {
         if (!registeredHandles.ContainsKey(handle)
             || token.Length != QuicStatelessReset.StatelessResetTokenLength
-            || !pathByHandle.TryGetValue(handle, out QuicConnectionPathIdentity pathIdentity))
+            || !pathByHandle.TryGetValue(handle, out QuicConnectionPathIdentity pathIdentity)
+            || !versionProfilesByHandle.TryGetValue(handle, out QuicConnectionVersionProfile versionProfile))
         {
             return false;
         }
@@ -221,7 +226,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             return false;
         }
 
-        QuicConnectionStatelessResetBinding binding = new(handle, connectionId, pathIdentity.RemoteAddress, tokenBuffer);
+        QuicConnectionStatelessResetBinding binding = new(handle, connectionId, pathIdentity.RemoteAddress, tokenBuffer, versionProfile);
         QuicConnectionStatelessResetMatchKey matchKey = new(pathIdentity.RemoteAddress, tokenKey);
         if (!statelessResetBindingsByMatchKey.TryAdd(matchKey, binding))
         {
@@ -303,7 +308,12 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         }
 
         byte[] datagram = new byte[datagramLength];
-        if (!QuicStatelessReset.TryFormatStatelessResetDatagram(binding.Token, datagramLength, datagram, out int bytesWritten))
+        if (!QuicStatelessReset.TryFormatStatelessResetDatagram(
+                binding.Token,
+                binding.VersionProfile.SupportedVersions.Span,
+                datagramLength,
+                datagram,
+                out int bytesWritten))
         {
             return new QuicConnectionStatelessResetEmissionResult(
                 QuicConnectionStatelessResetEmissionDisposition.FormatFailed,
@@ -416,6 +426,13 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             null);
     }
 
+    internal bool TryGetRetainedVersionProfile(
+        QuicConnectionHandle handle,
+        out QuicConnectionVersionProfile versionProfile)
+    {
+        return versionProfilesByHandle.TryGetValue(handle, out versionProfile);
+    }
+
     public Task RunAsync(
         Action<QuicConnectionHandle, int, QuicConnectionTransitionResult>? transitionObserver = null,
         Action<QuicConnectionHandle, int, QuicConnectionEffect>? effectObserver = null,
@@ -462,6 +479,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         statelessResetTokenIdsByHandle.Clear();
         statelessResetBindingsByMatchKey.Clear();
         statelessResetBindingsByConnectionId.Clear();
+        versionProfilesByHandle.Clear();
         statelessResetEmissionCountsByRemoteAddress.Clear();
     }
 

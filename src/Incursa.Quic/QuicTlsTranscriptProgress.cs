@@ -338,6 +338,27 @@ internal sealed class QuicTlsTranscriptProgress
                 checked((int)handshakeMessageBodyLength));
             QuicTlsHandshakeMessageType messageType = (QuicTlsHandshakeMessageType)transcriptBytes[0];
 
+            if (messageType == QuicTlsHandshakeMessageType.KeyUpdate)
+            {
+                int index = 0;
+                if (handshakeMessageBodyLength != 1
+                    || !TryReadUInt8(handshakeMessageBody, ref index, out _)
+                    || index != handshakeMessageBody.Length)
+                {
+                    ConsumePostHandshakeBytes(totalMessageLength);
+                    continue;
+                }
+
+                ConsumePostHandshakeBytes(totalMessageLength);
+                step = new QuicTlsTranscriptStep(
+                    QuicTlsTranscriptStepKind.ProhibitedKeyUpdateViolation,
+                    QuicTlsTranscriptPhase.Completed,
+                    HandshakeMessageType: messageType,
+                    HandshakeMessageLength: handshakeMessageBodyLength,
+                    HandshakeMessageBytes: transcriptBytes.Slice(0, totalMessageLength).ToArray());
+                return TranscriptAdvanceResult.Progressed;
+            }
+
             if (messageType != QuicTlsHandshakeMessageType.NewSessionTicket)
             {
                 ConsumePostHandshakeBytes(totalMessageLength);
@@ -1409,6 +1430,7 @@ internal enum QuicTlsTranscriptStepKind
     PeerTransportParametersStaged = 2,
     PostHandshakeTicketAvailable = 3,
     Fatal = 4,
+    ProhibitedKeyUpdateViolation = 5,
 }
 
 /// <summary>

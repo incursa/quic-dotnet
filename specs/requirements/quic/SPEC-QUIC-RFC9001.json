@@ -3,7 +3,10 @@
   "related_artifacts": [
     "ARC-QUIC-RFC9001-0001",
     "WI-QUIC-RFC9001-0001",
-    "VER-QUIC-RFC9001-0001"
+    "VER-QUIC-RFC9001-0001",
+    "ARC-QUIC-RFC9001-0002",
+    "WI-QUIC-RFC9001-0002",
+    "VER-QUIC-RFC9001-0002"
   ],
   "artifact_id": "SPEC-QUIC-RFC9001",
   "scope": "This specification covers the reviewed RFC 9001 extraction outputs and preserves the distinction between RFC 9001 packet-protection behavior and overlapping TLS or transport references.",
@@ -114,13 +117,13 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9001-0001"
+          "ARC-QUIC-RFC9001-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9001-0001"
+          "WI-QUIC-RFC9001-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9001-0001"
+          "VER-QUIC-RFC9001-0002"
         ],
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B2-P1-S2",
@@ -143,13 +146,13 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9001-0001"
+          "ARC-QUIC-RFC9001-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9001-0001"
+          "WI-QUIC-RFC9001-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9001-0001"
+          "VER-QUIC-RFC9001-0002"
         ],
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B2-P1-S2",
@@ -172,13 +175,13 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9001-0001"
+          "ARC-QUIC-RFC9001-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9001-0001"
+          "WI-QUIC-RFC9001-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9001-0001"
+          "VER-QUIC-RFC9001-0002"
         ],
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B5-P2-S1",
@@ -1240,13 +1243,13 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9001-0001"
+          "ARC-QUIC-RFC9001-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9001-0001"
+          "WI-QUIC-RFC9001-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9001-0001"
+          "VER-QUIC-RFC9001-0002"
         ],
         "upstream_refs": [
           "RFC 9001 §6 RFC9001-S6-B6-P5-S2",
@@ -1266,13 +1269,13 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9001-0001"
+          "ARC-QUIC-RFC9001-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9001-0001"
+          "WI-QUIC-RFC9001-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9001-0001"
+          "VER-QUIC-RFC9001-0002"
         ],
         "upstream_refs": [
           "RFC 9001 §6 RFC9001-S6-B6-P5-S3",

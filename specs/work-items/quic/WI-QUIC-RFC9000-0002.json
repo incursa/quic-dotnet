@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0002",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "RFC 9000 Address-Validation Token Emission Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Keep the RFC 9000 path-validation slice honest while the runtime gains server-only NEW_TOKEN emission and per-address deduplication.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0002"
+  ],
+  "verification_links": [
+    "VER-QUIC-RFC9000-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S9P3-0005",
+    "REQ-QUIC-RFC9000-S9P3-0011"
+  ],
+  "planned_changes": "- Add a server-only token-emission record keyed by remote address.\n- Flush NEW_TOKEN frames after new-address validation once a protected 1-RTT send is possible.\n- Keep repeated validation of the same address from creating duplicate NEW_TOKEN traffic.\n- Keep the framing helper internal to the runtime and avoid public API widening.",
+  "verification_plan": "Run the RFC 9000 requirement-home tests for the two token-emission clauses and confirm the new-token payload helper round-trips through the frame codec.",
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "out_of_scope": [
+    "Retry-token handling or any broader token-management API.",
+    "Public API widening for token issuance or token validation.",
+    "Client-role token emission."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicFrameCodec.cs\n- src/Incursa.Quic/QuicNewTokenFrame.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs"
+    }
+  ]
+}

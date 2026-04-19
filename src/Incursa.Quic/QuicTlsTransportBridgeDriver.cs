@@ -1061,6 +1061,10 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                     AppendPublishedUpdates(updates, PublishPostHandshakeTicketUpdate(step));
                     return;
 
+                case QuicTlsTranscriptStepKind.ProhibitedKeyUpdateViolation:
+                    AppendPublishedUpdates(updates, PublishProhibitedKeyUpdateViolation());
+                    return;
+
                 case QuicTlsTranscriptStepKind.Fatal:
                     if (step.AlertDescription.HasValue)
                     {

@@ -122,7 +122,7 @@ public sealed class REQ_QUIC_CRT_0128
         Assert.True(driver.TryBufferIncomingCryptoData(
             QuicTlsEncryptionLevel.OneRtt,
             offset: 0,
-            QuicPostHandshakeTicketTestSupport.CreateUnsupportedPostHandshakeMessage(),
+            QuicPostHandshakeTicketTestSupport.CreateUnknownPostHandshakeMessage(),
             out _));
 
         Assert.Empty(driver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.OneRtt));

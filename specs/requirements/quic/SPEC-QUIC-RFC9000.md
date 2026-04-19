@@ -1098,6 +1098,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B7-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0008.cs::TryApplyMaxStreamDataFrame_OpensUnopenedPeerBidirectionalStreamAndCreatesLowerNumberedPeers
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0008.cs::Fuzz_TryApplyMaxStreamDataFrame_OpensUnopenedPeerBidirectionalStreamAndIgnoresDuplicates
 
 ## REQ-QUIC-RFC9000-S3P2-0009 Interpret STOP_SENDING on an unopened stream as a peer desire to stop reception
 Receiving a STOP_SENDING frame for an unopened stream MUST indicate that the remote peer no longer wishes to receive data on this stream.
@@ -1680,6 +1683,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §4 RFC9000-S4-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0001.cs::TryReceiveStreamFrame_EnforcesPerStreamAndConnectionFlowControl
 
 ## REQ-QUIC-RFC9000-S4-0002 Limit bytes on streams and across the connection
 A QUIC receiver MUST control the maximum amount of data the sender can send on a stream and across all streams at any time.
@@ -6222,14 +6227,17 @@ After verifying a new client address, the server SHOULD send new address validat
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0002
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0002
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0002
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs::TryBuildOutboundNewTokenPayload_WritesANewTokenFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs::ServerValidationOfANewClientAddressEmitsANewTokenForTheValidatedPath
 
 ## REQ-QUIC-RFC9000-S9P3-0006 Send Subsequent Packets to the Migrated Address
 If the recipient permits the migration, it MUST send subsequent packets to the new peer address.
@@ -6320,14 +6328,17 @@ After verifying a new client address, the server SHOULD send new address validat
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0002
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0002
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0002
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::ClientValidationOfANewAddressDoesNotEmitANewToken
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::RevalidatingTheSameAddressDoesNotEmitAnotherNewToken
 
 ## REQ-QUIC-RFC9000-S9P3P1-0001 Limit Sending Until Address Validation
 Until a peer's address is deemed valid, an endpoint MUST limit the amount of data it sends to that address.
@@ -6586,6 +6597,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.4 RFC9000-S9.4-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0008.cs::ValidatingANewPathArmsASeparatePathValidationTimerThatCancelsOnSuccess
 
 ## REQ-QUIC-RFC9000-S9P4-0009 Allow Retrying PATH_CHALLENGE on Timeout
 If the timer fires before the PATH_RESPONSE is received, an endpoint MAY send a new PATH_CHALLENGE and restart the timer for a longer period of time.
@@ -6600,6 +6613,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.4 RFC9000-S9.4-B6-P5-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0009.cs::TimerExpiryAtTheDeadlineRetransmitsAChallengeAndRearmsTheTimer
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0009.cs::StaleTimerAfterTheResponseDoesNotRetransmit
 
 ## REQ-QUIC-RFC9000-S9P4-0010 Set the PATH_CHALLENGE Timer Conservatively
 This timer SHOULD be set as described in Section 6.2.1 of [QUIC-RECOVERY].
@@ -6614,6 +6630,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.4 RFC9000-S9.4-B6-P5-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0010.cs::InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget
 
 ## REQ-QUIC-RFC9000-S9P4-0011 Do Not Make the PATH_CHALLENGE Timer More Aggressive
 This timer MUST NOT be more aggressive.
@@ -6628,6 +6646,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.4 RFC9000-S9.4-B6-P5-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0011.cs::TimerRetryRearmsTheNextDeadlineAfterTheCurrentDeadline
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0011.cs::TimerRetryDoesNotShortenTheInitialInterval
 
 ## REQ-QUIC-RFC9000-S9P5-0001 At any time, endpoints MAY change the Destination Connection ID they transmit with to a value that has not been used on another path
 At any time, endpoints MAY change the Destination Connection ID they transmit with to a value that has not been used on another path.
@@ -8663,17 +8684,23 @@ An endpoint that supports multiple versions of QUIC MUST generate a Stateless Re
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0003
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0003
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0003
 - Source Refs:
   - RFC 9000 §10.3 RFC9000-S10.3-B23-P18-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0029.cs::TryCreateStatelessResetDatagram_RetainsTheConnectionVersionProfileAfterRuntimeDisposal
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0029.cs::TryGetRetainedVersionProfile_ReturnsFalseBeforeConnectionRegistration
+  - tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_UsesTheRetainedVersionProfileSnapshot
+  - tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_RejectsEmptyVersionProfileSnapshots
 
 Notes:
 - A faithful normative restatement here is version-specific and easy to overstate.
+- The endpoint-owned version-profile snapshot keeps the emission path honest after the runtime shell has been disposed.
 
 ## REQ-QUIC-RFC9000-S10P3P1-0001 Use the trailing 16 bytes to detect Stateless Reset
 An endpoint MUST use the trailing 16 bytes of the UDP datagram to detect a potential Stateless Reset.
@@ -12549,14 +12576,16 @@ An endpoint SHOULD use DPLPMTUD or PMTUD to determine whether the path to a dest
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0004
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0004
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0004
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_DeterminesWhetherThePathSupportsADesiredDatagramSize
 
 ## REQ-QUIC-RFC9000-S14P2-0004 Do not exceed the smallest allowed maximum datagram size without PMTU discovery
 In the absence of these mechanisms, QUIC endpoints SHOULD NOT send datagrams larger than the smallest allowed maximum datagram size.
@@ -12581,14 +12610,16 @@ Both DPLPMTUD and PMTUD MUST send datagrams that are larger than the current max
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0004
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0004
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0004
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0005.cs::CanSend_AllowsProbePacketsToExceedTheCurrentMaximumDatagramSize
 
 ## REQ-QUIC-RFC9000-S14P2-0006 Size non-PMTU-probe packets to fit within the maximum datagram size
 All QUIC packets that are not sent in a PMTU probe SHOULD be sized to fit within the maximum datagram size.
@@ -12613,42 +12644,50 @@ If a QUIC endpoint determines that the PMTU between any pair of local and remote
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0004
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0004
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0004
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::WriteAsync_FailsWhenTheActivePathDropsBelowTheRFCMinimum
 
 ## REQ-QUIC-RFC9000-S14P2-0008 Allow terminating the connection when no alternative path exists
 An endpoint MAY terminate the connection if an alternative path cannot be found.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0004
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0004
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0004
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0008.cs::LocalCloseRequested_StillEmitsConnectionCloseWhenTheActivePathCannotSendOrdinaryPackets
 
 ## REQ-QUIC-RFC9000-S14P2-0009 Maintain a maximum datagram size per address pair when doing PMTU discovery
 QUIC implementations that implement any kind of PMTU discovery SHOULD maintain a maximum datagram size for each combination of local and remote IP addresses.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0004
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0004
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0004
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0009.cs::CreateInitialMaximumDatagramSizeState_UsesTheRfcMinimumAndProjectsToTheActivePath
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0009.cs::Constructor_RejectsZeroMaximumDatagramSizes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0009.cs::PathRecordsCarryMaximumDatagramSizeStateAcrossCopies
 
 ## REQ-QUIC-RFC9000-S14P2-0010 Allow conservative maximum datagram size estimates
 A QUIC implementation MAY be more conservative in computing the maximum datagram size to allow for unknown tunnel overheads or IP header options or extensions.
@@ -20766,6 +20805,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.17 RFC9000-S19.17-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0001.cs::PacketFromANewAddressUsesPathChallengeToStartMigrationValidation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P17-0001.cs::RepeatedPacketsDoNotRestartPathChallengeValidationWhileTheChallengeIsPending
 
 ## REQ-QUIC-RFC9000-S19P17-0002 The Type field MUST be encoded as a variable-length integer with value 0x1a
 The Type field MUST be encoded as a variable-length integer with value 0x1a.
@@ -20901,6 +20943,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §19.18 RFC9000-S19.18-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.18
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0003.cs::MatchingPathResponseCompletesValidationWithoutClosingTheConnection
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0003.cs::MismatchedPathResponseClosesTheConnectionWithProtocolViolation
 
 ## REQ-QUIC-RFC9000-S19P19-0001 The CONNECTION_CLOSE frame with a type of 0x1c MUST be used to signal errors at only the QUIC...
 The CONNECTION_CLOSE frame with a type of 0x1c MUST be used to signal errors at only the QUIC layer, or the absence of errors (with the NO_ERROR code).
