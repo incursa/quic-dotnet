@@ -9,7 +9,10 @@ internal readonly record struct QuicPathMigrationRecoverySnapshot(
     ulong CongestionWindowBytes,
     ulong SlowStartThresholdBytes,
     ulong BytesInFlightBytes,
-    ulong? RecoveryStartTimeMicros);
+    ulong? RecoveryStartTimeMicros,
+    ulong SmoothedRttMicros,
+    ulong RttVarMicros,
+    bool EcnValidated);
 
 internal static class QuicPathMigrationRecoveryTestSupport
 {
@@ -78,11 +81,20 @@ internal static class QuicPathMigrationRecoveryTestSupport
             rttVarMicros: 300,
             maxAckDelayMicros: 25,
             handshakeConfirmed: true));
+
+        Assert.True(runtime.SendRuntime.RttEstimator.TryUpdateFromAck(
+            largestAcknowledgedPacketSentAtMicros: 1_000,
+            ackReceivedAtMicros: 1_500,
+            largestAcknowledgedPacketNewlyAcknowledged: true,
+            newlyAcknowledgedAckElicitingPacket: true,
+            handshakeConfirmed: true));
+        runtime.SendRuntime.EcnValidationState.DisableEcn();
     }
 
     internal static QuicPathMigrationRecoverySnapshot CaptureRecoveryState(QuicConnectionRuntime runtime)
     {
         QuicCongestionControlState congestionControlState = runtime.SendRuntime.FlowController.CongestionControlState;
+        QuicConnectionPathRecoverySnapshot pathRecoverySnapshot = runtime.SendRuntime.CapturePathRecoverySnapshot();
         return new QuicPathMigrationRecoverySnapshot(
             SentPacketCount: runtime.SendRuntime.SentPackets.Count,
             PendingRetransmissionCount: runtime.SendRuntime.PendingRetransmissionCount,
@@ -92,7 +104,10 @@ internal static class QuicPathMigrationRecoveryTestSupport
             CongestionWindowBytes: congestionControlState.CongestionWindowBytes,
             SlowStartThresholdBytes: congestionControlState.SlowStartThresholdBytes,
             BytesInFlightBytes: congestionControlState.BytesInFlightBytes,
-            RecoveryStartTimeMicros: congestionControlState.RecoveryStartTimeMicros);
+            RecoveryStartTimeMicros: congestionControlState.RecoveryStartTimeMicros,
+            SmoothedRttMicros: pathRecoverySnapshot.SmoothedRttMicros,
+            RttVarMicros: pathRecoverySnapshot.RttVarMicros,
+            EcnValidated: pathRecoverySnapshot.EcnValidated);
     }
 
     internal static QuicConnectionTransitionResult ValidatePath(
