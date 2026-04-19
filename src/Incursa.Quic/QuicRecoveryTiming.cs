@@ -484,6 +484,7 @@ internal readonly struct QuicLostPacket
 internal sealed class QuicRecoveryController
 {
     private readonly Dictionary<QuicPacketNumberSpace, QuicRecoveryPacketNumberSpaceState> states;
+    private readonly ulong initialRttMicros;
 
     /// <summary>
     /// Initializes a new RFC 9002 recovery controller with a single estimator seed for each packet number space.
@@ -491,6 +492,7 @@ internal sealed class QuicRecoveryController
     /// <param name="initialRttMicros">Initial RTT seed used by each packet number space.</param>
     internal QuicRecoveryController(ulong initialRttMicros = QuicRttEstimator.DefaultInitialRttMicros)
     {
+        this.initialRttMicros = initialRttMicros;
         states = new Dictionary<QuicPacketNumberSpace, QuicRecoveryPacketNumberSpaceState>(3);
         states[QuicPacketNumberSpace.Initial] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.Initial, initialRttMicros);
         states[QuicPacketNumberSpace.Handshake] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.Handshake, initialRttMicros);
@@ -539,11 +541,12 @@ internal sealed class QuicRecoveryController
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,
         ulong sentAtMicros,
-        bool isAckElicitingPacket = true)
+        bool isAckElicitingPacket = true,
+        bool isProbePacket = false)
     {
         StateFor(packetNumberSpace).RecordPacketSent(packetNumber, sentAtMicros, isAckElicitingPacket);
 
-        if (isAckElicitingPacket)
+        if (isAckElicitingPacket && !isProbePacket)
         {
             ProbeTimeoutBackoffCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
                 ProbeTimeoutBackoffCount,
@@ -625,6 +628,38 @@ internal sealed class QuicRecoveryController
         }
 
         return lostPackets;
+    }
+
+    /// <summary>
+    /// Resets the recovery state for every packet number space.
+    /// </summary>
+    internal void Reset()
+    {
+        states[QuicPacketNumberSpace.Initial] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.Initial, initialRttMicros);
+        states[QuicPacketNumberSpace.Handshake] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.Handshake, initialRttMicros);
+        states[QuicPacketNumberSpace.ApplicationData] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.ApplicationData, initialRttMicros);
+        ProbeTimeoutBackoffCount = 0;
+    }
+
+    /// <summary>
+    /// Discards the tracked packet-number-space state and restarts it from the initial RTT seed.
+    /// </summary>
+    internal bool TryDiscardPacketNumberSpace(
+        QuicPacketNumberSpace packetNumberSpace,
+        bool resetProbeTimeoutBackoff = false)
+    {
+        if (!states.ContainsKey(packetNumberSpace))
+        {
+            return false;
+        }
+
+        states[packetNumberSpace] = new QuicRecoveryPacketNumberSpaceState(packetNumberSpace, initialRttMicros);
+        if (resetProbeTimeoutBackoff)
+        {
+            ProbeTimeoutBackoffCount = 0;
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -944,4 +979,3 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         return left + right;
     }
 }
-

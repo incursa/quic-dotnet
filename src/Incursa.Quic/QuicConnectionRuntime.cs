@@ -30,6 +30,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
     private readonly IMonotonicClock clock;
     private readonly QuicConnectionSendRuntime sendRuntime;
+    private readonly QuicRecoveryController recoveryController;
     private readonly QuicConnectionStreamRegistry streamRegistry;
     private readonly Channel<ulong> inboundStreamIds;
     private readonly Channel<QuicConnectionEvent> inbox;
@@ -118,6 +119,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
         sendRuntime = new QuicConnectionSendRuntime();
+        recoveryController = new QuicRecoveryController();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         handshakeFlowCoordinator = new QuicHandshakeFlowCoordinator(enableRandomizedSpinBitSelection: enableRandomizedSpinBitSelection);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
@@ -1468,6 +1470,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             currentPath.Identity,
             protectedPacket));
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
 
         openCompletion!.TrySetResult(committedStreamId.Value);
         return true;
@@ -1582,6 +1585,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             TryReleasePeerStreamCapacity(streamId, ref effects);
         }
 
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         completion.TrySetResult(null);
         return true;
     }
@@ -1613,6 +1617,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     }
 
     private bool FlushPendingApplicationSends(long nowTicks, ref List<QuicConnectionEffect>? effects)
+        => FlushPendingApplicationSends(nowTicks, probePacket: false, ref effects);
+
+    private bool FlushPendingApplicationSends(
+        long nowTicks,
+        bool probePacket,
+        ref List<QuicConnectionEffect>? effects)
     {
         _ = nowTicks;
 
@@ -1644,6 +1654,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             combinedPayload,
             "The connection runtime could not protect the queued stream write packet.",
             "The connection cannot send the queued stream write packet.",
+            probePacket,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -3273,6 +3284,27 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         out byte[] protectedPacket,
         out Exception? exception)
     {
+        return TryProtectAndAccountApplicationPayload(
+            payload,
+            protectFailureMessage,
+            amplificationFailureMessage,
+            probePacket: false,
+            out currentPath,
+            out updatedAmplificationState,
+            out protectedPacket,
+            out exception);
+    }
+
+    private bool TryProtectAndAccountApplicationPayload(
+        ReadOnlySpan<byte> payload,
+        string protectFailureMessage,
+        string amplificationFailureMessage,
+        bool probePacket,
+        out QuicConnectionActivePathRecord currentPath,
+        out QuicConnectionPathAmplificationState updatedAmplificationState,
+        out byte[] protectedPacket,
+        out Exception? exception)
+    {
         currentPath = default;
         updatedAmplificationState = default;
         protectedPacket = [];
@@ -3309,7 +3341,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
-        TrackApplicationPacket(packetNumber, protectedPacket);
+        TrackApplicationPacket(packetNumber, protectedPacket, probePacket: probePacket);
         exception = null;
         return true;
     }
@@ -3445,6 +3477,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             Retransmittable: retransmittable,
             PacketBytes: protectedPacket,
             PacketProtectionLevel: packetProtectionLevel));
+        recoveryController.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber,
+            GetElapsedMicros(lastTransitionTicks),
+            isAckElicitingPacket: true,
+            isProbePacket: probePacket);
     }
 
     private void TrackInitialPacket(ulong packetNumber, byte[] protectedPacket)
@@ -3461,7 +3499,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         QuicPacketNumberSpace packetNumberSpace,
         QuicTlsEncryptionLevel encryptionLevel,
         ulong packetNumber,
-        byte[] protectedPacket)
+        byte[] protectedPacket,
+        bool probePacket = false)
     {
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             packetNumberSpace,
@@ -3471,6 +3510,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             CryptoMetadata: new QuicConnectionCryptoSendMetadata(encryptionLevel),
             PacketBytes: protectedPacket,
             PacketProtectionLevel: encryptionLevel));
+        recoveryController.RecordPacketSent(
+            packetNumberSpace,
+            packetNumber,
+            GetElapsedMicros(lastTransitionTicks),
+            isAckElicitingPacket: true,
+            isProbePacket: probePacket);
     }
 
     private bool TryBuildOutboundStreamPayload(
@@ -4180,8 +4225,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         return encryptionLevel switch
         {
-            QuicTlsEncryptionLevel.Initial => sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial),
-            QuicTlsEncryptionLevel.Handshake => sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake),
+            QuicTlsEncryptionLevel.Initial =>
+                sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial)
+                || recoveryController.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, resetProbeTimeoutBackoff: true),
+            QuicTlsEncryptionLevel.Handshake =>
+                sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake)
+                || recoveryController.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, resetProbeTimeoutBackoff: true),
             QuicTlsEncryptionLevel.ZeroRtt => sendRuntime.TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel.ZeroRtt),
             QuicTlsEncryptionLevel.OneRtt => false,
             _ => false,
@@ -4689,6 +4738,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             QuicConnectionTimerKind.CloseLifetime => timerState.CloseLifetime,
             QuicConnectionTimerKind.DrainLifetime => timerState.DrainLifetime,
             QuicConnectionTimerKind.PathValidation => timerState.PathValidation,
+            QuicConnectionTimerKind.Recovery => timerState.Recovery,
             QuicConnectionTimerKind.ApplicationSendDelay => timerState.ApplicationSendDelay,
             _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
         };
@@ -4722,7 +4772,15 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             case QuicConnectionTimerKind.PathValidation:
                 return HandlePathValidationTimerExpired(nowTicks, ref effects);
             case QuicConnectionTimerKind.ApplicationSendDelay:
-                return FlushPendingApplicationSends(nowTicks, ref effects);
+                if (!FlushPendingApplicationSends(nowTicks, ref effects))
+                {
+                    return false;
+                }
+
+                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                return true;
+            case QuicConnectionTimerKind.Recovery:
+                return HandleRecoveryTimerExpired(nowTicks, ref effects);
             default:
                 throw new ArgumentOutOfRangeException(nameof(timerExpiredEvent), "TimerKind was not recognized.");
         }
@@ -4736,6 +4794,131 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         return DiscardConnection(nowTicks, QuicConnectionCloseOrigin.IdleTimeout, default, ref effects);
+    }
+
+    private bool HandleRecoveryTimerExpired(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase is not (QuicConnectionPhase.Establishing or QuicConnectionPhase.Active)
+            || activePath is null)
+        {
+            return false;
+        }
+
+        if (!TrySelectRecoveryTimer(nowTicks, out _, out QuicPacketNumberSpace selectedPacketNumberSpace))
+        {
+            return false;
+        }
+
+        bool sentProbe = TrySendRecoveryProbes(selectedPacketNumberSpace, nowTicks, ref effects);
+
+        if (!sentProbe)
+        {
+            return false;
+        }
+
+        recoveryController.RecordProbeTimeoutExpired();
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return true;
+    }
+
+    private bool TrySelectRecoveryTimer(
+        long nowTicks,
+        out ulong selectedRecoveryTimerMicros,
+        out QuicPacketNumberSpace selectedPacketNumberSpace)
+    {
+        ulong nowMicros = GetElapsedMicros(nowTicks);
+        ulong maxAckDelayMicros = tlsState.PeerTransportParameters?.MaxAckDelay ?? 0;
+        bool handshakeConfirmed = peerHandshakeTranscriptCompleted;
+        bool serverAtAntiAmplificationLimit = tlsState.Role == QuicTlsRole.Server
+            && (activePath is null
+                || (!activePath.Value.AmplificationState.IsAddressValidated
+                    && activePath.Value.AmplificationState.RemainingSendBudget == 0));
+        bool peerAddressValidationComplete = transportFlags.HasFlag(QuicConnectionTransportState.PeerAddressValidated);
+
+        return recoveryController.TrySelectLossDetectionTimer(
+            nowMicros,
+            maxAckDelayMicros,
+            handshakeConfirmed,
+            serverAtAntiAmplificationLimit,
+            peerAddressValidationComplete,
+            tlsState.HandshakeKeysAvailable,
+            out selectedRecoveryTimerMicros,
+            out selectedPacketNumberSpace);
+    }
+
+    private bool TrySendRecoveryProbes(
+        QuicPacketNumberSpace selectedPacketNumberSpace,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        return selectedPacketNumberSpace switch
+        {
+            QuicPacketNumberSpace.Initial => TryFlushInitialPackets(ref effects)
+                || TryFlushHandshakePackets(ref effects)
+                || FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
+                || TrySendRecoveryPingProbe(ref effects),
+            QuicPacketNumberSpace.Handshake => TryFlushHandshakePackets(ref effects)
+                || TryFlushInitialPackets(ref effects)
+                || FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
+                || TrySendRecoveryPingProbe(ref effects),
+            QuicPacketNumberSpace.ApplicationData => FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
+                || TryFlushHandshakePackets(ref effects)
+                || TryFlushInitialPackets(ref effects)
+                || TrySendRecoveryPingProbe(ref effects),
+            _ => false,
+        };
+    }
+
+    private bool TrySendRecoveryPingProbe(ref List<QuicConnectionEffect>? effects)
+    {
+        if (activePath is null
+            || !activePath.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets
+            || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            return false;
+        }
+
+        Span<byte> applicationPayload = stackalloc byte[ApplicationMinimumProtectedPayloadLength];
+        applicationPayload.Clear();
+        if (!QuicFrameCodec.TryFormatPingFrame(applicationPayload, out int bytesWritten)
+            || bytesWritten <= 0)
+        {
+            return false;
+        }
+
+        QuicConnectionActivePathRecord currentPath = activePath.Value;
+        if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
+            applicationPayload[..bytesWritten],
+            tlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            tlsState.CurrentOneRttKeyPhase == 1,
+            out ulong packetNumber,
+            out byte[] protectedPacket))
+        {
+            return false;
+        }
+
+        if (!currentPath.MaximumDatagramSizeState.CanSend((ulong)protectedPacket.Length))
+        {
+            return false;
+        }
+
+        if (!currentPath.AmplificationState.TryConsumeSendBudget(
+            protectedPacket.Length,
+            out QuicConnectionPathAmplificationState updatedAmplificationState))
+        {
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        TrackApplicationPacket(packetNumber, protectedPacket, retransmittable: false, probePacket: true);
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+        return true;
     }
 
     private bool DiscardConnection(
@@ -5512,6 +5695,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, discardAckGenerationState: false);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, discardAckGenerationState: false);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData, discardAckGenerationState: false);
+        recoveryController.Reset();
     }
 
     private void ResetRecoveryStateForRetry()
@@ -5522,6 +5706,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, discardAckGenerationState: true);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, discardAckGenerationState: true);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData, discardAckGenerationState: true);
+        recoveryController.Reset();
     }
 
     private static bool IsPortOnlyPeerAddressChange(
@@ -5705,6 +5890,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         };
 
         long? pathValidationDueTicks = GetEarliestPathValidationDueTicks();
+        long? recoveryDueTicks = GetEarliestRecoveryDueTicks();
         long? applicationSendDelayDueTicks = pendingApplicationSendRequests.Count > 0
             ? pendingApplicationSendDelayDueTicks
             : null;
@@ -5716,6 +5902,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.CloseLifetime, closeDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.DrainLifetime, drainDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.PathValidation, pathValidationDueTicks));
+        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.Recovery, recoveryDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.ApplicationSendDelay, applicationSendDelayDueTicks));
         return effects.ToArray();
     }
@@ -5745,6 +5932,21 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         return dueTicks;
+    }
+
+    private long? GetEarliestRecoveryDueTicks()
+    {
+        if (phase is not QuicConnectionPhase.Establishing and not QuicConnectionPhase.Active)
+        {
+            return null;
+        }
+
+        if (!TrySelectRecoveryTimer(lastTransitionTicks, out ulong selectedRecoveryTimerMicros, out _))
+        {
+            return null;
+        }
+
+        return GetAbsoluteTicks(selectedRecoveryTimerMicros);
     }
 
     private long ComputeTerminalEndTicks(long nowTicks)

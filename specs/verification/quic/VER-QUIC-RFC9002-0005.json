@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9002-0005",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC RFC 9002 PTO Probe Send Scheduler Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Requirement-home execution, packet inspection, and trace validation for the PTO probe scheduler slice.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9002",
+    "ARC-QUIC-RFC9002-0005",
+    "WI-QUIC-RFC9002-0005"
+  ],
+  "verifies": [
+    "REQ-QUIC-RFC9002-S6P2-0001",
+    "REQ-QUIC-RFC9002-S6P2P3-0001",
+    "REQ-QUIC-RFC9002-S6P2P4-0001",
+    "REQ-QUIC-RFC9002-S6P2P4-0002",
+    "REQ-QUIC-RFC9002-S6P2P4-0003",
+    "REQ-QUIC-RFC9002-S6P2P4-0004",
+    "REQ-QUIC-RFC9002-S6P2P4-0005",
+    "REQ-QUIC-RFC9002-S6P2P4-0006",
+    "REQ-QUIC-RFC9002-S6P2P4-0007",
+    "REQ-QUIC-RFC9002-S6P2P4-0008",
+    "REQ-QUIC-RFC9002-S6P2P4-0009",
+    "REQ-QUIC-RFC9002-S7P7-0001",
+    "REQ-QUIC-RFC9002-S7P7-0002",
+    "REQ-QUIC-RFC9002-S7P7-0003",
+    "REQ-QUIC-RFC9002-S7P7-0004",
+    "REQ-QUIC-RFC9002-S7P7-0005",
+    "REQ-QUIC-RFC9002-S7P8-0002"
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The RFC 9002 requirement-home tests are discoverable in the local worktree.",
+    "The active-path test support can open a validated application-data packet for inspection."
+  ],
+  "scope": "This verification artifact covers the runtime-owned PTO probe scheduler slice only: recovery now re-arms from actual sends, PTO expiry prefers the selected packet-number space, falls back across other in-flight packet-number spaces before using a PING, and stays aligned with the existing pacing and burst helpers on non-ACK traffic. It does not claim public API changes, alternate congestion controllers, or unrelated RFC 9000 framing work.",
+  "expected_result": "The requirement-home proof shows a recovery timer armed by real sends, a PTO expiry path that emits a protected handshake packet when handshake egress is available, a PING probe when only application fallback exists, a rearmed recovery timer after the probe, and unchanged pacing/burst coverage for non-ACK traffic.",
+  "procedure": [
+    "Run `dotnet test Incursa.Quic.slnx --filter \"FullyQualifiedName~REQ_QUIC_RFC9002_S6P2_0001|FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P3_0001|FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P4_|FullyQualifiedName~REQ_QUIC_RFC9002_S7P7_|FullyQualifiedName~REQ_QUIC_RFC9002_S7P8_0002\"`.",
+    "Inspect `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs` for the selected-space handshake probe proof and `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs` for the PTO-expiry PING fallback.",
+    "Keep the adjacent pacing and burst requirement homes green so the non-ACK send-path proof stays intact."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0002.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "dotnet test Incursa.Quic.slnx --filter \"FullyQualifiedName~REQ_QUIC_RFC9002_S6P2_0001|FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P3_0001|FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P4_|FullyQualifiedName~REQ_QUIC_RFC9002_S7P7_|FullyQualifiedName~REQ_QUIC_RFC9002_S7P8_0002\""
+  ],
+  "status_summary": "Passed; the runtime slice now arms recovery from real sends, prefers the selected packet-number space at PTO expiry, falls back across other in-flight packet-number spaces before defaulting to PING, and keeps the pacing/burst proof visible in the targeted RFC 9002 requirement homes."
+}
