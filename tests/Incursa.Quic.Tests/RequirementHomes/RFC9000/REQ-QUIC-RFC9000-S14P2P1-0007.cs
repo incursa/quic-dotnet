@@ -22,4 +22,30 @@ public sealed class REQ_QUIC_RFC9000_S14P2P1_0007
         Assert.True(runtime.ActivePath.Value.MaximumDatagramSizeState.IsProvisional);
         Assert.Equal(1_300UL, runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void Transition_AppliesAProvisionalReductionWhenTheRuntimeReceivesTheICMPEvent()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(1_400));
+
+        byte[] quotedPacket = QuicS14P2P1TestSupport.BuildQuotedInitialPacket(runtime);
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionIcmpMaximumDatagramSizeReductionEvent(
+                ObservedAtTicks: 20,
+                runtime.ActivePath!.Value.Identity,
+                quotedPacket,
+                1_300),
+            nowTicks: 20);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionEventKind.IcmpMaximumDatagramSizeReduction, result.EventKind);
+        Assert.Equal(1_300UL, runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
+        Assert.True(runtime.ActivePath.Value.MaximumDatagramSizeState.IsProvisional);
+        Assert.Equal(1_300UL, runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
+    }
 }

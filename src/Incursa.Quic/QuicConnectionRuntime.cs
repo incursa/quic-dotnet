@@ -894,6 +894,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 => HandlePacketReceived(packetReceivedEvent, nowTicks, ref effects),
             QuicConnectionVersionNegotiationReceivedEvent versionNegotiationReceivedEvent
                 => HandleVersionNegotiationReceived(versionNegotiationReceivedEvent, nowTicks, ref effects),
+            QuicConnectionIcmpMaximumDatagramSizeReductionEvent icmpMaximumDatagramSizeReductionEvent
+                => HandleIcmpMaximumDatagramSizeReduction(icmpMaximumDatagramSizeReductionEvent, nowTicks, ref effects),
             QuicConnectionPathValidationSucceededEvent pathValidationSucceededEvent
                 => HandlePathValidationSucceeded(pathValidationSucceededEvent, nowTicks, ref effects),
             QuicConnectionPathValidationFailedEvent pathValidationFailedEvent

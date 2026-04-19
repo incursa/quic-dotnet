@@ -21,6 +21,7 @@ internal enum QuicConnectionEventKind
     RetryReceived = 16,
     VersionNegotiationReceived = 17,
     FlowControlCreditUpdated = 18,
+    IcmpMaximumDatagramSizeReduction = 19,
 }
 
 internal enum QuicConnectionEffectKind
@@ -81,6 +82,13 @@ internal sealed record QuicConnectionVersionNegotiationReceivedEvent(
     long ObservedAtTicks,
     ReadOnlyMemory<byte> Datagram)
     : QuicConnectionEvent(QuicConnectionEventKind.VersionNegotiationReceived, ObservedAtTicks);
+
+internal sealed record QuicConnectionIcmpMaximumDatagramSizeReductionEvent(
+    long ObservedAtTicks,
+    QuicConnectionPathIdentity PathIdentity,
+    ReadOnlyMemory<byte> QuotedPacket,
+    ulong MaximumDatagramSizeBytes)
+    : QuicConnectionEvent(QuicConnectionEventKind.IcmpMaximumDatagramSizeReduction, ObservedAtTicks);
 
 internal sealed record QuicConnectionFlowControlCreditUpdatedEvent(
     long ObservedAtTicks,

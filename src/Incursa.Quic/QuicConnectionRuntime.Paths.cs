@@ -495,6 +495,20 @@ internal sealed partial class QuicConnectionRuntime
         return TrySetActivePathMaximumDatagramSize(maximumDatagramSizeBytes, isProvisional: true);
     }
 
+    private bool HandleIcmpMaximumDatagramSizeReduction(
+        QuicConnectionIcmpMaximumDatagramSizeReductionEvent icmpMaximumDatagramSizeReductionEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        _ = nowTicks;
+        _ = effects;
+
+        return TryApplyProvisionalIcmpMaximumDatagramSizeReduction(
+            icmpMaximumDatagramSizeReductionEvent.PathIdentity,
+            icmpMaximumDatagramSizeReductionEvent.QuotedPacket.Span,
+            icmpMaximumDatagramSizeReductionEvent.MaximumDatagramSizeBytes);
+    }
+
     private bool TryValidateIcmpQuotedPacket(ReadOnlySpan<byte> quotedPacket)
     {
         if (quotedPacket.IsEmpty)
