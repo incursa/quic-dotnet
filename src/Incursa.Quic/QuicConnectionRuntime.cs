@@ -232,6 +232,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ? handshakeFlowCoordinator.DestinationConnectionId
             : peerConnectionIdState.CurrentDestinationConnectionId;
 
+    internal ReadOnlyMemory<byte> CurrentHandshakeSourceConnectionId
+        => handshakeFlowCoordinator.SourceConnectionId;
+
     public bool HasValidatedPath
     {
         get

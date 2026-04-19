@@ -1035,16 +1035,20 @@ internal sealed partial class QuicConnectionRuntime
         exception = null;
         return true;
     }
-    internal bool TrySetActivePathMaximumDatagramSize(ulong maximumDatagramSizeBytes)
+    internal bool TrySetActivePathMaximumDatagramSize(ulong maximumDatagramSizeBytes, bool isProvisional = false)
     {
         if (activePath is null)
         {
             return false;
         }
 
+        QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState = isProvisional
+            ? activePath.Value.MaximumDatagramSizeState.WithProvisionalMaximumDatagramSize(maximumDatagramSizeBytes)
+            : activePath.Value.MaximumDatagramSizeState.WithMaximumDatagramSize(maximumDatagramSizeBytes);
+
         QuicConnectionActivePathRecord updatedActivePath = activePath.Value with
         {
-            MaximumDatagramSizeState = activePath.Value.MaximumDatagramSizeState.WithMaximumDatagramSize(maximumDatagramSizeBytes),
+            MaximumDatagramSizeState = maximumDatagramSizeState,
         };
 
         activePath = updatedActivePath;

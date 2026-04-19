@@ -478,6 +478,55 @@ internal sealed partial class QuicConnectionRuntime
             resetToInitialWindow: false);
     }
 
+    internal bool TryApplyProvisionalIcmpMaximumDatagramSizeReduction(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> quotedPacket,
+        ulong maximumDatagramSizeBytes)
+    {
+        if (activePath is null
+            || !EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity)
+            || maximumDatagramSizeBytes < QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes
+            || maximumDatagramSizeBytes >= activePath.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes
+            || !TryValidateIcmpQuotedPacket(quotedPacket))
+        {
+            return false;
+        }
+
+        return TrySetActivePathMaximumDatagramSize(maximumDatagramSizeBytes, isProvisional: true);
+    }
+
+    private bool TryValidateIcmpQuotedPacket(ReadOnlySpan<byte> quotedPacket)
+    {
+        if (quotedPacket.IsEmpty)
+        {
+            return false;
+        }
+
+        if (QuicPacketParser.TryParseLongHeader(quotedPacket, out QuicLongHeaderPacket longHeader))
+        {
+            if (longHeader.IsVersionNegotiation)
+            {
+                return false;
+            }
+
+            if (!CurrentPeerDestinationConnectionId.Span.SequenceEqual(longHeader.DestinationConnectionId))
+            {
+                return false;
+            }
+
+            ReadOnlySpan<byte> sourceConnectionId = handshakeFlowCoordinator.SourceConnectionId.Span;
+            if (!sourceConnectionId.IsEmpty
+                && !sourceConnectionId.SequenceEqual(longHeader.SourceConnectionId))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        return QuicPacketParser.TryParseShortHeader(quotedPacket, out _);
+    }
+
     private bool TryPromoteValidatedCandidatePath(long nowTicks, ref List<QuicConnectionEffect>? effects)
     {
         QuicConnectionPathIdentity? bestPathIdentity = null;

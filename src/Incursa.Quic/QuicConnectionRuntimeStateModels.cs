@@ -90,6 +90,8 @@ internal readonly record struct QuicConnectionPathMaximumDatagramSizeState
 
     internal ulong MaximumDatagramSizeBytes { get; init; } = MinimumAllowedMaximumDatagramSizeBytes;
 
+    internal bool IsProvisional { get; init; }
+
     internal static QuicConnectionPathMaximumDatagramSizeState CreateInitial()
     {
         return new QuicConnectionPathMaximumDatagramSizeState(MinimumAllowedMaximumDatagramSizeBytes);
@@ -98,6 +100,14 @@ internal readonly record struct QuicConnectionPathMaximumDatagramSizeState
     internal QuicConnectionPathMaximumDatagramSizeState WithMaximumDatagramSize(ulong maximumDatagramSizeBytes)
     {
         return new QuicConnectionPathMaximumDatagramSizeState(maximumDatagramSizeBytes);
+    }
+
+    internal QuicConnectionPathMaximumDatagramSizeState WithProvisionalMaximumDatagramSize(ulong maximumDatagramSizeBytes)
+    {
+        return new QuicConnectionPathMaximumDatagramSizeState(maximumDatagramSizeBytes)
+        {
+            IsProvisional = true,
+        };
     }
 
     internal bool CanSend(ulong datagramSizeBytes, bool isProbePacket = false)
