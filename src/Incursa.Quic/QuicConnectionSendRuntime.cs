@@ -20,7 +20,8 @@ internal readonly record struct QuicConnectionSentPacket(
     bool ProbePacket = false,
     bool Retransmittable = true,
     QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
-    ReadOnlyMemory<byte> PacketBytes = default);
+    ReadOnlyMemory<byte> PacketBytes = default,
+    QuicTlsEncryptionLevel? PacketProtectionLevel = null);
 
 internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicPacketNumberSpace PacketNumberSpace,
@@ -28,7 +29,8 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
     ulong PayloadBytes,
     ulong SentAtMicros,
     QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
-    ReadOnlyMemory<byte> PacketBytes = default);
+    ReadOnlyMemory<byte> PacketBytes = default,
+    QuicTlsEncryptionLevel? PacketProtectionLevel = null);
 
 /// <summary>
 /// Owns connection-scoped send state, PTO bookkeeping, and retransmission planning.
@@ -102,6 +104,7 @@ internal sealed class QuicConnectionSendRuntime
             throw new ArgumentException("Probe packets must be ack-eliciting packets.", nameof(packet));
         }
 
+        packet = NormalizePacketProtectionLevel(packet);
         ValidateCryptoMetadata(packet);
         QuicConnectionSentPacketKey key = new(packet.PacketNumberSpace, packet.PacketNumber);
         sentPackets[key] = packet;
@@ -112,7 +115,8 @@ internal sealed class QuicConnectionSendRuntime
             packet.SentAtMicros,
             packet.AckEliciting,
             packet.AckOnlyPacket,
-            packet.ProbePacket);
+            packet.ProbePacket,
+            packet.PacketProtectionLevel);
     }
 
     public bool TryAcknowledgePacket(
@@ -233,6 +237,61 @@ internal sealed class QuicConnectionSendRuntime
     }
 
     /// <summary>
+    /// Discards all retained recovery state for packets that used the specified packet protection level.
+    /// </summary>
+    internal bool TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel packetProtectionLevel)
+    {
+        bool updated = flowController.TryDiscardPacketProtectionLevel(packetProtectionLevel);
+
+        List<QuicConnectionSentPacketKey>? removedKeys = null;
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
+        {
+            if (entry.Value.PacketProtectionLevel != packetProtectionLevel)
+            {
+                continue;
+            }
+
+            (removedKeys ??= []).Add(entry.Key);
+        }
+
+        if (removedKeys is not null)
+        {
+            foreach (QuicConnectionSentPacketKey key in removedKeys)
+            {
+                updated |= sentPackets.Remove(key);
+            }
+        }
+
+        if (pendingRetransmissions.Count > 0)
+        {
+            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
+            while (pendingRetransmissions.Count > 0)
+            {
+                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
+                if (retransmission.PacketProtectionLevel == packetProtectionLevel)
+                {
+                    updated = true;
+                    continue;
+                }
+
+                retainedRetransmissions.Enqueue(retransmission);
+            }
+
+            while (retainedRetransmissions.Count > 0)
+            {
+                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+            }
+        }
+
+        if (sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        {
+            LossDetectionDeadlineMicros = null;
+        }
+
+        return updated;
+    }
+
+    /// <summary>
     /// Discards queued retransmission plans sent before a retention cutoff.
     /// </summary>
     /// <remarks>
@@ -299,7 +358,8 @@ internal sealed class QuicConnectionSendRuntime
                 packet.PayloadBytes,
                 packet.SentAtMicros,
                 packet.CryptoMetadata,
-                packet.PacketBytes));
+                packet.PacketBytes,
+                packet.PacketProtectionLevel));
         }
 
         ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
@@ -363,6 +423,37 @@ internal sealed class QuicConnectionSendRuntime
     public void ClearLossDetectionDeadline()
     {
         LossDetectionDeadlineMicros = null;
+    }
+
+    private static QuicConnectionSentPacket NormalizePacketProtectionLevel(QuicConnectionSentPacket packet)
+    {
+        QuicTlsEncryptionLevel? packetProtectionLevel = packet.PacketProtectionLevel;
+        if (packetProtectionLevel.HasValue)
+        {
+            if (packet.CryptoMetadata.HasValue
+                && packet.CryptoMetadata.Value.EncryptionLevel != packetProtectionLevel.Value)
+            {
+                throw new ArgumentException(
+                    "Packet protection level must match the crypto metadata.",
+                    nameof(packet));
+            }
+
+            return packet;
+        }
+
+        if (packet.CryptoMetadata.HasValue)
+        {
+            packetProtectionLevel = packet.CryptoMetadata.Value.EncryptionLevel;
+        }
+        else if (packet.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+        {
+            packetProtectionLevel = QuicTlsEncryptionLevel.OneRtt;
+        }
+
+        return packet with
+        {
+            PacketProtectionLevel = packetProtectionLevel,
+        };
     }
 
     private static void ValidateCryptoMetadata(QuicConnectionSentPacket packet)

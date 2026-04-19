@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Incursa.Quic;
 
@@ -782,7 +783,8 @@ internal sealed class QuicSenderFlowController
         ulong sentAtMicros,
         bool ackEliciting,
         bool isAckOnlyPacket = false,
-        bool isProbePacket = false)
+        bool isProbePacket = false,
+        QuicTlsEncryptionLevel? packetProtectionLevel = null)
     {
         CongestionControlState.RegisterPacketSent(sentBytes, isAckOnlyPacket, isProbePacket);
         if (isAckOnlyPacket)
@@ -791,7 +793,13 @@ internal sealed class QuicSenderFlowController
         }
 
         SortedDictionary<ulong, SentPacketState> sentPackets = GetOrCreateSentPackets(packetNumberSpace);
-        sentPackets[packetNumber] = new SentPacketState(sentBytes, sentAtMicros, ackEliciting, InFlight: true, isProbePacket);
+        sentPackets[packetNumber] = new SentPacketState(
+            sentBytes,
+            sentAtMicros,
+            ackEliciting,
+            InFlight: true,
+            isProbePacket,
+            packetProtectionLevel);
     }
 
     /// <summary>
@@ -912,6 +920,62 @@ internal sealed class QuicSenderFlowController
 
         sentPacketsBySpace.Remove(packetNumberSpace);
         return updated || sentPackets.Count > 0;
+    }
+
+    /// <summary>
+    /// Discards retained packets with the specified packet protection level without altering ACK-generation state.
+    /// </summary>
+    internal bool TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel packetProtectionLevel)
+    {
+        bool updated = false;
+        List<QuicPacketNumberSpace>? emptyPacketNumberSpaces = null;
+
+        foreach (KeyValuePair<QuicPacketNumberSpace, SortedDictionary<ulong, SentPacketState>> sentPacketsBySpaceEntry in sentPacketsBySpace.ToArray())
+        {
+            SortedDictionary<ulong, SentPacketState> sentPackets = sentPacketsBySpaceEntry.Value;
+            if (sentPackets.Count == 0)
+            {
+                (emptyPacketNumberSpaces ??= []).Add(sentPacketsBySpaceEntry.Key);
+                continue;
+            }
+
+            List<ulong>? removedPacketNumbers = null;
+            foreach (KeyValuePair<ulong, SentPacketState> sentPacketEntry in sentPackets)
+            {
+                if (sentPacketEntry.Value.PacketProtectionLevel != packetProtectionLevel)
+                {
+                    continue;
+                }
+
+                updated = CongestionControlState.TryDiscardPacket(sentPacketEntry.Value.SentBytes, sentPacketEntry.Value.InFlight) || updated;
+                (removedPacketNumbers ??= []).Add(sentPacketEntry.Key);
+            }
+
+            if (removedPacketNumbers is null)
+            {
+                continue;
+            }
+
+            foreach (ulong packetNumber in removedPacketNumbers)
+            {
+                sentPackets.Remove(packetNumber);
+            }
+
+            if (sentPackets.Count == 0)
+            {
+                (emptyPacketNumberSpaces ??= []).Add(sentPacketsBySpaceEntry.Key);
+            }
+        }
+
+        if (emptyPacketNumberSpaces is not null)
+        {
+            foreach (QuicPacketNumberSpace emptyPacketNumberSpace in emptyPacketNumberSpaces)
+            {
+                sentPacketsBySpace.Remove(emptyPacketNumberSpace);
+            }
+        }
+
+        return updated;
     }
 
     /// <summary>
@@ -1046,5 +1110,6 @@ internal sealed class QuicSenderFlowController
         ulong SentAtMicros,
         bool AckEliciting,
         bool InFlight,
-        bool IsProbePacket);
+        bool IsProbePacket,
+        QuicTlsEncryptionLevel? PacketProtectionLevel = null);
 }

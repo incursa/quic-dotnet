@@ -1195,6 +1195,20 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
                 stateChanged |= TryCommitPeerTransportParametersFromTlsBridgeState(nowTicks, ref effects);
                 break;
 
+            case QuicTlsUpdateKind.ResumptionAttemptDispositionAvailable:
+                if (tlsState.ResumptionAttemptDisposition == QuicTlsResumptionAttemptDisposition.Rejected)
+                {
+                    stateChanged |= HandleTlsKeyDiscard(QuicTlsEncryptionLevel.ZeroRtt, ref effects);
+                }
+                break;
+
+            case QuicTlsUpdateKind.PeerEarlyDataDispositionAvailable:
+                if (tlsState.PeerEarlyDataDisposition == QuicTlsEarlyDataDisposition.Rejected)
+                {
+                    stateChanged |= HandleTlsKeyDiscard(QuicTlsEncryptionLevel.ZeroRtt, ref effects);
+                }
+                break;
+
             case QuicTlsUpdateKind.KeysDiscarded:
                 stateChanged |= HandleTlsKeyDiscard(tlsStateUpdatedEvent.Update.EncryptionLevel!.Value, ref effects);
                 break;
@@ -2822,7 +2836,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         }
 
         // The zero-RTT bootstrap path emits only a PING probe, so it carries no user data to repair.
-        TrackApplicationPacket(packetNumber, protectedPacket, retransmittable: false, probePacket: true);
+        TrackApplicationPacket(
+            packetNumber,
+            protectedPacket,
+            retransmittable: false,
+            probePacket: true,
+            packetProtectionLevel: QuicTlsEncryptionLevel.ZeroRtt);
         zeroRttPacketSent = true;
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
         return true;
@@ -3413,7 +3432,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         ulong packetNumber,
         byte[] protectedPacket,
         bool retransmittable = true,
-        bool probePacket = false)
+        bool probePacket = false,
+        QuicTlsEncryptionLevel packetProtectionLevel = QuicTlsEncryptionLevel.OneRtt)
     {
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.ApplicationData,
@@ -3422,7 +3442,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             GetElapsedMicros(lastTransitionTicks),
             ProbePacket: probePacket,
             Retransmittable: retransmittable,
-            PacketBytes: protectedPacket));
+            PacketBytes: protectedPacket,
+            PacketProtectionLevel: packetProtectionLevel));
     }
 
     private void TrackInitialPacket(ulong packetNumber, byte[] protectedPacket)
@@ -3447,7 +3468,8 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             (ulong)protectedPacket.Length,
             GetElapsedMicros(lastTransitionTicks),
             CryptoMetadata: new QuicConnectionCryptoSendMetadata(encryptionLevel),
-            PacketBytes: protectedPacket));
+            PacketBytes: protectedPacket,
+            PacketProtectionLevel: encryptionLevel));
     }
 
     private bool TryBuildOutboundStreamPayload(
@@ -4159,6 +4181,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         {
             QuicTlsEncryptionLevel.Initial => sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial),
             QuicTlsEncryptionLevel.Handshake => sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake),
+            QuicTlsEncryptionLevel.ZeroRtt => sendRuntime.TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel.ZeroRtt),
             QuicTlsEncryptionLevel.OneRtt => false,
             _ => false,
         };

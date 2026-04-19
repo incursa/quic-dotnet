@@ -9,24 +9,62 @@ public sealed class REQ_QUIC_RFC9002_S6P4_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void TryDetectPersistentCongestion_RemovesDiscardedPacketsFromBytesInFlight()
+    public void TryDiscardPacketNumberSpace_RemovesInitialAndHandshakePacketsFromBytesInFlight()
     {
-        QuicCongestionControlState state = new();
-        state.RegisterPacketSent(12_000);
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.Initial,
+            PacketNumber: 1,
+            PayloadBytes: 1_200,
+            SentAtMicros: 100,
+            AckEliciting: true,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Initial),
+            PacketBytes: new byte[] { 0x01 }));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.Handshake,
+            PacketNumber: 2,
+            PayloadBytes: 1_200,
+            SentAtMicros: 200,
+            AckEliciting: true,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Handshake),
+            PacketBytes: new byte[] { 0x02 }));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 3,
+            PayloadBytes: 1_200,
+            SentAtMicros: 300,
+            AckEliciting: true,
+            PacketBytes: new byte[] { 0x03 }));
 
-        Assert.True(state.TryDetectPersistentCongestion(
-            [
-                new(QuicPacketNumberSpace.Initial, 2_000, 1_200, ackEliciting: true, inFlight: true, acknowledged: false, lost: true),
-                new(QuicPacketNumberSpace.Handshake, 9_000, 1_200, ackEliciting: true, inFlight: true, acknowledged: false, lost: true),
-            ],
-            firstRttSampleMicros: 1_000,
-            smoothedRttMicros: 1_000,
-            rttVarMicros: 0,
-            maxAckDelayMicros: 0,
-            out bool persistentCongestionDetected,
-            applyReset: false));
+        Assert.Equal(3_600UL, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
 
-        Assert.True(persistentCongestionDetected);
-        Assert.Equal(9_600UL, state.BytesInFlightBytes);
+        Assert.True(runtime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial));
+        Assert.Equal(2_400UL, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+
+        Assert.True(runtime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake));
+        Assert.Equal(1_200UL, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+        Assert.Single(runtime.SentPackets);
+        Assert.Contains(runtime.SentPackets, entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryDiscardPacketNumberSpace_DoesNotChangeBytesInFlightWhenNoEarlyKeysWereTracked()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: 1_200,
+            SentAtMicros: 700,
+            AckEliciting: true,
+            PacketBytes: new byte[] { 0x07 }));
+
+        ulong bytesInFlightBeforeDiscard = runtime.FlowController.CongestionControlState.BytesInFlightBytes;
+
+        Assert.True(runtime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial));
+        Assert.Equal(bytesInFlightBeforeDiscard, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+        Assert.Single(runtime.SentPackets);
     }
 }

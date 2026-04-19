@@ -2,8 +2,11 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "related_artifacts": [
     "ARC-QUIC-RFC9002-0001",
+    "ARC-QUIC-RFC9002-0002",
     "WI-QUIC-RFC9002-0001",
-    "VER-QUIC-RFC9002-0001"
+    "WI-QUIC-RFC9002-0002",
+    "VER-QUIC-RFC9002-0001",
+    "VER-QUIC-RFC9002-0002"
   ],
   "artifact_id": "SPEC-QUIC-RFC9002",
   "scope": "This specification covers the reviewed RFC 9002 extraction outputs, including normative appendix material promoted from the reviewed drafts, and preserves the original RFC section provenance in `Source Refs`.",
@@ -24,13 +27,13 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0002"
         ],
         "upstream_refs": [
           "RFC 9002 §2 RFC9002-S2-B2-P1-S1",
@@ -1403,6 +1406,10 @@
         "upstream_refs": [
           "RFC 9002 §6 RFC9002-S6-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs::TryDiscardPacketNumberSpace_RemovesOnlyTheDiscardedSpaceFromTheRuntimeLedger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs::TryDiscardPacketNumberSpace_IsNoOpForASpaceThatWasNeverTracked"
         ]
       }
     },
@@ -2273,22 +2280,21 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0002"
         ],
         "upstream_refs": [
           "RFC 9002 §6.2.2 RFC9002-S6.2.2-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::ResetProbeTimeoutBackoffCount_ResetsTheBackoffWhenInitialOrHandshakeKeysAreDiscarded",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoDiscardOccurs",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenKeysAreDiscarded"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_ResetsPtoStateWhenInitialKeysAreDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_LeavesPtoBackoffCountUnchangedWhenApplicationDataIsDiscarded"
         ]
       }
     },
@@ -2936,21 +2942,21 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0002"
         ],
         "upstream_refs": [
           "RFC 9002 §6.4 RFC9002-S6.4-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDetectPersistentCongestion_ResetsRecoveryStateForDiscardedInitialAndHandshakeKeys",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDetectPersistentCongestion_DoesNotResetRecoveryStateForPacketsThatWereNotInFlight"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDiscardPacketNumberSpace_RemovesQueuedInitialAndHandshakeRecoveryPlansFromTheRuntimeLedger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDiscardPacketNumberSpace_LeavesApplicationRecoveryStateAloneWhenNoEarlyKeysWereTracked"
         ]
       }
     },
@@ -2966,20 +2972,21 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0002"
         ],
         "upstream_refs": [
           "RFC 9002 §6.4 RFC9002-S6.4-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDetectPersistentCongestion_RemovesDiscardedPacketsFromBytesInFlight"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDiscardPacketNumberSpace_RemovesInitialAndHandshakePacketsFromBytesInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDiscardPacketNumberSpace_DoesNotChangeBytesInFlightWhenNoEarlyKeysWereTracked"
         ]
       }
     },
@@ -2995,21 +3002,21 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0002"
         ],
         "upstream_refs": [
           "RFC 9002 §6.4 RFC9002-S6.4-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::TryDetectPersistentCongestion_DiscardsInFlightZeroRttPacketsWhenTheyAreRejected",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::TryDetectPersistentCongestion_DoesNotDiscardRejectedZeroRttPacketsWhenTheyWereNotInFlight"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::RejectingTheResumptionAttempt_DiscardsZeroRttRecoveryStateAndRetainsOneRttPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::AcceptingTheResumptionAttempt_KeepsZeroRttRecoveryStateIntact"
         ]
       }
     },
@@ -3025,13 +3032,13 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0002"
         ],
         "upstream_refs": [
           "RFC 9002 §6.4 RFC9002-S6.4-B6-P5-S2",
@@ -3040,7 +3047,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_DiscardOverflowFramesAsSoonAsReplacementKeysExist",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_ClosesWithBufferExceededBeforeReplacementKeysExist",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_TransitionsFromBufferingToDiscardingAtTheHandshakeCompleteBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_TransitionsFromBufferingToDiscardingAtTheHandshakeCompleteBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs::BridgeDriverHandshakeKeyDiscardFlowsThroughTheRuntimeAndClearsHandshakeSendState"
         ]
       }
     },

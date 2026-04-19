@@ -9,79 +9,123 @@ public sealed class REQ_QUIC_RFC9002_S6P4_0003
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void TryDetectPersistentCongestion_DiscardsInFlightZeroRttPacketsWhenTheyAreRejected()
+    public void RejectingTheResumptionAttempt_DiscardsZeroRttRecoveryStateAndRetainsOneRttPackets()
     {
-        QuicCongestionControlState state = new();
-        state.RegisterPacketSent(12_000);
+        QuicConnectionRuntime runtime = CreateRuntime();
+        runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 1,
+            PayloadBytes: 1_200,
+            SentAtMicros: 100,
+            AckEliciting: true,
+            Retransmittable: true,
+            PacketBytes: new byte[] { 0x01 },
+            PacketProtectionLevel: QuicTlsEncryptionLevel.ZeroRtt));
+        runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 2,
+            PayloadBytes: 1_200,
+            SentAtMicros: 200,
+            AckEliciting: true,
+            Retransmittable: true,
+            PacketBytes: new byte[] { 0x02 },
+            PacketProtectionLevel: QuicTlsEncryptionLevel.ZeroRtt));
+        runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 3,
+            PayloadBytes: 1_200,
+            SentAtMicros: 300,
+            AckEliciting: true,
+            PacketBytes: new byte[] { 0x03 },
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt));
 
-        Assert.True(state.TryDetectPersistentCongestion(
-            [
-                new(
-                    QuicPacketNumberSpace.ApplicationData,
-                    2_000,
-                    1_200,
-                    ackEliciting: true,
-                    inFlight: true,
-                    acknowledged: false,
-                    lost: true),
-                new(
-                    QuicPacketNumberSpace.ApplicationData,
-                    9_000,
-                    1_200,
-                    ackEliciting: true,
-                    inFlight: true,
-                    acknowledged: false,
-                    lost: true),
-            ],
-            firstRttSampleMicros: 1_000,
-            smoothedRttMicros: 1_000,
-            rttVarMicros: 0,
-            maxAckDelayMicros: 0,
-            out bool persistentCongestionDetected,
-            applyReset: false));
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            2,
+            handshakeConfirmed: false));
+        Assert.Equal(2, runtime.SendRuntime.SentPackets.Count);
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+        Assert.Equal(2_400UL, runtime.SendRuntime.FlowController.CongestionControlState.BytesInFlightBytes);
 
-        Assert.True(persistentCongestionDetected);
-        Assert.True(state.HasRecoveryStartTime);
-        Assert.Equal(9_000UL, state.RecoveryStartTimeMicros);
-        Assert.Equal(9_600UL, state.BytesInFlightBytes);
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 1,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.ResumptionAttemptDispositionAvailable,
+                    ResumptionAttemptDisposition: QuicTlsResumptionAttemptDisposition.Rejected)),
+            nowTicks: 1);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicTlsResumptionAttemptDisposition.Rejected, runtime.TlsState.ResumptionAttemptDisposition);
+        Assert.True(runtime.TlsState.OldKeysDiscarded);
+        Assert.DoesNotContain(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => packet.PacketProtectionLevel == QuicTlsEncryptionLevel.ZeroRtt);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => packet.PacketProtectionLevel == QuicTlsEncryptionLevel.OneRtt);
+        Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
+        Assert.Equal(1_200UL, runtime.SendRuntime.FlowController.CongestionControlState.BytesInFlightBytes);
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void TryDetectPersistentCongestion_DoesNotDiscardRejectedZeroRttPacketsWhenTheyWereNotInFlight()
+    public void AcceptingTheResumptionAttempt_KeepsZeroRttRecoveryStateIntact()
     {
-        QuicCongestionControlState state = new();
-        state.RegisterPacketSent(12_000);
+        QuicConnectionRuntime runtime = CreateRuntime();
+        runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 1,
+            PayloadBytes: 1_200,
+            SentAtMicros: 100,
+            AckEliciting: true,
+            Retransmittable: true,
+            PacketBytes: new byte[] { 0x01 },
+            PacketProtectionLevel: QuicTlsEncryptionLevel.ZeroRtt));
+        runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 2,
+            PayloadBytes: 1_200,
+            SentAtMicros: 200,
+            AckEliciting: true,
+            Retransmittable: true,
+            PacketBytes: new byte[] { 0x02 },
+            PacketProtectionLevel: QuicTlsEncryptionLevel.ZeroRtt));
+        runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 3,
+            PayloadBytes: 1_200,
+            SentAtMicros: 300,
+            AckEliciting: true,
+            PacketBytes: new byte[] { 0x03 },
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt));
 
-        Assert.True(state.TryDetectPersistentCongestion(
-            [
-                new(
-                    QuicPacketNumberSpace.ApplicationData,
-                    500,
-                    1_200,
-                    ackEliciting: true,
-                    inFlight: false,
-                    acknowledged: false,
-                    lost: true),
-                new(
-                    QuicPacketNumberSpace.ApplicationData,
-                    700,
-                    1_200,
-                    ackEliciting: true,
-                    inFlight: false,
-                    acknowledged: false,
-                    lost: true),
-            ],
-            firstRttSampleMicros: 1_000,
-            smoothedRttMicros: 1_000,
-            rttVarMicros: 0,
-            maxAckDelayMicros: 0,
-            out bool persistentCongestionDetected,
-            applyReset: false));
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            2,
+            handshakeConfirmed: false));
 
-        Assert.False(persistentCongestionDetected);
-        Assert.False(state.HasRecoveryStartTime);
-        Assert.Equal(12_000UL, state.BytesInFlightBytes);
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 1,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.ResumptionAttemptDispositionAvailable,
+                    ResumptionAttemptDisposition: QuicTlsResumptionAttemptDisposition.Accepted)),
+            nowTicks: 1);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicTlsResumptionAttemptDisposition.Accepted, runtime.TlsState.ResumptionAttemptDisposition);
+        Assert.False(runtime.TlsState.OldKeysDiscarded);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => packet.PacketProtectionLevel == QuicTlsEncryptionLevel.ZeroRtt);
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+        Assert.Equal(2_400UL, runtime.SendRuntime.FlowController.CongestionControlState.BytesInFlightBytes);
+    }
+
+    private static QuicConnectionRuntime CreateRuntime()
+    {
+        return new QuicConnectionRuntime(QuicConnectionStreamStateTestHelpers.CreateState());
     }
 }
