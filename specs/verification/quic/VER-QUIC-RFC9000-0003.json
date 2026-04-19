@@ -12,7 +12,8 @@
   "verifies": [
     "REQ-QUIC-RFC9000-S10P3-0029"
   ],
-  "status": "planned",
+  "status": "passed",
   "artifact_type": "verification",
-  "scope": "This verification plan covers the RFC 9000 stateless-reset versioning slice, including retained version-profile evidence, format validation, and the permanent benchmark hook for the retained-profile formatter path.\nIt does not claim new QUIC version support or broader packet-format changes."
+  "scope": "This verification plan covers the RFC 9000 stateless-reset versioning slice, including retained version-profile evidence, format validation, and the permanent benchmark hook for the retained-profile formatter path.\nIt does not claim new QUIC version support or broader packet-format changes.",
+  "status_summary": "This verification artifact records the landed stateless-reset versioning slice and points at the requirement-home, runtime, and benchmark evidence in the working tree."
 }

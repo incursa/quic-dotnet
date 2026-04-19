@@ -2,40 +2,54 @@
 
 # VER-QUIC-RFC9000-0004 - QUIC RFC 9000 PMTU Path-State Verification
 
-## Verification Method
-
-Execution and inspection of the path-state runtime plus the requirement-home proof for the path-owned maximum datagram size slice.
-
 ## Scope
 
-This verification covers the PMTU path-state slice for RFC 9000 Section 14.2.
-It checks that the runtime carries maximum datagram size state on path records and that the active path projects that state into sender congestion-control state.
-It does not claim PMTU probe generation, probe-vs-ordinary send gating, or connection termination when no alternative path exists.
+This verification covers the PMTU path-state and sender-admissibility slice for RFC 9000 Section 14.2.
+It checks that the runtime carries maximum datagram size state on path records, that the active path projects that state into sender congestion-control state, that ordinary sends stop below the RFC minimum, and that probe-sized datagrams remain admissible above the current maximum.
+It does not claim automatic alternative-path search or termination policy.
 
-## Expected Result
+## Requirements Verified
 
-The path records carry maximum datagram size state, the active path mirrors that state into the sender flow controller, and the requirement-home proof stays limited to the path-owned state clause.
+- REQ-QUIC-RFC9000-S14P2-0003
+- REQ-QUIC-RFC9000-S14P2-0005
+- REQ-QUIC-RFC9000-S14P2-0007
+- REQ-QUIC-RFC9000-S14P2-0008
+- REQ-QUIC-RFC9000-S14P2-0009
 
-## Procedure
+## Verification Method
 
-1. Run the requirement-home tests for REQ-QUIC-RFC9000-S14P2-0009.
-2. Inspect the active-path runtime state and congestion-control projection for the path-owned maximum datagram size value.
-3. Keep the remaining PMTU clauses deferred until the sender-side probe and gating work lands.
+Execution and inspection of the path-state and sender-admissibility runtime plus the requirement-home proof for the RFC 9000 PMTU slice.
 
 ## Preconditions
 
 - The Incursa.Quic solution builds successfully.
 - The RFC 9000 path-state requirement home is populated.
 
+## Procedure or Approach
+
+- Run the requirement-home tests for REQ-QUIC-RFC9000-S14P2-0003, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0007, REQ-QUIC-RFC9000-S14P2-0008, and REQ-QUIC-RFC9000-S14P2-0009.
+- Inspect the active-path runtime state and congestion-control projection for the path-owned maximum datagram size value.
+- Confirm that ordinary sends fail below the RFC minimum while probe-sized datagrams and CONNECTION_CLOSE remain admissible through the bounded helpers.
+
+## Expected Result
+
+The path records carry maximum datagram size state, the active path mirrors that state into the sender flow controller, ordinary sends are gated below 1200 bytes, probe-sized datagrams remain admissible above the current maximum, and the requirement-home proof stays limited to the bounded PMTU slice.
+
 ## Evidence
 
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0005.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0008.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0009.cs
 - src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs
+- src/Incursa.Quic/QuicConnectionSendRuntime.cs
+- src/Incursa.Quic/QuicCongestionControlState.cs
 
-## Verifies
+## Status
 
-- REQ-QUIC-RFC9000-S14P2-0009
+This verification artifact records the landed PMTU path-state slice and points at the requirement-home and runtime evidence in the working tree.
 
 ## Related Artifacts
 

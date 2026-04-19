@@ -25,7 +25,7 @@ Execution, inspection, and benchmark evidence.
 
 ## Status
 
-planned
+This verification artifact records the landed stateless-reset versioning slice and points at the requirement-home, runtime, and benchmark evidence in the working tree.
 
 ## Related Artifacts
 

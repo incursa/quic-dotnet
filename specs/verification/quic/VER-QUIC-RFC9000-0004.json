@@ -4,7 +4,7 @@
   "artifact_type": "verification",
   "title": "QUIC RFC 9000 PMTU Path-State Verification",
   "domain": "quic",
-  "status": "planned",
+  "status": "passed",
   "owner": "quic-maintainers",
   "related_artifacts": [
     "SPEC-QUIC-RFC9000",
@@ -40,5 +40,6 @@
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
     "src/Incursa.Quic/QuicCongestionControlState.cs"
-  ]
+  ],
+  "status_summary": "This verification artifact records the landed PMTU path-state slice and points at the requirement-home and runtime evidence in the working tree."
 }
