@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9002-0004",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9002 PTO Timer Discipline Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9002",
+    "ARC-QUIC-RFC9002-0004",
+    "VER-QUIC-RFC9002-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9002-S6P2-0003",
+    "REQ-QUIC-RFC9002-S6P2P1-0006",
+    "REQ-QUIC-RFC9002-S6P2P1-0008",
+    "REQ-QUIC-RFC9002-S6P2P1-0009",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0002",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0003",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0004",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+    "REQ-QUIC-RFC9002-S6P2P2P1-0006"
+  ],
+  "summary": "Keep the RFC 9002 PTO timer discipline slice traceable while the runtime-owned recovery state arms PTO, restarts it on the supported transitions, and applies validation-aware gating before handshake confirmation.",
+  "planned_changes": "- Reuse the packet-space recovery ledger as the single PTO timer source of truth instead of introducing a parallel timer store.\n- Reset PTO backoff on ack-eliciting send, acknowledgment, and key discard while preserving the current zero-backoff floor.\n- Gate pre-confirmation client and server PTO arming on actual validation state rather than on test-only assumptions.\n- Keep PTO expiration as scheduler state only, leaving packet-loss marking, probe composition, retry reset, and migration switching to separate slices.",
+  "verification_plan": "Run the targeted RFC 9002 requirement-home tests and inspect the recovery-timing, send-runtime, and validation seams that govern PTO arming, restart, backoff reset, and pre-confirmation gating.",
+  "verification_links": [
+    "VER-QUIC-RFC9002-0004"
+  ],
+  "out_of_scope": [
+    "Probe composition or packet selection after PTO expiry.",
+    "Retry reset behavior.",
+    "Migration path switching.",
+    "Treating PTO expiry as a packet-loss declaration."
+  ],
+  "completion_notes": "The PTO timer discipline slice is proven by the targeted requirement-home tests and the runtime helper seams already present in the repository. PTO expiry remains scheduler state only, and the probe, retry, and migration follow-ons stay separate."
+}

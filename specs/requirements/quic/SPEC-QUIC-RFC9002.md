@@ -1037,10 +1037,13 @@ A PTO timer expiration MUST NOT cause prior unacknowledged packets to be marked 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0004
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0004
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0004
 - Source Refs:
   - RFC 9002 §6.2 RFC9002-S6.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2
@@ -1146,10 +1149,13 @@ A sender SHOULD restart its PTO timer every time an ack-eliciting packet is sent
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0004
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0004
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0004
 - Source Refs:
   - RFC 9002 §6.2.1 RFC9002-S6.2.1-B9-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1
@@ -1182,10 +1188,13 @@ The PTO backoff factor MUST be reset when an acknowledgment is received.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0004
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0004
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0004
 - Source Refs:
   - RFC 9002 §6.2.1 RFC9002-S6.2.1-B10-P8-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1
@@ -1198,10 +1207,13 @@ A client that is not yet certain that the server has finished validating its add
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0004
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0004
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0004
 - Source Refs:
   - RFC 9002 §6.2.1 RFC9002-S6.2.1-B10-P8-S4
   - RFC 9002 §6.2.1 RFC9002-S6.2.1-B10-P8-S5
@@ -1320,10 +1332,13 @@ If no additional data can be sent, the server's PTO timer MUST NOT be armed unti
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0004
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0004
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0004
 - Source Refs:
   - RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1
@@ -1338,10 +1353,13 @@ When the server receives a datagram from the client, the amplification limit inc
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0004
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0004
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0004
 - Source Refs:
   - RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1
@@ -1356,10 +1374,13 @@ If the PTO timer is then set to a time in the past, it MUST be executed immediat
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0004
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0004
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0004
 - Source Refs:
   - RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1
@@ -1374,10 +1395,13 @@ The client MUST set the PTO timer if it has not received an acknowledgment for a
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0004
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0004
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0004
 - Source Refs:
   - RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1
@@ -1392,10 +1416,13 @@ When the PTO fires, the client MUST send a Handshake packet if it has Handshake 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0004
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0004
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0004
 - Source Refs:
   - RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S3
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1
@@ -1409,10 +1436,13 @@ When the PTO fires and the client does not have Handshake keys, it MUST send an 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0004
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0004
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0004
 - Source Refs:
   - RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S3
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1

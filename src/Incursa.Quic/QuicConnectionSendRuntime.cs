@@ -117,6 +117,13 @@ internal sealed class QuicConnectionSendRuntime
             packet.AckOnlyPacket,
             packet.ProbePacket,
             packet.PacketProtectionLevel);
+        if (packet.AckEliciting)
+        {
+            ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
+                ProbeTimeoutCount,
+                ackElicitingPacketSent: true);
+            LossDetectionDeadlineMicros = null;
+        }
     }
 
     public bool TryAcknowledgePacket(

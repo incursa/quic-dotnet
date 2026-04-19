@@ -6,43 +6,150 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9002-S6P2P1-0006")]
 public sealed class REQ_QUIC_RFC9002_S6P2P1_0006
 {
-    public static TheoryData<RestartTriggerCase> RestartTriggerCases => new()
-    {
-        new(true, false),
-        new(false, true),
-    };
-
-    [Theory]
-    [MemberData(nameof(RestartTriggerCases))]
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ResetProbeTimeoutBackoffCount_RestartsPtoAfterASendOrKeyDiscard(RestartTriggerCase scenario)
+    public void TryArmProbeTimeout_RestartsThePtoAfterAnAckElicitingSend()
     {
-        Assert.Equal(0, QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
-            ptoCount: 3,
-            ackElicitingPacketSent: scenario.AckElicitingPacketSent,
-            initialOrHandshakeKeysDiscarded: scenario.InitialOrHandshakeKeysDiscarded));
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: 1_200,
+            SentAtMicros: 0,
+            AckEliciting: true));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 8,
+            PayloadBytes: 1_200,
+            SentAtMicros: 0,
+            AckEliciting: true));
+
+        Assert.True(runtime.TryArmProbeTimeout(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 0,
+            smoothedRttMicros: 2_500,
+            rttVarMicros: 1_250,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: true));
+
+        Assert.Equal(1, runtime.ProbeTimeoutCount);
+        Assert.Equal(7_500UL, runtime.LossDetectionDeadlineMicros);
+
+        Assert.True(runtime.TryArmProbeTimeout(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 0,
+            smoothedRttMicros: 2_500,
+            rttVarMicros: 1_250,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: true));
+
+        Assert.Equal(2, runtime.ProbeTimeoutCount);
+        Assert.Equal(15_000UL, runtime.LossDetectionDeadlineMicros);
+
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 9,
+            PayloadBytes: 1_200,
+            SentAtMicros: 0,
+            AckEliciting: true));
+
+        Assert.Equal(0, runtime.ProbeTimeoutCount);
+        Assert.True(runtime.TryArmProbeTimeout(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 0,
+            smoothedRttMicros: 2_500,
+            rttVarMicros: 1_250,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: true));
+
+        Assert.Equal(1, runtime.ProbeTimeoutCount);
+        Assert.Equal(7_500UL, runtime.LossDetectionDeadlineMicros);
     }
 
     [Fact]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
-    public void ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoRestartEventOccurs()
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDiscardPacketNumberSpace_RestartsThePtoAfterInitialKeysAreDiscarded()
     {
-        Assert.Equal(3, QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(ptoCount: 3));
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.Initial,
+            PacketNumber: 1,
+            PayloadBytes: 1_200,
+            SentAtMicros: 0,
+            AckEliciting: true,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Initial)));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: 1_200,
+            SentAtMicros: 0,
+            AckEliciting: true));
+
+        Assert.True(runtime.TryArmProbeTimeout(
+            QuicPacketNumberSpace.Initial,
+            nowMicros: 0,
+            smoothedRttMicros: 2_500,
+            rttVarMicros: 1_250,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: false));
+
+        Assert.Equal(1, runtime.ProbeTimeoutCount);
+        Assert.Equal(7_500UL, runtime.LossDetectionDeadlineMicros);
+
+        Assert.True(runtime.TryArmProbeTimeout(
+            QuicPacketNumberSpace.Initial,
+            nowMicros: 0,
+            smoothedRttMicros: 2_500,
+            rttVarMicros: 1_250,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: false));
+
+        Assert.Equal(2, runtime.ProbeTimeoutCount);
+        Assert.Equal(15_000UL, runtime.LossDetectionDeadlineMicros);
+
+        Assert.True(runtime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial));
+
+        Assert.Equal(0, runtime.ProbeTimeoutCount);
+        Assert.Null(runtime.LossDetectionDeadlineMicros);
+
+        Assert.True(runtime.TryArmProbeTimeout(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 0,
+            smoothedRttMicros: 2_500,
+            rttVarMicros: 1_250,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: true));
+
+        Assert.Equal(1, runtime.ProbeTimeoutCount);
+        Assert.Equal(7_500UL, runtime.LossDetectionDeadlineMicros);
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    public void ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenRestarted()
+    public void TryArmProbeTimeout_PreservesAZeroBackoffWhenRestarted()
     {
-        Assert.Equal(0, QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
-            ptoCount: 0,
-            ackElicitingPacketSent: true));
-    }
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: 1_200,
+            SentAtMicros: 0,
+            AckEliciting: true));
 
-    public sealed record RestartTriggerCase(
-        bool AckElicitingPacketSent,
-        bool InitialOrHandshakeKeysDiscarded);
+        Assert.Equal(0, runtime.ProbeTimeoutCount);
+        Assert.Null(runtime.LossDetectionDeadlineMicros);
+
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 8,
+            PayloadBytes: 1_200,
+            SentAtMicros: 0,
+            AckEliciting: true));
+
+        Assert.Equal(0, runtime.ProbeTimeoutCount);
+        Assert.Null(runtime.LossDetectionDeadlineMicros);
+    }
 }

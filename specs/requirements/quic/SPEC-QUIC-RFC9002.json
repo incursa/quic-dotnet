@@ -1819,13 +1819,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0004"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0004"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0004"
         ],
         "upstream_refs": [
           "RFC 9002 §6.2 RFC9002-S6.2-B4-P3-S1",
@@ -2006,13 +2009,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0004"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0004"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0004"
         ],
         "upstream_refs": [
           "RFC 9002 §6.2.1 RFC9002-S6.2.1-B9-P7-S1",
@@ -2068,13 +2074,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0004"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0004"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0004"
         ],
         "upstream_refs": [
           "RFC 9002 §6.2.1 RFC9002-S6.2.1-B10-P8-S2",
@@ -2097,13 +2106,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0004"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0004"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0004"
         ],
         "upstream_refs": [
           "RFC 9002 §6.2.1 RFC9002-S6.2.1-B10-P8-S4",
@@ -2310,13 +2322,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0004"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0004"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0004"
         ],
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B2-P1-S2",
@@ -2341,13 +2356,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0004"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0004"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0004"
         ],
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B3-P2-S1",
@@ -2372,13 +2390,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0004"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0004"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0004"
         ],
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B3-P2-S2",
@@ -2403,13 +2424,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0004"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0004"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0004"
         ],
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S2",
@@ -2434,13 +2458,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0004"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0004"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0004"
         ],
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S3",
@@ -2464,13 +2491,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0004"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0004"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0004"
         ],
         "upstream_refs": [
           "RFC 9002 §6.2.2.1 RFC9002-S6.2.2.1-B4-P3-S3",
