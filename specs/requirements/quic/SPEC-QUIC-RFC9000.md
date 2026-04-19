@@ -12713,6 +12713,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B7-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0010.cs::TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtAConservativeEstimateJustAboveTheRfcMinimum
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0010.cs::TrySetActivePathMaximumDatagramSize_ProjectsAConservativeEstimateOntoTheSendRuntime
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0010.cs::TrySetActivePathMaximumDatagramSize_RejectsZeroMaximumDatagramSize
 
 ## REQ-QUIC-RFC9000-S14P2P1-0001 Ignore ICMP messages that claim PMTU below the minimum
 An endpoint MUST ignore an ICMP message that claims the PMTU has decreased below QUIC's smallest allowed maximum datagram size.
