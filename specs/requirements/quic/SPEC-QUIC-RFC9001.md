@@ -611,6 +611,8 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0003.cs::TryBuildProtectedApplicationDataPacket_DefaultsTheFirstOneRttPacketToKeyPhaseZero
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0003.cs::TryBuildProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeWhenSuccessorMaterialIsOnlyDerived
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0003.cs::TryBuildProtectedApplicationDataPacket_StillUsesKeyPhaseZeroAtTheMinimumProtectedPayloadBoundary
 
 ## REQ-QUIC-RFC9001-S6-0004 Toggle Key Phase on each update
 The Key Phase bit MUST be toggled to signal each subsequent key update.
@@ -711,6 +713,9 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs::ClientRoleDriverSurfacesTLSKeyUpdateAsAProhibitedMessageThroughThePostHandshakeSeam
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs::ClientRoleDriverKeepsNewSessionTicketProcessingSeparateFromTLSKeyUpdateProhibition
 
 ## REQ-QUIC-RFC9001-S6-0010 Treat TLS KeyUpdate as a connection error
 Endpoints MUST treat the receipt of a TLS KeyUpdate message as a connection error of type 0x010a, equivalent to a fatal TLS alert of unexpected_message.
@@ -725,6 +730,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B6-P5-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs::KeyUpdateViolationsBecomeConnectionErrors
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs::KeyUpdateViolationsStillBecomeConnectionErrorsAfterAPostHandshakeTicketHasBeenStored
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs::ClientRoleDriverKeepsNewSessionTicketProcessingSeparateFromTLSKeyUpdateProhibition
 
 ## REQ-QUIC-RFC9001-S7-0001 Use caution with unauthenticated Initial data
 Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.
