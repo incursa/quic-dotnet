@@ -16,7 +16,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0010
         QuicTlsTransportBridgeDriver driver = QuicPostHandshakeTicketTestSupport.CreateFinishedClientDriver();
         IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.OneRtt,
-            QuicPostHandshakeTicketTestSupport.CreateMalformedKeyUpdatePostHandshakeMessage());
+            QuicPostHandshakeTicketTestSupport.CreateProhibitedKeyUpdatePostHandshakeMessage());
 
         Assert.Single(updates);
         Assert.Equal(QuicTlsUpdateKind.ProhibitedKeyUpdateViolation, updates[0].Kind);
