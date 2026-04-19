@@ -6,7 +6,7 @@
   "title": "QUIC RFC 9002 PTO Probe Send Scheduler Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "summary": "Implement a runtime-owned PTO probe send scheduler that re-arms recovery from real application sends, falls back to a single PING when no queued stream data is available, and keeps the existing pacing and burst helpers visible on the non-ACK send path.",
+  "summary": "Implement a runtime-owned PTO probe send scheduler that re-arms recovery from real sends, selects the packet-number space at PTO expiry, falls back across other in-flight packet-number spaces before using a PING, and keeps the existing pacing and burst helpers visible on the non-ACK send path.",
   "related_artifacts": [
     "SPEC-QUIC-RFC9002"
   ],
@@ -35,9 +35,9 @@
     "REQ-QUIC-RFC9002-S7P7-0005",
     "REQ-QUIC-RFC9002-S7P8-0002"
   ],
-  "planned_changes": "- Re-arm the recovery timer from actual application send activity and queued stream flushes.\n- Emit one ack-eliciting PTO probe datagram, falling back to a PING when no queued application data is available.\n- Keep the existing pacing and burst helpers visible on non-ACK traffic instead of inventing an alternate scheduler.\n- Prove the slice with focused requirement-home coverage for the PTO fallback and pacing/burst contract.",
+  "planned_changes": "- Re-arm the recovery timer from actual send activity and queued stream flushes.\n- Select the PTO packet-number space at expiry and fall back across other in-flight spaces before using a PING.\n- Keep the existing pacing and burst helpers visible on non-ACK traffic instead of inventing an alternate scheduler.\n- Prove the slice with focused requirement-home coverage for the PTO fallback and pacing/burst contract.",
   "verification_plan": "Run the targeted RFC 9002 requirement-home tests for the PTO fallback and pacing/burst slice, then run the lane filter command and the repo-local trace validation flow if the canonical JSON changes.",
-  "completion_notes": "The recovery timer now re-arms from real sends and falls back to a PING probe on expiry when no queued application data is available. The proof stays inside the existing sender/recovery surface and does not widen public APIs.",
+  "completion_notes": "The recovery timer now re-arms from real sends, prefers the selected packet-number space at PTO expiry, falls back across other in-flight packet-number spaces before defaulting to a PING probe, and does not widen public APIs.",
   "out_of_scope": [
     "Public API widening.",
     "Alternate congestion controllers.",

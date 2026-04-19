@@ -4781,15 +4781,17 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
     private bool HandleRecoveryTimerExpired(long nowTicks, ref List<QuicConnectionEffect>? effects)
     {
         if (phase is not (QuicConnectionPhase.Establishing or QuicConnectionPhase.Active)
-            || activePath is null
-            || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+            || activePath is null)
         {
             return false;
         }
 
-        bool sentProbe = pendingApplicationSendRequests.Count > 0
-            ? FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
-            : TrySendRecoveryPingProbe(ref effects);
+        if (!TrySelectRecoveryTimer(nowTicks, out _, out QuicPacketNumberSpace selectedPacketNumberSpace))
+        {
+            return false;
+        }
+
+        bool sentProbe = TrySendRecoveryProbes(selectedPacketNumberSpace, nowTicks, ref effects);
 
         if (!sentProbe)
         {
@@ -4799,6 +4801,54 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         recoveryController.RecordProbeTimeoutExpired();
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return true;
+    }
+
+    private bool TrySelectRecoveryTimer(
+        long nowTicks,
+        out ulong selectedRecoveryTimerMicros,
+        out QuicPacketNumberSpace selectedPacketNumberSpace)
+    {
+        ulong nowMicros = GetElapsedMicros(nowTicks);
+        ulong maxAckDelayMicros = tlsState.PeerTransportParameters?.MaxAckDelay ?? 0;
+        bool handshakeConfirmed = peerHandshakeTranscriptCompleted;
+        bool serverAtAntiAmplificationLimit = tlsState.Role == QuicTlsRole.Server
+            && (activePath is null
+                || (!activePath.Value.AmplificationState.IsAddressValidated
+                    && activePath.Value.AmplificationState.RemainingSendBudget == 0));
+        bool peerAddressValidationComplete = transportFlags.HasFlag(QuicConnectionTransportState.PeerAddressValidated);
+
+        return recoveryController.TrySelectLossDetectionTimer(
+            nowMicros,
+            maxAckDelayMicros,
+            handshakeConfirmed,
+            serverAtAntiAmplificationLimit,
+            peerAddressValidationComplete,
+            tlsState.HandshakeKeysAvailable,
+            out selectedRecoveryTimerMicros,
+            out selectedPacketNumberSpace);
+    }
+
+    private bool TrySendRecoveryProbes(
+        QuicPacketNumberSpace selectedPacketNumberSpace,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        return selectedPacketNumberSpace switch
+        {
+            QuicPacketNumberSpace.Initial => TryFlushInitialPackets(ref effects)
+                || TryFlushHandshakePackets(ref effects)
+                || FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
+                || TrySendRecoveryPingProbe(ref effects),
+            QuicPacketNumberSpace.Handshake => TryFlushHandshakePackets(ref effects)
+                || TryFlushInitialPackets(ref effects)
+                || FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
+                || TrySendRecoveryPingProbe(ref effects),
+            QuicPacketNumberSpace.ApplicationData => FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
+                || TryFlushHandshakePackets(ref effects)
+                || TryFlushInitialPackets(ref effects)
+                || TrySendRecoveryPingProbe(ref effects),
+            _ => false,
+        };
     }
 
     private bool TrySendRecoveryPingProbe(ref List<QuicConnectionEffect>? effects)
@@ -5857,24 +5907,7 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return null;
         }
 
-        ulong nowMicros = GetElapsedMicros(lastTransitionTicks);
-        ulong maxAckDelayMicros = tlsState.PeerTransportParameters?.MaxAckDelay ?? 0;
-        bool handshakeConfirmed = peerHandshakeTranscriptCompleted;
-        bool serverAtAntiAmplificationLimit = tlsState.Role == QuicTlsRole.Server
-            && (activePath is null
-                || (!activePath.Value.AmplificationState.IsAddressValidated
-                    && activePath.Value.AmplificationState.RemainingSendBudget == 0));
-        bool peerAddressValidationComplete = transportFlags.HasFlag(QuicConnectionTransportState.PeerAddressValidated);
-
-        if (!recoveryController.TrySelectLossDetectionTimer(
-            nowMicros,
-            maxAckDelayMicros,
-            handshakeConfirmed,
-            serverAtAntiAmplificationLimit,
-            peerAddressValidationComplete,
-            tlsState.HandshakeKeysAvailable,
-            out ulong selectedRecoveryTimerMicros,
-            out _))
+        if (!TrySelectRecoveryTimer(lastTransitionTicks, out ulong selectedRecoveryTimerMicros, out _))
         {
             return null;
         }
