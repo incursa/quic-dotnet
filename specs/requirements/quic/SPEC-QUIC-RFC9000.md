@@ -6370,6 +6370,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3.2 RFC9000-S9.3.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0001.cs::ValidationFailureKeepsUsingTheLastValidatedPeerAddress
 
 ## REQ-QUIC-RFC9000-S9P3P2-0002 If an endpoint has no state about the last validated peer address, it MUST close the connection silently by discarding all connection state
 If an endpoint has no state about the last validated peer address, it MUST close the connection silently by discarding all connection state.
@@ -6384,6 +6386,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3.2 RFC9000-S9.3.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0002.cs::ValidationFailureWithoutAnyValidatedPathDiscardsTheConnectionSilently
 
 ## REQ-QUIC-RFC9000-S9P3P2-0003 For instance, an endpoint MAY send a Stateless Reset in response to any further incoming packets
 For instance, an endpoint MAY send a Stateless Reset in response to any further incoming packets.
@@ -6414,6 +6418,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3.2 RFC9000-S9.3.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0004.cs::ValidationFailureKeepsUsingTheMostRecentlyValidatedPeerAddress
 
 ## REQ-QUIC-RFC9000-S9P3P2-0005 Allow Stateless Reset After Silent Close
 After discarding all connection state, an endpoint MAY send a Stateless Reset in response to any further incoming packets.
@@ -8867,10 +8873,6 @@ Trace:
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S2
   - RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.1
-- Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0010.cs::TryCommitLocalTransportParameters_ClonesTheServerStatelessResetTokenValue
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0010.cs::ConnectionIdIssuedEvent_RegistersTheIssuedStatelessResetTokenForEmission
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0010.cs::ConnectionIdRetiredEvent_RemovesTheRetiredStatelessResetTokenFromEmission
 
 Notes:
 - This sentence pair is treated as one atomic memory-scope requirement.

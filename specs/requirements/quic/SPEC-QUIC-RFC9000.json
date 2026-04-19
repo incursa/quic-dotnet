@@ -11617,6 +11617,9 @@
         "upstream_refs": [
           "RFC 9000 §9.3.2 RFC9000-S9.3.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0001.cs::ValidationFailureKeepsUsingTheLastValidatedPeerAddress"
         ]
       }
     },
@@ -11643,6 +11646,9 @@
         "upstream_refs": [
           "RFC 9000 §9.3.2 RFC9000-S9.3.2-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0002.cs::ValidationFailureWithoutAnyValidatedPathDiscardsTheConnectionSilently"
         ]
       }
     },
@@ -11698,6 +11704,9 @@
         "upstream_refs": [
           "RFC 9000 §9.3.2 RFC9000-S9.3.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0004.cs::ValidationFailureKeepsUsingTheMostRecentlyValidatedPeerAddress"
         ]
       }
     },
