@@ -98,6 +98,24 @@ internal readonly record struct QuicConnectionPathMaximumDatagramSizeState
     {
         return new QuicConnectionPathMaximumDatagramSizeState(maximumDatagramSizeBytes);
     }
+
+    internal bool CanSend(ulong datagramSizeBytes, bool isProbePacket = false)
+    {
+        if (datagramSizeBytes == 0)
+        {
+            return false;
+        }
+
+        if (isProbePacket)
+        {
+            return datagramSizeBytes > MaximumDatagramSizeBytes;
+        }
+
+        return CanSendOrdinaryPackets
+            && datagramSizeBytes <= MaximumDatagramSizeBytes;
+    }
+
+    internal bool CanSendOrdinaryPackets => MaximumDatagramSizeBytes >= MinimumAllowedMaximumDatagramSizeBytes;
 }
 
 internal readonly record struct QuicConnectionPathAmplificationState(

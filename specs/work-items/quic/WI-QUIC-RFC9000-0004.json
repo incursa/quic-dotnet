@@ -18,15 +18,15 @@
     "REQ-QUIC-RFC9000-S14P2-0008",
     "REQ-QUIC-RFC9000-S14P2-0009"
   ],
-  "summary": "Keep the RFC 9000 PMTU discovery slice traceable while the runtime grows explicit path-owned maximum datagram size state and active-path projection.",
-  "planned_changes": "- Add path-owned maximum-datagram-size state to the active, candidate, and recently validated path records.\n- Carry that state through validation success and active-path promotion.\n- Project the active path's maximum datagram size into the sender flow controller.\n- Leave PMTU probe classification, probe-vs-ordinary send gating, and connection termination for follow-on packets.",
-  "verification_plan": "Run the RFC 9000 requirement-home tests for the path-state slice and keep the proof scope honest while the remaining PMTU clauses stay deferred.",
+  "summary": "Keep the RFC 9000 PMTU discovery slice traceable while the runtime grows explicit path-owned maximum datagram size state, probe-vs-ordinary send admissibility, and the 1200-byte ordinary-send floor.",
+  "planned_changes": "- Add path-owned maximum-datagram-size state to the active, candidate, and recently validated path records.\n- Add an internal active-path update helper that keeps the sender flow controller in sync with the path-owned maximum datagram size.\n- Distinguish ordinary sends from PMTU probes so probe-sized datagrams can exceed the current maximum while ordinary sends stop below the RFC minimum.\n- Keep CONNECTION_CLOSE sendable on the gated path without claiming automatic alternative-path search or termination policy.",
+  "verification_plan": "Run the RFC 9000 requirement-home tests for the ordinary, probe, 1200-byte floor, close-path, and path-state clauses, then inspect the active-path projection into the sender flow controller.",
   "verification_links": [
     "VER-QUIC-RFC9000-0004"
   ],
   "out_of_scope": [
-    "PMTU probe generation and probe-vs-ordinary send gating.",
-    "Termination when no alternative path exists."
+    "Automatic alternative-path search or termination policy.",
+    "Probe generation beyond the admissibility helper."
   ],
-  "completion_notes": "This packet currently proves only REQ-QUIC-RFC9000-S14P2-0009. The remaining PMTU clauses stay deferred until the sender-side probe and gating work lands."
+  "completion_notes": "This packet now proves REQ-QUIC-RFC9000-S14P2-0003, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0007, REQ-QUIC-RFC9000-S14P2-0008, and REQ-QUIC-RFC9000-S14P2-0009. Automatic alternative-path search remains a separate lifecycle slice and is not claimed here."
 }

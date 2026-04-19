@@ -3029,6 +3029,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
+        if (!activePath.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets)
+        {
+            exception = new InvalidOperationException("The active path cannot send ordinary packets.");
+            return false;
+        }
+
         exception = null;
         return true;
     }
@@ -3132,6 +3138,13 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
         updatedAmplificationState = default;
         protectedPacket = [];
 
+        currentPath = activePath!.Value;
+        if (!currentPath.MaximumDatagramSizeState.CanSendOrdinaryPackets)
+        {
+            exception = new InvalidOperationException("The active path cannot send ordinary packets.");
+            return false;
+        }
+
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             payload,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
@@ -3143,7 +3156,12 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
             return false;
         }
 
-        currentPath = activePath!.Value;
+        if (!currentPath.MaximumDatagramSizeState.CanSend((ulong)protectedPacket.Length))
+        {
+            exception = new InvalidOperationException("The active path cannot send an ordinary packet.");
+            return false;
+        }
+
         if (!currentPath.AmplificationState.TryConsumeSendBudget(
             protectedPacket.Length,
             out updatedAmplificationState))
@@ -3154,6 +3172,23 @@ internal sealed class QuicConnectionRuntime : IAsyncDisposable, IDisposable
 
         TrackApplicationPacket(packetNumber, protectedPacket);
         exception = null;
+        return true;
+    }
+
+    internal bool TrySetActivePathMaximumDatagramSize(ulong maximumDatagramSizeBytes)
+    {
+        if (activePath is null)
+        {
+            return false;
+        }
+
+        QuicConnectionActivePathRecord updatedActivePath = activePath.Value with
+        {
+            MaximumDatagramSizeState = activePath.Value.MaximumDatagramSizeState.WithMaximumDatagramSize(maximumDatagramSizeBytes),
+        };
+
+        activePath = updatedActivePath;
+        SyncActivePathMaximumDatagramSize(updatedActivePath.MaximumDatagramSizeState);
         return true;
     }
 

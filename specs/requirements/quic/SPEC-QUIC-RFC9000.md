@@ -12549,14 +12549,16 @@ An endpoint SHOULD use DPLPMTUD or PMTUD to determine whether the path to a dest
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0004
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0004
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0004
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_DeterminesWhetherThePathSupportsADesiredDatagramSize
 
 ## REQ-QUIC-RFC9000-S14P2-0004 Do not exceed the smallest allowed maximum datagram size without PMTU discovery
 In the absence of these mechanisms, QUIC endpoints SHOULD NOT send datagrams larger than the smallest allowed maximum datagram size.
@@ -12581,14 +12583,16 @@ Both DPLPMTUD and PMTUD MUST send datagrams that are larger than the current max
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0004
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0004
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0004
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0005.cs::CanSend_AllowsProbePacketsToExceedTheCurrentMaximumDatagramSize
 
 ## REQ-QUIC-RFC9000-S14P2-0006 Size non-PMTU-probe packets to fit within the maximum datagram size
 All QUIC packets that are not sent in a PMTU probe SHOULD be sized to fit within the maximum datagram size.
@@ -12613,42 +12617,50 @@ If a QUIC endpoint determines that the PMTU between any pair of local and remote
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0004
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0004
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0004
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0007.cs::WriteAsync_FailsWhenTheActivePathDropsBelowTheRFCMinimum
 
 ## REQ-QUIC-RFC9000-S14P2-0008 Allow terminating the connection when no alternative path exists
 An endpoint MAY terminate the connection if an alternative path cannot be found.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0004
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0004
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0004
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0008.cs::LocalCloseRequested_StillEmitsConnectionCloseWhenTheActivePathCannotSendOrdinaryPackets
 
 ## REQ-QUIC-RFC9000-S14P2-0009 Maintain a maximum datagram size per address pair when doing PMTU discovery
 QUIC implementations that implement any kind of PMTU discovery SHOULD maintain a maximum datagram size for each combination of local and remote IP addresses.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0004
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0004
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0004
 - Source Refs:
   - RFC 9000 §14.2 RFC9000-S14.2-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0009.cs::CreateInitialMaximumDatagramSizeState_UsesTheRfcMinimumAndProjectsToTheActivePath
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0009.cs::Constructor_RejectsZeroMaximumDatagramSizes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0009.cs::PathRecordsCarryMaximumDatagramSizeStateAcrossCopies
 
 ## REQ-QUIC-RFC9000-S14P2-0010 Allow conservative maximum datagram size estimates
 A QUIC implementation MAY be more conservative in computing the maximum datagram size to allow for unknown tunnel overheads or IP header options or extensions.
