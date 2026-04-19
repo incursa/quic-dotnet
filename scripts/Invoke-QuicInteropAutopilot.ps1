@@ -513,6 +513,10 @@ function Get-ActiveLaneCommitSnapshot {
         @(Get-CommitRange -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -FromRef $baseRef -ToRef $headSha)
     }
 
+    if (@($commitShas).Count -gt 0) {
+        $commitShas = @(Get-CherryPickableCommitShas -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -TargetBranch $targetBranch -HeadRef $headRef -CandidateCommitShas $commitShas)
+    }
+
     $headOnTargetBranch = $false
     if (-not [string]::IsNullOrWhiteSpace($targetBranch) -and (Test-GitObjectExists -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -Ref $targetBranch)) {
         $headOnTargetBranch = Test-GitAncestor -GitExecutable $GitExecutable -RepositoryRoot $RepoRoot -AncestorRef $headSha -DescendantRef $targetBranch
@@ -527,6 +531,54 @@ function Get-ActiveLaneCommitSnapshot {
         CommitCount = @($commitShas).Count
         HeadOnTargetBranch = $headOnTargetBranch
     }
+}
+
+function Get-CherryPickableCommitShas {
+    param(
+        [Parameter(Mandatory = $true)][string]$GitExecutable,
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [Parameter(Mandatory = $true)][string]$TargetBranch,
+        [Parameter(Mandatory = $true)][string]$HeadRef,
+        [Parameter(Mandatory = $true)][string[]]$CandidateCommitShas
+    )
+
+    $candidateCommitShas = @(
+        $CandidateCommitShas |
+        Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) }
+    )
+
+    if ($candidateCommitShas.Count -eq 0) {
+        return @()
+    }
+
+    if ([string]::IsNullOrWhiteSpace($TargetBranch) -or [string]::IsNullOrWhiteSpace($HeadRef)) {
+        return $candidateCommitShas
+    }
+
+    if (-not (Test-GitObjectExists -GitExecutable $GitExecutable -RepositoryRoot $RepositoryRoot -Ref $TargetBranch)) {
+        return $candidateCommitShas
+    }
+
+    $result = Invoke-NativeCapture -FilePath $GitExecutable -ArgumentList @("-C", $RepositoryRoot, "cherry", $TargetBranch, $HeadRef)
+    if ($result.ExitCode -ne 0) {
+        return $candidateCommitShas
+    }
+
+    $outstandingCommitShas = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($line in ($result.StdOut -split "\r?\n")) {
+        if ($line -match '^\+\s+([0-9a-fA-F]+)$') {
+            [void]$outstandingCommitShas.Add($Matches[1])
+        }
+    }
+
+    if ($outstandingCommitShas.Count -eq 0) {
+        return @()
+    }
+
+    return @(
+        $candidateCommitShas |
+        Where-Object { $outstandingCommitShas.Contains([string]$_) }
+    )
 }
 
 function Get-SupervisorStateSummary {
@@ -4130,7 +4182,21 @@ function Invoke-OrchestrationMerge {
     $commitSnapshot = Get-ActiveLaneCommitSnapshot -StateObject $state -GitExecutable $GitExecutable -RepoRoot $RepoRoot
     $commitShas = @($commitSnapshot.CommitShas)
     if ($commitShas.Count -eq 0) {
-        throw "No commits are available to cherry-pick for lane '$($workerContract.lane_id)'."
+        Complete-LaneInState -StateObject $state -LaneId $workerContract.lane_id
+        if ($null -eq $state.active_lane) {
+            $state.active_lane = [pscustomobject]@{}
+        }
+
+        Set-ObjectNoteProperty -Object $state.active_lane -Name "merged" -Value $true
+        Set-ObjectNoteProperty -Object $state.active_lane -Name "merged_at" -Value ((Get-Date).ToString("o"))
+        Set-ActiveLaneStateMetadata -StateObject $state -LanePhase "cleanup_pending" -LastSuccessfulAction "merge" -LastErrorClassification "" -RetryCount 0
+        Save-OrchestrationState -StatePath $StatePath -StateObject $state
+
+        Write-Host "Lane '$($workerContract.lane_id)' has no outstanding commits to cherry-pick. Cleanup is still required to remove the active worktree." -ForegroundColor Green
+        return [pscustomobject]@{
+            Status = "merged"
+            LaneId = $workerContract.lane_id
+        }
     }
 
     $mergeRepoRoot = $RepoRoot
