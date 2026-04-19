@@ -72,7 +72,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         return true;
     }
 
-    public bool TryUnregisterConnection(QuicConnectionHandle handle)
+    public bool TryUnregisterConnection(QuicConnectionHandle handle, bool preserveStatelessResetEmissionState = false)
     {
         if (!registeredHandles.ContainsKey(handle))
         {
@@ -100,7 +100,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         {
             foreach (ulong connectionId in tokenIds.Keys)
             {
-                TryRemoveStatelessResetBinding(connectionId);
+                TryRemoveStatelessResetBinding(connectionId, preserveStatelessResetEmissionState);
             }
         }
 
@@ -183,7 +183,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             {
                 if (statelessResetBindingsByConnectionId.TryGetValue(connectionId, out QuicConnectionStatelessResetBinding? binding))
                 {
-                    if (!TryMoveStatelessResetBinding(connectionId, binding, pathIdentity.RemoteAddress))
+                    if (!TryMoveStatelessResetBinding(connectionId, binding, pathIdentity))
                     {
                         return false;
                     }
@@ -226,7 +226,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             return false;
         }
 
-        QuicConnectionStatelessResetBinding binding = new(handle, connectionId, pathIdentity.RemoteAddress, tokenBuffer, versionProfile);
+        QuicConnectionStatelessResetBinding binding = new(handle, connectionId, pathIdentity, tokenBuffer, versionProfile);
         QuicConnectionStatelessResetMatchKey matchKey = new(pathIdentity.RemoteAddress, tokenKey);
         if (!statelessResetBindingsByMatchKey.TryAdd(matchKey, binding))
         {
@@ -279,9 +279,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         int triggeringPacketLength,
         bool hasLoopPreventionState)
     {
-        if (!registeredHandles.ContainsKey(handle)
-            || !pathByHandle.TryGetValue(handle, out QuicConnectionPathIdentity pathIdentity)
-            || !statelessResetBindingsByConnectionId.TryGetValue(connectionId, out QuicConnectionStatelessResetBinding? binding)
+        if (!statelessResetBindingsByConnectionId.TryGetValue(connectionId, out QuicConnectionStatelessResetBinding? binding)
             || binding.Handle != handle)
         {
             return new QuicConnectionStatelessResetEmissionResult(
@@ -295,15 +293,15 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         {
             return new QuicConnectionStatelessResetEmissionResult(
                 QuicConnectionStatelessResetEmissionDisposition.LoopOrAmplificationPrevented,
-                pathIdentity,
+                binding.PathIdentity,
                 ReadOnlyMemory<byte>.Empty);
         }
 
-        if (!TryReserveStatelessResetEmission(binding.RemoteAddress))
+        if (!TryReserveStatelessResetEmission(binding.PathIdentity.RemoteAddress))
         {
             return new QuicConnectionStatelessResetEmissionResult(
                 QuicConnectionStatelessResetEmissionDisposition.RateLimited,
-                pathIdentity,
+                binding.PathIdentity,
                 ReadOnlyMemory<byte>.Empty);
         }
 
@@ -317,13 +315,13 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         {
             return new QuicConnectionStatelessResetEmissionResult(
                 QuicConnectionStatelessResetEmissionDisposition.FormatFailed,
-                pathIdentity,
+                binding.PathIdentity,
                 ReadOnlyMemory<byte>.Empty);
         }
 
         return new QuicConnectionStatelessResetEmissionResult(
             QuicConnectionStatelessResetEmissionDisposition.Emitted,
-            pathIdentity,
+            binding.PathIdentity,
             datagram.AsMemory(0, bytesWritten));
     }
 
@@ -463,7 +461,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 => TryRegisterStatelessResetToken(handle, registerStatelessResetTokenEffect.ConnectionId, registerStatelessResetTokenEffect.Token.Span),
             QuicConnectionRetireStatelessResetTokenEffect retireStatelessResetTokenEffect
                 => TryRetireStatelessResetToken(handle, retireStatelessResetTokenEffect.ConnectionId),
-            QuicConnectionDiscardConnectionStateEffect => TryUnregisterConnection(handle),
+            QuicConnectionDiscardConnectionStateEffect discardConnectionStateEffect
+                => TryUnregisterConnection(handle, discardConnectionStateEffect.TerminalState is not null),
             _ => false,
         };
     }
@@ -659,10 +658,15 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
     private bool TryMoveStatelessResetBinding(
         ulong connectionId,
         QuicConnectionStatelessResetBinding binding,
-        string remoteAddress)
+        QuicConnectionPathIdentity pathIdentity)
     {
-        if (string.Equals(binding.RemoteAddress, remoteAddress, StringComparison.Ordinal))
+        if (string.Equals(binding.PathIdentity.RemoteAddress, pathIdentity.RemoteAddress, StringComparison.Ordinal))
         {
+            if (!EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(binding.PathIdentity, pathIdentity))
+            {
+                statelessResetBindingsByConnectionId[connectionId] = binding with { PathIdentity = pathIdentity };
+            }
+
             return true;
         }
 
@@ -671,9 +675,9 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             return false;
         }
 
-        QuicConnectionStatelessResetMatchKey oldKey = new(binding.RemoteAddress, tokenKey);
-        QuicConnectionStatelessResetBinding updatedBinding = binding with { RemoteAddress = remoteAddress };
-        QuicConnectionStatelessResetMatchKey newKey = new(remoteAddress, tokenKey);
+        QuicConnectionStatelessResetMatchKey oldKey = new(binding.PathIdentity.RemoteAddress, tokenKey);
+        QuicConnectionStatelessResetBinding updatedBinding = binding with { PathIdentity = pathIdentity };
+        QuicConnectionStatelessResetMatchKey newKey = new(pathIdentity.RemoteAddress, tokenKey);
 
         if (!statelessResetBindingsByMatchKey.TryAdd(newKey, updatedBinding))
         {
@@ -685,17 +689,22 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         return true;
     }
 
-    private void TryRemoveStatelessResetBinding(ulong connectionId)
+    private void TryRemoveStatelessResetBinding(ulong connectionId, bool preserveEmissionState = false)
     {
-        if (!statelessResetBindingsByConnectionId.TryRemove(connectionId, out QuicConnectionStatelessResetBinding? binding)
+        if (!statelessResetBindingsByConnectionId.TryGetValue(connectionId, out QuicConnectionStatelessResetBinding? binding)
             || !QuicConnectionStatelessResetTokenKey.TryCreate(binding.Token, out QuicConnectionStatelessResetTokenKey tokenKey))
         {
             return;
         }
 
         statelessResetBindingsByMatchKey.TryRemove(
-            new QuicConnectionStatelessResetMatchKey(binding.RemoteAddress, tokenKey),
+            new QuicConnectionStatelessResetMatchKey(binding.PathIdentity.RemoteAddress, tokenKey),
             out _);
+
+        if (!preserveEmissionState)
+        {
+            statelessResetBindingsByConnectionId.TryRemove(connectionId, out _);
+        }
     }
 
     private bool TryReserveStatelessResetEmission(string remoteAddress)

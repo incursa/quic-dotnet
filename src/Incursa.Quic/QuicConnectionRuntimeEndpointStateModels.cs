@@ -30,7 +30,7 @@ internal readonly record struct QuicConnectionIngressResult(
 internal sealed record QuicConnectionStatelessResetBinding(
     QuicConnectionHandle Handle,
     ulong ConnectionId,
-    string RemoteAddress,
+    QuicConnectionPathIdentity PathIdentity,
     byte[] Token,
     QuicConnectionVersionProfile VersionProfile);
 

@@ -6398,6 +6398,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3.2 RFC9000-S9.3.2-B4-P3-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0003.cs::DiscardedConnectionsCanStillCreateStatelessResetDatagrams
 
 ## REQ-QUIC-RFC9000-S9P3P2-0004 Revert to the Last Validated Peer Address
 When validation of a new peer address fails, an endpoint MUST revert to using the last validated peer address.
@@ -6426,6 +6428,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3.2 RFC9000-S9.3.2-B4-P3-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0003.cs::DiscardedConnectionsCanStillCreateStatelessResetDatagrams
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0005.cs::DiscardedConnectionsWithoutAStatelessResetTokenCannotCreateADatagram
 
 ## REQ-QUIC-RFC9000-S9P3P3-0001 In response to an apparent migration, endpoints MUST validate the previously active path using a PATH_CHALLENGE frame
 In response to an apparent migration, endpoints MUST validate the previously active path using a PATH_CHALLENGE frame.
