@@ -19,11 +19,11 @@ The key words in this document MUST be interpreted as described in BCP 14 when, 
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0002
 - Implemented By:
-  - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0002
 - Verified By:
-  - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0002
 - Source Refs:
   - RFC 9002 §2 RFC9002-S2-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-2
@@ -802,6 +802,9 @@ Trace:
 - Source Refs:
   - RFC 9002 §6 RFC9002-S6-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs::TryDiscardPacketNumberSpace_RemovesOnlyTheDiscardedSpaceFromTheRuntimeLedger
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs::TryDiscardPacketNumberSpace_IsNoOpForASpaceThatWasNeverTracked
 
 ## REQ-QUIC-RFC9002-S6P1-0001 Declare loss only for packets that satisfy the basic loss criteria
 A packet MUST be unacknowledged, in flight, and sent before an acknowledged packet before it can be declared lost.
@@ -1299,18 +1302,17 @@ When Initial or Handshake keys are discarded, the PTO and loss detection timers 
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0002
 - Implemented By:
-  - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0002
 - Verified By:
-  - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0002
 - Source Refs:
   - RFC 9002 §6.2.2 RFC9002-S6.2.2-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::ResetProbeTimeoutBackoffCount_ResetsTheBackoffWhenInitialOrHandshakeKeysAreDiscarded
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoDiscardOccurs
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenKeysAreDiscarded
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_ResetsPtoStateWhenInitialKeysAreDiscarded
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_LeavesPtoBackoffCountUnchangedWhenApplicationDataIsDiscarded
 
 ## REQ-QUIC-RFC9002-S6P2P2P1-0001 Delay server PTO until address validation traffic arrives
 If no additional data can be sent, the server's PTO timer MUST NOT be armed until datagrams have been received from the client.
@@ -1676,61 +1678,62 @@ The sender MUST discard all recovery state associated with packets sent with dis
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0002
 - Implemented By:
-  - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0002
 - Verified By:
-  - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0002
 - Source Refs:
   - RFC 9002 §6.4 RFC9002-S6.4-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4
 - Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDetectPersistentCongestion_ResetsRecoveryStateForDiscardedInitialAndHandshakeKeys
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDetectPersistentCongestion_DoesNotResetRecoveryStateForPacketsThatWereNotInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDiscardPacketNumberSpace_RemovesQueuedInitialAndHandshakeRecoveryPlansFromTheRuntimeLedger
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDiscardPacketNumberSpace_LeavesApplicationRecoveryStateAloneWhenNoEarlyKeysWereTracked
 
 ## REQ-QUIC-RFC9002-S6P4-0002 Remove discarded packets from bytes in flight
 The sender MUST remove those packets from the count of bytes in flight.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0002
 - Implemented By:
-  - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0002
 - Verified By:
-  - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0002
 - Source Refs:
   - RFC 9002 §6.4 RFC9002-S6.4-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4
 - Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDetectPersistentCongestion_RemovesDiscardedPacketsFromBytesInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDiscardPacketNumberSpace_RemovesInitialAndHandshakePacketsFromBytesInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDiscardPacketNumberSpace_DoesNotChangeBytesInFlightWhenNoEarlyKeysWereTracked
 
 ## REQ-QUIC-RFC9002-S6P4-0003 Discard recovery state for rejected 0-RTT packets
 An endpoint MUST discard recovery state for all in-flight 0-RTT packets when 0-RTT is rejected.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0002
 - Implemented By:
-  - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0002
 - Verified By:
-  - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0002
 - Source Refs:
   - RFC 9002 §6.4 RFC9002-S6.4-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4
 - Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::TryDetectPersistentCongestion_DiscardsInFlightZeroRttPacketsWhenTheyAreRejected
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::TryDetectPersistentCongestion_DoesNotDiscardRejectedZeroRttPacketsWhenTheyWereNotInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::RejectingTheResumptionAttempt_DiscardsZeroRttRecoveryStateAndRetainsOneRttPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::AcceptingTheResumptionAttempt_KeepsZeroRttRecoveryStateIntact
 
 ## REQ-QUIC-RFC9002-S6P4-0004 Discard secrets as soon as the replacement keys exist
 Initial and Handshake secrets MUST be discarded as soon as Handshake and 1-RTT keys are proven to be available to both client and server.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0002
 - Implemented By:
-  - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0002
 - Verified By:
-  - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0002
 - Source Refs:
   - RFC 9002 §6.4 RFC9002-S6.4-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4
@@ -1738,6 +1741,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_DiscardOverflowFramesAsSoonAsReplacementKeysExist
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_ClosesWithBufferExceededBeforeReplacementKeysExist
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_TransitionsFromBufferingToDiscardingAtTheHandshakeCompleteBoundary
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs::BridgeDriverHandshakeKeyDiscardFlowsThroughTheRuntimeAndClearsHandshakeSendState
 
 ## REQ-QUIC-RFC9002-S7-0001 Require alternate controllers to obey RFC 8085
 If a sender uses a different controller than the one specified in this document, the chosen controller MUST conform to the congestion-control guidelines in Section 3.1 of RFC 8085.

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "verification_method": "Execution, inspection, and targeted runtime evidence.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9002",
+    "ARC-QUIC-RFC9002-0002",
+    "WI-QUIC-RFC9002-0002"
+  ],
+  "expected_result": "- The runtime owns per-space sender-ledger recovery state.\n- Initial and Handshake key discard resets PTO and loss-detection state.\n- Rejected 0-RTT discard removes zero-RTT sender-ledger state, pending retransmission plans, and bytes in flight while OneRtt recovery state remains intact.\n- The helper-only secret-discard proof stays linked but is no longer the only evidence for the Section 6 recovery slice.",
+  "artifact_id": "VER-QUIC-RFC9002-0002",
+  "verifies": [
+    "REQ-QUIC-RFC9002-S6-0001",
+    "REQ-QUIC-RFC9002-S6P2P2-0005",
+    "REQ-QUIC-RFC9002-S6P4-0001",
+    "REQ-QUIC-RFC9002-S6P4-0002",
+    "REQ-QUIC-RFC9002-S6P4-0003",
+    "REQ-QUIC-RFC9002-S6P4-0004"
+  ],
+  "artifact_type": "verification",
+  "status": "planned",
+  "procedure": [
+    "Run the targeted RFC 9002 requirement-home tests with the section 6 filter.",
+    "Run the repo-local SpecTrace validation flow for the changed canonical JSON artifacts.",
+    "Inspect the companion markdown renders when they are regenerated from the updated canonical JSON.",
+    "Keep the runtime cleanup proof separate from the helper-only secret-discard proof."
+  ],
+  "scope": "This design covers the RFC 9002 recovery slice, including ACK processing, transport-parameter inputs, timer behavior, and the recovery contracts that sit on top of the transport layer.\nIt does not duplicate RFC 9000 transport framing or RFC 9001 TLS packet-protection behavior.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0142.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0143.cs"
+  ]
+}
