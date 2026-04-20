@@ -11069,17 +11069,20 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0005"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0005"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0005"
         ],
         "upstream_refs": [
           "RFC 9000 §9.1 RFC9000-S9.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P1-0001.cs::NewLocalAddressIsProbedBeforeTheConnectionMigrates"
         ]
       }
     },
@@ -11095,17 +11098,20 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0005"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0005"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0005"
         ],
         "upstream_refs": [
           "RFC 9000 §9.1 RFC9000-S9.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P1-0002.cs::UnvalidatedNewLocalAddressDoesNotReplaceTheActivePath"
         ]
       }
     },
@@ -11121,17 +11127,20 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0005"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0005"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0005"
         ],
         "upstream_refs": [
           "RFC 9000 §9.2 RFC9000-S9.2-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::ReplyTrafficStaysOnTheOriginalPathWhileValidationIsPending"
         ]
       }
     },
@@ -11147,17 +11156,20 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0005"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0005"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0005"
         ],
         "upstream_refs": [
           "RFC 9000 §9.2 RFC9000-S9.2-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0002.cs::TheRuntimeInitiatesPathValidationOnTheNewLocalAddress"
         ]
       }
     },
@@ -11173,17 +11185,21 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0005"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0005"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0005"
         ],
         "upstream_refs": [
           "RFC 9000 §9.2 RFC9000-S9.2-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0003.cs::MigratingToANewLocalAddressRecomputesTheCongestionWindowFromTheNewPathDatagramSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0003.cs::MigratingToANewLocalAddressResetsThePathRecoveryState"
         ]
       }
     },
@@ -11199,17 +11215,20 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0005"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0005"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0005"
         ],
         "upstream_refs": [
           "RFC 9000 §9.2 RFC9000-S9.2-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0004.cs::PortOnlyPeerAddressChangesRetainThePathRecoveryState"
         ]
       }
     },
@@ -11225,17 +11244,21 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0005"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0005"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0005"
         ],
         "upstream_refs": [
           "RFC 9000 §9.2 RFC9000-S9.2-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressReenablesEcnValidationOnTheNewPath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressResetsPriorEcnValidationCountsBeforeRevalidatingTheNewPath"
         ]
       }
     },

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0005",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Migration Path Probing and Recovery Reset Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the runtime probes new local addresses before migration, initiates path validation on the new path, and resets congestion, RTT, and ECN validation state on promotion without changing unrelated connection, handshake, or endpoint-binding state.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "WI-QUIC-RFC9000-0005",
+    "VER-QUIC-RFC9000-0005"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S9P1-0001",
+    "REQ-QUIC-RFC9000-S9P1-0002",
+    "REQ-QUIC-RFC9000-S9P2-0001",
+    "REQ-QUIC-RFC9000-S9P2-0002",
+    "REQ-QUIC-RFC9000-S9P2-0003",
+    "REQ-QUIC-RFC9000-S9P2-0004",
+    "REQ-QUIC-RFC9000-S9P2-0005"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicEcnValidationState.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs"
+  ],
+  "design_summary": "The connection runtime keeps one active path, a bounded candidate set, and a recently validated cache so a new local address is always treated as a candidate path until path validation succeeds. New local-address traffic gets a PATH_CHALLENGE first, then becomes active only after validation or trusted reuse permits promotion. When a candidate is promoted onto a different path, the sender recovery state resets congestion, RTT, and ECN validation to initial values, while port-only changes can retain the prior recovery snapshot and ECN history.",
+  "risks": [
+    "Trusted reuse must stay bounded so stale addresses cannot bypass the validation probe path.",
+    "Promotion must keep the active-path reset deterministic or congestion and recovery state can drift across path changes.",
+    "Port-only retention must remain isolated from full-address migration so the reset path never preserves stale state accidentally."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers RFC 9000 Sections 9.1 and 9.2 for the runtime-owned migration slice.\nIt probes new local addresses with path validation before normal use, classifies deferred/non-probing migration traffic through the existing path model, and resets path-local recovery state when a new path is promoted.\nIt does not claim a generalized multipath scheduler or any broader recovery policy beyond the promotion/reset path."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`QuicConnectionRuntime.Paths.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Paths.cs)\n- [`QuicConnectionRuntime.Routing.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Routing.cs)\n- [`QuicConnectionSendRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionSendRuntime.cs)\n- [`QuicEcnValidationState.cs`](../../../src/Incursa.Quic/QuicEcnValidationState.cs)\n- [`QuicCongestionControlState.cs`](../../../src/Incursa.Quic/QuicCongestionControlState.cs)\n- [`QuicPathMigrationRecoveryTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs)\n- [`REQ-QUIC-RFC9000-S9P1-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P1-0001.cs)\n- [`REQ-QUIC-RFC9000-S9P1-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P1-0002.cs)\n- [`REQ-QUIC-RFC9000-S9P2-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs)\n- [`REQ-QUIC-RFC9000-S9P2-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0002.cs)\n- [`REQ-QUIC-RFC9000-S9P2-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0003.cs)\n- [`REQ-QUIC-RFC9000-S9P2-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0004.cs)\n- [`REQ-QUIC-RFC9000-S9P2-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs)"
+    }
+  ]
+}

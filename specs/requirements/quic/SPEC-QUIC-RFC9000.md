@@ -6065,98 +6065,114 @@ An endpoint MAY probe for peer reachability from a new local address using path 
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0005
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0005
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0005
 - Source Refs:
   - RFC 9000 §9.1 RFC9000-S9.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P1-0001.cs::NewLocalAddressIsProbedBeforeTheConnectionMigrates
 
 ## REQ-QUIC-RFC9000-S9P1-0002 Probe New Local Addresses Before Migration
 An endpoint MAY probe for peer reachability from a new local address using path validation before migrating the connection to the new local address.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0005
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0005
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0005
 - Source Refs:
   - RFC 9000 §9.1 RFC9000-S9.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P1-0002.cs::UnvalidatedNewLocalAddressDoesNotReplaceTheActivePath
 
 ## REQ-QUIC-RFC9000-S9P2-0001 Defer path validation until after a peer sends the next non-probing frame to its new address
 An endpoint MAY defer path validation until after a peer sends the next non-probing frame to its new address.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0005
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0005
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0005
 - Source Refs:
   - RFC 9000 §9.2 RFC9000-S9.2-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::ReplyTrafficStaysOnTheOriginalPathWhileValidationIsPending
 
 ## REQ-QUIC-RFC9000-S9P2-0002 Initiate Path Validation on the New Path
 To establish reachability on the new path, an endpoint MUST initiate path validation on the new path.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0005
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0005
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0005
 - Source Refs:
   - RFC 9000 §9.2 RFC9000-S9.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0002.cs::TheRuntimeInitiatesPathValidationOnTheNewLocalAddress
 
 ## REQ-QUIC-RFC9000-S9P2-0003 Reset Congestion State on Migration
 When migrating, an endpoint MUST immediately reset its congestion controller and round-trip time estimator for the new path to initial values unless the only change in the peer's address is its port number.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0005
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0005
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0005
 - Source Refs:
   - RFC 9000 §9.2 RFC9000-S9.2-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0003.cs::MigratingToANewLocalAddressRecomputesTheCongestionWindowFromTheNewPathDatagramSize
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0003.cs::MigratingToANewLocalAddressResetsThePathRecoveryState
 
 ## REQ-QUIC-RFC9000-S9P2-0004 Retain State for Port-Only Changes
 When the only change in the peer's address is its port number, an endpoint MAY retain its congestion control state and round-trip estimate instead of reverting to initial values.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0005
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0005
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0005
 - Source Refs:
   - RFC 9000 §9.2 RFC9000-S9.2-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0004.cs::PortOnlyPeerAddressChangesRetainThePathRecoveryState
 
 ## REQ-QUIC-RFC9000-S9P2-0005 Validate ECN Capability After Migration
 An endpoint MUST validate ECN capability as described in Section 13.4 when it migrates to a new path.
 
 Trace:
 - Satisfied By:
-  - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0005
 - Implemented By:
-  - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0005
 - Verified By:
-  - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0005
 - Source Refs:
   - RFC 9000 §9.2 RFC9000-S9.2-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressReenablesEcnValidationOnTheNewPath
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressResetsPriorEcnValidationCountsBeforeRevalidatingTheNewPath
 
 ## REQ-QUIC-RFC9000-S9P3-0001 If the recipient permits the migration, it MUST send subsequent packets to the new peer address and MUST initiate path validation (Section 8
 If the recipient permits the migration, it MUST send subsequent packets to the new peer address and initiate path validation (Section 8.2) to verify the peer's ownership of the address if validation is not already underway.
