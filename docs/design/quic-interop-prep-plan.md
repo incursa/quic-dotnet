@@ -45,7 +45,7 @@ Supported today:
 - Supported write/completion on send-capable streams.
 - Narrow `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` support.
 - Supported `Abort(QuicAbortDirection.Both, ...)` composition on the bidirectional loopback path.
-- Initial peer stream-capacity reporting, later real peer `MAX_STREAMS` growth, and the narrow close-driven capacity-release subset already proven by the requirement-home tests.
+- Initial peer stream-capacity reporting, later real peer `MAX_STREAMS` growth, the narrow close-driven capacity-release subset already proven by the requirement-home tests, and the pending outbound-open disposal terminalization follow-on on the supported active-loopback path.
 
 Partially implemented but not yet promised:
 
@@ -54,7 +54,6 @@ Partially implemented but not yet promised:
 
 Still missing:
 
-- Broader abort-heavy behavior beyond the already landed supported `Abort(Both, ...)` composition.
 - Broader close-driven capacity release and fuller stream lifecycle parity beyond the supported callback subset.
 
 Why this stays separate:
@@ -191,7 +190,7 @@ Notes on dependency:
 
 6. `Broader stream-management parity`
    - Goal: keep the remaining stream lifecycle widening honest so transfer-oriented work has a truthful contract.
-   - Focus: the already landed supported `Abort(Both, ...)` composition stays in the supported slice, while the remaining work is narrower stream-data-loss suppression on the supported reset/stop-sending paths and any later close-driven capacity-release evolution beyond the supported callback subset.
+   - Focus: the already landed supported `Abort(Both, ...)` composition stays in the supported slice, while the remaining work is any later close-driven capacity-release evolution beyond the supported callback subset.
    - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
 7. `Interop runner dispatch`

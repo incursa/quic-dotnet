@@ -205,6 +205,65 @@ public sealed class REQ_QUIC_API_0008
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task OpenOutboundStreamAsync_UnblocksWithObjectDisposedException_WhenConnectionIsDisposedWhilePending()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+        };
+
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        Task<QuicConnection> acceptConnectionTask = listener.AcceptConnectionAsync().AsTask();
+        Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port))).AsTask();
+
+        await Task.WhenAll(acceptConnectionTask, connectTask);
+
+        QuicConnection serverConnection = await acceptConnectionTask;
+        QuicConnection clientConnection = await connectTask;
+
+        try
+        {
+            QuicConnectionRuntime runtime = GetRuntime(clientConnection);
+            Func<QuicConnectionEvent, bool> originalDispatcher = GetLocalApiEventDispatcher(runtime);
+            TaskCompletionSource<bool> dispatcherEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<bool> dispatcherRelease = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            runtime.SetLocalApiEventDispatcher(connectionEvent =>
+            {
+                dispatcherEntered.TrySetResult(true);
+                dispatcherRelease.Task.GetAwaiter().GetResult();
+                return originalDispatcher(connectionEvent);
+            });
+
+            Task<QuicStream> openStreamTask = Task.Run(
+                async () => await clientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional));
+
+            await dispatcherEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            Task disposeTask = clientConnection.DisposeAsync().AsTask();
+            dispatcherRelease.TrySetResult(true);
+
+            await disposeTask.WaitAsync(TimeSpan.FromSeconds(5));
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () => await openStreamTask.WaitAsync(TimeSpan.FromSeconds(5)));
+        }
+        finally
+        {
+            await serverConnection.DisposeAsync();
+            await clientConnection.DisposeAsync();
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ReadAsync_HonorsCancellationWhilePendingOnASupportedLoopbackStream()

@@ -124,6 +124,7 @@ public sealed class QuicConnection : IAsyncDisposable
 
         if (lifetimeOwner is not null)
         {
+            await runtime.DisposeAsync().ConfigureAwait(false);
             await lifetimeOwner.DisposeAsync().ConfigureAwait(false);
             return;
         }
