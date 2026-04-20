@@ -845,6 +845,8 @@ Trace:
 - Source Refs:
   - RFC 9001 §10 RFC9001-S10-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-10
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S10-0002.cs::QuicTransportParametersCodec_MarksTheRegistryRecommendedColumnYes
 
 ## REQ-QUIC-RFC9001-S10-0003 Include CH and EE in TLS 1.3 column
 The TLS 1.3 column for the quic_transport_parameters extension MUST include CH (ClientHello) and EE (EncryptedExtensions).
@@ -859,6 +861,8 @@ Trace:
 - Source Refs:
   - RFC 9001 §10 RFC9001-S10-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-10
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S10-0003.cs::QuicTransportParametersCodec_ListsClientHelloAndEncryptedExtensionsInTheTls13Column
 
 ## REQ-QUIC-RFC9001-SB-0001 Restrict larger packet-size-derived limits
 Only endpoints that strictly limit packet size MAY use the larger confidentiality and integrity limits derived using the smaller packet size.

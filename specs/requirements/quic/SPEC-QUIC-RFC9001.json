@@ -1499,6 +1499,9 @@
         "upstream_refs": [
           "RFC 9001 §10 RFC9001-S10-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S10-0002.cs::QuicTransportParametersCodec_MarksTheRegistryRecommendedColumnYes"
         ]
       }
     },
@@ -1525,6 +1528,9 @@
         "upstream_refs": [
           "RFC 9001 §10 RFC9001-S10-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S10-0003.cs::QuicTransportParametersCodec_ListsClientHelloAndEncryptedExtensionsInTheTls13Column"
         ]
       }
     },
