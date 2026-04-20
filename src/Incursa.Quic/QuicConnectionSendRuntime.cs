@@ -41,7 +41,7 @@ internal sealed class QuicConnectionSendRuntime
     private readonly Queue<QuicConnectionRetransmissionPlan> pendingRetransmissions = [];
     private readonly QuicSenderFlowController flowController;
     private readonly QuicRttEstimator rttEstimator;
-    private readonly QuicEcnValidationState ecnValidationState;
+    private QuicEcnValidationState ecnValidationState;
 
     public QuicConnectionSendRuntime(QuicSenderFlowController? flowController = null)
     {
@@ -77,7 +77,7 @@ internal sealed class QuicConnectionSendRuntime
     internal void ResetPathRecoveryState()
     {
         rttEstimator.Reset();
-        ecnValidationState.ReenableEcn();
+        ecnValidationState = new QuicEcnValidationState();
         flowController.CongestionControlState.Reset();
     }
 
