@@ -148,7 +148,7 @@ Why this stays separate:
 1. Freeze the public promise and stabilize the current handshake/runtime proof floor.
 2. Clean up transport/runtime bootstrap, especially the runner-facing Initial/DCID path and the endpoint-host seams.
 3. Tighten TLS / policy / trust / validation on top of the stable handshake floor.
-4. Finish broader stream-management parity, including any later abort or close/release behavior beyond the supported subset.
+4. Finish broader stream-management parity, centered on any later close/release behavior beyond the supported subset.
 5. Enable interop-runner testcase dispatch only after the runtime, TLS, and stream buckets above are stable enough to support it honestly.
 
 Notes on dependency:
