@@ -21,7 +21,7 @@ The current narrow supported slice is real. The remaining work is about keeping 
 Supported today:
 
 - The approved public facade described in `SPEC-QUIC-API` and `docs/design/quic-public-api.md`.
-- Listener/client connect, positive loopback establishment, stream open/accept, narrow write/completion, narrow `RESET_STREAM` / `STOP_SENDING` abort, the `IsSupported` marker, and the narrow stream-capacity callback subset.
+- Listener/client connect, positive loopback establishment, stream open/accept, narrow write/completion, narrow `RESET_STREAM` / `STOP_SENDING` abort, supported `Abort(QuicAbortDirection.Both, ...)` composition on the bidirectional loopback path, the `IsSupported` marker, and the narrow stream-capacity callback subset.
 
 Partially implemented but not yet promised:
 
@@ -44,6 +44,7 @@ Supported today:
 - Narrow stream-entry support on the active loopback path.
 - Supported write/completion on send-capable streams.
 - Narrow `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` support.
+- Supported `Abort(QuicAbortDirection.Both, ...)` composition on the bidirectional loopback path.
 - Initial peer stream-capacity reporting, later real peer `MAX_STREAMS` growth, and the narrow close-driven capacity-release subset already proven by the requirement-home tests.
 
 Partially implemented but not yet promised:
@@ -53,9 +54,8 @@ Partially implemented but not yet promised:
 
 Still missing:
 
-- `Abort(Both, ...)`.
-- Broader abort-heavy behavior.
-- Broader close-driven capacity release and fuller stream lifecycle parity.
+- Broader abort-heavy behavior beyond the supported `Abort(Both, ...)` composition.
+- Broader close-driven capacity release and fuller stream lifecycle parity beyond the supported callback subset.
 
 Why this stays separate:
 
@@ -149,7 +149,7 @@ Why this stays separate:
 1. Freeze the public promise and stabilize the current handshake/runtime proof floor.
 2. Clean up transport/runtime bootstrap, especially the runner-facing Initial/DCID path and the endpoint-host seams.
 3. Tighten TLS / policy / trust / validation on top of the stable handshake floor.
-4. Finish broader stream-management parity, including the remaining abort and close/release behavior.
+4. Finish broader stream-management parity, including any later abort or close/release behavior beyond the supported subset.
 5. Enable interop-runner testcase dispatch only after the runtime, TLS, and stream buckets above are stable enough to support it honestly.
 
 Notes on dependency:
@@ -190,8 +190,8 @@ Notes on dependency:
    - Depends on: the current handshake/runtime proof floor and the client-role 1-RTT readiness seam.
 
 6. `Broader stream-management parity`
-   - Goal: close the remaining stream lifecycle gap so transfer-oriented work has a truthful contract.
-   - Focus: `Abort(Both, ...)`, broader abort-heavy behavior, and remaining close-driven capacity-release parity.
+   - Goal: keep the remaining stream lifecycle widening honest so transfer-oriented work has a truthful contract.
+   - Focus: broader abort-heavy behavior beyond the supported `Abort(Both, ...)` composition, and any later close-driven capacity-release evolution beyond the supported callback subset.
    - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
 7. `Interop runner dispatch`
@@ -275,7 +275,7 @@ Notes on dependency:
 
 - Keep `QuicConnection` and `QuicListener` on the current narrow supported promise until the runtime and TLS buckets are stable.
 - Keep `IsSupported` as a narrow managed capability marker. It must not become a feature-completeness claim.
-- Keep `Abort(Both, ...)` unsupported.
+- Keep `Abort(Both, ...)` support narrow and confined to the supported bidirectional loopback slice.
 - Keep `0-RTT` and key update out of the public promise.
 - Keep early-data admission explicitly closed until the actual 0-RTT family exists.
 - Keep broader stream-management parity out of the public promise until the stream bucket is actually closed.
