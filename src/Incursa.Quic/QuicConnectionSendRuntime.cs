@@ -21,7 +21,8 @@ internal readonly record struct QuicConnectionSentPacket(
     bool Retransmittable = true,
     QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
     ReadOnlyMemory<byte> PacketBytes = default,
-    QuicTlsEncryptionLevel? PacketProtectionLevel = null);
+    QuicTlsEncryptionLevel? PacketProtectionLevel = null,
+    ulong[]? StreamIds = null);
 
 internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicPacketNumberSpace PacketNumberSpace,
@@ -30,7 +31,8 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
     ulong SentAtMicros,
     QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
     ReadOnlyMemory<byte> PacketBytes = default,
-    QuicTlsEncryptionLevel? PacketProtectionLevel = null);
+    QuicTlsEncryptionLevel? PacketProtectionLevel = null,
+    ulong[]? StreamIds = null);
 
 /// <summary>
 /// Owns connection-scoped send state, PTO bookkeeping, and retransmission planning.
@@ -366,7 +368,8 @@ internal sealed class QuicConnectionSendRuntime
                 packet.SentAtMicros,
                 packet.CryptoMetadata,
                 packet.PacketBytes,
-                packet.PacketProtectionLevel));
+                packet.PacketProtectionLevel,
+                packet.StreamIds));
         }
 
         ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
@@ -380,6 +383,64 @@ internal sealed class QuicConnectionSendRuntime
         }
 
         return true;
+    }
+
+    public bool TrySuppressRetransmissionForStream(ulong streamId)
+    {
+        bool updated = false;
+        List<QuicConnectionSentPacketKey>? updatedPacketKeys = null;
+
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
+        {
+            if (entry.Value.StreamIds is null
+                || entry.Value.StreamIds.Length != 1
+                || entry.Value.StreamIds[0] != streamId
+                || !entry.Value.Retransmittable)
+            {
+                continue;
+            }
+
+            (updatedPacketKeys ??= []).Add(entry.Key);
+        }
+
+        if (updatedPacketKeys is not null)
+        {
+            foreach (QuicConnectionSentPacketKey key in updatedPacketKeys)
+            {
+                sentPackets[key] = sentPackets[key] with { Retransmittable = false };
+                updated = true;
+            }
+        }
+
+        if (pendingRetransmissions.Count > 0)
+        {
+            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
+            while (pendingRetransmissions.Count > 0)
+            {
+                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
+                if (retransmission.StreamIds is null
+                    || retransmission.StreamIds.Length != 1
+                    || retransmission.StreamIds[0] != streamId)
+                {
+                    retainedRetransmissions.Enqueue(retransmission);
+                    continue;
+                }
+
+                updated = true;
+            }
+
+            while (retainedRetransmissions.Count > 0)
+            {
+                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+            }
+        }
+
+        if (updated && sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        {
+            LossDetectionDeadlineMicros = null;
+        }
+
+        return updated;
     }
 
     public bool TryArmProbeTimeout(

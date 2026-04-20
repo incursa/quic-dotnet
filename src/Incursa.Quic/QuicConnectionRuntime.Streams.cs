@@ -283,6 +283,7 @@ internal sealed partial class QuicConnectionRuntime
             streamPayload,
             "The connection runtime could not protect the stream write packet.",
             "The connection cannot send the stream write packet.",
+            new[] { streamId },
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -371,11 +372,14 @@ internal sealed partial class QuicConnectionRuntime
             copyOffset += queuedWrite.StreamPayload.Length;
         }
 
+        ulong[] streamIds = BuildDistinctStreamIds(queuedWrites);
+
         if (!TryProtectAndAccountApplicationPayload(
             combinedPayload,
             "The connection runtime could not protect the queued stream write packet.",
             "The connection cannot send the queued stream write packet.",
             probePacket,
+            streamIds,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -420,6 +424,42 @@ internal sealed partial class QuicConnectionRuntime
             pendingApplicationSendDelayDueTicks = null;
             AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         }
+    }
+
+    private static ulong[] BuildDistinctStreamIds(ReadOnlySpan<PendingApplicationSendRequest> queuedWrites)
+    {
+        if (queuedWrites.IsEmpty)
+        {
+            return [];
+        }
+
+        ulong[] streamIds = new ulong[queuedWrites.Length];
+        int uniqueCount = 0;
+
+        foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
+        {
+            bool alreadyPresent = false;
+            for (int index = 0; index < uniqueCount; index++)
+            {
+                if (streamIds[index] == queuedWrite.StreamId)
+                {
+                    alreadyPresent = true;
+                    break;
+                }
+            }
+
+            if (!alreadyPresent)
+            {
+                streamIds[uniqueCount++] = queuedWrite.StreamId;
+            }
+        }
+
+        if (uniqueCount != streamIds.Length)
+        {
+            Array.Resize(ref streamIds, uniqueCount);
+        }
+
+        return streamIds;
     }
 
     private bool TryEmitFlowControlBlockedSignal(
@@ -686,6 +726,7 @@ internal sealed partial class QuicConnectionRuntime
             protectedPacket));
 
         TryReleasePeerStreamCapacity(streamId, ref effects);
+        _ = sendRuntime.TrySuppressRetransmissionForStream(streamId);
         NotifyStreamObservers(
             streamId,
             new QuicStreamNotification(
@@ -742,6 +783,7 @@ internal sealed partial class QuicConnectionRuntime
             protectedPacket));
 
         TryReleasePeerStreamCapacity(streamId, ref effects);
+        _ = sendRuntime.TrySuppressRetransmissionForStream(streamId);
         NotifyStreamObservers(
             streamId,
             new QuicStreamNotification(
@@ -906,6 +948,29 @@ internal sealed partial class QuicConnectionRuntime
             protectFailureMessage,
             amplificationFailureMessage,
             probePacket: false,
+            streamIds: null,
+            out currentPath,
+            out updatedAmplificationState,
+            out protectedPacket,
+            out exception);
+    }
+
+    private bool TryProtectAndAccountApplicationPayload(
+        ReadOnlySpan<byte> payload,
+        string protectFailureMessage,
+        string amplificationFailureMessage,
+        ulong[]? streamIds,
+        out QuicConnectionActivePathRecord currentPath,
+        out QuicConnectionPathAmplificationState updatedAmplificationState,
+        out byte[] protectedPacket,
+        out Exception? exception)
+    {
+        return TryProtectAndAccountApplicationPayload(
+            payload,
+            protectFailureMessage,
+            amplificationFailureMessage,
+            probePacket: false,
+            streamIds,
             out currentPath,
             out updatedAmplificationState,
             out protectedPacket,
@@ -917,6 +982,7 @@ internal sealed partial class QuicConnectionRuntime
         string protectFailureMessage,
         string amplificationFailureMessage,
         bool probePacket,
+        ulong[]? streamIds,
         out QuicConnectionActivePathRecord currentPath,
         out QuicConnectionPathAmplificationState updatedAmplificationState,
         out byte[] protectedPacket,
@@ -967,7 +1033,11 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        TrackApplicationPacket(packetNumber, protectedPacket, probePacket: probePacket);
+        TrackApplicationPacket(
+            packetNumber,
+            protectedPacket,
+            probePacket: probePacket,
+            streamIds: streamIds);
         exception = null;
         return true;
     }
@@ -1104,7 +1174,8 @@ internal sealed partial class QuicConnectionRuntime
         byte[] protectedPacket,
         bool retransmittable = true,
         bool probePacket = false,
-        QuicTlsEncryptionLevel packetProtectionLevel = QuicTlsEncryptionLevel.OneRtt)
+        QuicTlsEncryptionLevel packetProtectionLevel = QuicTlsEncryptionLevel.OneRtt,
+        ulong[]? streamIds = null)
     {
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.ApplicationData,
@@ -1114,7 +1185,8 @@ internal sealed partial class QuicConnectionRuntime
             ProbePacket: probePacket,
             Retransmittable: retransmittable,
             PacketBytes: protectedPacket,
-            PacketProtectionLevel: packetProtectionLevel));
+            PacketProtectionLevel: packetProtectionLevel,
+            StreamIds: streamIds));
         recoveryController.RecordPacketSent(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber,
