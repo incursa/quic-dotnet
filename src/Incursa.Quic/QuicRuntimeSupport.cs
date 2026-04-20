@@ -3,12 +3,22 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic;
 
+/// <summary>
+/// Probes the current process for the runtime capabilities required by Incursa QUIC support.
+/// </summary>
 internal static class QuicRuntimeSupport
 {
+    // Probe once and cache the result because the capability checks touch platform-specific primitives.
     private static readonly Lazy<bool> supported = new(EvaluateIsSupported);
 
+    /// <summary>
+    /// Gets a value that indicates whether the current runtime environment can support QUIC operations.
+    /// </summary>
     internal static bool IsSupported => supported.Value;
 
+    /// <summary>
+    /// Performs the runtime capability probe used by <see cref="IsSupported"/>.
+    /// </summary>
     private static bool EvaluateIsSupported()
     {
         try
