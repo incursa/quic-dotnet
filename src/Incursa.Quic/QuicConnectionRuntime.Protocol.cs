@@ -116,6 +116,7 @@ internal sealed partial class QuicConnectionRuntime
         stateChanged |= TrySetHandshakeDestinationConnectionId(retryReceivedEvent.RetrySourceConnectionId.Span);
         EmitDiagnostic(ref effects, QuicDiagnostics.RetryReceived(retryReceivedEvent.Datagram.Span));
         stateChanged |= TryFlushInitialPackets(ref effects);
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return stateChanged;
     }
 
