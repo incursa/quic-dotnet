@@ -77,3 +77,44 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0020
         Assert.False(state.TryPeekPeerStreamCapacityRelease(1, out _));
     }
 }
+
+[Requirement("REQ-QUIC-RFC9000-S13P3-0020")]
+public sealed class QuicConnectionStreamStateAbortBothCapacityRelease
+{
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0020")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryPeekPeerStreamCapacityRelease_OffersTheCurrentBidirectionalStreamLimitAfterResetStreamIsAcknowledged()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            incomingBidirectionalStreamLimit: 1);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0B, streamId: 1, streamData: []),
+            out QuicStreamFrame frame));
+
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryAbortLocalStreamWrites(1, out ulong finalSize, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(0UL, finalSize);
+
+        Assert.True(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(1, 0x44, finalSize),
+            out QuicMaxDataFrame maxDataFrame,
+            out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(default, maxDataFrame);
+
+        Assert.True(state.TryAcknowledgeReset(1));
+
+        Assert.True(state.TryPeekPeerStreamCapacityRelease(1, out QuicMaxStreamsFrame releaseFrame));
+        Assert.True(releaseFrame.IsBidirectional);
+        Assert.Equal(2UL, releaseFrame.MaximumStreams);
+
+        Assert.True(state.TryCommitPeerStreamCapacityRelease(1, releaseFrame));
+        Assert.Equal(2UL, state.IncomingBidirectionalStreamLimit);
+    }
+}

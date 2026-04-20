@@ -1471,6 +1471,7 @@ internal sealed partial class QuicConnectionRuntime
                     QuicStreamNotificationKind.ReadAborted,
                     CreateStreamReadAbortedException(resetStreamFrame.ApplicationProtocolErrorCode)));
 
+            _ = streamRegistry.Bookkeeping.TryAcknowledgeReset(resetStreamFrame.StreamId);
             TryReleasePeerStreamCapacity(resetStreamFrame.StreamId, ref effects);
         }
 
