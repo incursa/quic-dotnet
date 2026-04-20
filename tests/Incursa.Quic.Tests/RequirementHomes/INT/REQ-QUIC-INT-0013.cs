@@ -101,6 +101,39 @@ public sealed class REQ_QUIC_INT_0013
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task LocalHelperCapturesExpectedArtifactsForPostHandshakeStreamRuns()
+    {
+        using InteropRunnerScriptFixture fixture = new(quicGoRole: "both");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "both",
+            "-ImplementationSlot",
+            "quic-go",
+            "-TestCases",
+            "post-handshake-stream");
+
+        await AssertSuccessfulHelperRunAsync(
+            fixture.ArtifactsRoot,
+            result,
+            expectedLocalRole: "both",
+            expectedLocalImplementationSlot: "quic-go",
+            expectedPeerImplementationSlots: "quic-go,msquic",
+            expectedRunnerServerImplementations: "quic-go",
+            expectedRunnerClientImplementations: "quic-go",
+            expectedReplacement: "quic-go=incursa-quic-interop-harness:local",
+            expectedTestCases: "post-handshake-stream");
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task HelperRejectsUnsupportedTestcasesBeforeBuildWorkBegins()
@@ -304,6 +337,19 @@ public sealed class REQ_QUIC_INT_0013
             "quic-go",
             "quic-go",
             "handshake,retry,transfer"
+        ];
+
+        yield return
+        [
+            "both",
+            null!,
+            null!,
+            "post-handshake-stream",
+            "quic-go",
+            "quic-go,msquic",
+            "quic-go",
+            "quic-go",
+            "post-handshake-stream"
         ];
 
         yield return

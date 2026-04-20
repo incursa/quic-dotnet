@@ -437,6 +437,7 @@ function Write-InteropRunnerFailureSummary {
 
 $runnerSupportedTestCases = @(
     'handshake',
+    'post-handshake-stream',
     'retry',
     'transfer'
 )
