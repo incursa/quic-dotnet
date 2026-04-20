@@ -608,6 +608,88 @@ public sealed class REQ_QUIC_API_0009
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    public async Task SupportedLoopbackCloseDrivenRelease_DoesNotFireForLocalWriteAbortAlone()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicServerConnectionOptions expectedServerOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+        expectedServerOptions.MaxInboundBidirectionalStreams = 1;
+        expectedServerOptions.MaxInboundUnidirectionalStreams = 0;
+
+        int callbackCount = 0;
+        TaskCompletionSource<bool> initialObserved = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(expectedServerOptions),
+        };
+
+        QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port));
+        clientOptions.StreamCapacityCallback = (_, _) =>
+        {
+            if (Interlocked.Increment(ref callbackCount) == 1)
+            {
+                initialObserved.TrySetResult(true);
+            }
+        };
+
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
+        Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(clientOptions).AsTask();
+
+        await Task.WhenAll(acceptTask, connectTask);
+
+        QuicConnection serverConnection = await acceptTask;
+        QuicConnection clientConnection = await connectTask;
+        QuicStream? serverStream = null;
+        QuicStream? clientStream = null;
+
+        try
+        {
+            await initialObserved.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.Equal(1, callbackCount);
+
+            clientStream = await clientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+            serverStream = await serverConnection.AcceptInboundStreamAsync();
+
+            byte[] payload = new byte[256];
+            payload.AsSpan().Fill(0x64);
+            await clientStream.WriteAsync(payload, 0, payload.Length);
+
+            byte[] receiveBuffer = new byte[payload.Length];
+            int bytesRead = await serverStream.ReadAsync(receiveBuffer, 0, receiveBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.Equal(payload.Length, bytesRead);
+            Assert.True(payload.AsSpan().SequenceEqual(receiveBuffer));
+
+            serverStream.Abort(QuicAbortDirection.Write, 17);
+            await Task.Delay(200);
+
+            Assert.Equal(1, callbackCount);
+        }
+        finally
+        {
+            if (serverStream is not null)
+            {
+                await serverStream.DisposeAsync();
+            }
+
+            if (clientStream is not null)
+            {
+                await clientStream.DisposeAsync();
+            }
+
+            await serverConnection.DisposeAsync();
+            await clientConnection.DisposeAsync();
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public async Task SupportedLoopbackLaterCapacityGrowth_IsSilentAfterClientDisposal()
     {
         using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
