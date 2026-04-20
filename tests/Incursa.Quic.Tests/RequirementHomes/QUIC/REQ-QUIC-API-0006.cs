@@ -5,7 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0006">The library MUST classify terminal and shutdown outcomes through QuicError and QuicException, surface application and transport error codes on the exception where the peer actually provided them, and support per-stream abort direction through QuicAbortDirection, including the combined Both case on the supported bidirectional loopback path, without fabricating broader stream-management parity.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0006">The library MUST classify terminal and shutdown outcomes through QuicError and QuicException, including handshake-timeout expiry on the still-pending client-connect path as QuicError.ConnectionTimeout, surface application and transport error codes on the exception where the peer actually provided them, and support per-stream abort direction through QuicAbortDirection, including the combined Both case on the supported bidirectional loopback path, without fabricating broader stream-management parity.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0006")]
 public sealed class REQ_QUIC_API_0006

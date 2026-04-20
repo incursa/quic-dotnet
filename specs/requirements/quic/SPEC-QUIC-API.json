@@ -116,7 +116,7 @@
     {
       "id": "REQ-QUIC-API-0006",
       "title": "Keep the close and error surface explicit",
-      "statement": "The library MUST classify terminal and shutdown outcomes through QuicError and QuicException, surface application and transport error codes on the exception, and support per-stream abort direction through QuicAbortDirection, including the combined Both case on the supported bidirectional loopback path, so consumers can distinguish read, write, and combined termination without referencing internal protocol state.",
+      "statement": "The library MUST classify terminal and shutdown outcomes through QuicError and QuicException, including handshake-timeout expiry on the still-pending client-connect path as QuicError.ConnectionTimeout, surface application and transport error codes on the exception, and support per-stream abort direction through QuicAbortDirection, including the combined Both case on the supported bidirectional loopback path, so consumers can distinguish read, write, and combined termination without referencing internal protocol state.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\ref\\System.Net.Quic.cs"
@@ -125,6 +125,7 @@
       "notes": [
         "Connection shutdown remains available through QuicConnection.CloseAsync(long errorCode, CancellationToken) and DisposeAsync.",
         "The exception surface is the consumer-facing representation of terminal outcomes, not a protocol debug channel.",
+        "If a still-pending client connect exhausts QuicConnectionOptions.HandshakeTimeout before establishment completes, the public API must surface QuicException carrying QuicError.ConnectionTimeout instead of hanging or converting the timeout into caller cancellation.",
         "CloseAsync validates the application error code and throws ArgumentOutOfRangeException for invalid values.",
         "CloseAsync is terminal and repeated close calls are ignored once the connection is already closed.",
         "DisposeAsync is the consumer-facing cleanup path when no explicit close is issued; it uses the configured default close error code.",
@@ -163,7 +164,7 @@
     {
       "id": "REQ-QUIC-API-0008",
       "title": "Honor async lifecycle cancellation and terminal-state transitions",
-      "statement": "The library MUST honor cancellation tokens on pending listen, accept, connect, open-stream, supported write, and close operations, and the server connection-options callback must observe the cancellation token supplied by the listener accept flow. A pre-canceled or later-canceled token must complete the still-pending operation with OperationCanceledException, but once a listener accept, connection, or stream has committed or reached a terminal state the public API must complete with the documented QuicError or ObjectDisposedException outcome instead of silently reviving or hiding the operation.",
+      "statement": "The library MUST honor cancellation tokens on pending listen, accept, connect, open-stream, supported write, and close operations, the server connection-options callback must observe the cancellation token supplied by the listener accept flow, and a still-pending client connect must also honor QuicConnectionOptions.HandshakeTimeout. A pre-canceled or later-canceled token must complete the still-pending operation with OperationCanceledException, a still-pending client connect whose configured HandshakeTimeout elapses must complete with QuicException carrying QuicError.ConnectionTimeout, but once a listener accept, connection, or stream has committed or reached a terminal state the public API must complete with the documented QuicError or ObjectDisposedException outcome instead of silently reviving or hiding the operation.",
       "trace": {
         "upstream_refs": [
           "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicListenerTests.cs",
@@ -175,7 +176,7 @@
       "notes": [
         "The Microsoft tests directly prove cancellation for listener accept, connect, the listener callback, blocked outbound stream opens, and the stream-capacity callback shape; this slice applies that evidence to the listener path, the still-pending client connect path, the stream-entry open/accept path on active loopback connections, the supported write cancellation path, and the supported stream-capacity callback subset.",
         "Cancellation does not retroactively undo a committed connection, accepted stream, or completed close.",
-        "Pending connect cancellation and disposal must not fabricate handshake completion.",
+        "Pending connect cancellation, timeout, and disposal must not fabricate handshake completion.",
         "Stream-capacity callback dispatch must not revive a disposed public connection facade.",
         "Idempotent close and dispose semantics are consumer-facing terminal behavior, not a hidden runtime optimization."
       ]

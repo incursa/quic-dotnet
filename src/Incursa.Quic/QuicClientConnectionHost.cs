@@ -146,14 +146,39 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
     private async ValueTask<QuicConnection> AwaitConnectionAsync(CancellationToken cancellationToken)
     {
+        TimeSpan handshakeTimeout = settings.Options.HandshakeTimeout;
+        CancellationTokenSource? handshakeTimeoutCancellation = null;
+        CancellationTokenSource? linkedCancellation = null;
+
         try
         {
+            handshakeTimeoutCancellation = CreateHandshakeTimeoutCancellation(handshakeTimeout);
+
+            if (handshakeTimeoutCancellation is not null)
+            {
+                linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+                    cancellationToken,
+                    handshakeTimeoutCancellation.Token);
+                return await establishedConnection.Task.WaitAsync(linkedCancellation.Token).ConfigureAwait(false);
+            }
+
             return await establishedConnection.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException exception)
+            when (!cancellationToken.IsCancellationRequested && handshakeTimeoutCancellation?.IsCancellationRequested == true)
+        {
+            await DisposeAsync().ConfigureAwait(false);
+            throw CreateHandshakeTimeoutException(handshakeTimeout, exception);
         }
         catch
         {
             await DisposeAsync().ConfigureAwait(false);
             throw;
+        }
+        finally
+        {
+            linkedCancellation?.Dispose();
+            handshakeTimeoutCancellation?.Dispose();
         }
     }
 
@@ -354,6 +379,34 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             ActiveConnectionIdLimit = MinimumActiveConnectionIdLimit,
             InitialSourceConnectionId = routeConnectionId.ToArray(),
         };
+    }
+
+    private static CancellationTokenSource? CreateHandshakeTimeoutCancellation(TimeSpan handshakeTimeout)
+    {
+        if (handshakeTimeout == Timeout.InfiniteTimeSpan || handshakeTimeout == TimeSpan.Zero)
+        {
+            return null;
+        }
+
+        if (handshakeTimeout < TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(handshakeTimeout),
+                "HandshakeTimeout must be non-negative, zero, or Timeout.InfiniteTimeSpan.");
+        }
+
+        CancellationTokenSource cancellation = new();
+        cancellation.CancelAfter(handshakeTimeout);
+        return cancellation;
+    }
+
+    private static QuicException CreateHandshakeTimeoutException(TimeSpan handshakeTimeout, Exception innerException)
+    {
+        return new QuicException(
+            QuicError.ConnectionTimeout,
+            null,
+            $"The client connection handshake timed out after {handshakeTimeout}.",
+            innerException);
     }
 
     private static Exception MapTerminalState(QuicConnectionTerminalState terminalState)

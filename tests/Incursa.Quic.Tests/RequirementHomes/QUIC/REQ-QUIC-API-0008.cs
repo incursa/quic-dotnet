@@ -8,7 +8,7 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0008">Pending accept, connect, and open-stream operations honor cancellation, listener or client-host disposal unblocks pending work with terminal outcomes instead of pretending handshake completion, and stream-capacity callbacks do not revive a disposed connection facade.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0008">Pending accept, connect, and open-stream operations honor cancellation, still-pending client connect operations also honor HandshakeTimeout, listener or client-host disposal unblocks pending work with terminal outcomes instead of pretending handshake completion, and stream-capacity callbacks do not revive a disposed connection facade.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0008")]
 public sealed class REQ_QUIC_API_0008
@@ -81,6 +81,25 @@ public sealed class REQ_QUIC_API_0008
         cancellationSource.Cancel();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => connectTask);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ConnectAsync_HonorsHandshakeTimeoutWhilePending()
+    {
+        using Socket silentPeer = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        silentPeer.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+
+        QuicClientConnectionOptions options = CreateClientOptions((IPEndPoint)silentPeer.LocalEndPoint!);
+        options.HandshakeTimeout = TimeSpan.FromMilliseconds(250);
+
+        QuicException exception = await Assert.ThrowsAsync<QuicException>(async () =>
+            await QuicConnection.ConnectAsync(options).AsTask().WaitAsync(TimeSpan.FromSeconds(5)));
+
+        Assert.Equal(QuicError.ConnectionTimeout, exception.QuicError);
+        Assert.Null(exception.ApplicationErrorCode);
+        Assert.Null(exception.TransportErrorCode);
     }
 
     [Fact]
