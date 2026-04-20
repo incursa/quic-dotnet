@@ -1277,7 +1277,7 @@ function Get-AutopilotReconciliationAction {
         [bool]$WorktreeClean = $false
     )
 
-    if ($State -ne "pause_manual") {
+    if ($State -notin @("pause_manual", "complete")) {
         return ""
     }
 

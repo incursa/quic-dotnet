@@ -703,6 +703,7 @@ function New-SmokeActiveLaneFixture {
         [string]$ManualReason = "",
         [string]$Summary = "",
         [string]$Tests = "",
+        [string]$ReconcileAction = "",
         [bool]$CreateCommit = $false,
         [bool]$MarkMerged = $false
     )
@@ -728,6 +729,7 @@ function New-SmokeActiveLaneFixture {
             NextStep = ""
             CommitSha = $commitSha
             Tests = $Tests
+            ReconcileAction = $ReconcileAction
         }) | Export-Csv -LiteralPath (Join-Path $outputDirectory "autopilot-summary.csv") -NoTypeInformation
     }
 
@@ -918,13 +920,21 @@ function Invoke-SupervisorSmokeValidation {
         $pauseDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $pauseStatePath) -GitExecutable $GitExecutable -RepoRoot $pauseRepo
         Assert-SupervisorCondition -Condition ($pauseDisposition.Action -eq "merge" -and $pauseDisposition.ManualClassification -eq "mergeable_manual_pause") -Message "Expected pause_manual with semantic commits, passed tests, and a clean worktree to reconcile automatically."
 
+        $hintRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
+        [void]$smokeRoots.Add($hintRepo)
+        $hintStatePath = Join-Path $hintRepo ".state\orchestration-state.json"
+        Ensure-Directory -Path (Split-Path -Path $hintStatePath -Parent) | Out-Null
+        New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $hintRepo -StatePath $hintStatePath -LaneId "hint-merge-lane" -DecisionState "pause_manual" -ManualReason "Need a quick human review of the wording." -Summary "Manual review requested." -Tests "" -ReconcileAction "merge" -CreateCommit:$true | Out-Null
+        $hintDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $hintStatePath) -GitExecutable $GitExecutable -RepoRoot $hintRepo
+        Assert-SupervisorCondition -Condition ($hintDisposition.Action -eq "merge" -and $hintDisposition.ManualClassification -eq "mergeable_manual_pause") -Message "Expected a worker reconciliation hint to merge a clean pause_manual with commits."
+
         $policyPauseRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
         [void]$smokeRoots.Add($policyPauseRepo)
         $policyPauseStatePath = Join-Path $policyPauseRepo ".state\orchestration-state.json"
         Ensure-Directory -Path (Split-Path -Path $policyPauseStatePath -Parent) | Out-Null
         New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $policyPauseRepo -StatePath $policyPauseStatePath -LaneId "policy-pause-lane" -DecisionState "pause_manual" -ManualReason "Path policy violation for lane 'policy-pause-lane': outside allowed paths: src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs" -Summary "Committed mergeable packet work and passed focused tests." -Tests "dotnet test lane filter passed (20/20 requirement-home tests)." -CreateCommit:$true | Out-Null
         $policyPauseDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $policyPauseStatePath) -GitExecutable $GitExecutable -RepoRoot $policyPauseRepo
-        Assert-SupervisorCondition -Condition ($policyPauseDisposition.Action -eq "merge" -and $policyPauseDisposition.ManualClassification -eq "mergeable_manual_pause") -Message "Expected policy-only pause_manual outcomes with passed tests and a clean worktree to reconcile automatically."
+        Assert-SupervisorCondition -Condition ($policyPauseDisposition.Action -eq "merge" -and $policyPauseDisposition.ManualClassification -eq "mergeable_rule_only_pause") -Message "Expected rule-only pause_manual outcomes with passed tests and a clean worktree to reconcile automatically."
 
         $verifyRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
         [void]$smokeRoots.Add($verifyRepo)
@@ -932,7 +942,15 @@ function Invoke-SupervisorSmokeValidation {
         Ensure-Directory -Path (Split-Path -Path $verifyStatePath -Parent) | Out-Null
         New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $verifyRepo -StatePath $verifyStatePath -LaneId "verify-lane" -DecisionState "pause_manual" -ManualReason "Verification command failed for lane 'verify-lane'." -Summary "Targeted verification failed." -Tests "dotnet test lane filter failed (0/20 requirement-home tests)." -CreateCommit:$true | Out-Null
         $verifyDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $verifyStatePath) -GitExecutable $GitExecutable -RepoRoot $verifyRepo
-        Assert-SupervisorCondition -Condition ($verifyDisposition.Action -eq "block") -Message "Expected verification failure after semantic commits to block the lane instead of stopping the supervisor."
+        Assert-SupervisorCondition -Condition ($verifyDisposition.Action -eq "block" -and $verifyDisposition.ManualClassification -eq "blocked_rule_only_pause") -Message "Expected verification failure after semantic commits to block the lane instead of stopping the supervisor."
+
+        $exhaustedRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
+        [void]$smokeRoots.Add($exhaustedRepo)
+        $exhaustedStatePath = Join-Path $exhaustedRepo ".state\orchestration-state.json"
+        Ensure-Directory -Path (Split-Path -Path $exhaustedStatePath -Parent) | Out-Null
+        New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $exhaustedRepo -StatePath $exhaustedStatePath -LaneId "exhausted-lane" -DecisionState "pause_manual" -ManualReason "No bounded slice remains for this lane." -Summary "Lane exhausted its only eligible scope." -Tests "" | Out-Null
+        $exhaustedDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $exhaustedStatePath) -GitExecutable $GitExecutable -RepoRoot $exhaustedRepo
+        Assert-SupervisorCondition -Condition ($exhaustedDisposition.Action -eq "block" -and $exhaustedDisposition.ManualClassification -eq "blocked_rule_only_pause") -Message "Expected a rule-only pause without commits to block rather than disappear as cleanup."
 
         $branchRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
         [void]$smokeRoots.Add($branchRepo)
@@ -3640,6 +3658,47 @@ function Test-WorkerDecisionTestsPassed {
     return ($Tests -match '(?i)\bpassed\b')
 }
 
+function Test-ManualPauseRuleOnlyReason {
+    param(
+        [string]$ManualReason = "",
+        [string]$Summary = ""
+    )
+
+    $reasonText = (($ManualReason.Trim() + " " + $Summary.Trim()).Trim())
+    if ([string]::IsNullOrWhiteSpace($reasonText)) {
+        return $false
+    }
+
+    $ruleOnlyPhrases = @(
+        "blocked gap",
+        "blocking gap",
+        "path scope",
+        "path policy",
+        "path violation",
+        "outside the assigned",
+        "outside the lane",
+        "requirement family",
+        "verification command failed",
+        "failing verification command",
+        "progress guardrail",
+        "lane contract",
+        "open gaps",
+        "no bounded slice",
+        "no eligible lane",
+        "exhausted",
+        "rule-only",
+        "policy-only"
+    )
+
+    foreach ($phrase in $ruleOnlyPhrases) {
+        if ($reasonText.IndexOf($phrase, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
 function Get-ManualLaneOutcomeClassification {
     param(
         [string]$DecisionState = "",
@@ -3655,19 +3714,32 @@ function Get-ManualLaneOutcomeClassification {
         return ""
     }
 
+    $isRuleOnlyPause = Test-ManualPauseRuleOnlyReason -ManualReason $ManualReason -Summary $Summary
+    $reasonText = (($ManualReason.Trim() + " " + $Summary.Trim()).Trim())
+
     if ($DecisionState -eq "pause_manual") {
         if ($ReconcileAction -eq "merge" -and $CommitCount -gt 0 -and $WorktreeClean) {
-            return "mergeable_manual_pause"
+            $classification = if ($isRuleOnlyPause) { "mergeable_rule_only_pause" } else { "mergeable_manual_pause" }
+            return $classification
         }
 
         if ($CommitCount -gt 0 -and $WorktreeClean -and (Test-WorkerDecisionTestsPassed -Tests $Tests)) {
-            return "mergeable_manual_pause"
+            $classification = if ($isRuleOnlyPause) { "mergeable_rule_only_pause" } else { "mergeable_manual_pause" }
+            return $classification
+        }
+
+        if ($isRuleOnlyPause) {
+            return "blocked_rule_only_pause"
+        }
+
+        if ([string]::IsNullOrWhiteSpace($reasonText)) {
+            $classification = if ($CommitCount -gt 0) { "blocked" } else { "manual_review" }
+            return $classification
         }
     }
 
-    $reasonText = (($ManualReason.Trim() + " " + $Summary.Trim()).Trim())
     if ([string]::IsNullOrWhiteSpace($reasonText)) {
-        return if ($DecisionState -eq "stuck" -or $CommitCount -gt 0) { "blocked" } else { "manual_review" }
+        return "blocked"
     }
 
     if ($reasonText -match '(?i)blocked gap|blocking gap|path scope|path violation|outside the assigned|outside the lane|requirement family|verification command failed|failing verification command|progress guardrail|lane contract|open gaps') {
@@ -3679,7 +3751,8 @@ function Get-ManualLaneOutcomeClassification {
     }
 
     if ($DecisionState -eq "stuck") {
-        return "blocked"
+        $classification = if ($isRuleOnlyPause) { "blocked_rule_only_pause" } else { "blocked" }
+        return $classification
     }
 
     return "manual_review"
@@ -3790,9 +3863,17 @@ function Get-ActiveLaneDisposition {
                 }
             }
             "pause_manual" {
-                if ($manualClassification -eq "mergeable_manual_pause") {
+                if ($manualClassification -eq "mergeable_rule_only_pause") {
                     $action = "merge"
-                    $reason = "The active lane paused for policy-only/manual review, but it produced mergeable commits and passed checks."
+                    $reason = "The active lane paused for a rule-only/manual reason, but it produced mergeable commits and passed checks."
+                }
+                elseif ($manualClassification -eq "mergeable_manual_pause") {
+                    $action = "merge"
+                    $reason = "The active lane paused for manual review, but it produced mergeable commits and passed checks."
+                }
+                elseif ($manualClassification -eq "blocked_rule_only_pause") {
+                    $action = "block"
+                    $reason = "The active lane paused for a rule-only issue and still needs follow-up before it can be reconciled deterministically."
                 }
                 elseif ($commitSnapshot.CommitCount -gt 0) {
                     $action = "block"
