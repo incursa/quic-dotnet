@@ -33,12 +33,12 @@ public sealed class REQ_QUIC_RFC9002_S6P3_0002
             AckEliciting: true,
             CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Initial)));
 
-        Assert.True(congestionControlState.TryRegisterLoss(
-            sentBytes: 1_200,
-            sentAtMicros: 100,
-            packetInFlight: true));
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 99));
         Assert.True(congestionControlState.CongestionWindowBytes < initialCongestionWindowBytes);
         Assert.True(congestionControlState.RecoveryStartTimeMicros.HasValue);
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
 
         Assert.True(runtime.SendRuntime.TryArmProbeTimeout(
             QuicPacketNumberSpace.Initial,
@@ -62,6 +62,7 @@ public sealed class REQ_QUIC_RFC9002_S6P3_0002
         // Retry immediately replays the bootstrap Initial packets, so the post-reset
         // bytes-in-flight count can reflect the fresh ClientHello rather than the discarded packet.
         Assert.False(congestionControlState.RecoveryStartTimeMicros.HasValue);
+        Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
         Assert.Equal(0, runtime.SendRuntime.ProbeTimeoutCount);
         Assert.Null(runtime.SendRuntime.LossDetectionDeadlineMicros);
         Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery));
