@@ -3,13 +3,26 @@ using System.Threading.Channels;
 
 namespace Incursa.Quic;
 
+/// <summary>
+/// Tracks timer registrations for a single runtime shard and exposes due work back to that shard's inbox.
+/// </summary>
+/// <remarks>
+/// The shard owns this scheduler and drives it from a single consumer loop, so the scheduler itself does not
+/// take locks.
+/// </remarks>
 internal sealed class QuicConnectionRuntimeDeadlineScheduler
 {
     private readonly PriorityQueue<QuicConnectionRuntimeScheduledTimerEntry, QuicConnectionTimerPriority> timerHeap = new();
     private readonly Dictionary<QuicConnectionRuntimeScheduledTimerKey, QuicConnectionRuntimeScheduledTimerRegistration> registrations = [];
 
+    /// <summary>
+    /// Gets the number of currently active timer registrations.
+    /// </summary>
     public int RegistrationCount => registrations.Count;
 
+    /// <summary>
+    /// Applies a runtime-emitted timer effect to the scheduler.
+    /// </summary>
     public void Apply(QuicConnectionHandle handle, QuicConnectionRuntime runtime, QuicConnectionEffect effect)
     {
         ArgumentNullException.ThrowIfNull(runtime);
@@ -26,6 +39,12 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
         }
     }
 
+    /// <summary>
+    /// Arms or replaces a timer registration for the supplied connection handle.
+    /// </summary>
+    /// <remarks>
+    /// Newer generations win; stale generations are ignored so previously enqueued heap entries can be skipped later.
+    /// </remarks>
     public void Arm(
         QuicConnectionHandle handle,
         QuicConnectionRuntime runtime,
@@ -58,6 +77,9 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
         timerHeap.Enqueue(entry, effect.Priority);
     }
 
+    /// <summary>
+    /// Cancels a timer registration when the cancellation generation is current.
+    /// </summary>
     public void Cancel(QuicConnectionHandle handle, QuicConnectionCancelTimerEffect effect)
     {
         QuicConnectionRuntimeScheduledTimerKey key = new(handle, effect.TimerKind);
@@ -74,6 +96,9 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
         registrations.Remove(key);
     }
 
+    /// <summary>
+    /// Computes the wait time until the next valid scheduled timer.
+    /// </summary>
     public bool TryGetNextWait(long nowTicks, out TimeSpan wait)
     {
         if (!TryPeekNextValidEntry(out QuicConnectionRuntimeScheduledTimerEntry entry))
@@ -89,6 +114,9 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
         return true;
     }
 
+    /// <summary>
+    /// Removes and returns the next due timer entry if its registration is still current.
+    /// </summary>
     public bool TryDequeueDueEntry(long nowTicks, out QuicConnectionRuntimeScheduledTimerEntry entry)
     {
         while (TryPeekNextValidEntry(out entry))
@@ -115,6 +143,9 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
         return false;
     }
 
+    /// <summary>
+    /// Enqueues due timer expirations into the shard inbox until the inbox applies backpressure.
+    /// </summary>
     public int EnqueueDueEntries(long nowTicks, ChannelWriter<QuicConnectionRuntimeShardWorkItem> inbox)
     {
         ArgumentNullException.ThrowIfNull(inbox);
@@ -138,6 +169,8 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
 
     private bool TryPeekNextValidEntry(out QuicConnectionRuntimeScheduledTimerEntry entry)
     {
+        // The heap can contain stale entries after a re-arm or cancellation, so each candidate must be validated
+        // against the active registration table before it is treated as live work.
         while (timerHeap.TryPeek(out QuicConnectionRuntimeScheduledTimerEntry candidate, out _))
         {
             QuicConnectionRuntimeScheduledTimerKey key = new(candidate.Handle, candidate.TimerKind);

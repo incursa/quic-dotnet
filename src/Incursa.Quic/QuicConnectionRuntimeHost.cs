@@ -2,6 +2,13 @@ using System.Collections.Concurrent;
 
 namespace Incursa.Quic;
 
+/// <summary>
+/// Owns the shard set for runtime-driven QUIC connection processing and routes handles to the correct shard.
+/// </summary>
+/// <remarks>
+/// The host starts at most one consumer fan-out, tracks handle ownership, and coordinates orderly shutdown of
+/// all shard inboxes before waiting for the processing task to finish.
+/// </remarks>
 internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
 {
     private const int HashShift = 33;
@@ -18,6 +25,9 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
     private int disposed;
     private Task? processingTask;
 
+    /// <summary>
+    /// Creates a runtime host with the requested number of shards.
+    /// </summary>
     public QuicConnectionRuntimeHost(int shardCount, IMonotonicClock? clock = null)
     {
         if (shardCount <= 0)
@@ -33,8 +43,14 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the number of shards owned by this host.
+    /// </summary>
     public int ShardCount => shards.Length;
 
+    /// <summary>
+    /// Allocates a new connection handle owned by this host.
+    /// </summary>
     public QuicConnectionHandle AllocateConnectionHandle()
     {
         ThrowIfDisposed();
@@ -43,11 +59,17 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         return new QuicConnectionHandle(unchecked((ulong)nextValue));
     }
 
+    /// <summary>
+    /// Maps a handle to its owning shard index.
+    /// </summary>
     public int GetShardIndex(QuicConnectionHandle handle)
     {
         return SelectShardIndex(handle, ShardCount);
     }
 
+    /// <summary>
+    /// Registers a runtime handle pair so later events can be routed back to the same shard.
+    /// </summary>
     public bool TryRegisterConnection(QuicConnectionHandle handle, QuicConnectionRuntime runtime)
     {
         ArgumentNullException.ThrowIfNull(runtime);
@@ -77,6 +99,9 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         return true;
     }
 
+    /// <summary>
+    /// Removes the handle-to-runtime routing owned by this host.
+    /// </summary>
     public bool TryUnregisterConnection(QuicConnectionHandle handle)
     {
         if (Volatile.Read(ref disposed) != 0)
@@ -93,6 +118,9 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         return true;
     }
 
+    /// <summary>
+    /// Posts a connection event to the shard that owns the registered runtime.
+    /// </summary>
     public bool TryPostEvent(QuicConnectionHandle handle, QuicConnectionEvent connectionEvent)
     {
         ArgumentNullException.ThrowIfNull(connectionEvent);
@@ -115,6 +143,9 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         return shards[route.ShardIndex].TryPost(handle, route.Runtime, connectionEvent);
     }
 
+    /// <summary>
+    /// Starts the shard consumers and returns a task that completes when all shards stop.
+    /// </summary>
     public Task RunAsync(
         Action<QuicConnectionHandle, int, QuicConnectionTransitionResult>? transitionObserver = null,
         Action<QuicConnectionHandle, int, QuicConnectionEffect>? effectObserver = null,
@@ -138,10 +169,14 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         }
 
         Task processing = Task.WhenAll(processingTasks);
+        // Cache the fan-out task so disposal can await the same completion path even if the caller discards it.
         processingTask = processing;
         return processing;
     }
 
+    /// <summary>
+    /// Stops all shards, clears routing state, and waits for the consumer fan-out to complete.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         if (Interlocked.Exchange(ref disposed, 1) != 0)
@@ -149,6 +184,7 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
             return;
         }
 
+        // Close the shard inboxes first so the single-reader loops observe shutdown and exit cleanly.
         foreach (QuicConnectionRuntimeShard shard in shards)
         {
             await shard.DisposeAsync().ConfigureAwait(false);
@@ -164,6 +200,9 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Synchronously disposes the host by waiting for the asynchronous shutdown path.
+    /// </summary>
     public void Dispose()
     {
         DisposeAsync().GetAwaiter().GetResult();

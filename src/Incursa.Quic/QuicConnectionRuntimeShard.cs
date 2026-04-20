@@ -2,6 +2,13 @@ using System.Threading.Channels;
 
 namespace Incursa.Quic;
 
+/// <summary>
+/// Owns a single runtime inbox and deadline scheduler for one shard of connection processing.
+/// </summary>
+/// <remarks>
+/// The host is responsible for starting and stopping the shard consumer; this type only processes work routed to
+/// its inbox and keeps the timer scheduler in sync with the connection runtime.
+/// </remarks>
 internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 {
     private readonly IMonotonicClock clock;
@@ -13,6 +20,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     private int disposed;
     private Task? processingTask;
 
+    /// <summary>
+    /// Creates a shard with the supplied shard index and optional shared clock.
+    /// </summary>
     public QuicConnectionRuntimeShard(int shardIndex, IMonotonicClock? clock = null)
     {
         if (shardIndex < 0)
@@ -30,10 +40,19 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         });
     }
 
+    /// <summary>
+    /// Gets the shard index assigned by the host.
+    /// </summary>
     public int ShardIndex => shardIndex;
 
+    /// <summary>
+    /// Exposes the shard-local timer scheduler so the runtime can arm and cancel deadlines through this shard.
+    /// </summary>
     internal QuicConnectionRuntimeDeadlineScheduler DeadlineScheduler => deadlineScheduler;
 
+    /// <summary>
+    /// Enqueues a connection event onto the shard inbox if the shard is still active.
+    /// </summary>
     public bool TryPost(QuicConnectionHandle handle, QuicConnectionRuntime runtime, QuicConnectionEvent connectionEvent)
     {
         ArgumentNullException.ThrowIfNull(runtime);
@@ -52,6 +71,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         return inbox.Writer.TryWrite(new QuicConnectionRuntimeShardWorkItem(handle, runtime, connectionEvent));
     }
 
+    /// <summary>
+    /// Starts the shard consumer loop and returns the task that represents its lifetime.
+    /// </summary>
     public Task RunAsync(
         Action<QuicConnectionHandle, QuicConnectionTransitionResult>? transitionObserver = null,
         Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver = null,
@@ -69,6 +91,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         return processing;
     }
 
+    /// <summary>
+    /// Completes the shard inbox and waits for the consumer loop to exit.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         if (Interlocked.Exchange(ref disposed, 1) != 0)
@@ -76,6 +101,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             return;
         }
 
+        // Completing the inbox tells the single reader to finish after draining any already-posted work.
         inbox.Writer.TryComplete();
 
         Task? processing = processingTask;
@@ -85,6 +111,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Synchronously disposes the shard by waiting for the asynchronous shutdown path.
+    /// </summary>
     public void Dispose()
     {
         DisposeAsync().GetAwaiter().GetResult();
@@ -101,6 +130,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         {
             while (true)
             {
+                // Drain any timer expirations into the inbox before and after reading so deadlines do not wait for
+                // a separate wake-up when the shard is already active.
                 deadlineScheduler.EnqueueDueEntries(clock.Ticks, inbox.Writer);
 
                 while (reader.TryRead(out QuicConnectionRuntimeShardWorkItem workItem))
@@ -150,6 +181,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Applies a runtime-emitted effect to the shard-local deadline scheduler.
+    /// </summary>
     internal void ApplyEffect(QuicConnectionHandle handle, QuicConnectionRuntime runtime, QuicConnectionEffect effect)
     {
         deadlineScheduler.Apply(handle, runtime, effect);
