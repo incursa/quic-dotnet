@@ -190,7 +190,7 @@ Notes on dependency:
 
 6. `Broader stream-management parity`
    - Goal: keep the remaining stream lifecycle widening honest so transfer-oriented work has a truthful contract.
-   - Focus: the already landed supported `Abort(Both, ...)` composition stays in the supported slice, while the remaining work is any later close-driven capacity-release evolution beyond the supported callback subset.
+   - Focus: the already landed supported `Abort(Both, ...)` composition stays in the supported slice, while the remaining work is the last close-driven capacity-release proof variant beyond the supported callback subset.
    - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
 7. `Interop runner dispatch`
