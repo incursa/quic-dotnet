@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0008",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC Interop Runner Multiconnect Sequential Dispatch Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the interop harness routes the child-process-only `multiconnect` testcase through the real endpoint-host transfer path one URL at a time without widening the supported protocol surface.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "WI-QUIC-INT-0008",
+    "VER-QUIC-INT-0008"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0015"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+    "src/Incursa.Quic.InteropHarness/InteropHarnessPreflightPlanner.cs",
+    "src/Incursa.Quic.InteropHarness/README.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0015.cs"
+  ],
+  "design_summary": "The harness adds a small sequential transfer-plan builder for the `multiconnect` testcase. It parses every space-separated `REQUESTS` URL, requires `https` and a shared host/port, resolves the same managed endpoint-host path used by transfer, and then opens one managed connection per URL in order. The server side listens once and accepts one connection per request, while the client side connects once per request and transfers exactly one file per connection. Requirement-home tests prove the sequential happy path and malformed URL rejection without claiming parallel connection handling, migration, retry enablement, `0-RTT`, key update, or public API widening.",
+  "alternatives_considered": [
+    "Keep returning `127` for `multiconnect` and wait for a broader endpoint-host redesign. Rejected because the testcase can be routed honestly today using the existing active-phase transfer path.",
+    "Build a generalized multipath or parallel-connection dispatcher. Rejected because that would widen the supported surface beyond the single bounded testcase slice requested here."
+  ],
+  "edge_cases_and_constraints": [
+    "All `REQUESTS` entries must share the same host and port so the sequential plan stays on the same endpoint-host path.",
+    "Malformed or empty `REQUESTS` input must fail before any transport success is claimed.",
+    "The implementation must not claim migration, parallel connection handling, or any public API widening."
+  ],
+  "data_and_state_considerations": "Sequential plans are derived from the immutable runner request list. qlog capture remains a per-run disposable scope, and the sequential testcase uses the same mounted `/www` and `/downloads` paths as the existing transfer slice without introducing new durable state.",
+  "risks": [
+    "A reused connection-options object could hide a host/port mismatch if the plan builder does not enforce consistency.",
+    "The sequential server loop must remain bounded to one accepted connection per request or the testcase could accidentally drift into a parallel-connection claim.",
+    "Malformed input should fail before listener startup so the negative path stays honest."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers only the sequential `multiconnect` dispatch slice. The broader runner dispatch plan and remaining unsupported testcase behavior stay under `REQ-QUIC-INT-0012`, `REQ-QUIC-INT-0013`, and `REQ-QUIC-INT-0014`."
+    }
+  ]
+}

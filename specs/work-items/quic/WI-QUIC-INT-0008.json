@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0008",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC Interop Runner Multiconnect Sequential Dispatch Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Route the `multiconnect` testcase through the existing managed endpoint-host transfer path sequentially, add requirement-home coverage, and keep unsupported runner cases honest.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0008",
+    "VER-QUIC-INT-0008"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0008"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0008"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0015"
+  ],
+  "planned_changes": "- Add a sequential `multiconnect` plan builder to `InteropHarnessRunner` that validates each `REQUESTS` URL, requires a shared `https` host/port, and opens one managed connection per request.\n- Keep the client and server paths on the existing endpoint-host transfer path rather than introducing a generalized multipath dispatcher.\n- Add a new requirement-home test file that proves the sequential happy path, qlog capture, and malformed-URL rejection.\n- Update local interop helper docs and testcase whitelists so `multiconnect` is recognized honestly.",
+  "out_of_scope": [
+    "parallel connection handling",
+    "migration or rebinding support",
+    "retry enablement",
+    "`0-RTT`",
+    "key update",
+    "public API widening",
+    "external runner registry changes",
+    "benchmark work",
+    "fuzzing work"
+  ],
+  "verification_plan": "Run the new requirement-home test file with a narrow `REQ_QUIC_INT_0015` filter, confirm the sequential connection markers and qlog capture, and confirm malformed multiconnect input fails before transport success is claimed. Re-run once if the tree is temporarily mid-edit and a first pass fails for an unrelated build reason.",
+  "completion_notes": "Implemented and verified; the requirement-home `REQ-QUIC-INT-0015` lane passed locally on 2026-04-20."
+}

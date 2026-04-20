@@ -16,7 +16,7 @@ Default behavior:
 - Runner checkout: local `quic-interop-runner` clone configured in the script or passed with `-RunnerRoot`
 - Replacement slot: `quic-go`
 - Testcases: `handshake,retry,transfer`
-- The helper also accepts `post-handshake-stream` when you want the managed child-process open/accept path.
+- The helper also accepts `post-handshake-stream` when you want the managed child-process open/accept path, and `multiconnect` when you want the sequential managed transfer path.
 - Artifact root: `artifacts/interop-runner/<timestamp>-<slot>/`
 
 Example:

@@ -21,6 +21,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-INT-0005.json`](ARC-QUIC-INT-0005.json): canonical interop retry child-process contract design source
 - [`ARC-QUIC-INT-0006.json`](ARC-QUIC-INT-0006.json): canonical local interop-runner execution-report helper design source
 - [`ARC-QUIC-INT-0007.json`](ARC-QUIC-INT-0007.json): canonical local harness preflight planning and localhost smoke design source
+- [`ARC-QUIC-INT-0008.json`](ARC-QUIC-INT-0008.json): canonical interop runner multiconnect sequential dispatch design source
 - [`ARC-QUIC-RFC8999-0001.json`](ARC-QUIC-RFC8999-0001.json): canonical RFC 8999 design source
 - [`ARC-QUIC-RFC9000-0001.json`](ARC-QUIC-RFC9000-0001.json): canonical RFC 9000 design source
 - [`ARC-QUIC-RFC9000-0002.json`](ARC-QUIC-RFC9000-0002.json): canonical RFC 9000 migration address-validation token emission design source

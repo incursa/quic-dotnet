@@ -142,7 +142,7 @@ Still missing:
 
 Why this stays separate:
 
-- The harness should keep returning `127` for unsupported testcases other than the narrow supported `retry` contract until it can dispatch into the real endpoint-host path; the managed bootstrap path is already proven for handshake, post-handshake stream open/accept, the narrow transfer slice, and the child-process retry slice.
+- The harness should keep returning `127` for unsupported testcases other than the narrow supported `retry`, `post-handshake-stream`, and `multiconnect` contracts until it can dispatch into the real endpoint-host path; the managed bootstrap path is already proven for handshake, post-handshake stream open/accept, the narrow transfer slice, and the child-process retry slice.
 
 ## Recommended Execution Order
 
@@ -196,7 +196,7 @@ Notes on dependency:
 
 7. `Interop runner dispatch`
    - Goal: route the remaining unsupported interop testcases into the real endpoint-host path instead of returning `127`.
-   - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch after the current proof floor is fixed. `handshake` is already wired into the managed bootstrap path, the child-process `post-handshake-stream` testcase is now also routed through the managed open/accept path, and the narrow child-process `retry` path is handled separately.
+   - Focus: testcase enablement, runner-side bootstrap, and honest end-to-end dispatch after the current proof floor is fixed. `handshake` is already wired into the managed bootstrap path, the child-process `post-handshake-stream` testcase is now also routed through the managed open/accept path, the narrow child-process `retry` path is handled separately, and the sequential `multiconnect` testcase now routes through the real endpoint-host transfer path one URL at a time.
    - Depends on: the client-role 1-RTT readiness seam, the TLS trust/policy slice, the current narrow stream slice staying stable, and any stream follow-ons that prove inseparable from the remaining cases.
 
 8. `Post-handshake ticket-bearing TLS update seam`
@@ -280,7 +280,7 @@ Notes on dependency:
 - Keep early-data admission explicitly closed until the actual 0-RTT family exists.
 - Keep broader stream-management parity out of the public promise until the stream bucket is actually closed.
 - Keep hostname validation, trust-store validation, and certificate-path validation out of the public client promise until they are implemented and proven.
-- Keep interop runner testcase support at `127` for unsupported cases other than the narrow supported `retry` child-process contract and the already-routed `post-handshake-stream` child-process contract.
+- Keep interop runner testcase support at `127` for unsupported cases other than the narrow supported `retry`, `post-handshake-stream`, and `multiconnect` child-process contracts.
 
 ## Current Unstable Areas Before Interop Continues
 

@@ -10,6 +10,18 @@ internal static class InteropHarnessRunner
 {
     private const int UnsupportedExitCode = 127;
 
+    private sealed record SequentialTransferPlan(
+        Uri RequestUri,
+        IPEndPoint RemoteEndPoint,
+        string RelativePath,
+        string SourcePath,
+        string DestinationPath);
+
+    private sealed record SequentialTransferPlanBuildResult(
+        bool Success,
+        IReadOnlyList<SequentialTransferPlan>? TransferPlans,
+        string? ErrorMessage);
+
     private static InteropHarnessPreflightPlanner CreatePlanner(InteropHarnessEnvironment settings, TextWriter stdout)
     {
         return new InteropHarnessPreflightPlanner(settings, stdout);
@@ -56,6 +68,7 @@ internal static class InteropHarnessRunner
             "handshake" => RunHandshakeClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "post-handshake-stream" => RunPostHandshakeStreamClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "retry" => RunRetryClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "multiconnect" => RunMulticonnectClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "transfer" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             _ => ReturnUnsupported(settings, stdout, "client"),
         };
@@ -75,6 +88,7 @@ internal static class InteropHarnessRunner
             "handshake" => RunHandshakeServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "post-handshake-stream" => RunPostHandshakeStreamServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "retry" => RunRetryServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "multiconnect" => RunMulticonnectServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "transfer" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             _ => ReturnUnsupported(settings, stdout, "server"),
         };
@@ -200,17 +214,17 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out errorMessage) ||
+            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out string? tlsErrorMessage) ||
                 materials is null)
             {
-                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                WriteLineAndFlush(stderr, tlsErrorMessage ?? string.Empty);
                 return 1;
             }
 
-            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out errorMessage) ||
+            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out string? certificateErrorMessage) ||
                 serverCertificate is null)
             {
-                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                WriteLineAndFlush(stderr, certificateErrorMessage ?? string.Empty);
                 return 1;
             }
 
@@ -274,17 +288,17 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out errorMessage) ||
+            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out string? tlsErrorMessage) ||
                 materials is null)
             {
-                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                WriteLineAndFlush(stderr, tlsErrorMessage ?? string.Empty);
                 return 1;
             }
 
-            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out errorMessage) ||
+            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out string? certificateErrorMessage) ||
                 serverCertificate is null)
             {
-                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                WriteLineAndFlush(stderr, certificateErrorMessage ?? string.Empty);
                 return 1;
             }
 
@@ -565,6 +579,75 @@ internal static class InteropHarnessRunner
         }
     }
 
+    private static async Task<int> RunMulticonnectClientAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr)
+    {
+        try
+        {
+            InteropHarnessPreflightPlanner planner = CreatePlanner(settings, stdout);
+
+            if (!QuicConnection.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC client bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            SequentialTransferPlanBuildResult transferPlanResult = await TryCreateSequentialTransferPlans(settings).ConfigureAwait(false);
+            if (!transferPlanResult.Success)
+            {
+                WriteLineAndFlush(stderr, transferPlanResult.ErrorMessage ?? string.Empty);
+                return 1;
+            }
+
+            ArgumentNullException.ThrowIfNull(transferPlanResult.TransferPlans);
+            IReadOnlyList<SequentialTransferPlan> transferPlans = transferPlanResult.TransferPlans;
+            SequentialTransferPlan firstPlan = transferPlans[0];
+            QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(firstPlan.RemoteEndPoint, firstPlan.RequestUri.Host);
+
+            using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
+            if (qlogScope is not null)
+            {
+                WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+            }
+
+            for (int index = 0; index < transferPlans.Count; index++)
+            {
+                SequentialTransferPlan transferPlan = transferPlans[index];
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=client, testcase=multiconnect, requestCount={settings.Requests.Count} connecting to {transferPlan.RemoteEndPoint}, target={transferPlan.RelativePath}, connection {index + 1}/{transferPlans.Count}.");
+
+                QuicConnection connection = await ConnectWithQlogCaptureAsync(qlogScope, clientOptions).ConfigureAwait(false);
+                await using QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).ConfigureAwait(false);
+
+                await using FileStream sourceStream = new(
+                    transferPlan.SourcePath,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.Read,
+                    bufferSize: 4096,
+                    useAsync: true);
+
+                await sourceStream.CopyToAsync(stream).ConfigureAwait(false);
+                await stream.DisposeAsync().ConfigureAwait(false);
+                await connection.CloseAsync(0).ConfigureAwait(false);
+
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=client, testcase=multiconnect, requestCount={settings.Requests.Count} completed managed multiconnect transfer to {transferPlan.DestinationPath} from {transferPlan.SourcePath}, connection {index + 1}/{transferPlans.Count}.");
+            }
+
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            WriteLineAndFlush(stdout, $"interop harness: role=client, testcase=multiconnect failed: {ex.Message}");
+            return 1;
+        }
+    }
+
     private static async Task<int> RunTransferClientAsync(
         InteropHarnessEnvironment settings,
         TextWriter stdout,
@@ -630,6 +713,121 @@ internal static class InteropHarnessRunner
         catch (Exception ex)
         {
             WriteLineAndFlush(stderr, $"interop harness: role=client, testcase=transfer failed: {ex.Message}");
+            return 1;
+        }
+    }
+
+    private static async Task<int> RunMulticonnectServerAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr,
+        string certificatePath,
+        string privateKeyPath)
+    {
+        try
+        {
+            InteropHarnessPreflightPlanner planner = CreatePlanner(settings, stdout);
+
+            if (!QuicListener.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC listener bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            SequentialTransferPlanBuildResult transferPlanResult = await TryCreateSequentialTransferPlans(settings).ConfigureAwait(false);
+            if (!transferPlanResult.Success)
+            {
+                WriteLineAndFlush(stderr, transferPlanResult.ErrorMessage ?? string.Empty);
+                return 1;
+            }
+
+            ArgumentNullException.ThrowIfNull(transferPlanResult.TransferPlans);
+            IReadOnlyList<SequentialTransferPlan> transferPlans = transferPlanResult.TransferPlans;
+            SequentialTransferPlan firstPlan = transferPlans[0];
+
+            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out string? tlsErrorMessage) ||
+                materials is null)
+            {
+                WriteLineAndFlush(stderr, tlsErrorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out string? certificateErrorMessage) ||
+                serverCertificate is null)
+            {
+                WriteLineAndFlush(stderr, certificateErrorMessage ?? string.Empty);
+                return 1;
+            }
+
+            using (serverCertificate)
+            {
+                IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(firstPlan.RequestUri).ConfigureAwait(false);
+                QuicListenerOptions listenerOptions = new()
+                {
+                    ListenEndPoint = listenEndPoint,
+                    ApplicationProtocols = [SslApplicationProtocol.Http3],
+                    ListenBacklog = transferPlans.Count,
+                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(InteropHarnessPreflightPlanner.CreateSupportedServerOptions(serverCertificate)),
+                };
+
+                using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
+                if (qlogScope is not null)
+                {
+                    WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+                }
+
+                await using QuicListener listener = await ListenWithQlogCaptureAsync(qlogScope, listenerOptions).ConfigureAwait(false);
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase=multiconnect, requestCount={settings.Requests.Count} listening on {listenEndPoint}, connectionCount={transferPlans.Count}.");
+
+                List<Task<QuicConnection>> acceptTasks = [];
+                for (int index = 0; index < transferPlans.Count; index++)
+                {
+                    acceptTasks.Add(listener.AcceptConnectionAsync().AsTask());
+                }
+
+                for (int index = 0; index < transferPlans.Count; index++)
+                {
+                    SequentialTransferPlan transferPlan = transferPlans[index];
+                    QuicConnection connection = await acceptTasks[index].ConfigureAwait(false);
+                    await using QuicStream stream = await connection.AcceptInboundStreamAsync().ConfigureAwait(false);
+                    FileInfo sourceInfo = new(transferPlan.SourcePath);
+                    if (!sourceInfo.Exists)
+                    {
+                        WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=multiconnect missing source file '{transferPlan.SourcePath}'.");
+                        return 1;
+                    }
+
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=server, testcase=multiconnect, requestCount={settings.Requests.Count} transferring {sourceInfo.Length} bytes from {transferPlan.SourcePath} to {transferPlan.DestinationPath}, connection {index + 1}/{transferPlans.Count}.");
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(transferPlan.DestinationPath)!);
+                    await using FileStream destinationStream = new(
+                        transferPlan.DestinationPath,
+                        FileMode.Create,
+                        FileAccess.Write,
+                        FileShare.None,
+                        bufferSize: 4096,
+                        useAsync: true);
+
+                    await stream.CopyToAsync(destinationStream).ConfigureAwait(false);
+                    await destinationStream.FlushAsync().ConfigureAwait(false);
+                    await stream.DisposeAsync().ConfigureAwait(false);
+                    await connection.CloseAsync(0).ConfigureAwait(false);
+
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=server, testcase=multiconnect, requestCount={settings.Requests.Count} completed managed multiconnect transfer from {transferPlan.SourcePath} to {transferPlan.DestinationPath}, connection {index + 1}/{transferPlans.Count}.");
+                }
+
+                return 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=multiconnect failed: {ex.Message}");
             return 1;
         }
     }
@@ -740,6 +938,64 @@ internal static class InteropHarnessRunner
             WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=transfer failed: {ex.Message}");
             return 1;
         }
+    }
+
+    private static async Task<SequentialTransferPlanBuildResult> TryCreateSequentialTransferPlans(
+        InteropHarnessEnvironment settings)
+    {
+        if (settings.Requests.Count == 0)
+        {
+            return new SequentialTransferPlanBuildResult(false, null, "REQUESTS must contain at least one URL for testcase dispatch.");
+        }
+
+        List<SequentialTransferPlan> plans = [];
+        string? expectedHost = null;
+        int expectedPort = 0;
+
+        foreach (string request in settings.Requests)
+        {
+            if (!Uri.TryCreate(request, UriKind.Absolute, out Uri? requestUri) || requestUri is null)
+            {
+                return new SequentialTransferPlanBuildResult(false, null, $"REQUESTS entry '{request}' is not a valid absolute URL.");
+            }
+
+            if (!string.Equals(requestUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+            {
+                return new SequentialTransferPlanBuildResult(false, null, $"REQUESTS entry '{request}' must use https for testcase dispatch.");
+            }
+
+            if (!InteropHarnessPreflightPlanner.TryGetTransferPaths(
+                requestUri,
+                out string? relativePath,
+                out string? sourcePath,
+                out string? destinationPath,
+                out string? errorMessage) ||
+                relativePath is null ||
+                sourcePath is null ||
+                destinationPath is null)
+            {
+                return new SequentialTransferPlanBuildResult(false, null, errorMessage);
+            }
+
+            ArgumentNullException.ThrowIfNull(relativePath);
+            ArgumentNullException.ThrowIfNull(sourcePath);
+            ArgumentNullException.ThrowIfNull(destinationPath);
+
+            if (expectedHost is null)
+            {
+                expectedHost = requestUri.Host;
+                expectedPort = requestUri.Port;
+            }
+            else if (!string.Equals(expectedHost, requestUri.Host, StringComparison.OrdinalIgnoreCase) || requestUri.Port != expectedPort)
+            {
+                return new SequentialTransferPlanBuildResult(false, null, $"REQUESTS entry '{requestUri}' must target the same host and port as the first multiconnect URL.");
+            }
+
+            IPEndPoint remoteEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeRemoteEndPointAsync(requestUri).ConfigureAwait(false);
+            plans.Add(new SequentialTransferPlan(requestUri, remoteEndPoint, relativePath, sourcePath, destinationPath));
+        }
+
+        return new SequentialTransferPlanBuildResult(true, plans, null);
     }
 
     private static int ReturnUnsupported(InteropHarnessEnvironment settings, TextWriter stdout, string roleName)

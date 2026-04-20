@@ -11,6 +11,7 @@
 
 - `handshake`
 - `post-handshake-stream`
+- `multiconnect`
 - `retry`
 - `transfer`
 

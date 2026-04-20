@@ -12,6 +12,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-INT-0005.json`](WI-QUIC-INT-0005.json): canonical interop retry child-process work item
 - [`WI-QUIC-INT-0006.json`](WI-QUIC-INT-0006.json): canonical local interop-runner execution-report helper work item
 - [`WI-QUIC-INT-0007.json`](WI-QUIC-INT-0007.json): canonical local harness preflight planning and localhost smoke work item
+- [`WI-QUIC-INT-0008.json`](WI-QUIC-INT-0008.json): canonical interop runner multiconnect sequential dispatch work item
 - [`WI-QUIC-RFC8999-0001.json`](WI-QUIC-RFC8999-0001.json): canonical RFC 8999 work-item source
 - [`WI-QUIC-RFC9000-0001.json`](WI-QUIC-RFC9000-0001.json): canonical RFC 9000 work-item source
 - [`WI-QUIC-RFC9000-0002.json`](WI-QUIC-RFC9000-0002.json): canonical RFC 9000 migration address-validation token emission work-item source
