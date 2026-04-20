@@ -1,11 +1,26 @@
 namespace Incursa.Quic;
 
+/// <summary>
+/// Maintains a normalized, non-overlapping set of half-open byte ranges and tracks the total
+/// amount of unique coverage across all stored ranges.
+/// </summary>
 internal sealed class QuicByteRangeSet
 {
+    // Stored ranges are coalesced so each byte offset appears at most once.
     private readonly List<Range> ranges = [];
 
+    /// <summary>
+    /// Gets the total length of unique bytes represented by the stored ranges.
+    /// </summary>
     public ulong TotalLength { get; private set; }
 
+    /// <summary>
+    /// Measures how many additional unique bytes would be covered by adding <paramref name="start" />
+    /// through <paramref name="endExclusive" />.
+    /// </summary>
+    /// <param name="start">The inclusive starting offset.</param>
+    /// <param name="endExclusive">The exclusive ending offset.</param>
+    /// <returns>The number of bytes that are not already covered.</returns>
     public ulong MeasureAdditionalCoverage(ulong start, ulong endExclusive)
     {
         if (endExclusive <= start)
@@ -50,6 +65,12 @@ internal sealed class QuicByteRangeSet
         return additional;
     }
 
+    /// <summary>
+    /// Adds the specified half-open byte range, merging overlaps and touching ranges.
+    /// </summary>
+    /// <param name="start">The inclusive starting offset.</param>
+    /// <param name="endExclusive">The exclusive ending offset.</param>
+    /// <returns>The number of previously uncovered bytes that were added.</returns>
     public ulong Add(ulong start, ulong endExclusive)
     {
         ulong additional = MeasureAdditionalCoverage(start, endExclusive);
@@ -78,6 +99,11 @@ internal sealed class QuicByteRangeSet
         return additional;
     }
 
+    /// <summary>
+    /// Determines whether the set covers every byte from offset 0 through <paramref name="endExclusive" />.
+    /// </summary>
+    /// <param name="endExclusive">The exclusive end offset of the prefix to test.</param>
+    /// <returns><see langword="true" /> when the prefix is fully covered; otherwise, <see langword="false" />.</returns>
     public bool CoversPrefix(ulong endExclusive)
     {
         if (endExclusive == 0)
@@ -90,5 +116,10 @@ internal sealed class QuicByteRangeSet
             && ranges[0].End >= endExclusive;
     }
 
+    /// <summary>
+    /// Represents a stored half-open byte range.
+    /// </summary>
+    /// <param name="Start">The inclusive starting offset.</param>
+    /// <param name="End">The exclusive ending offset.</param>
     private readonly record struct Range(ulong Start, ulong End);
 }
