@@ -52,6 +52,8 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot "AutopilotOrchestration.Common.ps1")
+
 function Resolve-ExistingPath {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -927,6 +929,12 @@ function Invoke-SupervisorSmokeValidation {
         New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $hintRepo -StatePath $hintStatePath -LaneId "hint-merge-lane" -DecisionState "pause_manual" -ManualReason "Need a quick human review of the wording." -Summary "Manual review requested." -Tests "" -ReconcileAction "merge" -CreateCommit:$true | Out-Null
         $hintDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $hintStatePath) -GitExecutable $GitExecutable -RepoRoot $hintRepo
         Assert-SupervisorCondition -Condition ($hintDisposition.Action -eq "merge" -and $hintDisposition.ManualClassification -eq "mergeable_manual_pause") -Message "Expected a worker reconciliation hint to merge a clean pause_manual with commits."
+
+        $mergeReadyDisposition = Get-AutopilotReconciliationDisposition -State "pause_manual" -CommitSha "merge-ready-sha" -TestsSummary "dotnet test lane filter passed (20/20 requirement-home tests)." -WorktreeClean:$true
+        Assert-SupervisorCondition -Condition ($mergeReadyDisposition.TerminalState -eq "complete" -and $mergeReadyDisposition.ReconcileAction -eq "merge") -Message "Expected merge-ready pause_manual outcomes to normalize to complete for deterministic reconciliation."
+
+        $failedTestsDisposition = Get-AutopilotReconciliationDisposition -State "pause_manual" -CommitSha "merge-ready-sha" -TestsSummary "dotnet test lane filter failed (1/20 requirement-home tests)." -WorktreeClean:$true
+        Assert-SupervisorCondition -Condition ($failedTestsDisposition.TerminalState -eq "pause_manual" -and [string]::IsNullOrWhiteSpace($failedTestsDisposition.ReconcileAction)) -Message "Expected failed tests to keep a pause_manual outcome from normalizing."
 
         $policyPauseRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
         [void]$smokeRoots.Add($policyPauseRepo)

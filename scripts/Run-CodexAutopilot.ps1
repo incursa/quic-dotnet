@@ -79,6 +79,8 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot "AutopilotOrchestration.Common.ps1")
+
 try {
     $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
     [Console]::InputEncoding = $utf8NoBom
@@ -1277,27 +1279,7 @@ function Get-AutopilotReconciliationAction {
         [bool]$WorktreeClean = $false
     )
 
-    if ($State -notin @("pause_manual", "complete")) {
-        return ""
-    }
-
-    if ([string]::IsNullOrWhiteSpace($CommitSha) -or -not $WorktreeClean) {
-        return ""
-    }
-
-    if ([string]::IsNullOrWhiteSpace($TestsSummary)) {
-        return ""
-    }
-
-    if ($TestsSummary -match '(?i)\bfailed\b|\bexit=\s*[1-9]\d*\b') {
-        return ""
-    }
-
-    if ($TestsSummary -match '(?i)\bpassed\b') {
-        return "merge"
-    }
-
-    return ""
+    return (Get-AutopilotReconciliationDisposition @PSBoundParameters).ReconcileAction
 }
 
 function Convert-HistoryToText {
@@ -2157,7 +2139,24 @@ try {
                 }
             }
 
-            $reconcileAction = Get-AutopilotReconciliationAction -State $state -CommitSha $commitSha -TestsSummary $testsSummary -WorktreeClean $statusAfter.IsClean
+            $reconciliationDisposition = Get-AutopilotReconciliationDisposition -State $state -CommitSha $commitSha -TestsSummary $testsSummary -WorktreeClean $statusAfter.IsClean
+            $reconcileAction = [string]$reconciliationDisposition.ReconcileAction
+            if ($reconcileAction -eq "merge") {
+                if ([bool]$reconciliationDisposition.NormalizedFromPauseManual) {
+                    if (-not [string]::IsNullOrWhiteSpace($summaryText)) {
+                        $summaryText = ($summaryText.TrimEnd() + " Normalized to complete because commit(s) are present, tests passed, and the worktree is clean.").Trim()
+                    }
+                    else {
+                        $summaryText = "Normalized to complete because commit(s) are present, tests passed, and the worktree is clean."
+                    }
+
+                    $nextStep = "Merge the committed patch and continue the lane."
+                }
+
+                $manualReason = ""
+            }
+
+            $state = [string]$reconciliationDisposition.TerminalState
 
             $historyEntry = [pscustomobject]@{
                 Turn          = $iteration
