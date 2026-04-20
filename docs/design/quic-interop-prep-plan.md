@@ -45,7 +45,7 @@ Supported today:
 - Supported write/completion on send-capable streams.
 - Narrow `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` support.
 - Supported `Abort(QuicAbortDirection.Both, ...)` composition on the bidirectional loopback path.
-- Initial peer stream-capacity reporting, later real peer `MAX_STREAMS` growth, the narrow close-driven capacity-release subset already proven by the requirement-home tests, and the pending outbound-open disposal terminalization follow-on on the supported active-loopback path.
+- Initial peer stream-capacity reporting, later real peer `MAX_STREAMS` growth, the narrow close-driven capacity-release subset already proven by the requirement-home tests, and the outbound-open disposal terminalization behavior on the supported active-loopback path, now also covered by requirement-home proof.
 
 Partially implemented but not yet promised:
 
@@ -148,7 +148,7 @@ Why this stays separate:
 1. Freeze the public promise and stabilize the current handshake/runtime proof floor.
 2. Clean up transport/runtime bootstrap, especially the runner-facing Initial/DCID path and the endpoint-host seams.
 3. Tighten TLS / policy / trust / validation on top of the stable handshake floor.
-4. Finish broader stream-management parity, centered on any later close/release behavior beyond the supported subset.
+4. Finish broader stream-management parity, centered on any later stream-management widening beyond the supported subset.
 5. Enable interop-runner testcase dispatch only after the runtime, TLS, and stream buckets above are stable enough to support it honestly.
 
 Notes on dependency:
@@ -190,7 +190,7 @@ Notes on dependency:
 
 6. `Broader stream-management parity`
    - Goal: keep the remaining stream lifecycle widening honest so transfer-oriented work has a truthful contract.
-   - Focus: the already landed supported `Abort(Both, ...)` composition stays in the supported slice, while the remaining work is the last close-driven capacity-release proof variant beyond the supported callback subset.
+   - Focus: the already landed supported `Abort(Both, ...)` composition stays in the supported slice, and any remaining work is later stream-management widening beyond the supported callback subset.
    - Depends on: the client-role 1-RTT readiness seam and the current narrow stream slice staying stable.
 
 7. `Interop runner dispatch`

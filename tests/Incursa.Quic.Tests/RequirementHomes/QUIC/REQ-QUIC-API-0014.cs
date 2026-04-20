@@ -148,6 +148,57 @@ public sealed class REQ_QUIC_API_0014
         }
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task OpenOutboundStreamAsync_UnblocksWithObjectDisposedException_WhenConnectionIsDisposedWhileBlockedByPeerLimit()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+
+        QuicServerConnectionOptions expectedServerOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+        expectedServerOptions.MaxInboundBidirectionalStreams = 0;
+        expectedServerOptions.MaxInboundUnidirectionalStreams = 0;
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(expectedServerOptions),
+        };
+
+        QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port));
+
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
+        Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(clientOptions).AsTask();
+
+        await Task.WhenAll(acceptTask, connectTask);
+
+        QuicConnection serverConnection = await acceptTask;
+        QuicConnection clientConnection = await connectTask;
+
+        try
+        {
+            Task<QuicStream> openTask = clientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask();
+
+            await Task.Delay(200);
+            Assert.False(openTask.IsCompleted);
+
+            await clientConnection.DisposeAsync();
+
+            await Assert.ThrowsAsync<ObjectDisposedException>(
+                async () => await openTask.WaitAsync(TimeSpan.FromSeconds(5)));
+        }
+        finally
+        {
+            await serverConnection.DisposeAsync();
+            await clientConnection.DisposeAsync();
+        }
+    }
+
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
     {
         FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
