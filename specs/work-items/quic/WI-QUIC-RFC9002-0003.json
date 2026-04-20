@@ -10,13 +10,13 @@
     "SPEC-QUIC-RFC9002"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "This landed Retry slice classifies Retry separately from ACK, resets client recovery and congestion state on receipt, and preserves the bootstrap ClientHello transcript for replay. The targeted requirement-home tests and Retry integrity unit tests passed.",
   "out_of_scope": [
     "RFC 9002 Retry RTT-estimation follow-ons.",
     "Broader Retry policy, multi-Retry handling, or public API widening.",
     "RFC 9000 transport framing and RFC 9001 packet-protection behavior that already belong to their own slices."
   ],
-  "status": "planned",
+  "status": "complete",
   "domain": "quic",
   "summary": "Close the RFC 9002 Section 6.3 Retry slice by resetting recovery and congestion state while preserving the handshake transcript that feeds the client bootstrap replay.",
   "verification_plan": "Run the Retry-focused requirement-home tests that cover rejection as ACK, recovery reset, and handshake transcript retention.\nRun the targeted dotnet test slice for the RFC 9002 Retry family and the Retry integrity unit tests.\nRender the trace markdown siblings from the canonical JSON artifacts so the downstream reports stay in sync.",
@@ -26,7 +26,7 @@
       "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionSendRuntime.cs\n- src/Incursa.Quic/QuicCongestionControlState.cs\n- src/Incursa.Quic/QuicRecoveryTiming.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs\n- tests/Incursa.Quic.Tests/QuicRetryIntegrityUnitTests.cs"
     }
   ],
-  "planned_changes": "- Reset the client sender and recovery runtime when Retry is processed.\n- Keep the TLS handshake transcript in place so the replay bootstrap can resend the original ClientHello.\n- Tighten the requirement-home tests so they assert concrete runtime state before and after Retry.",
+  "planned_changes": "- The client sender and recovery runtime reset when Retry is processed.\n- The TLS handshake transcript remains available so the replay bootstrap can resend the original ClientHello.\n- The requirement-home tests assert concrete runtime state before and after Retry.",
   "design_links": [
     "ARC-QUIC-RFC9002-0003"
   ],

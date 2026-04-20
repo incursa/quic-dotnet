@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-RFC9002-0003"
 artifact_type: "work_item"
 title: "QUIC RFC 9002 Retry Recovery Reset Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-RFC9002-S6P3-0001"
@@ -37,9 +37,9 @@ Close the RFC 9002 Section 6.3 Retry slice by resetting recovery and congestion 
 
 ## Planned Changes
 
-- Reset the client sender and recovery runtime when Retry is processed.
-- Keep the TLS handshake transcript in place so the replay bootstrap can resend the original ClientHello.
-- Tighten the requirement-home tests so they assert concrete runtime state before and after Retry.
+- The client sender and recovery runtime reset when Retry is processed.
+- The TLS handshake transcript remains available so the replay bootstrap can resend the original ClientHello.
+- The requirement-home tests assert concrete runtime state before and after Retry.
 
 ## Out of Scope
 
@@ -55,7 +55,7 @@ Render the trace markdown siblings from the canonical JSON artifacts so the down
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+This landed Retry slice classifies Retry separately from ACK, resets client recovery and congestion state on receipt, and preserves the bootstrap ClientHello transcript for replay. The targeted requirement-home tests and Retry integrity unit tests passed.
 
 ## Trace Links
 

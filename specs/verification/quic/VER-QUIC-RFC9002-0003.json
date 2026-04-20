@@ -4,8 +4,9 @@
   "artifact_type": "verification",
   "title": "QUIC RFC 9002 Retry Recovery Reset Verification",
   "domain": "quic",
-  "status": "planned",
+  "status": "passed",
   "owner": "quic-maintainers",
+  "status_summary": "This verification artifact records the landed Retry recovery reset slice and points at the requirement-home and runtime evidence in the working tree. The targeted Retry requirement-home tests and Retry integrity unit tests passed; RTT-estimation follow-ons remain out of scope.",
   "scope": "This verification covers the RFC 9002 Section 6.3 Retry slice: the client treats Retry as a connection-establishment reroute, resets congestion and loss-recovery state, and preserves the TLS handshake transcript needed to replay the bootstrap ClientHello.\nIt does not claim RTT-estimation policy beyond Retry receipt or broader Retry handling outside the three Section 6.3 requirements.",
   "verification_method": "Execution and inspection evidence.",
   "related_artifacts": [

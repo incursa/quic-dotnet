@@ -48,7 +48,7 @@ Execution and inspection evidence.
 
 ## Status
 
-planned
+This verification artifact records the landed Retry recovery reset slice and points at the requirement-home and runtime evidence in the working tree. The targeted Retry requirement-home tests and Retry integrity unit tests passed; RTT-estimation follow-ons remain out of scope.
 
 ## Related Artifacts
 
