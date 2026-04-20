@@ -1,13 +1,36 @@
 # Benchmarks
 
-This directory contains permanent BenchmarkDotNet suites for `Incursa.Quic`.
+Permanent BenchmarkDotNet suites for `Incursa.Quic`.
 
-## Included Suites
+## Baseline Path
+
+The reusable baseline surface for current product-viability checks is the
+trio of hot paths that most directly affect congestion control, RTT
+estimation, and sender-adjacent stream state:
+
+- `QuicCongestionControlBenchmarks`
+- `QuicRttEstimatorBenchmarks`
+- `QuicConnectionStreamStateBenchmarks`
+
+Run them through the launcher:
+
+```powershell
+.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry
+.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short
+```
+
+`Dry` validates the harness quickly. `Short` is the recommended repeatable
+baseline measurement.
+
+## Other Suites
+
+The benchmark project also contains the following permanent suites:
 
 - `QuicFrameCodecBenchmarks`
-- `QuicCongestionControlBenchmarks`
 - `QuicTransportParametersBenchmarks`
-- `QuicRttEstimatorBenchmarks`
+- `QuicHeaderParsingBenchmarks`
+- `QuicStreamParsingBenchmarks`
+- `QuicVariableLengthIntegerBenchmarks`
 - `QuicInitialPacketProtectionBenchmarks`
 - `QuicHandshakePacketProtectionBenchmarks`
 - `QuicRetryIntegrityBenchmarks`
@@ -18,25 +41,10 @@ This directory contains permanent BenchmarkDotNet suites for `Incursa.Quic`.
 - `QuicTlsClientZeroRttRejectionCleanupBenchmarks`
 - `QuicStatelessResetBenchmarks`
 
-## Run
+Target a specific suite with `--filter` when iterating locally:
 
-```bash
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicHeaderParsingBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicVariableLengthIntegerBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicStreamParsingBenchmarks*"
+```powershell
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicFrameCodecBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicCongestionControlBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTransportParametersBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRttEstimatorBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicInitialPacketProtectionBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicHandshakePacketProtectionBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRetryIntegrityBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsServerFinishedPublicationBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsClientFinishedPublicationBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationPacketKeyPhaseBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsClientZeroRttEmissionBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsClientZeroRttRejectionCleanupBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicStatelessResetBenchmarks*"
 ```
 
-Use `--filter` to narrow to a subset of benchmarks when iterating locally.
+BenchmarkDotNet writes reports under `benchmarks/BenchmarkDotNet.Artifacts/results`.
