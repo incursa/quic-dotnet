@@ -579,9 +579,10 @@ internal sealed class QuicRecoveryController
             peerMaxAckDelayMicros,
             localProcessingDelayMicros,
             isInitialPacket,
-            ignoreAckDelayForInitialPacket);
+            ignoreAckDelayForInitialPacket,
+            out bool hasNewlyAcknowledgedAckElicitingPacket);
 
-        if (acknowledgedNewPacket)
+        if (hasNewlyAcknowledgedAckElicitingPacket)
         {
             ProbeTimeoutBackoffCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
                 ProbeTimeoutBackoffCount,
@@ -823,10 +824,11 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         ulong peerMaxAckDelayMicros,
         ulong localProcessingDelayMicros,
         bool isInitialPacket,
-        bool ignoreAckDelayForInitialPacket)
+        bool ignoreAckDelayForInitialPacket,
+        out bool hasNewlyAcknowledgedAckElicitingPacket)
     {
         bool largestAcknowledgedPacketNewlyAcknowledged = largestAcknowledgedPacketNumber > LargestAcknowledgedPacketNumber;
-        bool hasNewlyAcknowledgedAckElicitingPacket = false;
+        hasNewlyAcknowledgedAckElicitingPacket = false;
         ulong? largestAcknowledgedPacketSentAtMicros = null;
 
         for (int index = 0; index < newlyAcknowledgedAckElicitingPacketNumbers.Length; index++)

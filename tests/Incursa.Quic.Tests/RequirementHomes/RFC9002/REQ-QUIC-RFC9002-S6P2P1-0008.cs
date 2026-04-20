@@ -64,4 +64,34 @@ public sealed class REQ_QUIC_RFC9002_S6P2P1_0008
         Assert.Equal(1, runtime.ProbeTimeoutCount);
         Assert.Equal(7_500UL, runtime.LossDetectionDeadlineMicros);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void RecordAcknowledgment_ResetsTheBackoffWhenAnOlderPacketIsAcknowledged()
+    {
+        QuicRecoveryController controller = new();
+
+        controller.RecordPacketSent(QuicPacketNumberSpace.ApplicationData, packetNumber: 7, sentAtMicros: 1_000);
+        controller.RecordPacketSent(QuicPacketNumberSpace.ApplicationData, packetNumber: 8, sentAtMicros: 1_900);
+
+        Assert.True(controller.RecordAcknowledgment(
+            QuicPacketNumberSpace.ApplicationData,
+            largestAcknowledgedPacketNumber: 8,
+            ackReceivedAtMicros: 2_500,
+            newlyAcknowledgedAckElicitingPacketNumbers: new ulong[] { 8 }));
+
+        controller.RecordProbeTimeoutExpired();
+
+        Assert.Equal(1, controller.ProbeTimeoutBackoffCount);
+
+        Assert.False(controller.RecordAcknowledgment(
+            QuicPacketNumberSpace.ApplicationData,
+            largestAcknowledgedPacketNumber: 8,
+            ackReceivedAtMicros: 3_000,
+            newlyAcknowledgedAckElicitingPacketNumbers: new ulong[] { 7 }));
+
+        Assert.Equal(0, controller.ProbeTimeoutBackoffCount);
+        Assert.False(controller.HasAckElicitingPacketsInFlight(QuicPacketNumberSpace.ApplicationData));
+    }
 }
