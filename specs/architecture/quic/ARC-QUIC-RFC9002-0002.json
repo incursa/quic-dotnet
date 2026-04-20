@@ -17,7 +17,7 @@
   ],
   "artifact_id": "ARC-QUIC-RFC9002-0002",
   "artifact_type": "architecture",
-  "status": "draft",
+  "status": "implemented",
   "purpose": "Describe the runtime-owned recovery ledger and key-discard cleanup slice for RFC 9002 Section 6.",
   "satisfies": [
     "REQ-QUIC-RFC9002-S6-0001",

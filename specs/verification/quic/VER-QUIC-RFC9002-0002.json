@@ -1,5 +1,6 @@
 {
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "title": "QUIC RFC 9002 Recovery Ledger and Key-Discard Verification",
   "verification_method": "Execution, inspection, and targeted runtime evidence.",
   "related_artifacts": [
     "SPEC-QUIC-RFC9002",
@@ -17,7 +18,7 @@
     "REQ-QUIC-RFC9002-S6P4-0004"
   ],
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "procedure": [
     "Run the targeted RFC 9002 requirement-home tests with the section 6 filter.",
     "Run the repo-local SpecTrace validation flow for the changed canonical JSON artifacts.",
@@ -34,6 +35,12 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0142.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0143.cs"
-  ]
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0143.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs"
+  ],
+  "status_summary": "This verification artifact records the landed runtime-owned sender-ledger cleanup slice, with requirement-home tests and targeted runtime inspection showing Initial and Handshake key discard reset PTO and loss detection while rejected 0-RTT cleanup removes bytes in flight and queued retransmissions."
 }

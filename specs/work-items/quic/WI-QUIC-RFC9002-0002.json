@@ -1,4 +1,5 @@
 {
+  "artifact_id": "WI-QUIC-RFC9002-0002",
   "title": "QUIC RFC 9002 Recovery Ledger and Key-Discard Work Item",
   "verification_links": [
     "VER-QUIC-RFC9002-0002"
@@ -8,14 +9,14 @@
     "SPEC-QUIC-RFC9002"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "The runtime now owns per-space sender-ledger cleanup for Initial, Handshake, and rejected 0-RTT key loss, and the requirement-home tests prove PTO reset, recovery-state discard, and bytes-in-flight removal while OneRtt traffic remains intact.",
   "out_of_scope": [
     "RFC 8999 version-independent invariants.",
     "RFC 9000 transport framing that does not affect recovery state.",
     "RFC 9001 packet-protection behavior beyond the discard hooks needed for this recovery slice.",
     "Public API widening."
   ],
-  "status": "planned",
+  "status": "complete",
   "domain": "quic",
   "summary": "Keep the RFC 9002 loss-detection and key-discard contract visible in the trace system while the runtime-owned sender ledger and selective discard cleanup land.\nPreserve the ability to add direct test and benchmark evidence as the recovery code matures.",
   "verification_plan": "Run the targeted RFC 9002 requirement-home tests that exercise the runtime ledger, timer reset, and key-discard paths.\nRun the repo-local SpecTrace validation flow so the updated trace links stay honest.\nRun the focused QUIC lane test filter and keep the runtime cleanup proof separate from the helper-only secret-discard proof.",
