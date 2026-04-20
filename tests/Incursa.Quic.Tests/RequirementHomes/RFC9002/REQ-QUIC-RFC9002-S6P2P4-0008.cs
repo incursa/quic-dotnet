@@ -72,6 +72,10 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0008
         ReadOnlySpan<byte> packetPayload = openedPacket.AsSpan(payloadOffset, payloadLength);
         Assert.True(QuicFrameCodec.TryParsePingFrame(packetPayload, out int pingBytesConsumed));
         Assert.Equal(1, pingBytesConsumed);
+        QuicConnectionSentPacket sentProbePacket = Assert.Single(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => packet.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
+        Assert.True(sentProbePacket.ProbePacket);
 
         for (int index = pingBytesConsumed; index < packetPayload.Length; index++)
         {

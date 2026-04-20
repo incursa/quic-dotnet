@@ -138,6 +138,10 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
         Assert.Equal((ulong)firstHandshakeCrypto.Length, cryptoFrame.Offset);
         Assert.True(secondHandshakeCrypto.AsSpan().SequenceEqual(cryptoFrame.CryptoData));
         Assert.True(bytesConsumed > 0);
+        QuicConnectionSentPacket sentProbePacket = Assert.Single(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => packet.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
+        Assert.True(sentProbePacket.ProbePacket);
         Assert.Equal(0, runtime.TlsState.HandshakeEgressCryptoBuffer.BufferedBytes);
         QuicConnectionArmTimerEffect rearmedRecovery = Assert.Single(
             timerResult.Effects.OfType<QuicConnectionArmTimerEffect>(),

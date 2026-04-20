@@ -513,22 +513,88 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        return selectedPacketNumberSpace switch
+        bool sentProbe;
+        switch (selectedPacketNumberSpace)
         {
-            QuicPacketNumberSpace.Initial => TryFlushInitialPackets(ref effects)
-                || TryFlushHandshakePackets(ref effects)
-                || FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
-                || TrySendRecoveryPingProbe(ref effects),
-            QuicPacketNumberSpace.Handshake => TryFlushHandshakePackets(ref effects)
-                || TryFlushInitialPackets(ref effects)
-                || FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
-                || TrySendRecoveryPingProbe(ref effects),
-            QuicPacketNumberSpace.ApplicationData => FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
-                || TryFlushHandshakePackets(ref effects)
-                || TryFlushInitialPackets(ref effects)
-                || TrySendRecoveryPingProbe(ref effects),
+            case QuicPacketNumberSpace.Initial:
+                sentProbe = TrySendRecoveryProbeSequence(
+                    QuicPacketNumberSpace.Initial,
+                    QuicPacketNumberSpace.Handshake,
+                    QuicPacketNumberSpace.ApplicationData,
+                    nowTicks,
+                    ref effects);
+                break;
+            case QuicPacketNumberSpace.Handshake:
+                sentProbe = TrySendRecoveryProbeSequence(
+                    QuicPacketNumberSpace.Handshake,
+                    QuicPacketNumberSpace.Initial,
+                    QuicPacketNumberSpace.ApplicationData,
+                    nowTicks,
+                    ref effects);
+                break;
+            case QuicPacketNumberSpace.ApplicationData:
+                sentProbe = TrySendRecoveryProbeSequence(
+                    QuicPacketNumberSpace.ApplicationData,
+                    QuicPacketNumberSpace.Handshake,
+                    QuicPacketNumberSpace.Initial,
+                    nowTicks,
+                    ref effects);
+                break;
+            default:
+                return false;
+        }
+
+        if (sentProbe)
+        {
+            return true;
+        }
+
+        return TrySendRecoveryPingProbe(ref effects);
+    }
+
+    private bool TrySendRecoveryProbeDatagram(
+        QuicPacketNumberSpace packetNumberSpace,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        return packetNumberSpace switch
+        {
+            QuicPacketNumberSpace.Initial => TryFlushInitialPackets(
+                ref effects,
+                probePacket: true,
+                maximumDatagrams: 1),
+            QuicPacketNumberSpace.Handshake => TryFlushHandshakePackets(
+                ref effects,
+                probePacket: true,
+                maximumDatagrams: 1),
+            QuicPacketNumberSpace.ApplicationData => FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects),
             _ => false,
         };
+    }
+
+    private bool TrySendRecoveryProbeSequence(
+        QuicPacketNumberSpace firstPacketNumberSpace,
+        QuicPacketNumberSpace secondPacketNumberSpace,
+        QuicPacketNumberSpace thirdPacketNumberSpace,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (TrySendRecoveryProbeDatagram(firstPacketNumberSpace, nowTicks, ref effects))
+        {
+            if (!TrySendRecoveryProbeDatagram(secondPacketNumberSpace, nowTicks, ref effects))
+            {
+                _ = TrySendRecoveryProbeDatagram(thirdPacketNumberSpace, nowTicks, ref effects);
+            }
+            return true;
+        }
+
+        if (TrySendRecoveryProbeDatagram(secondPacketNumberSpace, nowTicks, ref effects))
+        {
+            _ = TrySendRecoveryProbeDatagram(thirdPacketNumberSpace, nowTicks, ref effects);
+            return true;
+        }
+
+        return TrySendRecoveryProbeDatagram(thirdPacketNumberSpace, nowTicks, ref effects);
     }
 
     private bool TrySendRecoveryPingProbe(ref List<QuicConnectionEffect>? effects)

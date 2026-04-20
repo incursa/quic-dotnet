@@ -944,6 +944,15 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (!sendRuntime.FlowController.CanSend(
+            QuicPacketNumberSpace.ApplicationData,
+            (ulong)protectedPacket.Length,
+            isProbePacket: probePacket))
+        {
+            exception = new InvalidOperationException("The congestion controller cannot send another ordinary packet.");
+            return false;
+        }
+
         if (!currentPath.MaximumDatagramSizeState.CanSend((ulong)protectedPacket.Length))
         {
             exception = new InvalidOperationException("The active path cannot send an ordinary packet.");
@@ -988,6 +997,14 @@ internal sealed partial class QuicConnectionRuntime
             out protectedPacket))
         {
             exception = new InvalidOperationException(protectFailureMessage);
+            return false;
+        }
+
+        if (!sendRuntime.FlowController.CanSend(
+            QuicPacketNumberSpace.ApplicationData,
+            (ulong)protectedPacket.Length))
+        {
+            exception = new InvalidOperationException("The congestion controller cannot send another ordinary packet.");
             return false;
         }
 
@@ -1106,14 +1123,24 @@ internal sealed partial class QuicConnectionRuntime
             isProbePacket: probePacket);
     }
 
-    private void TrackInitialPacket(ulong packetNumber, byte[] protectedPacket)
+    private void TrackInitialPacket(ulong packetNumber, byte[] protectedPacket, bool probePacket = false)
     {
-        TrackCryptoPacket(QuicPacketNumberSpace.Initial, QuicTlsEncryptionLevel.Initial, packetNumber, protectedPacket);
+        TrackCryptoPacket(
+            QuicPacketNumberSpace.Initial,
+            QuicTlsEncryptionLevel.Initial,
+            packetNumber,
+            protectedPacket,
+            probePacket);
     }
 
-    private void TrackHandshakePacket(ulong packetNumber, byte[] protectedPacket)
+    private void TrackHandshakePacket(ulong packetNumber, byte[] protectedPacket, bool probePacket = false)
     {
-        TrackCryptoPacket(QuicPacketNumberSpace.Handshake, QuicTlsEncryptionLevel.Handshake, packetNumber, protectedPacket);
+        TrackCryptoPacket(
+            QuicPacketNumberSpace.Handshake,
+            QuicTlsEncryptionLevel.Handshake,
+            packetNumber,
+            protectedPacket,
+            probePacket);
     }
 
     private void TrackCryptoPacket(
@@ -1128,6 +1155,7 @@ internal sealed partial class QuicConnectionRuntime
             packetNumber,
             (ulong)protectedPacket.Length,
             GetElapsedMicros(lastTransitionTicks),
+            ProbePacket: probePacket,
             CryptoMetadata: new QuicConnectionCryptoSendMetadata(encryptionLevel),
             PacketBytes: protectedPacket,
             PacketProtectionLevel: encryptionLevel));

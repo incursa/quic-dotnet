@@ -917,7 +917,10 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryFlushInitialPackets(ref List<QuicConnectionEffect>? effects)
+    private bool TryFlushInitialPackets(
+        ref List<QuicConnectionEffect>? effects,
+        bool probePacket = false,
+        int maximumDatagrams = int.MaxValue)
     {
         if (phase != QuicConnectionPhase.Establishing
             || initialPacketProtection is null
@@ -958,6 +961,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool stateChanged = false;
+        int datagramsSent = 0;
         Span<byte> cryptoBuffer = stackalloc byte[HandshakeEgressChunkBytes];
 
         while (tlsState.InitialEgressCryptoBuffer.BufferedBytes > 0)
@@ -1006,7 +1010,7 @@ internal sealed partial class QuicConnectionRuntime
                     break;
                 }
 
-                TrackInitialPacket(packetNumber, protectedPacket);
+                TrackInitialPacket(packetNumber, protectedPacket, probePacket);
             }
             else
             {
@@ -1033,13 +1037,19 @@ internal sealed partial class QuicConnectionRuntime
                     break;
                 }
 
-                TrackInitialPacket(packetNumber, protectedPacket);
+                TrackInitialPacket(packetNumber, protectedPacket, probePacket);
             }
 
             EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
             tlsState.InitialEgressCryptoBuffer.DiscardFutureFrames();
             stateChanged = true;
+
+            datagramsSent++;
+            if (datagramsSent >= maximumDatagrams)
+            {
+                break;
+            }
         }
 
         return stateChanged;
@@ -1139,7 +1149,10 @@ internal sealed partial class QuicConnectionRuntime
         return stateChanged;
     }
 
-    private bool TryFlushHandshakePackets(ref List<QuicConnectionEffect>? effects)
+    private bool TryFlushHandshakePackets(
+        ref List<QuicConnectionEffect>? effects,
+        bool probePacket = false,
+        int maximumDatagrams = int.MaxValue)
     {
         if (phase is QuicConnectionPhase.Closing
             or QuicConnectionPhase.Draining
@@ -1152,6 +1165,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool stateChanged = false;
+        int datagramsSent = 0;
         Span<byte> cryptoBuffer = stackalloc byte[HandshakeEgressChunkBytes];
 
         while (tlsState.HandshakeEgressCryptoBuffer.BufferedBytes > 0)
@@ -1207,11 +1221,17 @@ internal sealed partial class QuicConnectionRuntime
                 AmplificationState = updatedAmplificationState,
             };
 
-            TrackHandshakePacket(packetNumber, protectedPacket);
+            TrackHandshakePacket(packetNumber, protectedPacket, probePacket);
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
                 currentPath.Identity,
                 protectedPacket));
             stateChanged = true;
+
+            datagramsSent++;
+            if (datagramsSent >= maximumDatagrams)
+            {
+                break;
+            }
         }
 
         return stateChanged;
