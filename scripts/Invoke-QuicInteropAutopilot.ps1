@@ -702,6 +702,7 @@ function New-SmokeActiveLaneFixture {
         [string]$DecisionState = "",
         [string]$ManualReason = "",
         [string]$Summary = "",
+        [string]$Tests = "",
         [bool]$CreateCommit = $false,
         [bool]$MarkMerged = $false
     )
@@ -719,12 +720,14 @@ function New-SmokeActiveLaneFixture {
     }
 
     if (-not [string]::IsNullOrWhiteSpace($DecisionState)) {
+        $commitSha = if ($CreateCommit) { Get-GitHead -GitExecutable $GitExecutable -RepositoryRoot $worktreePath -Ref "HEAD" } else { "" }
         @([pscustomobject]@{
             State = $DecisionState
             Summary = $Summary
             ManualReason = $ManualReason
             NextStep = ""
-            CommitSha = ""
+            CommitSha = $commitSha
+            Tests = $Tests
         }) | Export-Csv -LiteralPath (Join-Path $outputDirectory "autopilot-summary.csv") -NoTypeInformation
     }
 
@@ -911,15 +914,23 @@ function Invoke-SupervisorSmokeValidation {
         [void]$smokeRoots.Add($pauseRepo)
         $pauseStatePath = Join-Path $pauseRepo ".state\orchestration-state.json"
         Ensure-Directory -Path (Split-Path -Path $pauseStatePath -Parent) | Out-Null
-        New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $pauseRepo -StatePath $pauseStatePath -LaneId "pause-merge-lane" -DecisionState "pause_manual" -ManualReason "Need a quick human review of the wording." -Summary "Manual review requested." -CreateCommit:$true | Out-Null
+        New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $pauseRepo -StatePath $pauseStatePath -LaneId "pause-merge-lane" -DecisionState "pause_manual" -ManualReason "Need a quick human review of the wording." -Summary "Manual review requested." -Tests "dotnet test lane filter passed (20/20 requirement-home tests)." -CreateCommit:$true | Out-Null
         $pauseDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $pauseStatePath) -GitExecutable $GitExecutable -RepoRoot $pauseRepo
-        Assert-SupervisorCondition -Condition ($pauseDisposition.Action -eq "merge") -Message "Expected pause_manual with semantic commits and no blocked-lane reason to merge and continue."
+        Assert-SupervisorCondition -Condition ($pauseDisposition.Action -eq "merge" -and $pauseDisposition.ManualClassification -eq "mergeable_manual_pause") -Message "Expected pause_manual with semantic commits, passed tests, and a clean worktree to reconcile automatically."
+
+        $policyPauseRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
+        [void]$smokeRoots.Add($policyPauseRepo)
+        $policyPauseStatePath = Join-Path $policyPauseRepo ".state\orchestration-state.json"
+        Ensure-Directory -Path (Split-Path -Path $policyPauseStatePath -Parent) | Out-Null
+        New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $policyPauseRepo -StatePath $policyPauseStatePath -LaneId "policy-pause-lane" -DecisionState "pause_manual" -ManualReason "Path policy violation for lane 'policy-pause-lane': outside allowed paths: src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs" -Summary "Committed mergeable packet work and passed focused tests." -Tests "dotnet test lane filter passed (20/20 requirement-home tests)." -CreateCommit:$true | Out-Null
+        $policyPauseDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $policyPauseStatePath) -GitExecutable $GitExecutable -RepoRoot $policyPauseRepo
+        Assert-SupervisorCondition -Condition ($policyPauseDisposition.Action -eq "merge" -and $policyPauseDisposition.ManualClassification -eq "mergeable_manual_pause") -Message "Expected policy-only pause_manual outcomes with passed tests and a clean worktree to reconcile automatically."
 
         $verifyRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
         [void]$smokeRoots.Add($verifyRepo)
         $verifyStatePath = Join-Path $verifyRepo ".state\orchestration-state.json"
         Ensure-Directory -Path (Split-Path -Path $verifyStatePath -Parent) | Out-Null
-        New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $verifyRepo -StatePath $verifyStatePath -LaneId "verify-lane" -DecisionState "pause_manual" -ManualReason "Verification command failed for lane 'verify-lane'." -Summary "Targeted verification failed." -CreateCommit:$true | Out-Null
+        New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $verifyRepo -StatePath $verifyStatePath -LaneId "verify-lane" -DecisionState "pause_manual" -ManualReason "Verification command failed for lane 'verify-lane'." -Summary "Targeted verification failed." -Tests "dotnet test lane filter failed (0/20 requirement-home tests)." -CreateCommit:$true | Out-Null
         $verifyDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $verifyStatePath) -GitExecutable $GitExecutable -RepoRoot $verifyRepo
         Assert-SupervisorCondition -Condition ($verifyDisposition.Action -eq "block") -Message "Expected verification failure after semantic commits to block the lane instead of stopping the supervisor."
 
@@ -3584,6 +3595,8 @@ function Get-WorkerDecisionSnapshot {
         ManualReason = & $getDecisionField "ManualReason"
         NextStep = & $getDecisionField "NextStep"
         CommitSha = & $getDecisionField "CommitSha"
+        Tests = & $getDecisionField "Tests"
+        ReconcileAction = & $getDecisionField "ReconcileAction"
         LastHeartbeatTime = [string]$heartbeat.LastHeartbeatTime
         LastHeartbeatFile = [string]$heartbeat.LastHeartbeatFile
         HasAnyOutput = [bool]$heartbeat.HasAnyOutput
@@ -3613,23 +3626,55 @@ function Get-WorkerHeartbeatStatus {
     }
 }
 
+function Test-WorkerDecisionTestsPassed {
+    param([string]$Tests = "")
+
+    if ([string]::IsNullOrWhiteSpace($Tests)) {
+        return $false
+    }
+
+    if ($Tests -match '(?i)\bfailed\b|\bexit=\s*[1-9]\d*\b') {
+        return $false
+    }
+
+    return ($Tests -match '(?i)\bpassed\b')
+}
+
 function Get-ManualLaneOutcomeClassification {
     param(
         [string]$DecisionState = "",
         [string]$ManualReason = "",
-        [string]$Summary = ""
+        [string]$Summary = "",
+        [string]$Tests = "",
+        [string]$ReconcileAction = "",
+        [bool]$WorktreeClean = $false,
+        [int]$CommitCount = 0
     )
 
     if ($DecisionState -notin @("pause_manual", "stuck")) {
         return ""
     }
 
+    if ($DecisionState -eq "pause_manual") {
+        if ($ReconcileAction -eq "merge" -and $CommitCount -gt 0 -and $WorktreeClean) {
+            return "mergeable_manual_pause"
+        }
+
+        if ($CommitCount -gt 0 -and $WorktreeClean -and (Test-WorkerDecisionTestsPassed -Tests $Tests)) {
+            return "mergeable_manual_pause"
+        }
+    }
+
     $reasonText = (($ManualReason.Trim() + " " + $Summary.Trim()).Trim())
     if ([string]::IsNullOrWhiteSpace($reasonText)) {
-        return if ($DecisionState -eq "stuck") { "blocked" } else { "manual_review" }
+        return if ($DecisionState -eq "stuck" -or $CommitCount -gt 0) { "blocked" } else { "manual_review" }
     }
 
     if ($reasonText -match '(?i)blocked gap|blocking gap|path scope|path violation|outside the assigned|outside the lane|requirement family|verification command failed|failing verification command|progress guardrail|lane contract|open gaps') {
+        return "blocked"
+    }
+
+    if ($DecisionState -eq "pause_manual" -and $CommitCount -gt 0) {
         return "blocked"
     }
 
@@ -3660,6 +3705,7 @@ function Get-ActiveLaneDisposition {
     $laneId = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "lane_id" -DefaultValue "")
     $lanePhase = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "lane_phase" -DefaultValue "")
     $contractPath = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "contract_path" -DefaultValue "")
+    $worktreePath = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "worktree_path" -DefaultValue "")
     $outputDirectory = [string](Get-ObjectNotePropertyValue -Object $activeLane -Name "output_directory" -DefaultValue "")
     $merged = [bool](Get-ObjectNotePropertyValue -Object $activeLane -Name "merged" -DefaultValue $false)
 
@@ -3682,7 +3728,17 @@ function Get-ActiveLaneDisposition {
     $workerSnapshot = Get-WorkerDecisionSnapshot -OutputDirectory $outputDirectory
     $heartbeatStatus = Get-WorkerHeartbeatStatus -HeartbeatTime $workerSnapshot.LastHeartbeatTime
     $decisionState = [string]$workerSnapshot.DecisionState
-    $manualClassification = Get-ManualLaneOutcomeClassification -DecisionState $decisionState -ManualReason $workerSnapshot.ManualReason -Summary $workerSnapshot.Summary
+    $worktreeClean = $false
+    if ($commitSnapshot.WorktreeExists -and -not [string]::IsNullOrWhiteSpace($worktreePath)) {
+        try {
+            $worktreeClean = Test-GitClean -GitExecutable $GitExecutable -RepositoryRoot $worktreePath
+        }
+        catch {
+            $worktreeClean = $false
+        }
+    }
+
+    $manualClassification = Get-ManualLaneOutcomeClassification -DecisionState $decisionState -ManualReason $workerSnapshot.ManualReason -Summary $workerSnapshot.Summary -Tests $workerSnapshot.Tests -ReconcileAction $workerSnapshot.ReconcileAction -WorktreeClean:$worktreeClean -CommitCount $commitSnapshot.CommitCount
 
     $action = "resume"
     $reason = "The active lane remains resumable."
@@ -3734,13 +3790,13 @@ function Get-ActiveLaneDisposition {
                 }
             }
             "pause_manual" {
-                if ($manualClassification -eq "blocked") {
-                    $action = "block"
-                    $reason = "The active lane requested manual follow-up for a blocked or off-lane condition."
+                if ($manualClassification -eq "mergeable_manual_pause") {
+                    $action = "merge"
+                    $reason = "The active lane paused for policy-only/manual review, but it produced mergeable commits and passed checks."
                 }
                 elseif ($commitSnapshot.CommitCount -gt 0) {
-                    $action = "merge"
-                    $reason = "The active lane requested manual review, but it produced mergeable commits."
+                    $action = "block"
+                    $reason = "The active lane requested manual follow-up before its commits can be reconciled deterministically."
                 }
                 else {
                     $action = "cleanup"

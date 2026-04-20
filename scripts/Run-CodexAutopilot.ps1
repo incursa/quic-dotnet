@@ -1269,6 +1269,37 @@ function Get-ProgressVerdict {
     }
 }
 
+function Get-AutopilotReconciliationAction {
+    param(
+        [string]$State = "",
+        [string]$CommitSha = "",
+        [string]$TestsSummary = "",
+        [bool]$WorktreeClean = $false
+    )
+
+    if ($State -ne "pause_manual") {
+        return ""
+    }
+
+    if ([string]::IsNullOrWhiteSpace($CommitSha) -or -not $WorktreeClean) {
+        return ""
+    }
+
+    if ([string]::IsNullOrWhiteSpace($TestsSummary)) {
+        return ""
+    }
+
+    if ($TestsSummary -match '(?i)\bfailed\b|\bexit=\s*[1-9]\d*\b') {
+        return ""
+    }
+
+    if ($TestsSummary -match '(?i)\bpassed\b') {
+        return "merge"
+    }
+
+    return ""
+}
+
 function Convert-HistoryToText {
     param(
         [object[]]$History = @(),
@@ -2126,6 +2157,8 @@ try {
                 }
             }
 
+            $reconcileAction = Get-AutopilotReconciliationAction -State $state -CommitSha $commitSha -TestsSummary $testsSummary -WorktreeClean $statusAfter.IsClean
+
             $historyEntry = [pscustomobject]@{
                 Turn          = $iteration
                 Mode          = $mode
@@ -2160,6 +2193,7 @@ try {
                 confidence  = $confidence
                 change_summary = $changeSummary
                 progress_verdict = $progressVerdict
+                reconcile_action = $reconcileAction
                 progress_details = $progressDetails
                 result_file = $resultPathUsed
                 log_file    = $logPathUsed
@@ -2183,6 +2217,7 @@ try {
                 Confidence   = $confidence
                 ChangeSummary= $changeSummary
                 ProgressVerdict = $progressVerdict
+                ReconcileAction = $reconcileAction
                 ProgressDetails = $progressDetails
                 ExitCode     = $run.ExitCode
                 Seconds      = $run.Seconds
@@ -2205,6 +2240,9 @@ try {
             }
             if (-not [string]::IsNullOrWhiteSpace($progressVerdict)) {
                 Write-Host "  Verdict: $progressVerdict" -ForegroundColor Gray
+            }
+            if (-not [string]::IsNullOrWhiteSpace($reconcileAction)) {
+                Write-Host "  Reconcile: $reconcileAction" -ForegroundColor Gray
             }
 
             switch ($state) {
