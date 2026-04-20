@@ -936,13 +936,16 @@ function Invoke-SupervisorSmokeValidation {
         $failedTestsDisposition = Get-AutopilotReconciliationDisposition -State "pause_manual" -CommitSha "merge-ready-sha" -TestsSummary "dotnet test lane filter failed (1/20 requirement-home tests)." -WorktreeClean:$true
         Assert-SupervisorCondition -Condition ($failedTestsDisposition.TerminalState -eq "pause_manual" -and [string]::IsNullOrWhiteSpace($failedTestsDisposition.ReconcileAction)) -Message "Expected failed tests to keep a pause_manual outcome from normalizing."
 
+        $residualMergeReadyDisposition = Get-AutopilotReconciliationDisposition -State "pause_manual" -CommitSha "merge-ready-sha" -TestsSummary "dotnet test lane filter passed (20/20 requirement-home tests); Validate-SpecTraceJson.ps1 failed on pre-existing repo-wide residual Markdown/unresolved trace issues." -WorktreeClean:$true
+        Assert-SupervisorCondition -Condition ($residualMergeReadyDisposition.TerminalState -eq "complete" -and $residualMergeReadyDisposition.ReconcileAction -eq "merge") -Message "Expected merge-ready pause_manual outcomes with pre-existing residual validation failures to normalize to complete."
+
         $policyPauseRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
         [void]$smokeRoots.Add($policyPauseRepo)
         $policyPauseStatePath = Join-Path $policyPauseRepo ".state\orchestration-state.json"
         Ensure-Directory -Path (Split-Path -Path $policyPauseStatePath -Parent) | Out-Null
-        New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $policyPauseRepo -StatePath $policyPauseStatePath -LaneId "policy-pause-lane" -DecisionState "pause_manual" -ManualReason "Path policy violation for lane 'policy-pause-lane': outside allowed paths: src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs" -Summary "Committed mergeable packet work and passed focused tests." -Tests "dotnet test lane filter passed (20/20 requirement-home tests)." -CreateCommit:$true | Out-Null
+        New-SmokeActiveLaneFixture -GitExecutable $GitExecutable -RepoRoot $policyPauseRepo -StatePath $policyPauseStatePath -LaneId "policy-pause-lane" -DecisionState "pause_manual" -ManualReason "Requirement-family policy violation for lane 'policy-pause-lane': REQ-QUIC-CRT-0143" -Summary "Committed mergeable packet work and passed focused tests." -Tests "dotnet test lane filter passed (20/20 requirement-home tests); Validate-SpecTraceJson.ps1 failed on pre-existing repo-wide residual Markdown/unresolved trace issues." -CreateCommit:$true | Out-Null
         $policyPauseDisposition = Get-ActiveLaneDisposition -StateObject (Get-OrchestrationState -StatePath $policyPauseStatePath) -GitExecutable $GitExecutable -RepoRoot $policyPauseRepo
-        Assert-SupervisorCondition -Condition ($policyPauseDisposition.Action -eq "merge" -and $policyPauseDisposition.ManualClassification -eq "mergeable_rule_only_pause") -Message "Expected rule-only pause_manual outcomes with passed tests and a clean worktree to reconcile automatically."
+        Assert-SupervisorCondition -Condition ($policyPauseDisposition.Action -eq "merge" -and $policyPauseDisposition.ManualClassification -eq "mergeable_rule_only_pause") -Message "Expected rule-only pause_manual outcomes with merge-ready residual validation failures to reconcile automatically."
 
         $verifyRepo = New-SmokeGitRepository -GitExecutable $GitExecutable
         [void]$smokeRoots.Add($verifyRepo)
@@ -3655,15 +3658,7 @@ function Get-WorkerHeartbeatStatus {
 function Test-WorkerDecisionTestsPassed {
     param([string]$Tests = "")
 
-    if ([string]::IsNullOrWhiteSpace($Tests)) {
-        return $false
-    }
-
-    if ($Tests -match '(?i)\bfailed\b|\bexit=\s*[1-9]\d*\b') {
-        return $false
-    }
-
-    return ($Tests -match '(?i)\bpassed\b')
+    return Test-AutopilotMergeReadyTestsSummary -TestsSummary $Tests
 }
 
 function Test-ManualPauseRuleOnlyReason {
@@ -3683,6 +3678,7 @@ function Test-ManualPauseRuleOnlyReason {
         "path scope",
         "path policy",
         "path violation",
+        "policy violation",
         "outside the assigned",
         "outside the lane",
         "requirement family",

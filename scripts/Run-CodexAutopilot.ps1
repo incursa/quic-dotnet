@@ -2144,10 +2144,10 @@ try {
             if ($reconcileAction -eq "merge") {
                 if ([bool]$reconciliationDisposition.NormalizedFromPauseManual) {
                     if (-not [string]::IsNullOrWhiteSpace($summaryText)) {
-                        $summaryText = ($summaryText.TrimEnd() + " Normalized to complete because commit(s) are present, tests passed, and the worktree is clean.").Trim()
+                        $summaryText = ($summaryText.TrimEnd() + " Normalized to complete because commit(s) are present, the worktree is clean, and the tests summary is merge-ready.").Trim()
                     }
                     else {
-                        $summaryText = "Normalized to complete because commit(s) are present, tests passed, and the worktree is clean."
+                        $summaryText = "Normalized to complete because commit(s) are present, the worktree is clean, and the tests summary is merge-ready."
                     }
 
                     $nextStep = "Merge the committed patch and continue the lane."
