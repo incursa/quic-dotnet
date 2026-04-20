@@ -198,6 +198,131 @@ public sealed class REQ_QUIC_API_0009
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task SupportedLoopbackBidirectionalStreamWriteAbortAfterPeerEof_ReportsTheReleasedPeerStreamCapacityOnce()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicServerConnectionOptions expectedServerOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+        expectedServerOptions.MaxInboundBidirectionalStreams = 1;
+        expectedServerOptions.MaxInboundUnidirectionalStreams = 0;
+
+        int callbackCount = 0;
+        QuicConnection? observedConnection = null;
+        ConcurrentQueue<QuicStreamCapacityChangedArgs> observedArgs = new();
+        TaskCompletionSource<bool> initialObserved = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<bool> releaseObserved = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(expectedServerOptions),
+        };
+
+        QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port));
+        clientOptions.StreamCapacityCallback = (connection, args) =>
+        {
+            observedConnection = connection;
+            observedArgs.Enqueue(args);
+
+            int currentCount = Interlocked.Increment(ref callbackCount);
+            if (currentCount == 1)
+            {
+                initialObserved.TrySetResult(true);
+            }
+            else if (currentCount == 2)
+            {
+                releaseObserved.TrySetResult(true);
+            }
+        };
+
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
+        Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(clientOptions).AsTask();
+
+        await Task.WhenAll(acceptTask, connectTask);
+
+        QuicConnection serverConnection = await acceptTask;
+        QuicConnection clientConnection = await connectTask;
+        QuicStream? clientStream = null;
+        QuicStream? serverStream = null;
+
+        try
+        {
+            await initialObserved.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.Same(clientConnection, observedConnection);
+            QuicStreamCapacityChangedArgs[] initialCallbacks = observedArgs.ToArray();
+            Assert.Single(initialCallbacks);
+            Assert.Equal(1, initialCallbacks[0].BidirectionalIncrement);
+            Assert.Equal(0, initialCallbacks[0].UnidirectionalIncrement);
+            Assert.Equal(1, callbackCount);
+
+            clientStream = await clientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+            serverStream = await serverConnection.AcceptInboundStreamAsync();
+
+            byte[] payload = new byte[256];
+            payload.AsSpan().Fill(0x62);
+            await clientStream.WriteAsync(payload, 0, payload.Length);
+
+            byte[] receiveBuffer = new byte[payload.Length];
+            int bytesRead = await serverStream.ReadAsync(receiveBuffer, 0, receiveBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.Equal(payload.Length, bytesRead);
+            Assert.True(payload.AsSpan().SequenceEqual(receiveBuffer));
+
+            await clientStream.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.Equal(0, await serverStream.ReadAsync(receiveBuffer, 0, receiveBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5)));
+
+            serverStream.Abort(QuicAbortDirection.Write, 91);
+
+            Task completedReleaseTask = await Task.WhenAny(releaseObserved.Task, Task.Delay(TimeSpan.FromSeconds(5)));
+            if (completedReleaseTask != releaseObserved.Task)
+            {
+                QuicConnectionRuntime serverRuntime = GetRuntime(serverConnection);
+                QuicConnectionRuntime clientRuntime = GetRuntime(clientConnection);
+                bool hasServerSnapshot = serverRuntime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot((ulong)clientStream!.Id, out QuicConnectionStreamSnapshot serverSnapshot);
+                bool hasClientSnapshot = clientRuntime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot((ulong)clientStream.Id, out QuicConnectionStreamSnapshot clientSnapshot);
+                throw new TimeoutException(
+                    $"The released peer capacity was not observed. " +
+                    $"ServerIncomingBidirectionalLimit={serverRuntime.StreamRegistry.Bookkeeping.IncomingBidirectionalStreamLimit}; " +
+                    $"ClientPeerBidirectionalLimit={clientRuntime.StreamRegistry.Bookkeeping.PeerBidirectionalStreamLimit}; " +
+                    $"ServerStreamSnapshot={(hasServerSnapshot ? $"{serverSnapshot.SendState}/{serverSnapshot.ReceiveState}" : "<missing>")}; " +
+                    $"ClientStreamSnapshot={(hasClientSnapshot ? $"{clientSnapshot.SendState}/{clientSnapshot.ReceiveState}" : "<missing>")}; " +
+                    $"Server={QuicLoopbackEstablishmentTestSupport.DescribeConnection(serverConnection)}; " +
+                    $"Client={QuicLoopbackEstablishmentTestSupport.DescribeConnection(clientConnection)}");
+            }
+
+            Assert.Equal(2, callbackCount);
+            QuicStreamCapacityChangedArgs[] callbacks = observedArgs.ToArray();
+            Assert.Equal(2, callbacks.Length);
+            Assert.Equal(100, callbacks[1].BidirectionalIncrement);
+            Assert.Equal(0, callbacks[1].UnidirectionalIncrement);
+
+            QuicStream reopenedStream = await clientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+            await reopenedStream.DisposeAsync();
+        }
+        finally
+        {
+            if (serverStream is not null)
+            {
+                await serverStream.DisposeAsync();
+            }
+
+            if (clientStream is not null)
+            {
+                await clientStream.DisposeAsync();
+            }
+
+            await serverConnection.DisposeAsync();
+            await clientConnection.DisposeAsync();
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task SupportedLoopbackLaterCapacityGrowth_ReportsRealMaxStreamsDeltasExactlyOnce()
     {
         using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
