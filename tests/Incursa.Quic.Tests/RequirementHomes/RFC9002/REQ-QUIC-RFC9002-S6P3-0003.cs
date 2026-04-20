@@ -36,11 +36,15 @@ public sealed class REQ_QUIC_RFC9002_S6P3_0003
     public void ClientRetryReplayInitialPacketsPreserveTheOriginalHandshakeMessageBytes()
     {
         using QuicConnectionRuntime clientRuntime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
-        byte[] originalClientHelloBytes = QuicResumptionClientHelloTestSupport.GetInitialBootstrapClientHelloBytes(clientRuntime);
+        byte[] originalClientHelloBytes =
+            QuicResumptionClientHelloTestSupport.GetInitialBootstrapClientHelloBytes(clientRuntime).ToArray();
 
         QuicConnectionTransitionResult retryResult = clientRuntime.Transition(
             QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(1),
             nowTicks: 1);
+
+        Assert.True(originalClientHelloBytes.SequenceEqual(
+            QuicResumptionClientHelloTestSupport.GetInitialBootstrapClientHelloBytes(clientRuntime)));
 
         QuicS17P2P5P3TestSupport.RetryReplayInitialPacket[] replayPackets =
             QuicS17P2P5P3TestSupport.ReadRetryReplayInitialPackets(
