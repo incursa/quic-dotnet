@@ -1632,18 +1632,30 @@ internal sealed partial class QuicConnectionRuntime
     {
         _ = effects;
 
-        return encryptionLevel switch
+        bool stateChanged = false;
+        switch (encryptionLevel)
         {
-            QuicTlsEncryptionLevel.Initial =>
-                sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial)
-                || recoveryController.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, resetProbeTimeoutBackoff: true),
-            QuicTlsEncryptionLevel.Handshake =>
-                sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake)
-                || recoveryController.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, resetProbeTimeoutBackoff: true),
-            QuicTlsEncryptionLevel.ZeroRtt => sendRuntime.TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel.ZeroRtt),
-            QuicTlsEncryptionLevel.OneRtt => false,
-            _ => false,
-        };
+            case QuicTlsEncryptionLevel.Initial:
+                stateChanged |= sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial);
+                stateChanged |= recoveryController.TryDiscardPacketNumberSpace(
+                    QuicPacketNumberSpace.Initial,
+                    resetProbeTimeoutBackoff: true);
+                break;
+            case QuicTlsEncryptionLevel.Handshake:
+                stateChanged |= sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake);
+                stateChanged |= recoveryController.TryDiscardPacketNumberSpace(
+                    QuicPacketNumberSpace.Handshake,
+                    resetProbeTimeoutBackoff: true);
+                break;
+            case QuicTlsEncryptionLevel.ZeroRtt:
+                stateChanged |= sendRuntime.TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel.ZeroRtt);
+                stateChanged |= recoveryController.TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel.ZeroRtt);
+                break;
+            case QuicTlsEncryptionLevel.OneRtt:
+                break;
+        }
+
+        return stateChanged;
     }
 
     private bool HandleFatalTlsSignal(

@@ -1120,7 +1120,8 @@ internal sealed partial class QuicConnectionRuntime
             packetNumber,
             GetElapsedMicros(lastTransitionTicks),
             isAckElicitingPacket: true,
-            isProbePacket: probePacket);
+            isProbePacket: probePacket,
+            packetProtectionLevel: packetProtectionLevel);
     }
 
     private void TrackInitialPacket(ulong packetNumber, byte[] protectedPacket, bool probePacket = false)
@@ -1164,7 +1165,8 @@ internal sealed partial class QuicConnectionRuntime
             packetNumber,
             GetElapsedMicros(lastTransitionTicks),
             isAckElicitingPacket: true,
-            isProbePacket: probePacket);
+            isProbePacket: probePacket,
+            packetProtectionLevel: encryptionLevel);
     }
 
     private bool TryBuildOutboundStreamPayload(

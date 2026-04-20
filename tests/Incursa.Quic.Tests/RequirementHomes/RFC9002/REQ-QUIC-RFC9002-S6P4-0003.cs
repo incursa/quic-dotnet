@@ -124,6 +124,62 @@ public sealed class REQ_QUIC_RFC9002_S6P4_0003
         Assert.Equal(2_400UL, runtime.SendRuntime.FlowController.CongestionControlState.BytesInFlightBytes);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDiscardPacketProtectionLevel_RemovesZeroRttPacketsWhileRetainingOneRttPackets()
+    {
+        QuicRecoveryController controller = new();
+        controller.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            sentAtMicros: 100,
+            isAckElicitingPacket: true,
+            packetProtectionLevel: QuicTlsEncryptionLevel.ZeroRtt);
+        controller.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 2,
+            sentAtMicros: 200,
+            isAckElicitingPacket: true,
+            packetProtectionLevel: QuicTlsEncryptionLevel.OneRtt);
+
+        Assert.True(controller.TrySelectLossDetectionTimer(
+            nowMicros: 300,
+            maxAckDelayMicros: 25_000,
+            handshakeConfirmed: true,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: true,
+            handshakeKeysAvailable: true,
+            out ulong selectedRecoveryTimerMicros,
+            out QuicPacketNumberSpace selectedPacketNumberSpace));
+        Assert.Equal(QuicPacketNumberSpace.ApplicationData, selectedPacketNumberSpace);
+        Assert.NotEqual(0UL, selectedRecoveryTimerMicros);
+
+        Assert.True(controller.TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel.ZeroRtt));
+        Assert.True(controller.TrySelectLossDetectionTimer(
+            nowMicros: 400,
+            maxAckDelayMicros: 25_000,
+            handshakeConfirmed: true,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: true,
+            handshakeKeysAvailable: true,
+            out selectedRecoveryTimerMicros,
+            out selectedPacketNumberSpace));
+        Assert.Equal(QuicPacketNumberSpace.ApplicationData, selectedPacketNumberSpace);
+        Assert.NotEqual(0UL, selectedRecoveryTimerMicros);
+
+        Assert.True(controller.TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel.OneRtt));
+        Assert.False(controller.TrySelectLossDetectionTimer(
+            nowMicros: 500,
+            maxAckDelayMicros: 25_000,
+            handshakeConfirmed: true,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: true,
+            handshakeKeysAvailable: true,
+            out _,
+            out _));
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         return new QuicConnectionRuntime(QuicConnectionStreamStateTestHelpers.CreateState());

@@ -47,6 +47,49 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2_0005
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void DiscardingInitialKeysResetsTheRecoveryControllerTimerState()
+    {
+        QuicRecoveryController controller = new();
+        controller.RecordPacketSent(
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 1,
+            sentAtMicros: 100,
+            isAckElicitingPacket: true,
+            packetProtectionLevel: QuicTlsEncryptionLevel.Initial);
+        controller.RecordProbeTimeoutExpired();
+
+        Assert.True(controller.TrySelectLossDetectionTimer(
+            nowMicros: 200,
+            maxAckDelayMicros: 25_000,
+            handshakeConfirmed: false,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: false,
+            handshakeKeysAvailable: true,
+            out ulong selectedRecoveryTimerMicros,
+            out QuicPacketNumberSpace selectedPacketNumberSpace));
+        Assert.Equal(QuicPacketNumberSpace.Initial, selectedPacketNumberSpace);
+        Assert.NotEqual(0UL, selectedRecoveryTimerMicros);
+        Assert.Equal(1, controller.ProbeTimeoutBackoffCount);
+
+        Assert.True(controller.TryDiscardPacketNumberSpace(
+            QuicPacketNumberSpace.Initial,
+            resetProbeTimeoutBackoff: true));
+
+        Assert.Equal(0, controller.ProbeTimeoutBackoffCount);
+        Assert.False(controller.TrySelectLossDetectionTimer(
+            nowMicros: 300,
+            maxAckDelayMicros: 25_000,
+            handshakeConfirmed: false,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: false,
+            handshakeKeysAvailable: true,
+            out _,
+            out _));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryDiscardPacketNumberSpace_LeavesPtoBackoffCountUnchangedWhenApplicationDataIsDiscarded()

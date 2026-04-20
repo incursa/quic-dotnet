@@ -479,6 +479,13 @@ internal readonly struct QuicLostPacket
 }
 
 /// <summary>
+/// Captures the recovery facts retained for one ack-eliciting packet.
+/// </summary>
+internal readonly record struct QuicRecoverySentPacketState(
+    ulong SentAtMicros,
+    QuicTlsEncryptionLevel? PacketProtectionLevel);
+
+/// <summary>
 /// Minimal RFC 9002 runtime for loss and PTO timing decisions on a per-space basis.
 /// </summary>
 internal sealed class QuicRecoveryController
@@ -542,9 +549,14 @@ internal sealed class QuicRecoveryController
         ulong packetNumber,
         ulong sentAtMicros,
         bool isAckElicitingPacket = true,
-        bool isProbePacket = false)
+        bool isProbePacket = false,
+        QuicTlsEncryptionLevel? packetProtectionLevel = null)
     {
-        StateFor(packetNumberSpace).RecordPacketSent(packetNumber, sentAtMicros, isAckElicitingPacket);
+        StateFor(packetNumberSpace).RecordPacketSent(
+            packetNumber,
+            sentAtMicros,
+            isAckElicitingPacket,
+            packetProtectionLevel);
 
         if (isAckElicitingPacket && !isProbePacket)
         {
@@ -664,6 +676,20 @@ internal sealed class QuicRecoveryController
     }
 
     /// <summary>
+    /// Discards recovery state for packets that used the specified packet protection level.
+    /// </summary>
+    internal bool TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel packetProtectionLevel)
+    {
+        bool updated = false;
+        foreach (QuicRecoveryPacketNumberSpaceState state in states.Values)
+        {
+            updated |= state.TryDiscardPacketProtectionLevel(packetProtectionLevel);
+        }
+
+        return updated;
+    }
+
+    /// <summary>
     /// Computes the next PTO timer and packet number space across all packet number spaces.
     /// </summary>
     internal bool TrySelectPtoTimeAndSpace(
@@ -766,7 +792,7 @@ internal sealed class QuicRecoveryController
 /// </summary>
 internal sealed class QuicRecoveryPacketNumberSpaceState
 {
-    private readonly SortedList<ulong, ulong> ackElicitingPacketsInFlight;
+    private readonly SortedList<ulong, QuicRecoverySentPacketState> ackElicitingPacketsInFlight;
 
     /// <summary>
     /// Initializes a new per-space recovery state.
@@ -775,7 +801,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     {
         PacketNumberSpace = packetNumberSpace;
         RttEstimator = new QuicRttEstimator(initialRttMicros);
-        ackElicitingPacketsInFlight = new SortedList<ulong, ulong>();
+        ackElicitingPacketsInFlight = new SortedList<ulong, QuicRecoverySentPacketState>();
         LargestAcknowledgedPacketNumber = 0;
     }
 
@@ -802,14 +828,20 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     /// <summary>
     /// Records a sent packet for loss accounting.
     /// </summary>
-    internal void RecordPacketSent(ulong packetNumber, ulong sentAtMicros, bool isAckElicitingPacket)
+    internal void RecordPacketSent(
+        ulong packetNumber,
+        ulong sentAtMicros,
+        bool isAckElicitingPacket,
+        QuicTlsEncryptionLevel? packetProtectionLevel)
     {
         if (!isAckElicitingPacket)
         {
             return;
         }
 
-        ackElicitingPacketsInFlight[packetNumber] = sentAtMicros;
+        ackElicitingPacketsInFlight[packetNumber] = new QuicRecoverySentPacketState(
+            sentAtMicros,
+            packetProtectionLevel);
     }
 
     /// <summary>
@@ -834,12 +866,12 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         for (int index = 0; index < newlyAcknowledgedAckElicitingPacketNumbers.Length; index++)
         {
             ulong packetNumber = newlyAcknowledgedAckElicitingPacketNumbers[index];
-            if (ackElicitingPacketsInFlight.Remove(packetNumber, out ulong sentAtMicros))
+            if (ackElicitingPacketsInFlight.Remove(packetNumber, out QuicRecoverySentPacketState sentPacket))
             {
                 hasNewlyAcknowledgedAckElicitingPacket = true;
                 if (packetNumber == largestAcknowledgedPacketNumber && largestAcknowledgedPacketSentAtMicros is null)
                 {
-                    largestAcknowledgedPacketSentAtMicros = sentAtMicros;
+                    largestAcknowledgedPacketSentAtMicros = sentPacket.SentAtMicros;
                 }
             }
         }
@@ -879,7 +911,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         List<ulong> lostPacketNumbers = new();
         ulong? nextLossDelayMicros = null;
 
-        foreach (KeyValuePair<ulong, ulong> packet in ackElicitingPacketsInFlight)
+        foreach (KeyValuePair<ulong, QuicRecoverySentPacketState> packet in ackElicitingPacketsInFlight)
         {
             if (!QuicRecoveryTiming.CanDeclarePacketLost(
                 packetAcknowledged: false,
@@ -895,7 +927,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
                 LargestAcknowledgedPacketNumber);
 
             QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
-                packet.Value,
+                packet.Value.SentAtMicros,
                 nowMicros,
                 RttEstimator.LatestRttMicros,
                 RttEstimator.SmoothedRttMicros,
@@ -928,6 +960,40 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         }
 
         return lostPacketNumbers;
+    }
+
+    /// <summary>
+    /// Removes in-flight packets that used a specific packet protection level.
+    /// </summary>
+    internal bool TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel packetProtectionLevel)
+    {
+        if (ackElicitingPacketsInFlight.Count == 0)
+        {
+            return false;
+        }
+
+        List<ulong>? removedPacketNumbers = null;
+        foreach (KeyValuePair<ulong, QuicRecoverySentPacketState> packet in ackElicitingPacketsInFlight)
+        {
+            if (packet.Value.PacketProtectionLevel != packetProtectionLevel)
+            {
+                continue;
+            }
+
+            (removedPacketNumbers ??= []).Add(packet.Key);
+        }
+
+        if (removedPacketNumbers is null)
+        {
+            return false;
+        }
+
+        foreach (ulong packetNumber in removedPacketNumbers)
+        {
+            ackElicitingPacketsInFlight.Remove(packetNumber);
+        }
+
+        return true;
     }
 
     /// <summary>
