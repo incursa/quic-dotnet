@@ -22,6 +22,9 @@ internal sealed class QuicTlsTranscriptProgress
     private const int FinishedSha384Length = 48;
     private const ushort TlsLegacyVersion = 0x0303;
     private const ushort Tls13Version = 0x0304;
+    private const ushort ApplicationLayerProtocolNegotiationExtensionType = 0x0010;
+    private const ushort SignatureAlgorithmsExtensionType = 0x000d;
+    private const ushort SupportedGroupsExtensionType = 0x000a;
     private const byte NullCompressionMethod = 0x00;
     private const int MaximumSessionIdLength = 32;
     private const ushort SupportedVersionsExtensionType = 0x002b;
@@ -30,6 +33,7 @@ internal sealed class QuicTlsTranscriptProgress
     private const ushort PskKeyExchangeModesExtensionType = 0x002d;
     private const ushort EarlyDataExtensionType = 0x002a;
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
+    private const ushort EcdsaSecp256r1Sha256SignatureScheme = (ushort)QuicTlsSignatureScheme.EcdsaSecp256r1Sha256;
     private const ushort TlsAes128GcmSha256Value = (ushort)QuicTlsCipherSuite.TlsAes128GcmSha256;
     private const byte UncompressedPointFormat = 0x04;
     private const int Secp256r1CoordinateLength = 32;
@@ -838,6 +842,8 @@ internal sealed class QuicTlsTranscriptProgress
         transportParameters = null;
 
         bool foundSupportedVersions = false;
+        bool foundSignatureAlgorithms = false;
+        bool foundSupportedGroups = false;
         bool foundKeyShare = false;
         bool foundTransportParameters = false;
         bool foundPskKeyExchangeModes = false;
@@ -870,6 +876,33 @@ internal sealed class QuicTlsTranscriptProgress
                 }
 
                 foundSupportedVersions = true;
+            }
+            else if (extensionType == SignatureAlgorithmsExtensionType)
+            {
+                if (foundSignatureAlgorithms || !TryParseClientHelloSignatureAlgorithms(extensionValue))
+                {
+                    return false;
+                }
+
+                foundSignatureAlgorithms = true;
+            }
+            else if (extensionType == ApplicationLayerProtocolNegotiationExtensionType)
+            {
+                if (!TryParseApplicationLayerProtocolNegotiationExtension(
+                    extensionValue,
+                    requireSingleProtocol: false))
+                {
+                    return false;
+                }
+            }
+            else if (extensionType == SupportedGroupsExtensionType)
+            {
+                if (foundSupportedGroups || !TryParseClientHelloSupportedGroups(extensionValue))
+                {
+                    return false;
+                }
+
+                foundSupportedGroups = true;
             }
             else if (extensionType == KeyShareExtensionType)
             {
@@ -939,6 +972,95 @@ internal sealed class QuicTlsTranscriptProgress
         return TryReadUInt16(extensionValue, ref index, out ushort version)
             && version == Tls13Version
             && index == extensionValue.Length;
+    }
+
+    private static bool TryParseClientHelloSignatureAlgorithms(ReadOnlySpan<byte> extensionValue)
+    {
+        int index = 0;
+        if (!TryReadUInt16(extensionValue, ref index, out ushort signatureSchemesLength)
+            || signatureSchemesLength == 0
+            || (signatureSchemesLength & 1) != 0
+            || index + signatureSchemesLength != extensionValue.Length)
+        {
+            return false;
+        }
+
+        bool foundSupportedSignatureScheme = false;
+        int signatureSchemesEnd = index + signatureSchemesLength;
+        while (index < signatureSchemesEnd)
+        {
+            if (!TryReadUInt16(extensionValue, ref index, out ushort signatureScheme))
+            {
+                return false;
+            }
+
+            if (signatureScheme == EcdsaSecp256r1Sha256SignatureScheme)
+            {
+                foundSupportedSignatureScheme = true;
+            }
+        }
+
+        return index == extensionValue.Length && foundSupportedSignatureScheme;
+    }
+
+    private static bool TryParseClientHelloSupportedGroups(ReadOnlySpan<byte> extensionValue)
+    {
+        int index = 0;
+        if (!TryReadUInt16(extensionValue, ref index, out ushort groupsLength)
+            || groupsLength == 0
+            || (groupsLength & 1) != 0
+            || index + groupsLength != extensionValue.Length)
+        {
+            return false;
+        }
+
+        bool foundSupportedGroup = false;
+        int groupsEnd = index + groupsLength;
+        while (index < groupsEnd)
+        {
+            if (!TryReadUInt16(extensionValue, ref index, out ushort namedGroup))
+            {
+                return false;
+            }
+
+            if (namedGroup == Secp256r1NamedGroup)
+            {
+                foundSupportedGroup = true;
+            }
+        }
+
+        return index == extensionValue.Length && foundSupportedGroup;
+    }
+
+    private static bool TryParseApplicationLayerProtocolNegotiationExtension(
+        ReadOnlySpan<byte> extensionValue,
+        bool requireSingleProtocol)
+    {
+        int index = 0;
+        if (!TryReadUInt16(extensionValue, ref index, out ushort protocolNameListLength)
+            || protocolNameListLength == 0
+            || index + protocolNameListLength != extensionValue.Length)
+        {
+            return false;
+        }
+
+        int protocolCount = 0;
+        int protocolListEnd = index + protocolNameListLength;
+        while (index < protocolListEnd)
+        {
+            if (!TryReadUInt8(extensionValue, ref index, out int protocolNameLength)
+                || protocolNameLength == 0
+                || !TrySkipBytes(extensionValue, ref index, protocolNameLength))
+            {
+                return false;
+            }
+
+            protocolCount++;
+        }
+
+        return index == extensionValue.Length
+            && protocolCount > 0
+            && (!requireSingleProtocol || protocolCount == 1);
     }
 
     private static bool TryParseClientHelloKeyShare(
@@ -1117,6 +1239,15 @@ internal sealed class QuicTlsTranscriptProgress
                 }
 
                 foundEarlyData = true;
+            }
+            else if (extensionType == ApplicationLayerProtocolNegotiationExtensionType)
+            {
+                if (!TryParseApplicationLayerProtocolNegotiationExtension(
+                    extensionValue,
+                    requireSingleProtocol: true))
+                {
+                    return false;
+                }
             }
             else
             {

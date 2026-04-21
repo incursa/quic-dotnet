@@ -5,6 +5,8 @@ namespace Incursa.Quic;
 /// </summary>
 internal static class QuicPacketParser
 {
+    private const int LongHeaderFixedPrefixLength = 1 + sizeof(uint);
+
     /// <summary>
     /// Classifies a packet by the high bit of the first byte.
     /// </summary>
@@ -68,9 +70,7 @@ internal static class QuicPacketParser
     /// </summary>
     internal static bool TryParseShortHeader(ReadOnlySpan<byte> packet, out QuicShortHeaderPacket header)
     {
-        if (packet.IsEmpty
-            || (packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) != 0
-            || (packet[0] & QuicPacketHeaderBits.FixedBitMask) == 0
+        if (!IsRecognizableShortHeaderPacket(packet)
             || (packet[0] & QuicPacketHeaderBits.ShortReservedBitsMask) != 0)
         {
             header = default;
@@ -128,7 +128,7 @@ internal static class QuicPacketParser
 
         if (headerForm == QuicHeaderForm.Short)
         {
-            if (!TryParseShortHeader(packet, out _))
+            if (!IsRecognizableShortHeaderPacket(packet))
             {
                 return false;
             }
@@ -145,6 +145,129 @@ internal static class QuicPacketParser
         }
 
         return TryMapLongHeaderToPacketNumberSpace(header.LongPacketTypeBits, out packetNumberSpace);
+    }
+
+    /// <summary>
+    /// Computes the length of the leading QUIC packet inside a UDP datagram so coalesced packets can be split.
+    /// </summary>
+    internal static bool TryGetPacketLength(ReadOnlySpan<byte> datagram, out int packetLength)
+    {
+        packetLength = default;
+
+        if (!TryClassifyHeaderForm(datagram, out QuicHeaderForm headerForm))
+        {
+            return false;
+        }
+
+        if (headerForm == QuicHeaderForm.Short)
+        {
+            if (!IsRecognizableShortHeaderPacket(datagram))
+            {
+                return false;
+            }
+
+            packetLength = datagram.Length;
+            return true;
+        }
+
+        if (!QuicPacketParsing.TryParseLongHeaderFields(
+                datagram,
+                out byte headerControlBits,
+                out uint version,
+                out ReadOnlySpan<byte> destinationConnectionId,
+                out ReadOnlySpan<byte> sourceConnectionId,
+                out ReadOnlySpan<byte> versionSpecificData))
+        {
+            return false;
+        }
+
+        int longHeaderPrefixLength = LongHeaderFixedPrefixLength
+            + 1
+            + destinationConnectionId.Length
+            + 1
+            + sourceConnectionId.Length;
+
+        if (version != 0 && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
+        {
+            return false;
+        }
+
+        if (!QuicPacketParsing.TryValidateVersionSpecificLongHeaderFields(
+                headerControlBits,
+                version,
+                destinationConnectionId.Length,
+                sourceConnectionId.Length,
+                versionSpecificData))
+        {
+            return false;
+        }
+
+        if (version == QuicVersionNegotiation.VersionNegotiationVersion)
+        {
+            if (!TryParseVersionNegotiation(datagram, out _))
+            {
+                return false;
+            }
+
+            packetLength = datagram.Length;
+            return true;
+        }
+
+        if (version != QuicVersionNegotiation.Version1)
+        {
+            if (!TryParseLongHeader(datagram, out _))
+            {
+                return false;
+            }
+
+            packetLength = datagram.Length;
+            return true;
+        }
+
+        byte longPacketTypeBits = (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift);
+        switch (longPacketTypeBits)
+        {
+            case QuicLongPacketTypeBits.Initial:
+                if (!TryGetInitialVersionSpecificLength(
+                        headerControlBits,
+                        versionSpecificData,
+                        out int initialVersionSpecificLength))
+                {
+                    return false;
+                }
+
+                packetLength = longHeaderPrefixLength + initialVersionSpecificLength;
+                return packetLength <= datagram.Length;
+
+            case QuicLongPacketTypeBits.ZeroRtt:
+            case QuicLongPacketTypeBits.Handshake:
+                if (!TryGetLengthDelimitedVersionSpecificLength(
+                        headerControlBits,
+                        versionSpecificData,
+                        out int lengthDelimitedVersionSpecificLength))
+                {
+                    return false;
+                }
+
+                packetLength = longHeaderPrefixLength + lengthDelimitedVersionSpecificLength;
+                return packetLength <= datagram.Length;
+
+            default:
+                if (!TryParseLongHeader(datagram, out _))
+                {
+                    return false;
+                }
+
+                packetLength = datagram.Length;
+                return true;
+        }
+    }
+
+    private static bool IsRecognizableShortHeaderPacket(ReadOnlySpan<byte> packet)
+    {
+        return !packet.IsEmpty
+            && (packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) == 0
+            && (packet[0] & QuicPacketHeaderBits.FixedBitMask) != 0;
     }
 
     private static bool TryMapLongHeaderToPacketNumberSpace(byte longPacketTypeBits, out QuicPacketNumberSpace packetNumberSpace)
@@ -165,5 +288,65 @@ internal static class QuicPacketParser
                 return false;
         }
     }
-}
 
+    private static bool TryGetInitialVersionSpecificLength(
+        byte headerControlBits,
+        ReadOnlySpan<byte> versionSpecificData,
+        out int versionSpecificLength)
+    {
+        versionSpecificLength = default;
+
+        if (!QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong tokenLength, out int tokenLengthBytes))
+        {
+            return false;
+        }
+
+        int remainingAfterTokenLength = versionSpecificData.Length - tokenLengthBytes;
+        if (tokenLength > (ulong)remainingAfterTokenLength
+            || tokenLength > (ulong)(int.MaxValue - tokenLengthBytes))
+        {
+            return false;
+        }
+
+        int tokenSectionLength = tokenLengthBytes + checked((int)tokenLength);
+        if (!TryGetLengthDelimitedVersionSpecificLength(
+                headerControlBits,
+                versionSpecificData[tokenSectionLength..],
+                out int remainingVersionSpecificLength))
+        {
+            return false;
+        }
+
+        versionSpecificLength = tokenSectionLength + remainingVersionSpecificLength;
+        return versionSpecificLength <= versionSpecificData.Length;
+    }
+
+    private static bool TryGetLengthDelimitedVersionSpecificLength(
+        byte headerControlBits,
+        ReadOnlySpan<byte> versionSpecificData,
+        out int versionSpecificLength)
+    {
+        versionSpecificLength = default;
+
+        if (!QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong lengthFieldValue, out int lengthFieldBytes))
+        {
+            return false;
+        }
+
+        int packetNumberLength = (headerControlBits & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1;
+        if (lengthFieldValue < (ulong)packetNumberLength
+            || lengthFieldValue > (ulong)(int.MaxValue - lengthFieldBytes))
+        {
+            return false;
+        }
+
+        int remainingAfterLength = versionSpecificData.Length - lengthFieldBytes;
+        if (lengthFieldValue > (ulong)remainingAfterLength)
+        {
+            return false;
+        }
+
+        versionSpecificLength = lengthFieldBytes + checked((int)lengthFieldValue);
+        return true;
+    }
+}

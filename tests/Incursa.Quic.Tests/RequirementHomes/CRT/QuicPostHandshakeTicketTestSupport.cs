@@ -22,6 +22,8 @@ internal static class QuicPostHandshakeTicketTestSupport
     private const byte UncompressedPointFormat = 0x04;
     private const int Secp256r1CoordinateLength = 32;
     private const int Secp256r1KeyShareLength = 1 + (Secp256r1CoordinateLength * 2);
+    private const ulong DefaultConnectionFlowControlLimit = 64;
+    private const ulong DefaultStreamFlowControlLimit = 8;
     private static readonly byte[] PacketConnectionId =
     [
         0x0A, 0x0B, 0x0C,
@@ -533,6 +535,10 @@ internal static class QuicPostHandshakeTicketTestSupport
             DisableActiveMigration = true,
             OriginalDestinationConnectionId = [0x0A, 0x0B, 0x0C],
             InitialSourceConnectionId = [0x0A, 0x0B, 0x0C],
+            InitialMaxData = DefaultConnectionFlowControlLimit,
+            InitialMaxStreamDataBidiLocal = DefaultStreamFlowControlLimit,
+            InitialMaxStreamDataBidiRemote = DefaultStreamFlowControlLimit,
+            InitialMaxStreamDataUni = DefaultStreamFlowControlLimit,
         };
     }
 
@@ -543,6 +549,10 @@ internal static class QuicPostHandshakeTicketTestSupport
             MaxIdleTimeout = 21,
             DisableActiveMigration = true,
             InitialSourceConnectionId = [0x0A, 0x0B, 0x0C],
+            InitialMaxData = DefaultConnectionFlowControlLimit,
+            InitialMaxStreamDataBidiLocal = DefaultStreamFlowControlLimit,
+            InitialMaxStreamDataBidiRemote = DefaultStreamFlowControlLimit,
+            InitialMaxStreamDataUni = DefaultStreamFlowControlLimit,
         };
     }
 

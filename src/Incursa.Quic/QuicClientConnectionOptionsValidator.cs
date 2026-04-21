@@ -11,7 +11,8 @@ internal static class QuicClientConnectionOptionsValidator
         QuicClientConnectionOptions options,
         string parameterName,
         QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot = null,
-        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null)
+        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
+        ReadOnlyMemory<byte> localHandshakePrivateKey = default)
     {
         ArgumentNullException.ThrowIfNull(options);
 
@@ -114,7 +115,8 @@ internal static class QuicClientConnectionOptionsValidator
             CloneEndPoint(remoteEndPoint),
             options.LocalEndPoint is null ? null : CloneEndPoint(options.LocalEndPoint),
             capturedCertificatePolicySnapshot,
-            detachedResumptionTicketSnapshot);
+            detachedResumptionTicketSnapshot,
+            localHandshakePrivateKey);
     }
 
     private static QuicClientConnectionOptions CaptureOptions(
@@ -193,4 +195,5 @@ internal sealed record QuicClientConnectionSettings(
     IPEndPoint RemoteEndPoint,
     IPEndPoint? LocalEndPoint,
     QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot = null,
-    QuicDetachedResumptionTicketSnapshot? DetachedResumptionTicketSnapshot = null);
+    QuicDetachedResumptionTicketSnapshot? DetachedResumptionTicketSnapshot = null,
+    ReadOnlyMemory<byte> LocalHandshakePrivateKey = default);

@@ -350,6 +350,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
         return new QuicConnectionRuntime(
             bookkeeping,
+            localHandshakePrivateKey: settings.LocalHandshakePrivateKey,
             tlsRole: QuicTlsRole.Client,
             clientCertificatePolicySnapshot: settings.ClientCertificatePolicySnapshot,
             remoteCertificateValidationCallback: options.ClientAuthenticationOptions.RemoteCertificateValidationCallback,

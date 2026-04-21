@@ -79,7 +79,7 @@ internal sealed class InteropHarnessPreflightPlanner
             {
                 AllowRenegotiation = false,
                 AllowTlsResume = true,
-                ApplicationProtocols = [SslApplicationProtocol.Http3],
+                ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
                 EnabledSslProtocols = SslProtocols.Tls13,
                 EncryptionPolicy = EncryptionPolicy.RequireEncryption,
                 TargetHost = string.IsNullOrWhiteSpace(targetHost) ? null : targetHost,
@@ -100,7 +100,7 @@ internal sealed class InteropHarnessPreflightPlanner
         {
             ServerAuthenticationOptions = new SslServerAuthenticationOptions
             {
-                ApplicationProtocols = [SslApplicationProtocol.Http3],
+                ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
                 ServerCertificate = serverCertificate,
                 EnabledSslProtocols = SslProtocols.Tls13,
                 EncryptionPolicy = EncryptionPolicy.RequireEncryption,
@@ -127,7 +127,11 @@ internal sealed class InteropHarnessPreflightPlanner
                 return false;
             }
         }
-        else if (!TryGetTransferRelativePath(requestUri, out relativePath, out errorMessage) ||
+        else if (!TryGetTransferRelativePath(
+            requestUri.AbsolutePath,
+            requestUri.ToString(),
+            out relativePath,
+            out errorMessage) ||
             relativePath is null)
         {
             return false;
@@ -144,6 +148,58 @@ internal sealed class InteropHarnessPreflightPlanner
         {
             string requestDescription = requestUri?.ToString() ?? "(empty REQUESTS)";
             errorMessage = $"Unable to resolve transfer paths for '{requestDescription}': {ex.Message}";
+            return false;
+        }
+    }
+
+    internal static bool TryGetTransferPathsFromRequestTarget(
+        string requestTarget,
+        out string? relativePath,
+        out string? sourcePath,
+        out string? destinationPath,
+        out string? errorMessage)
+    {
+        relativePath = null;
+        sourcePath = null;
+        destinationPath = null;
+
+        if (string.IsNullOrWhiteSpace(requestTarget))
+        {
+            errorMessage = "HTTP/0.9 request target must not be empty.";
+            return false;
+        }
+
+        string normalizedTarget = requestTarget.Trim();
+        if (Uri.TryCreate(normalizedTarget, UriKind.Absolute, out Uri? requestUri) && requestUri is not null)
+        {
+            return TryGetTransferPaths(requestUri, out relativePath, out sourcePath, out destinationPath, out errorMessage);
+        }
+
+        int querySeparatorIndex = normalizedTarget.IndexOfAny(['?', '#']);
+        string requestPath = querySeparatorIndex >= 0
+            ? normalizedTarget[..querySeparatorIndex]
+            : normalizedTarget;
+
+        if (!TryGetTransferRelativePath(
+            requestPath,
+            normalizedTarget,
+            out relativePath,
+            out errorMessage) ||
+            relativePath is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            sourcePath = ResolveMountedPath(InteropHarnessEnvironment.WwwDirectory, relativePath);
+            destinationPath = ResolveMountedPath(InteropHarnessEnvironment.DownloadsDirectory, relativePath);
+            errorMessage = null;
+            return true;
+        }
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException or NotSupportedException or PathTooLongException)
+        {
+            errorMessage = $"Unable to resolve transfer paths for '{normalizedTarget}': {ex.Message}";
             return false;
         }
     }
@@ -232,16 +288,17 @@ internal sealed class InteropHarnessPreflightPlanner
     }
 
     private static bool TryGetTransferRelativePath(
-        Uri requestUri,
+        string requestPath,
+        string requestDescription,
         out string? relativePath,
         out string? errorMessage)
     {
-        string requestPath = Uri.UnescapeDataString(requestUri.AbsolutePath).Replace('\\', '/');
-        string[] pathSegments = requestPath.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        string normalizedRequestPath = Uri.UnescapeDataString(requestPath).Replace('\\', '/');
+        string[] pathSegments = normalizedRequestPath.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         if (pathSegments.Length == 0)
         {
             relativePath = null;
-            errorMessage = $"REQUESTS entry '{requestUri}' must include a non-root path for transfer dispatch.";
+            errorMessage = $"REQUESTS entry '{requestDescription}' must include a non-root path for transfer dispatch.";
             return false;
         }
 
@@ -250,14 +307,14 @@ internal sealed class InteropHarnessPreflightPlanner
             if (segment is "." or "..")
             {
                 relativePath = null;
-                errorMessage = $"REQUESTS entry '{requestUri}' must not escape the transfer mount roots.";
+                errorMessage = $"REQUESTS entry '{requestDescription}' must not escape the transfer mount roots.";
                 return false;
             }
 
             if (segment.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             {
                 relativePath = null;
-                errorMessage = $"REQUESTS entry '{requestUri}' contains an invalid transfer path segment '{segment}'.";
+                errorMessage = $"REQUESTS entry '{requestDescription}' contains an invalid transfer path segment '{segment}'.";
                 return false;
             }
         }

@@ -29,6 +29,10 @@ internal static class QuicS13ApplicationSendDelayTestSupport
             MaxIdleTimeout = 21,
             OriginalDestinationConnectionId = [0x0A, 0x0B, 0x0C],
             InitialSourceConnectionId = [0x0A, 0x0B, 0x0C],
+            InitialMaxData = Math.Max(localBidirectionalSendLimit, 64UL),
+            InitialMaxStreamDataBidiLocal = Math.Max(localBidirectionalSendLimit, 64UL),
+            InitialMaxStreamDataBidiRemote = Math.Max(localBidirectionalSendLimit, 64UL),
+            InitialMaxStreamDataUni = Math.Max(localBidirectionalSendLimit, 64UL),
         };
 
         using ECDsa leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);

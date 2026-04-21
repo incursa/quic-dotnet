@@ -45,12 +45,14 @@ public sealed class QuicConnection : IAsyncDisposable
         QuicClientConnectionOptions options,
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot,
         CancellationToken cancellationToken = default,
-        IQuicDiagnosticsSink? diagnosticsSink = null)
+        IQuicDiagnosticsSink? diagnosticsSink = null,
+        ReadOnlyMemory<byte> localHandshakePrivateKey = default)
     {
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
             options,
             nameof(options),
-            detachedResumptionTicketSnapshot: detachedResumptionTicketSnapshot);
+            detachedResumptionTicketSnapshot: detachedResumptionTicketSnapshot,
+            localHandshakePrivateKey: localHandshakePrivateKey);
         cancellationToken.ThrowIfCancellationRequested();
         return new QuicClientConnectionHost(
             settings,

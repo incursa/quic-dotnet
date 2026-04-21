@@ -13,8 +13,11 @@ internal sealed record InteropHarnessEnvironment(
     string TestCase,
     IReadOnlyList<string> Requests,
     string? QlogDirectory,
-    string? SslKeyLogFile)
+    string? SslKeyLogFile,
+    ReadOnlyMemory<byte> LocalHandshakePrivateKey)
 {
+    private const int DeterministicHandshakePrivateKeyLength = 32;
+
     public const string WwwDirectory = "/www";
 
     public const string DownloadsDirectory = "/downloads";
@@ -47,13 +50,19 @@ internal sealed record InteropHarnessEnvironment(
             return false;
         }
 
+        if (!TryGetOptionalLocalHandshakePrivateKey(environment, out byte[] localHandshakePrivateKey, out errorMessage))
+        {
+            return false;
+        }
+
         IReadOnlyList<string> requests = ParseRequests(GetString(environment, "REQUESTS"));
         settings = new InteropHarnessEnvironment(
             role,
             testCaseValue.Trim().ToLowerInvariant(),
             requests,
             GetString(environment, "QLOGDIR"),
-            GetString(environment, "SSLKEYLOGFILE"));
+            GetString(environment, "SSLKEYLOGFILE"),
+            localHandshakePrivateKey);
         return true;
     }
 
@@ -93,6 +102,65 @@ internal sealed record InteropHarnessEnvironment(
         return requestsValue
             .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .ToArray();
+    }
+
+    private static bool TryGetOptionalLocalHandshakePrivateKey(
+        IDictionary environment,
+        out byte[] localHandshakePrivateKey,
+        out string? errorMessage)
+    {
+        localHandshakePrivateKey = Array.Empty<byte>();
+        errorMessage = null;
+
+        string? localHandshakePrivateKeyHex = GetLocalHandshakePrivateKeyHex(environment);
+        if (string.IsNullOrWhiteSpace(localHandshakePrivateKeyHex))
+        {
+            return true;
+        }
+
+        try
+        {
+            localHandshakePrivateKey = Convert.FromHexString(localHandshakePrivateKeyHex.Trim());
+        }
+        catch (FormatException)
+        {
+            errorMessage = "Deterministic local handshake key must be an even-length hexadecimal string.";
+            return false;
+        }
+
+        if (localHandshakePrivateKey.Length != DeterministicHandshakePrivateKeyLength)
+        {
+            errorMessage = $"Deterministic local handshake key must decode to exactly {DeterministicHandshakePrivateKeyLength} bytes.";
+            return false;
+        }
+
+        return true;
+    }
+
+    private static string? GetLocalHandshakePrivateKeyHex(IDictionary environment)
+    {
+        if (TryGetString(environment, "LOCAL_HANDSHAKE_PRIVATE_KEY_HEX", out string? directValue)
+            && !string.IsNullOrWhiteSpace(directValue))
+        {
+            return directValue;
+        }
+
+        if (!TryGetString(environment, "CLIENT_PARAMS", out string? clientParams)
+            || string.IsNullOrWhiteSpace(clientParams))
+        {
+            return null;
+        }
+
+        foreach (string token in clientParams.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            const string Prefix = "local_handshake_private_key_hex=";
+            if (token.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return token[Prefix.Length..];
+            }
+        }
+
+        return null;
     }
 
     private static bool TryGetString(System.Collections.IDictionary environment, string name, out string? value)

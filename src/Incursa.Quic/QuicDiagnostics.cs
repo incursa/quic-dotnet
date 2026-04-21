@@ -221,12 +221,13 @@ internal static class QuicDiagnostics
 
     internal static QuicDiagnosticEvent HandshakePacketOpenFailed(
         QuicConnectionPathIdentity pathIdentity,
+        string reason,
         ReadOnlySpan<byte> packetBytes = default)
     {
         return new QuicDiagnosticEvent(
             "connection.runtime.handshake",
             "handshake-packet-open-failed",
-            "Handshake packet could not be opened or parsed by the runtime.",
+            $"Handshake packet could not be opened or parsed by the runtime: {reason}.",
             QuicDiagnosticSeverity.Warning)
         {
             PathIdentity = pathIdentity,

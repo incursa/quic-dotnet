@@ -83,6 +83,33 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
+    private bool TryMarkActivePathValidated(long nowTicks)
+    {
+        if (activePath is null)
+        {
+            return false;
+        }
+
+        QuicConnectionActivePathRecord currentPath = activePath.Value;
+        bool alreadyValidated = currentPath.IsValidated && currentPath.AmplificationState.IsAddressValidated;
+        if (alreadyValidated)
+        {
+            return false;
+        }
+
+        QuicConnectionActivePathRecord validatedPath = currentPath with
+        {
+            IsValidated = true,
+            LastActivityTicks = nowTicks,
+            AmplificationState = currentPath.AmplificationState.MarkAddressValidated(),
+        };
+
+        activePath = validatedPath;
+        lastValidatedRemoteAddress = validatedPath.Identity.RemoteAddress;
+        UpdatePeerAddressValidationFlag();
+        return true;
+    }
+
     private bool HandleAddressChangePacket(
         QuicConnectionPathIdentity pathIdentity,
         int payloadBytes,

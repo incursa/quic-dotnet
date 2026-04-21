@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Net.Security;
 using System.Security.Cryptography;
 
 namespace Incursa.Quic.Tests;
@@ -106,6 +107,27 @@ public sealed class REQ_QUIC_CRT_0112
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ServerRoleAcceptsClientHelloThatOffersApplicationProtocolNegotiation()
+    {
+        QuicTransportParameters peerTransportParameters = CreateClientTransportParameters();
+        QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
+        _ = driver.StartHandshake(CreateBootstrapLocalTransportParameters());
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            CreateClientHelloTranscript(
+                peerTransportParameters,
+                applicationProtocols: [SslApplicationProtocol.Http3.Protocol.ToArray()]));
+
+        Assert.True(updates.Count >= 5);
+        Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, updates[0].Kind);
+        Assert.Equal(QuicTlsHandshakeMessageType.ClientHello, updates[0].HandshakeMessageType);
+        Assert.True(driver.State.HandshakeKeysAvailable);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void HandshakeKeysStayUnavailableUntilTheSupportedClientHelloCompletes()
@@ -183,6 +205,26 @@ public sealed class REQ_QUIC_CRT_0112
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    public void EmptyClientHelloApplicationProtocolNameFailsDeterministically()
+    {
+        QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
+        _ = driver.StartHandshake(CreateBootstrapLocalTransportParameters());
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            CreateClientHelloTranscript(
+                CreateClientTransportParameters(),
+                applicationProtocols: [Array.Empty<byte>()]));
+
+        Assert.Single(updates);
+        Assert.Equal(QuicTlsUpdateKind.FatalAlert, updates[0].Kind);
+        Assert.Equal((ushort)0x0032, updates[0].AlertDescription);
+        Assert.True(driver.State.IsTerminal);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void UnsupportedClientHelloNamedGroupOrKeyShareFailsDeterministically()
     {
         QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
@@ -194,6 +236,26 @@ public sealed class REQ_QUIC_CRT_0112
                 CreateClientTransportParameters(),
                 keyShareNamedGroup: 0x001d,
                 keyShare: CreateSequentialBytes(0x90, 32)));
+
+        Assert.Single(updates);
+        Assert.Equal(QuicTlsUpdateKind.FatalAlert, updates[0].Kind);
+        Assert.Equal((ushort)0x0032, updates[0].AlertDescription);
+        Assert.True(driver.State.IsTerminal);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void UnsupportedClientHelloSupportedGroupsFailsDeterministically()
+    {
+        QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
+        _ = driver.StartHandshake(CreateBootstrapLocalTransportParameters());
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            CreateClientHelloTranscript(
+                CreateClientTransportParameters(),
+                supportedGroups: [0x001d]));
 
         Assert.Single(updates);
         Assert.Equal(QuicTlsUpdateKind.FatalAlert, updates[0].Kind);
@@ -268,20 +330,29 @@ public sealed class REQ_QUIC_CRT_0112
         QuicTransportParameters transportParameters,
         ushort[]? supportedVersions = null,
         ushort[]? cipherSuites = null,
+        ushort[]? supportedGroups = null,
+        byte[][]? applicationProtocols = null,
         ushort keyShareNamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1,
         byte[]? keyShare = null)
     {
         supportedVersions ??= [0x0304];
         cipherSuites ??= [(ushort)QuicTlsCipherSuite.TlsAes128GcmSha256];
+        supportedGroups ??= [(ushort)QuicTlsNamedGroup.Secp256r1];
         keyShare ??= CreateClientKeyShare();
 
         byte[] supportedVersionsExtension = CreateClientSupportedVersionsExtension(supportedVersions);
+        byte[]? applicationProtocolsExtension = applicationProtocols is { Length: > 0 }
+            ? CreateClientApplicationProtocolNegotiationExtension(applicationProtocols)
+            : null;
+        byte[] supportedGroupsExtension = CreateClientSupportedGroupsExtension(supportedGroups);
         byte[] keyShareExtension = CreateClientKeyShareExtension(keyShareNamedGroup, keyShare);
         byte[] transportParametersExtension = CreateTransportParametersExtension(
             transportParameters,
             QuicTransportParameterRole.Client);
 
         int extensionsLength = supportedVersionsExtension.Length
+            + (applicationProtocolsExtension?.Length ?? 0)
+            + supportedGroupsExtension.Length
             + keyShareExtension.Length
             + transportParametersExtension.Length;
         byte[] body = new byte[43 + extensionsLength];
@@ -308,6 +379,10 @@ public sealed class REQ_QUIC_CRT_0112
 
         supportedVersionsExtension.CopyTo(body.AsSpan(index));
         index += supportedVersionsExtension.Length;
+        applicationProtocolsExtension?.CopyTo(body.AsSpan(index));
+        index += applicationProtocolsExtension?.Length ?? 0;
+        supportedGroupsExtension.CopyTo(body.AsSpan(index));
+        index += supportedGroupsExtension.Length;
         keyShareExtension.CopyTo(body.AsSpan(index));
         index += keyShareExtension.Length;
         transportParametersExtension.CopyTo(body.AsSpan(index));
@@ -335,6 +410,51 @@ public sealed class REQ_QUIC_CRT_0112
         foreach (ushort supportedVersion in supportedVersions)
         {
             WriteUInt16(extension.AsSpan(index, 2), supportedVersion);
+            index += 2;
+        }
+
+        return extension;
+    }
+
+    private static byte[] CreateClientApplicationProtocolNegotiationExtension(IReadOnlyList<byte[]> applicationProtocols)
+    {
+        int protocolListLength = 0;
+        foreach (byte[] applicationProtocol in applicationProtocols)
+        {
+            protocolListLength += 1 + applicationProtocol.Length;
+        }
+
+        byte[] extension = new byte[2 + 2 + 2 + protocolListLength];
+        int index = 0;
+        WriteUInt16(extension.AsSpan(index, 2), 0x0010);
+        index += 2;
+        WriteUInt16(extension.AsSpan(index, 2), checked((ushort)(2 + protocolListLength)));
+        index += 2;
+        WriteUInt16(extension.AsSpan(index, 2), checked((ushort)protocolListLength));
+        index += 2;
+        foreach (byte[] applicationProtocol in applicationProtocols)
+        {
+            extension[index++] = checked((byte)applicationProtocol.Length);
+            applicationProtocol.CopyTo(extension.AsSpan(index));
+            index += applicationProtocol.Length;
+        }
+
+        return extension;
+    }
+
+    private static byte[] CreateClientSupportedGroupsExtension(IReadOnlyList<ushort> supportedGroups)
+    {
+        byte[] extension = new byte[2 + 2 + 2 + (supportedGroups.Count * 2)];
+        int index = 0;
+        WriteUInt16(extension.AsSpan(index, 2), 0x000a);
+        index += 2;
+        WriteUInt16(extension.AsSpan(index, 2), checked((ushort)(2 + (supportedGroups.Count * 2))));
+        index += 2;
+        WriteUInt16(extension.AsSpan(index, 2), checked((ushort)(supportedGroups.Count * 2)));
+        index += 2;
+        foreach (ushort supportedGroup in supportedGroups)
+        {
+            WriteUInt16(extension.AsSpan(index, 2), supportedGroup);
             index += 2;
         }
 

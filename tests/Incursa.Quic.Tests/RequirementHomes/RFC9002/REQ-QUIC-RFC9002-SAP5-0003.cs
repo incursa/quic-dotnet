@@ -24,6 +24,31 @@ public sealed class REQ_QUIC_RFC9002_SAP5_0003
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ClientBootstrapInitialArmsTheRecoveryTimerWhenItBecomesInFlight()
+    {
+        using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateClientRuntime();
+
+        QuicConnectionTransitionResult bootstrapResult = runtime.Transition(
+            new QuicConnectionHandshakeBootstrapRequestedEvent(
+                ObservedAtTicks: 0,
+                LocalTransportParameters: QuicLoopbackEstablishmentTestSupport.CreateSupportedTransportParameters(
+                    QuicS17P2P5P2TestSupport.InitialSourceConnectionId)),
+            nowTicks: 0);
+
+        Assert.True(bootstrapResult.StateChanged);
+        Assert.Contains(bootstrapResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+        Assert.Contains(bootstrapResult.Effects, effect =>
+            effect is QuicConnectionArmTimerEffect armEffect
+            && armEffect.TimerKind == QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery));
+        Assert.Single(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => packet.PacketNumberSpace == QuicPacketNumberSpace.Initial && packet.AckEliciting);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void QuicCongestionControlState_DoesNotCountAckOnlyPacketsOrRestartPtoWithoutASend()

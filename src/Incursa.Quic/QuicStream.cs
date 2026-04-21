@@ -223,6 +223,55 @@ public sealed class QuicStream : Stream
         runtime.AbortStreamWritesAsync(streamId, checked((ulong)errorCode)).GetAwaiter().GetResult();
     }
 
+    internal async ValueTask CompleteWritesAsync(CancellationToken cancellationToken = default)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+
+        if (!canWrite)
+        {
+            throw new InvalidOperationException("This stream does not have a writable side.");
+        }
+
+        if (writesClosed.Task.IsCompleted)
+        {
+            return;
+        }
+
+        if (runtime is null)
+        {
+            throw new NotSupportedException("Completing writes requires the supported connection runtime path.");
+        }
+
+        await writeGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            if (runtime.GetStreamOperationException() is Exception runtimeException)
+            {
+                throw runtimeException;
+            }
+
+            if (!bookkeeping.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot))
+            {
+                throw new InvalidOperationException("The stream state is unavailable.");
+            }
+
+            if (snapshot.SendState is not (QuicStreamSendState.Ready or QuicStreamSendState.Send))
+            {
+                writesClosed.TrySetResult(null);
+                return;
+            }
+
+            await runtime.CompleteStreamWritesAsync(streamId, cancellationToken).ConfigureAwait(false);
+            writesClosed.TrySetResult(null);
+            runtime.TryQueueStreamCapacityRelease(streamId);
+        }
+        finally
+        {
+            writeGate.Release();
+        }
+    }
+
     public override ValueTask DisposeAsync()
     {
         return DisposeCoreAsync(useAsyncWait: true);

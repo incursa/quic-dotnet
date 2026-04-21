@@ -35,21 +35,16 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged = true;
         }
 
-        if (phase == QuicConnectionPhase.Establishing)
-        {
-            stateChanged |= TryHandleInitialPacketReceived(packetReceivedEvent, nowTicks, ref effects);
-            stateChanged |= TryHandleHandshakePacketReceived(packetReceivedEvent, nowTicks, ref effects);
-        }
-        else if (phase == QuicConnectionPhase.Active)
-        {
-            stateChanged |= TryHandleApplicationPacketReceived(packetReceivedEvent, nowTicks, ref effects);
-        }
-        else if (phase == QuicConnectionPhase.Closing)
+        if (phase == QuicConnectionPhase.Closing)
         {
             if (terminalState is QuicConnectionTerminalState terminalStateValue)
             {
                 AppendConnectionClosePacket(ref effects, terminalStateValue.Close);
             }
+        }
+        else
+        {
+            stateChanged |= TryHandleReceivedPacketDatagram(packetReceivedEvent, nowTicks, ref effects);
         }
 
         stateChanged |= TryFlushHandshakePackets(ref effects);
@@ -60,6 +55,60 @@ internal sealed partial class QuicConnectionRuntime
         {
             hasSuccessfullyProcessedAnotherPacket = true;
             AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        }
+
+        return stateChanged;
+    }
+
+    private bool TryHandleReceivedPacketDatagram(
+        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        bool stateChanged = false;
+        bool processedAnyPacket = false;
+        int packetOffset = 0;
+
+        while (packetOffset < packetReceivedEvent.Datagram.Length)
+        {
+            ReadOnlyMemory<byte> remainingDatagram = packetReceivedEvent.Datagram[packetOffset..];
+            if (!QuicPacketParser.TryGetPacketLength(remainingDatagram.Span, out int packetLength)
+                || packetLength <= 0)
+            {
+                return processedAnyPacket && stateChanged;
+            }
+
+            QuicConnectionPacketReceivedEvent packetEvent = packetReceivedEvent with
+            {
+                Datagram = remainingDatagram[..packetLength],
+            };
+
+            processedAnyPacket = true;
+
+            switch (phase)
+            {
+                case QuicConnectionPhase.Establishing:
+                    stateChanged |= TryHandleInitialPacketReceived(packetEvent, nowTicks, ref effects);
+                    stateChanged |= TryHandleHandshakePacketReceived(packetEvent, nowTicks, ref effects);
+                    break;
+
+                case QuicConnectionPhase.Active:
+                    stateChanged |= TryHandleApplicationPacketReceived(packetEvent, nowTicks, ref effects);
+                    break;
+
+                case QuicConnectionPhase.Closing:
+                    if (terminalState is QuicConnectionTerminalState terminalStateValue)
+                    {
+                        AppendConnectionClosePacket(ref effects, terminalStateValue.Close);
+                    }
+
+                    return stateChanged;
+
+                default:
+                    return stateChanged;
+            }
+
+            packetOffset += packetLength;
         }
 
         return stateChanged;
@@ -460,8 +509,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool HandleRecoveryTimerExpired(long nowTicks, ref List<QuicConnectionEffect>? effects)
     {
-        if (phase is not (QuicConnectionPhase.Establishing or QuicConnectionPhase.Active)
-            || activePath is null)
+        if (phase is not (QuicConnectionPhase.Establishing or QuicConnectionPhase.Active))
         {
             return false;
         }

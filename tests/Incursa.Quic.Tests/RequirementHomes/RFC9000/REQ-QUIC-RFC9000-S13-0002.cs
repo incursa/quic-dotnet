@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
@@ -147,6 +149,72 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
         Assert.True(secondFrame.StreamData.SequenceEqual(secondPayload));
 
         ReadOnlySpan<byte> tail = SkipPadding(remainder[secondFrame.ConsumedLength..]);
+        Assert.True(tail.IsEmpty);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task WriteAsync_FollowedImmediatelyByCompleteWritesAsync_CoalescesTheRequestAndFinIntoOneQueuedPacket()
+    {
+        // Modeled from the preserved 2026-04-20 client->quic-go handshake repro:
+        // the request line "GET /tired-full-diary\r\n" arrived on its own packet, and the
+        // standalone FIN-only follow-up packet was the remaining interop suspect. This proof
+        // keeps the request queued long enough for CompleteWritesAsync() to set FIN on that
+        // same STREAM frame before the delayed flush sends it.
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        Assert.True(runtime.ActivePath.HasValue);
+        runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 9,
+                runtime.ActivePath.Value.Identity,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 9);
+        outboundEffects.Clear();
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        outboundEffects.Clear();
+
+        byte[] request = Encoding.ASCII.GetBytes("GET /tired-full-diary\r\n");
+        await stream.WriteAsync(request, 0, request.Length);
+
+        Assert.Contains(outboundEffects, effect =>
+            effect is QuicConnectionArmTimerEffect arm
+            && arm.TimerKind == QuicConnectionTimerKind.ApplicationSendDelay);
+        Assert.Empty(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+
+        await stream.CompleteWritesAsync().AsTask();
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            sendEffect.Datagram.Span,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength,
+            out bool keyPhase));
+        Assert.False(keyPhase);
+
+        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(payload, out QuicStreamFrame requestFrame));
+        Assert.Equal((ulong)stream.Id, requestFrame.StreamId.Value);
+        Assert.Equal(0UL, requestFrame.Offset);
+        Assert.True(requestFrame.IsFin);
+        Assert.True(requestFrame.StreamData.SequenceEqual(request));
+
+        ReadOnlySpan<byte> tail = SkipPadding(payload[requestFrame.ConsumedLength..]);
         Assert.True(tail.IsEmpty);
     }
 

@@ -236,6 +236,24 @@ public sealed class InteropHarnessPreflightPlannerTests
     }
 
     [Fact]
+    public void TryGetTransferPathsAcceptsHttp09PathTargetsWithoutAFullUrl()
+    {
+        string requestTarget = "/captured/interop-proof.txt";
+        string expectedRelativePath = Path.Combine("captured", "interop-proof.txt");
+
+        Assert.True(InteropHarnessPreflightPlanner.TryGetTransferPathsFromRequestTarget(
+            requestTarget,
+            out string? relativePath,
+            out string? sourcePath,
+            out string? destinationPath,
+            out string? errorMessage));
+        Assert.Equal(expectedRelativePath, relativePath);
+        Assert.Equal(Path.GetFullPath(Path.Combine(InteropHarnessEnvironment.WwwDirectory, expectedRelativePath)), sourcePath);
+        Assert.Equal(Path.GetFullPath(Path.Combine(InteropHarnessEnvironment.DownloadsDirectory, expectedRelativePath)), destinationPath);
+        Assert.Null(errorMessage);
+    }
+
+    [Fact]
     public void TryGetTransferPathsRejectsEscapingRequestPaths()
     {
         Uri requestUri = new("https://localhost:443/foo/..%2fescape.txt");

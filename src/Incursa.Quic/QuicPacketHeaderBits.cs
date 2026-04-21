@@ -69,4 +69,9 @@ internal static class QuicPacketHeaderBits
     /// The low nibble of the first byte, exposed as a convenience view for type-specific parsing.
     /// </summary>
     internal const byte TypeSpecificBitsMask = 0x0F;
+
+    /// <summary>
+    /// The five short-header bits covered by packet header protection.
+    /// </summary>
+    internal const byte ShortTypeSpecificBitsMask = 0x1F;
 }

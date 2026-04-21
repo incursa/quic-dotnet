@@ -266,6 +266,28 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        bool queuedWritesPendingForStream = finishWrites
+            && pendingApplicationSendRequests.Any(pendingWrite => pendingWrite.StreamId == streamId);
+        if (queuedWritesPendingForStream)
+        {
+            if (!TryPromoteQueuedApplicationSendToFinal(streamId))
+            {
+                completion.TrySetException(new InvalidOperationException("The connection runtime could not mark the queued stream write as final."));
+                return false;
+            }
+
+            if (!FlushPendingApplicationSends(nowTicks, ref effects))
+            {
+                completion.TrySetException(new InvalidOperationException("The connection runtime could not flush queued stream writes before finishing the writable side."));
+                return false;
+            }
+
+            TryReleasePeerStreamCapacity(streamId, ref effects);
+            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            completion.TrySetResult(null);
+            return true;
+        }
+
         if (!TryBuildOutboundStreamPayload(streamId, writeOffset, streamData.Span, finishWrites, out byte[] streamPayload))
         {
             completion.TrySetException(new InvalidOperationException("The connection runtime could not build the stream write payload."));
@@ -336,6 +358,34 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+    }
+
+    private bool TryPromoteQueuedApplicationSendToFinal(ulong streamId)
+    {
+        for (int index = pendingApplicationSendRequests.Count - 1; index >= 0; index--)
+        {
+            PendingApplicationSendRequest queuedWrite = pendingApplicationSendRequests[index];
+            if (queuedWrite.StreamId != streamId)
+            {
+                continue;
+            }
+
+            if (!QuicStreamParser.TryParseStreamFrame(queuedWrite.StreamPayload, out QuicStreamFrame frame)
+                || !TryBuildOutboundStreamPayload(
+                    streamId,
+                    frame.Offset,
+                    frame.StreamData,
+                    fin: true,
+                    out byte[] finalPayload))
+            {
+                return false;
+            }
+
+            pendingApplicationSendRequests[index] = new PendingApplicationSendRequest(streamId, finalPayload);
+            return true;
+        }
+
+        return false;
     }
 
     private bool FlushPendingApplicationSends(long nowTicks, ref List<QuicConnectionEffect>? effects)

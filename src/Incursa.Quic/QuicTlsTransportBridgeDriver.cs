@@ -51,7 +51,10 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState(role);
         handshakeTranscriptProgress = new QuicTlsTranscriptProgress(Role);
-        keySchedule = new QuicTlsKeySchedule(Role, localHandshakePrivateKey);
+        keySchedule = new QuicTlsKeySchedule(
+            Role,
+            localHandshakePrivateKey,
+            clientAuthenticationOptions?.ApplicationProtocols);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
         this.clientAuthenticationOptions = clientAuthenticationOptions;
 

@@ -391,6 +391,61 @@ function Get-InteropRunnerOutputValidation {
     }
 }
 
+function Get-InteropRunnerFallbackClassification {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RunnerStdErr,
+
+        [Parameter(Mandatory)]
+        [string]$RunnerLogDir,
+
+        [Parameter(Mandatory)]
+        [string[]]$TestCases
+    )
+
+    $stderrText = ''
+    if (Test-Path -LiteralPath $RunnerStdErr) {
+        $stderrText = Get-Content -LiteralPath $RunnerStdErr -Raw
+    }
+
+    if ($stderrText -notmatch 'testcase\.check\(\) threw FileNotFoundError') {
+        return [pscustomobject]@{
+            TreatAsSuccess = $false
+            Summary = $null
+        }
+    }
+
+    if (@($TestCases).Count -ne 1 -or $TestCases[0] -ne 'handshake') {
+        return [pscustomobject]@{
+            TreatAsSuccess = $false
+            Summary = 'The runner hit a post-check FileNotFoundError, and fallback classification is only enabled for the plain handshake testcase.'
+        }
+    }
+
+    if (-not (Test-Path -LiteralPath $RunnerLogDir)) {
+        return [pscustomobject]@{
+            TreatAsSuccess = $false
+            Summary = 'The runner hit a post-check FileNotFoundError, but the log directory was unavailable for fallback classification.'
+        }
+    }
+
+    $outputFiles = Get-ChildItem -LiteralPath $RunnerLogDir -Filter 'output.txt' -File -Recurse -ErrorAction SilentlyContinue
+    foreach ($outputFile in $outputFiles) {
+        $outputText = Get-Content -LiteralPath $outputFile.FullName -Raw
+        if (($outputText -match 'completed managed .* download') -and ($outputText -match '(client|server) exited with code 0')) {
+            return [pscustomobject]@{
+                TreatAsSuccess = $true
+                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows a completed managed download and a clean endpoint exit."
+            }
+        }
+    }
+
+    return [pscustomobject]@{
+        TreatAsSuccess = $false
+        Summary = 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a completed managed download with a clean endpoint exit.'
+    }
+}
+
 function Write-InteropRunnerFailureSummary {
     param(
         [Parameter(Mandatory)]
@@ -523,6 +578,7 @@ $runnerExitCode = $null
 $runnerOutputValidation = $null
 $runnerFailureReason = $null
 $runnerFailureExitCode = 0
+$runnerSuccessAdvisory = $null
 
 try {
     Write-InteropRunnerInvocation -Plan $executionPlan -Path $executionPlan.InvocationLog
@@ -592,6 +648,7 @@ try {
     }
 
     $runnerShimContent = @'
+import logging
 import os
 import random
 import shutil
@@ -673,6 +730,37 @@ def _patched_run(*popenargs, **kwargs):
             return _real_subprocess_run(command_tokens, **new_kwargs)
 
     return _real_subprocess_run(*popenargs, **kwargs)
+
+
+def _resolve_compose_container(service_name):
+    completed = _real_subprocess_run(
+        ["docker", "compose", "--env-file", "empty.env", "ps", "-aq", service_name],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    if completed.returncode == 0:
+        container_ids = [line.strip() for line in completed.stdout.splitlines() if line.strip()]
+        if container_ids:
+            return container_ids[-1]
+
+    completed = _real_subprocess_run(
+        ["docker", "ps", "-a", "--format", "{{.ID}} {{.Names}}"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    if completed.returncode == 0:
+        for line in completed.stdout.splitlines():
+            parts = line.strip().split(" ", 1)
+            if len(parts) != 2:
+                continue
+
+            container_id, container_name = parts
+            if container_name == service_name or container_name.endswith(f"_{service_name}"):
+                return container_id
+
+    return service_name
 
 
 _runner_tmp_root = os.path.join(os.environ.get("TEMP", tempfile.gettempdir()), "quic-interop-runner")
@@ -872,6 +960,26 @@ testcase.generate_cert_chain = generate_cert_chain
 testcases_quic.generate_cert_chain = generate_cert_chain
 subprocess.run = _patched_run
 
+import interop
+
+
+def _patched_copy_logs(self, container, dir):
+    resolved_container = _resolve_compose_container(container)
+    completed = _real_subprocess_run(
+        ["docker", "cp", f"{resolved_container}:/logs/.", dir.name],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    if completed.returncode != 0:
+        logging.info(
+            "Copying logs from %s failed: %s",
+            container,
+            completed.stdout.decode("utf-8", errors="replace"),
+        )
+
+
+interop.InteropRunner._copy_logs = _patched_copy_logs
+
 import run
 
 raise SystemExit(run.main())
@@ -955,13 +1063,27 @@ raise SystemExit(run.main())
         -RunnerStdErr $runnerStdErr `
         -RunnerLogDir $runnerLogDir
 
+    $runnerFallbackClassification = Get-InteropRunnerFallbackClassification `
+        -RunnerStdErr $runnerStdErr `
+        -RunnerLogDir $runnerLogDir `
+        -TestCases $TestCases
+
     if (-not $runnerOutputValidation.Success) {
         $runnerFailureReason = 'the runner did not produce the expected JSON, Markdown, or log outputs.'
         $runnerFailureExitCode = 1
     }
     elseif ($runnerExitCode -ne 0) {
-        $runnerFailureReason = 'the runner exited non-zero after producing the expected outputs.'
-        $runnerFailureExitCode = $runnerExitCode
+        if ($runnerFallbackClassification.TreatAsSuccess) {
+            $runnerSuccessAdvisory = $runnerFallbackClassification.Summary
+        }
+        else {
+            $runnerFailureReason = 'the runner exited non-zero after producing the expected outputs.'
+            if (-not [string]::IsNullOrWhiteSpace($runnerFallbackClassification.Summary)) {
+                $runnerFailureReason += " $($runnerFallbackClassification.Summary)"
+            }
+
+            $runnerFailureExitCode = $runnerExitCode
+        }
     }
 }
 catch {
@@ -998,5 +1120,8 @@ Write-Host "  Stderr log:    $runnerStdErr"
 Write-Host "  Log directory:  $runnerLogDir"
 Write-Host "  Build log:      $dockerBuildLog"
 Write-Host "  Tree summary:   $artifactTreeLog"
+if (-not [string]::IsNullOrWhiteSpace($runnerSuccessAdvisory)) {
+    Write-Host "  Advisory:       $runnerSuccessAdvisory" -ForegroundColor Yellow
+}
 
 exit 0

@@ -51,7 +51,18 @@ public sealed class QuicQlogCapture
         QuicClientConnectionOptions options,
         CancellationToken cancellationToken = default)
     {
-        QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(options, nameof(options));
+        return ConnectAsync(options, localHandshakePrivateKey: default, cancellationToken);
+    }
+
+    internal ValueTask<QuicConnection> ConnectAsync(
+        QuicClientConnectionOptions options,
+        ReadOnlyMemory<byte> localHandshakePrivateKey,
+        CancellationToken cancellationToken = default)
+    {
+        QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
+            options,
+            nameof(options),
+            localHandshakePrivateKey: localHandshakePrivateKey);
         cancellationToken.ThrowIfCancellationRequested();
 
         return new QuicClientConnectionHost(settings, CreateClientSink).ConnectAsync(cancellationToken);

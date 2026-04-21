@@ -363,18 +363,22 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        for (int packetNumberLength = 1; packetNumberLength <= ApplicationPacketNumberLength; packetNumberLength++)
+        foreach (int connectionIdLength in GetApplicationDataOpenConnectionIdLengthCandidates())
         {
-            if (TryOpenApplicationDataPacket(
-                protectedPacket,
-                material,
-                packetNumberLength,
-                out openedPacket,
-                out payloadOffset,
-                out payloadLength,
-                out keyPhase))
+            for (int packetNumberLength = 1; packetNumberLength <= ApplicationPacketNumberLength; packetNumberLength++)
             {
-                return true;
+                if (TryOpenApplicationDataPacket(
+                    protectedPacket,
+                    material,
+                    connectionIdLength,
+                    packetNumberLength,
+                    out openedPacket,
+                    out payloadOffset,
+                    out payloadLength,
+                    out keyPhase))
+                {
+                    return true;
+                }
             }
         }
 
@@ -1087,6 +1091,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     private bool TryOpenApplicationDataPacket(
         ReadOnlySpan<byte> protectedPacket,
         QuicTlsPacketProtectionMaterial material,
+        int connectionIdLength,
         int packetNumberLength,
         out byte[] openedPacket,
         out int payloadOffset,
@@ -1099,16 +1104,18 @@ internal sealed class QuicHandshakeFlowCoordinator
         keyPhase = default;
 
         if (!TryValidatePacketProtectionMaterial(material)
+            || connectionIdLength < 0
             || packetNumberLength < 1
             || packetNumberLength > ApplicationPacketNumberLength
-            || destinationConnectionId.Length > MaximumConnectionIdLength)
+            || connectionIdLength > MaximumConnectionIdLength)
         {
             return false;
         }
 
-        int packetNumberOffset = 1 + destinationConnectionId.Length;
+        int packetNumberOffset = 1 + connectionIdLength;
         int ciphertextPayloadLength = protectedPacket.Length - packetNumberOffset - packetNumberLength - QuicInitialPacketProtection.AuthenticationTagLength;
-        if (ciphertextPayloadLength < ApplicationMinimumProtectedPayloadLength)
+        // Incoming short-header packets can legitimately carry tiny payloads, such as a FIN-only STREAM frame.
+        if (ciphertextPayloadLength < 0)
         {
             return false;
         }
@@ -1128,7 +1135,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        byte unmaskedFirstByte = (byte)(protectedPacket[0] ^ (mask[0] & QuicPacketHeaderBits.TypeSpecificBitsMask));
+        byte unmaskedFirstByte = (byte)(protectedPacket[0] ^ (mask[0] & QuicPacketHeaderBits.ShortTypeSpecificBitsMask));
         if ((unmaskedFirstByte & QuicPacketHeaderBits.HeaderFormBitMask) != 0
             || (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0
             || ((unmaskedFirstByte & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1) != packetNumberLength
@@ -1174,6 +1181,22 @@ internal sealed class QuicHandshakeFlowCoordinator
         payloadOffset = packetNumberOffset + packetNumberLength;
         payloadLength = ciphertextPayloadLength;
         return true;
+    }
+
+    private int[] GetApplicationDataOpenConnectionIdLengthCandidates()
+    {
+        if (sourceConnectionId.Length > 0
+            && sourceConnectionId.Length != destinationConnectionId.Length)
+        {
+            return [sourceConnectionId.Length, destinationConnectionId.Length];
+        }
+
+        if (sourceConnectionId.Length > 0)
+        {
+            return [sourceConnectionId.Length];
+        }
+
+        return [destinationConnectionId.Length];
     }
 
     private static bool TryEncryptPacketPayload(
@@ -1265,7 +1288,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        packet[0] ^= (byte)(mask[0] & QuicPacketHeaderBits.TypeSpecificBitsMask);
+        packet[0] ^= (byte)(mask[0] & QuicPacketHeaderBits.ShortTypeSpecificBitsMask);
         for (int i = 0; i < packetNumberLength; i++)
         {
             packet[packetNumberOffset + i] ^= mask[1 + i];

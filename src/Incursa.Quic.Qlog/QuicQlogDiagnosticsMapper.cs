@@ -138,6 +138,11 @@ internal static class QuicQlogDiagnosticsMapper
             },
         };
 
+        if (!string.IsNullOrWhiteSpace(diagnosticEvent.Message))
+        {
+            payload.ExtensionData["reason"] = QlogValue.FromString(diagnosticEvent.Message);
+        }
+
         QlogEvent qlogEvent = QlogQuicEvents.CreatePacketDropped(eventTime, payload);
         ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
         return qlogEvent;

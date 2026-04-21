@@ -16,9 +16,9 @@ internal sealed class QuicConnectionStreamState
     private readonly ulong initialLocalBidirectionalReceiveLimit;
     private readonly ulong initialPeerBidirectionalReceiveLimit;
     private readonly ulong initialPeerUnidirectionalReceiveLimit;
-    private readonly ulong initialLocalBidirectionalSendLimit;
-    private readonly ulong initialLocalUnidirectionalSendLimit;
-    private readonly ulong initialPeerBidirectionalSendLimit;
+    private ulong localBidirectionalSendLimit;
+    private ulong localUnidirectionalSendLimit;
+    private ulong peerBidirectionalSendLimit;
 
     private ulong nextLocalBidirectionalStreamIndex;
     private ulong nextLocalUnidirectionalStreamIndex;
@@ -44,9 +44,9 @@ internal sealed class QuicConnectionStreamState
         initialLocalBidirectionalReceiveLimit = options.InitialLocalBidirectionalReceiveLimit;
         initialPeerBidirectionalReceiveLimit = options.InitialPeerBidirectionalReceiveLimit;
         initialPeerUnidirectionalReceiveLimit = options.InitialPeerUnidirectionalReceiveLimit;
-        initialLocalBidirectionalSendLimit = options.InitialLocalBidirectionalSendLimit;
-        initialLocalUnidirectionalSendLimit = options.InitialLocalUnidirectionalSendLimit;
-        initialPeerBidirectionalSendLimit = options.InitialPeerBidirectionalSendLimit;
+        localBidirectionalSendLimit = options.InitialLocalBidirectionalSendLimit;
+        localUnidirectionalSendLimit = options.InitialLocalUnidirectionalSendLimit;
+        peerBidirectionalSendLimit = options.InitialPeerBidirectionalSendLimit;
     }
 
     public bool IsServer => isServer;
@@ -209,6 +209,56 @@ internal sealed class QuicConnectionStreamState
         return true;
     }
 
+    public bool TryApplyPeerTransportParameterSendLimits(
+        ulong localBidirectionalLimit,
+        ulong peerBidirectionalLimit,
+        ulong localUnidirectionalLimit)
+    {
+        ValidateFlowControlLimit(localBidirectionalLimit);
+        ValidateFlowControlLimit(peerBidirectionalLimit);
+        ValidateFlowControlLimit(localUnidirectionalLimit);
+
+        bool stateChanged = false;
+
+        if (localBidirectionalSendLimit != localBidirectionalLimit)
+        {
+            localBidirectionalSendLimit = localBidirectionalLimit;
+            stateChanged = true;
+        }
+
+        if (peerBidirectionalSendLimit != peerBidirectionalLimit)
+        {
+            peerBidirectionalSendLimit = peerBidirectionalLimit;
+            stateChanged = true;
+        }
+
+        if (localUnidirectionalSendLimit != localUnidirectionalLimit)
+        {
+            localUnidirectionalSendLimit = localUnidirectionalLimit;
+            stateChanged = true;
+        }
+
+        foreach (KeyValuePair<ulong, StreamState> entry in streams)
+        {
+            QuicStreamId streamId = new(entry.Key);
+            if (!entry.Value.HasSendPart)
+            {
+                continue;
+            }
+
+            ulong updatedSendLimit = ResolveCurrentSendLimit(streamId);
+            if (entry.Value.SendLimit == updatedSendLimit)
+            {
+                continue;
+            }
+
+            entry.Value.SendLimit = updatedSendLimit;
+            stateChanged = true;
+        }
+
+        return stateChanged;
+    }
+
     public bool TryReserveSendCapacity(
         ulong streamIdValue,
         ulong offset,
@@ -246,11 +296,11 @@ internal sealed class QuicConnectionStreamState
         }
 
         ulong endExclusive = offset + (ulong)length;
-        if (state.FinalSize.HasValue)
+        if (state.SendFinalSize.HasValue)
         {
-            if ((fin && endExclusive != state.FinalSize.Value)
-                || endExclusive > state.FinalSize.Value
-                || (length > 0 && offset >= state.FinalSize.Value))
+            if ((fin && endExclusive != state.SendFinalSize.Value)
+                || endExclusive > state.SendFinalSize.Value
+                || (length > 0 && offset >= state.SendFinalSize.Value))
             {
                 errorCode = QuicTransportErrorCode.FinalSizeError;
                 return false;
@@ -287,9 +337,9 @@ internal sealed class QuicConnectionStreamState
             connectionUniqueBytesSent += additionalBytes;
         }
 
-        if (fin && !state.FinalSize.HasValue)
+        if (fin && !state.SendFinalSize.HasValue)
         {
-            state.FinalSize = endExclusive;
+            state.SendFinalSize = endExclusive;
         }
 
         if (fin)
@@ -313,7 +363,7 @@ internal sealed class QuicConnectionStreamState
         ulong endExclusive = frame.Offset + (ulong)frame.StreamDataLength;
         if (state.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead)
         {
-            if (ViolatesKnownFinalSize(state, frame.Offset, endExclusive, frame.StreamDataLength, frame.IsFin))
+            if (ViolatesKnownReceiveFinalSize(state, frame.Offset, endExclusive, frame.StreamDataLength, frame.IsFin))
             {
                 errorCode = QuicTransportErrorCode.FinalSizeError;
                 return false;
@@ -322,14 +372,14 @@ internal sealed class QuicConnectionStreamState
             return true;
         }
 
-        if (ViolatesKnownFinalSize(state, frame.Offset, endExclusive, frame.StreamDataLength, frame.IsFin))
+        if (ViolatesKnownReceiveFinalSize(state, frame.Offset, endExclusive, frame.StreamDataLength, frame.IsFin))
         {
             errorCode = QuicTransportErrorCode.FinalSizeError;
             return false;
         }
 
-        ulong? proposedFinalSize = frame.IsFin ? endExclusive : state.FinalSize;
-        if (frame.IsFin && !state.FinalSize.HasValue && endExclusive < state.HighestReceivedOffset)
+        ulong? proposedFinalSize = frame.IsFin ? endExclusive : state.ReceiveFinalSize;
+        if (frame.IsFin && !state.ReceiveFinalSize.HasValue && endExclusive < state.HighestReceivedOffset)
         {
             errorCode = QuicTransportErrorCode.FinalSizeError;
             return false;
@@ -365,7 +415,7 @@ internal sealed class QuicConnectionStreamState
 
         if (proposedFinalSize.HasValue)
         {
-            state.FinalSize = proposedFinalSize.Value;
+            state.ReceiveFinalSize = proposedFinalSize.Value;
         }
 
         if (frame.StreamDataLength > 0)
@@ -406,7 +456,7 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
-        if (state.FinalSize.HasValue && state.FinalSize.Value != frame.FinalSize)
+        if (state.ReceiveFinalSize.HasValue && state.ReceiveFinalSize.Value != frame.FinalSize)
         {
             errorCode = QuicTransportErrorCode.FinalSizeError;
             return false;
@@ -449,7 +499,7 @@ internal sealed class QuicConnectionStreamState
 
         state.BufferedSegments.Clear();
         state.BufferedReadableBytes = 0;
-        state.FinalSize = frame.FinalSize;
+        state.ReceiveFinalSize = frame.FinalSize;
         state.HighestReceivedOffset = Math.Max(state.HighestReceivedOffset, frame.FinalSize);
         state.AccountedBytes = newAccountedBytes;
         connectionAccountedBytesReceived += additionalAccountedBytes;
@@ -479,8 +529,8 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
-        finalSize = state.FinalSize ?? state.HighestSentOffset;
-        state.FinalSize = finalSize;
+        finalSize = state.SendFinalSize ?? state.HighestSentOffset;
+        state.SendFinalSize = finalSize;
         state.SendState = QuicStreamSendState.ResetSent;
         return true;
     }
@@ -514,8 +564,8 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
-        ulong finalSize = state.FinalSize ?? state.HighestSentOffset;
-        state.FinalSize = finalSize;
+        ulong finalSize = state.SendFinalSize ?? state.HighestSentOffset;
+        state.SendFinalSize = finalSize;
         state.SendState = QuicStreamSendState.ResetSent;
         state.SendAbortErrorCode = frame.ApplicationProtocolErrorCode;
         state.HasSendAbortErrorCode = true;
@@ -550,7 +600,7 @@ internal sealed class QuicConnectionStreamState
 
         if (destination.IsEmpty || state.BufferedSegments.Count == 0)
         {
-            completed = state.FinalSize.HasValue && state.ReadOffset == state.FinalSize.Value;
+            completed = state.ReceiveFinalSize.HasValue && state.ReadOffset == state.ReceiveFinalSize.Value;
             return false;
         }
 
@@ -597,7 +647,7 @@ internal sealed class QuicConnectionStreamState
 
         if (destinationIndex == 0)
         {
-            completed = state.FinalSize.HasValue && state.ReadOffset == state.FinalSize.Value;
+            completed = state.ReceiveFinalSize.HasValue && state.ReadOffset == state.ReceiveFinalSize.Value;
             return false;
         }
 
@@ -687,6 +737,8 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
+        ulong? observableFinalSize = state.ReceiveFinalSize ?? state.SendFinalSize;
+
         snapshot = new QuicConnectionStreamSnapshot(
             streamIdValue,
             state.StreamType,
@@ -694,8 +746,8 @@ internal sealed class QuicConnectionStreamState
             state.ReceiveState,
             state.SendLimit,
             state.ReceiveLimit,
-            state.FinalSize.GetValueOrDefault(),
-            state.FinalSize.HasValue,
+            observableFinalSize.GetValueOrDefault(),
+            observableFinalSize.HasValue,
             state.SentRanges.TotalLength,
             state.ReceivedRanges.TotalLength,
             state.AccountedBytes,
@@ -866,25 +918,39 @@ internal sealed class QuicConnectionStreamState
     private StreamState CreateLocalStreamState(QuicStreamId streamId)
     {
         return streamId.IsBidirectional
-            ? new StreamState(streamId.StreamType, true, true, QuicStreamSendState.Ready, QuicStreamReceiveState.Recv, initialLocalBidirectionalSendLimit, initialLocalBidirectionalReceiveLimit)
-            : new StreamState(streamId.StreamType, true, false, QuicStreamSendState.Ready, QuicStreamReceiveState.None, initialLocalUnidirectionalSendLimit, 0);
+            ? new StreamState(streamId.StreamType, true, true, QuicStreamSendState.Ready, QuicStreamReceiveState.Recv, localBidirectionalSendLimit, initialLocalBidirectionalReceiveLimit)
+            : new StreamState(streamId.StreamType, true, false, QuicStreamSendState.Ready, QuicStreamReceiveState.None, localUnidirectionalSendLimit, 0);
     }
 
     private StreamState CreatePeerStreamState(QuicStreamId streamId)
     {
         return streamId.IsBidirectional
-            ? new StreamState(streamId.StreamType, true, true, QuicStreamSendState.Ready, QuicStreamReceiveState.Recv, initialPeerBidirectionalSendLimit, initialPeerBidirectionalReceiveLimit)
+            ? new StreamState(streamId.StreamType, true, true, QuicStreamSendState.Ready, QuicStreamReceiveState.Recv, peerBidirectionalSendLimit, initialPeerBidirectionalReceiveLimit)
             : new StreamState(streamId.StreamType, false, true, QuicStreamSendState.None, QuicStreamReceiveState.Recv, 0, initialPeerUnidirectionalReceiveLimit);
     }
 
-    private static bool ViolatesKnownFinalSize(StreamState state, ulong offset, ulong endExclusive, int length, bool fin)
+    private ulong ResolveCurrentSendLimit(QuicStreamId streamId)
     {
-        if (!state.FinalSize.HasValue)
+        if (IsLocalInitiated(streamId))
+        {
+            return streamId.IsBidirectional
+                ? localBidirectionalSendLimit
+                : localUnidirectionalSendLimit;
+        }
+
+        return streamId.IsBidirectional
+            ? peerBidirectionalSendLimit
+            : 0;
+    }
+
+    private static bool ViolatesKnownReceiveFinalSize(StreamState state, ulong offset, ulong endExclusive, int length, bool fin)
+    {
+        if (!state.ReceiveFinalSize.HasValue)
         {
             return false;
         }
 
-        ulong finalSize = state.FinalSize.Value;
+        ulong finalSize = state.ReceiveFinalSize.Value;
         return (fin && endExclusive != finalSize)
             || endExclusive > finalSize
             || (length > 0 && offset >= finalSize);
@@ -892,18 +958,18 @@ internal sealed class QuicConnectionStreamState
 
     private static void UpdateReceiveState(StreamState state)
     {
-        if (!state.HasReceivePart || state.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead || !state.FinalSize.HasValue)
+        if (!state.HasReceivePart || state.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead || !state.ReceiveFinalSize.HasValue)
         {
             return;
         }
 
         state.ReceiveState = QuicStreamReceiveState.SizeKnown;
-        if (state.ReceivedRanges.CoversPrefix(state.FinalSize.Value))
+        if (state.ReceivedRanges.CoversPrefix(state.ReceiveFinalSize.Value))
         {
             state.ReceiveState = QuicStreamReceiveState.DataRecvd;
         }
 
-        if (state.ReadOffset == state.FinalSize.Value)
+        if (state.ReadOffset == state.ReceiveFinalSize.Value)
         {
             state.ReceiveState = QuicStreamReceiveState.DataRead;
         }
@@ -1074,7 +1140,8 @@ internal sealed class QuicConnectionStreamState
         public QuicStreamReceiveState ReceiveState { get; set; } = receiveState;
         public ulong SendLimit { get; set; } = sendLimit;
         public ulong ReceiveLimit { get; set; } = receiveLimit;
-        public ulong? FinalSize { get; set; }
+        public ulong? SendFinalSize { get; set; }
+        public ulong? ReceiveFinalSize { get; set; }
         public ulong AccountedBytes { get; set; }
         public ulong ReadOffset { get; set; }
         public int BufferedReadableBytes { get; set; }

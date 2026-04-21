@@ -401,8 +401,8 @@ public sealed class REQ_QUIC_CRT_0116
             },
         });
 
-        byte[] sharedSecret = localKeyPair.DeriveKeyMaterial(peer.PublicKey);
-        byte[] earlySecret = HkdfExtract(new byte[HashLength], []);
+        byte[] sharedSecret = localKeyPair.DeriveRawSecretAgreement(peer.PublicKey);
+        byte[] earlySecret = HkdfExtract(ZeroHashInput, ZeroHashInput);
         byte[] derivedSecret = HkdfExpandLabel(earlySecret, DerivedLabel, EmptyTranscriptHash, HashLength);
         byte[] handshakeSecret = HkdfExtract(derivedSecret, sharedSecret);
         return HkdfExpandLabel(handshakeSecret, ServerHandshakeTrafficLabel, serverHelloTranscriptHash, HashLength);
@@ -523,6 +523,7 @@ public sealed class REQ_QUIC_CRT_0116
     private static readonly byte[] DerivedLabel = Encoding.ASCII.GetBytes("derived");
     private static readonly byte[] FinishedLabel = Encoding.ASCII.GetBytes("finished");
     private static readonly byte[] ServerHandshakeTrafficLabel = Encoding.ASCII.GetBytes("s hs traffic");
+    private static readonly byte[] ZeroHashInput = new byte[HashLength];
     private const int HashLength = 32;
     private const int Secp256r1CoordinateLength = 32;
     private const int UInt16Length = 2;

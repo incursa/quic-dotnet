@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Diagnostics;
+using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography;
 using Xunit;
@@ -11,9 +12,14 @@ internal static class QuicResumptionClientHelloTestSupport
     private const int HandshakeHeaderLength = 4;
     private const int UInt16Length = sizeof(ushort);
     private const int UInt32Length = sizeof(uint);
+    private const ushort ApplicationLayerProtocolNegotiationExtensionType = 0x0010;
+    private const ushort SignatureAlgorithmsExtensionType = 0x000d;
+    private const ushort SupportedGroupsExtensionType = 0x000a;
     private const ushort EarlyDataExtensionType = 0x002a;
     private const ushort PreSharedKeyExtensionType = 0x0029;
     private const ushort PskKeyExchangeModesExtensionType = 0x002d;
+    private const ushort EcdsaSecp256r1Sha256SignatureScheme = (ushort)QuicTlsSignatureScheme.EcdsaSecp256r1Sha256;
+    private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
     private const int HashLength = 32;
     private const byte PskDheKeMode = 0x01;
 
@@ -83,6 +89,12 @@ internal static class QuicResumptionClientHelloTestSupport
         bool hasPreSharedKey = false;
         bool preSharedKeyIsLast = false;
         bool hasEarlyData = false;
+        bool hasApplicationLayerProtocolNegotiation = false;
+        bool applicationProtocolsContainHttp3 = false;
+        bool hasSignatureAlgorithms = false;
+        bool signatureAlgorithmsContainEcdsaSecp256r1Sha256 = false;
+        bool hasSupportedGroups = false;
+        bool supportedGroupsContainSecp256r1 = false;
         byte[] ticketIdentity = Array.Empty<byte>();
         uint obfuscatedTicketAge = 0;
         byte[] binder = Array.Empty<byte>();
@@ -105,6 +117,68 @@ internal static class QuicResumptionClientHelloTestSupport
                 Assert.Equal(2, extensionValue.Length);
                 Assert.Equal(1, extensionValue[0]);
                 Assert.Equal(PskDheKeMode, extensionValue[1]);
+            }
+            else if (extensionType == SignatureAlgorithmsExtensionType)
+            {
+                hasSignatureAlgorithms = true;
+
+                int extensionIndex = 0;
+                ushort signatureSchemesLength = BinaryPrimitives.ReadUInt16BigEndian(extensionValue.Slice(extensionIndex, UInt16Length));
+                extensionIndex += UInt16Length;
+                Assert.Equal(signatureSchemesLength, extensionValue.Length - UInt16Length);
+                Assert.Equal(0, signatureSchemesLength % UInt16Length);
+
+                while (extensionIndex < extensionValue.Length)
+                {
+                    ushort signatureScheme = BinaryPrimitives.ReadUInt16BigEndian(extensionValue.Slice(extensionIndex, UInt16Length));
+                    extensionIndex += UInt16Length;
+                    if (signatureScheme == EcdsaSecp256r1Sha256SignatureScheme)
+                    {
+                        signatureAlgorithmsContainEcdsaSecp256r1Sha256 = true;
+                    }
+                }
+            }
+            else if (extensionType == ApplicationLayerProtocolNegotiationExtensionType)
+            {
+                hasApplicationLayerProtocolNegotiation = true;
+
+                int extensionIndex = 0;
+                ushort protocolListLength = BinaryPrimitives.ReadUInt16BigEndian(extensionValue.Slice(extensionIndex, UInt16Length));
+                extensionIndex += UInt16Length;
+                Assert.Equal(protocolListLength, extensionValue.Length - UInt16Length);
+
+                while (extensionIndex < extensionValue.Length)
+                {
+                    int protocolLength = extensionValue[extensionIndex++];
+                    Assert.True(protocolLength > 0);
+
+                    ReadOnlySpan<byte> protocol = extensionValue.Slice(extensionIndex, protocolLength);
+                    extensionIndex += protocolLength;
+                    if (protocol.SequenceEqual(SslApplicationProtocol.Http3.Protocol.Span))
+                    {
+                        applicationProtocolsContainHttp3 = true;
+                    }
+                }
+            }
+            else if (extensionType == SupportedGroupsExtensionType)
+            {
+                hasSupportedGroups = true;
+
+                int extensionIndex = 0;
+                ushort groupsLength = BinaryPrimitives.ReadUInt16BigEndian(extensionValue.Slice(extensionIndex, UInt16Length));
+                extensionIndex += UInt16Length;
+                Assert.Equal(groupsLength, extensionValue.Length - UInt16Length);
+                Assert.Equal(0, groupsLength % UInt16Length);
+
+                while (extensionIndex < extensionValue.Length)
+                {
+                    ushort namedGroup = BinaryPrimitives.ReadUInt16BigEndian(extensionValue.Slice(extensionIndex, UInt16Length));
+                    extensionIndex += UInt16Length;
+                    if (namedGroup == Secp256r1NamedGroup)
+                    {
+                        supportedGroupsContainSecp256r1 = true;
+                    }
+                }
             }
             else if (extensionType == PreSharedKeyExtensionType)
             {
@@ -147,6 +221,12 @@ internal static class QuicResumptionClientHelloTestSupport
             hasPreSharedKey,
             preSharedKeyIsLast,
             hasEarlyData,
+            hasApplicationLayerProtocolNegotiation,
+            applicationProtocolsContainHttp3,
+            hasSignatureAlgorithms,
+            signatureAlgorithmsContainEcdsaSecp256r1Sha256,
+            hasSupportedGroups,
+            supportedGroupsContainSecp256r1,
             ticketIdentity,
             obfuscatedTicketAge,
             binder,
@@ -281,6 +361,12 @@ internal static class QuicResumptionClientHelloTestSupport
         bool HasPreSharedKey,
         bool PreSharedKeyIsLastExtension,
         bool HasEarlyData,
+        bool HasApplicationLayerProtocolNegotiation,
+        bool ApplicationProtocolsContainHttp3,
+        bool HasSignatureAlgorithms,
+        bool SignatureAlgorithmsContainEcdsaSecp256r1Sha256,
+        bool HasSupportedGroups,
+        bool SupportedGroupsContainSecp256r1,
         byte[] TicketIdentity,
         uint ObfuscatedTicketAge,
         byte[] Binder,

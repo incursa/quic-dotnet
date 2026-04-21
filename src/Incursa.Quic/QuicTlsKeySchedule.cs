@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Buffers.Binary;
 using System.Diagnostics;
+using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -41,13 +42,20 @@ internal sealed class QuicTlsKeySchedule
     private const int MaximumSessionIdLength = 32;
     private const ushort TlsLegacyVersion = 0x0303;
     private const ushort Tls13Version = 0x0304;
+    private const ushort ApplicationLayerProtocolNegotiationExtensionType = 0x0010;
+    private const ushort SignatureAlgorithmsExtensionType = 0x000d;
+    private const ushort SupportedGroupsExtensionType = 0x000a;
     private const ushort SupportedVersionsExtensionType = 0x002b;
     private const ushort KeyShareExtensionType = 0x0033;
     private const ushort PreSharedKeyExtensionType = 0x0029;
     private const ushort PskKeyExchangeModesExtensionType = 0x002d;
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
     private const ushort TlsCipherSuitesListLength = UInt16Length;
+    private const ushort SignatureAlgorithmsVectorLength = UInt16Length;
+    private const ushort SupportedGroupsVectorLength = UInt16Length;
     private const byte SupportedVersionsVectorLength = (byte)UInt16Length;
+    private const ushort SignatureAlgorithmsExtensionBodyLength = UInt16Length + UInt16Length;
+    private const ushort SupportedGroupsExtensionBodyLength = UInt16Length + UInt16Length;
     private const ushort SupportedVersionsExtensionBodyLength = 1 + UInt16Length;
     private const ushort KeyShareEntryFixedLength = UInt16Length + UInt16Length;
     private const byte PskKeyExchangeModesVectorLength = 1;
@@ -69,11 +77,13 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] ResumptionMasterLabel = Encoding.ASCII.GetBytes("res master");
     private static readonly byte[] ResumptionLabel = Encoding.ASCII.GetBytes("resumption");
     private static readonly byte[] ResumptionBinderLabel = Encoding.ASCII.GetBytes("res binder");
+    private static readonly byte[] DeterministicClientHelloRandomLabel = Encoding.ASCII.GetBytes("incursa.quic.client-random");
     private static readonly byte[] ServerCertificateVerifyContext = Encoding.ASCII.GetBytes("TLS 1.3, server CertificateVerify");
     private static readonly byte[] ClientCertificateVerifyContext = Encoding.ASCII.GetBytes("TLS 1.3, client CertificateVerify");
     private static readonly byte[] QuicKeyLabel = Encoding.ASCII.GetBytes("quic key");
     private static readonly byte[] QuicIvLabel = Encoding.ASCII.GetBytes("quic iv");
     private static readonly byte[] QuicHpLabel = Encoding.ASCII.GetBytes("quic hp");
+    private static readonly byte[] ZeroHashInput = new byte[HashLength];
     private static readonly byte[] EmptyTranscriptHash = SHA256.HashData(Array.Empty<byte>());
     private static readonly QuicAeadUsageLimits HandshakeUsageLimits = new(64, 128);
 
@@ -82,6 +92,8 @@ internal sealed class QuicTlsKeySchedule
     private readonly QuicTlsCipherSuiteProfile profile;
     private readonly ArrayBufferWriter<byte> transcriptBytes = new();
     private readonly byte[] localKeyShare;
+    private readonly byte[]? deterministicClientHelloRandom;
+    private readonly byte[][] applicationProtocols;
 
     private byte[]? handshakeSecret;
     private byte[]? clientHandshakeTrafficSecret;
@@ -102,8 +114,11 @@ internal sealed class QuicTlsKeySchedule
     /// Creates the client-role TLS key schedule, optionally seeded with a deterministic local private key for tests.
     /// </summary>
     /// <param name="localPrivateKey">An optional P-256 private scalar to import for deterministic tests.</param>
-    internal QuicTlsKeySchedule(ReadOnlyMemory<byte> localPrivateKey = default)
-        : this(QuicTlsRole.Client, localPrivateKey)
+    /// <param name="applicationProtocols">The configured ALPN protocols to advertise for the client role.</param>
+    internal QuicTlsKeySchedule(
+        ReadOnlyMemory<byte> localPrivateKey = default,
+        IReadOnlyList<SslApplicationProtocol>? applicationProtocols = null)
+        : this(QuicTlsRole.Client, localPrivateKey, applicationProtocols)
     {
     }
 
@@ -112,7 +127,11 @@ internal sealed class QuicTlsKeySchedule
     /// </summary>
     /// <param name="role">The endpoint role that owns the key schedule.</param>
     /// <param name="localPrivateKey">An optional P-256 private scalar to import for deterministic tests.</param>
-    internal QuicTlsKeySchedule(QuicTlsRole role, ReadOnlyMemory<byte> localPrivateKey = default)
+    /// <param name="applicationProtocols">The configured ALPN protocols owned by this role.</param>
+    internal QuicTlsKeySchedule(
+        QuicTlsRole role,
+        ReadOnlyMemory<byte> localPrivateKey = default,
+        IReadOnlyList<SslApplicationProtocol>? applicationProtocols = null)
     {
         this.role = role;
 
@@ -136,9 +155,12 @@ internal sealed class QuicTlsKeySchedule
             {
                 throw new ArgumentException("The local private key must be a valid P-256 scalar.", nameof(localPrivateKey), ex);
             }
+
+            deterministicClientHelloRandom = DeriveDeterministicClientHelloRandom(localPrivateKey.Span);
         }
 
         localKeyShare = ExportUncompressedPoint(localKeyPair.ExportParameters(true));
+        this.applicationProtocols = NormalizeApplicationProtocols(applicationProtocols);
     }
 
     /// <summary>
@@ -200,9 +222,15 @@ internal sealed class QuicTlsKeySchedule
         }
 
         int supportedVersionsExtensionLength = 2 + 2 + 1 + 2;
+        int applicationProtocolsExtensionLength = GetApplicationLayerProtocolNegotiationExtensionLength(applicationProtocols);
+        int signatureAlgorithmsExtensionLength = 2 + 2 + 2 + 2;
+        int supportedGroupsExtensionLength = 2 + 2 + 2 + 2;
         int keyShareExtensionLength = 2 + 2 + 2 + 2 + 2 + localKeyShare.Length;
         int transportParametersExtensionLength = 2 + 2 + transportParametersEncodedBytes;
         int baseExtensionsLength = supportedVersionsExtensionLength
+            + applicationProtocolsExtensionLength
+            + signatureAlgorithmsExtensionLength
+            + supportedGroupsExtensionLength
             + keyShareExtensionLength
             + transportParametersExtensionLength;
 
@@ -843,14 +871,14 @@ internal sealed class QuicTlsKeySchedule
                 },
             });
 
-            sharedSecret = localKeyPair.DeriveKeyMaterial(peer.PublicKey);
+            sharedSecret = localKeyPair.DeriveRawSecretAgreement(peer.PublicKey);
         }
         catch (CryptographicException)
         {
             return false;
         }
 
-        byte[] earlySecret = HkdfExtract(new byte[HashLength], []);
+        byte[] earlySecret = HkdfExtract(ZeroHashInput, ZeroHashInput);
         byte[] derivedSecret = HkdfExpandLabel(earlySecret, DerivedLabel, EmptyTranscriptHash, HashLength);
         byte[] derivedHandshakeSecret = HkdfExtract(derivedSecret, sharedSecret);
         handshakeSecret = derivedHandshakeSecret;
@@ -904,7 +932,7 @@ internal sealed class QuicTlsKeySchedule
         try
         {
             derivedSecret = HkdfExpandLabel(localHandshakeSecret, DerivedLabel, EmptyTranscriptHash, HashLength);
-            masterSecret = HkdfExtract(derivedSecret, []);
+            masterSecret = HkdfExtract(derivedSecret, ZeroHashInput);
             localResumptionMasterSecret = HkdfExpandLabel(masterSecret, ResumptionMasterLabel, resumptionTranscriptHash, HashLength);
             localClientApplicationTrafficSecret = HkdfExpandLabel(
                 masterSecret,
@@ -1084,7 +1112,7 @@ internal sealed class QuicTlsKeySchedule
         try
         {
             resumptionPsk = HkdfExpandLabel(detachedResumptionMasterSecret, ResumptionLabel, ticketNonce, HashLength);
-            earlySecret = HkdfExtract(new byte[HashLength], resumptionPsk);
+            earlySecret = HkdfExtract(ZeroHashInput, resumptionPsk);
             byte[] clientHelloTranscriptHash = SHA256.HashData(clientHelloBytes);
             clientEarlyTrafficSecret = HkdfExpandLabel(earlySecret, ClientEarlyTrafficLabel, clientHelloTranscriptHash, HashLength);
 
@@ -1223,7 +1251,7 @@ internal sealed class QuicTlsKeySchedule
         try
         {
             resumptionPsk = HkdfExpandLabel(detachedResumptionMasterSecret, ResumptionLabel, ticketNonce, HashLength);
-            earlySecret = HkdfExtract(new byte[HashLength], resumptionPsk);
+            earlySecret = HkdfExtract(ZeroHashInput, resumptionPsk);
             binderKey = HkdfExpandLabel(earlySecret, ResumptionBinderLabel, EmptyTranscriptHash, HashLength);
             byte[] partialTranscriptHash = SHA256.HashData(partialClientHello);
             byte[] binder = DeriveFinishedVerifyData(binderKey, partialTranscriptHash);
@@ -1952,7 +1980,15 @@ internal sealed class QuicTlsKeySchedule
         index += UInt16Length;
 
         Span<byte> clientRandom = body.AsSpan(index, TlsRandomLength);
-        RandomNumberGenerator.Fill(clientRandom);
+        if (deterministicClientHelloRandom is { Length: TlsRandomLength } deterministicRandom)
+        {
+            deterministicRandom.CopyTo(clientRandom);
+        }
+        else
+        {
+            RandomNumberGenerator.Fill(clientRandom);
+        }
+
         index += TlsRandomLength;
 
         body[index++] = 0x00;
@@ -1969,6 +2005,15 @@ internal sealed class QuicTlsKeySchedule
         index += UInt16Length;
     }
 
+    private static byte[] DeriveDeterministicClientHelloRandom(ReadOnlySpan<byte> localPrivateKey)
+    {
+        byte[] seedMaterial = GC.AllocateUninitializedArray<byte>(
+            DeterministicClientHelloRandomLabel.Length + localPrivateKey.Length);
+        DeterministicClientHelloRandomLabel.CopyTo(seedMaterial, 0);
+        localPrivateKey.CopyTo(seedMaterial.AsSpan(DeterministicClientHelloRandomLabel.Length));
+        return SHA256.HashData(seedMaterial);
+    }
+
     private void WriteClientHelloBaseExtensions(
         byte[] body,
         ref int index,
@@ -1980,6 +2025,28 @@ internal sealed class QuicTlsKeySchedule
         index += UInt16Length;
         body[index++] = SupportedVersionsVectorLength;
         BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Tls13Version);
+        index += UInt16Length;
+
+        WriteClientHelloApplicationProtocolNegotiationExtension(body, ref index);
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SignatureAlgorithmsExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SignatureAlgorithmsExtensionBodyLength);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SignatureAlgorithmsVectorLength);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(
+            body.AsSpan(index, UInt16Length),
+            (ushort)QuicTlsSignatureScheme.EcdsaSecp256r1Sha256);
+        index += UInt16Length;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedGroupsExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedGroupsExtensionBodyLength);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedGroupsVectorLength);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Secp256r1NamedGroup);
         index += UInt16Length;
 
         BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), KeyShareExtensionType);
@@ -2001,6 +2068,66 @@ internal sealed class QuicTlsKeySchedule
         index += UInt16Length;
         transportParametersEncoded.CopyTo(body.AsSpan(index, transportParametersEncoded.Length));
         index += transportParametersEncoded.Length;
+    }
+
+    private void WriteClientHelloApplicationProtocolNegotiationExtension(byte[] body, ref int index)
+    {
+        if (applicationProtocols.Length == 0)
+        {
+            return;
+        }
+
+        int protocolListLength = 0;
+        foreach (byte[] applicationProtocol in applicationProtocols)
+        {
+            protocolListLength = checked(protocolListLength + 1 + applicationProtocol.Length);
+        }
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), ApplicationLayerProtocolNegotiationExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(UInt16Length + protocolListLength)));
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)protocolListLength));
+        index += UInt16Length;
+
+        foreach (byte[] applicationProtocol in applicationProtocols)
+        {
+            body[index++] = checked((byte)applicationProtocol.Length);
+            applicationProtocol.CopyTo(body, index);
+            index += applicationProtocol.Length;
+        }
+    }
+
+    private static int GetApplicationLayerProtocolNegotiationExtensionLength(IReadOnlyList<byte[]> applicationProtocols)
+    {
+        if (applicationProtocols.Count == 0)
+        {
+            return 0;
+        }
+
+        int protocolListLength = 0;
+        foreach (byte[] applicationProtocol in applicationProtocols)
+        {
+            protocolListLength = checked(protocolListLength + 1 + applicationProtocol.Length);
+        }
+
+        return checked(UInt16Length + UInt16Length + UInt16Length + protocolListLength);
+    }
+
+    private static byte[][] NormalizeApplicationProtocols(IReadOnlyList<SslApplicationProtocol>? applicationProtocols)
+    {
+        if (applicationProtocols is null || applicationProtocols.Count == 0)
+        {
+            return [];
+        }
+
+        byte[][] normalizedProtocols = new byte[applicationProtocols.Count][];
+        for (int index = 0; index < applicationProtocols.Count; index++)
+        {
+            normalizedProtocols[index] = applicationProtocols[index].Protocol.ToArray();
+        }
+
+        return normalizedProtocols;
     }
 
     private static uint ComputeObfuscatedTicketAge(

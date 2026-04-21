@@ -310,6 +310,12 @@ public sealed class REQ_QUIC_INT_0014
         Assert.NotNull(clientOptions.ClientAuthenticationOptions);
         Assert.Equal("127.0.0.1", clientOptions.ClientAuthenticationOptions!.TargetHost);
         Assert.NotNull(clientOptions.ClientAuthenticationOptions.RemoteCertificateValidationCallback);
+        Assert.NotNull(clientOptions.ClientAuthenticationOptions.ApplicationProtocols);
+        IReadOnlyList<SslApplicationProtocol> applicationProtocols = clientOptions.ClientAuthenticationOptions.ApplicationProtocols!;
+        Assert.Single(applicationProtocols);
+        Assert.Equal(
+            InteropHarnessProtocols.QuicInterop,
+            applicationProtocols[0]);
 
         bool accepted = clientOptions.ClientAuthenticationOptions.RemoteCertificateValidationCallback!(
             null!,

@@ -9,6 +9,27 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void RuntimeAcceptsACoalescedServerFlightDuringHandshake()
+    {
+        QuicCoalescedPacketRuntimeTestSupport.CoalescedServerFlightScenario scenario =
+            QuicCoalescedPacketRuntimeTestSupport.CreateClientRuntimeWithCoalescedServerFlight();
+
+        QuicConnectionTransitionResult result = scenario.ClientRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                PathIdentity: scenario.PathIdentity,
+                Datagram: scenario.CoalescedDatagram),
+            nowTicks: 10);
+
+        Assert.True(result.StateChanged);
+        Assert.True(scenario.ClientRuntime.TlsState.HandshakeKeysAvailable);
+        Assert.True(scenario.ClientRuntime.TlsState.PeerTransportParametersCommitted);
+        Assert.NotNull(scenario.ClientRuntime.TlsState.PeerTransportParameters);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryParseLongHeader_AllowsReceiversToProcessTwoLengthDelimitedPacketsInTheSameDatagram()
     {
         byte[] firstVersionSpecificData = QuicHeaderTestData.BuildInitialVersionSpecificData(

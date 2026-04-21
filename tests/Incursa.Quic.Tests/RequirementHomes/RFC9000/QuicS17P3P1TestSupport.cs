@@ -119,7 +119,7 @@ internal static class QuicS17P3P1TestSupport
             return false;
         }
 
-        packet[0] ^= (byte)(mask[0] & QuicPacketHeaderBits.TypeSpecificBitsMask);
+        packet[0] ^= (byte)(mask[0] & QuicPacketHeaderBits.ShortTypeSpecificBitsMask);
         for (int index = 0; index < packetNumberLength; index++)
         {
             packet[packetNumberOffset + index] ^= mask[1 + index];

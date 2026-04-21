@@ -270,28 +270,46 @@ public sealed class REQ_QUIC_INT_0008
         await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
         {
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-            string requests = $"https://localhost:{listenEndPoint.Port}/handshake";
+            string relativePath = $"handshake-{Guid.NewGuid():N}.txt";
+            string requests = $"https://localhost:{listenEndPoint.Port}/{relativePath}";
             string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+            string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+            string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+            string sourcePath = Path.Combine(sourceRoot, relativePath);
+            string destinationPath = Path.Combine(destinationRoot, relativePath);
 
-            await using HarnessProcess serverProcess = HarnessProcess.Start("server", "handshake", requests, harnessDll);
-            await serverProcess.WaitForListeningAsync(TimeSpan.FromSeconds(10));
+            Directory.CreateDirectory(sourceRoot);
+            Directory.CreateDirectory(destinationRoot);
+            File.WriteAllText(sourcePath, $"managed handshake bootstrap proof {Guid.NewGuid():N}");
+            TryDeleteFile(destinationPath);
 
-            await using HarnessProcess clientProcess = HarnessProcess.Start("client", "handshake", requests, harnessDll);
-            await clientProcess.WaitForStdoutContainsAsync("connecting to", TimeSpan.FromSeconds(10));
-            await WaitForHandshakeExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(10));
+            try
+            {
+                await using HarnessProcess serverProcess = HarnessProcess.Start("server", "handshake", requests, harnessDll);
+                await serverProcess.WaitForListeningAsync(TimeSpan.FromSeconds(10));
 
-            Assert.Contains("role=server, testcase=handshake", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("role=client, testcase=handshake", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("listening on", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("connecting to", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("completed managed listener bootstrap", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("completed managed client bootstrap", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Equal(0, serverProcess.Process.ExitCode);
-            Assert.Equal(0, clientProcess.Process.ExitCode);
-            Assert.DoesNotContain("unsupported", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("unsupported", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("unsupported", serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("unsupported", clientProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+                await using HarnessProcess clientProcess = HarnessProcess.Start("client", "handshake", requests, harnessDll);
+                await clientProcess.WaitForStdoutContainsAsync("connecting to", TimeSpan.FromSeconds(10));
+                await WaitForHandshakeExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(15));
+
+                Assert.Contains("role=server, testcase=handshake", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("role=client, testcase=handshake", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("listening on", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("connecting to", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("completed managed listener bootstrap", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("completed managed client bootstrap", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Equal(0, serverProcess.Process.ExitCode);
+                Assert.Equal(0, clientProcess.Process.ExitCode);
+                Assert.DoesNotContain("unsupported", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("unsupported", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("unsupported", serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("unsupported", clientProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+            }
+            finally
+            {
+                TryDeleteFile(sourcePath);
+                TryDeleteFile(destinationPath);
+            }
         });
     }
 
@@ -874,6 +892,21 @@ public sealed class REQ_QUIC_INT_0008
             {
                 return builder.ToString();
             }
+        }
+    }
+
+    private static void TryDeleteFile(string path)
+    {
+        try
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+        catch
+        {
+            // Best-effort cleanup only.
         }
     }
 

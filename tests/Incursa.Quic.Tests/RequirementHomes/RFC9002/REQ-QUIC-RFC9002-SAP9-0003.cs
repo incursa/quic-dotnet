@@ -39,6 +39,40 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RecoveryTimerExpired_ReplaysTheBootstrapInitialWhenNoNewClientCryptoIsAvailable()
+    {
+        using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+
+        long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(recoveryDueTicks);
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: recoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: recoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            timerResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(sendEffect.Datagram.Span, out QuicLongHeaderPacket packet));
+        Assert.Equal(QuicLongPacketTypeBits.Initial, packet.LongPacketTypeBits);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Values,
+            sentPacket => sentPacket.PacketNumberSpace == QuicPacketNumberSpace.Initial
+                && sentPacket.ProbePacket
+                && sentPacket.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
+        Assert.Contains(timerResult.Effects, effect =>
+            effect is QuicConnectionArmTimerEffect armEffect
+            && armEffect.TimerKind == QuicConnectionTimerKind.Recovery);
+        Assert.True(runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery) > recoveryGeneration);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ProbeContent_RetransmitsPreviouslySentApplicationDataWhenNewDataIsUnavailable()

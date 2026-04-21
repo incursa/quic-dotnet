@@ -7,6 +7,68 @@ namespace Incursa.Quic.Tests;
 public sealed class InteropHarnessProcessObservabilityTests
 {
     [Fact]
+    public async Task ChildProcessHandshakeDownloadsTheRequestedFileAndKeepsStderrEmptyOnTheGreenPath()
+    {
+        await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
+        {
+            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+            string relativePath = $"handshake-{Guid.NewGuid():N}.txt";
+            string requestPath = $"/{relativePath}";
+            string requests = $"https://localhost:{listenEndPoint.Port}{requestPath}";
+            string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+            string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+            string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+            string sourcePath = Path.Combine(sourceRoot, relativePath);
+            string destinationPath = Path.Combine(destinationRoot, relativePath);
+            byte[] payload = Encoding.UTF8.GetBytes($"managed handshake proof {Guid.NewGuid():N}");
+
+            Directory.CreateDirectory(sourceRoot);
+            Directory.CreateDirectory(destinationRoot);
+            File.WriteAllBytes(sourcePath, payload);
+            TryDelete(destinationPath);
+
+            try
+            {
+                await using HarnessProcess serverProcess = HarnessProcess.Start("server", "handshake", requests, harnessDll);
+                await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
+
+                await using HarnessProcess clientProcess = HarnessProcess.Start("client", "handshake", requests, harnessDll);
+                await WaitForPairMarkersAsync(
+                    serverProcess,
+                    clientProcess,
+                    "completed managed handshake response",
+                    "completed managed handshake download",
+                    TimeSpan.FromSeconds(20));
+                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
+
+                Assert.Equal(0, serverProcess.Process.ExitCode);
+                Assert.Equal(0, clientProcess.Process.ExitCode);
+                Assert.Empty(serverProcess.Stderr);
+                Assert.Empty(clientProcess.Stderr);
+                Assert.True(File.Exists(destinationPath));
+                Assert.Equal(payload, File.ReadAllBytes(destinationPath));
+                Assert.Contains("role=server, testcase=handshake", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("role=client, testcase=handshake", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                AssertContainsInOrder(
+                    serverProcess.Stdout,
+                    "listening on",
+                    "completed managed listener bootstrap",
+                    "completed managed handshake response");
+                AssertContainsInOrder(
+                    clientProcess.Stdout,
+                    "connecting to",
+                    "completed managed client bootstrap",
+                    "completed managed handshake download");
+            }
+            finally
+            {
+                TryDelete(sourcePath);
+                TryDelete(destinationPath);
+            }
+        });
+    }
+
+    [Fact]
     public async Task ChildProcessPostHandshakeStreamEmitsLifecycleMarkersInOrderAndKeepsStderrEmptyOnTheGreenPath()
     {
         await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>

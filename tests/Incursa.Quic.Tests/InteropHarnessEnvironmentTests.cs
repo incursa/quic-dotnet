@@ -19,12 +19,15 @@ public sealed class InteropHarnessEnvironmentTests
     [Fact]
     public void TryCreateNormalizesTestCaseAndPassesThroughOptionalEnvironmentValues()
     {
+        byte[] expectedLocalHandshakePrivateKey =
+            Convert.FromHexString("00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF");
         IDictionary environment = CreateEnvironment(
             role: " server ",
             testcase: "  HANDSHAKE  ",
             requests: "https://one\t\nhttps://two   https://three",
             qlogDir: "/tmp/qlog",
-            sslKeyLogFile: "/tmp/keys.log");
+            sslKeyLogFile: "/tmp/keys.log",
+            localHandshakePrivateKeyHex: Convert.ToHexString(expectedLocalHandshakePrivateKey));
 
         Assert.True(InteropHarnessEnvironment.TryCreate(environment, out InteropHarnessEnvironment? settings, out string? errorMessage));
         Assert.Null(errorMessage);
@@ -35,6 +38,7 @@ public sealed class InteropHarnessEnvironmentTests
         Assert.Equal(new[] { "https://one", "https://two", "https://three" }, settings.Requests);
         Assert.Equal("/tmp/qlog", settings.QlogDirectory);
         Assert.Equal("/tmp/keys.log", settings.SslKeyLogFile);
+        Assert.Equal(expectedLocalHandshakePrivateKey, settings.LocalHandshakePrivateKey.ToArray());
     }
 
     [Theory]
@@ -65,12 +69,44 @@ public sealed class InteropHarnessEnvironmentTests
         Assert.Equal(expectedErrorMessage, errorMessage);
     }
 
+    [Theory]
+    [InlineData("xyz", "Deterministic local handshake key must be an even-length hexadecimal string.")]
+    [InlineData("0011", "Deterministic local handshake key must decode to exactly 32 bytes.")]
+    public void TryCreateRejectsInvalidDeterministicHandshakeKeyInput(string localHandshakePrivateKeyHex, string expectedErrorMessage)
+    {
+        IDictionary environment = CreateEnvironment(
+            role: "client",
+            testcase: "handshake",
+            localHandshakePrivateKeyHex: localHandshakePrivateKeyHex);
+
+        Assert.False(InteropHarnessEnvironment.TryCreate(environment, out _, out string? errorMessage));
+        Assert.Equal(expectedErrorMessage, errorMessage);
+    }
+
+    [Fact]
+    public void TryCreateAcceptsDeterministicHandshakeKeyFromClientParamsFallback()
+    {
+        byte[] expectedLocalHandshakePrivateKey =
+            Convert.FromHexString("FFEEDDCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100");
+        IDictionary environment = CreateEnvironment(
+            role: "client",
+            testcase: "handshake",
+            clientParams: $"local_handshake_private_key_hex={Convert.ToHexString(expectedLocalHandshakePrivateKey)}");
+
+        Assert.True(InteropHarnessEnvironment.TryCreate(environment, out InteropHarnessEnvironment? settings, out string? errorMessage));
+        Assert.Null(errorMessage);
+        Assert.NotNull(settings);
+        Assert.Equal(expectedLocalHandshakePrivateKey, settings!.LocalHandshakePrivateKey.ToArray());
+    }
+
     private static IDictionary CreateEnvironment(
         string? role,
         string? testcase,
         string? requests = null,
         string? qlogDir = null,
-        string? sslKeyLogFile = null)
+        string? sslKeyLogFile = null,
+        string? localHandshakePrivateKeyHex = null,
+        string? clientParams = null)
     {
         Hashtable environment = new(StringComparer.OrdinalIgnoreCase);
 
@@ -97,6 +133,16 @@ public sealed class InteropHarnessEnvironmentTests
         if (sslKeyLogFile is not null)
         {
             environment["SSLKEYLOGFILE"] = sslKeyLogFile;
+        }
+
+        if (localHandshakePrivateKeyHex is not null)
+        {
+            environment["LOCAL_HANDSHAKE_PRIVATE_KEY_HEX"] = localHandshakePrivateKeyHex;
+        }
+
+        if (clientParams is not null)
+        {
+            environment["CLIENT_PARAMS"] = clientParams;
         }
 
         return environment;

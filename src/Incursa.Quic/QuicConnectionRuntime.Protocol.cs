@@ -22,6 +22,11 @@ internal sealed partial class QuicConnectionRuntime
                 phase = QuicConnectionPhase.Active;
             }
 
+            if (tlsState.Role == QuicTlsRole.Server)
+            {
+                stateChanged |= TryMarkActivePathValidated(nowTicks);
+            }
+
             if (TryPromoteValidatedCandidatePath(nowTicks, ref effects))
             {
                 stateChanged = true;
@@ -263,6 +268,11 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         stateChanged |= TryCaptureResumptionMasterSecret();
+        if (stateChanged)
+        {
+            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        }
+
         return stateChanged;
     }
 
@@ -353,7 +363,10 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (diagnosticsEnabled)
             {
-                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketOpenFailed(packetReceivedEvent.PathIdentity, datagram));
+                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketOpenFailed(
+                    packetReceivedEvent.PathIdentity,
+                    "missing-open-material",
+                    datagram));
             }
 
             return false;
@@ -368,7 +381,10 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (diagnosticsEnabled)
             {
-                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketOpenFailed(packetReceivedEvent.PathIdentity, datagram));
+                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketOpenFailed(
+                    packetReceivedEvent.PathIdentity,
+                    "decrypt-or-layout-failed",
+                    datagram));
             }
 
             return false;
@@ -413,6 +429,29 @@ internal sealed partial class QuicConnectionRuntime
                 }
 
                 payloadOffset += pingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out QuicAckFrame ackFrame, out int ackBytesConsumed))
+            {
+                if (ackBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                QuicPacketNumberSpace packetNumberSpace = encryptionLevel switch
+                {
+                    QuicTlsEncryptionLevel.Initial => QuicPacketNumberSpace.Initial,
+                    QuicTlsEncryptionLevel.Handshake => QuicPacketNumberSpace.Handshake,
+                    _ => throw new InvalidOperationException($"Unsupported handshake packet encryption level {encryptionLevel}."),
+                };
+
+                stateChanged |= sendRuntime.FlowController.TryProcessAckFrame(
+                    packetNumberSpace,
+                    ackFrame,
+                    GetElapsedMicros(nowTicks),
+                    pathValidated: HasValidatedPath);
+                payloadOffset += ackBytesConsumed;
                 continue;
             }
 
@@ -958,7 +997,17 @@ internal sealed partial class QuicConnectionRuntime
 
         if (tlsState.InitialEgressCryptoBuffer.BufferedBytes <= 0)
         {
-            return false;
+            return probePacket
+                && tlsState.Role == QuicTlsRole.Client
+                && initialBootstrapClientHelloBytes is not null
+                && initialBootstrapClientHelloBytes.Length > 0
+                && TryReplayBootstrapInitialPackets(
+                    pathIdentity,
+                    initialBootstrapClientHelloBytes,
+                    initialPacketProtection,
+                    probePacket,
+                    maximumDatagrams,
+                    ref effects);
         }
 
         bool stateChanged = false;
@@ -1047,6 +1096,60 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged = true;
 
             datagramsSent++;
+            if (datagramsSent >= maximumDatagrams)
+            {
+                break;
+            }
+        }
+
+        return stateChanged;
+    }
+
+    private bool TryReplayBootstrapInitialPackets(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> initialClientHelloBytes,
+        QuicInitialPacketProtection protection,
+        bool probePacket,
+        int maximumDatagrams,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (initialClientHelloBytes.IsEmpty)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        int datagramsSent = 0;
+        int replayOffset = 0;
+        Span<byte> cryptoBuffer = stackalloc byte[HandshakeEgressChunkBytes];
+
+        while (replayOffset < initialClientHelloBytes.Length)
+        {
+            int requestedBytes = Math.Min(cryptoBuffer.Length, initialClientHelloBytes.Length - replayOffset);
+            if (requestedBytes <= 0)
+            {
+                break;
+            }
+
+            ReadOnlySpan<byte> cryptoChunk = initialClientHelloBytes.Slice(replayOffset, requestedBytes);
+            if (!handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
+                    cryptoChunk,
+                    (ulong)replayOffset,
+                    protection,
+                    out ulong packetNumber,
+                    out byte[] protectedPacket))
+            {
+                break;
+            }
+
+            TrackInitialPacket(packetNumber, protectedPacket, probePacket);
+            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
+
+            replayOffset += requestedBytes;
+            datagramsSent++;
+            stateChanged = true;
+
             if (datagramsSent >= maximumDatagrams)
             {
                 break;
@@ -1603,7 +1706,12 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects);
         }
 
-        bool stateChanged = TryCommitPeerStreamLimits(
+        bool stateChanged = streamRegistry.Bookkeeping.TryApplyPeerTransportParameterSendLimits(
+            localBidirectionalLimit: peerTransportParameters.InitialMaxStreamDataBidiRemote ?? 0,
+            peerBidirectionalLimit: peerTransportParameters.InitialMaxStreamDataBidiLocal ?? 0,
+            localUnidirectionalLimit: peerTransportParameters.InitialMaxStreamDataUni ?? 0);
+
+        stateChanged |= TryCommitPeerStreamLimits(
             peerTransportParameters,
             out int bidirectionalIncrement,
             out int unidirectionalIncrement);

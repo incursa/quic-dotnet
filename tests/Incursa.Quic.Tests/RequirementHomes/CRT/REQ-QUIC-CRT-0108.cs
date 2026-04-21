@@ -1,10 +1,76 @@
 using System.Security.Cryptography;
+using System.Net.Security;
 
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-CRT-0108")]
 public sealed class REQ_QUIC_CRT_0108
 {
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ManagedClientHelloCarriesSupportedSignatureAlgorithmsForThePinnedEcdsaSubset()
+    {
+        QuicTlsKeySchedule schedule = new(CreateScalar(0x11));
+
+        Assert.True(schedule.TryCreateClientHello(CreateBootstrapLocalTransportParameters(), out byte[] clientHelloTranscript));
+
+        QuicResumptionClientHelloTestSupport.ParsedClientHello parsedClientHello =
+            QuicResumptionClientHelloTestSupport.ParseClientHello(clientHelloTranscript);
+
+        Assert.True(parsedClientHello.HasSignatureAlgorithms);
+        Assert.True(parsedClientHello.SignatureAlgorithmsContainEcdsaSecp256r1Sha256);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ManagedClientHelloCarriesSupportedGroupsForThePinnedSecp256r1Subset()
+    {
+        QuicTlsKeySchedule schedule = new(CreateScalar(0x11));
+
+        Assert.True(schedule.TryCreateClientHello(CreateBootstrapLocalTransportParameters(), out byte[] clientHelloTranscript));
+
+        QuicResumptionClientHelloTestSupport.ParsedClientHello parsedClientHello =
+            QuicResumptionClientHelloTestSupport.ParseClientHello(clientHelloTranscript);
+
+        Assert.True(parsedClientHello.HasSupportedGroups);
+        Assert.True(parsedClientHello.SupportedGroupsContainSecp256r1);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ManagedClientHelloCarriesConfiguredApplicationProtocolNegotiation()
+    {
+        QuicTlsKeySchedule schedule = new(
+            CreateScalar(0x11),
+            [SslApplicationProtocol.Http3]);
+
+        Assert.True(schedule.TryCreateClientHello(CreateBootstrapLocalTransportParameters(), out byte[] clientHelloTranscript));
+
+        QuicResumptionClientHelloTestSupport.ParsedClientHello parsedClientHello =
+            QuicResumptionClientHelloTestSupport.ParseClientHello(clientHelloTranscript);
+
+        Assert.True(parsedClientHello.HasApplicationLayerProtocolNegotiation);
+        Assert.True(parsedClientHello.ApplicationProtocolsContainHttp3);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void DeterministicLocalHandshakeKeyProducesStableClientHelloTranscript()
+    {
+        byte[] localHandshakePrivateKey = CreateScalar(0x11);
+        QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
+        QuicTlsKeySchedule firstSchedule = new(localHandshakePrivateKey);
+        QuicTlsKeySchedule secondSchedule = new(localHandshakePrivateKey);
+
+        Assert.True(firstSchedule.TryCreateClientHello(localTransportParameters, out byte[] firstClientHelloTranscript));
+        Assert.True(secondSchedule.TryCreateClientHello(localTransportParameters, out byte[] secondClientHelloTranscript));
+        Assert.Equal(firstClientHelloTranscript, secondClientHelloTranscript);
+    }
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -106,6 +172,39 @@ public sealed class REQ_QUIC_CRT_0108
         Assert.False(schedule.HandshakeSecretsDerived);
         Assert.False(schedule.TryGetExpectedPeerFinishedVerifyData(out _));
         Assert.Empty(schedule.ProcessTranscriptStep(CreateEncryptedExtensionsStep(CreateServerTransportParameters())));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void MalformedPeerEncryptedExtensionsApplicationProtocolFailsDeterministically()
+    {
+        QuicTlsTransportBridgeDriver driver = new(
+            QuicTlsRole.Client,
+            localHandshakePrivateKey: CreateScalar(0x11));
+        QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
+        QuicTransportParameters peerTransportParameters = CreateServerTransportParameters();
+
+        IReadOnlyList<QuicTlsStateUpdate> bootstrapUpdates = driver.StartHandshake(localTransportParameters);
+        Assert.Equal(2, bootstrapUpdates.Count);
+
+        IReadOnlyList<QuicTlsStateUpdate> serverHelloUpdates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Initial,
+            CreateServerHelloTranscript(
+                QuicTlsCipherSuite.TlsAes128GcmSha256,
+                CreateServerKeyShare(0x02)));
+
+        Assert.True(serverHelloUpdates.Count >= 4);
+
+        IReadOnlyList<QuicTlsStateUpdate> malformedEncryptedExtensionsUpdates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            CreateEncryptedExtensionsTranscript(
+                peerTransportParameters,
+                selectedApplicationProtocols: [Array.Empty<byte>()]));
+
+        Assert.Single(malformedEncryptedExtensionsUpdates);
+        Assert.Equal(QuicTlsUpdateKind.FatalAlert, malformedEncryptedExtensionsUpdates[0].Kind);
+        Assert.Equal((ushort)0x0032, malformedEncryptedExtensionsUpdates[0].AlertDescription);
     }
 
     [Fact]
@@ -241,9 +340,13 @@ public sealed class REQ_QUIC_CRT_0108
             HandshakeMessageBytes: transcriptBytes);
     }
 
-    private static QuicTlsTranscriptStep CreateEncryptedExtensionsStep(QuicTransportParameters transportParameters)
+    private static QuicTlsTranscriptStep CreateEncryptedExtensionsStep(
+        QuicTransportParameters transportParameters,
+        byte[][]? selectedApplicationProtocols = null)
     {
-        byte[] transcriptBytes = CreateEncryptedExtensionsTranscript(transportParameters);
+        byte[] transcriptBytes = CreateEncryptedExtensionsTranscript(
+            transportParameters,
+            selectedApplicationProtocols);
         return new QuicTlsTranscriptStep(
             QuicTlsTranscriptStepKind.PeerTransportParametersStaged,
             TranscriptPhase: QuicTlsTranscriptPhase.PeerTransportParametersStaged,
@@ -374,7 +477,9 @@ public sealed class REQ_QUIC_CRT_0108
         return keyShare;
     }
 
-    private static byte[] CreateEncryptedExtensionsTranscript(QuicTransportParameters transportParameters)
+    private static byte[] CreateEncryptedExtensionsTranscript(
+        QuicTransportParameters transportParameters,
+        byte[][]? selectedApplicationProtocols = null)
     {
         byte[] encodedTransportParameters = new byte[256];
         Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
@@ -383,20 +488,54 @@ public sealed class REQ_QUIC_CRT_0108
             encodedTransportParameters,
             out int bytesWritten));
 
-        Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
-            encodedTransportParameters[..bytesWritten],
-            QuicTransportParameterRole.Client,
-            out QuicTransportParameters parsedTransportParameters));
+        byte[] transportParametersExtension = new byte[4 + bytesWritten];
+        WriteUInt16(transportParametersExtension.AsSpan(0, 2), QuicTransportParametersCodec.QuicTransportParametersExtensionType);
+        WriteUInt16(transportParametersExtension.AsSpan(2, 2), (ushort)bytesWritten);
+        encodedTransportParameters.AsSpan(0, bytesWritten).CopyTo(transportParametersExtension.AsSpan(4));
 
-        byte[] transcript = new byte[512];
-        Assert.True(QuicTlsTranscriptProgress.TryFormatDeterministicEncryptedExtensionsTransportParametersMessage(
-            parsedTransportParameters,
-            QuicTransportParameterRole.Server,
-            transcript,
-            out int messageBytesWritten));
+        byte[]? applicationProtocolExtension = selectedApplicationProtocols is { Length: > 0 }
+            ? CreateEncryptedExtensionsApplicationProtocolNegotiationExtension(selectedApplicationProtocols)
+            : null;
 
-        Array.Resize(ref transcript, messageBytesWritten);
-        return transcript;
+        int extensionsLength = transportParametersExtension.Length + (applicationProtocolExtension?.Length ?? 0);
+        byte[] body = new byte[2 + extensionsLength];
+        int index = 0;
+
+        WriteUInt16(body.AsSpan(index, 2), checked((ushort)extensionsLength));
+        index += 2;
+        transportParametersExtension.CopyTo(body.AsSpan(index));
+        index += transportParametersExtension.Length;
+
+        applicationProtocolExtension?.CopyTo(body.AsSpan(index));
+        return WrapHandshakeMessage(QuicTlsHandshakeMessageType.EncryptedExtensions, body);
+    }
+
+    private static byte[] CreateEncryptedExtensionsApplicationProtocolNegotiationExtension(
+        IReadOnlyList<byte[]> selectedApplicationProtocols)
+    {
+        int protocolListLength = 0;
+        foreach (byte[] selectedApplicationProtocol in selectedApplicationProtocols)
+        {
+            protocolListLength += 1 + selectedApplicationProtocol.Length;
+        }
+
+        byte[] extension = new byte[2 + 2 + 2 + protocolListLength];
+        int index = 0;
+        WriteUInt16(extension.AsSpan(index, 2), 0x0010);
+        index += 2;
+        WriteUInt16(extension.AsSpan(index, 2), checked((ushort)(2 + protocolListLength)));
+        index += 2;
+        WriteUInt16(extension.AsSpan(index, 2), checked((ushort)protocolListLength));
+        index += 2;
+
+        foreach (byte[] selectedApplicationProtocol in selectedApplicationProtocols)
+        {
+            extension[index++] = checked((byte)selectedApplicationProtocol.Length);
+            selectedApplicationProtocol.CopyTo(extension.AsSpan(index));
+            index += selectedApplicationProtocol.Length;
+        }
+
+        return extension;
     }
 
     private static byte[] CreateFinishedTranscript(byte[] verifyData)

@@ -30,7 +30,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int PreferredAddressIPv4BytesLength = sizeof(uint);
     private const int PreferredAddressIPv6BytesLength = 16;
     private const ulong ApplicationSendDelayMicros = 1_000UL;
-    private const int ApplicationSendDelayThresholdBytes = ApplicationMinimumProtectedPayloadLength;
+    // Hold slightly underfilled application writes long enough to coalesce a follow-up FIN
+    // or sibling frame into one 1-RTT packet instead of emitting a second tiny packet.
+    private const int ApplicationSendDelayThresholdBytes = 32;
     private const int HandshakeEgressChunkBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =

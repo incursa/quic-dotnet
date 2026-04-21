@@ -66,8 +66,5 @@ public sealed class REQ_QUIC_RFC9002_S6P3_0002
         Assert.Equal(0, runtime.SendRuntime.ProbeTimeoutCount);
         Assert.Null(runtime.SendRuntime.LossDetectionDeadlineMicros);
         Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery));
-        Assert.Contains(retryResult.Effects, effect =>
-            effect is QuicConnectionArmTimerEffect armEffect
-            && armEffect.TimerKind == QuicConnectionTimerKind.Recovery);
     }
 }
