@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-CRT-0145">In the client role, after handshake confirmation and on the active 1-RTT short-header packet path, the library MUST retain the current 1-RTT application traffic secret material long enough to derive a successor 1-RTT open/protect packet-protection pair when the peer Key Phase bit first transitions from 0 to 1. On that first observed 0->1 transition, the runtime MUST derive the successor pair from the retained application traffic secret material, MUST install the successor open/protect material into the existing bridge-state fields, MUST update `KeyUpdateInstalled` and `CurrentOneRttKeyPhase` to 1, and MUST cause subsequently protected outbound 1-RTT packets to use the installed phase-1 material and set the Key Phase bit accordingly. Before handshake confirmation, the establishing runtime MUST remain unchanged. The slice MUST remain client-role only, MUST remain managed client/runtime only, and MUST remain closed to repeated successor derivation, a general RFC 9001 key-update engine, TLS KeyUpdate support, transfer, retry, public API widening, and any public key-update promise.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-CRT-0145">In the client role, after handshake confirmation and on the active 1-RTT short-header packet path, the library MUST retain the current 1-RTT application traffic secret material long enough to derive a successor 1-RTT open/protect packet-protection pair when the peer Key Phase bit first transitions from 0 to 1. On that first observed 0->1 transition, the runtime MUST derive successor 1-RTT AEAD key/IV material from the retained application traffic secret material, MUST retain the currently installed 1-RTT header-protection keys for that first supported successor pair, MUST install the successor open/protect material into the existing bridge-state fields, MUST update `KeyUpdateInstalled` and `CurrentOneRttKeyPhase` to 1, and MUST cause subsequently protected outbound 1-RTT packets to use the installed phase-1 material and set the Key Phase bit accordingly. Before handshake confirmation, the establishing runtime MUST remain unchanged. The slice MUST remain client-role only, MUST remain managed client/runtime only, and MUST remain closed to repeated successor derivation, a general RFC 9001 key-update engine, TLS KeyUpdate support, transfer, retry, public API widening, and any public key-update promise.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-CRT-0145")]
 public sealed class REQ_QUIC_CRT_0145
@@ -38,6 +38,60 @@ public sealed class REQ_QUIC_CRT_0145
         Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
         Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
         Assert.False(priorProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ActiveClientRuntimeInstallsSuccessorMaterialWhenTheFirstObservedPhaseOnePacketArrivesAfterLongPhaseZeroHistory()
+    {
+        using QuicConnectionRuntime runtime = CreateFinishedClientRuntime();
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(KeyPhaseDestinationConnectionId));
+
+        QuicHandshakeFlowCoordinator coordinator = CreatePacketCoordinator();
+        QuicTlsPacketProtectionMaterial currentOpenMaterial = runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+
+        for (int packetIndex = 0; packetIndex < 100; packetIndex++)
+        {
+            Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+                CreatePingPayload(),
+                currentOpenMaterial,
+                keyPhase: false,
+                out byte[] phaseZeroPacket));
+
+            QuicConnectionTransitionResult phaseZeroResult = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: packetIndex + 1,
+                    PacketPathIdentity,
+                    phaseZeroPacket),
+                nowTicks: packetIndex + 1);
+
+            Assert.True(phaseZeroResult.StateChanged);
+        }
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+            runtime,
+            out QuicTlsPacketProtectionMaterial successorOpenMaterial,
+            out _));
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            CreatePingPayload(),
+            successorOpenMaterial,
+            keyPhase: true,
+            out byte[] phaseOnePacket));
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 101,
+                PacketPathIdentity,
+                phaseOnePacket),
+            nowTicks: 101);
+
+        Assert.True(result.StateChanged);
+        Assert.True(runtime.TlsState.KeyUpdateInstalled);
+        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+        Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
     }
 
     [Fact]
@@ -126,7 +180,6 @@ public sealed class REQ_QUIC_CRT_0145
             return true;
         });
 
-        int packetCountBeforeStreamOpen = runtime.SendRuntime.SentPackets.Count;
         QuicStream outboundStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
 
         Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
@@ -137,12 +190,16 @@ public sealed class REQ_QUIC_CRT_0145
         QuicConnectionSendDatagramEffect sendEffect = Assert.Single(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
         Assert.Equal(PacketPathIdentity, sendEffect.PathIdentity);
 
-        Assert.Equal(packetCountBeforeStreamOpen + 1, runtime.SendRuntime.SentPackets.Count);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && entry.Value.AckOnlyPacket);
         KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedPacket = Assert.Single(
             runtime.SendRuntime.SentPackets,
-            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && entry.Value.Retransmittable);
         Assert.Equal(QuicPacketNumberSpace.ApplicationData, trackedPacket.Key.PacketNumberSpace);
-        Assert.Equal(0UL, trackedPacket.Key.PacketNumber);
+        Assert.Equal(1UL, trackedPacket.Key.PacketNumber);
         Assert.Equal((ulong)sendEffect.Datagram.Length, trackedPacket.Value.PayloadBytes);
 
         QuicHandshakeFlowCoordinator coordinator = CreatePacketCoordinator();
@@ -236,11 +293,12 @@ public sealed class REQ_QUIC_CRT_0145
     private static QuicConnectionTransitionResult InstallFirstObservedKeyPhaseTransition(QuicConnectionRuntime runtime)
     {
         Assert.NotNull(runtime.TlsState.OneRttOpenPacketProtectionMaterial);
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+            runtime,
+            out QuicTlsPacketProtectionMaterial successorOpenMaterial,
+            out _));
 
-        byte[] protectedPacket = BuildProtectedApplicationPacket(
-            CreatePacketCoordinator(),
-            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
-            keyPhase: true);
+        byte[] protectedPacket = QuicRfc9001KeyPhaseTestSupport.CreateSuccessorPhaseOneApplicationPacket(successorOpenMaterial);
 
         return runtime.Transition(
             new QuicConnectionPacketReceivedEvent(

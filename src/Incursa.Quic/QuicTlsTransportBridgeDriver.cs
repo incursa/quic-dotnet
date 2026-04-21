@@ -391,6 +391,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
     /// <summary>
     /// Derives the successor 1-RTT packet-protection pair without installing it into the bridge state.
+    /// The supported first-update slice retains the currently installed header-protection keys and
+    /// advances only the 1-RTT AEAD key/IV material for the successor Key Phase.
     /// </summary>
     internal bool TryDeriveOneRttSuccessorPacketProtectionMaterial(
         out QuicTlsPacketProtectionMaterial openMaterial,
@@ -411,6 +413,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
 
         return keySchedule.TryDeriveOneRttSuccessorPacketProtectionMaterial(
+            bridgeState.OneRttOpenPacketProtectionMaterial.Value.HeaderProtectionKey,
+            bridgeState.OneRttProtectPacketProtectionMaterial.Value.HeaderProtectionKey,
             out openMaterial,
             out protectMaterial);
     }

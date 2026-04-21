@@ -18,7 +18,9 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         new("203.0.113.10", RemotePort: 443);
 
     internal static QuicConnectionRuntime CreateFinishedClientRuntimeWithValidatedActivePath(
+        ulong connectionReceiveLimit = 64,
         ulong localBidirectionalSendLimit = 32,
+        ulong localBidirectionalReceiveLimit = 8,
         int maximumCandidatePaths = 8,
         int maximumRecentlyValidatedPaths = 8)
     {
@@ -40,7 +42,10 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         byte[] pinnedPeerLeafCertificateSha256 = SHA256.HashData(leafCertificateDer);
 
         QuicConnectionRuntime runtime = new(
-            QuicConnectionStreamStateTestHelpers.CreateState(localBidirectionalSendLimit: localBidirectionalSendLimit),
+            QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionReceiveLimit: connectionReceiveLimit,
+                localBidirectionalReceiveLimit: localBidirectionalReceiveLimit,
+                localBidirectionalSendLimit: localBidirectionalSendLimit),
             new FakeMonotonicClock(0),
             maximumCandidatePaths: maximumCandidatePaths,
             maximumRecentlyValidatedPaths: maximumRecentlyValidatedPaths,

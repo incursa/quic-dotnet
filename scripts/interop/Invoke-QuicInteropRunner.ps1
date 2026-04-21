@@ -34,6 +34,156 @@ function Assert-CommandAvailable {
     }
 }
 
+function ConvertTo-WindowsProcessArgument {
+    param(
+        [AllowEmptyString()]
+        [Parameter(Mandatory)]
+        [string]$Argument
+    )
+
+    if ($Argument.Length -eq 0) {
+        return '""'
+    }
+
+    $needsQuoting = $false
+    foreach ($character in $Argument.ToCharArray()) {
+        if ([char]::IsWhiteSpace($character) -or $character -eq '"') {
+            $needsQuoting = $true
+            break
+        }
+    }
+
+    if (-not $needsQuoting) {
+        return $Argument
+    }
+
+    $builder = [System.Text.StringBuilder]::new()
+    [void]$builder.Append('"')
+
+    $backslashCount = 0
+    foreach ($character in $Argument.ToCharArray()) {
+        if ($character -eq '\') {
+            $backslashCount++
+            continue
+        }
+
+        if ($character -eq '"') {
+            if ($backslashCount -gt 0) {
+                [void]$builder.Append([string]::new('\', $backslashCount * 2))
+            }
+
+            [void]$builder.Append('\')
+            [void]$builder.Append('"')
+            $backslashCount = 0
+            continue
+        }
+
+        if ($backslashCount -gt 0) {
+            [void]$builder.Append([string]::new('\', $backslashCount))
+            $backslashCount = 0
+        }
+
+        [void]$builder.Append($character)
+    }
+
+    if ($backslashCount -gt 0) {
+        [void]$builder.Append([string]::new('\', $backslashCount * 2))
+    }
+
+    [void]$builder.Append('"')
+    return $builder.ToString()
+}
+
+function ConvertTo-ProcessArgumentString {
+    param(
+        [AllowEmptyCollection()]
+        [Parameter(Mandatory)]
+        [string[]]$Arguments
+    )
+
+    if ($Arguments.Count -eq 0) {
+        return ''
+    }
+
+    return (($Arguments | ForEach-Object {
+                ConvertTo-WindowsProcessArgument -Argument $_
+            }) -join ' ')
+}
+
+function Write-Utf8File {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path,
+
+        [AllowEmptyString()]
+        [Parameter(Mandatory)]
+        [string]$Content
+    )
+
+    $encoding = [System.Text.UTF8Encoding]::new($false)
+    [System.IO.File]::WriteAllText($Path, $Content, $encoding)
+}
+
+function Invoke-ProcessToFiles {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FilePath,
+
+        [AllowEmptyCollection()]
+        [Parameter(Mandatory)]
+        [string[]]$ArgumentList,
+
+        [Parameter(Mandatory)]
+        [string]$WorkingDirectory,
+
+        [Parameter(Mandatory)]
+        [string]$StdOutPath,
+
+        [Parameter(Mandatory)]
+        [string]$StdErrPath
+    )
+
+    $processStartInfo = [System.Diagnostics.ProcessStartInfo]::new()
+    $processStartInfo.FileName = $FilePath
+    $processStartInfo.WorkingDirectory = $WorkingDirectory
+    $processStartInfo.UseShellExecute = $false
+    $processStartInfo.RedirectStandardOutput = $true
+    $processStartInfo.RedirectStandardError = $true
+
+    $argumentListProperty = $processStartInfo.GetType().GetProperty('ArgumentList')
+    if ($null -ne $argumentListProperty) {
+        foreach ($argument in $ArgumentList) {
+            [void]$processStartInfo.ArgumentList.Add([string]$argument)
+        }
+    }
+    else {
+        $processStartInfo.Arguments = ConvertTo-ProcessArgumentString -Arguments $ArgumentList
+    }
+
+    $process = [System.Diagnostics.Process]::new()
+    $process.StartInfo = $processStartInfo
+
+    try {
+        if (-not $process.Start()) {
+            throw "Failed to start '$FilePath'."
+        }
+
+        $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+        $stderrTask = $process.StandardError.ReadToEndAsync()
+
+        $process.WaitForExit()
+        [System.Threading.Tasks.Task]::WaitAll(@($stdoutTask, $stderrTask))
+
+        Write-Utf8File -Path $StdOutPath -Content $stdoutTask.GetAwaiter().GetResult()
+        Write-Utf8File -Path $StdErrPath -Content $stderrTask.GetAwaiter().GetResult()
+
+        return $process.ExitCode
+    }
+    finally {
+        $process.Dispose()
+    }
+}
+
 function Get-RepoRelativePath {
     param(
         [Parameter(Mandatory)]
@@ -391,6 +541,48 @@ function Get-InteropRunnerOutputValidation {
     }
 }
 
+function Test-InteropRunnerTransferClientOutput {
+    param(
+        [Parameter(Mandatory)]
+        [string]$OutputText
+    )
+
+    $completionMatches = [System.Text.RegularExpressions.Regex]::Matches(
+        $OutputText,
+        'completed managed transfer download .* stream (?<index>\d+)/(?<count>\d+)\.',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+
+    if ($completionMatches.Count -eq 0) {
+        return $false
+    }
+
+    $expectedStreamCount = 0
+    $completedStreams = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($completionMatch in $completionMatches) {
+        $streamIndex = [int]$completionMatch.Groups['index'].Value
+        $streamCount = [int]$completionMatch.Groups['count'].Value
+
+        if ($expectedStreamCount -eq 0) {
+            $expectedStreamCount = $streamCount
+        }
+        elseif ($expectedStreamCount -ne $streamCount) {
+            return $false
+        }
+
+        if ($streamIndex -lt 1 -or $streamIndex -gt $expectedStreamCount) {
+            return $false
+        }
+
+        $null = $completedStreams.Add($streamIndex)
+    }
+
+    if (($expectedStreamCount -le 0) -or ($completionMatches.Count -ne $expectedStreamCount) -or ($completedStreams.Count -ne $expectedStreamCount)) {
+        return $false
+    }
+
+    return $OutputText.IndexOf('client exited with code 0', [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+}
+
 function Get-InteropRunnerFallbackClassification {
     param(
         [Parameter(Mandatory)]
@@ -418,10 +610,25 @@ function Get-InteropRunnerFallbackClassification {
         }
     }
 
-    if (@($TestCases).Count -ne 1 -or $TestCases[0] -notin @('handshake', 'retry')) {
+    if (@($TestCases).Count -ne 1) {
         return [pscustomobject]@{
             TreatAsSuccess = $false
-            Summary = 'The runner hit a post-check FileNotFoundError, and fallback classification is only enabled for the plain handshake and retry testcases.'
+            Summary = 'The runner hit a post-check FileNotFoundError, and fallback classification is only enabled for one testcase at a time.'
+        }
+    }
+
+    $testCase = $TestCases[0]
+    if ($testCase -notin @('handshake', 'retry', 'transfer')) {
+        return [pscustomobject]@{
+            TreatAsSuccess = $false
+            Summary = 'The runner hit a post-check FileNotFoundError, and fallback classification is only enabled for the plain handshake and retry testcases, plus the client-role transfer testcase when preserved output proves every managed download completed.'
+        }
+    }
+
+    if ($testCase -eq 'transfer' -and $LocalRole -ne 'client') {
+        return [pscustomobject]@{
+            TreatAsSuccess = $false
+            Summary = 'The runner hit a post-check FileNotFoundError, and transfer fallback classification is only enabled for the client-role testcase when preserved output proves every managed download completed.'
         }
     }
 
@@ -435,7 +642,7 @@ function Get-InteropRunnerFallbackClassification {
     $outputFiles = Get-ChildItem -LiteralPath $RunnerLogDir -Filter 'output.txt' -File -Recurse -ErrorAction SilentlyContinue
     foreach ($outputFile in $outputFiles) {
         $outputText = Get-Content -LiteralPath $outputFile.FullName -Raw
-        switch ($TestCases[0]) {
+        switch ($testCase) {
             'handshake' {
                 if (($outputText -match 'completed managed .* download') -and ($outputText -match '(client|server) exited with code 0')) {
                     return [pscustomobject]@{
@@ -467,13 +674,25 @@ function Get-InteropRunnerFallbackClassification {
                     }
                 }
             }
+
+            'transfer' {
+                if (Test-InteropRunnerTransferClientOutput -OutputText $outputText) {
+                    return [pscustomobject]@{
+                        TreatAsSuccess = $true
+                        Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows completed managed downloads for every transfer request and a clean local client exit."
+                    }
+                }
+            }
         }
     }
 
     return [pscustomobject]@{
         TreatAsSuccess = $false
-        Summary = if ($TestCases[0] -eq 'retry') {
+        Summary = if ($testCase -eq 'retry') {
             'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a completed managed Retry bootstrap with a clean local endpoint exit.'
+        }
+        elseif ($testCase -eq 'transfer') {
+            'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain completed managed downloads for every transfer request with a clean local client exit.'
         }
         else {
             'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a completed managed download with a clean endpoint exit.'
@@ -631,6 +850,16 @@ try {
 
     if ($null -eq $pythonCommand) {
         throw 'python is required but was not found on PATH.'
+    }
+
+    $pythonCommandPath = if ($pythonCommand.PSObject.Properties.Match('Path').Count -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$pythonCommand.Path)) {
+        [string]$pythonCommand.Path
+    }
+    elseif ($pythonCommand.PSObject.Properties.Match('Source').Count -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$pythonCommand.Source)) {
+        [string]$pythonCommand.Source
+    }
+    else {
+        [string]$pythonCommand
     }
 
     if (-not (Test-Path -LiteralPath $runnerRootResolved)) {
@@ -1073,8 +1302,13 @@ raise SystemExit(run.main())
     Push-Location $runnerRootResolved
     try {
         Write-Host "Running quic-interop-runner locally..." -ForegroundColor Cyan
-        & $pythonCommand -X utf8 $runnerShimPath @runnerArgs 1> $runnerMarkdown 2> $runnerStdErr
-        $runnerExitCode = $LASTEXITCODE
+        $runnerProcessArguments = @('-X', 'utf8', $runnerShimPath) + $runnerArgs
+        $runnerExitCode = Invoke-ProcessToFiles `
+            -FilePath $pythonCommandPath `
+            -ArgumentList $runnerProcessArguments `
+            -WorkingDirectory $runnerRootResolved `
+            -StdOutPath $runnerMarkdown `
+            -StdErrPath $runnerStdErr
     }
     finally {
         Pop-Location

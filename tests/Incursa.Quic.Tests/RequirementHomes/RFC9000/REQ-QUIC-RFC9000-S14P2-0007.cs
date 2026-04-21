@@ -32,7 +32,7 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0007
         QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
         outboundEffects.Clear();
 
-        byte[] payload = Enumerable.Range(0, 21).Select(value => (byte)value).ToArray();
+        byte[] payload = Enumerable.Range(0, 64).Select(value => (byte)value).ToArray();
 
         await stream.WriteAsync(payload, 0, payload.Length);
 
@@ -67,7 +67,7 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0007
         Assert.False(runtime.ActivePath.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets);
         Assert.Equal(reducedMaximumDatagramSizeBytes, runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
 
-        byte[] payload = Enumerable.Range(0, 21).Select(value => (byte)value).ToArray();
+        byte[] payload = Enumerable.Range(0, 64).Select(value => (byte)value).ToArray();
         outboundEffects.Clear();
 
         InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(
@@ -75,6 +75,46 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0007
 
         Assert.NotNull(exception.Message);
         Assert.Empty(outboundEffects);
+        await stream.DisposeAsync();
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task WriteAsync_DoesNotAdvanceTheStreamOffsetWhenOrdinaryPacketsAreDisabled()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        byte[] payload = Enumerable.Range(0, 64).Select(value => (byte)value).ToArray();
+        outboundEffects.Clear();
+
+        ulong reducedMaximumDatagramSizeBytes = QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes - 1;
+        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(reducedMaximumDatagramSizeBytes));
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => stream.WriteAsync(payload, 0, payload.Length));
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot((ulong)stream.Id, out QuicConnectionStreamSnapshot failedSnapshot));
+        Assert.Equal(0UL, failedSnapshot.UniqueBytesSent);
+        Assert.DoesNotContain(outboundEffects, effect => effect is QuicConnectionSendDatagramEffect);
+
+        ulong minimumAllowedMaximumDatagramSizeBytes = QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes;
+        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(minimumAllowedMaximumDatagramSizeBytes));
+        outboundEffects.Clear();
+
+        await stream.WriteAsync(payload, 0, payload.Length);
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot((ulong)stream.Id, out QuicConnectionStreamSnapshot successSnapshot));
+        Assert.Equal((ulong)payload.Length, successSnapshot.UniqueBytesSent);
+        Assert.Contains(outboundEffects, effect => effect is QuicConnectionSendDatagramEffect);
         await stream.DisposeAsync();
     }
 

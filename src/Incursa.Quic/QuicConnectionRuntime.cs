@@ -100,12 +100,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private long? terminalEndTicks;
     private long lastTransitionTicks;
     private ulong transitionSequence;
+    private ulong largestObservedApplicationPacketNumber;
     private long nextStreamActionRequestId;
     private long nextStreamObserverId;
     private Exception? inboundStreamQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Action<int, int>? streamCapacityObserver;
     private long? pendingApplicationSendDelayDueTicks;
+    private bool hasObservedApplicationPacketNumber;
 
     public QuicConnectionRuntime(
         QuicConnectionStreamState bookkeeping,

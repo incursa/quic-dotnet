@@ -10,6 +10,7 @@ internal sealed class QuicConnectionStreamState
     private const int StreamIdTypeBitCount = 2;
 
     private readonly bool isServer;
+    private readonly object syncRoot = new();
     private readonly Dictionary<ulong, StreamState> streams = [];
     private readonly Dictionary<QuicStreamType, ulong> highestCreatedIncomingStreamIndexes = [];
 
@@ -61,152 +62,173 @@ internal sealed class QuicConnectionStreamState
 
     public bool TryPeekLocalStream(bool bidirectional, out QuicStreamId streamId, out QuicStreamsBlockedFrame blockedFrame)
     {
-        ulong nextIndex = bidirectional ? nextLocalBidirectionalStreamIndex : nextLocalUnidirectionalStreamIndex;
-        ulong limit = bidirectional ? peerBidirectionalStreamLimit : peerUnidirectionalStreamLimit;
-
-        if (nextIndex >= limit)
+        lock (syncRoot)
         {
-            streamId = default;
-            blockedFrame = new QuicStreamsBlockedFrame(bidirectional, limit);
-            return false;
-        }
+            ulong nextIndex = bidirectional ? nextLocalBidirectionalStreamIndex : nextLocalUnidirectionalStreamIndex;
+            ulong limit = bidirectional ? peerBidirectionalStreamLimit : peerUnidirectionalStreamLimit;
 
-        streamId = new QuicStreamId(BuildLocalStreamIdValue(bidirectional, nextIndex));
-        blockedFrame = default;
-        return true;
+            if (nextIndex >= limit)
+            {
+                streamId = default;
+                blockedFrame = new QuicStreamsBlockedFrame(bidirectional, limit);
+                return false;
+            }
+
+            streamId = new QuicStreamId(BuildLocalStreamIdValue(bidirectional, nextIndex));
+            blockedFrame = default;
+            return true;
+        }
     }
 
     public bool TryOpenLocalStream(bool bidirectional, out QuicStreamId streamId, out QuicStreamsBlockedFrame blockedFrame)
     {
-        if (!TryPeekLocalStream(bidirectional, out streamId, out blockedFrame))
+        lock (syncRoot)
         {
-            return false;
-        }
+            if (!TryPeekLocalStream(bidirectional, out streamId, out blockedFrame))
+            {
+                return false;
+            }
 
-        streams.Add(streamId.Value, CreateLocalStreamState(streamId));
+            streams.Add(streamId.Value, CreateLocalStreamState(streamId));
 
-        if (bidirectional)
-        {
-            nextLocalBidirectionalStreamIndex++;
-        }
-        else
-        {
-            nextLocalUnidirectionalStreamIndex++;
-        }
+            if (bidirectional)
+            {
+                nextLocalBidirectionalStreamIndex++;
+            }
+            else
+            {
+                nextLocalUnidirectionalStreamIndex++;
+            }
 
-        return true;
+            return true;
+        }
     }
 
     public bool TryApplyMaxDataFrame(QuicMaxDataFrame frame)
     {
-        if (frame.MaximumData <= ConnectionSendLimit)
+        lock (syncRoot)
         {
-            return false;
-        }
+            if (frame.MaximumData <= ConnectionSendLimit)
+            {
+                return false;
+            }
 
-        ConnectionSendLimit = frame.MaximumData;
-        return true;
+            ConnectionSendLimit = frame.MaximumData;
+            return true;
+        }
     }
 
     public bool TryApplyMaxStreamsFrame(QuicMaxStreamsFrame frame)
     {
-        if (frame.IsBidirectional)
+        lock (syncRoot)
         {
-            if (frame.MaximumStreams <= peerBidirectionalStreamLimit)
+            if (frame.IsBidirectional)
+            {
+                if (frame.MaximumStreams <= peerBidirectionalStreamLimit)
+                {
+                    return false;
+                }
+
+                peerBidirectionalStreamLimit = frame.MaximumStreams;
+                return true;
+            }
+
+            if (frame.MaximumStreams <= peerUnidirectionalStreamLimit)
             {
                 return false;
             }
 
-            peerBidirectionalStreamLimit = frame.MaximumStreams;
+            peerUnidirectionalStreamLimit = frame.MaximumStreams;
             return true;
         }
-
-        if (frame.MaximumStreams <= peerUnidirectionalStreamLimit)
-        {
-            return false;
-        }
-
-        peerUnidirectionalStreamLimit = frame.MaximumStreams;
-        return true;
     }
 
     public bool TryPeekPeerStreamCapacityRelease(ulong streamIdValue, out QuicMaxStreamsFrame frame)
     {
-        frame = default;
-
-        QuicStreamId streamId = new(streamIdValue);
-        if (!IsPeerInitiated(streamId)
-            || !streams.TryGetValue(streamIdValue, out StreamState? state)
-            || state.PeerCapacityReleaseReported
-            || !IsPeerStreamFullyClosed(state))
+        lock (syncRoot)
         {
-            return false;
-        }
+            frame = default;
 
-        ulong currentLimit = streamId.IsBidirectional
-            ? incomingBidirectionalStreamLimit
-            : incomingUnidirectionalStreamLimit;
-        if (currentLimit == MaximumStreamCount)
-        {
-            return false;
-        }
+            QuicStreamId streamId = new(streamIdValue);
+            if (!IsPeerInitiated(streamId)
+                || !streams.TryGetValue(streamIdValue, out StreamState? state)
+                || state.PeerCapacityReleaseReported
+                || !IsPeerStreamFullyClosed(state))
+            {
+                return false;
+            }
 
-        frame = new QuicMaxStreamsFrame(streamId.IsBidirectional, currentLimit + 1);
-        return true;
+            ulong currentLimit = streamId.IsBidirectional
+                ? incomingBidirectionalStreamLimit
+                : incomingUnidirectionalStreamLimit;
+            if (currentLimit == MaximumStreamCount)
+            {
+                return false;
+            }
+
+            frame = new QuicMaxStreamsFrame(streamId.IsBidirectional, currentLimit + 1);
+            return true;
+        }
     }
 
     public bool TryCommitPeerStreamCapacityRelease(ulong streamIdValue, QuicMaxStreamsFrame frame)
     {
-        QuicStreamId streamId = new(streamIdValue);
-        if (!IsPeerInitiated(streamId)
-            || frame.IsBidirectional != streamId.IsBidirectional
-            || !streams.TryGetValue(streamIdValue, out StreamState? state)
-            || state.PeerCapacityReleaseReported
-            || !IsPeerStreamFullyClosed(state))
+        lock (syncRoot)
         {
-            return false;
-        }
-
-        if (streamId.IsBidirectional)
-        {
-            if (frame.MaximumStreams <= incomingBidirectionalStreamLimit)
+            QuicStreamId streamId = new(streamIdValue);
+            if (!IsPeerInitiated(streamId)
+                || frame.IsBidirectional != streamId.IsBidirectional
+                || !streams.TryGetValue(streamIdValue, out StreamState? state)
+                || state.PeerCapacityReleaseReported
+                || !IsPeerStreamFullyClosed(state))
             {
                 return false;
             }
 
-            incomingBidirectionalStreamLimit = frame.MaximumStreams;
-        }
-        else
-        {
-            if (frame.MaximumStreams <= incomingUnidirectionalStreamLimit)
+            if (streamId.IsBidirectional)
             {
-                return false;
+                if (frame.MaximumStreams <= incomingBidirectionalStreamLimit)
+                {
+                    return false;
+                }
+
+                incomingBidirectionalStreamLimit = frame.MaximumStreams;
+            }
+            else
+            {
+                if (frame.MaximumStreams <= incomingUnidirectionalStreamLimit)
+                {
+                    return false;
+                }
+
+                incomingUnidirectionalStreamLimit = frame.MaximumStreams;
             }
 
-            incomingUnidirectionalStreamLimit = frame.MaximumStreams;
+            state.PeerCapacityReleaseReported = true;
+            return true;
         }
-
-        state.PeerCapacityReleaseReported = true;
-        return true;
     }
 
     public bool TryApplyMaxStreamDataFrame(QuicMaxStreamDataFrame frame, out QuicTransportErrorCode errorCode)
     {
-        errorCode = default;
-
-        QuicStreamId streamId = new(frame.StreamId);
-        if (!TryResolveSendCapableStream(streamId, allowImplicitPeerOpen: true, out StreamState? state, out errorCode))
+        lock (syncRoot)
         {
-            return false;
-        }
+            errorCode = default;
 
-        if (frame.MaximumStreamData <= state.SendLimit)
-        {
-            return false;
-        }
+            QuicStreamId streamId = new(frame.StreamId);
+            if (!TryResolveSendCapableStream(streamId, allowImplicitPeerOpen: true, out StreamState? state, out errorCode))
+            {
+                return false;
+            }
 
-        state.SendLimit = frame.MaximumStreamData;
-        return true;
+            if (frame.MaximumStreamData <= state.SendLimit)
+            {
+                return false;
+            }
+
+            state.SendLimit = frame.MaximumStreamData;
+            return true;
+        }
     }
 
     public bool TryApplyPeerTransportParameterSendLimits(
@@ -214,49 +236,52 @@ internal sealed class QuicConnectionStreamState
         ulong peerBidirectionalLimit,
         ulong localUnidirectionalLimit)
     {
-        ValidateFlowControlLimit(localBidirectionalLimit);
-        ValidateFlowControlLimit(peerBidirectionalLimit);
-        ValidateFlowControlLimit(localUnidirectionalLimit);
-
-        bool stateChanged = false;
-
-        if (localBidirectionalSendLimit != localBidirectionalLimit)
+        lock (syncRoot)
         {
-            localBidirectionalSendLimit = localBidirectionalLimit;
-            stateChanged = true;
-        }
+            ValidateFlowControlLimit(localBidirectionalLimit);
+            ValidateFlowControlLimit(peerBidirectionalLimit);
+            ValidateFlowControlLimit(localUnidirectionalLimit);
 
-        if (peerBidirectionalSendLimit != peerBidirectionalLimit)
-        {
-            peerBidirectionalSendLimit = peerBidirectionalLimit;
-            stateChanged = true;
-        }
+            bool stateChanged = false;
 
-        if (localUnidirectionalSendLimit != localUnidirectionalLimit)
-        {
-            localUnidirectionalSendLimit = localUnidirectionalLimit;
-            stateChanged = true;
-        }
-
-        foreach (KeyValuePair<ulong, StreamState> entry in streams)
-        {
-            QuicStreamId streamId = new(entry.Key);
-            if (!entry.Value.HasSendPart)
+            if (localBidirectionalSendLimit != localBidirectionalLimit)
             {
-                continue;
+                localBidirectionalSendLimit = localBidirectionalLimit;
+                stateChanged = true;
             }
 
-            ulong updatedSendLimit = ResolveCurrentSendLimit(streamId);
-            if (entry.Value.SendLimit == updatedSendLimit)
+            if (peerBidirectionalSendLimit != peerBidirectionalLimit)
             {
-                continue;
+                peerBidirectionalSendLimit = peerBidirectionalLimit;
+                stateChanged = true;
             }
 
-            entry.Value.SendLimit = updatedSendLimit;
-            stateChanged = true;
-        }
+            if (localUnidirectionalSendLimit != localUnidirectionalLimit)
+            {
+                localUnidirectionalSendLimit = localUnidirectionalLimit;
+                stateChanged = true;
+            }
 
-        return stateChanged;
+            foreach (KeyValuePair<ulong, StreamState> entry in streams)
+            {
+                QuicStreamId streamId = new(entry.Key);
+                if (!entry.Value.HasSendPart)
+                {
+                    continue;
+                }
+
+                ulong updatedSendLimit = ResolveCurrentSendLimit(streamId);
+                if (entry.Value.SendLimit == updatedSendLimit)
+                {
+                    continue;
+                }
+
+                entry.Value.SendLimit = updatedSendLimit;
+                stateChanged = true;
+            }
+
+            return stateChanged;
+        }
     }
 
     public bool TryReserveSendCapacity(
@@ -268,178 +293,191 @@ internal sealed class QuicConnectionStreamState
         out QuicStreamDataBlockedFrame streamDataBlockedFrame,
         out QuicTransportErrorCode errorCode)
     {
-        dataBlockedFrame = default;
-        streamDataBlockedFrame = default;
-        errorCode = default;
-
-        if (length < 0)
+        lock (syncRoot)
         {
-            throw new ArgumentOutOfRangeException(nameof(length));
-        }
+            dataBlockedFrame = default;
+            streamDataBlockedFrame = default;
+            errorCode = default;
 
-        if (offset > MaximumFlowControlLimit - (ulong)length)
-        {
-            errorCode = QuicTransportErrorCode.FinalSizeError;
-            return false;
-        }
+            if (length < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length));
+            }
 
-        QuicStreamId streamId = new(streamIdValue);
-        if (!TryResolveSendCapableStream(streamId, allowImplicitPeerOpen: false, out StreamState? state, out errorCode))
-        {
-            return false;
-        }
-
-        if (IsStreamSendClosedForNewFrames(state.SendState))
-        {
-            errorCode = QuicTransportErrorCode.StreamStateError;
-            return false;
-        }
-
-        ulong endExclusive = offset + (ulong)length;
-        if (state.SendFinalSize.HasValue)
-        {
-            if ((fin && endExclusive != state.SendFinalSize.Value)
-                || endExclusive > state.SendFinalSize.Value
-                || (length > 0 && offset >= state.SendFinalSize.Value))
+            if (offset > MaximumFlowControlLimit - (ulong)length)
             {
                 errorCode = QuicTransportErrorCode.FinalSizeError;
                 return false;
             }
-        }
-        else if (fin && endExclusive < state.HighestSentOffset)
-        {
-            errorCode = QuicTransportErrorCode.FinalSizeError;
-            return false;
-        }
 
-        if (state.SendState == QuicStreamSendState.Ready)
-        {
-            state.SendState = QuicStreamSendState.Send;
+            QuicStreamId streamId = new(streamIdValue);
+            if (!TryResolveSendCapableStream(streamId, allowImplicitPeerOpen: false, out StreamState? state, out errorCode))
+            {
+                return false;
+            }
+
+            if (IsStreamSendClosedForNewFrames(state.SendState))
+            {
+                errorCode = QuicTransportErrorCode.StreamStateError;
+                return false;
+            }
+
+            ulong endExclusive = offset + (ulong)length;
+            if (state.SendFinalSize.HasValue)
+            {
+                if ((fin && endExclusive != state.SendFinalSize.Value)
+                    || endExclusive > state.SendFinalSize.Value
+                    || (length > 0 && offset >= state.SendFinalSize.Value))
+                {
+                    errorCode = QuicTransportErrorCode.FinalSizeError;
+                    return false;
+                }
+            }
+            else if (fin && endExclusive < state.HighestSentOffset)
+            {
+                errorCode = QuicTransportErrorCode.FinalSizeError;
+                return false;
+            }
+
+            if (state.SendState == QuicStreamSendState.Ready)
+            {
+                state.SendState = QuicStreamSendState.Send;
+            }
+
+            if (state.SendState != QuicStreamSendState.DataSent
+                && endExclusive > state.SendLimit)
+            {
+                streamDataBlockedFrame = new QuicStreamDataBlockedFrame(streamIdValue, state.SendLimit);
+                return false;
+            }
+
+            ulong additionalBytes = state.SentRanges.MeasureAdditionalCoverage(offset, endExclusive);
+            if (additionalBytes > 0 && additionalBytes > ConnectionSendLimit - connectionUniqueBytesSent)
+            {
+                dataBlockedFrame = new QuicDataBlockedFrame(ConnectionSendLimit);
+                return false;
+            }
+
+            if (additionalBytes > 0)
+            {
+                state.SentRanges.Add(offset, endExclusive);
+                connectionUniqueBytesSent += additionalBytes;
+            }
+
+            if (fin && !state.SendFinalSize.HasValue)
+            {
+                state.SendFinalSize = endExclusive;
+            }
+
+            if (fin)
+            {
+                state.SendState = QuicStreamSendState.DataSent;
+            }
+
+            state.HighestSentOffset = Math.Max(state.HighestSentOffset, endExclusive);
+            return true;
         }
-
-        if (state.SendState != QuicStreamSendState.DataSent
-            && endExclusive > state.SendLimit)
-        {
-            streamDataBlockedFrame = new QuicStreamDataBlockedFrame(streamIdValue, state.SendLimit);
-            return false;
-        }
-
-        ulong additionalBytes = state.SentRanges.MeasureAdditionalCoverage(offset, endExclusive);
-        if (additionalBytes > 0 && additionalBytes > ConnectionSendLimit - connectionUniqueBytesSent)
-        {
-            dataBlockedFrame = new QuicDataBlockedFrame(ConnectionSendLimit);
-            return false;
-        }
-
-        if (additionalBytes > 0)
-        {
-            state.SentRanges.Add(offset, endExclusive);
-            connectionUniqueBytesSent += additionalBytes;
-        }
-
-        if (fin && !state.SendFinalSize.HasValue)
-        {
-            state.SendFinalSize = endExclusive;
-        }
-
-        if (fin)
-        {
-            state.SendState = QuicStreamSendState.DataSent;
-        }
-
-        state.HighestSentOffset = Math.Max(state.HighestSentOffset, endExclusive);
-
-        return true;
     }
 
     public bool TryReceiveStreamFrame(QuicStreamFrame frame, out QuicTransportErrorCode errorCode)
     {
-        errorCode = default;
-        if (!TryResolveReceiveCapableStream(frame.StreamId, out StreamState? state, out errorCode))
+        lock (syncRoot)
         {
-            return false;
-        }
+            errorCode = default;
+            if (!TryResolveReceiveCapableStream(frame.StreamId, out StreamState? state, out errorCode))
+            {
+                return false;
+            }
 
-        ulong endExclusive = frame.Offset + (ulong)frame.StreamDataLength;
-        if (state.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead)
-        {
+            ulong endExclusive = frame.Offset + (ulong)frame.StreamDataLength;
+            if (state.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead)
+            {
+                if (ViolatesKnownReceiveFinalSize(state, frame.Offset, endExclusive, frame.StreamDataLength, frame.IsFin))
+                {
+                    errorCode = QuicTransportErrorCode.FinalSizeError;
+                    return false;
+                }
+
+                return true;
+            }
+
             if (ViolatesKnownReceiveFinalSize(state, frame.Offset, endExclusive, frame.StreamDataLength, frame.IsFin))
             {
                 errorCode = QuicTransportErrorCode.FinalSizeError;
                 return false;
             }
 
+            ulong? proposedFinalSize = frame.IsFin ? endExclusive : state.ReceiveFinalSize;
+            if (frame.IsFin && !state.ReceiveFinalSize.HasValue && endExclusive < state.HighestReceivedOffset)
+            {
+                errorCode = QuicTransportErrorCode.FinalSizeError;
+                return false;
+            }
+
+            if (proposedFinalSize.HasValue && proposedFinalSize.Value > state.ReceiveLimit)
+            {
+                errorCode = QuicTransportErrorCode.FlowControlError;
+                return false;
+            }
+
+            if (endExclusive > state.ReceiveLimit)
+            {
+                errorCode = QuicTransportErrorCode.FlowControlError;
+                return false;
+            }
+
+            ulong additionalBytes = state.ReceivedRanges.MeasureAdditionalCoverage(frame.Offset, endExclusive);
+            ulong newUniqueBytes = state.ReceivedRanges.TotalLength + additionalBytes;
+            ulong newAccountedBytes = proposedFinalSize.HasValue ? Math.Max(newUniqueBytes, proposedFinalSize.Value) : newUniqueBytes;
+            ulong additionalAccountedBytes = newAccountedBytes - state.AccountedBytes;
+
+            if (additionalAccountedBytes > ConnectionReceiveLimit - connectionAccountedBytesReceived)
+            {
+                errorCode = QuicTransportErrorCode.FlowControlError;
+                return false;
+            }
+
+            state.ReceivedRanges.Add(frame.Offset, endExclusive);
+            state.HighestReceivedOffset = Math.Max(state.HighestReceivedOffset, endExclusive);
+            state.AccountedBytes = newAccountedBytes;
+            connectionAccountedBytesReceived += additionalAccountedBytes;
+
+            if (proposedFinalSize.HasValue)
+            {
+                state.ReceiveFinalSize = proposedFinalSize.Value;
+            }
+
+            if (frame.StreamDataLength > 0)
+            {
+                InsertReadableBytes(state, frame.Offset, frame.StreamData.ToArray());
+            }
+
+            UpdateReceiveState(state);
             return true;
         }
-
-        if (ViolatesKnownReceiveFinalSize(state, frame.Offset, endExclusive, frame.StreamDataLength, frame.IsFin))
-        {
-            errorCode = QuicTransportErrorCode.FinalSizeError;
-            return false;
-        }
-
-        ulong? proposedFinalSize = frame.IsFin ? endExclusive : state.ReceiveFinalSize;
-        if (frame.IsFin && !state.ReceiveFinalSize.HasValue && endExclusive < state.HighestReceivedOffset)
-        {
-            errorCode = QuicTransportErrorCode.FinalSizeError;
-            return false;
-        }
-
-        if (proposedFinalSize.HasValue && proposedFinalSize.Value > state.ReceiveLimit)
-        {
-            errorCode = QuicTransportErrorCode.FlowControlError;
-            return false;
-        }
-
-        if (endExclusive > state.ReceiveLimit)
-        {
-            errorCode = QuicTransportErrorCode.FlowControlError;
-            return false;
-        }
-
-        ulong additionalBytes = state.ReceivedRanges.MeasureAdditionalCoverage(frame.Offset, endExclusive);
-        ulong newUniqueBytes = state.ReceivedRanges.TotalLength + additionalBytes;
-        ulong newAccountedBytes = proposedFinalSize.HasValue ? Math.Max(newUniqueBytes, proposedFinalSize.Value) : newUniqueBytes;
-        ulong additionalAccountedBytes = newAccountedBytes - state.AccountedBytes;
-
-        if (additionalAccountedBytes > ConnectionReceiveLimit - connectionAccountedBytesReceived)
-        {
-            errorCode = QuicTransportErrorCode.FlowControlError;
-            return false;
-        }
-
-        state.ReceivedRanges.Add(frame.Offset, endExclusive);
-        state.HighestReceivedOffset = Math.Max(state.HighestReceivedOffset, endExclusive);
-        state.AccountedBytes = newAccountedBytes;
-        connectionAccountedBytesReceived += additionalAccountedBytes;
-
-        if (proposedFinalSize.HasValue)
-        {
-            state.ReceiveFinalSize = proposedFinalSize.Value;
-        }
-
-        if (frame.StreamDataLength > 0)
-        {
-            InsertReadableBytes(state, frame.Offset, frame.StreamData.ToArray());
-        }
-
-        UpdateReceiveState(state);
-        return true;
     }
 
     public bool TryReceiveStreamDataBlockedFrame(
         QuicStreamDataBlockedFrame frame,
         out QuicTransportErrorCode errorCode)
     {
-        QuicStreamId streamId = new(frame.StreamId);
-        return TryResolveReceiveCapableStream(streamId, out _, out errorCode);
+        lock (syncRoot)
+        {
+            QuicStreamId streamId = new(frame.StreamId);
+            return TryResolveReceiveCapableStream(streamId, out _, out errorCode);
+        }
     }
 
     public bool TryReceiveResetStreamFrame(
         QuicResetStreamFrame frame,
         out QuicMaxDataFrame maxDataFrame,
         out QuicTransportErrorCode errorCode)
-        => TryReceiveResetStreamFrame(frame, out maxDataFrame, out errorCode, suppressResetSignalWhenDataRecvd: false);
+    {
+        lock (syncRoot)
+        {
+            return TryReceiveResetStreamFrame(frame, out maxDataFrame, out errorCode, suppressResetSignalWhenDataRecvd: false);
+        }
+    }
 
     internal bool TryReceiveResetStreamFrame(
         QuicResetStreamFrame frame,
@@ -447,66 +485,69 @@ internal sealed class QuicConnectionStreamState
         out QuicTransportErrorCode errorCode,
         bool suppressResetSignalWhenDataRecvd)
     {
-        maxDataFrame = default;
-        errorCode = default;
-
-        QuicStreamId streamId = new(frame.StreamId);
-        if (!TryResolveReceiveCapableStream(streamId, out StreamState? state, out errorCode))
+        lock (syncRoot)
         {
-            return false;
-        }
+            maxDataFrame = default;
+            errorCode = default;
 
-        if (state.ReceiveFinalSize.HasValue && state.ReceiveFinalSize.Value != frame.FinalSize)
-        {
-            errorCode = QuicTransportErrorCode.FinalSizeError;
-            return false;
-        }
+            QuicStreamId streamId = new(frame.StreamId);
+            if (!TryResolveReceiveCapableStream(streamId, out StreamState? state, out errorCode))
+            {
+                return false;
+            }
 
-        if (frame.FinalSize < state.HighestReceivedOffset)
-        {
-            errorCode = QuicTransportErrorCode.FinalSizeError;
-            return false;
-        }
+            if (state.ReceiveFinalSize.HasValue && state.ReceiveFinalSize.Value != frame.FinalSize)
+            {
+                errorCode = QuicTransportErrorCode.FinalSizeError;
+                return false;
+            }
 
-        if (frame.FinalSize > state.ReceiveLimit)
-        {
-            errorCode = QuicTransportErrorCode.FlowControlError;
-            return false;
-        }
+            if (frame.FinalSize < state.HighestReceivedOffset)
+            {
+                errorCode = QuicTransportErrorCode.FinalSizeError;
+                return false;
+            }
 
-        ulong newAccountedBytes = Math.Max(state.AccountedBytes, frame.FinalSize);
-        ulong additionalAccountedBytes = newAccountedBytes - state.AccountedBytes;
-        if (additionalAccountedBytes > ConnectionReceiveLimit - connectionAccountedBytesReceived)
-        {
-            errorCode = QuicTransportErrorCode.FlowControlError;
-            return false;
-        }
+            if (frame.FinalSize > state.ReceiveLimit)
+            {
+                errorCode = QuicTransportErrorCode.FlowControlError;
+                return false;
+            }
 
-        if (suppressResetSignalWhenDataRecvd && state.ReceiveState == QuicStreamReceiveState.DataRecvd)
-        {
+            ulong newAccountedBytes = Math.Max(state.AccountedBytes, frame.FinalSize);
+            ulong additionalAccountedBytes = newAccountedBytes - state.AccountedBytes;
+            if (additionalAccountedBytes > ConnectionReceiveLimit - connectionAccountedBytesReceived)
+            {
+                errorCode = QuicTransportErrorCode.FlowControlError;
+                return false;
+            }
+
+            if (suppressResetSignalWhenDataRecvd && state.ReceiveState == QuicStreamReceiveState.DataRecvd)
+            {
+                return true;
+            }
+
+            if (state.BufferedReadableBytes > 0)
+            {
+                ulong increasedLimit = IncreaseLimit(ConnectionReceiveLimit, (ulong)state.BufferedReadableBytes);
+                if (increasedLimit != ConnectionReceiveLimit)
+                {
+                    ConnectionReceiveLimit = increasedLimit;
+                    maxDataFrame = new QuicMaxDataFrame(ConnectionReceiveLimit);
+                }
+            }
+
+            state.BufferedSegments.Clear();
+            state.BufferedReadableBytes = 0;
+            state.ReceiveFinalSize = frame.FinalSize;
+            state.HighestReceivedOffset = Math.Max(state.HighestReceivedOffset, frame.FinalSize);
+            state.AccountedBytes = newAccountedBytes;
+            connectionAccountedBytesReceived += additionalAccountedBytes;
+            state.ReceiveState = QuicStreamReceiveState.ResetRecvd;
+            state.ReceiveAbortErrorCode = frame.ApplicationProtocolErrorCode;
+            state.HasReceiveAbortErrorCode = true;
             return true;
         }
-
-        if (state.BufferedReadableBytes > 0)
-        {
-            ulong increasedLimit = IncreaseLimit(ConnectionReceiveLimit, (ulong)state.BufferedReadableBytes);
-            if (increasedLimit != ConnectionReceiveLimit)
-            {
-                ConnectionReceiveLimit = increasedLimit;
-                maxDataFrame = new QuicMaxDataFrame(ConnectionReceiveLimit);
-            }
-        }
-
-        state.BufferedSegments.Clear();
-        state.BufferedReadableBytes = 0;
-        state.ReceiveFinalSize = frame.FinalSize;
-        state.HighestReceivedOffset = Math.Max(state.HighestReceivedOffset, frame.FinalSize);
-        state.AccountedBytes = newAccountedBytes;
-        connectionAccountedBytesReceived += additionalAccountedBytes;
-        state.ReceiveState = QuicStreamReceiveState.ResetRecvd;
-        state.ReceiveAbortErrorCode = frame.ApplicationProtocolErrorCode;
-        state.HasReceiveAbortErrorCode = true;
-        return true;
     }
 
     public bool TryAbortLocalStreamWrites(
@@ -514,25 +555,28 @@ internal sealed class QuicConnectionStreamState
         out ulong finalSize,
         out QuicTransportErrorCode errorCode)
     {
-        finalSize = 0;
-        errorCode = default;
-
-        QuicStreamId streamId = new(streamIdValue);
-        if (!TryResolveOrOpenLocalSendCapableStream(streamId, out StreamState? state, out errorCode))
+        lock (syncRoot)
         {
-            return false;
-        }
+            finalSize = 0;
+            errorCode = default;
 
-        if (IsStreamSendClosedForNewFrames(state.SendState))
-        {
-            errorCode = QuicTransportErrorCode.StreamStateError;
-            return false;
-        }
+            QuicStreamId streamId = new(streamIdValue);
+            if (!TryResolveOrOpenLocalSendCapableStream(streamId, out StreamState? state, out errorCode))
+            {
+                return false;
+            }
 
-        finalSize = state.SendFinalSize ?? state.HighestSentOffset;
-        state.SendFinalSize = finalSize;
-        state.SendState = QuicStreamSendState.ResetSent;
-        return true;
+            if (IsStreamSendClosedForNewFrames(state.SendState))
+            {
+                errorCode = QuicTransportErrorCode.StreamStateError;
+                return false;
+            }
+
+            finalSize = state.SendFinalSize ?? state.HighestSentOffset;
+            state.SendFinalSize = finalSize;
+            state.SendState = QuicStreamSendState.ResetSent;
+            return true;
+        }
     }
 
     public bool TryReceiveStopSendingFrame(
@@ -540,37 +584,40 @@ internal sealed class QuicConnectionStreamState
         out QuicResetStreamFrame resetStreamFrame,
         out QuicTransportErrorCode errorCode)
     {
-        resetStreamFrame = default;
-        errorCode = default;
-
-        QuicStreamId streamId = new(frame.StreamId);
-        if (!TryResolveSendCapableStream(streamId, allowImplicitPeerOpen: true, out StreamState? state, out errorCode))
+        lock (syncRoot)
         {
-            return false;
-        }
+            resetStreamFrame = default;
+            errorCode = default;
 
-        if (state.SendState is QuicStreamSendState.DataRecvd
-            or QuicStreamSendState.ResetSent
-            or QuicStreamSendState.ResetRecvd)
-        {
-            errorCode = QuicTransportErrorCode.StreamStateError;
-            return false;
-        }
+            QuicStreamId streamId = new(frame.StreamId);
+            if (!TryResolveSendCapableStream(streamId, allowImplicitPeerOpen: true, out StreamState? state, out errorCode))
+            {
+                return false;
+            }
 
-        if (state.HasReceivePart
-            && state.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead)
-        {
-            errorCode = QuicTransportErrorCode.StreamStateError;
-            return false;
-        }
+            if (state.SendState is QuicStreamSendState.DataRecvd
+                or QuicStreamSendState.ResetSent
+                or QuicStreamSendState.ResetRecvd)
+            {
+                errorCode = QuicTransportErrorCode.StreamStateError;
+                return false;
+            }
 
-        ulong finalSize = state.SendFinalSize ?? state.HighestSentOffset;
-        state.SendFinalSize = finalSize;
-        state.SendState = QuicStreamSendState.ResetSent;
-        state.SendAbortErrorCode = frame.ApplicationProtocolErrorCode;
-        state.HasSendAbortErrorCode = true;
-        resetStreamFrame = new QuicResetStreamFrame(frame.StreamId, frame.ApplicationProtocolErrorCode, finalSize);
-        return true;
+            if (state.HasReceivePart
+                && state.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead)
+            {
+                errorCode = QuicTransportErrorCode.StreamStateError;
+                return false;
+            }
+
+            ulong finalSize = state.SendFinalSize ?? state.HighestSentOffset;
+            state.SendFinalSize = finalSize;
+            state.SendState = QuicStreamSendState.ResetSent;
+            state.SendAbortErrorCode = frame.ApplicationProtocolErrorCode;
+            state.HasSendAbortErrorCode = true;
+            resetStreamFrame = new QuicResetStreamFrame(frame.StreamId, frame.ApplicationProtocolErrorCode, finalSize);
+            return true;
+        }
     }
 
     public bool TryReadStreamData(
@@ -582,182 +629,239 @@ internal sealed class QuicConnectionStreamState
         out QuicMaxStreamDataFrame maxStreamDataFrame,
         out QuicTransportErrorCode errorCode)
     {
-        bytesWritten = 0;
-        completed = false;
-        maxDataFrame = default;
-        maxStreamDataFrame = default;
-        errorCode = default;
-
-        if (!streams.TryGetValue(streamIdValue, out StreamState? state) || !state.HasReceivePart)
+        lock (syncRoot)
         {
-            return false;
-        }
+            bytesWritten = 0;
+            completed = false;
+            maxDataFrame = default;
+            maxStreamDataFrame = default;
+            errorCode = default;
 
-        if (state.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead)
-        {
-            return false;
-        }
-
-        if (destination.IsEmpty || state.BufferedSegments.Count == 0)
-        {
-            completed = state.ReceiveFinalSize.HasValue && state.ReadOffset == state.ReceiveFinalSize.Value;
-            return false;
-        }
-
-        ulong expectedOffset = state.ReadOffset;
-        int destinationIndex = 0;
-
-        while (destinationIndex < destination.Length && state.BufferedSegments.Count > 0)
-        {
-            BufferedSegment entry = state.BufferedSegments[0];
-            if (entry.Offset > expectedOffset)
+            if (!streams.TryGetValue(streamIdValue, out StreamState? state) || !state.HasReceivePart)
             {
-                break;
+                return false;
             }
 
-            if (entry.Offset < expectedOffset)
+            if (state.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead)
             {
-                int skip = (int)(expectedOffset - entry.Offset);
-                if (skip >= entry.Data.Length)
+                return false;
+            }
+
+            if (destination.IsEmpty || state.BufferedSegments.Count == 0)
+            {
+                completed = state.ReceiveFinalSize.HasValue && state.ReadOffset == state.ReceiveFinalSize.Value;
+                return false;
+            }
+
+            ulong expectedOffset = state.ReadOffset;
+            int destinationIndex = 0;
+
+            while (destinationIndex < destination.Length && state.BufferedSegments.Count > 0)
+            {
+                BufferedSegment entry = state.BufferedSegments[0];
+                if (entry.Offset > expectedOffset)
                 {
-                    state.BufferedReadableBytes -= entry.Data.Length;
-                    state.BufferedSegments.RemoveAt(0);
-                    continue;
+                    break;
                 }
 
-                entry = new BufferedSegment(expectedOffset, entry.Data[skip..]);
+                if (entry.Offset < expectedOffset)
+                {
+                    int skip = (int)(expectedOffset - entry.Offset);
+                    if (skip >= entry.Data.Length)
+                    {
+                        state.BufferedReadableBytes -= entry.Data.Length;
+                        state.BufferedSegments.RemoveAt(0);
+                        continue;
+                    }
+
+                    entry = new BufferedSegment(expectedOffset, entry.Data[skip..]);
+                }
+
+                int bytesToCopy = Math.Min(entry.Data.Length, destination.Length - destinationIndex);
+                entry.Data.AsSpan(0, bytesToCopy).CopyTo(destination[destinationIndex..]);
+                destinationIndex += bytesToCopy;
+                expectedOffset += (ulong)bytesToCopy;
+                state.BufferedReadableBytes -= bytesToCopy;
+
+                if (bytesToCopy == entry.Data.Length)
+                {
+                    state.BufferedSegments.RemoveAt(0);
+                }
+                else
+                {
+                    state.BufferedSegments[0] = new BufferedSegment(entry.Offset + (ulong)bytesToCopy, entry.Data[bytesToCopy..]);
+                    break;
+                }
             }
 
-            int bytesToCopy = Math.Min(entry.Data.Length, destination.Length - destinationIndex);
-            entry.Data.AsSpan(0, bytesToCopy).CopyTo(destination[destinationIndex..]);
-            destinationIndex += bytesToCopy;
-            expectedOffset += (ulong)bytesToCopy;
-            state.BufferedReadableBytes -= bytesToCopy;
-
-            if (bytesToCopy == entry.Data.Length)
+            if (destinationIndex == 0)
             {
-                state.BufferedSegments.RemoveAt(0);
+                completed = state.ReceiveFinalSize.HasValue && state.ReadOffset == state.ReceiveFinalSize.Value;
+                return false;
             }
-            else
+
+            state.ReadOffset = expectedOffset;
+            bytesWritten = destinationIndex;
+            ulong increasedStreamLimit = IncreaseLimit(state.ReceiveLimit, (ulong)destinationIndex);
+            if (increasedStreamLimit != state.ReceiveLimit)
             {
-                state.BufferedSegments[0] = new BufferedSegment(entry.Offset + (ulong)bytesToCopy, entry.Data[bytesToCopy..]);
-                break;
+                state.ReceiveLimit = increasedStreamLimit;
+                maxStreamDataFrame = new QuicMaxStreamDataFrame(streamIdValue, state.ReceiveLimit);
             }
-        }
 
-        if (destinationIndex == 0)
-        {
-            completed = state.ReceiveFinalSize.HasValue && state.ReadOffset == state.ReceiveFinalSize.Value;
-            return false;
-        }
+            ulong increasedConnectionLimit = IncreaseLimit(ConnectionReceiveLimit, (ulong)destinationIndex);
+            if (increasedConnectionLimit != ConnectionReceiveLimit)
+            {
+                ConnectionReceiveLimit = increasedConnectionLimit;
+                maxDataFrame = new QuicMaxDataFrame(ConnectionReceiveLimit);
+            }
 
-        state.ReadOffset = expectedOffset;
-        bytesWritten = destinationIndex;
-        ulong increasedStreamLimit = IncreaseLimit(state.ReceiveLimit, (ulong)destinationIndex);
-        if (increasedStreamLimit != state.ReceiveLimit)
-        {
-            state.ReceiveLimit = increasedStreamLimit;
-            maxStreamDataFrame = new QuicMaxStreamDataFrame(streamIdValue, state.ReceiveLimit);
+            UpdateReceiveState(state);
+            completed = state.ReceiveState == QuicStreamReceiveState.DataRead;
+            return true;
         }
-
-        ulong increasedConnectionLimit = IncreaseLimit(ConnectionReceiveLimit, (ulong)destinationIndex);
-        if (increasedConnectionLimit != ConnectionReceiveLimit)
-        {
-            ConnectionReceiveLimit = increasedConnectionLimit;
-            maxDataFrame = new QuicMaxDataFrame(ConnectionReceiveLimit);
-        }
-
-        UpdateReceiveState(state);
-        completed = state.ReceiveState == QuicStreamReceiveState.DataRead;
-        return true;
     }
 
     public bool TryAcknowledgeReset(ulong streamIdValue)
     {
-        if (!streams.TryGetValue(streamIdValue, out StreamState? state) || state.ReceiveState != QuicStreamReceiveState.ResetRecvd)
+        lock (syncRoot)
         {
-            return false;
-        }
+            if (!streams.TryGetValue(streamIdValue, out StreamState? state) || state.ReceiveState != QuicStreamReceiveState.ResetRecvd)
+            {
+                return false;
+            }
 
-        state.ReceiveState = QuicStreamReceiveState.ResetRead;
-        return true;
+            state.ReceiveState = QuicStreamReceiveState.ResetRead;
+            return true;
+        }
     }
 
     public bool TryAcknowledgeSendCompletion(ulong streamIdValue)
     {
-        if (!streams.TryGetValue(streamIdValue, out StreamState? state))
+        lock (syncRoot)
         {
-            return false;
-        }
-
-        switch (state.SendState)
-        {
-            case QuicStreamSendState.DataSent:
-                state.SendState = QuicStreamSendState.DataRecvd;
-                return true;
-            case QuicStreamSendState.ResetSent:
-                state.SendState = QuicStreamSendState.ResetRecvd;
-                return true;
-            default:
+            if (!streams.TryGetValue(streamIdValue, out StreamState? state))
+            {
                 return false;
+            }
+
+            switch (state.SendState)
+            {
+                case QuicStreamSendState.DataSent:
+                    state.SendState = QuicStreamSendState.DataRecvd;
+                    return true;
+                case QuicStreamSendState.ResetSent:
+                    state.SendState = QuicStreamSendState.ResetRecvd;
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 
     public bool TryGetReceiveAbortErrorCode(ulong streamIdValue, out ulong applicationErrorCode)
     {
-        applicationErrorCode = 0;
-        if (!streams.TryGetValue(streamIdValue, out StreamState? state)
-            || !state.HasReceiveAbortErrorCode)
+        lock (syncRoot)
         {
-            return false;
-        }
+            applicationErrorCode = 0;
+            if (!streams.TryGetValue(streamIdValue, out StreamState? state)
+                || !state.HasReceiveAbortErrorCode)
+            {
+                return false;
+            }
 
-        applicationErrorCode = state.ReceiveAbortErrorCode;
-        return true;
+            applicationErrorCode = state.ReceiveAbortErrorCode;
+            return true;
+        }
     }
 
     public bool TryGetSendAbortErrorCode(ulong streamIdValue, out ulong applicationErrorCode)
     {
-        applicationErrorCode = 0;
-        if (!streams.TryGetValue(streamIdValue, out StreamState? state)
-            || !state.HasSendAbortErrorCode)
+        lock (syncRoot)
         {
-            return false;
-        }
+            applicationErrorCode = 0;
+            if (!streams.TryGetValue(streamIdValue, out StreamState? state)
+                || !state.HasSendAbortErrorCode)
+            {
+                return false;
+            }
 
-        applicationErrorCode = state.SendAbortErrorCode;
-        return true;
+            applicationErrorCode = state.SendAbortErrorCode;
+            return true;
+        }
     }
 
     public bool TryGetStreamSnapshot(ulong streamIdValue, out QuicConnectionStreamSnapshot snapshot)
     {
-        snapshot = default;
-        if (!streams.TryGetValue(streamIdValue, out StreamState? state))
+        lock (syncRoot)
         {
-            return false;
+            snapshot = default;
+            if (!streams.TryGetValue(streamIdValue, out StreamState? state))
+            {
+                return false;
+            }
+
+            ulong? observableFinalSize = state.ReceiveFinalSize ?? state.SendFinalSize;
+
+            snapshot = new QuicConnectionStreamSnapshot(
+                streamIdValue,
+                state.StreamType,
+                state.SendState,
+                state.ReceiveState,
+                state.SendLimit,
+                state.ReceiveLimit,
+                observableFinalSize.GetValueOrDefault(),
+                observableFinalSize.HasValue,
+                state.SentRanges.TotalLength,
+                state.ReceivedRanges.TotalLength,
+                state.AccountedBytes,
+                state.ReadOffset,
+                state.BufferedReadableBytes,
+                state.ReceiveAbortErrorCode,
+                state.HasReceiveAbortErrorCode,
+                state.SendAbortErrorCode,
+                state.HasSendAbortErrorCode);
+            return true;
         }
+    }
 
-        ulong? observableFinalSize = state.ReceiveFinalSize ?? state.SendFinalSize;
+    public bool TryCaptureSendState(ulong streamIdValue, out QuicConnectionStreamSendStateSnapshot snapshot)
+    {
+        lock (syncRoot)
+        {
+            snapshot = default;
+            if (!streams.TryGetValue(streamIdValue, out StreamState? state))
+            {
+                return false;
+            }
 
-        snapshot = new QuicConnectionStreamSnapshot(
-            streamIdValue,
-            state.StreamType,
-            state.SendState,
-            state.ReceiveState,
-            state.SendLimit,
-            state.ReceiveLimit,
-            observableFinalSize.GetValueOrDefault(),
-            observableFinalSize.HasValue,
-            state.SentRanges.TotalLength,
-            state.ReceivedRanges.TotalLength,
-            state.AccountedBytes,
-            state.ReadOffset,
-            state.BufferedReadableBytes,
-            state.ReceiveAbortErrorCode,
-            state.HasReceiveAbortErrorCode,
-            state.SendAbortErrorCode,
-            state.HasSendAbortErrorCode);
-        return true;
+            snapshot = new QuicConnectionStreamSendStateSnapshot(
+                streamIdValue,
+                connectionUniqueBytesSent,
+                state.SendState,
+                state.SendFinalSize,
+                state.HighestSentOffset,
+                state.SentRanges.CaptureSnapshot());
+            return true;
+        }
+    }
+
+    public bool TryRestoreSendState(QuicConnectionStreamSendStateSnapshot snapshot)
+    {
+        lock (syncRoot)
+        {
+            if (!streams.TryGetValue(snapshot.StreamId, out StreamState? state))
+            {
+                return false;
+            }
+
+            connectionUniqueBytesSent = snapshot.ConnectionUniqueBytesSent;
+            state.SendState = snapshot.SendState;
+            state.SendFinalSize = snapshot.SendFinalSize;
+            state.HighestSentOffset = snapshot.HighestSentOffset;
+            state.SentRanges.Restore(snapshot.SentRanges);
+            return true;
+        }
     }
 
     private static void ValidateLimits(QuicConnectionStreamStateOptions options)
@@ -1162,3 +1266,11 @@ internal sealed class QuicConnectionStreamState
         public ulong End => Offset + (ulong)Data.Length;
     }
 }
+
+internal readonly record struct QuicConnectionStreamSendStateSnapshot(
+    ulong StreamId,
+    ulong ConnectionUniqueBytesSent,
+    QuicStreamSendState SendState,
+    ulong? SendFinalSize,
+    ulong HighestSentOffset,
+    QuicByteRangeSetSnapshot SentRanges);

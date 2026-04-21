@@ -25,4 +25,44 @@ public sealed class REQ_QUIC_RFC9002_SAP8_0005
             handshakeAckReceived,
             handshakeConfirmed));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ClientBootstrapPathRemainsUnvalidatedBeforeHandshakeProofCompletes()
+    {
+        QuicCoalescedPacketRuntimeTestSupport.CoalescedServerFlightScenario scenario =
+            QuicCoalescedPacketRuntimeTestSupport.CreateClientRuntimeWithCoalescedServerFlight();
+
+        QuicConnectionTransitionResult result = scenario.ClientRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                PathIdentity: scenario.PathIdentity,
+                Datagram: scenario.InitialPacket),
+            nowTicks: 10);
+
+        Assert.True(result.StateChanged);
+        Assert.True(scenario.ClientRuntime.ActivePath.HasValue);
+        Assert.False(scenario.ClientRuntime.PeerHandshakeTranscriptCompleted);
+        Assert.False(scenario.ClientRuntime.ActivePath.Value.IsValidated);
+        Assert.False(scenario.ClientRuntime.ActivePath.Value.AmplificationState.IsAddressValidated);
+        Assert.Null(scenario.ClientRuntime.LastValidatedRemoteAddress);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void FinishedClientRuntimeMarksTheBootstrapServerPathValidated()
+    {
+        // Regression from the managed client-role transfer interop run on 2026-04-20:
+        // the client had already completed the server handshake flight, but later transfer
+        // requests still saw the bootstrap server path as amplification-limited.
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
+        Assert.True(runtime.ActivePath.Value.IsValidated);
+        Assert.True(runtime.ActivePath.Value.AmplificationState.IsAddressValidated);
+        Assert.Equal(runtime.ActivePath.Value.Identity.RemoteAddress, runtime.LastValidatedRemoteAddress);
+    }
 }

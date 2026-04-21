@@ -64,4 +64,43 @@ public sealed class REQ_QUIC_RFC9001_S6_0007
             out _,
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void CapturedTransferPhaseOnePacketDecryptsWithSuccessorAeadMaterialAndTheRetainedCurrentHeaderProtectionKey()
+    {
+        Assert.True(QuicCapturedInteropTransferEvidence.TryCreateTransferPhaseOneServerOpenMaterialWithRetainedHeaderProtectionKey(
+            out QuicTlsPacketProtectionMaterial successorOpenMaterial));
+
+        Assert.True(QuicCapturedInteropTransferEvidence.TryOpenTransferPhaseOneServerPacket(
+            QuicCapturedInteropTransferEvidence.QuicGoTransferKeyUpdatePacket101Protected,
+            successorOpenMaterial,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength,
+            out bool observedKeyPhase));
+
+        Assert.True(observedKeyPhase);
+        Assert.Equal(
+            QuicCapturedInteropTransferEvidence.QuicGoTransferKeyUpdatePacket101Payload,
+            openedPacket.AsSpan(payloadOffset, payloadLength).ToArray());
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void CapturedTransferPhaseOnePacketDoesNotDecryptWhenTheHeaderProtectionKeyAlsoRotates()
+    {
+        Assert.True(QuicCapturedInteropTransferEvidence.TryCreateTransferPhaseOneServerOpenMaterialWithDerivedHeaderProtectionKey(
+            out QuicTlsPacketProtectionMaterial successorOpenMaterial));
+
+        Assert.False(QuicCapturedInteropTransferEvidence.TryOpenTransferPhaseOneServerPacket(
+            QuicCapturedInteropTransferEvidence.QuicGoTransferKeyUpdatePacket101Protected,
+            successorOpenMaterial,
+            out _,
+            out _,
+            out _,
+            out _));
+    }
 }

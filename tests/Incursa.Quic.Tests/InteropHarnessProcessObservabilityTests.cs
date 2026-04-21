@@ -152,20 +152,48 @@ public sealed class InteropHarnessProcessObservabilityTests
         await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
         {
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-            string relativePath = $"transfer-{Guid.NewGuid():N}.txt";
-            string requestPath = $"/{relativePath}";
-            string requests = $"https://localhost:{listenEndPoint.Port}{requestPath}";
             string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
             string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
             string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
-            string sourcePath = Path.Combine(sourceRoot, relativePath);
-            string destinationPath = Path.Combine(destinationRoot, relativePath);
-            byte[] payload = Encoding.UTF8.GetBytes($"managed transfer proof {Guid.NewGuid():N}");
+            string[] relativePaths =
+            [
+                $"transfer-{Guid.NewGuid():N}-1.txt",
+                $"transfer-{Guid.NewGuid():N}-2.txt",
+                $"transfer-{Guid.NewGuid():N}-3.txt",
+            ];
+            string requests = string.Join(
+                " ",
+                [
+                    $"https://localhost:{listenEndPoint.Port}/{relativePaths[0]}",
+                    $"https://localhost:{listenEndPoint.Port}/{relativePaths[1]}",
+                    $"https://localhost:{listenEndPoint.Port}/{relativePaths[2]}",
+                ]);
+            string[] sourcePaths =
+            [
+                Path.Combine(sourceRoot, relativePaths[0]),
+                Path.Combine(sourceRoot, relativePaths[1]),
+                Path.Combine(sourceRoot, relativePaths[2]),
+            ];
+            string[] destinationPaths =
+            [
+                Path.Combine(destinationRoot, relativePaths[0]),
+                Path.Combine(destinationRoot, relativePaths[1]),
+                Path.Combine(destinationRoot, relativePaths[2]),
+            ];
+            byte[][] payloads =
+            [
+                Encoding.UTF8.GetBytes($"managed transfer proof one {Guid.NewGuid():N}"),
+                Encoding.UTF8.GetBytes($"managed transfer proof two {Guid.NewGuid():N}"),
+                Encoding.UTF8.GetBytes($"managed transfer proof three {Guid.NewGuid():N}"),
+            ];
 
             Directory.CreateDirectory(sourceRoot);
             Directory.CreateDirectory(destinationRoot);
-            File.WriteAllBytes(sourcePath, payload);
-            TryDelete(destinationPath);
+            for (int index = 0; index < sourcePaths.Length; index++)
+            {
+                File.WriteAllBytes(sourcePaths[index], payloads[index]);
+                TryDelete(destinationPaths[index]);
+            }
 
             try
             {
@@ -176,33 +204,51 @@ public sealed class InteropHarnessProcessObservabilityTests
                 await WaitForPairMarkersAsync(
                     serverProcess,
                     clientProcess,
-                    "completed managed transfer from",
-                    "completed managed transfer to",
+                    "completed managed transfer response",
+                    "completed managed transfer download",
                     TimeSpan.FromSeconds(20));
+                await serverProcess.WaitForStdoutContainsAsync("stream 3", TimeSpan.FromSeconds(20));
+                await clientProcess.WaitForStdoutContainsAsync("stream 3/3", TimeSpan.FromSeconds(20));
                 await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
 
                 Assert.Equal(0, serverProcess.Process.ExitCode);
                 Assert.Equal(0, clientProcess.Process.ExitCode);
                 Assert.Empty(serverProcess.Stderr);
                 Assert.Empty(clientProcess.Stderr);
-                Assert.True(File.Exists(destinationPath));
-                Assert.Equal(payload, File.ReadAllBytes(destinationPath));
                 Assert.Contains("role=server, testcase=transfer", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains("role=client, testcase=transfer", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                for (int index = 0; index < destinationPaths.Length; index++)
+                {
+                    Assert.True(File.Exists(destinationPaths[index]), $"Expected destination file '{destinationPaths[index]}' to exist.");
+                    Assert.Equal(payloads[index], File.ReadAllBytes(destinationPaths[index]));
+                }
+
                 AssertContainsInOrder(
                     serverProcess.Stdout,
                     "listening on",
-                    "transferring",
-                    "completed managed transfer from");
+                    "accepted transfer request stream 1",
+                    "completed managed transfer response",
+                    "accepted transfer request stream 2",
+                    "accepted transfer request stream 3");
                 AssertContainsInOrder(
                     clientProcess.Stdout,
                     "connecting to",
-                    "completed managed transfer to");
+                    "opened transfer request stream 1/3",
+                    "completed managed transfer download",
+                    "opened transfer request stream 2/3",
+                    "opened transfer request stream 3/3");
             }
             finally
             {
-                TryDelete(sourcePath);
-                TryDelete(destinationPath);
+                foreach (string sourcePath in sourcePaths)
+                {
+                    TryDelete(sourcePath);
+                }
+
+                foreach (string destinationPath in destinationPaths)
+                {
+                    TryDelete(destinationPath);
+                }
             }
         });
     }

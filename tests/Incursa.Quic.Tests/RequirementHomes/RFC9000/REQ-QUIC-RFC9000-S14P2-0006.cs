@@ -59,7 +59,7 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0006
         QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
         outboundEffects.Clear();
 
-        byte[] payload = new byte[21];
+        byte[] payload = new byte[64];
 
         await stream.WriteAsync(payload, 0, payload.Length);
 

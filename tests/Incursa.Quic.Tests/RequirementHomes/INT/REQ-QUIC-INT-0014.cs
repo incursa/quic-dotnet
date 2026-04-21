@@ -135,26 +135,49 @@ public sealed class REQ_QUIC_INT_0014
         string qlogDirectory = fixture.CreateSubdirectory("qlog");
         (string CertificatePath, string PrivateKeyPath) = CreateServerCertificateFiles(fixture, "localhost");
         IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-        string request = $"https://localhost:{listenEndPoint.Port}/handshake";
+        string relativePath = $"preflight-handshake-{Guid.NewGuid():N}.txt";
+        string request = $"https://localhost:{listenEndPoint.Port}/{relativePath}";
+        string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+        string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+        string sourcePath = Path.Combine(sourceRoot, relativePath);
+        string destinationPath = Path.Combine(destinationRoot, relativePath);
+        byte[] payload = Encoding.UTF8.GetBytes($"preflight handshake payload {Guid.NewGuid():N}");
 
-        (HarnessRunResult server, HarnessRunResult client) = await RunHarnessPairAsync(
-            "handshake",
-            request,
-            CertificatePath,
-            PrivateKeyPath,
-            qlogDirectory);
+        Directory.CreateDirectory(sourceRoot);
+        Directory.CreateDirectory(destinationRoot);
+        File.WriteAllBytes(sourcePath, payload);
+        TryDelete(destinationPath);
 
-        Assert.Equal(0, server.ExitCode);
-        Assert.Equal(0, client.ExitCode);
-        Assert.Contains("completed managed listener bootstrap", server.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("completed managed client bootstrap", client.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("qlog capture enabled", server.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("qlog capture enabled", client.Stdout, StringComparison.OrdinalIgnoreCase);
+        try
+        {
+            (HarnessRunResult server, HarnessRunResult client) = await RunHarnessPairAsync(
+                "handshake",
+                request,
+                CertificatePath,
+                PrivateKeyPath,
+                qlogDirectory);
 
-        string[] qlogFiles = Directory.GetFiles(qlogDirectory, "*.qlog");
-        Assert.NotEmpty(qlogFiles);
-        QlogFile qlog = QlogJsonSerializer.Deserialize(File.ReadAllText(qlogFiles[0]));
-        Assert.NotEmpty(qlog.Traces);
+            Assert.Equal(0, server.ExitCode);
+            Assert.Equal(0, client.ExitCode);
+            Assert.Contains("completed managed listener bootstrap", server.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed client bootstrap", client.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed handshake response", server.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed handshake download", client.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("qlog capture enabled", server.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("qlog capture enabled", client.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.True(File.Exists(destinationPath));
+            Assert.Equal(payload, File.ReadAllBytes(destinationPath));
+
+            string[] qlogFiles = Directory.GetFiles(qlogDirectory, "*.qlog");
+            Assert.NotEmpty(qlogFiles);
+            QlogFile qlog = QlogJsonSerializer.Deserialize(File.ReadAllText(qlogFiles[0]));
+            Assert.NotEmpty(qlog.Traces);
+        }
+        finally
+        {
+            TryDelete(sourcePath);
+            TryDelete(destinationPath);
+        }
     }
 
     [Fact]
@@ -187,26 +210,60 @@ public sealed class REQ_QUIC_INT_0014
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task LocalhostTransferSmokeOverwritesPreexistingDestinationFileWithQlogCapture()
+    public async Task LocalhostTransferSmokeOverwritesPreexistingDestinationFilesWithQlogCapture()
     {
         using TempDirectoryFixture fixture = new("incursa-quic-preflight-transfer");
         string qlogDirectory = fixture.CreateSubdirectory("qlog");
         (string CertificatePath, string PrivateKeyPath) = CreateServerCertificateFiles(fixture, "localhost");
         IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-        string relativePath = $"preflight-transfer-{Guid.NewGuid():N}.txt";
-        string request = $"https://localhost:{listenEndPoint.Port}/{relativePath}";
         string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
         string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
-        string sourcePath = Path.Combine(sourceRoot, relativePath);
-        string destinationPath = Path.Combine(destinationRoot, relativePath);
-        byte[] payload = Encoding.UTF8.GetBytes($"preflight transfer payload {Guid.NewGuid():N}");
-        byte[] preexistingPayload = Encoding.UTF8.GetBytes($"preexisting destination payload {Guid.NewGuid():N}");
-        Assert.NotEqual(preexistingPayload, payload);
+        string[] relativePaths =
+        [
+            $"preflight-transfer-{Guid.NewGuid():N}-1.txt",
+            $"preflight-transfer-{Guid.NewGuid():N}-2.txt",
+            $"preflight-transfer-{Guid.NewGuid():N}-3.txt",
+        ];
+        string request = string.Join(
+            " ",
+            [
+                $"https://localhost:{listenEndPoint.Port}/{relativePaths[0]}",
+                $"https://localhost:{listenEndPoint.Port}/{relativePaths[1]}",
+                $"https://localhost:{listenEndPoint.Port}/{relativePaths[2]}",
+            ]);
+        string[] sourcePaths =
+        [
+            Path.Combine(sourceRoot, relativePaths[0]),
+            Path.Combine(sourceRoot, relativePaths[1]),
+            Path.Combine(sourceRoot, relativePaths[2]),
+        ];
+        string[] destinationPaths =
+        [
+            Path.Combine(destinationRoot, relativePaths[0]),
+            Path.Combine(destinationRoot, relativePaths[1]),
+            Path.Combine(destinationRoot, relativePaths[2]),
+        ];
+        byte[][] payloads =
+        [
+            Encoding.UTF8.GetBytes($"preflight transfer payload one {Guid.NewGuid():N}"),
+            Encoding.UTF8.GetBytes($"preflight transfer payload two {Guid.NewGuid():N}"),
+            Encoding.UTF8.GetBytes($"preflight transfer payload three {Guid.NewGuid():N}"),
+        ];
+        byte[][] preexistingPayloads =
+        [
+            Encoding.UTF8.GetBytes($"preexisting destination payload one {Guid.NewGuid():N}"),
+            Encoding.UTF8.GetBytes($"preexisting destination payload two {Guid.NewGuid():N}"),
+            Encoding.UTF8.GetBytes($"preexisting destination payload three {Guid.NewGuid():N}"),
+        ];
 
         Directory.CreateDirectory(sourceRoot);
         Directory.CreateDirectory(destinationRoot);
-        File.WriteAllBytes(sourcePath, payload);
-        File.WriteAllBytes(destinationPath, preexistingPayload);
+        for (int index = 0; index < sourcePaths.Length; index++)
+        {
+            Assert.NotEqual(preexistingPayloads[index], payloads[index]);
+            File.WriteAllBytes(sourcePaths[index], payloads[index]);
+            File.WriteAllBytes(destinationPaths[index], preexistingPayloads[index]);
+        }
 
         try
         {
@@ -219,18 +276,30 @@ public sealed class REQ_QUIC_INT_0014
 
             Assert.Equal(0, server.ExitCode);
             Assert.Equal(0, client.ExitCode);
-            Assert.Contains("completed managed transfer", server.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("completed managed transfer", client.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.True(File.Exists(destinationPath));
-            Assert.Equal(payload, File.ReadAllBytes(destinationPath));
+            Assert.Contains("completed managed transfer response", server.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed transfer download", client.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("stream 3", server.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("stream 3/3", client.Stdout, StringComparison.OrdinalIgnoreCase);
+            for (int index = 0; index < destinationPaths.Length; index++)
+            {
+                Assert.True(File.Exists(destinationPaths[index]), $"Expected destination file '{destinationPaths[index]}' to exist.");
+                Assert.Equal(payloads[index], File.ReadAllBytes(destinationPaths[index]));
+            }
 
             string[] qlogFiles = Directory.GetFiles(qlogDirectory, "*.qlog");
             Assert.NotEmpty(qlogFiles);
         }
         finally
         {
-            TryDelete(sourcePath);
-            TryDelete(destinationPath);
+            foreach (string sourcePath in sourcePaths)
+            {
+                TryDelete(sourcePath);
+            }
+
+            foreach (string destinationPath in destinationPaths)
+            {
+                TryDelete(destinationPath);
+            }
         }
     }
 
@@ -243,17 +312,44 @@ public sealed class REQ_QUIC_INT_0014
         string qlogDirectory = fixture.CreateSubdirectory("qlog");
         (string CertificatePath, string PrivateKeyPath) = CreateServerCertificateFiles(fixture, "localhost");
         IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-        string relativePath = $"missing-transfer-source-{Guid.NewGuid():N}.txt";
-        string request = $"https://localhost:{listenEndPoint.Port}/{relativePath}";
         string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
         string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
-        string sourcePath = Path.Combine(sourceRoot, relativePath);
-        string destinationPath = Path.Combine(destinationRoot, relativePath);
+        string[] relativePaths =
+        [
+            $"missing-transfer-source-{Guid.NewGuid():N}-1.txt",
+            $"missing-transfer-source-{Guid.NewGuid():N}-2.txt",
+            $"missing-transfer-source-{Guid.NewGuid():N}-3.txt",
+        ];
+        string request = string.Join(
+            " ",
+            [
+                $"https://localhost:{listenEndPoint.Port}/{relativePaths[0]}",
+                $"https://localhost:{listenEndPoint.Port}/{relativePaths[1]}",
+                $"https://localhost:{listenEndPoint.Port}/{relativePaths[2]}",
+            ]);
+        string[] sourcePaths =
+        [
+            Path.Combine(sourceRoot, relativePaths[0]),
+            Path.Combine(sourceRoot, relativePaths[1]),
+            Path.Combine(sourceRoot, relativePaths[2]),
+        ];
+        string[] destinationPaths =
+        [
+            Path.Combine(destinationRoot, relativePaths[0]),
+            Path.Combine(destinationRoot, relativePaths[1]),
+            Path.Combine(destinationRoot, relativePaths[2]),
+        ];
 
         Directory.CreateDirectory(sourceRoot);
         Directory.CreateDirectory(destinationRoot);
-        TryDelete(sourcePath);
-        TryDelete(destinationPath);
+        File.WriteAllBytes(sourcePaths[0], Encoding.UTF8.GetBytes($"preflight transfer payload one {Guid.NewGuid():N}"));
+        TryDelete(sourcePaths[1]);
+        File.WriteAllBytes(sourcePaths[2], Encoding.UTF8.GetBytes($"preflight transfer payload three {Guid.NewGuid():N}"));
+
+        foreach (string destinationPath in destinationPaths)
+        {
+            TryDelete(destinationPath);
+        }
 
         try
         {
@@ -266,18 +362,26 @@ public sealed class REQ_QUIC_INT_0014
 
             Assert.Equal(1, server.ExitCode);
             Assert.Equal(1, client.ExitCode);
-            Assert.Contains("missing source file", server.Stderr, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains(sourcePaths[1], server.Stderr, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("was not found", server.Stderr, StringComparison.OrdinalIgnoreCase);
             Assert.StartsWith(
                 "interop harness: role=client, testcase=transfer failed:",
                 client.Stderr,
                 StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("completed managed transfer", server.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("completed managed transfer", client.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("stream 3", server.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("stream 3/3", client.Stdout, StringComparison.OrdinalIgnoreCase);
         }
         finally
         {
-            TryDelete(sourcePath);
-            TryDelete(destinationPath);
+            foreach (string sourcePath in sourcePaths)
+            {
+                TryDelete(sourcePath);
+            }
+
+            foreach (string destinationPath in destinationPaths)
+            {
+                TryDelete(destinationPath);
+            }
         }
     }
 

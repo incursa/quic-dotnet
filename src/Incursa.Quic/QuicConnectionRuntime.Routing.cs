@@ -519,11 +519,17 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        bool stateChanged = TryRegisterDetectedLosses(nowTicks);
         bool sentProbe = TrySendRecoveryProbes(selectedPacketNumberSpace, nowTicks, ref effects);
 
         if (!sentProbe)
         {
-            return false;
+            if (stateChanged)
+            {
+                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            }
+
+            return stateChanged;
         }
 
         recoveryController.RecordProbeTimeoutExpired();
@@ -607,15 +613,30 @@ internal sealed partial class QuicConnectionRuntime
     {
         return packetNumberSpace switch
         {
-            QuicPacketNumberSpace.Initial => TryFlushInitialPackets(
-                ref effects,
-                probePacket: true,
-                maximumDatagrams: 1),
-            QuicPacketNumberSpace.Handshake => TryFlushHandshakePackets(
-                ref effects,
-                probePacket: true,
-                maximumDatagrams: 1),
-            QuicPacketNumberSpace.ApplicationData => FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects),
+            QuicPacketNumberSpace.Initial => TryFlushPendingRetransmissions(
+                    QuicPacketNumberSpace.Initial,
+                    nowTicks,
+                    probePacket: true,
+                    ref effects)
+                || TryFlushInitialPackets(
+                    ref effects,
+                    probePacket: true,
+                    maximumDatagrams: 1),
+            QuicPacketNumberSpace.Handshake => TryFlushPendingRetransmissions(
+                    QuicPacketNumberSpace.Handshake,
+                    nowTicks,
+                    probePacket: true,
+                    ref effects)
+                || TryFlushHandshakePackets(
+                    ref effects,
+                    probePacket: true,
+                    maximumDatagrams: 1),
+            QuicPacketNumberSpace.ApplicationData => TryFlushPendingRetransmissions(
+                    QuicPacketNumberSpace.ApplicationData,
+                    nowTicks,
+                    probePacket: true,
+                    ref effects)
+                || FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects),
             _ => false,
         };
     }

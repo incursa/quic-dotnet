@@ -1,4 +1,5 @@
 using Incursa.Quic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
@@ -12,6 +13,12 @@ internal static class InteropHarnessRunner
     private const int UnsupportedExitCode = 127;
     private const int StreamCopyBufferSize = 4096;
     private const int MaxHttp09RequestLineBytes = 4096;
+    private const int QuicStreamBodyWriteChunkSize = 1024;
+    private const string CongestionControllerExhaustedMessage = "The congestion controller cannot send another ordinary packet.";
+    private const string FlowControlCreditExhaustedMessage = "Writes that wait for additional flow-control credit are not supported by this slice.";
+    private static readonly TimeSpan InteropRequestWaitTimeout = TimeSpan.FromSeconds(20);
+    private static readonly TimeSpan CongestionRetryDelay = TimeSpan.FromMilliseconds(10);
+    private static readonly TimeSpan CongestionRetryTimeout = TimeSpan.FromSeconds(30);
 
     private sealed record SequentialTransferPlan(
         Uri RequestUri,
@@ -518,17 +525,17 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out errorMessage) ||
+            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out string? tlsErrorMessage) ||
                 materials is null)
             {
-                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                WriteLineAndFlush(stderr, tlsErrorMessage ?? string.Empty);
                 return 1;
             }
 
-            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out errorMessage) ||
+            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out tlsErrorMessage) ||
                 serverCertificate is null)
             {
-                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                WriteLineAndFlush(stderr, tlsErrorMessage ?? string.Empty);
                 return 1;
             }
 
@@ -674,10 +681,11 @@ internal static class InteropHarnessRunner
                     FileMode.Open,
                     FileAccess.Read,
                     FileShare.Read,
-                    bufferSize: 4096,
+                    bufferSize: StreamCopyBufferSize,
                     useAsync: true);
 
-                await sourceStream.CopyToAsync(stream).ConfigureAwait(false);
+                await CopyToQuicStreamWithRetryAsync(sourceStream, stream).ConfigureAwait(false);
+                await CompleteQuicStreamWritesWithRetryAsync(stream).ConfigureAwait(false);
                 await stream.DisposeAsync().ConfigureAwait(false);
                 await connection.CloseAsync(0).ConfigureAwait(false);
 
@@ -710,28 +718,22 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!planner.TryGetDispatchRequestUri(out Uri? requestUri, out string? errorMessage))
+            SequentialTransferPlanBuildResult transferPlanResult = await TryCreateSequentialTransferPlans(settings).ConfigureAwait(false);
+            if (!transferPlanResult.Success)
             {
-                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                WriteLineAndFlush(stderr, transferPlanResult.ErrorMessage ?? string.Empty);
                 return 1;
             }
 
-            ArgumentNullException.ThrowIfNull(requestUri);
-            if (!InteropHarnessPreflightPlanner.TryGetTransferPaths(requestUri, out string? relativePath, out string? sourcePath, out string? destinationPath, out errorMessage) ||
-                relativePath is null ||
-                sourcePath is null ||
-                destinationPath is null)
-            {
-                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
-                return 1;
-            }
-
-            IPEndPoint remoteEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeRemoteEndPointAsync(requestUri).ConfigureAwait(false);
+            ArgumentNullException.ThrowIfNull(transferPlanResult.TransferPlans);
+            IReadOnlyList<SequentialTransferPlan> transferPlans = transferPlanResult.TransferPlans;
+            SequentialTransferPlan firstPlan = transferPlans[0];
+            IPEndPoint remoteEndPoint = firstPlan.RemoteEndPoint;
             WriteLineAndFlush(
                 stdout,
-                $"interop harness: role=client, testcase=transfer, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}, target={relativePath}.");
+                $"interop harness: role=client, testcase=transfer, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}, targetCount={transferPlans.Count}.");
 
-            QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(remoteEndPoint, requestUri.Host);
+            QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(remoteEndPoint, firstPlan.RequestUri.Host);
 
             using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
             if (qlogScope is not null)
@@ -740,27 +742,31 @@ internal static class InteropHarnessRunner
             }
             WriteDeterministicClientKeySelection(settings, stdout);
             await using QuicConnection connection = await ConnectWithQlogCaptureAsync(settings, qlogScope, clientOptions).ConfigureAwait(false);
-            await using QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).ConfigureAwait(false);
 
-            await using FileStream sourceStream = new(
-                sourcePath,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read,
-                bufferSize: 4096,
-                useAsync: true);
+            for (int index = 0; index < transferPlans.Count; index++)
+            {
+                SequentialTransferPlan transferPlan = transferPlans[index];
+                long bytesDownloaded = await DownloadHttp09ResponseAsync(
+                    connection,
+                    transferPlan,
+                    stdout,
+                    settings.TestCase,
+                    settings.Requests.Count,
+                    index,
+                    transferPlans.Count).ConfigureAwait(false);
 
-            await sourceStream.CopyToAsync(stream).ConfigureAwait(false);
-            await stream.DisposeAsync().ConfigureAwait(false);
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=client, testcase=transfer, requestCount={settings.Requests.Count} completed managed transfer download to {transferPlan.DestinationPath} from {transferPlan.RequestUri.PathAndQuery}, bytes={bytesDownloaded}, stream {index + 1}/{transferPlans.Count}.");
+            }
 
-            WriteLineAndFlush(
-                stdout,
-                $"interop harness: role=client, testcase=transfer, requestCount={settings.Requests.Count} completed managed transfer to {destinationPath} from {sourcePath}.");
+            await connection.CloseAsync(0).ConfigureAwait(false);
             return 0;
         }
         catch (Exception ex)
         {
             WriteLineAndFlush(stderr, $"interop harness: role=client, testcase=transfer failed: {ex.Message}");
+            WriteLineAndFlush(stderr, ex.ToString());
             return 1;
         }
     }
@@ -897,21 +903,18 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!planner.TryGetDispatchRequestUri(out Uri? requestUri, out string? errorMessage, allowEmptyRequests: true))
+            SequentialTransferPlanBuildResult transferPlanResult = await TryCreateSequentialTransferPlans(settings).ConfigureAwait(false);
+            if (!transferPlanResult.Success)
             {
-                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                WriteLineAndFlush(stderr, transferPlanResult.ErrorMessage ?? string.Empty);
                 return 1;
             }
 
-            if (!InteropHarnessPreflightPlanner.TryGetTransferPaths(requestUri, out string? relativePath, out string? sourcePath, out string? destinationPath, out errorMessage) ||
-                relativePath is null ||
-                sourcePath is null ||
-                destinationPath is null)
-            {
-                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
-                return 1;
-            }
+            ArgumentNullException.ThrowIfNull(transferPlanResult.TransferPlans);
+            IReadOnlyList<SequentialTransferPlan> transferPlans = transferPlanResult.TransferPlans;
+            SequentialTransferPlan firstPlan = transferPlans[0];
 
+            string? errorMessage;
             if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out errorMessage) ||
                 materials is null)
             {
@@ -928,7 +931,7 @@ internal static class InteropHarnessRunner
 
             using (serverCertificate)
             {
-                IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(requestUri).ConfigureAwait(false);
+                IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(firstPlan.RequestUri).ConfigureAwait(false);
                 QuicListenerOptions listenerOptions = new()
                 {
                     ListenEndPoint = listenEndPoint,
@@ -947,37 +950,23 @@ internal static class InteropHarnessRunner
                 await Task.Yield();
                 WriteLineAndFlush(
                     stdout,
-                    $"interop harness: role=server, testcase=transfer, requestCount={settings.Requests.Count} listening on {listenEndPoint}, target={relativePath}.");
+                    $"interop harness: role=server, testcase=transfer, requestCount={transferPlans.Count} listening on {listenEndPoint}.");
 
                 await using QuicConnection connection = await acceptTask.ConfigureAwait(false);
-                await using QuicStream stream = await connection.AcceptInboundStreamAsync().ConfigureAwait(false);
-                FileInfo sourceInfo = new(sourcePath);
-                if (!sourceInfo.Exists)
+                int servedRequestCount = await ServeHttp09RequestsAsync(
+                    connection,
+                    stdout,
+                    "transfer",
+                    expectedRequestCount: transferPlans.Count,
+                    configuredRequestCount: transferPlans.Count).ConfigureAwait(false);
+
+                if (servedRequestCount == 0)
                 {
-                    WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=transfer missing source file '{sourcePath}'.");
+                    WriteLineAndFlush(stderr, "interop harness: role=server, testcase=transfer did not observe an HTTP/0.9 request stream.");
                     return 1;
                 }
 
-                WriteLineAndFlush(
-                    stdout,
-                    $"interop harness: role=server, testcase=transfer, requestCount={settings.Requests.Count} transferring {sourceInfo.Length} bytes from {sourcePath} to {destinationPath}.");
-
-                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
-                await using FileStream destinationStream = new(
-                    destinationPath,
-                    FileMode.Create,
-                    FileAccess.Write,
-                    FileShare.None,
-                    bufferSize: 4096,
-                    useAsync: true);
-
-                await stream.CopyToAsync(destinationStream).ConfigureAwait(false);
-                await destinationStream.FlushAsync().ConfigureAwait(false);
-                await stream.DisposeAsync().ConfigureAwait(false);
-
-                WriteLineAndFlush(
-                    stdout,
-                    $"interop harness: role=server, testcase=transfer, requestCount={settings.Requests.Count} completed managed transfer from {sourcePath} to {destinationPath}.");
+                await connection.CloseAsync(0).ConfigureAwait(false);
                 return 0;
             }
         }
@@ -1036,7 +1025,7 @@ internal static class InteropHarnessRunner
             }
             else if (!string.Equals(expectedHost, requestUri.Host, StringComparison.OrdinalIgnoreCase) || requestUri.Port != expectedPort)
             {
-                return new SequentialTransferPlanBuildResult(false, null, $"REQUESTS entry '{requestUri}' must target the same host and port as the first multiconnect URL.");
+                return new SequentialTransferPlanBuildResult(false, null, $"REQUESTS entry '{requestUri}' must target the same host and port as the first request URL.");
             }
 
             IPEndPoint remoteEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeRemoteEndPointAsync(requestUri).ConfigureAwait(false);
@@ -1058,7 +1047,7 @@ internal static class InteropHarnessRunner
         await using QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).ConfigureAwait(false);
         WriteLineAndFlush(
             stdout,
-            $"interop harness: role=client, testcase={testCase}, requestCount={configuredRequestCount} opened handshake request stream {requestIndex + 1}/{totalRequestCount} for {transferPlan.RequestUri.PathAndQuery}.");
+            $"interop harness: role=client, testcase={testCase}, requestCount={configuredRequestCount} opened {testCase} request stream {requestIndex + 1}/{totalRequestCount} for {transferPlan.RequestUri.PathAndQuery}.");
 
         byte[] requestBytes = BuildHttp09GetRequestBytes(transferPlan.RequestUri);
         await stream.WriteAsync(requestBytes, 0, requestBytes.Length).ConfigureAwait(false);
@@ -1068,16 +1057,60 @@ internal static class InteropHarnessRunner
             $"interop harness: role=client, testcase={testCase}, requestCount={configuredRequestCount} sent HTTP/0.9 request line for {transferPlan.RequestUri.PathAndQuery}.");
 
         Directory.CreateDirectory(Path.GetDirectoryName(transferPlan.DestinationPath)!);
-        await using FileStream destinationStream = new(
-            transferPlan.DestinationPath,
-            FileMode.Create,
-            FileAccess.Write,
-            FileShare.None,
-            bufferSize: StreamCopyBufferSize,
-            useAsync: true);
+        string stagingPath = transferPlan.DestinationPath + ".partial";
 
-        await stream.CopyToAsync(destinationStream).ConfigureAwait(false);
-        await destinationStream.FlushAsync().ConfigureAwait(false);
+        try
+        {
+            await using FileStream destinationStream = new(
+                stagingPath,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.None,
+                bufferSize: StreamCopyBufferSize,
+                useAsync: true);
+
+            byte[] responseBuffer = new byte[StreamCopyBufferSize];
+            long bytesDownloaded = 0;
+            while (true)
+            {
+                int bytesRead = await stream.ReadAsync(responseBuffer, 0, responseBuffer.Length).ConfigureAwait(false);
+                if (bytesRead == 0)
+                {
+                    break;
+                }
+
+                await destinationStream.WriteAsync(responseBuffer, 0, bytesRead).ConfigureAwait(false);
+                bytesDownloaded += bytesRead;
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=client, testcase={testCase}, requestCount={configuredRequestCount} read {bytesRead} bytes (total={bytesDownloaded}) from {transferPlan.RequestUri.PathAndQuery}, stream {requestIndex + 1}/{totalRequestCount}.");
+            }
+
+            await destinationStream.FlushAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+            try
+            {
+                if (File.Exists(stagingPath))
+                {
+                    File.Delete(stagingPath);
+                }
+            }
+            catch
+            {
+                // Best-effort cleanup only.
+            }
+
+            throw;
+        }
+
+        if (File.Exists(transferPlan.DestinationPath))
+        {
+            File.Delete(transferPlan.DestinationPath);
+        }
+
+        File.Move(stagingPath, transferPlan.DestinationPath);
         return new FileInfo(transferPlan.DestinationPath).Length;
     }
 
@@ -1093,10 +1126,7 @@ internal static class InteropHarnessRunner
 
         while (servedRequestCount < remainingExpectedRequests)
         {
-            using CancellationTokenSource requestTimeout = new(
-                servedRequestCount == 0
-                    ? TimeSpan.FromSeconds(20)
-                    : TimeSpan.FromSeconds(2));
+            using CancellationTokenSource requestTimeout = new(InteropRequestWaitTimeout);
 
             QuicStream stream;
             try
@@ -1110,46 +1140,60 @@ internal static class InteropHarnessRunner
 
             await using (stream.ConfigureAwait(false))
             {
-                WriteLineAndFlush(
-                    stdout,
-                    $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} accepted handshake request stream {servedRequestCount + 1}.");
-
-                string requestTarget = await ReadHttp09RequestTargetAsync(stream).ConfigureAwait(false);
-                WriteLineAndFlush(
-                    stdout,
-                    $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} parsed HTTP/0.9 request target {requestTarget} on stream {servedRequestCount + 1}.");
-
-                if (!InteropHarnessPreflightPlanner.TryGetTransferPathsFromRequestTarget(
-                    requestTarget,
-                    out string? relativePath,
-                    out string? sourcePath,
-                    out _,
-                    out string? errorMessage) ||
-                    relativePath is null ||
-                    sourcePath is null)
+                try
                 {
-                    throw new InvalidOperationException(errorMessage ?? $"Unable to resolve a mounted source path for request target '{requestTarget}'.");
-                }
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} accepted {testCase} request stream {servedRequestCount + 1}.");
 
-                FileInfo sourceInfo = new(sourcePath);
-                if (!sourceInfo.Exists)
+                    string requestTarget = await ReadHttp09RequestTargetAsync(stream).ConfigureAwait(false);
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} parsed HTTP/0.9 request target {requestTarget} on stream {servedRequestCount + 1}.");
+
+                    // HTTP/0.9 GET requests in this harness never carry a request body, and the
+                    // client completes its request stream immediately after the line is sent.
+                    // Drain to EOF rather than sending STOP_SENDING on the shared bidirectional
+                    // stream, because the response travels on the same stream ID.
+                    await DrainStreamReadSideToEofAsync(stream).ConfigureAwait(false);
+
+                    if (!InteropHarnessPreflightPlanner.TryGetTransferPathsFromRequestTarget(
+                        requestTarget,
+                        out string? relativePath,
+                        out string? sourcePath,
+                        out _,
+                        out string? errorMessage) ||
+                        relativePath is null ||
+                        sourcePath is null)
+                    {
+                        throw new InvalidOperationException(errorMessage ?? $"Unable to resolve a mounted source path for request target '{requestTarget}'.");
+                    }
+
+                    FileInfo sourceInfo = new(sourcePath);
+                    if (!sourceInfo.Exists)
+                    {
+                        throw new FileNotFoundException($"Interop source file '{sourcePath}' was not found for request target '{requestTarget}'.", sourcePath);
+                    }
+
+                    await using FileStream sourceStream = new(
+                        sourcePath,
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.Read,
+                        bufferSize: StreamCopyBufferSize,
+                        useAsync: true);
+
+                    await CopyToQuicStreamWithRetryAsync(sourceStream, stream).ConfigureAwait(false);
+                    await CompleteQuicStreamWritesWithRetryAsync(stream).ConfigureAwait(false);
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} completed managed {testCase} response from {sourcePath} for target={relativePath}, bytes={sourceInfo.Length}, stream {servedRequestCount + 1}.");
+                }
+                catch
                 {
-                    throw new FileNotFoundException($"Interop source file '{sourcePath}' was not found for request target '{requestTarget}'.", sourcePath);
+                    TryAbortStreamWriteSide(stream);
+                    throw;
                 }
-
-                await using FileStream sourceStream = new(
-                    sourcePath,
-                    FileMode.Open,
-                    FileAccess.Read,
-                    FileShare.Read,
-                    bufferSize: StreamCopyBufferSize,
-                    useAsync: true);
-
-                await sourceStream.CopyToAsync(stream).ConfigureAwait(false);
-                await stream.CompleteWritesAsync().ConfigureAwait(false);
-                WriteLineAndFlush(
-                    stdout,
-                    $"interop harness: role=server, testcase={testCase}, requestCount={expectedRequestCount} completed managed handshake response from {sourcePath} for target={relativePath}, bytes={sourceInfo.Length}, stream {servedRequestCount + 1}.");
             }
 
             servedRequestCount++;
@@ -1217,6 +1261,123 @@ internal static class InteropHarnessRunner
             ? "/"
             : requestUri.PathAndQuery;
         return Encoding.ASCII.GetBytes($"GET {requestTarget}\r\n");
+    }
+
+    private static async Task CopyToQuicStreamWithRetryAsync(Stream sourceStream, QuicStream destinationStream)
+    {
+        byte[] buffer = new byte[QuicStreamBodyWriteChunkSize];
+
+        while (true)
+        {
+            int bytesRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
+            if (bytesRead == 0)
+            {
+                break;
+            }
+
+            await WriteQuicStreamChunkWithRetryAsync(destinationStream, buffer, bytesRead).ConfigureAwait(false);
+        }
+    }
+
+    private static async Task WriteQuicStreamChunkWithRetryAsync(QuicStream stream, byte[] buffer, int count)
+    {
+        long startedAt = Stopwatch.GetTimestamp();
+
+        while (true)
+        {
+            try
+            {
+                await stream.WriteAsync(buffer, 0, count).ConfigureAwait(false);
+                return;
+            }
+            catch (InvalidOperationException ex) when (IsTransientCongestionExhaustion(ex))
+            {
+                if (Stopwatch.GetElapsedTime(startedAt) >= CongestionRetryTimeout)
+                {
+                    throw new TimeoutException("Timed out waiting for QUIC stream send credit.", ex);
+                }
+
+                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
+            }
+            catch (NotSupportedException ex) when (IsTransientFlowControlCreditExhaustion(ex))
+            {
+                if (Stopwatch.GetElapsedTime(startedAt) >= CongestionRetryTimeout)
+                {
+                    throw new TimeoutException("Timed out waiting for QUIC stream flow-control credit.", ex);
+                }
+
+                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private static async Task CompleteQuicStreamWritesWithRetryAsync(QuicStream stream)
+    {
+        long startedAt = Stopwatch.GetTimestamp();
+
+        while (true)
+        {
+            try
+            {
+                await stream.CompleteWritesAsync().ConfigureAwait(false);
+                return;
+            }
+            catch (InvalidOperationException ex) when (IsTransientCongestionExhaustion(ex))
+            {
+                if (Stopwatch.GetElapsedTime(startedAt) >= CongestionRetryTimeout)
+                {
+                    throw new TimeoutException("Timed out waiting for QUIC stream FIN send credit.", ex);
+                }
+
+                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
+            }
+            catch (NotSupportedException ex) when (IsTransientFlowControlCreditExhaustion(ex))
+            {
+                if (Stopwatch.GetElapsedTime(startedAt) >= CongestionRetryTimeout)
+                {
+                    throw new TimeoutException("Timed out waiting for QUIC stream FIN flow-control credit.", ex);
+                }
+
+                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private static bool IsTransientCongestionExhaustion(InvalidOperationException exception)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
+        return string.Equals(exception.Message, CongestionControllerExhaustedMessage, StringComparison.Ordinal);
+    }
+
+    private static bool IsTransientFlowControlCreditExhaustion(NotSupportedException exception)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
+        return string.Equals(exception.Message, FlowControlCreditExhaustedMessage, StringComparison.Ordinal);
+    }
+
+    private static void TryAbortStreamWriteSide(QuicStream stream)
+    {
+        try
+        {
+            stream.Abort(QuicAbortDirection.Write, 1);
+        }
+        catch
+        {
+            // Best-effort failure signaling only.
+        }
+    }
+
+    private static async Task DrainStreamReadSideToEofAsync(QuicStream stream)
+    {
+        byte[] buffer = new byte[256];
+        while (true)
+        {
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
+            if (bytesRead == 0)
+            {
+                return;
+            }
+        }
     }
 
     private static int ReturnUnsupported(InteropHarnessEnvironment settings, TextWriter stdout, string roleName)

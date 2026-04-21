@@ -151,6 +151,7 @@ public sealed class InteropHarnessRunnerTests
 
     [Theory]
     [InlineData("transfer", "https://localhost:443/", "REQUESTS entry 'https://localhost/' must include a non-root path for transfer dispatch.")]
+    [InlineData("transfer", "https://localhost:443/one https://localhost:444/two", "REQUESTS entry 'https://localhost:444/two' must target the same host and port as the first request URL.")]
     public void ClientTransferDispatchFailuresDoNotAdvertiseSuccessOrQlogCapture(
         string testcase,
         string requests,

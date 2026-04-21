@@ -901,14 +901,12 @@ internal sealed class QuicTransportTlsBridgeState
             return false;
         }
 
-        int bufferedBytesBefore = cryptoBuffer.BufferedBytes;
         if (!cryptoBuffer.TryAddFrame(new QuicCryptoFrame(offset, cryptoData.Span), out result))
         {
             return false;
         }
 
-        return result != QuicCryptoBufferResult.BufferExceeded
-            && cryptoBuffer.BufferedBytes != bufferedBytesBefore;
+        return result != QuicCryptoBufferResult.BufferExceeded;
     }
 
     private QuicCryptoBuffer? GetIngressCryptoBuffer(QuicTlsEncryptionLevel encryptionLevel)

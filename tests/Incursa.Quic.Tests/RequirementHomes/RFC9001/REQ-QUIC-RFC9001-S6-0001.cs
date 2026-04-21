@@ -14,6 +14,9 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
         QuicRfc9001KeyPhaseTestSupport.ConfigureKeyPhaseDestinationConnectionId(runtime);
 
+        QuicTlsPacketProtectionMaterial currentOpenMaterial = runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+        QuicTlsPacketProtectionMaterial currentProtectMaterial = runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
+
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
@@ -26,6 +29,11 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
 
         Assert.Equal(QuicTlsEncryptionLevel.OneRtt, successorOpenMaterial.EncryptionLevel);
         Assert.Equal(QuicTlsEncryptionLevel.OneRtt, successorProtectMaterial.EncryptionLevel);
+        AssertSuccessorRetainsCurrentHeaderProtectionKeys(
+            currentOpenMaterial,
+            currentProtectMaterial,
+            successorOpenMaterial,
+            successorProtectMaterial);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
         Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
     }
@@ -37,6 +45,9 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
     {
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
 
+        QuicTlsPacketProtectionMaterial currentOpenMaterial = runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+        QuicTlsPacketProtectionMaterial currentProtectMaterial = runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
+
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
@@ -49,6 +60,11 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
 
         Assert.Equal(QuicTlsEncryptionLevel.OneRtt, successorOpenMaterial.EncryptionLevel);
         Assert.Equal(QuicTlsEncryptionLevel.OneRtt, successorProtectMaterial.EncryptionLevel);
+        AssertSuccessorRetainsCurrentHeaderProtectionKeys(
+            currentOpenMaterial,
+            currentProtectMaterial,
+            successorOpenMaterial,
+            successorProtectMaterial);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
         Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
     }
@@ -81,6 +97,21 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
             QuicConnectionStreamStateTestHelpers.CreateState(),
             new FakeMonotonicClock(0),
             tlsRole: QuicTlsRole.Client);
+    }
+
+    private static void AssertSuccessorRetainsCurrentHeaderProtectionKeys(
+        in QuicTlsPacketProtectionMaterial currentOpenMaterial,
+        in QuicTlsPacketProtectionMaterial currentProtectMaterial,
+        in QuicTlsPacketProtectionMaterial successorOpenMaterial,
+        in QuicTlsPacketProtectionMaterial successorProtectMaterial)
+    {
+        Assert.False(currentOpenMaterial.AeadKey.SequenceEqual(successorOpenMaterial.AeadKey));
+        Assert.False(currentOpenMaterial.AeadIv.SequenceEqual(successorOpenMaterial.AeadIv));
+        Assert.True(currentOpenMaterial.HeaderProtectionKey.SequenceEqual(successorOpenMaterial.HeaderProtectionKey));
+
+        Assert.False(currentProtectMaterial.AeadKey.SequenceEqual(successorProtectMaterial.AeadKey));
+        Assert.False(currentProtectMaterial.AeadIv.SequenceEqual(successorProtectMaterial.AeadIv));
+        Assert.True(currentProtectMaterial.HeaderProtectionKey.SequenceEqual(successorProtectMaterial.HeaderProtectionKey));
     }
 
     private sealed class FakeMonotonicClock : IMonotonicClock

@@ -71,6 +71,116 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundTransferClientSuccessTreatsTheRunAsAdvisorySuccess()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-transfer-client-success");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "transfer");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Exit code: 7", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Advisory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "completed managed downloads for every transfer request and a clean local client exit",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-report.json")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-report.md")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner.stderr.log")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "quic-go_chrome", "transfer", "output.txt")));
+    }
+
+    [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundTransferClientWithoutAllCompletedDownloadsStillFails()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-transfer-incomplete");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "transfer");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "did not contain completed managed downloads for every transfer request with a clean local client exit",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundTransferServerRoleStillFails()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-transfer-client-success");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "nginx",
+            "-PeerImplementationSlots",
+            "chrome",
+            "-TestCases",
+            "transfer");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "transfer fallback classification is only enabled for the client-role testcase",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task RunnerExitZeroAfterValidOutputsButMissingRunnerStderrLogReportsFailureSummary()
     {
         using InteropRunnerScriptFixture fixture = new();
@@ -511,6 +621,8 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 set "mode=success"
 
                 findstr /c:"# fake-runner: non-zero-valid-outputs" run.py >nul && set "mode=non-zero-valid-outputs"
+                findstr /c:"# fake-runner: file-not-found-transfer-client-success" run.py >nul && set "mode=file-not-found-transfer-client-success"
+                findstr /c:"# fake-runner: file-not-found-transfer-incomplete" run.py >nul && set "mode=file-not-found-transfer-incomplete"
 
                 set "jsonPath="
                 set "logsDir="
@@ -549,6 +661,35 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                   exit /b 7
                 )
 
+                if /I "%mode%"=="file-not-found-transfer-client-success" (
+                  echo fake-runner sentinel file-not-found-transfer-client-success
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_chrome\transfer" md "%logsDir%\quic-go_chrome\transfer" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-transfer-client-success"}
+                  > "%logsDir%\quic-go_chrome\transfer\output.txt" (
+                    echo client ^| interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/moderate-red-car from /moderate-red-car, bytes=2097152, stream 1/3.
+                    echo client ^| interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/zestful-aquamarine-hat from /zestful-aquamarine-hat, bytes=3145728, stream 2/3.
+                    echo client ^| interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/envious-mild-warlock from /envious-mild-warlock, bytes=5242880, stream 3/3.
+                    echo client exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="file-not-found-transfer-incomplete" (
+                  echo fake-runner sentinel file-not-found-transfer-incomplete
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_chrome\transfer" md "%logsDir%\quic-go_chrome\transfer" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-transfer-incomplete"}
+                  > "%logsDir%\quic-go_chrome\transfer\output.txt" (
+                    echo client ^| interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/moderate-red-car from /moderate-red-car, bytes=2097152, stream 1/3.
+                    echo client ^| interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/zestful-aquamarine-hat from /zestful-aquamarine-hat, bytes=3145728, stream 2/3.
+                    echo client exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
                 echo fake-runner sentinel success
                 if defined jsonPath (
                   > "%jsonPath%" echo {"mode":"success"}
@@ -565,6 +706,10 @@ public sealed class InteropRunnerScriptFailureSummaryTests
             mode=success
             if grep -q '# fake-runner: non-zero-valid-outputs' run.py; then
                 mode=non-zero-valid-outputs
+            elif grep -q '# fake-runner: file-not-found-transfer-client-success' run.py; then
+                mode=file-not-found-transfer-client-success
+            elif grep -q '# fake-runner: file-not-found-transfer-incomplete' run.py; then
+                mode=file-not-found-transfer-incomplete
             fi
 
             json_path=
@@ -600,6 +745,39 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 printf '%s\n' '{"mode":"non-zero-valid-outputs"}' > "$json_path"
                 printf '%s\n' 'fake-runner mode=non-zero-valid-outputs' > "$logs_dir/fake-runner.log"
                 printf '%s\n' 'Unable to create certificates' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-transfer-client-success" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-transfer-client-success'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_chrome/transfer"
+                printf '%s\n' '{"mode":"file-not-found-transfer-client-success"}' > "$json_path"
+                {
+                    printf '%s\n' 'client | interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/moderate-red-car from /moderate-red-car, bytes=2097152, stream 1/3.'
+                    printf '%s\n' 'client | interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/zestful-aquamarine-hat from /zestful-aquamarine-hat, bytes=3145728, stream 2/3.'
+                    printf '%s\n' 'client | interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/envious-mild-warlock from /envious-mild-warlock, bytes=5242880, stream 3/3.'
+                    printf '%s\n' 'client exited with code 0'
+                } > "$logs_dir/quic-go_chrome/transfer/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-transfer-incomplete" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-transfer-incomplete'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_chrome/transfer"
+                printf '%s\n' '{"mode":"file-not-found-transfer-incomplete"}' > "$json_path"
+                {
+                    printf '%s\n' 'client | interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/moderate-red-car from /moderate-red-car, bytes=2097152, stream 1/3.'
+                    printf '%s\n' 'client | interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/zestful-aquamarine-hat from /zestful-aquamarine-hat, bytes=3145728, stream 2/3.'
+                    printf '%s\n' 'client exited with code 0'
+                } > "$logs_dir/quic-go_chrome/transfer/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
                 exit 7
             fi
 

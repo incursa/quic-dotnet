@@ -33,9 +33,10 @@
     "The runner checkout path or Python executable may be missing on the local machine.",
     "The helper must choose implementation slots that already exist in the runner registry before replacement is applied, and split-role runs must avoid replacing the peer slot they are meant to exercise.",
     "The artifact root must be unique per run so execution reports are not silently overwritten.",
-    "Unsupported or build-blocked runs must remain honest and must not be translated into success."
+    "Unsupported or build-blocked runs must remain honest and must not be translated into success.",
+    "Any advisory-only downgrade for the runner's post-check `FileNotFoundError` must stay tied to preserved testcase-specific evidence rather than broad exit-code rewriting."
   ],
-  "data_and_state_considerations": "Each run writes a timestamped artifact root containing the runner report JSON, any Markdown or table output, the runner log directory tree, and the helper's own console capture. The helper should not persist any transport state beyond those run artifacts.",
+  "data_and_state_considerations": "Each run writes a timestamped artifact root containing the runner report JSON, any Markdown or table output, the runner log directory tree, and the helper's own console capture. Advisory-only classification, when it is allowed, is derived from those preserved artifacts rather than from the runner exit code alone. The helper should not persist any transport state beyond those run artifacts.",
   "supplemental_sections": [
     {
       "heading": "Scope",
@@ -49,6 +50,7 @@
   "risks": [
     "Using an existing implementation slot means the runner matrix will still label the replaced image with that slot name unless the helper rewrites the captured reports.",
     "The external runner's CLI or log layout could drift over time, so the helper should keep its assumptions narrow and well documented.",
-    "Local build or transient worktree failures may still interrupt a run; the helper must surface that failure honestly rather than masking it."
+    "Local build or transient worktree failures may still interrupt a run; the helper must surface that failure honestly rather than masking it.",
+    "A broad advisory-success rule could overstate interop progress if preserved artifact inspection is not kept narrow and testcase-specific."
   ]
 }

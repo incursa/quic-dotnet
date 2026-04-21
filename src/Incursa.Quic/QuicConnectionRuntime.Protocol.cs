@@ -3,6 +3,13 @@ namespace Incursa.Quic;
 // TLS/bootstrap handling, packet ingress, and transport-parameter commits.
 internal sealed partial class QuicConnectionRuntime
 {
+    private const int BitsPerByte = 8;
+    private static readonly bool ApplicationReceiveDebugEnabled =
+        string.Equals(
+            Environment.GetEnvironmentVariable("INCURSA_QUIC_DEBUG_APP_RX"),
+            "1",
+            StringComparison.Ordinal);
+
     private bool HandlePeerHandshakeTranscriptCompleted(
         QuicConnectionPeerHandshakeTranscriptCompletedEvent peerHandshakeTranscriptCompletedEvent,
         long nowTicks,
@@ -22,7 +29,13 @@ internal sealed partial class QuicConnectionRuntime
                 phase = QuicConnectionPhase.Active;
             }
 
-            if (tlsState.Role == QuicTlsRole.Server)
+            // The recovery model treats peer-handshake completion as the client's available
+            // handshake-confirmed proof point, so use the same gate to drop the bootstrap
+            // anti-amplification cap on the active peer path for both roles.
+            if (QuicAddressValidation.PeerCompletedAddressValidation(
+                    isServer: tlsState.Role == QuicTlsRole.Server,
+                    handshakeAckReceived: false,
+                    handshakeConfirmed: peerHandshakeTranscriptCompleted))
             {
                 stateChanged |= TryMarkActivePathValidated(nowTicks);
             }
@@ -579,9 +592,21 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged = true;
         }
 
+        if (!TryExpandOpenedApplicationPacketNumber(openedPacket, payloadOffset, out ulong packetNumber))
+        {
+            if (ApplicationReceiveDebugEnabled)
+            {
+                Console.Error.WriteLine(
+                    $"app-rx packet-number-failed role={tlsState.Role} payloadOffset={payloadOffset} datagram={packetReceivedEvent.Datagram.Length}.");
+            }
+
+            return false;
+        }
+
         bool processedCryptoFrame = false;
         bool processedStreamFrame = false;
         bool processedMaxStreamsFrame = false;
+        bool packetAckEliciting = false;
         ulong originalBidirectionalLimit = streamRegistry.Bookkeeping.PeerBidirectionalStreamLimit;
         ulong originalUnidirectionalLimit = streamRegistry.Bookkeeping.PeerUnidirectionalStreamLimit;
         int payloadEnd = payloadOffset + payloadLength;
@@ -609,6 +634,19 @@ internal sealed partial class QuicConnectionRuntime
                 }
 
                 offset += pingBytesConsumed;
+                packetAckEliciting = true;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out QuicAckFrame ackFrame, out int ackBytesConsumed))
+            {
+                if (ackBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                stateChanged |= HandleApplicationAckFrame(ackFrame, nowTicks, ref effects);
+                offset += ackBytesConsumed;
                 continue;
             }
 
@@ -626,6 +664,45 @@ internal sealed partial class QuicConnectionRuntime
 
                 stateChanged = true;
                 offset += stopSendingBytesConsumed;
+                packetAckEliciting = true;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseMaxDataFrame(remaining, out QuicMaxDataFrame maxDataFrame, out int maxDataBytesConsumed))
+            {
+                if (maxDataBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (streamRegistry.Bookkeeping.TryApplyMaxDataFrame(maxDataFrame))
+                {
+                    stateChanged = true;
+                }
+
+                offset += maxDataBytesConsumed;
+                packetAckEliciting = true;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseMaxStreamDataFrame(remaining, out QuicMaxStreamDataFrame maxStreamDataFrame, out int maxStreamDataBytesConsumed))
+            {
+                if (maxStreamDataBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (streamRegistry.Bookkeeping.TryApplyMaxStreamDataFrame(maxStreamDataFrame, out QuicTransportErrorCode maxStreamDataErrorCode))
+                {
+                    stateChanged = true;
+                }
+                else if (maxStreamDataErrorCode != default)
+                {
+                    return false;
+                }
+
+                offset += maxStreamDataBytesConsumed;
+                packetAckEliciting = true;
                 continue;
             }
 
@@ -643,6 +720,30 @@ internal sealed partial class QuicConnectionRuntime
                 }
 
                 offset += maxStreamsBytesConsumed;
+                packetAckEliciting = true;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseStreamDataBlockedFrame(
+                remaining,
+                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+                out int streamDataBlockedBytesConsumed))
+            {
+                if (streamDataBlockedBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (!streamRegistry.Bookkeeping.TryReceiveStreamDataBlockedFrame(
+                    streamDataBlockedFrame,
+                    out QuicTransportErrorCode streamDataBlockedErrorCode))
+                {
+                    _ = streamDataBlockedErrorCode;
+                    return false;
+                }
+
+                offset += streamDataBlockedBytesConsumed;
+                packetAckEliciting = true;
                 continue;
             }
 
@@ -674,6 +775,31 @@ internal sealed partial class QuicConnectionRuntime
                 }
 
                 offset += cryptoBytesConsumed;
+                packetAckEliciting = true;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseNewTokenFrame(remaining, out QuicNewTokenFrame _, out int newTokenBytesConsumed))
+            {
+                if (newTokenBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                offset += newTokenBytesConsumed;
+                packetAckEliciting = true;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseHandshakeDoneFrame(remaining, out QuicHandshakeDoneFrame _, out int handshakeDoneBytesConsumed))
+            {
+                if (handshakeDoneBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                offset += handshakeDoneBytesConsumed;
+                packetAckEliciting = true;
                 continue;
             }
 
@@ -691,6 +817,7 @@ internal sealed partial class QuicConnectionRuntime
 
                 stateChanged |= newConnectionIdStateChanged;
                 offset += newConnectionIdBytesConsumed;
+                packetAckEliciting = true;
                 continue;
             }
 
@@ -708,6 +835,7 @@ internal sealed partial class QuicConnectionRuntime
 
                 stateChanged = true;
                 offset += retireConnectionIdBytesConsumed;
+                packetAckEliciting = true;
                 continue;
             }
 
@@ -718,13 +846,14 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-            if (!TryHandleResetStreamFrame(resetStreamFrame, ref effects))
-            {
-                return false;
-            }
+                if (!TryHandleResetStreamFrame(resetStreamFrame, ref effects))
+                {
+                    return false;
+                }
 
                 stateChanged = true;
                 offset += resetBytesConsumed;
+                packetAckEliciting = true;
                 continue;
             }
 
@@ -745,6 +874,7 @@ internal sealed partial class QuicConnectionRuntime
                 }
 
                 offset += pathChallengeBytesConsumed;
+                packetAckEliciting = true;
                 continue;
             }
 
@@ -781,11 +911,18 @@ internal sealed partial class QuicConnectionRuntime
                 }
 
                 offset += pathResponseBytesConsumed;
+                packetAckEliciting = true;
                 continue;
             }
 
             if (!QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
             {
+                if (ApplicationReceiveDebugEnabled)
+                {
+                    Console.Error.WriteLine(
+                        $"app-rx stream-parse-failed role={tlsState.Role} packet={packetNumber} remaining={remaining.Length}.");
+                }
+
                 return false;
             }
 
@@ -795,6 +932,11 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             processedStreamFrame = true;
+            if (ApplicationReceiveDebugEnabled)
+            {
+                Console.Error.WriteLine(
+                    $"app-rx stream role={tlsState.Role} packet={packetNumber} stream={streamFrame.StreamId.Value} offset={streamFrame.Offset} length={streamFrame.StreamDataLength} fin={streamFrame.IsFin}.");
+            }
             bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamFrame.StreamId.Value, out _);
             if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode))
             {
@@ -809,6 +951,7 @@ internal sealed partial class QuicConnectionRuntime
 
             stateChanged = true;
             offset += streamFrame.ConsumedLength;
+            packetAckEliciting = true;
         }
 
         if (processedMaxStreamsFrame)
@@ -836,7 +979,252 @@ internal sealed partial class QuicConnectionRuntime
             }
         }
 
+        sendRuntime.FlowController.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber,
+            packetAckEliciting,
+            GetElapsedMicros(nowTicks));
+
+        largestObservedApplicationPacketNumber = hasObservedApplicationPacketNumber
+            ? Math.Max(largestObservedApplicationPacketNumber, packetNumber)
+            : packetNumber;
+        hasObservedApplicationPacketNumber = true;
+
+        if (TrySendPendingApplicationAck(nowTicks, ref effects))
+        {
+            stateChanged = true;
+        }
+
         return processedStreamFrame || processedCryptoFrame || stateChanged;
+    }
+
+    private bool TryExpandOpenedApplicationPacketNumber(byte[] openedPacket, int payloadOffset, out ulong packetNumber)
+    {
+        packetNumber = default;
+
+        if (openedPacket.Length == 0
+            || payloadOffset <= 0
+            || payloadOffset > openedPacket.Length)
+        {
+            return false;
+        }
+
+        int packetNumberLength = (openedPacket[0] & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1;
+        int packetNumberOffset = payloadOffset - packetNumberLength;
+        if (packetNumberLength < 1
+            || packetNumberLength > sizeof(uint)
+            || packetNumberOffset < 1
+            || packetNumberOffset + packetNumberLength > openedPacket.Length)
+        {
+            return false;
+        }
+
+        ulong truncatedPacketNumber = 0;
+        for (int index = packetNumberOffset; index < payloadOffset; index++)
+        {
+            truncatedPacketNumber = (truncatedPacketNumber << BitsPerByte) | openedPacket[index];
+        }
+
+        ulong expectedPacketNumber = hasObservedApplicationPacketNumber
+            ? largestObservedApplicationPacketNumber + 1
+            : 0;
+        packetNumber = ExpandTruncatedPacketNumber(truncatedPacketNumber, packetNumberLength, expectedPacketNumber);
+        return true;
+    }
+
+    private static ulong ExpandTruncatedPacketNumber(
+        ulong truncatedPacketNumber,
+        int packetNumberLength,
+        ulong expectedPacketNumber)
+    {
+        int packetNumberBits = checked(packetNumberLength * BitsPerByte);
+        ulong packetNumberWindow = 1UL << packetNumberBits;
+        ulong packetNumberHalfWindow = packetNumberWindow / 2;
+        ulong packetNumberMask = packetNumberWindow - 1;
+        ulong candidatePacketNumber = (expectedPacketNumber & ~packetNumberMask) | truncatedPacketNumber;
+
+        if (candidatePacketNumber + packetNumberHalfWindow <= expectedPacketNumber
+            && candidatePacketNumber <= ulong.MaxValue - packetNumberWindow)
+        {
+            candidatePacketNumber += packetNumberWindow;
+        }
+        else if (candidatePacketNumber > expectedPacketNumber + packetNumberHalfWindow
+            && candidatePacketNumber >= packetNumberWindow)
+        {
+            candidatePacketNumber -= packetNumberWindow;
+        }
+
+        return candidatePacketNumber;
+    }
+
+    private bool HandleApplicationAckFrame(
+        QuicAckFrame ackFrame,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        ArgumentNullException.ThrowIfNull(ackFrame);
+
+        ulong ackReceivedAtMicros = GetElapsedMicros(nowTicks);
+        HashSet<ulong> acknowledgedPacketNumbers = [];
+        List<ulong> newlyAcknowledgedAckElicitingPacketNumbers = [];
+
+        foreach (ulong packetNumber in EnumerateAcknowledgedPacketNumbers(ackFrame))
+        {
+            if (!acknowledgedPacketNumbers.Add(packetNumber))
+            {
+                continue;
+            }
+
+            if (sendRuntime.SentPackets.TryGetValue(
+                    new QuicConnectionSentPacketKey(QuicPacketNumberSpace.ApplicationData, packetNumber),
+                    out QuicConnectionSentPacket sentPacket)
+                && sentPacket.AckEliciting)
+            {
+                newlyAcknowledgedAckElicitingPacketNumbers.Add(packetNumber);
+            }
+        }
+
+        bool stateChanged = sendRuntime.FlowController.TryProcessAckFrame(
+            QuicPacketNumberSpace.ApplicationData,
+            ackFrame,
+            ackReceivedAtMicros,
+            pathValidated: HasValidatedPath);
+
+        foreach (ulong packetNumber in acknowledgedPacketNumbers)
+        {
+            stateChanged |= sendRuntime.TryAcknowledgePacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber,
+                handshakeConfirmed: peerHandshakeTranscriptCompleted);
+        }
+
+        stateChanged |= recoveryController.RecordAcknowledgment(
+            QuicPacketNumberSpace.ApplicationData,
+            ackFrame.LargestAcknowledged,
+            ackReceivedAtMicros,
+            newlyAcknowledgedAckElicitingPacketNumbers.ToArray(),
+            ackDelayMicros: ackFrame.AckDelay,
+            handshakeConfirmed: peerHandshakeTranscriptCompleted,
+            peerMaxAckDelayMicros: tlsState.PeerTransportParameters?.MaxAckDelay ?? 0);
+
+        stateChanged |= TryRegisterDetectedLosses(nowTicks);
+        if (TryFlushPendingRetransmissions(
+            QuicPacketNumberSpace.ApplicationData,
+            nowTicks,
+            probePacket: false,
+            ref effects))
+        {
+            stateChanged = true;
+        }
+
+        return stateChanged;
+    }
+
+    private bool TrySendPendingApplicationAck(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    {
+        if (activePath is null || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            return false;
+        }
+
+        ulong nowMicros = GetElapsedMicros(nowTicks);
+        if (!sendRuntime.FlowController.CanSendAckOnlyPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros,
+            maxAckDelayMicros: 0)
+            || !sendRuntime.FlowController.TryBuildAckFrame(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros,
+                out QuicAckFrame ackFrame)
+            || !TryBuildOutboundAckPayload(ackFrame, out byte[] ackPayload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            ackPayload,
+            "The connection runtime could not protect the ACK packet.",
+            "The connection cannot send the ACK packet.",
+            probePacket: false,
+            ackOnlyPacket: true,
+            streamIds: null,
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out _))
+        {
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        sendRuntime.FlowController.MarkAckFrameSent(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros,
+            ackOnlyPacket: true);
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+        return true;
+    }
+
+    private bool TryBuildOutboundAckPayload(QuicAckFrame ackFrame, out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 512)];
+        if (!QuicFrameCodec.TryFormatAckFrame(ackFrame, buffer, out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
+    private static IEnumerable<ulong> EnumerateAcknowledgedPacketNumbers(QuicAckFrame ackFrame)
+    {
+        if (ackFrame.LargestAcknowledged < ackFrame.FirstAckRange)
+        {
+            yield break;
+        }
+
+        ulong largestAcknowledged = ackFrame.LargestAcknowledged;
+        ulong smallestAcknowledged = largestAcknowledged - ackFrame.FirstAckRange;
+        for (ulong packetNumber = smallestAcknowledged; ; packetNumber++)
+        {
+            yield return packetNumber;
+            if (packetNumber == largestAcknowledged)
+            {
+                break;
+            }
+        }
+
+        foreach (QuicAckRange range in ackFrame.AdditionalRanges)
+        {
+            for (ulong packetNumber = range.SmallestAcknowledged; ; packetNumber++)
+            {
+                yield return packetNumber;
+                if (packetNumber == range.LargestAcknowledged)
+                {
+                    break;
+                }
+            }
+        }
     }
 
     private bool TryHandlePathChallengeFrame(

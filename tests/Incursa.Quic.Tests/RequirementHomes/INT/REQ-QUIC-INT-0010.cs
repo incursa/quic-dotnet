@@ -11,28 +11,53 @@ public sealed class REQ_QUIC_INT_0010
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task ManagedChildProcessHarnessTransfersOneFileFromWwwToDownloadsAndCompletesOnEOF()
+    public async Task ManagedChildProcessHarnessTransfersEveryOrderedRequestFromWwwToDownloadsOnOneConnection()
     {
         await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
         {
             string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
-            string relativePath = $"transfer-{Guid.NewGuid():N}.txt";
-            string requestPath = $"/{relativePath}";
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-            string requests = $"https://localhost:{listenEndPoint.Port}{requestPath}";
             string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
             string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
-            string sourcePath = Path.Combine(sourceRoot, relativePath);
-            string destinationPath = Path.Combine(destinationRoot, relativePath);
-            byte[] payload = Encoding.UTF8.GetBytes($"managed transfer proof {Guid.NewGuid():N}");
+            string[] relativePaths =
+            [
+                $"transfer-{Guid.NewGuid():N}-1.txt",
+                $"transfer-{Guid.NewGuid():N}-2.txt",
+                $"transfer-{Guid.NewGuid():N}-3.txt",
+            ];
+            string[] requestUris =
+            [
+                $"https://localhost:{listenEndPoint.Port}/{relativePaths[0]}",
+                $"https://localhost:{listenEndPoint.Port}/{relativePaths[1]}",
+                $"https://localhost:{listenEndPoint.Port}/{relativePaths[2]}",
+            ];
+            string requests = string.Join(" ", requestUris);
+
+            string[] sourcePaths =
+            [
+                Path.Combine(sourceRoot, relativePaths[0]),
+                Path.Combine(sourceRoot, relativePaths[1]),
+                Path.Combine(sourceRoot, relativePaths[2]),
+            ];
+            string[] destinationPaths =
+            [
+                Path.Combine(destinationRoot, relativePaths[0]),
+                Path.Combine(destinationRoot, relativePaths[1]),
+                Path.Combine(destinationRoot, relativePaths[2]),
+            ];
+            byte[][] payloads =
+            [
+                Encoding.UTF8.GetBytes($"managed transfer proof one {Guid.NewGuid():N}"),
+                Encoding.UTF8.GetBytes($"managed transfer proof two {Guid.NewGuid():N}"),
+                Encoding.UTF8.GetBytes($"managed transfer proof three {Guid.NewGuid():N}"),
+            ];
 
             Directory.CreateDirectory(sourceRoot);
             Directory.CreateDirectory(destinationRoot);
-            File.WriteAllBytes(sourcePath, payload);
-
-            if (File.Exists(destinationPath))
+            for (int index = 0; index < sourcePaths.Length; index++)
             {
-                File.Delete(destinationPath);
+                File.WriteAllBytes(sourcePaths[index], payloads[index]);
+                TryDelete(destinationPaths[index]);
             }
 
             try
@@ -41,23 +66,124 @@ public sealed class REQ_QUIC_INT_0010
                 await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
 
                 await using HarnessProcess clientProcess = HarnessProcess.Start("client", "transfer", requests, harnessDll);
-                await clientProcess.WaitForStdoutContainsAsync("completed managed transfer", TimeSpan.FromSeconds(10));
-                await serverProcess.WaitForStdoutContainsAsync("completed managed transfer", TimeSpan.FromSeconds(10));
+                await clientProcess.WaitForStdoutContainsAsync("stream 3/3", TimeSpan.FromSeconds(20));
+                await serverProcess.WaitForStdoutContainsAsync("stream 3", TimeSpan.FromSeconds(20));
                 await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
 
                 Assert.Equal(0, clientProcess.Process.ExitCode);
                 Assert.Equal(0, serverProcess.Process.ExitCode);
-                Assert.True(File.Exists(destinationPath));
-                Assert.Equal(payload, File.ReadAllBytes(destinationPath));
+                Assert.Empty(clientProcess.Stderr);
+                Assert.Empty(serverProcess.Stderr);
+
+                for (int index = 0; index < destinationPaths.Length; index++)
+                {
+                    Assert.True(File.Exists(destinationPaths[index]), $"Expected destination file '{destinationPaths[index]}' to exist.");
+                    Assert.Equal(payloads[index], File.ReadAllBytes(destinationPaths[index]));
+                }
+
                 Assert.Contains("testcase=transfer", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains("completed managed transfer", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("completed managed transfer download", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("stream 1/3", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("stream 2/3", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("stream 3/3", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains("testcase=transfer", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains("completed managed transfer", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("completed managed transfer response", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("stream 1", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("stream 2", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("stream 3", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
             }
             finally
             {
-                TryDelete(sourcePath);
+                foreach (string sourcePath in sourcePaths)
+                {
+                    TryDelete(sourcePath);
+                }
+
+                foreach (string destinationPath in destinationPaths)
+                {
+                    TryDelete(destinationPath);
+                }
+            }
+        });
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ManagedChildProcessHarnessFailsTransferWhenAnyOrderedServerFileIsMissing()
+    {
+        await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
+        {
+            string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+            string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+            string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+            string[] relativePaths =
+            [
+                $"transfer-missing-{Guid.NewGuid():N}-1.txt",
+                $"transfer-missing-{Guid.NewGuid():N}-2.txt",
+                $"transfer-missing-{Guid.NewGuid():N}-3.txt",
+            ];
+            string requests = string.Join(
+                " ",
+                [
+                    $"https://localhost:{listenEndPoint.Port}/{relativePaths[0]}",
+                    $"https://localhost:{listenEndPoint.Port}/{relativePaths[1]}",
+                    $"https://localhost:{listenEndPoint.Port}/{relativePaths[2]}",
+                ]);
+            string[] sourcePaths =
+            [
+                Path.Combine(sourceRoot, relativePaths[0]),
+                Path.Combine(sourceRoot, relativePaths[1]),
+                Path.Combine(sourceRoot, relativePaths[2]),
+            ];
+            string[] destinationPaths =
+            [
+                Path.Combine(destinationRoot, relativePaths[0]),
+                Path.Combine(destinationRoot, relativePaths[1]),
+                Path.Combine(destinationRoot, relativePaths[2]),
+            ];
+
+            Directory.CreateDirectory(sourceRoot);
+            Directory.CreateDirectory(destinationRoot);
+            File.WriteAllBytes(sourcePaths[0], Encoding.UTF8.GetBytes($"ordered transfer proof one {Guid.NewGuid():N}"));
+            TryDelete(sourcePaths[1]);
+            File.WriteAllBytes(sourcePaths[2], Encoding.UTF8.GetBytes($"ordered transfer proof three {Guid.NewGuid():N}"));
+
+            foreach (string destinationPath in destinationPaths)
+            {
                 TryDelete(destinationPath);
+            }
+
+            try
+            {
+                await using HarnessProcess serverProcess = HarnessProcess.Start("server", "transfer", requests, harnessDll);
+                await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
+
+                await using HarnessProcess clientProcess = HarnessProcess.Start("client", "transfer", requests, harnessDll);
+                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
+
+                Assert.Equal(1, clientProcess.Process.ExitCode);
+                Assert.Equal(1, serverProcess.Process.ExitCode);
+                Assert.Contains(sourcePaths[1], serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("was not found", serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+                Assert.StartsWith("interop harness: role=client, testcase=transfer failed:", clientProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("stream 3/3", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("stream 3", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.False(File.Exists(destinationPaths[1]));
+                Assert.False(File.Exists(destinationPaths[2]));
+            }
+            finally
+            {
+                foreach (string sourcePath in sourcePaths)
+                {
+                    TryDelete(sourcePath);
+                }
+
+                foreach (string destinationPath in destinationPaths)
+                {
+                    TryDelete(destinationPath);
+                }
             }
         });
     }

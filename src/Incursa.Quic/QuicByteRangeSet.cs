@@ -116,6 +116,30 @@ internal sealed class QuicByteRangeSet
             && ranges[0].End >= endExclusive;
     }
 
+    internal QuicByteRangeSetSnapshot CaptureSnapshot()
+    {
+        QuicByteRange[] snapshotRanges = new QuicByteRange[ranges.Count];
+        for (int index = 0; index < ranges.Count; index++)
+        {
+            Range range = ranges[index];
+            snapshotRanges[index] = new QuicByteRange(range.Start, range.End);
+        }
+
+        return new QuicByteRangeSetSnapshot(snapshotRanges, TotalLength);
+    }
+
+    internal void Restore(QuicByteRangeSetSnapshot snapshot)
+    {
+        ranges.Clear();
+        for (int index = 0; index < snapshot.Ranges.Length; index++)
+        {
+            QuicByteRange range = snapshot.Ranges[index];
+            ranges.Add(new Range(range.Start, range.End));
+        }
+
+        TotalLength = snapshot.TotalLength;
+    }
+
     /// <summary>
     /// Represents a stored half-open byte range.
     /// </summary>
@@ -123,3 +147,7 @@ internal sealed class QuicByteRangeSet
     /// <param name="End">The exclusive ending offset.</param>
     private readonly record struct Range(ulong Start, ulong End);
 }
+
+internal readonly record struct QuicByteRange(ulong Start, ulong End);
+
+internal readonly record struct QuicByteRangeSetSnapshot(QuicByteRange[] Ranges, ulong TotalLength);

@@ -488,6 +488,11 @@ internal sealed class QuicConnectionSendRuntime
         return true;
     }
 
+    internal void QueueRetransmission(QuicConnectionRetransmissionPlan retransmission)
+    {
+        pendingRetransmissions.Enqueue(retransmission);
+    }
+
     public void ClearLossDetectionDeadline()
     {
         LossDetectionDeadlineMicros = null;

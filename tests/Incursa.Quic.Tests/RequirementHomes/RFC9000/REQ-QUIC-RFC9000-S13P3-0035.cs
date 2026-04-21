@@ -6,6 +6,11 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S13P3-0035")]
 public sealed class REQ_QUIC_RFC9000_S13P3_0035
 {
+    private static readonly byte[] PacketConnectionId =
+    [
+        0x0A, 0x0B, 0x0C,
+    ];
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -25,6 +30,45 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0035
         Assert.Equal(outdatedFrameBytes.Length, outdatedBytesConsumed);
         Assert.False(state.TryApplyMaxDataFrame(outdatedFrame));
         Assert.Equal(12UL, state.ConnectionSendLimit);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryHandleApplicationPacketReceived_AcceptsAStaleMaxDataFrameWithoutDroppingSiblingStreamData()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            connectionReceiveLimit: 256,
+            localBidirectionalSendLimit: 96,
+            localBidirectionalReceiveLimit: 96);
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+
+        byte[] applicationPayload =
+        [
+            .. QuicFrameTestData.BuildMaxDataFrame(new QuicMaxDataFrame(95)),
+            .. QuicStreamTestData.BuildStreamFrame(0x0E, 1, [0xAA, 0xBB], offset: 0),
+        ];
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+            runtime.TlsState.CurrentOneRttKeyPhase == 1,
+            out byte[] protectedPacket));
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath!.Value.Identity,
+                protectedPacket),
+            nowTicks: 10);
+
+        Assert.True(result.StateChanged);
+        Assert.Null(runtime.TerminalState);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamReceiveState.Recv, snapshot.ReceiveState);
+        Assert.Equal(2UL, snapshot.UniqueBytesReceived);
+        Assert.Equal(2UL, snapshot.AccountedBytesReceived);
+        Assert.Equal(2, snapshot.BufferedReadableBytes);
     }
 
     [Fact]
@@ -48,6 +92,53 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0035
         Assert.Equal(default, errorCode);
         Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
         Assert.Equal(10UL, snapshot.SendLimit);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryHandleApplicationPacketReceived_IgnoresAStaleMaxStreamDataFrameWithoutDroppingSiblingStreamData()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            connectionReceiveLimit: 256,
+            localBidirectionalSendLimit: 96,
+            localBidirectionalReceiveLimit: 96);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(0UL, streamId.Value);
+        Assert.Equal(default, blockedFrame);
+
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        byte[] applicationPayload =
+        [
+            .. QuicFrameTestData.BuildMaxStreamDataFrame(new QuicMaxStreamDataFrame(streamId.Value, 95)),
+            .. QuicStreamTestData.BuildStreamFrame(0x0E, 1, [0xCC, 0xDD], offset: 0),
+        ];
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+            runtime.TlsState.CurrentOneRttKeyPhase == 1,
+            out byte[] protectedPacket));
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath!.Value.Identity,
+                protectedPacket),
+            nowTicks: 10);
+
+        Assert.True(result.StateChanged);
+        Assert.Null(runtime.TerminalState);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamReceiveState.Recv, snapshot.ReceiveState);
+        Assert.Equal(2UL, snapshot.UniqueBytesReceived);
+        Assert.Equal(2UL, snapshot.AccountedBytesReceived);
+        Assert.Equal(2, snapshot.BufferedReadableBytes);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot localSnapshot));
+        Assert.Equal(96UL, localSnapshot.SendLimit);
     }
 
     [Fact]

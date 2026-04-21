@@ -14,18 +14,45 @@ public sealed class InteropHarnessProcessFailureTests
             using TempDirectoryFixture fixture = new(nameof(InteropHarnessProcessFailureTests));
             string qlogDirectory = fixture.CreateSubdirectory("qlog");
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-            string relativePath = $"missing-transfer-source-{Guid.NewGuid():N}.txt";
-            string request = $"https://localhost:{listenEndPoint.Port}/{relativePath}";
             string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
             string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
-            string sourcePath = Path.Combine(sourceRoot, relativePath);
-            string destinationPath = Path.Combine(destinationRoot, relativePath);
+            string[] relativePaths =
+            [
+                $"missing-transfer-source-{Guid.NewGuid():N}-1.txt",
+                $"missing-transfer-source-{Guid.NewGuid():N}-2.txt",
+                $"missing-transfer-source-{Guid.NewGuid():N}-3.txt",
+            ];
+            string request = string.Join(
+                " ",
+                [
+                    $"https://localhost:{listenEndPoint.Port}/{relativePaths[0]}",
+                    $"https://localhost:{listenEndPoint.Port}/{relativePaths[1]}",
+                    $"https://localhost:{listenEndPoint.Port}/{relativePaths[2]}",
+                ]);
+            string[] sourcePaths =
+            [
+                Path.Combine(sourceRoot, relativePaths[0]),
+                Path.Combine(sourceRoot, relativePaths[1]),
+                Path.Combine(sourceRoot, relativePaths[2]),
+            ];
+            string[] destinationPaths =
+            [
+                Path.Combine(destinationRoot, relativePaths[0]),
+                Path.Combine(destinationRoot, relativePaths[1]),
+                Path.Combine(destinationRoot, relativePaths[2]),
+            ];
             string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
 
             Directory.CreateDirectory(sourceRoot);
             Directory.CreateDirectory(destinationRoot);
-            TryDelete(sourcePath);
-            TryDelete(destinationPath);
+            File.WriteAllBytes(sourcePaths[0], Encoding.UTF8.GetBytes($"transfer proof one {Guid.NewGuid():N}"));
+            TryDelete(sourcePaths[1]);
+            File.WriteAllBytes(sourcePaths[2], Encoding.UTF8.GetBytes($"transfer proof three {Guid.NewGuid():N}"));
+
+            foreach (string destinationPath in destinationPaths)
+            {
+                TryDelete(destinationPath);
+            }
 
             try
             {
@@ -37,17 +64,23 @@ public sealed class InteropHarnessProcessFailureTests
 
                 Assert.Equal(1, serverProcess.Process.ExitCode);
                 Assert.Equal(1, clientProcess.Process.ExitCode);
-                Assert.Contains(sourcePath, serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains("missing source file", serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains(sourcePath, clientProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains(sourcePaths[1], serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("was not found", serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
                 Assert.StartsWith("interop harness: role=client, testcase=transfer failed:", clientProcess.Stderr, StringComparison.OrdinalIgnoreCase);
-                Assert.DoesNotContain("completed managed transfer", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-                Assert.DoesNotContain("completed managed transfer", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("stream 3", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("stream 3/3", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
             }
             finally
             {
-                TryDelete(sourcePath);
-                TryDelete(destinationPath);
+                foreach (string sourcePath in sourcePaths)
+                {
+                    TryDelete(sourcePath);
+                }
+
+                foreach (string destinationPath in destinationPaths)
+                {
+                    TryDelete(destinationPath);
+                }
             }
         });
     }

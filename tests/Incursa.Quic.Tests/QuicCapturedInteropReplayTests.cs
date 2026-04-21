@@ -331,6 +331,54 @@ public sealed class QuicCapturedInteropReplayTests
             DescribeCapturedServerApplicationFrames(CapturedQuicGoServerResponseFinPacket));
     }
 
+    [Fact]
+    public void CapturedQuicGoTransferPacket77ReplaysAsStreamDataBlockedThenTheNextResponseChunk()
+    {
+        Assert.Equal(
+            "stream_data_blocked(stream=0,max=83018),stream(id=0,off=82693,len=325,fin=False,data=D3BE139613F3A3DC)",
+            DescribeCapturedTransferServerApplicationFrames(
+                QuicCapturedInteropTransferEvidence.QuicGoTransferPacket77Protected));
+    }
+
+    [Fact]
+    public void CapturedQuicGoTransferPacket83ReplaysAsNewTokenCryptoBlockedHandshakeDoneAndTheNextResponseChunk()
+    {
+        Assert.Equal(
+            "new_token(len=89),crypto(off=0,len=170),stream_data_blocked(stream=0,max=83018),handshake_done,stream(id=0,off=82693,len=325,fin=False,data=D3BE139613F3A3DC)",
+            DescribeCapturedTransferServerApplicationFrames(
+                QuicCapturedInteropTransferEvidence.QuicGoTransferPacket83Protected));
+    }
+
+    [Fact]
+    public void CapturedQuicGoTransferKeyUpdatePacket101ReplaysAsAckWhenTheCurrentHeaderProtectionKeyIsRetained()
+    {
+        Assert.Equal(
+            "ack(largest=72,first=37,ranges=0)",
+            DescribeCapturedTransferPhaseOneServerApplicationFrames(
+                QuicCapturedInteropTransferEvidence.QuicGoTransferKeyUpdatePacket101Protected));
+    }
+
+    [Fact]
+    public void CapturedQuicGoTransferKeyUpdatePacket101DoesNotOpenWhenTheHeaderProtectionKeyAlsoRotates()
+    {
+        Assert.True(QuicCapturedInteropTransferEvidence.TryCreateTransferPhaseOneServerOpenMaterialWithDerivedHeaderProtectionKey(
+            out QuicTlsPacketProtectionMaterial openMaterial));
+        Assert.False(QuicCapturedInteropTransferEvidence.TryOpenTransferPhaseOneServerPacket(
+            QuicCapturedInteropTransferEvidence.QuicGoTransferKeyUpdatePacket101Protected,
+            openMaterial,
+            out _,
+            out _,
+            out _,
+            out _));
+    }
+
+    [Fact]
+    public void CapturedQuicGoTransferKeyUpdatePacket102OpensWithTheRetainedCurrentHeaderProtectionKey()
+    {
+        Assert.NotEmpty(QuicCapturedInteropTransferEvidence.OpenTransferPhaseOneServerApplicationPayloadWithRetainedHeaderProtectionKey(
+            QuicCapturedInteropTransferEvidence.QuicGoTransferKeyUpdatePacket102Protected));
+    }
+
     private static string DescribeState(
         QuicConnectionRuntime runtime,
         QuicRecordingDiagnosticsSink diagnosticsSink,
@@ -445,6 +493,18 @@ public sealed class QuicCapturedInteropReplayTests
         return DescribeFrames(payloadMemory.Span.Slice(payloadOffset, payloadLength));
     }
 
+    private static string DescribeCapturedTransferServerApplicationFrames(ReadOnlySpan<byte> protectedPacket)
+    {
+        return DescribeFrames(GetCapturedTransferServerApplicationPayload(protectedPacket));
+    }
+
+    private static string DescribeCapturedTransferPhaseOneServerApplicationFrames(ReadOnlySpan<byte> protectedPacket)
+    {
+        return DescribeFrames(
+            QuicCapturedInteropTransferEvidence.OpenTransferPhaseOneServerApplicationPayloadWithRetainedHeaderProtectionKey(
+                protectedPacket));
+    }
+
     private static void OpenCapturedClientApplicationPacket(
         ReadOnlySpan<byte> protectedPacket,
         out byte[] openedPacket,
@@ -495,6 +555,11 @@ public sealed class QuicCapturedInteropReplayTests
         payloadMemory = openedPacket;
     }
 
+    private static byte[] GetCapturedTransferServerApplicationPayload(ReadOnlySpan<byte> protectedPacket)
+    {
+        return QuicCapturedInteropTransferEvidence.OpenServerApplicationPayload(protectedPacket);
+    }
+
     private static string DescribeFrames(ReadOnlySpan<byte> payload)
     {
         StringBuilder description = new();
@@ -526,6 +591,15 @@ public sealed class QuicCapturedInteropReplayTests
                 continue;
             }
 
+            if (QuicFrameCodec.TryParseNewTokenFrame(remaining, out QuicNewTokenFrame newTokenFrame, out int newTokenBytesConsumed))
+            {
+                AppendFrameDescription(
+                    description,
+                    $"new_token(len={newTokenFrame.Token.Length})");
+                offset += newTokenBytesConsumed;
+                continue;
+            }
+
             if (QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
             {
                 AppendFrameDescription(
@@ -539,6 +613,31 @@ public sealed class QuicCapturedInteropReplayTests
             {
                 AppendFrameDescription(description, "ping");
                 offset += pingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseCryptoFrame(remaining, out QuicCryptoFrame cryptoFrame, out int cryptoBytesConsumed))
+            {
+                AppendFrameDescription(
+                    description,
+                    $"crypto(off={cryptoFrame.Offset},len={cryptoFrame.CryptoData.Length})");
+                offset += cryptoBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseStreamDataBlockedFrame(remaining, out QuicStreamDataBlockedFrame streamDataBlockedFrame, out int streamDataBlockedBytesConsumed))
+            {
+                AppendFrameDescription(
+                    description,
+                    $"stream_data_blocked(stream={streamDataBlockedFrame.StreamId},max={streamDataBlockedFrame.MaximumStreamData})");
+                offset += streamDataBlockedBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseHandshakeDoneFrame(remaining, out _, out int handshakeDoneBytesConsumed))
+            {
+                AppendFrameDescription(description, "handshake_done");
+                offset += handshakeDoneBytesConsumed;
                 continue;
             }
 

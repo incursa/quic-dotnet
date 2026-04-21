@@ -37,6 +37,7 @@ internal sealed class QuicTlsKeySchedule
     private const int UInt24HighByteIndex = 0;
     private const int UInt24MidByteIndex = 1;
     private const int UInt24LowByteIndex = 2;
+    private const int HeaderProtectionKeyLength = 16;
     private const int TlsRandomLength = 32;
     private const byte NullCompressionMethod = 0x00;
     private const int MaximumSessionIdLength = 32;
@@ -888,21 +889,23 @@ internal sealed class QuicTlsKeySchedule
         ReadOnlySpan<byte> openTrafficSecret = protectWithClientTrafficSecret
             ? serverHandshakeTrafficSecret
             : clientHandshakeTrafficSecret;
-        ReadOnlySpan<byte> protectTrafficSecret = protectWithClientTrafficSecret
-            ? clientHandshakeTrafficSecret
-            : serverHandshakeTrafficSecret;
+            ReadOnlySpan<byte> protectTrafficSecret = protectWithClientTrafficSecret
+                ? clientHandshakeTrafficSecret
+                : serverHandshakeTrafficSecret;
 
-        if (!TryCreatePacketProtectionMaterial(
-            QuicTlsEncryptionLevel.Handshake,
-            openTrafficSecret,
-            out openMaterial)
-            || !TryCreatePacketProtectionMaterial(
+            if (!TryCreatePacketProtectionMaterial(
                 QuicTlsEncryptionLevel.Handshake,
-                protectTrafficSecret,
-                out protectMaterial))
-        {
-            return false;
-        }
+                openTrafficSecret,
+                DeriveHeaderProtectionKey(openTrafficSecret),
+                out openMaterial)
+                || !TryCreatePacketProtectionMaterial(
+                    QuicTlsEncryptionLevel.Handshake,
+                    protectTrafficSecret,
+                    DeriveHeaderProtectionKey(protectTrafficSecret),
+                    out protectMaterial))
+            {
+                return false;
+            }
 
         return true;
     }
@@ -955,10 +958,12 @@ internal sealed class QuicTlsKeySchedule
             if (!TryCreatePacketProtectionMaterial(
                 QuicTlsEncryptionLevel.OneRtt,
                 openTrafficSecret,
+                DeriveHeaderProtectionKey(openTrafficSecret),
                 out openMaterial)
                 || !TryCreatePacketProtectionMaterial(
                     QuicTlsEncryptionLevel.OneRtt,
                     protectTrafficSecret,
+                    DeriveHeaderProtectionKey(protectTrafficSecret),
                     out protectMaterial))
             {
                 return false;
@@ -1006,6 +1011,8 @@ internal sealed class QuicTlsKeySchedule
     }
 
     internal bool TryDeriveOneRttSuccessorPacketProtectionMaterial(
+        ReadOnlySpan<byte> currentOpenHeaderProtectionKey,
+        ReadOnlySpan<byte> currentProtectHeaderProtectionKey,
         out QuicTlsPacketProtectionMaterial openMaterial,
         out QuicTlsPacketProtectionMaterial protectMaterial)
     {
@@ -1013,7 +1020,9 @@ internal sealed class QuicTlsKeySchedule
         protectMaterial = default;
 
         if (clientApplicationTrafficSecret is null
-            || serverApplicationTrafficSecret is null)
+            || serverApplicationTrafficSecret is null
+            || currentOpenHeaderProtectionKey.Length == 0
+            || currentProtectHeaderProtectionKey.Length == 0)
         {
             return false;
         }
@@ -1046,10 +1055,12 @@ internal sealed class QuicTlsKeySchedule
             if (!TryCreatePacketProtectionMaterial(
                 QuicTlsEncryptionLevel.OneRtt,
                 openTrafficSecret,
+                currentOpenHeaderProtectionKey,
                 out openMaterial)
                 || !TryCreatePacketProtectionMaterial(
                     QuicTlsEncryptionLevel.OneRtt,
                     protectTrafficSecret,
+                    currentProtectHeaderProtectionKey,
                     out protectMaterial))
             {
                 return false;
@@ -1119,6 +1130,7 @@ internal sealed class QuicTlsKeySchedule
             return TryCreatePacketProtectionMaterial(
                 QuicTlsEncryptionLevel.ZeroRtt,
                 clientEarlyTrafficSecret,
+                DeriveHeaderProtectionKey(clientEarlyTrafficSecret),
                 out material);
         }
         finally
@@ -1143,13 +1155,13 @@ internal sealed class QuicTlsKeySchedule
     private static bool TryCreatePacketProtectionMaterial(
         QuicTlsEncryptionLevel encryptionLevel,
         ReadOnlySpan<byte> trafficSecret,
+        ReadOnlySpan<byte> headerProtectionKey,
         out QuicTlsPacketProtectionMaterial material)
     {
         material = default;
 
         byte[] aeadKey = HkdfExpandLabel(trafficSecret, QuicKeyLabel, [], 16);
         byte[] aeadIv = HkdfExpandLabel(trafficSecret, QuicIvLabel, [], 12);
-        byte[] headerProtectionKey = HkdfExpandLabel(trafficSecret, QuicHpLabel, [], 16);
 
         return QuicTlsPacketProtectionMaterial.TryCreate(
             encryptionLevel,
@@ -1159,6 +1171,11 @@ internal sealed class QuicTlsKeySchedule
             headerProtectionKey,
             HandshakeUsageLimits,
             out material);
+    }
+
+    private static byte[] DeriveHeaderProtectionKey(ReadOnlySpan<byte> trafficSecret)
+    {
+        return HkdfExpandLabel(trafficSecret, QuicHpLabel, [], HeaderProtectionKeyLength);
     }
 
     private bool TryCreateInitialClientHello(
