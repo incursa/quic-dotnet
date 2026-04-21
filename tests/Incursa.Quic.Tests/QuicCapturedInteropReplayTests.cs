@@ -58,6 +58,25 @@ public sealed class QuicCapturedInteropReplayTests
         // Captured from the same repro pcap.
         // Packet 68: server -> client short 1-RTT FIN-only STREAM packet for stream 0.
         "48BD0B27A812A5E5F6C224A783A2B1295ECCC1ACBBEB429A6B00C5578336AA");
+    private static readonly byte[] CapturedManagedClientOriginalInitialDestinationConnectionIdForRetry = Convert.FromHexString(
+        // Captured from:
+        // C:\src\incursa\quic-dotnet.local\interop-evidence\artifacts\client-retry-repro\20260420-184749312-client-chrome\
+        //   runner-logs\quic-go_chrome\retry\sim\trace_node_left.pcap
+        // Packet 46: client -> server Initial packet before Retry.
+        "AACF05E43CC63FF5");
+    private static readonly byte[] CapturedQuicGoRetrySourceConnectionId = Convert.FromHexString("4274E8CE");
+    private static readonly byte[] CapturedQuicGoRetryPacket = Convert.FromHexString(
+        // Captured from:
+        // C:\src\incursa\quic-dotnet.local\interop-evidence\artifacts\client-retry-repro\20260420-184749312-client-chrome\
+        //   runner-logs\quic-go_chrome\retry\sim\trace_node_left.pcap
+        // Packet 47: server -> client Retry packet.
+        "F0000000010888B72C24D21FF97C044274E8CEEA5944A5B83A19629A69A7242056B907AD648E374D790C57AADB84B45E034C38A894A0E32C4CDF469C922B5CB456A05A94358EDF537D730AFF561A24E74BF3ADE2DF2710F8CBE5B67915A092F5EE34254EDC00FD518792833BB8A88DC20EE01EC1905140ABDFBA1B3C6EDAC12DFF2CF7783341FB81");
+    private static readonly byte[] CapturedManagedClientRetriedInitialPacket = Convert.FromHexString(
+        // Captured from:
+        // C:\src\incursa\quic-dotnet.local\interop-evidence\artifacts\client-retry-repro\20260420-184749312-client-chrome\
+        //   runner-logs\quic-go_chrome\retry\sim\trace_node_left.pcap
+        // Packet 48: client -> server replayed Initial packet that follows the Retry.
+        "C700000001044274E8CE0888B72C24D21FF97C4065EA5944A5B83A19629A69A7242056B907AD648E374D790C57AADB84B45E034C38A894A0E32C4CDF469C922B5CB456A05A94358EDF537D730AFF561A24E74BF3ADE2DF2710F8CBE5B67915A092F5EE34254EDC00FD518792833BB8A88DC20EE01EC1905140AB449A93981243EA133BA9AE4294E5A4F062239554F12CD22A2257A6C47EBA6375C2CD4CA0A9330BCF3AA1D154DE83E8923286B8AB177C539F16D819FAE6F5CD5AA99D616F0A2142A40F5CF05314F8DFEADB7C528CAF38B51BC0A35067F53DAA95AFE4B1B86403DE9311BA9E7F4AF4CE0C9B0D456497C498BD4E88BE4B748D2EB4221542A284240846CD2C1E7D98DB126693D9080572027A9D15BACE4B1D34492B75E459C0287F63FDBCD4393431D267917EE9CAEC550535ABE9617FF4E6EDACFFCC693520EB86047FD83BE284755C8B4D5EFE5F4C37BE62D82121C5EF648E9ACBDDCB5C519544006475FA4DA3EC6476FD1444E1AF94B42F722ACE36BECC0B9FB1F8E7BCFCC8DC80F89BBC62475BD4B443520AC7FB3449A378750EF736DC8680F20632F4E51F7C68D5A39E3A29A066C726F8E1231D8515ED4AB3878D5C928FC450360EE8294433F3383FA4DB0B5FAFF26882D86912E3AEB5963A5674DAEF16EE240D755A5B3AC3E41AD9B53B48DA4B29CFA403DB14DDC2DBDE9862A0E1FE0DD1A224BB01FF0A2A8B712610ABAF8907E05704FCD211291429A79D86C61BF22F79CE0EB4ECF0B7088FFB3DA38FFD834C12A3C0BAFB4E5D95D384A4841F2FFAD1FCA1AB0A53D346191718357A603B03C16F970FCB2211B5BFE300CE754848635BE06CC82187A3FC5CD3C3A0BF89F7793355D3DB71AE216744F4FD0F0D264208FE227E39BEA01DCA4A565713F3B5A7CBB2E157246EB1C41B648043E8C1957DCC4F63A5DE7EBBF46D600AF05DE437D0DCE9B0C38DEE51F0CABFA09FE072445963FE494AA7AA8D095E135246C7EE70A9822F586B317ABF773A36EA03AE4DF5180FB71FF68489632DAA509EEA642E236B9840801C8A2F48286E8BC66405AF2B37D35315A381BC3FC0752FBDD6B2C66FF9E0EEC2D92D1998B8110811FFB4B56FC8BCE186AE4CB7AE49EEEF82D56496FEA7DB2C54E21D10B753393819BC14EEFB37620309EC988C8C551039DFC60BA18974E68FEA8E5969C0E80DF3D4911EC12B8D98886ACE8583524B994FB20B0AF0B38DCA825F2408BAD8EC5E328C786BA5CA98071228373D03C88F232D7FA2AC899C04FBB700B279885757A51185DC3A403DE86528D7842EDE87C5BED5D990F7529F66DB353F772CE15005859C0DCA94E36A1BDF05ACE6790D84EA20450B08359DAEAE2477CA7CAB77C7E1665800D3181DCAEF190D60027616A2FCFFDDFD9E133291B1784D62DA3A2D7108008C6FEB0D55CB88F021A3F112F06C9435B4493A6FA8CCE1BF56F40551AB139E4BE7ABA33FF6364F6AFBBCDA9F0D7E5D3B436BCE7C111002132631F6B4A44A7D98A7FE26C54D6BF1E514C8E7DCA3D62ADB18EE6D0C3750518A34194A9AD871993C8FD19F30C846C1BE22B422EF69AC9B7E9DF3C4E529C26E531EF511A259272AC61F78B9F87957F570557A7EDA96D05066E38C6A2E8AE7D0BB1E0D0E2D63FF8C7A08C2F5EE87E4CF9E96608DC9FBEF8D946BB5D91630453219565BC093F9851FA9664FD9C9FBC2495E47B1CC476A0E5FA536A3CAB0CDE6951475E40BF3E65D226C97456693A6BEA773398619B5585C2B9C1AAAF75E8AF4C934D7E0D4A8ED1F06382A8DBE29D2138A941F399744F62ED60387F4315E9CDB34BE76ABB96B8CB5EC184E5C8E64983C55");
 
     [Fact]
     public void DeterministicBootstrapMatchesCapturedInteropClientInitialPlaintextPacket()
@@ -158,6 +177,68 @@ public sealed class QuicCapturedInteropReplayTests
 
         Assert.True(handshakeResult.StateChanged, detail);
         Assert.True(scenario.ClientRuntime.TlsState.PeerTransportParametersCommitted, detail);
+    }
+
+    [Fact]
+    public void CapturedQuicGoRetryPacketRetainsValidRetryBootstrapMetadata()
+    {
+        Assert.True(QuicRetryIntegrity.TryValidateRetryPacketIntegrity(
+            CapturedManagedClientOriginalInitialDestinationConnectionIdForRetry,
+            CapturedQuicGoRetryPacket));
+        Assert.True(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+            CapturedManagedClientOriginalInitialDestinationConnectionIdForRetry,
+            CapturedQuicGoRetryPacket,
+            out QuicRetryBootstrapMetadata retryMetadata));
+
+        Assert.Equal(CapturedQuicGoRetrySourceConnectionId, retryMetadata.RetrySourceConnectionId);
+        Assert.NotEmpty(retryMetadata.RetryToken);
+    }
+
+    [Fact]
+    public void CapturedManagedClientRetriedInitialNeedsTheRetrySelectedInitialKeysToOpen()
+    {
+        Assert.True(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+            CapturedManagedClientOriginalInitialDestinationConnectionIdForRetry,
+            CapturedQuicGoRetryPacket,
+            out QuicRetryBootstrapMetadata retryMetadata));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            CapturedManagedClientOriginalInitialDestinationConnectionIdForRetry,
+            out QuicInitialPacketProtection originalServerProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            retryMetadata.RetrySourceConnectionId,
+            out QuicInitialPacketProtection retryServerProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = new();
+        Assert.False(coordinator.TryOpenInitialPacket(
+            CapturedManagedClientRetriedInitialPacket,
+            originalServerProtection,
+            out _,
+            out _,
+            out _));
+        Assert.True(coordinator.TryOpenInitialPacket(
+            CapturedManagedClientRetriedInitialPacket,
+            retryServerProtection,
+            out byte[] openedPacket,
+            out _,
+            out _));
+        Assert.True(QuicPacketParsing.TryParseLongHeaderFields(
+            openedPacket,
+            out _,
+            out uint replayVersion,
+            out ReadOnlySpan<byte> replayDestinationConnectionId,
+            out _,
+            out ReadOnlySpan<byte> replayVersionSpecificData));
+        Assert.Equal(1u, replayVersion);
+        Assert.Equal(retryMetadata.RetrySourceConnectionId, replayDestinationConnectionId.ToArray());
+        Assert.True(QuicVariableLengthInteger.TryParse(
+            replayVersionSpecificData,
+            out ulong retryTokenLength,
+            out int retryTokenLengthBytes));
+        Assert.Equal((ulong)retryMetadata.RetryToken.Length, retryTokenLength);
+        Assert.True(retryMetadata.RetryToken.AsSpan().SequenceEqual(
+            replayVersionSpecificData.Slice(retryTokenLengthBytes, retryMetadata.RetryToken.Length)));
     }
 
     [Fact]

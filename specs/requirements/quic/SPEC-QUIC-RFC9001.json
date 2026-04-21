@@ -854,8 +854,8 @@
     },
     {
       "id": "REQ-QUIC-RFC9001-S5-0006",
-      "title": "Derive Initial keys from the first client Initial",
-      "statement": "The keys for Initial packets MUST be derived from the Destination Connection ID field of the first Initial packet sent by the client.",
+      "title": "Derive Initial keys from the active client Initial destination connection ID",
+      "statement": "Initial packet keys MUST be derived from the client Initial Destination Connection ID that is active for the current attempt: the first client Initial Destination Connection ID before Retry, and the server-selected Destination Connection ID after Retry.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -864,21 +864,28 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9001-0001"
+          "ARC-QUIC-RFC9001-0001",
+          "ARC-QUIC-CRT-0020"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9001-0001"
+          "WI-QUIC-RFC9001-0001",
+          "WI-QUIC-CRT-0020"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9001-0001"
+          "VER-QUIC-RFC9001-0001",
+          "VER-QUIC-CRT-0020"
         ],
         "upstream_refs": [
           "RFC 9001 §5 RFC9001-S5-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-5"
         ]
       },
+      "notes": [
+        "A valid Retry changes the active client Initial Destination Connection ID to the server-selected value from the Retry packet for subsequent Initial packets."
+      ],
       "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs::TryDeriveInitialKeyMaterial_UsesTheFirstClientInitialDcid"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs::TryDeriveInitialKeyMaterial_UsesTheFirstClientInitialDcid",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs::RetryReceived_RekeysSubsequentInitialPacketsToTheRetrySelectedDestinationConnectionId"
       ]
     },
     {

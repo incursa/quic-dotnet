@@ -339,6 +339,20 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         return true;
     }
 
+    internal bool TryConfigureRetryInitialPacketProtection(ReadOnlySpan<byte> retrySelectedDestinationConnectionId)
+    {
+        if (!QuicInitialPacketProtection.TryCreate(
+            tlsState.Role,
+            retrySelectedDestinationConnectionId,
+            out QuicInitialPacketProtection protection))
+        {
+            return false;
+        }
+
+        initialPacketProtection = protection;
+        return true;
+    }
+
     internal bool TryExportDetachedResumptionTicketSnapshot(out QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot)
     {
         _ = TryCaptureResumptionMasterSecret();

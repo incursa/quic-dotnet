@@ -69,4 +69,59 @@ public sealed class REQ_QUIC_RFC9001_S5_0006
         Assert.True(ExpectedServerAeadIv.AsSpan().SequenceEqual(serverMaterial.AeadIv));
         Assert.True(ExpectedServerHeaderProtectionKey.AsSpan().SequenceEqual(serverMaterial.HeaderProtectionKey));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RetryReceived_RekeysSubsequentInitialPacketsToTheRetrySelectedDestinationConnectionId()
+    {
+        using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            out QuicInitialPacketProtection originalServerProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
+            out QuicInitialPacketProtection retryServerProtection));
+
+        QuicConnectionTransitionResult retryResult = runtime.Transition(
+            QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(1),
+            nowTicks: 1);
+
+        QuicConnectionSendDatagramEffect replayDatagram = Assert.Single(
+            retryResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+
+        QuicHandshakeFlowCoordinator packetCoordinator = new();
+        Assert.False(packetCoordinator.TryOpenInitialPacket(
+            replayDatagram.Datagram.Span,
+            originalServerProtection,
+            out _,
+            out _,
+            out _));
+        Assert.True(packetCoordinator.TryOpenInitialPacket(
+            replayDatagram.Datagram.Span,
+            retryServerProtection,
+            out byte[] openedReplayPacket,
+            out _,
+            out _));
+
+        Assert.True(QuicPacketParsing.TryParseLongHeaderFields(
+            openedReplayPacket,
+            out _,
+            out uint replayVersion,
+            out ReadOnlySpan<byte> replayDestinationConnectionId,
+            out _,
+            out ReadOnlySpan<byte> replayVersionSpecificData));
+        Assert.Equal(1u, replayVersion);
+        Assert.Equal(QuicS17P2P5P2TestSupport.RetrySourceConnectionId, replayDestinationConnectionId.ToArray());
+        Assert.True(QuicVariableLengthInteger.TryParse(
+            replayVersionSpecificData,
+            out ulong retryTokenLength,
+            out int retryTokenLengthBytes));
+        Assert.Equal((ulong)QuicS17P2P5P2TestSupport.RetryToken.Length, retryTokenLength);
+        Assert.True(QuicS17P2P5P2TestSupport.RetryToken.AsSpan().SequenceEqual(
+            replayVersionSpecificData.Slice(retryTokenLengthBytes, QuicS17P2P5P2TestSupport.RetryToken.Length)));
+    }
 }

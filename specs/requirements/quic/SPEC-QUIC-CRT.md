@@ -965,17 +965,17 @@ Notes:
 - This slice is the client counterpart to server-role 1-RTT packet-protection publication in REQ-QUIC-CRT-0119.
 
 ## REQ-QUIC-CRT-0122 Retain one retry bootstrap handoff across a single replay
-The library bootstrap path MUST retain the original destination connection ID, the server-provided Retry source connection ID, and the Retry token across exactly one valid Retry so the next client Initial can be reissued with the echoed token and the eventual `retry_source_connection_id` binding check can validate the attempt; this slice must not add interop-runner retry dispatch, public API widening, transfer generalization, broader TLS-policy work, 0-RTT, key update, or broad token-lifecycle behavior.
+The library bootstrap path MUST retain the original destination connection ID, the server-provided Retry source connection ID, and the Retry token across exactly one valid Retry, rederive client Initial packet protection from the Retry source connection ID for the replayed attempt, and keep the echoed token plus the Retry-selected Initial keys on later probe-driven replays until handshake progress supersedes them; this slice must not add interop-runner retry dispatch, public API widening, transfer generalization, broader TLS-policy work, 0-RTT, key update, or broad token-lifecycle behavior.
 
 Trace:
 - Source Refs:
   - RFC 9000 Sections 7.2, 8.1, and 17.2.5
-  - RFC 9001 Section 5.8
+  - RFC 9001 Sections 5.2 and 5.8
   - RFC 9002 Section 6.3
   - connection-runtime-state-machine.md
 
 Notes:
-- The helper-backed Retry integrity and `retry_source_connection_id` checks already exist; the missing seam is bootstrap state ownership across one replay.
+- The helper-backed Retry integrity and `retry_source_connection_id` checks already exist; the missing seam is bootstrap state ownership across one replay plus the Retry-selected Initial key redrive that peers enforce on the wire.
 - This slice keeps retry testcase dispatch out of scope. The narrow child-process retry contract is traced separately under `REQ-QUIC-INT-0012`.
 - The work is intentionally smaller than broader token-lifecycle or NEW_TOKEN support.
 

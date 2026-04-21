@@ -8,11 +8,12 @@ Describe how the library-owned bootstrap path retains one valid Retry across a s
 
 ## Requirements Satisfied
 
+- REQ-QUIC-RFC9001-S5-0006
 - REQ-QUIC-CRT-0122
 
 ## Design Summary
 
-The retry prerequisite stays inside the library-owned bootstrap path. The client host retains the original destination connection ID and the single Retry token for exactly one replay, while the server-side binding checks continue to use the existing helper-backed integrity and `retry_source_connection_id` validation instead of duplicating packet math. The endpoint runtime still classifies Retry as endpoint-handled metadata today, and the child-process retry contract is traced separately under `REQ-QUIC-INT-0012` so the bootstrap handoff stays library-owned.
+The retry prerequisite stays inside the library-owned bootstrap path. The client host retains the original destination connection ID and the single Retry token for exactly one replay, while the runtime rederives `initialPacketProtection` from the Retry-selected destination connection ID before it emits the replayed Initial or any later recovery probe in the Initial space. The original destination connection ID remains available for Retry integrity and eventual `retry_source_connection_id` binding checks, and the server-side binding checks continue to use the existing helper-backed integrity and transport-parameter validation instead of duplicating packet math. The endpoint runtime still classifies Retry as endpoint-handled metadata today, and the child-process retry contract is traced separately under `REQ-QUIC-INT-0012` so the bootstrap handoff stays library-owned.
 
 ## Key Components
 
@@ -24,12 +25,14 @@ The retry prerequisite stays inside the library-owned bootstrap path. The client
 - src/Incursa.Quic/QuicRetryIntegrity.cs
 - src/Incursa.Quic/QuicTransportParametersCodec.cs
 - src/Incursa.Quic/QuicConnectionIdBindingValidationError.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs
 
 ## Risks
 
 - If Retry is treated as a no-op, the code will appear to support retry without preserving replay state.
+- If the runtime keeps the original Initial keys after Retry, standards-compliant peers will drop the replayed Initial with a payload decrypt error.
 - If the retry token is folded into a general token store, the slice will widen into NEW_TOKEN and broader anti-abuse behavior.
 - If the bootstrap state is mixed with runner dispatch, the supported boundary will widen before the library seam is proven.
 
@@ -42,5 +45,6 @@ The retry prerequisite stays inside the library-owned bootstrap path. The client
 - [`src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)
 - [`src/Incursa.Quic/QuicRetryIntegrity.cs`](../../../src/Incursa.Quic/QuicRetryIntegrity.cs)
 - [`src/Incursa.Quic/QuicTransportParametersCodec.cs`](../../../src/Incursa.Quic/QuicTransportParametersCodec.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs)

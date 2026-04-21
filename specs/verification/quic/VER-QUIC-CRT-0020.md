@@ -4,10 +4,11 @@
 
 ## Scope
 
-Verify that the library-owned bootstrap path retains one valid Retry across a single replay, preserves the original destination connection ID and `retry_source_connection_id` binding state, rejects invalid Retry inputs, and keeps the child-process retry contract in a separate INT verification slice.
+Verify that the library-owned bootstrap path retains one valid Retry across a single replay, rekeys subsequent Initial packets to the Retry-selected destination connection ID, preserves the original destination connection ID and `retry_source_connection_id` binding state, rejects invalid Retry inputs, and keeps the child-process retry contract in a separate INT verification slice.
 
 ## Requirements Verified
 
+- REQ-QUIC-RFC9001-S5-0006
 - REQ-QUIC-CRT-0122
 
 ## Verification Method
@@ -23,13 +24,16 @@ Execution, inspection, and regression evidence.
 ## Procedure or Approach
 
 - Run the existing Retry integrity helper tests and the library-owned retry bootstrap requirement-home tests.
+- Run the focused RFC 9001 Initial-protection requirement home that proves Retry-selected Initial key redrive.
 - Verify the separate child-process retry contract under REQ-QUIC-INT-0012.
+- Reproduce the external `retry` interop lane against `quic-go` and preserve the resulting runner logs, pcaps, and qlogs.
 - Run the full `REQ_QUIC_CRT_` sweep.
 - Re-render the canonical SpecTrace Markdown views for the changed JSON artifacts and run the repository-level SpecTrace validation checks.
 
 ## Expected Result
 
-- One valid Retry can be replayed through the library-owned bootstrap seam.
+- One valid Retry can be replayed through the library-owned bootstrap seam using Initial keys derived from the Retry-selected destination connection ID.
+- Initial-space recovery probes after Retry keep the echoed Retry token and Retry-selected Initial keys until handshake progress supersedes them.
 - Tampered Retry integrity, zero-length Retry tokens, duplicate Retry packets, and mismatched `retry_source_connection_id` values fail deterministically.
 - The child-process retry contract is proven separately by REQ-QUIC-INT-0012.
 - Transfer remains limited to the exact narrow child-process contract already proven elsewhere.
@@ -44,16 +48,18 @@ Execution, inspection, and regression evidence.
 - [`src/Incursa.Quic/QuicRetryIntegrity.cs`](../../../src/Incursa.Quic/QuicRetryIntegrity.cs)
 - [`src/Incursa.Quic/QuicTransportParametersCodec.cs`](../../../src/Incursa.Quic/QuicTransportParametersCodec.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs)
 - [`scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1`](../../../scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1)
 
 ## Status
 
-Library-owned retry bootstrap now has execution, inspection, and regression evidence on the current runtime path.
+Library-owned retry bootstrap now has execution, inspection, regression, and interop evidence on the current runtime path, including Retry-selected Initial key redrive.
 
 ## Related Artifacts
 
+- SPEC-QUIC-RFC9001
 - SPEC-QUIC-CRT
 - ARC-QUIC-CRT-0020
 - WI-QUIC-CRT-0020

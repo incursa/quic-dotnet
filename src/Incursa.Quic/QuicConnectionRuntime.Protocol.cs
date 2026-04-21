@@ -111,6 +111,11 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (!TryConfigureRetryInitialPacketProtection(retryReceivedEvent.RetrySourceConnectionId.Span))
+        {
+            return false;
+        }
+
         ResetRecoveryStateForRetry();
         retrySourceConnectionId = retryReceivedEvent.RetrySourceConnectionId.ToArray();
         retryToken = retryReceivedEvent.RetryToken.ToArray();
@@ -985,6 +990,8 @@ internal sealed partial class QuicConnectionRuntime
                 retrySourceConnectionId,
                 retryToken,
                 initialPacketProtection,
+                probePacket: false,
+                maximumDatagrams: int.MaxValue,
                 ref effects);
 
             if (replayed)
@@ -1001,13 +1008,25 @@ internal sealed partial class QuicConnectionRuntime
                 && tlsState.Role == QuicTlsRole.Client
                 && initialBootstrapClientHelloBytes is not null
                 && initialBootstrapClientHelloBytes.Length > 0
-                && TryReplayBootstrapInitialPackets(
-                    pathIdentity,
-                    initialBootstrapClientHelloBytes,
-                    initialPacketProtection,
-                    probePacket,
-                    maximumDatagrams,
-                    ref effects);
+                && (
+                    retrySourceConnectionId is not null
+                    && retryToken is not null
+                    ? TryFlushRetriedInitialPackets(
+                        pathIdentity,
+                        initialBootstrapClientHelloBytes,
+                        retrySourceConnectionId,
+                        retryToken,
+                        initialPacketProtection,
+                        probePacket,
+                        maximumDatagrams,
+                        ref effects)
+                    : TryReplayBootstrapInitialPackets(
+                        pathIdentity,
+                        initialBootstrapClientHelloBytes,
+                        initialPacketProtection,
+                        probePacket,
+                        maximumDatagrams,
+                        ref effects));
         }
 
         bool stateChanged = false;
@@ -1211,6 +1230,8 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlySpan<byte> retrySourceConnectionId,
         ReadOnlySpan<byte> retryToken,
         QuicInitialPacketProtection protection,
+        bool probePacket,
+        int maximumDatagrams,
         ref List<QuicConnectionEffect>? effects)
     {
         if (initialClientHelloBytes.IsEmpty)
@@ -1219,6 +1240,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool stateChanged = false;
+        int datagramsSent = 0;
         Span<byte> cryptoBuffer = stackalloc byte[HandshakeEgressChunkBytes];
         int replayOffset = 0;
 
@@ -1243,11 +1265,17 @@ internal sealed partial class QuicConnectionRuntime
                 break;
             }
 
-            TrackInitialPacket(packetNumber, protectedPacket);
+            TrackInitialPacket(packetNumber, protectedPacket, probePacket);
             EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
             replayOffset += requestedBytes;
+            datagramsSent++;
             stateChanged = true;
+
+            if (datagramsSent >= maximumDatagrams)
+            {
+                break;
+            }
         }
 
         return stateChanged;

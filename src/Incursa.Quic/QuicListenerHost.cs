@@ -440,17 +440,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         try
         {
-            ReadOnlySpan<byte> protectionConnectionId = initialDestinationConnectionId;
-            if (retryBootstrapEnabled
-                && Volatile.Read(ref retryBootstrapIssued) != 0
-                && retryBootstrapOriginalDestinationConnectionId is not null)
-            {
-                protectionConnectionId = retryBootstrapOriginalDestinationConnectionId;
-            }
-
             if (!QuicInitialPacketProtection.TryCreate(
                 QuicTlsRole.Server,
-                protectionConnectionId,
+                initialDestinationConnectionId,
                 out QuicInitialPacketProtection initialProtection))
             {
                 return false;
@@ -545,11 +537,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             ApplyReturnedOptions(selectedOptions, returnedOptions);
             connection.UpdateStreamCapacityCallback(selectedOptions.StreamCapacityCallback);
 
-            ReadOnlySpan<byte> initialPacketProtectionConnectionId = retryBootstrapOriginalDestinationConnectionId is null
-                ? initialDestinationConnectionId
-                : retryBootstrapOriginalDestinationConnectionId;
-
-            if (!runtime.TryConfigureInitialPacketProtection(initialPacketProtectionConnectionId)
+            if (!runtime.TryConfigureInitialPacketProtection(initialDestinationConnectionId)
                 || !runtime.TrySetHandshakeDestinationConnectionId(clientSourceConnectionId)
                 || !runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId)
                 || !runtime.TryConfigureServerAuthenticationMaterial(

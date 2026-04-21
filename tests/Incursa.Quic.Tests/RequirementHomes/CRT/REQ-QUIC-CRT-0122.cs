@@ -55,6 +55,10 @@ public sealed class REQ_QUIC_CRT_0122
             QuicTlsRole.Server,
             originalDestinationConnectionId,
             out QuicInitialPacketProtection serverProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            retrySourceConnectionId,
+            out QuicInitialPacketProtection retryServerProtection));
 
         QuicHandshakeFlowCoordinator packetCoordinator = new();
         Assert.True(packetCoordinator.TryOpenInitialPacket(
@@ -107,9 +111,15 @@ public sealed class REQ_QUIC_CRT_0122
             .ToArray();
         Assert.NotEmpty(replayDatagrams);
 
-        Assert.True(packetCoordinator.TryOpenInitialPacket(
+        Assert.False(packetCoordinator.TryOpenInitialPacket(
             replayDatagrams[0].Datagram.Span,
             serverProtection,
+            out _,
+            out _,
+            out _));
+        Assert.True(packetCoordinator.TryOpenInitialPacket(
+            replayDatagrams[0].Datagram.Span,
+            retryServerProtection,
             out byte[] openedReplayPacket,
             out _,
             out _));
@@ -132,7 +142,7 @@ public sealed class REQ_QUIC_CRT_0122
 
         CryptoFrameSnapshot[] replayFrames = OpenInitialCryptoFrames(
             packetCoordinator,
-            serverProtection,
+            retryServerProtection,
             replayDatagrams);
 
         Assert.Equal(bootstrapFrames.Length, replayFrames.Length);
@@ -168,6 +178,78 @@ public sealed class REQ_QUIC_CRT_0122
         Assert.False(duplicateRetryResult.StateChanged);
         Assert.Empty(duplicateRetryResult.Effects);
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RecoveryProbeAfterRetryRetainsTheRetrySelectedInitialKeysAndToken()
+    {
+        using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+        QuicConnectionRetryReceivedEvent retryReceivedEvent = QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(1);
+
+        QuicConnectionTransitionResult retryResult = runtime.Transition(retryReceivedEvent, nowTicks: 1);
+        Assert.Contains(retryResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+
+        long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(recoveryDueTicks);
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: recoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: recoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect probeDatagram = Assert.Single(
+            timerResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            out QuicInitialPacketProtection originalServerProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
+            out QuicInitialPacketProtection retryServerProtection));
+
+        QuicHandshakeFlowCoordinator packetCoordinator = new();
+        Assert.False(packetCoordinator.TryOpenInitialPacket(
+            probeDatagram.Datagram.Span,
+            originalServerProtection,
+            out _,
+            out _,
+            out _));
+        Assert.True(packetCoordinator.TryOpenInitialPacket(
+            probeDatagram.Datagram.Span,
+            retryServerProtection,
+            out byte[] openedProbePacket,
+            out _,
+            out _));
+
+        Assert.True(QuicPacketParsing.TryParseLongHeaderFields(
+            openedProbePacket,
+            out _,
+            out uint probeVersion,
+            out ReadOnlySpan<byte> probeDestinationConnectionId,
+            out _,
+            out ReadOnlySpan<byte> probeVersionSpecificData));
+        Assert.Equal(1u, probeVersion);
+        Assert.Equal(QuicS17P2P5P2TestSupport.RetrySourceConnectionId, probeDestinationConnectionId.ToArray());
+        Assert.True(QuicVariableLengthInteger.TryParse(
+            probeVersionSpecificData,
+            out ulong retryTokenLength,
+            out int retryTokenLengthBytes));
+        Assert.Equal((ulong)QuicS17P2P5P2TestSupport.RetryToken.Length, retryTokenLength);
+        Assert.True(QuicS17P2P5P2TestSupport.RetryToken.AsSpan().SequenceEqual(
+            probeVersionSpecificData.Slice(retryTokenLengthBytes, QuicS17P2P5P2TestSupport.RetryToken.Length)));
+
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Values,
+            sentPacket => sentPacket.PacketNumberSpace == QuicPacketNumberSpace.Initial
+                && sentPacket.ProbePacket
+                && sentPacket.PacketBytes.Span.SequenceEqual(probeDatagram.Datagram.Span));
     }
 
     [Fact]

@@ -485,19 +485,25 @@ Trace:
   - RFC 9001 §5 RFC9001-S5-B6-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
 
-## REQ-QUIC-RFC9001-S5-0006 Derive Initial keys from the first client Initial
-The keys for Initial packets MUST be derived from the Destination Connection ID field of the first Initial packet sent by the client.
+## REQ-QUIC-RFC9001-S5-0006 Derive Initial keys from the active client Initial destination connection ID
+Initial packet keys MUST be derived from the client Initial Destination Connection ID that is active for the current attempt: the first client Initial Destination Connection ID before Retry, and the server-selected Destination Connection ID after Retry.
 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-CRT-0020
 - Implemented By:
   - WI-QUIC-RFC9001-0001
+  - WI-QUIC-CRT-0020
 - Verified By:
   - VER-QUIC-RFC9001-0001
+  - VER-QUIC-CRT-0020
 - Source Refs:
   - RFC 9001 §5 RFC9001-S5-B6-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-5
+
+Notes:
+- A valid Retry changes the active client Initial Destination Connection ID to the server-selected value from the Retry packet for subsequent Initial packets.
 
 ## REQ-QUIC-RFC9001-S5-0007 Protect all other packets cryptographically
 All other packets MUST have strong cryptographic protections for confidentiality and integrity using keys and algorithms negotiated by TLS.

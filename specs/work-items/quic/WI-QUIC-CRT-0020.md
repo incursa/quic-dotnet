@@ -6,12 +6,14 @@ domain: "quic"
 status: "complete"
 owner: "quic-maintainers"
 addresses:
+  - "REQ-QUIC-RFC9001-S5-0006"
   - "REQ-QUIC-CRT-0122"
 design_links:
   - "ARC-QUIC-CRT-0020"
 verification_links:
   - "VER-QUIC-CRT-0020"
 related_artifacts:
+  - "SPEC-QUIC-RFC9001"
   - "SPEC-QUIC-CRT"
 ---
 
@@ -25,6 +27,7 @@ Add the library-owned one-Retry bootstrap handoff so the retry token and binding
 
 ## Requirements Addressed
 
+- REQ-QUIC-RFC9001-S5-0006
 - REQ-QUIC-CRT-0122
 
 ## Design Inputs
@@ -34,9 +37,10 @@ Add the library-owned one-Retry bootstrap handoff so the retry token and binding
 ## Planned Changes
 
 - Thread one Retry token and the original destination connection ID through the client bootstrap path so a single valid Retry can be replayed honestly.
+- Redrive `initialPacketProtection` from the Retry-selected destination connection ID before the replayed Initial and any later Initial-space recovery probe are emitted.
 - Keep the existing helper-backed Retry integrity and `retry_source_connection_id` validation as the source of truth instead of duplicating packet math.
 - Leave retry testcase dispatch and child-process proof to REQ-QUIC-INT-0012 so this work item remains library-owned.
-- Add positive and negative tests for one valid Retry replay, tampered Retry integrity, zero-length Retry token rejection, duplicate Retry discard, and mismatched `retry_source_connection_id` binding.
+- Add positive and negative tests for one valid Retry replay, Retry-selected Initial key use, post-Retry Initial probes, tampered Retry integrity, zero-length Retry token rejection, duplicate Retry discard, and mismatched `retry_source_connection_id` binding.
 - Keep transfer, multi-stream, and broader TLS-policy behavior unchanged.
 
 ## Out of Scope
@@ -55,16 +59,17 @@ Add the library-owned one-Retry bootstrap handoff so the retry token and binding
 
 ## Verification Plan
 
-Run the existing Retry helper tests, the library-owned retry bootstrap requirement-home tests, and the full `REQ_QUIC_CRT_` sweep. Verify the separate child-process retry contract under REQ-QUIC-INT-0012, then re-render and check the SpecTrace markdown views after the canonical JSON artifacts change.
+Run the existing Retry helper tests, the library-owned retry bootstrap requirement-home tests, and the focused RFC 9001 Initial-protection requirement home. Verify the separate child-process retry contract under REQ-QUIC-INT-0012, rerun the external `retry` interop reproduction against `quic-go`, then re-render and check the SpecTrace markdown views after the canonical JSON artifacts change.
 
 ## Completion Notes
 
-Implemented the library-owned one-Retry bootstrap handoff and closed the requirement-home coverage under REQ-QUIC-CRT-0122; the child-process retry contract remains separately traced under REQ-QUIC-INT-0012.
+Implemented the library-owned one-Retry bootstrap handoff, added Retry-selected Initial key redrive for replayed and probed client Initial packets, and closed the requirement-home coverage under REQ-QUIC-RFC9001-S5-0006 and REQ-QUIC-CRT-0122; the child-process retry contract remains separately traced under REQ-QUIC-INT-0012.
 
 ## Trace Links
 
 Addresses:
 
+- REQ-QUIC-RFC9001-S5-0006
 - REQ-QUIC-CRT-0122
 
 Uses Design:
@@ -85,5 +90,6 @@ Verified By:
 - [`src/Incursa.Quic/QuicRetryIntegrity.cs`](../../../src/Incursa.Quic/QuicRetryIntegrity.cs)
 - [`src/Incursa.Quic/QuicTransportParametersCodec.cs`](../../../src/Incursa.Quic/QuicTransportParametersCodec.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0007.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0006.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0004.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs)

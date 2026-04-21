@@ -400,7 +400,10 @@ function Get-InteropRunnerFallbackClassification {
         [string]$RunnerLogDir,
 
         [Parameter(Mandatory)]
-        [string[]]$TestCases
+        [string[]]$TestCases,
+
+        [Parameter(Mandatory)]
+        [string]$LocalRole
     )
 
     $stderrText = ''
@@ -415,10 +418,10 @@ function Get-InteropRunnerFallbackClassification {
         }
     }
 
-    if (@($TestCases).Count -ne 1 -or $TestCases[0] -ne 'handshake') {
+    if (@($TestCases).Count -ne 1 -or $TestCases[0] -notin @('handshake', 'retry')) {
         return [pscustomobject]@{
             TreatAsSuccess = $false
-            Summary = 'The runner hit a post-check FileNotFoundError, and fallback classification is only enabled for the plain handshake testcase.'
+            Summary = 'The runner hit a post-check FileNotFoundError, and fallback classification is only enabled for the plain handshake and retry testcases.'
         }
     }
 
@@ -432,17 +435,49 @@ function Get-InteropRunnerFallbackClassification {
     $outputFiles = Get-ChildItem -LiteralPath $RunnerLogDir -Filter 'output.txt' -File -Recurse -ErrorAction SilentlyContinue
     foreach ($outputFile in $outputFiles) {
         $outputText = Get-Content -LiteralPath $outputFile.FullName -Raw
-        if (($outputText -match 'completed managed .* download') -and ($outputText -match '(client|server) exited with code 0')) {
-            return [pscustomobject]@{
-                TreatAsSuccess = $true
-                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows a completed managed download and a clean endpoint exit."
+        switch ($TestCases[0]) {
+            'handshake' {
+                if (($outputText -match 'completed managed .* download') -and ($outputText -match '(client|server) exited with code 0')) {
+                    return [pscustomobject]@{
+                        TreatAsSuccess = $true
+                        Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows a completed managed download and a clean endpoint exit."
+                    }
+                }
+            }
+
+            'retry' {
+                $requiredMarkers = switch ($LocalRole) {
+                    'client' { @('completed managed client bootstrap.', 'client exited with code 0') }
+                    'server' { @('completed managed listener bootstrap.', 'server exited with code 0') }
+                    default { @('completed managed client bootstrap.', 'client exited with code 0', 'completed managed listener bootstrap.', 'server exited with code 0') }
+                }
+
+                $containsAllMarkers = $true
+                foreach ($requiredMarker in $requiredMarkers) {
+                    if ($outputText.IndexOf($requiredMarker, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+                        $containsAllMarkers = $false
+                        break
+                    }
+                }
+
+                if ($containsAllMarkers) {
+                    return [pscustomobject]@{
+                        TreatAsSuccess = $true
+                        Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows a completed managed Retry bootstrap and a clean local endpoint exit."
+                    }
+                }
             }
         }
     }
 
     return [pscustomobject]@{
         TreatAsSuccess = $false
-        Summary = 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a completed managed download with a clean endpoint exit.'
+        Summary = if ($TestCases[0] -eq 'retry') {
+            'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a completed managed Retry bootstrap with a clean local endpoint exit.'
+        }
+        else {
+            'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a completed managed download with a clean endpoint exit.'
+        }
     }
 }
 
@@ -1066,7 +1101,8 @@ raise SystemExit(run.main())
     $runnerFallbackClassification = Get-InteropRunnerFallbackClassification `
         -RunnerStdErr $runnerStdErr `
         -RunnerLogDir $runnerLogDir `
-        -TestCases $TestCases
+        -TestCases $TestCases `
+        -LocalRole $LocalRole
 
     if (-not $runnerOutputValidation.Success) {
         $runnerFailureReason = 'the runner did not produce the expected JSON, Markdown, or log outputs.'
