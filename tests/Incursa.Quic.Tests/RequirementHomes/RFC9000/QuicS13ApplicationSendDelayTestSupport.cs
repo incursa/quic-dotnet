@@ -18,6 +18,7 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         new("203.0.113.10", RemotePort: 443);
 
     internal static QuicConnectionRuntime CreateFinishedClientRuntimeWithValidatedActivePath(
+        IMonotonicClock? clock = null,
         ulong connectionReceiveLimit = 64,
         ulong localBidirectionalSendLimit = 32,
         ulong localBidirectionalReceiveLimit = 8,
@@ -46,7 +47,7 @@ internal static class QuicS13ApplicationSendDelayTestSupport
                 connectionReceiveLimit: connectionReceiveLimit,
                 localBidirectionalReceiveLimit: localBidirectionalReceiveLimit,
                 localBidirectionalSendLimit: localBidirectionalSendLimit),
-            new FakeMonotonicClock(0),
+            clock ?? new FakeMonotonicClock(0),
             maximumCandidatePaths: maximumCandidatePaths,
             maximumRecentlyValidatedPaths: maximumRecentlyValidatedPaths,
             tlsRole: QuicTlsRole.Client,
@@ -156,6 +157,38 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         Assert.True(runtime.ActivePath.Value.IsValidated);
         Assert.True(runtime.ActivePath.Value.AmplificationState.IsAddressValidated);
 
+        return runtime;
+    }
+
+    internal static QuicConnectionRuntime CreateConfirmedClientRuntimeWithValidatedActivePath(
+        IMonotonicClock? clock = null,
+        ulong connectionReceiveLimit = 64,
+        ulong localBidirectionalSendLimit = 32,
+        ulong localBidirectionalReceiveLimit = 8,
+        int maximumCandidatePaths = 8,
+        int maximumRecentlyValidatedPaths = 8)
+    {
+        QuicConnectionRuntime runtime = CreateFinishedClientRuntimeWithValidatedActivePath(
+            clock,
+            connectionReceiveLimit,
+            localBidirectionalSendLimit,
+            localBidirectionalReceiveLimit,
+            maximumCandidatePaths,
+            maximumRecentlyValidatedPaths);
+
+        Assert.False(runtime.HandshakeConfirmed);
+        Assert.True(QuicPostHandshakeTicketTestSupport.ReceiveProtectedHandshakeDonePacket(runtime, observedAtTicks: 9).StateChanged);
+        Assert.True(runtime.HandshakeConfirmed);
+
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPacket in runtime.SendRuntime.SentPackets.ToArray())
+        {
+            Assert.True(runtime.SendRuntime.TryAcknowledgePacket(
+                sentPacket.Key.PacketNumberSpace,
+                sentPacket.Key.PacketNumber,
+                handshakeConfirmed: true));
+        }
+
+        Assert.Empty(runtime.SendRuntime.SentPackets);
         return runtime;
     }
 

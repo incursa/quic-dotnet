@@ -169,6 +169,36 @@ internal sealed class QuicHandshakeFlowCoordinator
         return true;
     }
 
+    internal bool TryBuildProtectedHandshakePacketForRetransmission(
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoPayloadOffset,
+        ReadOnlySpan<byte> destinationConnectionId,
+        ReadOnlySpan<byte> sourceConnectionId,
+        QuicTlsPacketProtectionMaterial material,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        byte[] savedDestinationConnectionId = this.destinationConnectionId;
+        byte[] savedSourceConnectionId = this.sourceConnectionId;
+
+        try
+        {
+            this.destinationConnectionId = destinationConnectionId.ToArray();
+            this.sourceConnectionId = sourceConnectionId.ToArray();
+            return TryBuildProtectedHandshakePacket(
+                cryptoPayload,
+                cryptoPayloadOffset,
+                material,
+                out packetNumber,
+                out protectedPacket);
+        }
+        finally
+        {
+            this.destinationConnectionId = savedDestinationConnectionId;
+            this.sourceConnectionId = savedSourceConnectionId;
+        }
+    }
+
     /// <summary>
     /// Formats and protects a 1-RTT short-header packet from a STREAM/control payload.
     /// </summary>
@@ -262,6 +292,35 @@ internal sealed class QuicHandshakeFlowCoordinator
         packetNumber = currentPacketNumber;
         nextApplicationPacketNumber = nextApplicationPacketNumber == ulong.MaxValue ? 0 : nextApplicationPacketNumber + 1;
         return true;
+    }
+
+    internal bool TryBuildProtectedApplicationDataPacketForRetransmission(
+        ReadOnlySpan<byte> applicationPayload,
+        ulong minimumPacketNumberExclusive,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        protectedPacket = [];
+        packetNumber = default;
+
+        if (minimumPacketNumberExclusive == ulong.MaxValue)
+        {
+            return false;
+        }
+
+        if (nextApplicationPacketNumber <= minimumPacketNumberExclusive)
+        {
+            nextApplicationPacketNumber = minimumPacketNumberExclusive + 1;
+        }
+
+        return TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            material,
+            keyPhase,
+            out packetNumber,
+            out protectedPacket);
     }
 
     /// <summary>
@@ -445,6 +504,31 @@ internal sealed class QuicHandshakeFlowCoordinator
             out payloadLength);
     }
 
+    internal bool TryOpenOutboundInitialPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicInitialPacketProtection protection,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        openedPacket = [];
+        payloadOffset = default;
+        payloadLength = default;
+
+        byte[] openedPacketBuffer = new byte[protectedPacket.Length];
+        if (!protection.TryOpenOutbound(protectedPacket, openedPacketBuffer, out int openedBytesWritten))
+        {
+            return false;
+        }
+
+        openedPacket = openedPacketBuffer.AsSpan(0, openedBytesWritten).ToArray();
+        return TryParseInitialPayloadLayout(
+            openedPacket,
+            requireZeroTokenLength: false,
+            out payloadOffset,
+            out payloadLength);
+    }
+
     /// <summary>
     /// Formats and protects an Initial packet from a CRYPTO payload and its stream offset.
     /// </summary>
@@ -547,6 +631,43 @@ internal sealed class QuicHandshakeFlowCoordinator
             protection,
             out packetNumber,
             out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedInitialPacketForRetransmission(
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoPayloadOffset,
+        ReadOnlySpan<byte> initialDestinationConnectionId,
+        ReadOnlySpan<byte> destinationConnectionId,
+        ReadOnlySpan<byte> sourceConnectionId,
+        ReadOnlySpan<byte> token,
+        QuicInitialPacketProtection protection,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        byte[] savedInitialDestinationConnectionId = this.initialDestinationConnectionId;
+        byte[] savedDestinationConnectionId = this.destinationConnectionId;
+        byte[] savedSourceConnectionId = this.sourceConnectionId;
+
+        try
+        {
+            this.initialDestinationConnectionId = initialDestinationConnectionId.ToArray();
+            this.destinationConnectionId = destinationConnectionId.ToArray();
+            this.sourceConnectionId = sourceConnectionId.ToArray();
+            return TryBuildProtectedInitialPacket(
+                cryptoPayload,
+                cryptoPayloadOffset,
+                destinationConnectionId,
+                token,
+                protection,
+                out packetNumber,
+                out protectedPacket);
+        }
+        finally
+        {
+            this.initialDestinationConnectionId = savedInitialDestinationConnectionId;
+            this.destinationConnectionId = savedDestinationConnectionId;
+            this.sourceConnectionId = savedSourceConnectionId;
+        }
     }
 
     private bool TryBuildProtectedInitialPacketCore(

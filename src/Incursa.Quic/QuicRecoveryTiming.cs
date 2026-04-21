@@ -741,7 +741,23 @@ internal sealed class QuicRecoveryController
         out ulong selectedRecoveryTimerMicros,
         out QuicPacketNumberSpace selectedPacketNumberSpace)
     {
-        DetectLostPackets(nowMicros, out ulong? lossDetectionTimeMicros, out QuicPacketNumberSpace lossPacketNumberSpace);
+        ulong? lossDetectionTimeMicros = null;
+        QuicPacketNumberSpace lossPacketNumberSpace = default;
+        foreach (QuicRecoveryPacketNumberSpaceState state in states.Values)
+        {
+            state.PeekLossDetectionTime(nowMicros, out ulong? spaceLossTimeMicros);
+            if (spaceLossTimeMicros is null)
+            {
+                continue;
+            }
+
+            if (lossDetectionTimeMicros is null || spaceLossTimeMicros < lossDetectionTimeMicros)
+            {
+                lossDetectionTimeMicros = spaceLossTimeMicros;
+                lossPacketNumberSpace = state.PacketNumberSpace;
+            }
+        }
+
         bool hasPtoTimeout = TrySelectPtoTimeAndSpace(
             nowMicros,
             maxAckDelayMicros,
@@ -960,6 +976,65 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         }
 
         return lostPacketNumbers;
+    }
+
+    /// <summary>
+    /// Peeks the next loss-detection deadline without discarding packets from flight.
+    /// </summary>
+    internal void PeekLossDetectionTime(
+        ulong nowMicros,
+        out ulong? nextLossDetectionTimeMicros)
+    {
+        bool hasImmediateLoss = false;
+        ulong? nextLossDelayMicros = null;
+
+        foreach (KeyValuePair<ulong, QuicRecoverySentPacketState> packet in ackElicitingPacketsInFlight)
+        {
+            if (!QuicRecoveryTiming.CanDeclarePacketLost(
+                packetAcknowledged: false,
+                packetInFlight: true,
+                packetNumber: packet.Key,
+                largestAcknowledgedPacketNumber: LargestAcknowledgedPacketNumber))
+            {
+                continue;
+            }
+
+            bool byPacketThreshold = QuicRecoveryTiming.ShouldDeclarePacketLostByPacketThreshold(
+                packet.Key,
+                LargestAcknowledgedPacketNumber);
+
+            QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
+                packet.Value.SentAtMicros,
+                nowMicros,
+                RttEstimator.LatestRttMicros,
+                RttEstimator.SmoothedRttMicros,
+                out ulong remainingLossDelayMicros);
+
+            if (byPacketThreshold || remainingLossDelayMicros == 0)
+            {
+                hasImmediateLoss = true;
+                break;
+            }
+
+            if (nextLossDelayMicros is null || remainingLossDelayMicros < nextLossDelayMicros.Value)
+            {
+                nextLossDelayMicros = remainingLossDelayMicros;
+            }
+        }
+
+        if (hasImmediateLoss)
+        {
+            nextLossDetectionTimeMicros = nowMicros;
+            return;
+        }
+
+        if (nextLossDelayMicros is null)
+        {
+            nextLossDetectionTimeMicros = null;
+            return;
+        }
+
+        nextLossDetectionTimeMicros = SaturatingAdd(nowMicros, nextLossDelayMicros.Value);
     }
 
     /// <summary>

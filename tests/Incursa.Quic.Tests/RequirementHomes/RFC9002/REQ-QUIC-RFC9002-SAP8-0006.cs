@@ -56,4 +56,52 @@ public sealed class REQ_QUIC_RFC9002_SAP8_0006
 
         Assert.Equal(0UL, selectedTimerMicros);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TrySelectLossDetectionTimer_PeeksAnImmediateLossWithoutDiscardingIt()
+    {
+        QuicRecoveryController controller = new();
+        controller.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            sentAtMicros: 0,
+            isAckElicitingPacket: true,
+            packetProtectionLevel: QuicTlsEncryptionLevel.OneRtt);
+        controller.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 4,
+            sentAtMicros: 0,
+            isAckElicitingPacket: true,
+            packetProtectionLevel: QuicTlsEncryptionLevel.OneRtt);
+        Assert.True(controller.RecordAcknowledgment(
+            QuicPacketNumberSpace.ApplicationData,
+            largestAcknowledgedPacketNumber: 4,
+            ackReceivedAtMicros: 100,
+            newlyAcknowledgedAckElicitingPacketNumbers: [4],
+            ackDelayMicros: 0,
+            handshakeConfirmed: true,
+            peerMaxAckDelayMicros: 0));
+
+        Assert.True(controller.TrySelectLossDetectionTimer(
+            nowMicros: 100,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: true,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: true,
+            handshakeKeysAvailable: true,
+            out ulong selectedRecoveryTimerMicros,
+            out QuicPacketNumberSpace selectedPacketNumberSpace));
+        Assert.Equal(100UL, selectedRecoveryTimerMicros);
+        Assert.Equal(QuicPacketNumberSpace.ApplicationData, selectedPacketNumberSpace);
+
+        IReadOnlyList<QuicLostPacket> lostPackets = controller.DetectLostPackets(
+            nowMicros: 100,
+            out _,
+            out _);
+        QuicLostPacket lostPacket = Assert.Single(lostPackets);
+        Assert.Equal(QuicPacketNumberSpace.ApplicationData, lostPacket.PacketNumberSpace);
+        Assert.Equal(1UL, lostPacket.PacketNumber);
+    }
 }

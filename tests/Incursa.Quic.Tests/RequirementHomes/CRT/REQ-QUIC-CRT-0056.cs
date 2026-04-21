@@ -64,6 +64,146 @@ public sealed class REQ_QUIC_CRT_0056
         Assert.True(restartedDueTicks > initialDueTicks);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task FirstAckElicitingLocalSendAfterPeerActivityRearmsTheIdleTimer()
+    {
+        FakeMonotonicClock clock = new(0);
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(clock: clock);
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        Assert.True(runtime.ActivePath.HasValue);
+        QuicConnectionPathIdentity activePathIdentity = runtime.ActivePath.Value.Identity;
+        runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                activePathIdentity,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 10);
+
+        long idleDueTicksBeforeSend = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.IdleTimeout)!.Value;
+        outboundEffects.Clear();
+        clock.Advance(MicrosecondsToTicks(50));
+
+        _ = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+
+        long idleDueTicksAfterSend = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.IdleTimeout)!.Value;
+        Assert.True(idleDueTicksAfterSend > idleDueTicksBeforeSend);
+        Assert.Contains(outboundEffects, effect =>
+            effect is QuicConnectionArmTimerEffect arm
+            && arm.TimerKind == QuicConnectionTimerKind.IdleTimeout
+            && arm.Priority.DueTicks == idleDueTicksAfterSend);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task RecoveryBackoffKeepsTheIdleTimeoutAtLeastThreeTimesTheCurrentPto()
+    {
+        FakeMonotonicClock clock = new(0);
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(clock: clock);
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        outboundEffects.Clear();
+
+        byte[] payload = Enumerable.Range(0, 24)
+            .Select(index => unchecked((byte)(0x30 + index)))
+            .ToArray();
+        await stream.WriteAsync(payload, 0, payload.Length);
+        outboundEffects.Clear();
+        await stream.CompleteWritesAsync().AsTask();
+        _ = GetSingleStreamSendEffect(runtime, outboundEffects);
+        outboundEffects.Clear();
+
+        byte[] peerPingPacket = BuildProtectedPeerPingPacket(runtime);
+        QuicConnectionTransitionResult peerPacketResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 100,
+                runtime.ActivePath!.Value.Identity,
+                peerPingPacket),
+            nowTicks: 100);
+        Assert.True(peerPacketResult.StateChanged);
+
+        long initialRecoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery)!.Value;
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+
+        QuicConnectionTransitionResult recoveryResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: initialRecoveryDueTicks,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: initialRecoveryDueTicks);
+
+        Assert.True(recoveryResult.StateChanged);
+        long nextRecoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery)!.Value;
+        long nextIdleDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.IdleTimeout)!.Value;
+        long currentPtoTicks = nextRecoveryDueTicks - initialRecoveryDueTicks;
+        long idleRemainingTicks = nextIdleDueTicks - initialRecoveryDueTicks;
+
+        Assert.True(currentPtoTicks > 0);
+        Assert.True(
+            idleRemainingTicks >= checked(currentPtoTicks * 3),
+            $"idleRemainingTicks={idleRemainingTicks} currentPtoTicks={currentPtoTicks} nextIdleDueTicks={nextIdleDueTicks} nextRecoveryDueTicks={nextRecoveryDueTicks}");
+    }
+
+    private static byte[] BuildProtectedPeerPingPacket(QuicConnectionRuntime runtime)
+    {
+        Span<byte> pingPayload = stackalloc byte[1];
+        Assert.True(QuicFrameCodec.TryFormatPingFrame(pingPayload, out int pingBytesWritten));
+
+        QuicHandshakeFlowCoordinator coordinator = new(new byte[] { 0x0A, 0x0B, 0x0C });
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            pingPayload[..pingBytesWritten],
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+            runtime.TlsState.CurrentOneRttKeyPhase == 1,
+            out byte[] protectedPacket));
+
+        return protectedPacket;
+    }
+
+    private static QuicConnectionSendDatagramEffect GetSingleStreamSendEffect(
+        QuicConnectionRuntime runtime,
+        IEnumerable<QuicConnectionEffect> outboundEffects)
+    {
+        QuicConnectionSendDatagramEffect[] sendEffects = outboundEffects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        if (sendEffects.Length == 1)
+        {
+            return sendEffects[0];
+        }
+
+        Assert.Empty(sendEffects);
+        long? dueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay);
+        Assert.NotNull(dueTicks);
+        ulong generation = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.ApplicationSendDelay);
+
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: dueTicks.Value,
+                QuicConnectionTimerKind.ApplicationSendDelay,
+                generation),
+            nowTicks: dueTicks.Value);
+
+        return Assert.Single(timerResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+    }
+
     private static QuicConnectionRuntime CreateRuntime(FakeMonotonicClock clock)
     {
         QuicConnectionRuntime runtime = new(

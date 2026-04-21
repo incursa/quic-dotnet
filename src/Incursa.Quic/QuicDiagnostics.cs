@@ -32,6 +32,8 @@ internal enum QuicDiagnosticKind
     InitialPacketSent = 13,
     RetryReceived = 14,
     VersionNegotiationReceived = 15,
+    HandshakePacketReceived = 16,
+    HandshakePacketSent = 17,
 }
 
 /// <summary>
@@ -96,6 +98,8 @@ internal readonly record struct QuicDiagnosticEvent(
             ("connection.runtime.handshake", "initial-packet-sent") => QuicDiagnosticKind.InitialPacketSent,
             ("connection.runtime.handshake", "retry-received") => QuicDiagnosticKind.RetryReceived,
             ("connection.runtime.handshake", "version-negotiation-received") => QuicDiagnosticKind.VersionNegotiationReceived,
+            ("connection.runtime.handshake", "handshake-packet-received") => QuicDiagnosticKind.HandshakePacketReceived,
+            ("connection.runtime.handshake", "handshake-packet-sent") => QuicDiagnosticKind.HandshakePacketSent,
             ("connection.runtime.path", "validated-paths-exhausted") => QuicDiagnosticKind.PathValidationFailedNoValidatedPathsRemain,
             ("connection.runtime.path", "path-validation-timer-exhausted") => QuicDiagnosticKind.PathValidationTimerExpiredNoValidatedPathsRemain,
             ("connection.runtime.lifecycle", "accepted-stateless-reset") => QuicDiagnosticKind.AcceptedStatelessReset,
@@ -229,6 +233,36 @@ internal static class QuicDiagnostics
             "handshake-packet-open-failed",
             $"Handshake packet could not be opened or parsed by the runtime: {reason}.",
             QuicDiagnosticSeverity.Warning)
+        {
+            PathIdentity = pathIdentity,
+            PacketBytes = packetBytes.ToArray(),
+        };
+    }
+
+    internal static QuicDiagnosticEvent HandshakePacketReceived(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> packetBytes = default)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.handshake",
+            "handshake-packet-received",
+            $"Handshake packet reached the runtime on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
+            PacketBytes = packetBytes.ToArray(),
+        };
+    }
+
+    internal static QuicDiagnosticEvent HandshakePacketSent(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> packetBytes = default)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.handshake",
+            "handshake-packet-sent",
+            $"Handshake packet was queued for send on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Trace)
         {
             PathIdentity = pathIdentity,
             PacketBytes = packetBytes.ToArray(),

@@ -152,17 +152,21 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
         Assert.True(tail.IsEmpty);
     }
 
-    [Fact]
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task WriteAsync_FollowedImmediatelyByCompleteWritesAsync_CoalescesTheRequestAndFinIntoOneQueuedPacket()
+    public async Task WriteAsync_FollowedImmediatelyByCompleteWritesAsync_CoalescesTheRequestAndFinIntoOneQueuedPacket(bool handshakeConfirmed)
     {
         // Modeled from the preserved 2026-04-20 client->quic-go handshake repro:
         // the request line "GET /tired-full-diary\r\n" arrived on its own packet, and the
         // standalone FIN-only follow-up packet was the remaining interop suspect. This proof
         // keeps the request queued long enough for CompleteWritesAsync() to set FIN on that
         // same STREAM frame before the delayed flush sends it.
-        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        QuicConnectionRuntime runtime = handshakeConfirmed
+            ? QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath()
+            : QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
         List<QuicConnectionEffect> outboundEffects = [];
 
         runtime.SetLocalApiEventDispatcher(connectionEvent =>

@@ -16,7 +16,9 @@ Default behavior:
 - Runner checkout: local `quic-interop-runner` clone configured in the script or passed with `-RunnerRoot`
 - Replacement slot: `quic-go`
 - Testcases: `handshake,retry,transfer`
-- The helper also accepts `post-handshake-stream` when you want the managed child-process open/accept path, and `multiconnect` when you want the sequential managed transfer path.
+- The helper also accepts `multiconnect` when you want the sequential managed transfer path.
+- The helper translates local `multiconnect` into the runner's CLI testcase name `handshakeloss`, because the upstream runner uses `multiconnect` only for the container-facing `TESTCASE_*` values.
+- The smaller `post-handshake-stream` proof remains available through the local harness requirement-home lane; this helper does not expose that testcase yet.
 - Artifact root: `artifacts/interop-runner/<timestamp>-<slot>/`
 
 Example:

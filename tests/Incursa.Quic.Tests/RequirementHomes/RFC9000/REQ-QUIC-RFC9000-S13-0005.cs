@@ -32,8 +32,7 @@ public sealed class REQ_QUIC_RFC9000_S13_0005
         byte[] payload = [0xAB];
         await stream.WriteAsync(payload, 0, payload.Length);
 
-        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
-            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        QuicConnectionSendDatagramEffect sendEffect = GetSingleStreamSendEffect(runtime, outboundEffects);
 
         QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
         Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
@@ -65,5 +64,32 @@ public sealed class REQ_QUIC_RFC9000_S13_0005
         }
 
         await stream.DisposeAsync();
+    }
+
+    private static QuicConnectionSendDatagramEffect GetSingleStreamSendEffect(
+        QuicConnectionRuntime runtime,
+        IEnumerable<QuicConnectionEffect> outboundEffects)
+    {
+        QuicConnectionSendDatagramEffect[] sendEffects = outboundEffects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        if (sendEffects.Length == 1)
+        {
+            return sendEffects[0];
+        }
+
+        Assert.Empty(sendEffects);
+        long? dueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay);
+        Assert.NotNull(dueTicks);
+        ulong generation = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.ApplicationSendDelay);
+
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: dueTicks.Value,
+                QuicConnectionTimerKind.ApplicationSendDelay,
+                generation),
+            nowTicks: dueTicks.Value);
+
+        return Assert.Single(timerResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
     }
 }

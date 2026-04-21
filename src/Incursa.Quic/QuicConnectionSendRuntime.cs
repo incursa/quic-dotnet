@@ -66,6 +66,40 @@ internal sealed class QuicConnectionSendRuntime
 
     public int PendingRetransmissionCount => pendingRetransmissions.Count;
 
+    internal ulong? GetLargestTrackedPacketNumber(QuicPacketNumberSpace packetNumberSpace)
+    {
+        ulong largestPacketNumber = default;
+        bool found = false;
+
+        foreach (QuicConnectionSentPacketKey key in sentPackets.Keys)
+        {
+            if (key.PacketNumberSpace != packetNumberSpace)
+            {
+                continue;
+            }
+
+            largestPacketNumber = found
+                ? Math.Max(largestPacketNumber, key.PacketNumber)
+                : key.PacketNumber;
+            found = true;
+        }
+
+        foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
+        {
+            if (retransmission.PacketNumberSpace != packetNumberSpace)
+            {
+                continue;
+            }
+
+            largestPacketNumber = found
+                ? Math.Max(largestPacketNumber, retransmission.PacketNumber)
+                : retransmission.PacketNumber;
+            found = true;
+        }
+
+        return found ? largestPacketNumber : null;
+    }
+
     internal QuicConnectionPathRecoverySnapshot CapturePathRecoverySnapshot()
     {
         return new QuicConnectionPathRecoverySnapshot(
@@ -486,6 +520,33 @@ internal sealed class QuicConnectionSendRuntime
         }
 
         return true;
+    }
+
+    public bool TryDequeueRetransmission(
+        QuicPacketNumberSpace packetNumberSpace,
+        out QuicConnectionRetransmissionPlan retransmission)
+    {
+        if (pendingRetransmissions.Count == 0)
+        {
+            retransmission = default;
+            return false;
+        }
+
+        int remainingPlans = pendingRetransmissions.Count;
+        while (remainingPlans-- > 0
+            && TryDequeueRetransmission(out QuicConnectionRetransmissionPlan candidate))
+        {
+            if (candidate.PacketNumberSpace == packetNumberSpace)
+            {
+                retransmission = candidate;
+                return true;
+            }
+
+            pendingRetransmissions.Enqueue(candidate);
+        }
+
+        retransmission = default;
+        return false;
     }
 
     internal void QueueRetransmission(QuicConnectionRetransmissionPlan retransmission)

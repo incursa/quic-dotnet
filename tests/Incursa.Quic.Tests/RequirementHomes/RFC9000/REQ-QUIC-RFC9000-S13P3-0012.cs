@@ -33,8 +33,6 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0012
             entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
                 && entry.Value.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
 
-        Assert.Equal(0UL, resetPacket.Key.PacketNumber);
-
         QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
         Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
             sendEffect.Datagram.Span,

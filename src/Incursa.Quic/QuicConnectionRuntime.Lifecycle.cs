@@ -91,6 +91,9 @@ internal sealed partial class QuicConnectionRuntime
 
     private QuicConnectionEffect[] RecomputeLifecycleTimerEffects()
     {
+        RefreshCurrentProbeTimeoutMicros(lastTransitionTicks);
+        _ = RecomputeIdleTimeoutState(lastTransitionTicks);
+
         List<QuicConnectionEffect> effects = [];
         long? idleDueTicks = phase switch
         {
@@ -115,6 +118,34 @@ internal sealed partial class QuicConnectionRuntime
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.Recovery, recoveryDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.ApplicationSendDelay, applicationSendDelayDueTicks));
         return effects.ToArray();
+    }
+
+    private void RefreshCurrentProbeTimeoutMicros(long nowTicks)
+    {
+        ulong nowMicros = GetElapsedMicros(nowTicks);
+        ulong maxAckDelayMicros = tlsState.PeerTransportParameters?.MaxAckDelay ?? 0;
+        bool isHandshakeConfirmed = HandshakeConfirmed;
+
+        if (!recoveryController.TrySelectPtoTimeAndSpace(
+                nowMicros,
+                maxAckDelayMicros,
+                isHandshakeConfirmed,
+                tlsState.HandshakeKeysAvailable,
+                out ulong selectedProbeTimeoutMicros,
+                out _))
+        {
+            return;
+        }
+
+        ulong updatedProbeTimeoutMicros = selectedProbeTimeoutMicros <= nowMicros
+            ? 1UL
+            : selectedProbeTimeoutMicros - nowMicros;
+        if (currentProbeTimeoutMicros == updatedProbeTimeoutMicros)
+        {
+            return;
+        }
+
+        currentProbeTimeoutMicros = updatedProbeTimeoutMicros;
     }
 
     private long? GetEarliestPathValidationDueTicks()

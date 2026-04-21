@@ -261,6 +261,34 @@ internal sealed class QuicInitialPacketProtection
         Span<byte> destination,
         out int bytesWritten)
     {
+        return TryOpen(
+            protectedPacket,
+            destination,
+            InboundMaterial,
+            out bytesWritten);
+    }
+
+    /// <summary>
+    /// Opens an outbound Initial packet using the owning endpoint's send keys.
+    /// </summary>
+    internal bool TryOpenOutbound(
+        ReadOnlySpan<byte> protectedPacket,
+        Span<byte> destination,
+        out int bytesWritten)
+    {
+        return TryOpen(
+            protectedPacket,
+            destination,
+            OutboundMaterial,
+            out bytesWritten);
+    }
+
+    private static bool TryOpen(
+        ReadOnlySpan<byte> protectedPacket,
+        Span<byte> destination,
+        QuicInitialPacketProtectionMaterial packetProtectionMaterial,
+        out int bytesWritten)
+    {
         bytesWritten = default;
 
         if (!TryParseInitialPacketLayout(protectedPacket, out _, out ulong lengthFieldValue, out int packetNumberOffset))
@@ -282,7 +310,7 @@ internal sealed class QuicInitialPacketProtection
 
         Span<byte> mask = stackalloc byte[HeaderProtectionKeyLength];
         if (!TryGenerateHeaderProtectionMask(
-            InboundMaterial.HeaderProtectionKeyBytes,
+            packetProtectionMaterial.HeaderProtectionKeyBytes,
             protectedPacket.Slice(packetNumberOffset + HeaderProtectionSampleOffset, HeaderProtectionSampleLength),
             mask))
         {
@@ -321,9 +349,9 @@ internal sealed class QuicInitialPacketProtection
             }
 
             Span<byte> nonce = stackalloc byte[AeadNonceLength];
-            BuildNonce(InboundMaterial.AeadIvBytes, destination.Slice(packetNumberOffset, packetNumberLength), nonce);
+            BuildNonce(packetProtectionMaterial.AeadIvBytes, destination.Slice(packetNumberOffset, packetNumberLength), nonce);
 
-            using AesGcm aead = new(InboundMaterial.AeadKeyBytes, AuthenticationTagLength);
+            using AesGcm aead = new(packetProtectionMaterial.AeadKeyBytes, AuthenticationTagLength);
             aead.Decrypt(
                 nonce,
                 protectedPacket.Slice(packetNumberOffset + packetNumberLength, plaintextPayloadLength),

@@ -247,6 +247,27 @@ function Normalize-StringList {
     return $normalizedValues.ToArray()
 }
 
+function ConvertTo-RunnerTestCaseNames {
+    param(
+        [AllowEmptyCollection()]
+        [Parameter(Mandatory)]
+        [string[]]$TestCases
+    )
+
+    $runnerTestCases = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($testCase in @($TestCases)) {
+        $runnerTestCase = $testCase
+        if ($testCase -eq 'multiconnect') {
+            $runnerTestCase = 'handshakeloss'
+        }
+
+        $runnerTestCases.Add($runnerTestCase)
+    }
+
+    return $runnerTestCases.ToArray()
+}
+
 function Get-RunnerImplementationRole {
     param(
         [Parameter(Mandatory)]
@@ -324,6 +345,7 @@ function Get-InteropRunnerExecutionPlan {
         $runnerServerImplementations = @($ImplementationSlot)
     }
 
+    $runnerRequestedTestCases = ConvertTo-RunnerTestCaseNames -TestCases $TestCases
     $safeSlotName = "$LocalRole-$ImplementationSlot" -replace '[^A-Za-z0-9_.-]', '-'
     $runRoot = Join-Path $ArtifactRootResolved "$RunStamp-$safeSlotName"
     $runnerLogDir = Join-Path $runRoot 'runner-logs'
@@ -346,6 +368,7 @@ function Get-InteropRunnerExecutionPlan {
         RunnerServerImplementations = $runnerServerImplementations
         ImageTag = $ImageTag
         TestCases = $TestCases
+        RunnerRequestedTestCases = $runnerRequestedTestCases
         ArtifactRoot = $ArtifactRootResolved
         RunRoot = $runRoot
         RunnerLogDir = $runnerLogDir
@@ -367,7 +390,7 @@ function Get-InteropRunnerExecutionPlan {
             '-c'
             ($runnerClientImplementations -join ',')
             '-t'
-            ($TestCases -join ',')
+            ($runnerRequestedTestCases -join ',')
             '-r'
             "$ImplementationSlot=$ImageTag"
             '-l'
@@ -395,6 +418,7 @@ function Write-InteropRunnerPlan {
     Write-Host "  Runner client implementations: $($Plan.RunnerClientImplementations -join ',')"
     Write-Host "  Runner server implementations: $($Plan.RunnerServerImplementations -join ',')"
     Write-Host "  Test cases:                   $($Plan.TestCases -join ',')"
+    Write-Host "  Runner test cases:            $($Plan.RunnerRequestedTestCases -join ',')"
     Write-Host "  Artifact root:                $($Plan.ArtifactRoot)"
     Write-Host "  Run root:                     $($Plan.RunRoot)"
     Write-Host "  Dockerfile:                   $($Plan.DockerfilePath)"
@@ -461,6 +485,7 @@ LocalImplementationSlot: $($Plan.LocalImplementationSlot)
 PeerImplementationSlots: $($Plan.PeerImplementationSlots -join ',')
 ImageTag: $($Plan.ImageTag)
 TestCases: $($Plan.TestCases -join ',')
+RunnerTestCases: $($Plan.RunnerRequestedTestCases -join ',')
 ArtifactsRoot: $($Plan.ArtifactRoot)
 RunRoot: $($Plan.RunRoot)
 RunnerJson: $($Plan.RunnerJson)
@@ -747,7 +772,8 @@ function Write-InteropRunnerFailureSummary {
 $runnerSupportedTestCases = @(
     'handshake',
     'retry',
-    'transfer'
+    'transfer',
+    'multiconnect'
 )
 
 if ([string]::IsNullOrWhiteSpace($RepoRoot)) {

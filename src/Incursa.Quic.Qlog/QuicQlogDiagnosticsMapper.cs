@@ -20,6 +20,8 @@ internal static class QuicQlogDiagnosticsMapper
             QuicDiagnosticKind.InitialPacketAdvanced => CreateConnectionStateUpdated(eventTime, processed: true),
             QuicDiagnosticKind.InitialPacketNotAdvanced => CreateConnectionStateUpdated(eventTime, processed: false),
             QuicDiagnosticKind.InitialPacketSent => CreateInitialPacketSent(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.HandshakePacketReceived => CreateHandshakePacketReceived(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.HandshakePacketSent => CreateHandshakePacketSent(eventTime, diagnosticEvent),
             QuicDiagnosticKind.HandshakePacketOpenFailed => CreatePacketDropped(eventTime, diagnosticEvent, QlogQuicKnownValues.PacketTypeHandshake),
             QuicDiagnosticKind.RetryReceived => CreateRetryReceived(eventTime, diagnosticEvent),
             QuicDiagnosticKind.VersionNegotiationReceived => CreateVersionNegotiationReceived(eventTime, diagnosticEvent),
@@ -65,6 +67,24 @@ internal static class QuicQlogDiagnosticsMapper
             eventTime,
             diagnosticEvent,
             QlogQuicKnownValues.PacketTypeInitial,
+            version: QuicVersionNegotiation.Version1.ToString("x8"));
+    }
+
+    private static QlogEvent CreateHandshakePacketReceived(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        return CreatePacketReceived(
+            eventTime,
+            diagnosticEvent,
+            QlogQuicKnownValues.PacketTypeHandshake,
+            version: QuicVersionNegotiation.Version1.ToString("x8"));
+    }
+
+    private static QlogEvent CreateHandshakePacketSent(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        return CreatePacketSent(
+            eventTime,
+            diagnosticEvent,
+            QlogQuicKnownValues.PacketTypeHandshake,
             version: QuicVersionNegotiation.Version1.ToString("x8"));
     }
 

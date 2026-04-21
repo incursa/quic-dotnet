@@ -130,7 +130,42 @@ public sealed class REQ_QUIC_INT_0013
             expectedRunnerServerImplementations: "quic-go",
             expectedRunnerClientImplementations: "quic-go",
             expectedReplacement: "quic-go=incursa-quic-interop-harness:local",
-            expectedTestCases: "transfer");
+            expectedTestCases: "transfer",
+            expectedRunnerTestCases: "transfer");
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task LocalHelperCapturesExpectedArtifactsForMulticonnectRuns()
+    {
+        using InteropRunnerScriptFixture fixture = new(quicGoRole: "both");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "both",
+            "-ImplementationSlot",
+            "quic-go",
+            "-TestCases",
+            "multiconnect");
+
+        await AssertSuccessfulHelperRunAsync(
+            fixture.ArtifactsRoot,
+            result,
+            expectedLocalRole: "both",
+            expectedLocalImplementationSlot: "quic-go",
+            expectedPeerImplementationSlots: "quic-go,msquic",
+            expectedRunnerServerImplementations: "quic-go",
+            expectedRunnerClientImplementations: "quic-go",
+            expectedReplacement: "quic-go=incursa-quic-interop-harness:local",
+            expectedTestCases: "multiconnect",
+            expectedRunnerTestCases: "handshakeloss");
     }
 
     [Fact]
@@ -272,7 +307,8 @@ public sealed class REQ_QUIC_INT_0013
         string expectedPeerImplementationSlots,
         string expectedRunnerClientImplementations,
         string expectedRunnerServerImplementations,
-        string expectedTestCases)
+        string expectedTestCases,
+        string expectedRunnerTestCases)
     {
         using InteropRunnerScriptFixture fixture = new();
 
@@ -303,6 +339,7 @@ public sealed class REQ_QUIC_INT_0013
         Assert.Equal(expectedRunnerClientImplementations, GetPlanValue(output, "Runner client implementations"));
         Assert.Equal(expectedRunnerServerImplementations, GetPlanValue(output, "Runner server implementations"));
         Assert.Equal(expectedTestCases, GetPlanValue(output, "Test cases"));
+        Assert.Equal(expectedRunnerTestCases, GetPlanValue(output, "Runner test cases"));
 
         string artifactRoot = Path.GetFullPath(fixture.ArtifactsRoot);
         string runRoot = GetPlanValue(output, "Run root");
@@ -336,6 +373,7 @@ public sealed class REQ_QUIC_INT_0013
             "quic-go,msquic",
             "quic-go",
             "quic-go",
+            "handshake,retry,transfer",
             "handshake,retry,transfer"
         ];
 
@@ -349,6 +387,7 @@ public sealed class REQ_QUIC_INT_0013
             "quic-go,msquic",
             "quic-go",
             "quic-go",
+            "transfer",
             "transfer"
         ];
 
@@ -362,6 +401,7 @@ public sealed class REQ_QUIC_INT_0013
             "quic-go,msquic",
             "chrome",
             "quic-go,msquic",
+            "handshake,retry,transfer",
             "handshake,retry,transfer"
         ];
 
@@ -375,6 +415,7 @@ public sealed class REQ_QUIC_INT_0013
             "quic-go,msquic",
             "quic-go,msquic",
             "nginx",
+            "handshake,retry,transfer",
             "handshake,retry,transfer"
         ];
 
@@ -388,7 +429,22 @@ public sealed class REQ_QUIC_INT_0013
             "msquic,quic-go",
             "chrome",
             "msquic,quic-go",
+            "transfer,handshake",
             "transfer,handshake"
+        ];
+
+        yield return
+        [
+            "client",
+            "chrome",
+            "quic-go",
+            "multiconnect",
+            "chrome",
+            "quic-go",
+            "chrome",
+            "quic-go",
+            "multiconnect",
+            "handshakeloss"
         ];
     }
 
@@ -569,7 +625,8 @@ public sealed class REQ_QUIC_INT_0013
         string expectedRunnerServerImplementations,
         string expectedRunnerClientImplementations,
         string expectedReplacement,
-        string expectedTestCases = "handshake,retry,transfer")
+        string expectedTestCases = "handshake,retry,transfer",
+        string expectedRunnerTestCases = "handshake,retry,transfer")
     {
         Assert.True(
             result.ExitCode == 0,
@@ -607,6 +664,8 @@ public sealed class REQ_QUIC_INT_0013
         Assert.Equal(expectedLocalImplementationSlot, GetInvocationFieldValue(invocationText, "LocalImplementationSlot"));
         Assert.Equal(expectedPeerImplementationSlots, GetInvocationFieldValue(invocationText, "PeerImplementationSlots"));
         Assert.Equal("incursa-quic-interop-harness:local", GetInvocationFieldValue(invocationText, "ImageTag"));
+        Assert.Equal(expectedTestCases, GetInvocationFieldValue(invocationText, "TestCases"));
+        Assert.Equal(expectedRunnerTestCases, GetInvocationFieldValue(invocationText, "RunnerTestCases"));
 
         string[] expectedRunnerArgs = CreateExpectedRunnerArgs(
             expectedRunnerServerImplementations,
@@ -614,7 +673,7 @@ public sealed class REQ_QUIC_INT_0013
             expectedReplacement,
             runnerLogDir,
             runnerReportJsonPath,
-            expectedTestCases);
+            expectedRunnerTestCases);
 
         Assert.Equal(expectedRunnerArgs, GetInvocationRunnerArgs(invocationText));
         Assert.Contains("\"mode\":\"success\"", runnerReportJsonText, StringComparison.OrdinalIgnoreCase);

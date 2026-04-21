@@ -133,17 +133,23 @@ public sealed class REQ_QUIC_CRT_0136
             LocalPort: 61234);
 
         byte[] initialPacketBytes = [0x01, 0x02, 0x03];
-        byte[] retryBytes = [0x04, 0x05];
-        byte[] versionNegotiationBytes = [0x06];
+        byte[] handshakePacketReceivedBytes = [0x04, 0x05, 0x06];
+        byte[] handshakePacketSentBytes = [0x07, 0x08];
+        byte[] retryBytes = [0x09, 0x0A];
+        byte[] versionNegotiationBytes = [0x0B];
 
         QuicQlogDiagnosticsSink clientSink = new(isServer: false);
 
         clientSink.Emit(QuicDiagnostics.InitialPacketSent(pathIdentity, initialPacketBytes));
+        clientSink.Emit(QuicDiagnostics.HandshakePacketReceived(pathIdentity, handshakePacketReceivedBytes));
+        clientSink.Emit(QuicDiagnostics.HandshakePacketSent(pathIdentity, handshakePacketSentBytes));
         clientSink.Emit(QuicDiagnostics.RetryReceived(retryBytes));
         clientSink.Emit(QuicDiagnostics.VersionNegotiationReceived(versionNegotiationBytes));
 
         Assert.Equal(
             [
+                QlogQuicKnownValues.PacketSentEventName,
+                QlogQuicKnownValues.PacketReceivedEventName,
                 QlogQuicKnownValues.PacketSentEventName,
                 QlogQuicKnownValues.PacketReceivedEventName,
                 QlogQuicKnownValues.PacketReceivedEventName,
@@ -158,19 +164,35 @@ public sealed class REQ_QUIC_CRT_0136
         Assert.Equal(3L, ReadObjectNumber(initialPacketSent.Data["raw"], "payload_length"));
         Assert.Equal("010203", ReadObjectString(initialPacketSent.Data["raw"], "data"));
 
-        QlogEvent retryReceived = clientSink.Trace.Events[1];
+        QlogEvent handshakePacketReceived = clientSink.Trace.Events[1];
+        Assert.Equal("203.0.113.10:443|198.51.100.3:61234", handshakePacketReceived.Tuple);
+        Assert.Equal(QlogQuicKnownValues.PacketTypeHandshake, ReadObjectString(handshakePacketReceived.Data["header"], "packet_type"));
+        Assert.Equal("00000001", ReadObjectString(handshakePacketReceived.Data["header"], "version"));
+        Assert.Equal(3L, ReadObjectNumber(handshakePacketReceived.Data["raw"], "length"));
+        Assert.Equal(3L, ReadObjectNumber(handshakePacketReceived.Data["raw"], "payload_length"));
+        Assert.Equal("040506", ReadObjectString(handshakePacketReceived.Data["raw"], "data"));
+
+        QlogEvent handshakePacketSent = clientSink.Trace.Events[2];
+        Assert.Equal("203.0.113.10:443|198.51.100.3:61234", handshakePacketSent.Tuple);
+        Assert.Equal(QlogQuicKnownValues.PacketTypeHandshake, ReadObjectString(handshakePacketSent.Data["header"], "packet_type"));
+        Assert.Equal("00000001", ReadObjectString(handshakePacketSent.Data["header"], "version"));
+        Assert.Equal(2L, ReadObjectNumber(handshakePacketSent.Data["raw"], "length"));
+        Assert.Equal(2L, ReadObjectNumber(handshakePacketSent.Data["raw"], "payload_length"));
+        Assert.Equal("0708", ReadObjectString(handshakePacketSent.Data["raw"], "data"));
+
+        QlogEvent retryReceived = clientSink.Trace.Events[3];
         Assert.Equal(QlogQuicKnownValues.PacketTypeRetry, ReadObjectString(retryReceived.Data["header"], "packet_type"));
         Assert.Equal("00000001", ReadObjectString(retryReceived.Data["header"], "version"));
         Assert.Equal(2L, ReadObjectNumber(retryReceived.Data["raw"], "length"));
         Assert.Equal(2L, ReadObjectNumber(retryReceived.Data["raw"], "payload_length"));
-        Assert.Equal("0405", ReadObjectString(retryReceived.Data["raw"], "data"));
+        Assert.Equal("090A", ReadObjectString(retryReceived.Data["raw"], "data"));
 
-        QlogEvent versionNegotiationReceived = clientSink.Trace.Events[2];
+        QlogEvent versionNegotiationReceived = clientSink.Trace.Events[4];
         Assert.Equal(QlogQuicKnownValues.PacketTypeVersionNegotiation, ReadObjectString(versionNegotiationReceived.Data["header"], "packet_type"));
         Assert.Equal("00000000", ReadObjectString(versionNegotiationReceived.Data["header"], "version"));
         Assert.Equal(1L, ReadObjectNumber(versionNegotiationReceived.Data["raw"], "length"));
         Assert.Equal(1L, ReadObjectNumber(versionNegotiationReceived.Data["raw"], "payload_length"));
-        Assert.Equal("06", ReadObjectString(versionNegotiationReceived.Data["raw"], "data"));
+        Assert.Equal("0B", ReadObjectString(versionNegotiationReceived.Data["raw"], "data"));
     }
 
     [Fact]

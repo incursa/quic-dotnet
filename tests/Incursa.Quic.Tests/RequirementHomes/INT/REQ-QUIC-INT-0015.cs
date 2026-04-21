@@ -12,7 +12,7 @@ public sealed class REQ_QUIC_INT_0015
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task LocalhostMulticonnectSmokeCompletesSequentialRequestsWithQlogCapture()
+    public async Task LocalhostMulticonnectSmokeCompletesSequentialHttp09DownloadsWithQlogCapture()
     {
         using TempDirectoryFixture fixture = new("incursa-quic-preflight-multiconnect");
         string qlogDirectory = fixture.CreateSubdirectory("qlog");
@@ -59,12 +59,18 @@ public sealed class REQ_QUIC_INT_0015
             Assert.Equal(0, clientResult!.ExitCode);
             Assert.Contains("testcase=multiconnect", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("testcase=multiconnect", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("connection 1/2", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("connection 2/2", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("connectionCount=2", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("accepted managed connection 1/2", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("accepted managed connection 2/2", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("connection 1/2", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("connection 2/2", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("completed managed multiconnect transfer", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("completed managed multiconnect transfer", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("accepted multiconnect request stream 1", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains($"parsed HTTP/0.9 request target /{relativePathOne}", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains($"parsed HTTP/0.9 request target /{relativePathTwo}", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains($"sent HTTP/0.9 request line for /{relativePathOne}", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains($"sent HTTP/0.9 request line for /{relativePathTwo}", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed multiconnect response", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed multiconnect download", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
 
             Assert.True(File.Exists(destinationPathOne));
             Assert.True(File.Exists(destinationPathTwo));
@@ -110,6 +116,75 @@ public sealed class REQ_QUIC_INT_0015
         Assert.Contains("not a valid absolute URL", serverResult.Stderr, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("not a valid absolute URL", clientResult.Stderr, StringComparison.OrdinalIgnoreCase);
         Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task MulticonnectRejectsConflictingHostOrPortBeforeListenerStartup()
+    {
+        using TempDirectoryFixture fixture = new("incursa-quic-preflight-conflicting-multiconnect");
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        (string CertificatePath, string PrivateKeyPath) = InteropHarnessTestSupport.CreateTlsMaterialFixture(fixture);
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        string requests = $"https://localhost:{listenEndPoint.Port}/one https://127.0.0.1:{listenEndPoint.Port}/two";
+
+        (HarnessRunResult serverResult, HarnessRunResult clientResult) = await RunHarnessPairWithoutListeningAsync(
+            "multiconnect",
+            requests,
+            CertificatePath,
+            PrivateKeyPath,
+            qlogDirectory);
+
+        Assert.Equal(1, serverResult.ExitCode);
+        Assert.Equal(1, clientResult.ExitCode);
+        Assert.Empty(serverResult.Stdout);
+        Assert.Empty(clientResult.Stdout);
+        Assert.Contains("must target the same host and port", serverResult.Stderr, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("must target the same host and port", clientResult.Stderr, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task TransientSendCreditRetry_WaitsOutTheExactCongestionExhaustionObservedByMulticonnect()
+    {
+        // Regression from the preserved 2026-04-21 client-role quic-go multiconnect run:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-142834827-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\output.txt
+        // Connection 7/50 reached certificate validation and then failed before
+        // "opened multiconnect request stream 7/50" with the exact message
+        // "The congestion controller cannot send another ordinary packet." The harness
+        // must wait out that transient send-credit condition instead of turning it into
+        // a false testcase failure before any HTTP/0.9 request bytes are sent.
+        int attempts = 0;
+
+        string result = await InteropHarnessRunner.RetryTransientSendCreditAsync(
+            () =>
+            {
+                attempts++;
+                return attempts < 3
+                    ? ValueTask.FromException<string>(new InvalidOperationException("The congestion controller cannot send another ordinary packet."))
+                    : ValueTask.FromResult("opened");
+            },
+            "Timed out waiting for QUIC stream open send credit.");
+
+        Assert.Equal("opened", result);
+        Assert.Equal(3, attempts);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task TransientSendCreditRetry_DoesNotSwallowUnrelatedStreamOpenFailures()
+    {
+        InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            InteropHarnessRunner.RetryTransientSendCreditAsync(
+                () => ValueTask.FromException<string>(new InvalidOperationException("The connection is not established.")),
+                "Timed out waiting for QUIC stream open send credit."));
+
+        Assert.Equal("The connection is not established.", exception.Message);
     }
 
     private static Task<int> StartHarnessRunAsync(

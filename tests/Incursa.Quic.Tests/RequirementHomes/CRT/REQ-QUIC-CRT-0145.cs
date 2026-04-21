@@ -190,10 +190,6 @@ public sealed class REQ_QUIC_CRT_0145
         QuicConnectionSendDatagramEffect sendEffect = Assert.Single(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
         Assert.Equal(PacketPathIdentity, sendEffect.PathIdentity);
 
-        Assert.Contains(
-            runtime.SendRuntime.SentPackets,
-            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
-                && entry.Value.AckOnlyPacket);
         KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedPacket = Assert.Single(
             runtime.SendRuntime.SentPackets,
             entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData

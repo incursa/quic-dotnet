@@ -26,7 +26,7 @@ internal sealed class QuicIdleTimeoutState
     /// <summary>
     /// Gets the effective idle timeout, in microseconds.
     /// </summary>
-    internal ulong EffectiveIdleTimeoutMicros { get; }
+    internal ulong EffectiveIdleTimeoutMicros { get; private set; }
 
     /// <summary>
     /// Gets the timestamp at which the idle timer was most recently restarted.
@@ -99,6 +99,26 @@ internal sealed class QuicIdleTimeoutState
     }
 
     /// <summary>
+    /// Updates the effective idle-timeout floor while preserving the most recent restart point.
+    /// </summary>
+    internal bool TryUpdateEffectiveIdleTimeoutMicros(ulong effectiveIdleTimeoutMicros)
+    {
+        if (effectiveIdleTimeoutMicros == 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(effectiveIdleTimeoutMicros));
+        }
+
+        if (effectiveIdleTimeoutMicros == EffectiveIdleTimeoutMicros)
+        {
+            return false;
+        }
+
+        EffectiveIdleTimeoutMicros = effectiveIdleTimeoutMicros;
+        IdleTimeoutDeadlineMicros = SaturatingAdd(IdleTimerRestartAtMicros, effectiveIdleTimeoutMicros);
+        return true;
+    }
+
+    /// <summary>
     /// Determines whether the idle deadline has passed.
     /// </summary>
     internal bool HasTimedOut(ulong nowMicros)
@@ -162,4 +182,3 @@ internal sealed class QuicIdleTimeoutState
         return left + right;
     }
 }
-

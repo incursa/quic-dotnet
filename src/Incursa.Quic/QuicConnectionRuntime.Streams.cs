@@ -1237,7 +1237,7 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged |= sendRuntime.TryRegisterLoss(
                 lostPacket.PacketNumberSpace,
                 lostPacket.PacketNumber,
-                handshakeConfirmed: peerHandshakeTranscriptCompleted);
+                handshakeConfirmed: HandshakeConfirmed);
         }
 
         return stateChanged;
@@ -1254,8 +1254,109 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        bool sentAny = false;
         ulong sentAtMicros = GetElapsedMicros(nowTicks);
+        if (probePacket)
+        {
+            if (!TryDequeuePreferredProbeRetransmission(
+                    packetNumberSpace,
+                    out QuicConnectionRetransmissionPlan probeRetransmission))
+            {
+                return false;
+            }
+
+            ReadOnlyMemory<byte> datagram = probeRetransmission.PacketBytes;
+            bool rebuildableCryptoRetransmission = TryGetCryptoRetransmissionProtectionLevel(
+                probeRetransmission,
+                out QuicTlsEncryptionLevel cryptoProtectionLevel);
+            ulong rebuiltPacketNumber = default;
+            byte[] rebuiltDatagram = [];
+            bool rebuildableApplicationRetransmission =
+                !rebuildableCryptoRetransmission
+                && probeRetransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData;
+            if ((rebuildableCryptoRetransmission
+                    && !TryBuildCryptoRetransmissionPacket(
+                        probeRetransmission,
+                        out _,
+                        out rebuiltPacketNumber,
+                        out rebuiltDatagram))
+                || (rebuildableApplicationRetransmission
+                    && !TryBuildApplicationRetransmissionPacket(
+                        probeRetransmission,
+                        out rebuiltPacketNumber,
+                        out rebuiltDatagram)))
+            {
+                sendRuntime.QueueRetransmission(probeRetransmission);
+                return false;
+            }
+
+            if (rebuildableCryptoRetransmission
+                || rebuildableApplicationRetransmission)
+            {
+                datagram = rebuiltDatagram;
+            }
+
+            if (datagram.IsEmpty)
+            {
+                return false;
+            }
+
+            QuicConnectionActivePathRecord currentPath = activePath.Value;
+            if (!currentPath.MaximumDatagramSizeState.CanSendOrdinaryPackets
+                || !currentPath.MaximumDatagramSizeState.CanSend((ulong)datagram.Length)
+                || !sendRuntime.FlowController.CanSend(
+                    probeRetransmission.PacketNumberSpace,
+                    (ulong)datagram.Length,
+                    isAckOnlyPacket: false,
+                    isProbePacket: probePacket)
+                || !currentPath.AmplificationState.TryConsumeSendBudget(
+                    datagram.Length,
+                    out QuicConnectionPathAmplificationState updatedAmplificationState))
+            {
+                sendRuntime.QueueRetransmission(probeRetransmission);
+                return false;
+            }
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+
+            if (rebuildableCryptoRetransmission)
+            {
+                TrackCryptoRetransmissionSent(
+                    currentPath.Identity,
+                    cryptoProtectionLevel,
+                    rebuiltPacketNumber,
+                    datagram.ToArray(),
+                    probePacket,
+                    ref effects);
+            }
+            else if (rebuildableApplicationRetransmission)
+            {
+                TrackApplicationRetransmissionSent(
+                    rebuiltPacketNumber,
+                    datagram.ToArray(),
+                    sentAtMicros,
+                    probePacket,
+                    probeRetransmission.StreamIds);
+            }
+            else
+            {
+                TrackRetransmissionPlanSent(
+                    currentPath.Identity,
+                    probeRetransmission,
+                    sentAtMicros,
+                    probePacket,
+                    ref effects);
+            }
+
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+                currentPath.Identity,
+                datagram));
+            return true;
+        }
+
+        bool sentAny = false;
         int remainingPlans = sendRuntime.PendingRetransmissionCount;
 
         while (remainingPlans-- > 0
@@ -1268,6 +1369,36 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             ReadOnlyMemory<byte> datagram = retransmission.PacketBytes;
+            bool rebuildableCryptoRetransmission = TryGetCryptoRetransmissionProtectionLevel(
+                retransmission,
+                out QuicTlsEncryptionLevel cryptoProtectionLevel);
+            ulong rebuiltPacketNumber = default;
+            byte[] rebuiltDatagram = [];
+            bool rebuildableApplicationRetransmission =
+                !rebuildableCryptoRetransmission
+                && retransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData;
+            if ((rebuildableCryptoRetransmission
+                    && !TryBuildCryptoRetransmissionPacket(
+                        retransmission,
+                        out _,
+                        out rebuiltPacketNumber,
+                        out rebuiltDatagram))
+                || (rebuildableApplicationRetransmission
+                    && !TryBuildApplicationRetransmissionPacket(
+                        retransmission,
+                        out rebuiltPacketNumber,
+                        out rebuiltDatagram)))
+            {
+                sendRuntime.QueueRetransmission(retransmission);
+                break;
+            }
+
+            if (rebuildableCryptoRetransmission
+                || rebuildableApplicationRetransmission)
+            {
+                datagram = rebuiltDatagram;
+            }
+
             if (datagram.IsEmpty)
             {
                 continue;
@@ -1294,30 +1425,34 @@ internal sealed partial class QuicConnectionRuntime
                 AmplificationState = updatedAmplificationState,
             };
 
-            QuicTlsEncryptionLevel packetProtectionLevel = retransmission.PacketProtectionLevel
-                ?? retransmission.CryptoMetadata?.EncryptionLevel
-                ?? QuicTlsEncryptionLevel.OneRtt;
-
-            sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
-                retransmission.PacketNumberSpace,
-                retransmission.PacketNumber,
-                retransmission.PayloadBytes,
-                sentAtMicros,
-                AckEliciting: true,
-                AckOnlyPacket: false,
-                ProbePacket: probePacket,
-                Retransmittable: true,
-                CryptoMetadata: retransmission.CryptoMetadata,
-                PacketBytes: datagram,
-                PacketProtectionLevel: retransmission.PacketProtectionLevel,
-                StreamIds: retransmission.StreamIds));
-            recoveryController.RecordPacketSent(
-                retransmission.PacketNumberSpace,
-                retransmission.PacketNumber,
-                sentAtMicros,
-                isAckElicitingPacket: true,
-                isProbePacket: probePacket,
-                packetProtectionLevel: packetProtectionLevel);
+            if (rebuildableCryptoRetransmission)
+            {
+                TrackCryptoRetransmissionSent(
+                    currentPath.Identity,
+                    cryptoProtectionLevel,
+                    rebuiltPacketNumber,
+                    datagram.ToArray(),
+                    probePacket,
+                    ref effects);
+            }
+            else if (rebuildableApplicationRetransmission)
+            {
+                TrackApplicationRetransmissionSent(
+                    rebuiltPacketNumber,
+                    datagram.ToArray(),
+                    sentAtMicros,
+                    probePacket,
+                    retransmission.StreamIds);
+            }
+            else
+            {
+                TrackRetransmissionPlanSent(
+                    currentPath.Identity,
+                    retransmission,
+                    sentAtMicros,
+                    probePacket,
+                    ref effects);
+            }
 
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
                 currentPath.Identity,
@@ -1331,6 +1466,685 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return sentAny;
+    }
+
+    private bool TryDequeuePreferredProbeRetransmission(
+        QuicPacketNumberSpace packetNumberSpace,
+        out QuicConnectionRetransmissionPlan retransmission)
+    {
+        if (packetNumberSpace != QuicPacketNumberSpace.ApplicationData)
+        {
+            return sendRuntime.TryDequeueRetransmission(packetNumberSpace, out retransmission);
+        }
+
+        retransmission = default;
+        if (sendRuntime.PendingRetransmissionCount == 0)
+        {
+            return false;
+        }
+
+        int queuedPlanCount = sendRuntime.PendingRetransmissionCount;
+        List<QuicConnectionRetransmissionPlan> queuedPlans = [];
+        while (queuedPlanCount-- > 0
+            && sendRuntime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan candidatePlan))
+        {
+            queuedPlans.Add(candidatePlan);
+        }
+
+        int selectedIndex = -1;
+        bool selectedHasPreferredPayload = false;
+        bool selectedCarriesStreamData = false;
+        bool selectedClosesStream = false;
+        ulong selectedStreamEndOffset = 0;
+
+        for (int index = 0; index < queuedPlans.Count; index++)
+        {
+            QuicConnectionRetransmissionPlan candidatePlan = queuedPlans[index];
+            if (candidatePlan.PacketNumberSpace != packetNumberSpace)
+            {
+                continue;
+            }
+
+            bool candidateHasPreferredPayload = candidatePlan.StreamIds is { Length: > 0 };
+            bool candidateCarriesStreamData = false;
+            bool candidateClosesStream = false;
+            ulong candidateStreamEndOffset = 0;
+            if (candidateHasPreferredPayload)
+            {
+                _ = TryGetApplicationProbeSelectionPriority(
+                    candidatePlan.PacketBytes,
+                    out candidateCarriesStreamData,
+                    out candidateClosesStream,
+                    out candidateStreamEndOffset);
+            }
+
+            if (selectedIndex >= 0)
+            {
+                if (selectedHasPreferredPayload && !candidateHasPreferredPayload)
+                {
+                    continue;
+                }
+
+                if (!selectedHasPreferredPayload && candidateHasPreferredPayload)
+                {
+                    // Prefer application retransmissions that actually repair stream progress.
+                }
+                else
+                {
+                    if (!IsPreferredApplicationProbeCandidate(
+                            selectedCarriesStreamData,
+                            selectedClosesStream,
+                            selectedStreamEndOffset,
+                            queuedPlans[selectedIndex].PacketNumber,
+                            candidateCarriesStreamData,
+                            candidateClosesStream,
+                            candidateStreamEndOffset,
+                            candidatePlan.PacketNumber))
+                    {
+                        continue;
+                    }
+                }
+            }
+
+            selectedIndex = index;
+            selectedHasPreferredPayload = candidateHasPreferredPayload;
+            selectedCarriesStreamData = candidateCarriesStreamData;
+            selectedClosesStream = candidateClosesStream;
+            selectedStreamEndOffset = candidateStreamEndOffset;
+        }
+
+        if (selectedIndex < 0)
+        {
+            foreach (QuicConnectionRetransmissionPlan queuedPlan in queuedPlans)
+            {
+                sendRuntime.QueueRetransmission(queuedPlan);
+            }
+
+            return false;
+        }
+
+        retransmission = queuedPlans[selectedIndex];
+        for (int index = 0; index < queuedPlans.Count; index++)
+        {
+            if (index == selectedIndex)
+            {
+                continue;
+            }
+
+            sendRuntime.QueueRetransmission(queuedPlans[index]);
+        }
+
+        return true;
+    }
+
+    private bool TrySendCoalescedCryptoRecoveryProbeDatagram(
+        QuicPacketNumberSpace firstPacketNumberSpace,
+        QuicPacketNumberSpace secondPacketNumberSpace,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (activePath is null
+            || !IsInitialAndHandshakePair(firstPacketNumberSpace, secondPacketNumberSpace))
+        {
+            return false;
+        }
+
+        bool initialDequeued = sendRuntime.TryDequeueRetransmission(
+            QuicPacketNumberSpace.Initial,
+            out QuicConnectionRetransmissionPlan initialRetransmission);
+        if (!initialDequeued
+            && TryPromoteOutstandingProbePacket(QuicPacketNumberSpace.Initial))
+        {
+            initialDequeued = sendRuntime.TryDequeueRetransmission(
+                QuicPacketNumberSpace.Initial,
+                out initialRetransmission);
+        }
+
+        if (!initialDequeued)
+        {
+            return false;
+        }
+
+        bool handshakeDequeued = sendRuntime.TryDequeueRetransmission(
+            QuicPacketNumberSpace.Handshake,
+            out QuicConnectionRetransmissionPlan handshakeRetransmission);
+        if (!handshakeDequeued
+            && TryPromoteOutstandingProbePacket(QuicPacketNumberSpace.Handshake))
+        {
+            handshakeDequeued = sendRuntime.TryDequeueRetransmission(
+                QuicPacketNumberSpace.Handshake,
+                out handshakeRetransmission);
+        }
+
+        if (!handshakeDequeued)
+        {
+            sendRuntime.QueueRetransmission(initialRetransmission);
+            return false;
+        }
+
+        bool queueInitialForRetry = true;
+        bool queueHandshakeForRetry = true;
+        try
+        {
+            if (!TryGetCryptoRetransmissionProtectionLevel(
+                    initialRetransmission,
+                    out QuicTlsEncryptionLevel initialProtectionLevel)
+                || initialProtectionLevel != QuicTlsEncryptionLevel.Initial
+                || !TryGetCryptoRetransmissionProtectionLevel(
+                    handshakeRetransmission,
+                    out QuicTlsEncryptionLevel handshakeProtectionLevel)
+                || handshakeProtectionLevel != QuicTlsEncryptionLevel.Handshake)
+            {
+                return false;
+            }
+
+            ReadOnlySpan<byte> initialDestinationConnectionIdOverride = TryResolveClientInitialProbeDestinationConnectionId(
+                initialRetransmission,
+                handshakeRetransmission,
+                out byte[] probeDestinationConnectionId)
+                ? probeDestinationConnectionId
+                : ReadOnlySpan<byte>.Empty;
+            if (!TryBuildCryptoRetransmissionPacket(
+                    initialRetransmission,
+                    initialDestinationConnectionIdOverride,
+                    out _,
+                    out ulong rebuiltInitialPacketNumber,
+                    out byte[] rebuiltInitialPacketBytes)
+                || !TryBuildCryptoRetransmissionPacket(
+                    handshakeRetransmission,
+                    out _,
+                    out ulong rebuiltHandshakePacketNumber,
+                    out byte[] rebuiltHandshakePacketBytes))
+            {
+                return false;
+            }
+
+            ReadOnlyMemory<byte> initialPacketBytes = rebuiltInitialPacketBytes;
+            int coalescedDatagramLength = checked(
+                initialPacketBytes.Length + rebuiltHandshakePacketBytes.Length);
+            QuicConnectionActivePathRecord currentPath = activePath.Value;
+            if (!currentPath.MaximumDatagramSizeState.CanSendOrdinaryPackets
+                || !currentPath.MaximumDatagramSizeState.CanSend((ulong)coalescedDatagramLength)
+                || !sendRuntime.FlowController.CanSend(
+                    QuicPacketNumberSpace.Initial,
+                    (ulong)coalescedDatagramLength,
+                    isAckOnlyPacket: false,
+                    isProbePacket: true)
+                || !currentPath.AmplificationState.TryConsumeSendBudget(
+                    coalescedDatagramLength,
+                    out QuicConnectionPathAmplificationState updatedAmplificationState))
+            {
+                return false;
+            }
+
+            byte[] coalescedDatagram = new byte[coalescedDatagramLength];
+            initialPacketBytes.CopyTo(coalescedDatagram);
+            rebuiltHandshakePacketBytes.CopyTo(coalescedDatagram.AsMemory(initialPacketBytes.Length));
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+
+            TrackCryptoRetransmissionSent(
+                currentPath.Identity,
+                QuicTlsEncryptionLevel.Initial,
+                rebuiltInitialPacketNumber,
+                rebuiltInitialPacketBytes,
+                probePacket: true,
+                ref effects);
+            TrackCryptoRetransmissionSent(
+                currentPath.Identity,
+                QuicTlsEncryptionLevel.Handshake,
+                rebuiltHandshakePacketNumber,
+                rebuiltHandshakePacketBytes,
+                probePacket: true,
+                ref effects);
+
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+                currentPath.Identity,
+                coalescedDatagram));
+
+            queueInitialForRetry = false;
+            queueHandshakeForRetry = false;
+            return true;
+        }
+        finally
+        {
+            if (queueInitialForRetry)
+            {
+                sendRuntime.QueueRetransmission(initialRetransmission);
+            }
+
+            if (queueHandshakeForRetry)
+            {
+                sendRuntime.QueueRetransmission(handshakeRetransmission);
+            }
+        }
+    }
+
+    private bool TryResolveClientInitialProbeDestinationConnectionId(
+        QuicConnectionRetransmissionPlan initialRetransmission,
+        QuicConnectionRetransmissionPlan handshakeRetransmission,
+        out byte[] destinationConnectionId)
+    {
+        destinationConnectionId = [];
+
+        if (tlsState.Role != QuicTlsRole.Client
+            || !TryGetLongHeaderDestinationConnectionId(
+                initialRetransmission.PacketBytes.Span,
+                out byte[] initialDestinationConnectionId)
+            || !TryGetLongHeaderDestinationConnectionId(
+                handshakeRetransmission.PacketBytes.Span,
+                out byte[] handshakeDestinationConnectionId)
+            || initialDestinationConnectionId.AsSpan().SequenceEqual(handshakeDestinationConnectionId))
+        {
+            return false;
+        }
+
+        destinationConnectionId = handshakeDestinationConnectionId;
+        return true;
+    }
+
+    private static bool TryGetLongHeaderDestinationConnectionId(
+        ReadOnlySpan<byte> packetBytes,
+        out byte[] destinationConnectionId)
+    {
+        destinationConnectionId = [];
+
+        if (!QuicPacketParsing.TryParseLongHeaderFields(
+                packetBytes,
+                out _,
+                out _,
+                out ReadOnlySpan<byte> parsedDestinationConnectionId,
+                out _,
+                out _))
+        {
+            return false;
+        }
+
+        destinationConnectionId = parsedDestinationConnectionId.ToArray();
+        return destinationConnectionId.Length > 0;
+    }
+
+    private bool TryBuildCryptoRetransmissionPacket(
+        QuicConnectionRetransmissionPlan retransmission,
+        out QuicTlsEncryptionLevel packetProtectionLevel,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        return TryBuildCryptoRetransmissionPacket(
+            retransmission,
+            ReadOnlySpan<byte>.Empty,
+            out packetProtectionLevel,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    private bool TryBuildCryptoRetransmissionPacket(
+        QuicConnectionRetransmissionPlan retransmission,
+        ReadOnlySpan<byte> initialDestinationConnectionIdOverride,
+        out QuicTlsEncryptionLevel packetProtectionLevel,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        packetNumber = default;
+        protectedPacket = [];
+
+        if (!TryGetCryptoRetransmissionProtectionLevel(retransmission, out packetProtectionLevel))
+        {
+            return false;
+        }
+
+        return packetProtectionLevel switch
+        {
+            QuicTlsEncryptionLevel.Initial => TryBuildInitialCryptoRetransmissionPacket(
+                retransmission,
+                initialDestinationConnectionIdOverride,
+                out packetNumber,
+                out protectedPacket),
+            QuicTlsEncryptionLevel.Handshake => TryBuildHandshakeCryptoRetransmissionPacket(
+                retransmission,
+                out packetNumber,
+                out protectedPacket),
+            _ => false,
+        };
+    }
+
+    private bool TryBuildInitialCryptoRetransmissionPacket(
+        QuicConnectionRetransmissionPlan retransmission,
+        ReadOnlySpan<byte> destinationConnectionIdOverride,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        packetNumber = default;
+        protectedPacket = [];
+
+        if (initialPacketProtection is null)
+        {
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TryOpenOutboundInitialPacket(
+                retransmission.PacketBytes.Span,
+                initialPacketProtection,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength))
+        {
+            return false;
+        }
+
+        if (!TryParseRetransmittableCryptoFrame(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                out ulong cryptoOffset,
+                out byte[] cryptoPayload))
+        {
+            return false;
+        }
+
+        if (!QuicPacketParser.TryParseLongHeader(retransmission.PacketBytes.Span, out QuicLongHeaderPacket longHeader))
+        {
+            return false;
+        }
+
+        if (!TryParseInitialRetryToken(longHeader.VersionSpecificData, out byte[] parsedRetryToken))
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> destinationConnectionId = destinationConnectionIdOverride.IsEmpty
+            ? longHeader.DestinationConnectionId
+            : destinationConnectionIdOverride;
+
+        return handshakeFlowCoordinator.TryBuildProtectedInitialPacketForRetransmission(
+            cryptoPayload,
+            cryptoOffset,
+            longHeader.DestinationConnectionId,
+            destinationConnectionId,
+            longHeader.SourceConnectionId,
+            parsedRetryToken,
+            initialPacketProtection,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    private bool TryBuildHandshakeCryptoRetransmissionPacket(
+        QuicConnectionRetransmissionPlan retransmission,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        packetNumber = default;
+        protectedPacket = [];
+
+        if (!tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial))
+        {
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TryOpenHandshakePacket(
+                retransmission.PacketBytes.Span,
+                handshakeMaterial,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength))
+        {
+            return false;
+        }
+
+        if (!TryParseRetransmittableCryptoFrame(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                out ulong cryptoOffset,
+                out byte[] cryptoPayload))
+        {
+            return false;
+        }
+
+        if (!QuicPacketParser.TryParseLongHeader(retransmission.PacketBytes.Span, out QuicLongHeaderPacket longHeader))
+        {
+            return false;
+        }
+
+        return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
+            cryptoPayload,
+            cryptoOffset,
+            longHeader.DestinationConnectionId,
+            longHeader.SourceConnectionId,
+            handshakeMaterial,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    private static bool TryParseRetransmittableCryptoFrame(
+        ReadOnlySpan<byte> payload,
+        out ulong cryptoOffset,
+        out byte[] cryptoPayload)
+    {
+        cryptoOffset = default;
+        cryptoPayload = [];
+
+        int offset = 0;
+        while (offset < payload.Length && payload[offset] == 0)
+        {
+            offset++;
+        }
+
+        if (offset >= payload.Length
+            || !QuicFrameCodec.TryParseCryptoFrame(
+                payload[offset..],
+                out QuicCryptoFrame cryptoFrame,
+                out int cryptoBytesConsumed)
+            || cryptoBytesConsumed <= 0)
+        {
+            return false;
+        }
+
+        cryptoOffset = cryptoFrame.Offset;
+        cryptoPayload = cryptoFrame.CryptoData.ToArray();
+        return cryptoPayload.Length > 0;
+    }
+
+    private static bool TryParseInitialRetryToken(
+        ReadOnlySpan<byte> versionSpecificData,
+        out byte[] retryToken)
+    {
+        retryToken = [];
+
+        if (!QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong tokenLength, out int tokenLengthBytes)
+            || tokenLength > (ulong)(versionSpecificData.Length - tokenLengthBytes))
+        {
+            return false;
+        }
+
+        retryToken = versionSpecificData.Slice(tokenLengthBytes, (int)tokenLength).ToArray();
+        return true;
+    }
+
+    private bool TryBuildApplicationRetransmissionPacket(
+        QuicConnectionRetransmissionPlan retransmission,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        protectedPacket = [];
+        packetNumber = default;
+
+        if (retransmission.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
+            || retransmission.PacketBytes.IsEmpty
+            || CurrentPeerDestinationConnectionId.IsEmpty
+            || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            return false;
+        }
+
+        QuicHandshakeFlowCoordinator retransmissionOpenCoordinator = new(CurrentPeerDestinationConnectionId.ToArray());
+        if (!retransmissionOpenCoordinator.TryOpenProtectedApplicationDataPacket(
+                retransmission.PacketBytes.Span,
+                tlsState.OneRttProtectPacketProtectionMaterial.Value,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength,
+                out _))
+        {
+            return false;
+        }
+
+        ulong minimumPacketNumberExclusive = retransmission.PacketNumber;
+        ulong? largestTrackedPacketNumber = sendRuntime.GetLargestTrackedPacketNumber(QuicPacketNumberSpace.ApplicationData);
+        if (largestTrackedPacketNumber.HasValue)
+        {
+            minimumPacketNumberExclusive = Math.Max(
+                minimumPacketNumberExclusive,
+                largestTrackedPacketNumber.Value);
+        }
+
+        return handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            minimumPacketNumberExclusive,
+            tlsState.OneRttProtectPacketProtectionMaterial.Value,
+            tlsState.CurrentOneRttKeyPhase == 1,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    private void TrackCryptoRetransmissionSent(
+        QuicConnectionPathIdentity pathIdentity,
+        QuicTlsEncryptionLevel packetProtectionLevel,
+        ulong packetNumber,
+        byte[] protectedPacket,
+        bool probePacket,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        switch (packetProtectionLevel)
+        {
+            case QuicTlsEncryptionLevel.Initial:
+                TrackInitialPacket(packetNumber, protectedPacket, probePacket);
+                if (diagnosticsEnabled)
+                {
+                    EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
+                }
+
+                break;
+            case QuicTlsEncryptionLevel.Handshake:
+                TrackHandshakePacket(packetNumber, protectedPacket, probePacket);
+                if (diagnosticsEnabled)
+                {
+                    EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketSent(pathIdentity, protectedPacket));
+                }
+
+                break;
+            default:
+                throw new InvalidOperationException($"Unsupported crypto retransmission protection level {packetProtectionLevel}.");
+        }
+    }
+
+    private void TrackApplicationRetransmissionSent(
+        ulong packetNumber,
+        byte[] protectedPacket,
+        ulong sentAtMicros,
+        bool probePacket,
+        ulong[]? streamIds)
+    {
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber,
+            (ulong)protectedPacket.Length,
+            sentAtMicros,
+            AckEliciting: true,
+            AckOnlyPacket: false,
+            ProbePacket: probePacket,
+            Retransmittable: true,
+            PacketBytes: protectedPacket,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            StreamIds: streamIds));
+        recoveryController.RecordPacketSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber,
+            sentAtMicros,
+            isAckElicitingPacket: true,
+            isProbePacket: probePacket,
+            packetProtectionLevel: QuicTlsEncryptionLevel.OneRtt);
+
+        if (idleTimeoutState is not null)
+        {
+            idleTimeoutState.RecordAckElicitingPacketSent(sentAtMicros);
+        }
+    }
+
+    private void TrackRetransmissionPlanSent(
+        QuicConnectionPathIdentity pathIdentity,
+        QuicConnectionRetransmissionPlan retransmission,
+        ulong sentAtMicros,
+        bool probePacket,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        QuicTlsEncryptionLevel packetProtectionLevel = retransmission.PacketProtectionLevel
+            ?? retransmission.CryptoMetadata?.EncryptionLevel
+            ?? QuicTlsEncryptionLevel.OneRtt;
+
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            retransmission.PacketNumberSpace,
+            retransmission.PacketNumber,
+            retransmission.PayloadBytes,
+            sentAtMicros,
+            AckEliciting: true,
+            AckOnlyPacket: false,
+            ProbePacket: probePacket,
+            Retransmittable: true,
+            CryptoMetadata: retransmission.CryptoMetadata,
+            PacketBytes: retransmission.PacketBytes,
+            PacketProtectionLevel: retransmission.PacketProtectionLevel,
+            StreamIds: retransmission.StreamIds));
+        recoveryController.RecordPacketSent(
+            retransmission.PacketNumberSpace,
+            retransmission.PacketNumber,
+            sentAtMicros,
+            isAckElicitingPacket: true,
+            isProbePacket: probePacket,
+            packetProtectionLevel: packetProtectionLevel);
+
+        if (idleTimeoutState is not null)
+        {
+            idleTimeoutState.RecordAckElicitingPacketSent(sentAtMicros);
+        }
+
+        if (diagnosticsEnabled)
+        {
+            switch (retransmission.PacketNumberSpace)
+            {
+                case QuicPacketNumberSpace.Initial:
+                    EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, retransmission.PacketBytes.Span));
+                    break;
+                case QuicPacketNumberSpace.Handshake:
+                    EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketSent(pathIdentity, retransmission.PacketBytes.Span));
+                    break;
+            }
+        }
+    }
+
+    private static bool IsInitialAndHandshakePair(
+        QuicPacketNumberSpace firstPacketNumberSpace,
+        QuicPacketNumberSpace secondPacketNumberSpace)
+    {
+        return (firstPacketNumberSpace == QuicPacketNumberSpace.Initial
+                && secondPacketNumberSpace == QuicPacketNumberSpace.Handshake)
+            || (firstPacketNumberSpace == QuicPacketNumberSpace.Handshake
+                && secondPacketNumberSpace == QuicPacketNumberSpace.Initial);
+    }
+
+    private static bool TryGetCryptoRetransmissionProtectionLevel(
+        QuicConnectionRetransmissionPlan retransmission,
+        out QuicTlsEncryptionLevel packetProtectionLevel)
+    {
+        QuicTlsEncryptionLevel? actualProtectionLevel = retransmission.PacketProtectionLevel
+            ?? retransmission.CryptoMetadata?.EncryptionLevel;
+        if (retransmission.PacketBytes.IsEmpty
+            || actualProtectionLevel is not (QuicTlsEncryptionLevel.Initial or QuicTlsEncryptionLevel.Handshake))
+        {
+            packetProtectionLevel = default;
+            return false;
+        }
+
+        packetProtectionLevel = actualProtectionLevel.Value;
+        return true;
     }
 
     internal bool TrySetActivePathMaximumDatagramSize(ulong maximumDatagramSizeBytes, bool isProvisional = false)
@@ -1409,6 +2223,11 @@ internal sealed partial class QuicConnectionRuntime
             isAckElicitingPacket: ackEliciting,
             isProbePacket: probePacket,
             packetProtectionLevel: packetProtectionLevel);
+
+        if (ackEliciting && idleTimeoutState is not null)
+        {
+            idleTimeoutState.RecordAckElicitingPacketSent(GetElapsedMicros(lastTransitionTicks));
+        }
     }
 
     private void TrackInitialPacket(ulong packetNumber, byte[] protectedPacket, bool probePacket = false)
@@ -1454,6 +2273,11 @@ internal sealed partial class QuicConnectionRuntime
             isAckElicitingPacket: true,
             isProbePacket: probePacket,
             packetProtectionLevel: encryptionLevel);
+
+        if (idleTimeoutState is not null)
+        {
+            idleTimeoutState.RecordAckElicitingPacketSent(GetElapsedMicros(lastTransitionTicks));
+        }
     }
 
     private bool TryBuildOutboundStreamPayload(

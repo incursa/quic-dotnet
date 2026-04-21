@@ -544,7 +544,7 @@ internal sealed partial class QuicConnectionRuntime
     {
         ulong nowMicros = GetElapsedMicros(nowTicks);
         ulong maxAckDelayMicros = tlsState.PeerTransportParameters?.MaxAckDelay ?? 0;
-        bool handshakeConfirmed = peerHandshakeTranscriptCompleted;
+        bool isHandshakeConfirmed = HandshakeConfirmed;
         bool serverAtAntiAmplificationLimit = tlsState.Role == QuicTlsRole.Server
             && (activePath is null
                 || (!activePath.Value.AmplificationState.IsAddressValidated
@@ -554,7 +554,7 @@ internal sealed partial class QuicConnectionRuntime
         return recoveryController.TrySelectLossDetectionTimer(
             nowMicros,
             maxAckDelayMicros,
-            handshakeConfirmed,
+            isHandshakeConfirmed,
             serverAtAntiAmplificationLimit,
             peerAddressValidationComplete,
             tlsState.HandshakeKeysAvailable,
@@ -603,7 +603,8 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
-        return TrySendRecoveryPingProbe(ref effects);
+        return selectedPacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+            && TrySendRecoveryPingProbe(ref effects);
     }
 
     private bool TrySendRecoveryProbeDatagram(
@@ -621,7 +622,13 @@ internal sealed partial class QuicConnectionRuntime
                 || TryFlushInitialPackets(
                     ref effects,
                     probePacket: true,
-                    maximumDatagrams: 1),
+                    maximumDatagrams: 1)
+                || TryPromoteOutstandingProbePacket(QuicPacketNumberSpace.Initial)
+                && TryFlushPendingRetransmissions(
+                    QuicPacketNumberSpace.Initial,
+                    nowTicks,
+                    probePacket: true,
+                    ref effects),
             QuicPacketNumberSpace.Handshake => TryFlushPendingRetransmissions(
                     QuicPacketNumberSpace.Handshake,
                     nowTicks,
@@ -630,15 +637,269 @@ internal sealed partial class QuicConnectionRuntime
                 || TryFlushHandshakePackets(
                     ref effects,
                     probePacket: true,
-                    maximumDatagrams: 1),
+                    maximumDatagrams: 1)
+                || TryPromoteOutstandingProbePacket(QuicPacketNumberSpace.Handshake)
+                && TryFlushPendingRetransmissions(
+                    QuicPacketNumberSpace.Handshake,
+                    nowTicks,
+                    probePacket: true,
+                    ref effects),
             QuicPacketNumberSpace.ApplicationData => TryFlushPendingRetransmissions(
                     QuicPacketNumberSpace.ApplicationData,
                     nowTicks,
                     probePacket: true,
                     ref effects)
-                || FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects),
+                || FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
+                || TryPromoteOutstandingProbePacket(QuicPacketNumberSpace.ApplicationData)
+                && TryFlushPendingRetransmissions(
+                    QuicPacketNumberSpace.ApplicationData,
+                    nowTicks,
+                    probePacket: true,
+                    ref effects),
             _ => false,
         };
+    }
+
+    private bool TryPromoteOutstandingProbePacket(QuicPacketNumberSpace packetNumberSpace)
+    {
+        bool preferStreamData = packetNumberSpace == QuicPacketNumberSpace.ApplicationData;
+        QuicConnectionSentPacketKey? candidateKey = null;
+        bool candidateIsProbePacket = false;
+        bool candidateHasPreferredPayload = false;
+        bool candidateCarriesStreamData = false;
+        bool candidateClosesStream = false;
+        ulong candidateStreamEndOffset = 0;
+
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sendRuntime.SentPackets)
+        {
+            if (entry.Key.PacketNumberSpace != packetNumberSpace)
+            {
+                continue;
+            }
+
+            QuicConnectionSentPacket packet = entry.Value;
+            if (!packet.AckEliciting
+                || packet.AckOnlyPacket
+                || !packet.Retransmittable
+                || packet.PacketBytes.IsEmpty)
+            {
+                continue;
+            }
+
+            bool entryIsProbePacket = packet.ProbePacket;
+            bool entryHasPreferredPayload = !preferStreamData
+                || packet.StreamIds is { Length: > 0 };
+            bool entryCarriesStreamData = false;
+            bool entryClosesStream = false;
+            ulong entryStreamEndOffset = 0;
+            if (preferStreamData
+                && entryHasPreferredPayload)
+            {
+                _ = TryGetApplicationProbeSelectionPriority(
+                    packet,
+                    out entryCarriesStreamData,
+                    out entryClosesStream,
+                    out entryStreamEndOffset);
+            }
+
+            if (candidateKey is not null)
+            {
+                if (candidateIsProbePacket && !entryIsProbePacket)
+                {
+                    // Prefer retransmitting an older outstanding packet before retransmitting a
+                    // probe packet we already emitted during this PTO event.
+                }
+                else if (!candidateIsProbePacket && entryIsProbePacket)
+                {
+                    continue;
+                }
+                if (candidateHasPreferredPayload && !entryHasPreferredPayload)
+                {
+                    continue;
+                }
+
+                if (!candidateHasPreferredPayload && entryHasPreferredPayload)
+                {
+                    // Prefer application packets that actually repair stream progress.
+                }
+                else if (preferStreamData)
+                {
+                    if (!IsPreferredApplicationProbeCandidate(
+                            candidateCarriesStreamData,
+                            candidateClosesStream,
+                            candidateStreamEndOffset,
+                            candidateKey.Value.PacketNumber,
+                            entryCarriesStreamData,
+                            entryClosesStream,
+                            entryStreamEndOffset,
+                            entry.Key.PacketNumber))
+                    {
+                        continue;
+                    }
+                }
+                else if (entry.Key.PacketNumber >= candidateKey.Value.PacketNumber)
+                {
+                    continue;
+                }
+            }
+
+            candidateKey = entry.Key;
+            candidateIsProbePacket = entryIsProbePacket;
+            candidateHasPreferredPayload = entryHasPreferredPayload;
+            candidateCarriesStreamData = entryCarriesStreamData;
+            candidateClosesStream = entryClosesStream;
+            candidateStreamEndOffset = entryStreamEndOffset;
+        }
+
+        if (candidateKey is null)
+        {
+            return false;
+        }
+
+        return sendRuntime.TryRegisterLoss(
+            candidateKey.Value.PacketNumberSpace,
+            candidateKey.Value.PacketNumber,
+            handshakeConfirmed: HandshakeConfirmed,
+            scheduleRetransmission: true);
+    }
+
+    private bool TryGetApplicationProbeSelectionPriority(
+        QuicConnectionSentPacket packet,
+        out bool carriesStreamData,
+        out bool closesStream,
+        out ulong streamEndOffset)
+    {
+        return TryGetApplicationProbeSelectionPriority(
+            packet.PacketBytes,
+            out carriesStreamData,
+            out closesStream,
+            out streamEndOffset);
+    }
+
+    private bool TryGetApplicationProbeSelectionPriority(
+        ReadOnlyMemory<byte> packetBytes,
+        out bool carriesStreamData,
+        out bool closesStream,
+        out ulong streamEndOffset)
+    {
+        carriesStreamData = false;
+        closesStream = false;
+        streamEndOffset = 0;
+
+        if (!tlsState.OneRttProtectPacketProtectionMaterial.HasValue
+            || CurrentPeerDestinationConnectionId.IsEmpty)
+        {
+            return false;
+        }
+
+        QuicHandshakeFlowCoordinator probeSelectionCoordinator = new(CurrentPeerDestinationConnectionId.ToArray());
+        if (!probeSelectionCoordinator.TryOpenProtectedApplicationDataPacket(
+                packetBytes.Span,
+                tlsState.OneRttProtectPacketProtectionMaterial.Value,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength,
+                out _))
+        {
+            return false;
+        }
+
+        bool parsedStreamFrame = false;
+        int offset = 0;
+        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+        while (offset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[offset..];
+            int paddingLength = 0;
+            while (paddingLength < remaining.Length
+                && remaining[paddingLength] == 0)
+            {
+                paddingLength++;
+            }
+
+            if (paddingLength > 0)
+            {
+                offset += paddingLength;
+                continue;
+            }
+
+            if (QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
+            {
+                parsedStreamFrame = true;
+                carriesStreamData |= streamFrame.StreamDataLength > 0;
+                closesStream |= streamFrame.IsFin;
+                ulong streamFrameEndOffset = streamFrame.Offset + (ulong)streamFrame.StreamDataLength;
+                if (streamFrameEndOffset > streamEndOffset)
+                {
+                    streamEndOffset = streamFrameEndOffset;
+                }
+
+                offset += streamFrame.ConsumedLength;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                offset += ackBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
+            {
+                offset += pingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseCryptoFrame(remaining, out _, out int cryptoBytesConsumed))
+            {
+                offset += cryptoBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseNewTokenFrame(remaining, out _, out int newTokenBytesConsumed))
+            {
+                offset += newTokenBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseHandshakeDoneFrame(remaining, out _, out int handshakeDoneBytesConsumed))
+            {
+                offset += handshakeDoneBytesConsumed;
+                continue;
+            }
+
+            break;
+        }
+
+        return parsedStreamFrame;
+    }
+
+    private static bool IsPreferredApplicationProbeCandidate(
+        bool currentCarriesStreamData,
+        bool currentClosesStream,
+        ulong currentStreamEndOffset,
+        ulong currentPacketNumber,
+        bool candidateCarriesStreamData,
+        bool candidateClosesStream,
+        ulong candidateStreamEndOffset,
+        ulong candidatePacketNumber)
+    {
+        if (currentCarriesStreamData != candidateCarriesStreamData)
+        {
+            return candidateCarriesStreamData;
+        }
+
+        if (currentClosesStream != candidateClosesStream)
+        {
+            return candidateClosesStream;
+        }
+
+        if (currentStreamEndOffset != candidateStreamEndOffset)
+        {
+            return candidateStreamEndOffset > currentStreamEndOffset;
+        }
+
+        return candidatePacketNumber > currentPacketNumber;
     }
 
     private bool TrySendRecoveryProbeSequence(
@@ -648,22 +909,28 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (TrySendRecoveryProbeDatagram(firstPacketNumberSpace, nowTicks, ref effects))
+        if (TrySendCoalescedCryptoRecoveryProbeDatagram(
+            firstPacketNumberSpace,
+            secondPacketNumberSpace,
+            ref effects))
         {
-            if (!TrySendRecoveryProbeDatagram(secondPacketNumberSpace, nowTicks, ref effects))
-            {
-                _ = TrySendRecoveryProbeDatagram(thirdPacketNumberSpace, nowTicks, ref effects);
-            }
             return true;
         }
 
-        if (TrySendRecoveryProbeDatagram(secondPacketNumberSpace, nowTicks, ref effects))
+        _ = thirdPacketNumberSpace;
+
+        if (!TrySendRecoveryProbeDatagram(firstPacketNumberSpace, nowTicks, ref effects))
         {
-            _ = TrySendRecoveryProbeDatagram(thirdPacketNumberSpace, nowTicks, ref effects);
-            return true;
+            return false;
         }
 
-        return TrySendRecoveryProbeDatagram(thirdPacketNumberSpace, nowTicks, ref effects);
+        QuicPacketNumberSpace secondProbeSpace = IsInitialAndHandshakePair(
+            firstPacketNumberSpace,
+            secondPacketNumberSpace)
+            ? secondPacketNumberSpace
+            : firstPacketNumberSpace;
+        _ = TrySendRecoveryProbeDatagram(secondProbeSpace, nowTicks, ref effects);
+        return true;
     }
 
     private bool TrySendRecoveryPingProbe(ref List<QuicConnectionEffect>? effects)
@@ -776,10 +1043,9 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
-        if (idleTimeoutState is not null
-            && idleTimeoutState.EffectiveIdleTimeoutMicros == effectiveIdleTimeoutMicros)
+        if (idleTimeoutState is not null)
         {
-            return false;
+            return idleTimeoutState.TryUpdateEffectiveIdleTimeoutMicros(effectiveIdleTimeoutMicros);
         }
 
         idleTimeoutState = new QuicIdleTimeoutState(effectiveIdleTimeoutMicros);

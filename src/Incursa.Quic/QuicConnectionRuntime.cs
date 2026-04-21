@@ -86,6 +86,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private int disposed;
     private Task? processingTask;
     private bool peerHandshakeTranscriptCompleted;
+    private bool handshakeConfirmed;
     private QuicConnectionTransportState transportFlags;
     private QuicConnectionActivePathRecord? activePath;
     private QuicConnectionTimerDeadlineState timerState = default;
@@ -206,6 +207,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     public bool CanSendOrdinaryPackets => SendingMode == QuicConnectionSendingMode.Ordinary;
 
     public bool PeerHandshakeTranscriptCompleted => peerHandshakeTranscriptCompleted;
+
+    internal bool HandshakeConfirmed => tlsState.Role == QuicTlsRole.Server
+        ? peerHandshakeTranscriptCompleted
+        : handshakeConfirmed;
 
     public QuicConnectionTransportState TransportFlags => transportFlags;
 

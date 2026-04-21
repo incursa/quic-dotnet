@@ -656,9 +656,6 @@ internal static class InteropHarnessRunner
 
             ArgumentNullException.ThrowIfNull(transferPlanResult.TransferPlans);
             IReadOnlyList<SequentialTransferPlan> transferPlans = transferPlanResult.TransferPlans;
-            SequentialTransferPlan firstPlan = transferPlans[0];
-            QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(firstPlan.RemoteEndPoint, firstPlan.RequestUri.Host);
-
             using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
             if (qlogScope is not null)
             {
@@ -672,26 +669,24 @@ internal static class InteropHarnessRunner
                     stdout,
                     $"interop harness: role=client, testcase=multiconnect, requestCount={settings.Requests.Count} connecting to {transferPlan.RemoteEndPoint}, target={transferPlan.RelativePath}, connection {index + 1}/{transferPlans.Count}.");
 
+                QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(
+                    transferPlan.RemoteEndPoint,
+                    transferPlan.RequestUri.Host);
                 WriteDeterministicClientKeySelection(settings, stdout);
-                QuicConnection connection = await ConnectWithQlogCaptureAsync(settings, qlogScope, clientOptions).ConfigureAwait(false);
-                await using QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).ConfigureAwait(false);
-
-                await using FileStream sourceStream = new(
-                    transferPlan.SourcePath,
-                    FileMode.Open,
-                    FileAccess.Read,
-                    FileShare.Read,
-                    bufferSize: StreamCopyBufferSize,
-                    useAsync: true);
-
-                await CopyToQuicStreamWithRetryAsync(sourceStream, stream).ConfigureAwait(false);
-                await CompleteQuicStreamWritesWithRetryAsync(stream).ConfigureAwait(false);
-                await stream.DisposeAsync().ConfigureAwait(false);
+                await using QuicConnection connection = await ConnectWithQlogCaptureAsync(settings, qlogScope, clientOptions).ConfigureAwait(false);
+                long bytesDownloaded = await DownloadHttp09ResponseAsync(
+                    connection,
+                    transferPlan,
+                    stdout,
+                    "multiconnect",
+                    settings.Requests.Count,
+                    index,
+                    transferPlans.Count).ConfigureAwait(false);
                 await connection.CloseAsync(0).ConfigureAwait(false);
 
                 WriteLineAndFlush(
                     stdout,
-                    $"interop harness: role=client, testcase=multiconnect, requestCount={settings.Requests.Count} completed managed multiconnect transfer to {transferPlan.DestinationPath} from {transferPlan.SourcePath}, connection {index + 1}/{transferPlans.Count}.");
+                    $"interop harness: role=client, testcase=multiconnect, requestCount={settings.Requests.Count} completed managed multiconnect download to {transferPlan.DestinationPath} from {transferPlan.RequestUri.PathAndQuery}, bytes={bytesDownloaded}, connection {index + 1}/{transferPlans.Count}.");
             }
 
             return 0;
@@ -835,45 +830,26 @@ internal static class InteropHarnessRunner
                     stdout,
                     $"interop harness: role=server, testcase=multiconnect, requestCount={settings.Requests.Count} listening on {listenEndPoint}, connectionCount={transferPlans.Count}.");
 
-                List<Task<QuicConnection>> acceptTasks = [];
                 for (int index = 0; index < transferPlans.Count; index++)
                 {
-                    acceptTasks.Add(listener.AcceptConnectionAsync().AsTask());
-                }
+                    await using QuicConnection connection = await listener.AcceptConnectionAsync().ConfigureAwait(false);
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=server, testcase=multiconnect, requestCount={settings.Requests.Count} accepted managed connection {index + 1}/{transferPlans.Count}.");
+                    int servedRequestCount = await ServeHttp09RequestsAsync(
+                        connection,
+                        stdout,
+                        "multiconnect",
+                        expectedRequestCount: 1,
+                        configuredRequestCount: settings.Requests.Count).ConfigureAwait(false);
 
-                for (int index = 0; index < transferPlans.Count; index++)
-                {
-                    SequentialTransferPlan transferPlan = transferPlans[index];
-                    QuicConnection connection = await acceptTasks[index].ConfigureAwait(false);
-                    await using QuicStream stream = await connection.AcceptInboundStreamAsync().ConfigureAwait(false);
-                    FileInfo sourceInfo = new(transferPlan.SourcePath);
-                    if (!sourceInfo.Exists)
+                    if (servedRequestCount == 0)
                     {
-                        WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=multiconnect missing source file '{transferPlan.SourcePath}'.");
+                        WriteLineAndFlush(stderr, "interop harness: role=server, testcase=multiconnect did not observe an HTTP/0.9 request stream.");
                         return 1;
                     }
 
-                    WriteLineAndFlush(
-                        stdout,
-                        $"interop harness: role=server, testcase=multiconnect, requestCount={settings.Requests.Count} transferring {sourceInfo.Length} bytes from {transferPlan.SourcePath} to {transferPlan.DestinationPath}, connection {index + 1}/{transferPlans.Count}.");
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(transferPlan.DestinationPath)!);
-                    await using FileStream destinationStream = new(
-                        transferPlan.DestinationPath,
-                        FileMode.Create,
-                        FileAccess.Write,
-                        FileShare.None,
-                        bufferSize: 4096,
-                        useAsync: true);
-
-                    await stream.CopyToAsync(destinationStream).ConfigureAwait(false);
-                    await destinationStream.FlushAsync().ConfigureAwait(false);
-                    await stream.DisposeAsync().ConfigureAwait(false);
                     await connection.CloseAsync(0).ConfigureAwait(false);
-
-                    WriteLineAndFlush(
-                        stdout,
-                        $"interop harness: role=server, testcase=multiconnect, requestCount={settings.Requests.Count} completed managed multiconnect transfer from {transferPlan.SourcePath} to {transferPlan.DestinationPath}, connection {index + 1}/{transferPlans.Count}.");
                 }
 
                 return 0;
@@ -1044,14 +1020,22 @@ internal static class InteropHarnessRunner
         int requestIndex,
         int totalRequestCount)
     {
-        await using QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).ConfigureAwait(false);
+        await using QuicStream stream = await RetryTransientSendCreditAsync(
+            () => connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional),
+            "Timed out waiting for QUIC stream open send credit.").ConfigureAwait(false);
         WriteLineAndFlush(
             stdout,
             $"interop harness: role=client, testcase={testCase}, requestCount={configuredRequestCount} opened {testCase} request stream {requestIndex + 1}/{totalRequestCount} for {transferPlan.RequestUri.PathAndQuery}.");
 
         byte[] requestBytes = BuildHttp09GetRequestBytes(transferPlan.RequestUri);
-        await stream.WriteAsync(requestBytes, 0, requestBytes.Length).ConfigureAwait(false);
-        await stream.CompleteWritesAsync().ConfigureAwait(false);
+        await RetryTransientSendCreditAsync(
+            () => new ValueTask(stream.WriteAsync(requestBytes, 0, requestBytes.Length)),
+            "Timed out waiting for QUIC stream send credit.",
+            "Timed out waiting for QUIC stream flow-control credit.").ConfigureAwait(false);
+        await RetryTransientSendCreditAsync(
+            () => stream.CompleteWritesAsync(),
+            "Timed out waiting for QUIC stream FIN send credit.",
+            "Timed out waiting for QUIC stream FIN flow-control credit.").ConfigureAwait(false);
         WriteLineAndFlush(
             stdout,
             $"interop harness: role=client, testcase={testCase}, requestCount={configuredRequestCount} sent HTTP/0.9 request line for {transferPlan.RequestUri.PathAndQuery}.");
@@ -1112,6 +1096,59 @@ internal static class InteropHarnessRunner
 
         File.Move(stagingPath, transferPlan.DestinationPath);
         return new FileInfo(transferPlan.DestinationPath).Length;
+    }
+
+    internal static async Task<T> RetryTransientSendCreditAsync<T>(
+        Func<ValueTask<T>> operation,
+        string congestionTimeoutMessage,
+        string? flowControlTimeoutMessage = null)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
+        ArgumentException.ThrowIfNullOrWhiteSpace(congestionTimeoutMessage);
+
+        long startedAt = Stopwatch.GetTimestamp();
+
+        while (true)
+        {
+            try
+            {
+                return await operation().ConfigureAwait(false);
+            }
+            catch (InvalidOperationException ex) when (IsTransientCongestionExhaustion(ex))
+            {
+                if (Stopwatch.GetElapsedTime(startedAt) >= CongestionRetryTimeout)
+                {
+                    throw new TimeoutException(congestionTimeoutMessage, ex);
+                }
+
+                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
+            }
+            catch (NotSupportedException ex) when (flowControlTimeoutMessage is not null && IsTransientFlowControlCreditExhaustion(ex))
+            {
+                if (Stopwatch.GetElapsedTime(startedAt) >= CongestionRetryTimeout)
+                {
+                    throw new TimeoutException(flowControlTimeoutMessage, ex);
+                }
+
+                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
+            }
+        }
+    }
+
+    internal static async Task RetryTransientSendCreditAsync(
+        Func<ValueTask> operation,
+        string congestionTimeoutMessage,
+        string? flowControlTimeoutMessage = null)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
+        await RetryTransientSendCreditAsync(
+            async () =>
+            {
+                await operation().ConfigureAwait(false);
+                return true;
+            },
+            congestionTimeoutMessage,
+            flowControlTimeoutMessage).ConfigureAwait(false);
     }
 
     private static async Task<int> ServeHttp09RequestsAsync(
@@ -1281,66 +1318,18 @@ internal static class InteropHarnessRunner
 
     private static async Task WriteQuicStreamChunkWithRetryAsync(QuicStream stream, byte[] buffer, int count)
     {
-        long startedAt = Stopwatch.GetTimestamp();
-
-        while (true)
-        {
-            try
-            {
-                await stream.WriteAsync(buffer, 0, count).ConfigureAwait(false);
-                return;
-            }
-            catch (InvalidOperationException ex) when (IsTransientCongestionExhaustion(ex))
-            {
-                if (Stopwatch.GetElapsedTime(startedAt) >= CongestionRetryTimeout)
-                {
-                    throw new TimeoutException("Timed out waiting for QUIC stream send credit.", ex);
-                }
-
-                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
-            }
-            catch (NotSupportedException ex) when (IsTransientFlowControlCreditExhaustion(ex))
-            {
-                if (Stopwatch.GetElapsedTime(startedAt) >= CongestionRetryTimeout)
-                {
-                    throw new TimeoutException("Timed out waiting for QUIC stream flow-control credit.", ex);
-                }
-
-                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
-            }
-        }
+        await RetryTransientSendCreditAsync(
+            () => new ValueTask(stream.WriteAsync(buffer, 0, count)),
+            "Timed out waiting for QUIC stream send credit.",
+            "Timed out waiting for QUIC stream flow-control credit.").ConfigureAwait(false);
     }
 
     private static async Task CompleteQuicStreamWritesWithRetryAsync(QuicStream stream)
     {
-        long startedAt = Stopwatch.GetTimestamp();
-
-        while (true)
-        {
-            try
-            {
-                await stream.CompleteWritesAsync().ConfigureAwait(false);
-                return;
-            }
-            catch (InvalidOperationException ex) when (IsTransientCongestionExhaustion(ex))
-            {
-                if (Stopwatch.GetElapsedTime(startedAt) >= CongestionRetryTimeout)
-                {
-                    throw new TimeoutException("Timed out waiting for QUIC stream FIN send credit.", ex);
-                }
-
-                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
-            }
-            catch (NotSupportedException ex) when (IsTransientFlowControlCreditExhaustion(ex))
-            {
-                if (Stopwatch.GetElapsedTime(startedAt) >= CongestionRetryTimeout)
-                {
-                    throw new TimeoutException("Timed out waiting for QUIC stream FIN flow-control credit.", ex);
-                }
-
-                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
-            }
-        }
+        await RetryTransientSendCreditAsync(
+            () => stream.CompleteWritesAsync(),
+            "Timed out waiting for QUIC stream FIN send credit.",
+            "Timed out waiting for QUIC stream FIN flow-control credit.").ConfigureAwait(false);
     }
 
     private static bool IsTransientCongestionExhaustion(InvalidOperationException exception)

@@ -28,6 +28,29 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0009
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void HandlePacketReceived_TracksTheLargestObservedDatagramSizeOnTheActivePath()
+    {
+        using QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(
+            new QuicConnectionPathIdentity("203.0.113.9", RemotePort: 443));
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 1,
+                new QuicConnectionPathIdentity("203.0.113.9", RemotePort: 443),
+                new byte[1280]),
+            nowTicks: 1);
+
+        Assert.True(result.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(1280UL, runtime.ActivePath.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
+        Assert.Equal(
+            runtime.ActivePath.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes,
+            runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void Constructor_RejectsZeroMaximumDatagramSizes()

@@ -29,9 +29,10 @@ internal sealed partial class QuicConnectionRuntime
                 phase = QuicConnectionPhase.Active;
             }
 
-            // The recovery model treats peer-handshake completion as the client's available
-            // handshake-confirmed proof point, so use the same gate to drop the bootstrap
-            // anti-amplification cap on the active peer path for both roles.
+            // The supported client floor still uses transcript completion as the currently
+            // available bootstrap-path validation proof point so the active path does not
+            // remain stuck in bootstrap-only state once the peer handshake flight is proven.
+            // Recovery-level handshake confirmation remains a separate client-side signal.
             if (QuicAddressValidation.PeerCompletedAddressValidation(
                     isServer: tlsState.Role == QuicTlsRole.Server,
                     handshakeAckReceived: false,
@@ -314,15 +315,19 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (diagnosticsEnabled)
-        {
-            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketReceived(packetReceivedEvent.PathIdentity, packetReceivedEvent.Datagram.Span));
-        }
-
         ReadOnlySpan<byte> datagram = packetReceivedEvent.Datagram.Span;
         if (!QuicPacketParser.TryGetPacketNumberSpace(datagram, out QuicPacketNumberSpace packetNumberSpace)
-            || packetNumberSpace != QuicPacketNumberSpace.Initial
-            || initialPacketProtection is null
+            || packetNumberSpace != QuicPacketNumberSpace.Initial)
+        {
+            return false;
+        }
+
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketReceived(packetReceivedEvent.PathIdentity, datagram));
+        }
+
+        if (initialPacketProtection is null
             || !handshakeFlowCoordinator.TryOpenInitialPacket(
                 datagram,
                 initialPacketProtection,
@@ -375,6 +380,11 @@ internal sealed partial class QuicConnectionRuntime
             || packetNumberSpace != QuicPacketNumberSpace.Handshake)
         {
             return false;
+        }
+
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketReceived(packetReceivedEvent.PathIdentity, datagram));
         }
 
         if (!tlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial packetProtectionMaterial))
@@ -798,6 +808,7 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
+                stateChanged |= TryHandleHandshakeDoneFrameReceived(nowTicks, ref effects);
                 offset += handshakeDoneBytesConsumed;
                 packetAckEliciting = true;
                 continue;
@@ -1095,7 +1106,7 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged |= sendRuntime.TryAcknowledgePacket(
                 QuicPacketNumberSpace.ApplicationData,
                 packetNumber,
-                handshakeConfirmed: peerHandshakeTranscriptCompleted);
+                handshakeConfirmed: HandshakeConfirmed);
         }
 
         stateChanged |= recoveryController.RecordAcknowledgment(
@@ -1104,7 +1115,7 @@ internal sealed partial class QuicConnectionRuntime
             ackReceivedAtMicros,
             newlyAcknowledgedAckElicitingPacketNumbers.ToArray(),
             ackDelayMicros: ackFrame.AckDelay,
-            handshakeConfirmed: peerHandshakeTranscriptCompleted,
+            handshakeConfirmed: HandshakeConfirmed,
             peerMaxAckDelayMicros: tlsState.PeerTransportParameters?.MaxAckDelay ?? 0);
 
         stateChanged |= TryRegisterDetectedLosses(nowTicks);
@@ -1742,6 +1753,10 @@ internal sealed partial class QuicConnectionRuntime
             };
 
             TrackHandshakePacket(packetNumber, protectedPacket, probePacket);
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketSent(currentPath.Identity, protectedPacket));
+            }
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
                 currentPath.Identity,
                 protectedPacket));
@@ -1795,6 +1810,33 @@ internal sealed partial class QuicConnectionRuntime
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             currentPath.Identity,
             protectedPacket));
+        return true;
+    }
+
+    private bool TryHandleHandshakeDoneFrameReceived(
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (tlsState.Role == QuicTlsRole.Server)
+        {
+            QuicConnectionCloseMetadata closeMetadata = new(
+                TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: 0x1E,
+                ReasonPhrase: "The server received a HANDSHAKE_DONE frame.");
+
+            return HandleLocalCloseRequested(
+                new QuicConnectionLocalCloseRequestedEvent(nowTicks, closeMetadata),
+                nowTicks,
+                ref effects);
+        }
+
+        if (handshakeConfirmed)
+        {
+            return false;
+        }
+
+        handshakeConfirmed = true;
         return true;
     }
 

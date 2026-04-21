@@ -204,6 +204,10 @@ internal static class QuicPostHandshakeTicketTestSupport
         Assert.True(runtime.TlsState.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
         Assert.True(runtime.HasResumptionMasterSecret);
+        Assert.False(runtime.HandshakeConfirmed);
+        Assert.True(ReceiveProtectedHandshakeDonePacket(runtime, observedAtTicks: 7).StateChanged);
+        Assert.True(runtime.HandshakeConfirmed);
+        AcknowledgeTrackedPackets(runtime);
 
         return runtime;
     }
@@ -443,8 +447,54 @@ internal static class QuicPostHandshakeTicketTestSupport
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
         Assert.True(runtime.HasResumptionMasterSecret);
         Assert.False(runtime.IsEarlyDataAdmissionOpen);
+        Assert.False(runtime.HandshakeConfirmed);
+        Assert.True(ReceiveProtectedHandshakeDonePacket(runtime, observedAtTicks).StateChanged);
+        Assert.True(runtime.HandshakeConfirmed);
+        AcknowledgeTrackedPackets(runtime);
 
         return runtime;
+    }
+
+    private static void AcknowledgeTrackedPackets(QuicConnectionRuntime runtime)
+    {
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPacket in runtime.SendRuntime.SentPackets.ToArray())
+        {
+            Assert.True(runtime.SendRuntime.TryAcknowledgePacket(
+                sentPacket.Key.PacketNumberSpace,
+                sentPacket.Key.PacketNumber,
+                handshakeConfirmed: true));
+        }
+
+        Assert.Empty(runtime.SendRuntime.SentPackets);
+        Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
+    }
+
+    internal static QuicConnectionTransitionResult ReceiveProtectedHandshakeDonePacket(
+        QuicConnectionRuntime runtime,
+        long observedAtTicks)
+    {
+        byte[] protectedPacket = CreateProtectedHandshakeDonePacket(runtime);
+        QuicConnectionPathIdentity pathIdentity = runtime.ActivePath?.Identity ?? PacketPathIdentity;
+        return runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: observedAtTicks,
+                pathIdentity,
+                protectedPacket),
+            nowTicks: observedAtTicks);
+    }
+
+    internal static byte[] CreateProtectedHandshakeDonePacket(QuicConnectionRuntime runtime)
+    {
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+        byte[] destinationConnectionId = runtime.CurrentPeerDestinationConnectionId.ToArray();
+        QuicHandshakeFlowCoordinator coordinator = new(destinationConnectionId);
+        Assert.True(coordinator.TrySetDestinationConnectionId(destinationConnectionId));
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            QuicFrameTestData.BuildHandshakeDoneFrame(),
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            runtime.TlsState.CurrentOneRttKeyPhase == 1,
+            out byte[] protectedPacket));
+        return protectedPacket;
     }
 
     internal static byte[] CreatePostHandshakeTicketMessage(

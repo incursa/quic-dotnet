@@ -77,6 +77,49 @@ public sealed class QuicCapturedInteropReplayTests
         //   runner-logs\quic-go_chrome\retry\sim\trace_node_left.pcap
         // Packet 48: client -> server replayed Initial packet that follows the Retry.
         "C700000001044274E8CE0888B72C24D21FF97C4065EA5944A5B83A19629A69A7242056B907AD648E374D790C57AADB84B45E034C38A894A0E32C4CDF469C922B5CB456A05A94358EDF537D730AFF561A24E74BF3ADE2DF2710F8CBE5B67915A092F5EE34254EDC00FD518792833BB8A88DC20EE01EC1905140AB449A93981243EA133BA9AE4294E5A4F062239554F12CD22A2257A6C47EBA6375C2CD4CA0A9330BCF3AA1D154DE83E8923286B8AB177C539F16D819FAE6F5CD5AA99D616F0A2142A40F5CF05314F8DFEADB7C528CAF38B51BC0A35067F53DAA95AFE4B1B86403DE9311BA9E7F4AF4CE0C9B0D456497C498BD4E88BE4B748D2EB4221542A284240846CD2C1E7D98DB126693D9080572027A9D15BACE4B1D34492B75E459C0287F63FDBCD4393431D267917EE9CAEC550535ABE9617FF4E6EDACFFCC693520EB86047FD83BE284755C8B4D5EFE5F4C37BE62D82121C5EF648E9ACBDDCB5C519544006475FA4DA3EC6476FD1444E1AF94B42F722ACE36BECC0B9FB1F8E7BCFCC8DC80F89BBC62475BD4B443520AC7FB3449A378750EF736DC8680F20632F4E51F7C68D5A39E3A29A066C726F8E1231D8515ED4AB3878D5C928FC450360EE8294433F3383FA4DB0B5FAFF26882D86912E3AEB5963A5674DAEF16EE240D755A5B3AC3E41AD9B53B48DA4B29CFA403DB14DDC2DBDE9862A0E1FE0DD1A224BB01FF0A2A8B712610ABAF8907E05704FCD211291429A79D86C61BF22F79CE0EB4ECF0B7088FFB3DA38FFD834C12A3C0BAFB4E5D95D384A4841F2FFAD1FCA1AB0A53D346191718357A603B03C16F970FCB2211B5BFE300CE754848635BE06CC82187A3FC5CD3C3A0BF89F7793355D3DB71AE216744F4FD0F0D264208FE227E39BEA01DCA4A565713F3B5A7CBB2E157246EB1C41B648043E8C1957DCC4F63A5DE7EBBF46D600AF05DE437D0DCE9B0C38DEE51F0CABFA09FE072445963FE494AA7AA8D095E135246C7EE70A9822F586B317ABF773A36EA03AE4DF5180FB71FF68489632DAA509EEA642E236B9840801C8A2F48286E8BC66405AF2B37D35315A381BC3FC0752FBDD6B2C66FF9E0EEC2D92D1998B8110811FFB4B56FC8BCE186AE4CB7AE49EEEF82D56496FEA7DB2C54E21D10B753393819BC14EEFB37620309EC988C8C551039DFC60BA18974E68FEA8E5969C0E80DF3D4911EC12B8D98886ACE8583524B994FB20B0AF0B38DCA825F2408BAD8EC5E328C786BA5CA98071228373D03C88F232D7FA2AC899C04FBB700B279885757A51185DC3A403DE86528D7842EDE87C5BED5D990F7529F66DB353F772CE15005859C0DCA94E36A1BDF05ACE6790D84EA20450B08359DAEAE2477CA7CAB77C7E1665800D3181DCAEF190D60027616A2FCFFDDFD9E133291B1784D62DA3A2D7108008C6FEB0D55CB88F021A3F112F06C9435B4493A6FA8CCE1BF56F40551AB139E4BE7ABA33FF6364F6AFBBCDA9F0D7E5D3B436BCE7C111002132631F6B4A44A7D98A7FE26C54D6BF1E514C8E7DCA3D62ADB18EE6D0C3750518A34194A9AD871993C8FD19F30C846C1BE22B422EF69AC9B7E9DF3C4E529C26E531EF511A259272AC61F78B9F87957F570557A7EDA96D05066E38C6A2E8AE7D0BB1E0D0E2D63FF8C7A08C2F5EE87E4CF9E96608DC9FBEF8D946BB5D91630453219565BC093F9851FA9664FD9C9FBC2495E47B1CC476A0E5FA536A3CAB0CDE6951475E40BF3E65D226C97456693A6BEA773398619B5585C2B9C1AAAF75E8AF4C934D7E0D4A8ED1F06382A8DBE29D2138A941F399744F62ED60387F4315E9CDB34BE76ABB96B8CB5EC184E5C8E64983C55");
+    private static readonly byte[] CapturedQuicGoMulticonnectOriginalInitialDestinationConnectionId = Convert.FromHexString("97484682953323E0");
+    private static readonly byte[] CapturedQuicGoMulticonnectClientHandshakeRetransmission = Convert.FromHexString(
+        // Captured from:
+        // C:\src\incursa\quic-dotnet.local\interop-evidence\20260421-multiconnect-stall\
+        //   client-multiconnect-11a0e9f9cf014ab7bb861a240967f43d.qlog
+        // Final contained-trace tuple 193.167.100.100:443|193.167.0.100:52643, client packet_sent time=10.
+        "E900000001042FC84F0108AFABAAD4B0FE3CE03B368D1348DAFF7CB25CA3E85A3C613F6B3E49659ABAB723D7DD5862997483E9DD0E33F87D52934DF1384AF38252B721C60A3BAB0E27FE8B92E96CA4");
+    private static readonly byte[] CapturedQuicGoMulticonnectClientInitialRetransmission = Convert.FromHexString(
+        // Captured from the same preserved qlog.
+        // Final contained-trace tuple 193.167.100.100:443|193.167.0.100:52643, client packet_sent time=9.
+        "C200000001042FC84F0108AFABAAD4B0FE3CE000449A2E7D2F3110C8D91A367A90A45C60A672F32AA257B330E1EAF0C2BD9E84F65B102C033C346363AACC53FB32B054982DCADA2C8D362F242D8E4FFE3CFBDC23F9BF1FFC68B3CB13FFF6A6AAFB0766D41EFBF146452BE601932D494C6E052BE86F912F5CA8CA25F7D86C7045BF9D7FD3DFE62B3434D25766722290A7F68D7FB53EBFBFD83D18AED24BF4281C12A97E11E6150B0D3BD70874D2E2222EEF3E4DBF5730E9BDCB4051FD5563735C642E50EE604AA9B3923F4A4106D262FE428F77116A6088D0FD6571B38C949FBD0043DFB5A04BD32DFCCB3ED3F61317DBDBB6D21487212B46AD4D30D2BF170E431C92439C8FF7788F927981999AF60A480B0D54F2DC3FBF4E957B2481DBB57C0514FA291E447731A7616200D20A213F684AF1003523386074BB6314B8782015FC5121C065E3D0EB289DBD83569041076B786528D887ACA94CE5E11BCF194127D87F492817ADEC7B561CB47E279F04E3D68BDEFF27C05E03DCBA7718707CF312B21F676257081824D84B261F7931B0B707A2B08E652EF74858D19146BE5321127B074AA82E99D29A277C31674AB0864283F5BE757FA5F643F444CBB0C71367A6AEB94A8BF8CDB2DA3C4DE08C43DF0FD8D2FF498C57E07D33BB2351C69BE0A339CE73C0EF2E3244698896C66CA56E4138710BA04F0A864AC2EAB7FA737AB6A0C581CA8E7704FF60AB30F2A03A63451D29916D9035352F3E742047709BED3C296BF95EDC0E882597DCBE88BB3AB57BB3BDA7D3B9703DF46FC97DDDE8833AB16995120220C25FFDA5E63F787F07D98C38F0B9F732286740A10FE6755006DDE9CF15D77743E74EC58F6CF650E15F36F7566CE63D5F70E001DFD947125CE5865A576F7004C33130E3888FF84F1A1F73F328551F8277EB1F7F1EC8880F3DBFDA78BF50C1C1100B9EDF1010867BD90C87AD72E5F963C9153559E58D62353E0A69D51CD4D8E94555262C6BFE3F31674B79DE486038C50355473F274519B0B047C18DB663B8A48CC48645624BD2EED2EA695620627676A0F107AB0268CA5ED048CCAE324F38AD031C63B0174B18C425EBB7F52F27002B79B89B5F8F73ED64F22B5E2ED535D80F8A573103E9E37642DFCFF1FD30864B94A679F6667600A91F151271467FD240427B0CBC3C8BDD0CDB87A6D4733EF72956CAC417D99B9D80D607F3C2CD8F217732463082A9ADF1E1448B6DDF7C400E648FD460CFA8833610ED2393413D864EC560A23B0C1FF1092D4EC728C32888490EE94729C5228F3B7AC958359C19815A956F25FAFE529F09411F50ACD6346CD0CEB41FAB0FF99D10879F27382EC3F9DACBFF32C519E77CB56A5B4A194E5112924A37079E5E0D017D2EB478D6CA5671D1D7E8B7BEF3F7E27C890C73C7DEA1301A9D3940B40B6C3F267D449A7F26FE4D374C2FC231FB67762F127CE1C36776171A147AAB5EF4ABC6E41EA90EBC48A7BAC8DCF8CEFB24A35ED219A356C33ABE396B50255E9E419CD75680845455953C7B5DCCCC81B8FD6145B5ED78AF86E3754FB879F6F8D66892C2FD0C82E509883E1C1169B636EA149F2D0075E219D34ADC843B87C028CC641BB959A6FB0A48CC866D2CEAB7BB489ABF8B54186E0C6F0272A60E03231A58DF48A900CF9E81476590AC2485579D731258AB05D6D4AB49724D38B0C4");
+    private static readonly byte[][] CapturedQuicGoMulticonnectClientHandshakeTrafficSecretCandidates =
+    [
+        // Captured from:
+        // C:\src\incursa\quic-dotnet.local\interop-evidence\20260421-multiconnect-stall\
+        //   server-keys.log
+        // Tail candidates from the preserved quic-go server key log for the final multiconnect attempts.
+        Convert.FromHexString("07A68A9A10577D3AA91E8E80C46F2A45E4FAFF1F7F71FF9B1046C6CB58E66026"),
+        Convert.FromHexString("7648808F590BEFB2F545D596021BAACC9E5AF01014F13097ADE79A33B7354BC2"),
+        Convert.FromHexString("FD0B0387B345AF3825D51B889E69D34D4D9B8CBAC5A2845864EA4DAB4E235978"),
+        Convert.FromHexString("BA227DCC5A82F4B8E5033378E4618B2164BCD77B458E49A07A503E0C7660236D"),
+    ];
+    private static readonly byte[] CapturedCurrentMulticonnectIssuedConnectionId = Convert.FromHexString("0C2A5AB9");
+    private static readonly byte[] CapturedCurrentMulticonnectClientTrafficSecret = Convert.FromHexString(
+        // Captured from:
+        // C:\src\incursa\quic-dotnet.local\interop-evidence\20260421-multiconnect-regression\
+        //   server-keys.log
+        // CLIENT_TRAFFIC_SECRET_0 for the first stalled multiconnect connection.
+        "7DC1AE4378C05772C86DB76BCAEC43041EA0706B0AC0AB61CC160CBDAD8D47F7");
+    private static readonly byte[] CapturedCurrentMulticonnectOpenMarkerPacket = Convert.FromHexString(
+        // Captured from:
+        // C:\src\incursa\quic-dotnet.local\interop-evidence\20260421-multiconnect-regression\
+        //   trace_node_left.pcap
+        // Client-facing packet 7: short-header 1-RTT stream-open marker that never reached the server-facing trace.
+        "620C2A5AB911246E64D0DD0E9DE4884851848D307B8D9C47340A7CED481E16858DFA6AA0826657D56E9DD12DAF26E75E9BF5B406E970D13AA3");
+    private static readonly byte[] CapturedCurrentMulticonnectRequestPacket = Convert.FromHexString(
+        // Captured from the same preserved left-side simulator trace.
+        // Client-facing packet 8: short-header 1-RTT packet that carries "GET /abundant-endless-ocelot\r\n".
+        "650C2A5AB929BAAF3F43C5322B26F5CB56632C37E378231BA96A5F70D2AA2E3C1DCCBC9DC16C99DB7BF42383D7D25217107B506800341D3D453F1126AA790372015B9B9EDF6492D379AD7B59A8CAC3A3646D78C3596CB4");
+    private static readonly byte[] CapturedCurrentMulticonnectFinOnlyPacket = Convert.FromHexString(
+        // Captured from the same preserved left-side simulator trace.
+        // Client-facing packet 9: short-header 1-RTT FIN-only close at final offset 30.
+        "6C0C2A5AB9F2F7220D20B76B30800718B7D8DC0B4D82DA4AE42C8DFF1DEA0130B6B4FD43146C05189BA1364593794CBD2E2DEB48BB31834F57");
 
     [Fact]
     public void DeterministicBootstrapMatchesCapturedInteropClientInitialPlaintextPacket()
@@ -180,6 +223,73 @@ public sealed class QuicCapturedInteropReplayTests
     }
 
     [Fact]
+    public void CapturedQuicGoServerInitialPacketEmitsOnlyInitialReceiveDiagnosticsForItsOwnBytes()
+    {
+        using QuicCapturedInteropReplayTestSupport.CapturedInteropHandshakeScenario scenario =
+            QuicCapturedInteropReplayTestSupport.CreateDeterministicQuicGoClientHandshakeScenario();
+
+        int diagnosticCountBeforeInitial = scenario.DiagnosticsSink.Events.Count;
+        QuicConnectionTransitionResult initialResult = scenario.ClientRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                PathIdentity: scenario.PathIdentity,
+                Datagram: scenario.CapturedServerInitialPacket),
+            nowTicks: 10);
+
+        string detail = DescribeState(scenario.ClientRuntime, scenario.DiagnosticsSink, initialResult);
+        QuicDiagnosticEvent[] newDiagnostics = scenario.DiagnosticsSink.Events
+            .Skip(diagnosticCountBeforeInitial)
+            .ToArray();
+
+        Assert.True(initialResult.StateChanged, detail);
+        Assert.Contains(newDiagnostics, diagnostic =>
+            diagnostic.Kind == QuicDiagnosticKind.InitialPacketReceived
+            && diagnostic.PacketBytes.Span.SequenceEqual(scenario.CapturedServerInitialPacket));
+        Assert.DoesNotContain(newDiagnostics, diagnostic =>
+            diagnostic.Kind == QuicDiagnosticKind.HandshakePacketReceived
+            && diagnostic.PacketBytes.Span.SequenceEqual(scenario.CapturedServerInitialPacket));
+    }
+
+    [Fact]
+    public void CapturedQuicGoServerHandshakePacketEmitsHandshakeDiagnosticsWithoutMislabelingItAsInitial()
+    {
+        using QuicCapturedInteropReplayTestSupport.CapturedInteropHandshakeScenario scenario =
+            QuicCapturedInteropReplayTestSupport.CreateDeterministicQuicGoClientHandshakeScenario();
+
+        QuicConnectionTransitionResult initialResult = scenario.ClientRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                PathIdentity: scenario.PathIdentity,
+                Datagram: scenario.CapturedServerInitialPacket),
+            nowTicks: 10);
+        Assert.True(initialResult.StateChanged, DescribeState(scenario.ClientRuntime, scenario.DiagnosticsSink, initialResult));
+
+        int diagnosticCountBeforeHandshake = scenario.DiagnosticsSink.Events.Count;
+        QuicConnectionTransitionResult handshakeResult = scenario.ClientRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 11,
+                PathIdentity: scenario.PathIdentity,
+                Datagram: scenario.CapturedServerHandshakePacket),
+            nowTicks: 11);
+
+        string detail = DescribeState(scenario.ClientRuntime, scenario.DiagnosticsSink, handshakeResult);
+        QuicDiagnosticEvent[] newDiagnostics = scenario.DiagnosticsSink.Events
+            .Skip(diagnosticCountBeforeHandshake)
+            .ToArray();
+
+        Assert.True(handshakeResult.StateChanged, detail);
+        Assert.Contains(newDiagnostics, diagnostic =>
+            diagnostic.Kind == QuicDiagnosticKind.HandshakePacketReceived
+            && diagnostic.PacketBytes.Span.SequenceEqual(scenario.CapturedServerHandshakePacket));
+        Assert.DoesNotContain(newDiagnostics, diagnostic =>
+            diagnostic.Kind == QuicDiagnosticKind.InitialPacketReceived
+            && diagnostic.PacketBytes.Span.SequenceEqual(scenario.CapturedServerHandshakePacket));
+        Assert.DoesNotContain(newDiagnostics, diagnostic =>
+            diagnostic.Kind == QuicDiagnosticKind.InitialPacketOpenFailed
+            && diagnostic.PacketBytes.Span.SequenceEqual(scenario.CapturedServerHandshakePacket));
+    }
+
+    [Fact]
     public void CapturedQuicGoRetryPacketRetainsValidRetryBootstrapMetadata()
     {
         Assert.True(QuicRetryIntegrity.TryValidateRetryPacketIntegrity(
@@ -239,6 +349,98 @@ public sealed class QuicCapturedInteropReplayTests
         Assert.Equal((ulong)retryMetadata.RetryToken.Length, retryTokenLength);
         Assert.True(retryMetadata.RetryToken.AsSpan().SequenceEqual(
             replayVersionSpecificData.Slice(retryTokenLengthBytes, retryMetadata.RetryToken.Length)));
+    }
+
+    [Fact]
+    public void CapturedMulticonnectClientInitialRetransmissionStillOpensWithTheOriginalInitialKeysAfterTheVisibleDcidChanges()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            CapturedQuicGoMulticonnectOriginalInitialDestinationConnectionId,
+            out QuicInitialPacketProtection serverProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = new();
+        Assert.True(coordinator.TryOpenInitialPacket(
+            CapturedQuicGoMulticonnectClientInitialRetransmission,
+            serverProtection,
+            out byte[] openedPacket,
+            out _,
+            out _));
+        Assert.True(QuicPacketParsing.TryParseLongHeaderFields(
+            openedPacket,
+            out _,
+            out uint version,
+            out ReadOnlySpan<byte> destinationConnectionId,
+            out ReadOnlySpan<byte> sourceConnectionId,
+            out _));
+
+        Assert.Equal(1u, version);
+        Assert.Equal("2FC84F01", Convert.ToHexString(destinationConnectionId));
+        Assert.Equal("AFABAAD4B0FE3CE0", Convert.ToHexString(sourceConnectionId));
+        Assert.NotEqual(
+            Convert.ToHexString(CapturedQuicGoMulticonnectOriginalInitialDestinationConnectionId),
+            Convert.ToHexString(destinationConnectionId));
+    }
+
+    [Fact]
+    public void CapturedMulticonnectClientHandshakeRetransmissionOpensWithOneOfThePreservedServerKeyLogSecrets()
+    {
+        QuicHandshakeFlowCoordinator coordinator = new();
+
+        foreach (byte[] trafficSecret in CapturedQuicGoMulticonnectClientHandshakeTrafficSecretCandidates)
+        {
+            Assert.True(TryCreateHandshakePacketProtectionMaterial(
+                trafficSecret,
+                out QuicTlsPacketProtectionMaterial openMaterial));
+
+            if (!coordinator.TryOpenHandshakePacket(
+                    CapturedQuicGoMulticonnectClientHandshakeRetransmission,
+                    openMaterial,
+                    out byte[] openedPacket,
+                    out _,
+                    out _))
+            {
+                continue;
+            }
+
+            Assert.True(QuicPacketParsing.TryParseLongHeaderFields(
+                openedPacket,
+                out _,
+                out uint version,
+                out ReadOnlySpan<byte> destinationConnectionId,
+                out ReadOnlySpan<byte> sourceConnectionId,
+                out _));
+            Assert.Equal(1u, version);
+            Assert.Equal("2FC84F01", Convert.ToHexString(destinationConnectionId));
+            Assert.Equal("AFABAAD4B0FE3CE0", Convert.ToHexString(sourceConnectionId));
+            return;
+        }
+
+        Assert.Fail("None of the preserved multiconnect client handshake traffic-secret candidates opened the captured client Handshake retransmission.");
+    }
+
+    [Fact]
+    public void CapturedCurrentMulticonnectPacketsUseConsecutivePacketNumbersAcrossOpenRequestAndFin()
+    {
+        Assert.Equal(1U, GetCapturedCurrentMulticonnectPacketNumber(CapturedCurrentMulticonnectOpenMarkerPacket));
+        Assert.Equal(2U, GetCapturedCurrentMulticonnectPacketNumber(CapturedCurrentMulticonnectRequestPacket));
+        Assert.Equal(3U, GetCapturedCurrentMulticonnectPacketNumber(CapturedCurrentMulticonnectFinOnlyPacket));
+    }
+
+    [Fact]
+    public void CapturedCurrentMulticonnectRequestPacketReplaysAsTheHttp09RequestFrame()
+    {
+        Assert.Equal(
+            "stream(id=0,off=0,len=30,fin=False,data=474554202F616275),padding(29)",
+            DescribeCapturedCurrentMulticonnectFrames(CapturedCurrentMulticonnectRequestPacket));
+    }
+
+    [Fact]
+    public void CapturedCurrentMulticonnectFinOnlyPacketReplaysAsAFinOnlyCloseAtOffset30()
+    {
+        Assert.Equal(
+            "stream(id=0,off=30,len=0,fin=True,data=),padding(28)",
+            DescribeCapturedCurrentMulticonnectFrames(CapturedCurrentMulticonnectFinOnlyPacket));
     }
 
     [Fact]
@@ -481,6 +683,31 @@ public sealed class QuicCapturedInteropReplayTests
         return DescribeFrames(payloadMemory.Span.Slice(payloadOffset, payloadLength));
     }
 
+    private static uint GetCapturedCurrentMulticonnectPacketNumber(ReadOnlySpan<byte> protectedPacket)
+    {
+        OpenCapturedCurrentMulticonnectPacket(
+            protectedPacket,
+            out byte[] openedPacket,
+            out _,
+            out _,
+            out _);
+
+        int packetNumberOffset = 1 + CapturedCurrentMulticonnectIssuedConnectionId.Length;
+        return BinaryPrimitives.ReadUInt32BigEndian(openedPacket.AsSpan(packetNumberOffset, sizeof(uint)));
+    }
+
+    private static string DescribeCapturedCurrentMulticonnectFrames(ReadOnlySpan<byte> protectedPacket)
+    {
+        OpenCapturedCurrentMulticonnectPacket(
+            protectedPacket,
+            out _,
+            out int payloadOffset,
+            out int payloadLength,
+            out ReadOnlyMemory<byte> payloadMemory);
+
+        return DescribeFrames(payloadMemory.Span.Slice(payloadOffset, payloadLength));
+    }
+
     private static string DescribeCapturedServerApplicationFrames(ReadOnlySpan<byte> protectedPacket)
     {
         OpenCapturedServerApplicationPacket(
@@ -543,6 +770,30 @@ public sealed class QuicCapturedInteropReplayTests
         QuicHandshakeFlowCoordinator coordinator = new(
             CapturedQuicGoServerChosenConnectionId,
             CapturedManagedClientSourceConnectionId);
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            openMaterial,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength,
+            out bool observedKeyPhase));
+        Assert.False(observedKeyPhase);
+
+        payloadMemory = openedPacket;
+    }
+
+    private static void OpenCapturedCurrentMulticonnectPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength,
+        out ReadOnlyMemory<byte> payloadMemory)
+    {
+        Assert.True(TryCreateOneRttPacketProtectionMaterial(
+            CapturedCurrentMulticonnectClientTrafficSecret,
+            out QuicTlsPacketProtectionMaterial openMaterial));
+
+        QuicHandshakeFlowCoordinator coordinator = new(CapturedCurrentMulticonnectIssuedConnectionId);
         Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
             protectedPacket,
             openMaterial,
