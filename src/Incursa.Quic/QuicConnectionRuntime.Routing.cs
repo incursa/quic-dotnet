@@ -999,7 +999,37 @@ internal sealed partial class QuicConnectionRuntime
     {
         if (initialAndHandshakeAlreadyCoalesced)
         {
+            if (IsInitialAndHandshakePair(firstPacketNumberSpace, secondPacketNumberSpace)
+                && thirdPacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(
+                    nowTicks,
+                    ref effects))
+            {
+                return true;
+            }
+
             return TrySendRecoveryProbeDatagram(thirdPacketNumberSpace, nowTicks, ref effects);
+        }
+
+        if (firstPacketNumberSpace == QuicPacketNumberSpace.Initial
+            && secondPacketNumberSpace == QuicPacketNumberSpace.Handshake
+            && thirdPacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+        {
+            return TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(
+                    nowTicks,
+                    ref effects)
+                || TrySendRecoveryProbeDatagram(secondPacketNumberSpace, nowTicks, ref effects)
+                || TrySendRecoveryProbeDatagram(thirdPacketNumberSpace, nowTicks, ref effects)
+                || TrySendRecoveryProbeDatagram(firstPacketNumberSpace, nowTicks, ref effects);
+        }
+
+        if (IsInitialAndHandshakePair(firstPacketNumberSpace, secondPacketNumberSpace)
+            && thirdPacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+            && TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(
+                nowTicks,
+                ref effects))
+        {
+            return true;
         }
 
         if (IsInitialAndHandshakePair(firstPacketNumberSpace, secondPacketNumberSpace)

@@ -1,5 +1,7 @@
+using System.Buffers.Binary;
 using System.Net;
 using System.Net.Security;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Reflection;
 using System.Text;
@@ -73,6 +75,230 @@ public sealed class REQ_QUIC_API_0010
         Assert.True(response.AsSpan().SequenceEqual(responseBuffer));
         Assert.Equal(0, await pair.ClientStream.ReadAsync(responseBuffer, 0, responseBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5)));
         await pair.ClientStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task FollowupReadPendingBeforePeerFin_CompletesWithEofWhenThePeerClosesLater()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-212428010-client-chrome
+        //   runner-logs\quic-go_chrome\handshakeloss\output.txt:
+        //     connection 22/50 sent "GET /vibrant-arctic-vga\r\n" and then timed out waiting for more bytes or EOF.
+        //   runner-logs\quic-go_chrome\handshakeloss\server\log.txt:
+        //     quic-go first sent STREAM data length 1024 at offset 0, then later retransmitted a FIN-only STREAM
+        //     frame at offset 1024 after the client had already consumed the response bytes.
+        // The public stream facade must surface that later peer FIN to a pending follow-up ReadAsync rather than
+        // leaving the read blocked after the body bytes have already been delivered.
+        await using LoopbackStreamPair pair = await LoopbackStreamPair.CreateAsync();
+
+        byte[] request = Encoding.ASCII.GetBytes("GET /vibrant-arctic-vga\r\n");
+        byte[] response = Enumerable.Range(0, 1024).Select(static i => (byte)(i % 251)).ToArray();
+
+        await pair.ClientStream.WriteAsync(request, 0, request.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        await pair.ClientStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        await pair.ClientStream.WritesClosed.WaitAsync(TimeSpan.FromSeconds(5));
+
+        byte[] requestBuffer = new byte[request.Length];
+        int requestBytesRead = await ReadWithDiagnosticsAsync(pair, requestBuffer, request.Length);
+        Assert.Equal(request.Length, requestBytesRead);
+        Assert.True(request.AsSpan().SequenceEqual(requestBuffer));
+        Assert.Equal(0, await pair.ServerStream.ReadAsync(new byte[1], 0, 1).WaitAsync(TimeSpan.FromSeconds(5)));
+        await pair.ServerStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5));
+
+        await pair.ServerStream.WriteAsync(response, 0, response.Length).WaitAsync(TimeSpan.FromSeconds(5));
+
+        byte[] responseBuffer = new byte[response.Length];
+        int responseBytesRead = await pair.ClientStream.ReadAsync(responseBuffer, 0, responseBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal(response.Length, responseBytesRead);
+        Assert.True(response.AsSpan().SequenceEqual(responseBuffer));
+
+        Task<int> pendingFollowupRead = pair.ClientStream.ReadAsync(new byte[1], 0, 1);
+        await Task.Delay(150);
+        Assert.False(pendingFollowupRead.IsCompleted, "The follow-up read should still be waiting before the peer sends FIN.");
+
+        await pair.ServerStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        await pair.ServerStream.WritesClosed.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.Equal(0, await pendingFollowupRead.WaitAsync(TimeSpan.FromSeconds(5)));
+        await pair.ClientStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task RuntimeIngressReplay_DeliversBodyThenSurfacesDelayedPeerFinToTheSamePendingRead()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-212428010-client-chrome
+        //   runner-logs\quic-go_chrome\handshakeloss\output.txt:
+        //     connection 22/50 sent "GET /vibrant-arctic-vga\r\n" and then timed out waiting for more bytes or EOF.
+        //   runner-logs\quic-go_chrome\handshakeloss\server\log.txt:
+        //     quic-go sent STREAM stream_id=0 offset=0 length=1024, then later retransmitted a FIN-only STREAM
+        //     frame at offset 1024 after the client had already advanced its flow-control credit on that stream.
+        // This replay drives the actual protected 1-RTT ingress path rather than the local loopback writer.
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            connectionReceiveLimit: 4096,
+            localBidirectionalReceiveLimit: 2048);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await using QuicStream requestStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        Assert.Equal(0L, requestStream.Id);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+
+        QuicHandshakeFlowCoordinator peerCoordinator = new(runtime.CurrentHandshakeSourceConnectionId);
+        byte[] response = Enumerable.Range(0, 1024).Select(static index => (byte)(index % 251)).ToArray();
+
+        byte[] responsePayload = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0E,
+            streamId: (ulong)requestStream.Id,
+            streamData: response,
+            offset: 0);
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            responsePayload,
+            minimumPacketNumberExclusive: 5,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            keyPhase: false,
+            out ulong responsePacketNumber,
+            out byte[] responsePacket));
+        Assert.Equal(6UL, responsePacketNumber);
+
+        QuicConnectionTransitionResult responseResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath.Value.Identity,
+                responsePacket),
+            nowTicks: 10);
+        Assert.True(responseResult.StateChanged, DescribeStream(requestStream));
+
+        byte[] responseBuffer = new byte[response.Length];
+        int responseBytesRead = await requestStream.ReadAsync(responseBuffer, 0, responseBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal(response.Length, responseBytesRead);
+        Assert.True(response.AsSpan().SequenceEqual(responseBuffer));
+
+        Task<int> pendingFollowupRead = requestStream.ReadAsync(new byte[1], 0, 1);
+        await Task.Delay(150);
+        Assert.False(
+            pendingFollowupRead.IsCompleted,
+            $"The follow-up read should still be waiting before the delayed FIN arrives. {DescribeStream(requestStream)}");
+
+        byte[] responseFinPayload = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0F,
+            streamId: (ulong)requestStream.Id,
+            streamData: [],
+            offset: (ulong)response.Length);
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            responseFinPayload,
+            minimumPacketNumberExclusive: 9,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            keyPhase: false,
+            out ulong responseFinPacketNumber,
+            out byte[] responseFinPacket));
+        Assert.Equal(10UL, responseFinPacketNumber);
+
+        QuicConnectionTransitionResult responseFinResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 11,
+                runtime.ActivePath.Value.Identity,
+                responseFinPacket),
+            nowTicks: 11);
+        Assert.True(responseFinResult.StateChanged, DescribeStream(requestStream));
+
+        Assert.Equal(0, await pendingFollowupRead.WaitAsync(TimeSpan.FromSeconds(5)));
+        await requestStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task RuntimeIngressReplay_DeliversBodyThenSurfacesDelayedPeerFinWithoutALengthField()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-221126614-client-chrome
+        //   runner-logs\quic-go_chrome\handshakeloss\output.txt:
+        //     connection 1/50 read 1024 bytes from /sour-sad-cat and then idled waiting for more bytes or EOF.
+        //   runner-logs\quic-go_chrome\handshakeloss\server\qlog\c9131ce79f3864e7.sqlog:
+        //     packet 4 and later retransmissions 8/9/11/12 carried STREAM stream_id=0 offset=1024 length=0 fin=true.
+        // quic-go is sending the standalone FIN-only response frame without a length field on that path, so the
+        // managed runtime must surface EOF for the exact protected 1-RTT encoding that the live peer retransmits.
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            connectionReceiveLimit: 4096,
+            localBidirectionalReceiveLimit: 2048);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await using QuicStream requestStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        Assert.Equal(0L, requestStream.Id);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+
+        QuicHandshakeFlowCoordinator peerCoordinator = new(runtime.CurrentHandshakeSourceConnectionId);
+        byte[] response = Enumerable.Range(0, 1024).Select(static index => (byte)(index % 251)).ToArray();
+
+        byte[] responsePayload = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0E,
+            streamId: (ulong)requestStream.Id,
+            streamData: response,
+            offset: 0);
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            responsePayload,
+            minimumPacketNumberExclusive: 2,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            keyPhase: false,
+            out ulong responsePacketNumber,
+            out byte[] responsePacket));
+        Assert.Equal(3UL, responsePacketNumber);
+
+        QuicConnectionTransitionResult responseResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath.Value.Identity,
+                responsePacket),
+            nowTicks: 10);
+        Assert.True(responseResult.StateChanged, DescribeStream(requestStream));
+
+        byte[] responseBuffer = new byte[response.Length];
+        int responseBytesRead = await requestStream.ReadAsync(responseBuffer, 0, responseBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal(response.Length, responseBytesRead);
+        Assert.True(response.AsSpan().SequenceEqual(responseBuffer));
+
+        Task<int> pendingFollowupRead = requestStream.ReadAsync(new byte[1], 0, 1);
+        await Task.Delay(150);
+        Assert.False(
+            pendingFollowupRead.IsCompleted,
+            $"The follow-up read should still be waiting before the delayed no-length FIN arrives. {DescribeStream(requestStream)}");
+
+        byte[] responseFinPayload = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0D,
+            streamId: (ulong)requestStream.Id,
+            streamData: [],
+            offset: (ulong)response.Length);
+        byte[] responseFinPacket = CreateProtectedMinimalApplicationDataPacket(
+            runtime.CurrentHandshakeSourceConnectionId.Span,
+            packetNumberBytes: [0x00, 0x08],
+            responseFinPayload,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            declaredPacketNumberLength: 2);
+
+        QuicConnectionTransitionResult responseFinResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 11,
+                runtime.ActivePath.Value.Identity,
+                responseFinPacket),
+            nowTicks: 11);
+        Assert.True(responseFinResult.StateChanged, DescribeStream(requestStream));
+
+        Assert.Equal(0, await pendingFollowupRead.WaitAsync(TimeSpan.FromSeconds(5)));
+        await requestStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -316,6 +542,76 @@ public sealed class REQ_QUIC_API_0010
         Assert.NotNull(handshakeFlowField);
         Assert.IsType<QuicHandshakeFlowCoordinator>(handshakeFlowField!.GetValue(runtime));
         return (QuicHandshakeFlowCoordinator)handshakeFlowField.GetValue(runtime)!;
+    }
+
+    private static byte[] CreateProtectedMinimalApplicationDataPacket(
+        ReadOnlySpan<byte> destinationConnectionId,
+        ReadOnlySpan<byte> packetNumberBytes,
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        int declaredPacketNumberLength)
+    {
+        int packetNumberLength = packetNumberBytes.Length;
+        Assert.InRange(packetNumberLength, 1, 4);
+        Assert.InRange(declaredPacketNumberLength, 1, 4);
+        Assert.True(
+            applicationPayload.Length >= QuicInitialPacketProtection.HeaderProtectionSampleOffset,
+            "The plaintext payload must provide enough ciphertext bytes for header protection sampling once the AEAD tag is appended.");
+
+        int packetNumberOffset = 1 + destinationConnectionId.Length;
+
+        byte[] plaintextPacket = new byte[packetNumberOffset + packetNumberLength + applicationPayload.Length];
+        plaintextPacket[0] = (byte)(
+            QuicPacketHeaderBits.FixedBitMask
+            | ((declaredPacketNumberLength - 1) & QuicPacketHeaderBits.PacketNumberLengthBitsMask));
+        destinationConnectionId.CopyTo(plaintextPacket.AsSpan(1));
+        packetNumberBytes.CopyTo(plaintextPacket.AsSpan(packetNumberOffset));
+        applicationPayload.CopyTo(plaintextPacket.AsSpan(packetNumberOffset + packetNumberLength));
+
+        byte[] protectedPacket = new byte[plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength];
+        plaintextPacket[..(packetNumberOffset + packetNumberLength)].CopyTo(protectedPacket);
+
+        Span<byte> nonce = stackalloc byte[QuicInitialPacketProtection.AeadNonceLength];
+        material.AeadIvBytes.CopyTo(nonce);
+
+        int nonceOffset = nonce.Length - packetNumberLength;
+        for (int index = 0; index < packetNumberLength; index++)
+        {
+            nonce[nonceOffset + index] ^= plaintextPacket[packetNumberOffset + index];
+        }
+
+        using (AesGcm aeadGcm = new(material.AeadKeyBytes, QuicInitialPacketProtection.AuthenticationTagLength))
+        {
+            aeadGcm.Encrypt(
+                nonce,
+                plaintextPacket.AsSpan(packetNumberOffset + packetNumberLength, applicationPayload.Length),
+                protectedPacket.AsSpan(packetNumberOffset + packetNumberLength, applicationPayload.Length),
+                protectedPacket.AsSpan(plaintextPacket.Length, QuicInitialPacketProtection.AuthenticationTagLength),
+                protectedPacket.AsSpan(0, packetNumberOffset + packetNumberLength));
+        }
+
+        Span<byte> mask = stackalloc byte[QuicInitialPacketProtection.HeaderProtectionSampleLength];
+        using (Aes aes = Aes.Create())
+        {
+            aes.Key = material.HeaderProtectionKeyBytes.ToArray();
+            aes.Mode = CipherMode.ECB;
+            aes.Padding = PaddingMode.None;
+            int bytesWritten = aes.EncryptEcb(
+                protectedPacket.AsSpan(
+                    packetNumberOffset + QuicInitialPacketProtection.HeaderProtectionSampleOffset,
+                    QuicInitialPacketProtection.HeaderProtectionSampleLength),
+                mask,
+                PaddingMode.None);
+            Assert.Equal(QuicInitialPacketProtection.HeaderProtectionSampleLength, bytesWritten);
+        }
+
+        protectedPacket[0] ^= (byte)(mask[0] & QuicPacketHeaderBits.ShortTypeSpecificBitsMask);
+        for (int index = 0; index < packetNumberLength; index++)
+        {
+            protectedPacket[packetNumberOffset + index] ^= mask[1 + index];
+        }
+
+        return protectedPacket;
     }
 
     private static string DescribeFrames(ReadOnlySpan<byte> payload)
