@@ -1,4 +1,3 @@
-using System.Buffers.Binary;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography;
@@ -295,6 +294,192 @@ public sealed class REQ_QUIC_API_0010
                 runtime.ActivePath.Value.Identity,
                 responseFinPacket),
             nowTicks: 11);
+        Assert.True(responseFinResult.StateChanged, DescribeStream(requestStream));
+
+        Assert.Equal(0, await pendingFollowupRead.WaitAsync(TimeSpan.FromSeconds(5)));
+        await requestStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task RuntimeIngressReplay_LiveMulticonnectRecoveryContextStillSurfacesDelayedPeerFinWithoutALengthField()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-221126614-client-chrome
+        //   runner-logs\quic-go_chrome\handshakeloss\output.txt:
+        //     connection 1/50 read 1024 bytes from /sour-sad-cat and then idled waiting for more bytes or EOF.
+        //   runner-logs\quic-go_chrome\handshakeloss\server\qlog\c9131ce79f3864e7.sqlog:
+        //     the managed client first sent an empty open marker, then the HTTP/0.9 request bytes, then a
+        //     FIN-only stream frame; later ACK-only peer packets left that open marker unacknowledged while
+        //     a delayed FIN-only retransmission at final offset 1024 should still have completed the read.
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            connectionReceiveLimit: 4096,
+            localBidirectionalReceiveLimit: 2048,
+            localBidirectionalSendLimit: 4096);
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        Assert.True(runtime.ActivePath.HasValue);
+        runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 9,
+                runtime.ActivePath.Value.Identity,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 9);
+        outboundEffects.Clear();
+
+        await using QuicStream requestStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        byte[] request = Encoding.ASCII.GetBytes("GET /sour-sad-cat\r\n");
+        await requestStream.WriteAsync(request, 0, request.Length).WaitAsync(TimeSpan.FromSeconds(5));
+
+        long? dueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay);
+        Assert.NotNull(dueTicks);
+        ulong generation = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.ApplicationSendDelay);
+        Assert.True(runtime.ActivePath.HasValue);
+
+        QuicConnectionTransitionResult flushResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: dueTicks.Value,
+                QuicConnectionTimerKind.ApplicationSendDelay,
+                generation),
+            nowTicks: dueTicks.Value);
+        outboundEffects.AddRange(flushResult.Effects);
+
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        await requestStream.WritesClosed.WaitAsync(TimeSpan.FromSeconds(5));
+
+        ulong openMarkerPacketNumber = FindSentStreamFramePacketNumber(
+            runtime,
+            (ulong)requestStream.Id,
+            offset: 0,
+            streamDataLength: 0,
+            fin: false);
+        ulong requestPacketNumber = FindSentStreamFramePacketNumber(
+            runtime,
+            (ulong)requestStream.Id,
+            offset: 0,
+            streamDataLength: request.Length,
+            fin: false);
+        ulong requestFinPacketNumber = FindSentStreamFramePacketNumber(
+            runtime,
+            (ulong)requestStream.Id,
+            offset: (ulong)request.Length,
+            streamDataLength: 0,
+            fin: true);
+
+        Assert.True(openMarkerPacketNumber < requestPacketNumber);
+        Assert.True(requestPacketNumber < requestFinPacketNumber);
+
+        QuicHandshakeFlowCoordinator peerCoordinator = new(runtime.CurrentHandshakeSourceConnectionId);
+        byte[] response = Enumerable.Range(0, 1024).Select(static index => (byte)(index % 251)).ToArray();
+
+        byte[] responsePayload = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0E,
+            streamId: (ulong)requestStream.Id,
+            streamData: response,
+            offset: 0);
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            responsePayload,
+            minimumPacketNumberExclusive: 2,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+            keyPhase: false,
+            out ulong responsePacketNumber,
+            out byte[] responsePacket));
+        Assert.Equal(3UL, responsePacketNumber);
+
+        QuicConnectionTransitionResult responseResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                runtime.ActivePath.Value.Identity,
+                responsePacket),
+            nowTicks: 20);
+        outboundEffects.AddRange(responseResult.Effects);
+        Assert.True(responseResult.StateChanged, DescribeStream(requestStream));
+
+        byte[] responseBuffer = new byte[response.Length];
+        int responseBytesRead = await requestStream.ReadAsync(responseBuffer, 0, responseBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal(response.Length, responseBytesRead);
+        Assert.True(response.AsSpan().SequenceEqual(responseBuffer));
+
+        Task<int> pendingFollowupRead = requestStream.ReadAsync(new byte[1], 0, 1);
+        await Task.Delay(150);
+        Assert.False(
+            pendingFollowupRead.IsCompleted,
+            $"The follow-up read should still be waiting before the delayed peer FIN arrives. {DescribeStream(requestStream)}");
+
+        ulong[] acknowledgedClientPackets = GetSentApplicationPacketNumbers(runtime)
+            .Where(packetNumber => packetNumber != openMarkerPacketNumber)
+            .ToArray();
+        Assert.NotEmpty(acknowledgedClientPackets);
+        Assert.DoesNotContain(openMarkerPacketNumber, acknowledgedClientPackets);
+        outboundEffects.Clear();
+
+        byte[] peerAckPayload = QuicFrameTestData.BuildAckFrame(
+            BuildAckFrame(acknowledgedClientPackets));
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            peerAckPayload,
+            minimumPacketNumberExclusive: responsePacketNumber,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            keyPhase: false,
+            out ulong peerAckPacketNumber,
+            out byte[] peerAckPacket));
+        Assert.True(peerAckPacketNumber > responsePacketNumber);
+
+        QuicConnectionTransitionResult peerAckResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 21,
+                runtime.ActivePath.Value.Identity,
+                peerAckPacket),
+            nowTicks: 21);
+        outboundEffects.AddRange(peerAckResult.Effects);
+        Assert.True(peerAckResult.StateChanged);
+        Assert.DoesNotContain(
+            runtime.SendRuntime.SentPackets.Keys,
+            key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData && key.PacketNumber == openMarkerPacketNumber);
+        ulong retransmittedOpenMarkerPacketNumber = FindSentStreamFramePacketNumber(
+            runtime,
+            (ulong)requestStream.Id,
+            offset: 0,
+            streamDataLength: 0,
+            fin: false);
+        Assert.True(retransmittedOpenMarkerPacketNumber > requestFinPacketNumber);
+        Assert.Contains(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>(),
+            effect => PacketContainsStreamFrame(
+                effect.Datagram.Span,
+                runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+                runtime.CurrentPeerDestinationConnectionId.Span,
+                (ulong)requestStream.Id,
+                offset: 0,
+                streamDataLength: 0,
+                fin: false));
+
+        byte[] responseFinPayload = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0D,
+            streamId: (ulong)requestStream.Id,
+            streamData: [],
+            offset: (ulong)response.Length);
+        byte[] responseFinPacket = CreateProtectedMinimalApplicationDataPacket(
+            runtime.CurrentHandshakeSourceConnectionId.Span,
+            packetNumberBytes: [0x00, 0x09],
+            responseFinPayload,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            declaredPacketNumberLength: 2);
+
+        QuicConnectionTransitionResult responseFinResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 22,
+                runtime.ActivePath.Value.Identity,
+                responseFinPacket),
+            nowTicks: 22);
+        outboundEffects.AddRange(responseFinResult.Effects);
         Assert.True(responseFinResult.StateChanged, DescribeStream(requestStream));
 
         Assert.Equal(0, await pendingFollowupRead.WaitAsync(TimeSpan.FromSeconds(5)));
@@ -612,6 +797,170 @@ public sealed class REQ_QUIC_API_0010
         }
 
         return protectedPacket;
+    }
+
+    private static ulong[] GetSentApplicationPacketNumbers(QuicConnectionRuntime runtime)
+    {
+        return runtime.SendRuntime.SentPackets.Keys
+            .Where(static key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+            .Select(static key => key.PacketNumber)
+            .OrderBy(static packetNumber => packetNumber)
+            .ToArray();
+    }
+
+    private static ulong FindSentStreamFramePacketNumber(
+        QuicConnectionRuntime runtime,
+        ulong streamId,
+        ulong offset,
+        int streamDataLength,
+        bool fin)
+    {
+        foreach (QuicConnectionSentPacket packet in runtime.SendRuntime.SentPackets.Values
+                     .Where(static packet => packet.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+                     .OrderBy(static packet => packet.PacketNumber))
+        {
+            if (TryFindStreamFrame(
+                    packet.PlaintextPayload.Span,
+                    streamId,
+                    offset,
+                    streamDataLength,
+                    fin,
+                    out _))
+            {
+                return packet.PacketNumber;
+            }
+        }
+
+        Assert.Fail(
+            $"No sent application packet contained stream={streamId}, offset={offset}, length={streamDataLength}, fin={fin}.");
+        return 0;
+    }
+
+    private static QuicAckFrame BuildAckFrame(ReadOnlySpan<ulong> acknowledgedPacketNumbers)
+    {
+        if (acknowledgedPacketNumbers.IsEmpty)
+        {
+            throw new ArgumentException("At least one acknowledged packet number is required.", nameof(acknowledgedPacketNumbers));
+        }
+
+        ulong[] ordered = acknowledgedPacketNumbers.ToArray();
+        Array.Sort(ordered);
+
+        List<(ulong Smallest, ulong Largest)> ranges = [];
+        ulong smallest = ordered[0];
+        ulong largest = ordered[0];
+
+        for (int index = 1; index < ordered.Length; index++)
+        {
+            ulong packetNumber = ordered[index];
+            if (packetNumber == largest)
+            {
+                continue;
+            }
+
+            if (packetNumber == largest + 1)
+            {
+                largest = packetNumber;
+                continue;
+            }
+
+            ranges.Add((smallest, largest));
+            smallest = packetNumber;
+            largest = packetNumber;
+        }
+
+        ranges.Add((smallest, largest));
+
+        (ulong Smallest, ulong Largest) highestRange = ranges[^1];
+        List<QuicAckRange> additionalRanges = [];
+        ulong previousSmallestAcknowledged = highestRange.Smallest;
+        for (int index = ranges.Count - 2; index >= 0; index--)
+        {
+            (ulong rangeSmallest, ulong rangeLargest) = ranges[index];
+            ulong gap = previousSmallestAcknowledged - rangeLargest - 2;
+            ulong ackRangeLength = rangeLargest - rangeSmallest;
+            additionalRanges.Add(new QuicAckRange(gap, ackRangeLength, rangeSmallest, rangeLargest));
+            previousSmallestAcknowledged = rangeSmallest;
+        }
+
+        return new QuicAckFrame
+        {
+            FrameType = 0x02,
+            LargestAcknowledged = highestRange.Largest,
+            AckDelay = 0,
+            FirstAckRange = highestRange.Largest - highestRange.Smallest,
+            AdditionalRanges = additionalRanges.ToArray(),
+        };
+    }
+
+    private static bool PacketContainsStreamFrame(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial openMaterial,
+        ReadOnlySpan<byte> destinationConnectionId,
+        ulong streamId,
+        ulong offset,
+        int streamDataLength,
+        bool fin)
+    {
+        QuicHandshakeFlowCoordinator coordinator = new(destinationConnectionId.ToArray());
+        if (!coordinator.TryOpenProtectedApplicationDataPacket(
+                protectedPacket,
+                openMaterial,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength,
+                out _))
+        {
+            return false;
+        }
+
+        return TryFindStreamFrame(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            streamId,
+            offset,
+            streamDataLength,
+            fin,
+            out _);
+    }
+
+    private static bool TryFindStreamFrame(
+        ReadOnlySpan<byte> payload,
+        ulong streamId,
+        ulong offset,
+        int streamDataLength,
+        bool fin,
+        out QuicStreamFrame matchingFrame)
+    {
+        matchingFrame = default;
+        int payloadOffset = 0;
+
+        while (payloadOffset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[payloadOffset..];
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                payloadOffset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (!QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
+            {
+                return false;
+            }
+
+            if (streamFrame.StreamId.Value == streamId
+                && streamFrame.Offset == offset
+                && streamFrame.StreamDataLength == streamDataLength
+                && streamFrame.IsFin == fin)
+            {
+                matchingFrame = streamFrame;
+                return true;
+            }
+
+            payloadOffset += streamFrame.ConsumedLength;
+        }
+
+        return false;
     }
 
     private static string DescribeFrames(ReadOnlySpan<byte> payload)
