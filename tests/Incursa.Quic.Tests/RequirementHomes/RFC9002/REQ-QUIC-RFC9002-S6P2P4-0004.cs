@@ -259,6 +259,105 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void HandleRecoveryTimerExpired_AfterAnInitialOnlyPtoStillUsesTheNextProbeBudgetForHandshakeRepairOnceHandshakePacketsExist()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-085849660-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\output.txt:
+        //     connection 32/50 started on tuple 193.167.100.100:443|193.167.0.100:47878,
+        //     the simulator later showed repeated 1200-byte client Initial retransmissions,
+        //     and no client 79-byte Handshake repair ever reached the server on that tuple.
+        //   runner-logs\quic-go_chrome\handshakeloss\server\log.txt:
+        //     quic-go received client Initial packets 3 and 4 for connection f3cbb6db380cebe1,
+        //     but no later client Handshake packet before timing out.
+        // Recreate the bounded recovery shape behind that preserved failure: the client already
+        // spent one PTO entirely in the Initial space, then learned the peer Handshake flight.
+        // The next PTO must still reserve the second probe datagram for Handshake repair instead
+        // of emitting two more Initial retransmissions and starving the Handshake space.
+        using QuicCapturedInteropReplayTestSupport.CapturedInteropHandshakeScenario scenario =
+            QuicCapturedInteropReplayTestSupport.CreateDeterministicQuicGoClientHandshakeScenario();
+
+        QuicConnectionRuntime runtime = scenario.ClientRuntime;
+
+        long? firstRecoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(firstRecoveryDueTicks);
+        ulong firstRecoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+
+        QuicConnectionTransitionResult firstPtoResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: firstRecoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                firstRecoveryGeneration),
+            nowTicks: firstRecoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect[] firstPtoSendEffects = firstPtoResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        Assert.Equal(2, firstPtoSendEffects.Length);
+        Assert.All(firstPtoSendEffects, sendEffect =>
+        {
+            Assert.True(QuicPacketParser.TryParseLongHeader(sendEffect.Datagram.Span, out QuicLongHeaderPacket packet));
+            Assert.Equal(QuicLongPacketTypeBits.Initial, packet.LongPacketTypeBits);
+        });
+
+        QuicConnectionTransitionResult initialResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: firstRecoveryDueTicks.Value + 1,
+                PathIdentity: scenario.PathIdentity,
+                Datagram: scenario.CapturedServerInitialPacket),
+            nowTicks: firstRecoveryDueTicks.Value + 1);
+
+        Assert.True(initialResult.StateChanged);
+        Assert.True(runtime.TlsState.HandshakeKeysAvailable);
+        Assert.True(runtime.TlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial));
+        QuicHandshakeFlowCoordinator coordinator = new();
+
+        QuicConnectionTransitionResult handshakeResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: firstRecoveryDueTicks.Value + 2,
+                PathIdentity: scenario.PathIdentity,
+                Datagram: scenario.CapturedServerHandshakePacket),
+            nowTicks: firstRecoveryDueTicks.Value + 2);
+
+        Assert.True(handshakeResult.StateChanged);
+        Assert.True(runtime.TlsState.PeerTransportParametersCommitted);
+        Assert.Contains(
+            handshakeResult.Effects.OfType<QuicConnectionSendDatagramEffect>(),
+            sendEffect => coordinator.TryOpenHandshakePacket(
+                sendEffect.Datagram.Span,
+                handshakeMaterial,
+                out _,
+                out _,
+                out _));
+
+        long? secondRecoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(secondRecoveryDueTicks);
+        ulong secondRecoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+
+        QuicConnectionTransitionResult secondPtoResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: secondRecoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                secondRecoveryGeneration),
+            nowTicks: secondRecoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect[] secondPtoSendEffects = secondPtoResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        Assert.Equal(2, secondPtoSendEffects.Length);
+        Assert.Contains(
+            secondPtoSendEffects,
+            sendEffect => coordinator.TryOpenHandshakePacket(
+                sendEffect.Datagram.Span,
+                handshakeMaterial,
+                out _,
+                out _,
+                out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task HandleRecoveryTimerExpired_WhenInitialConsumesTheFirstProbeDatagram_CoalescesHandshakeAndApplicationDataOnTheSecondProbeDatagram()
     {
         // Provenance:
