@@ -576,7 +576,6 @@ public sealed class REQ_QUIC_INT_0013
         string runStamp = runDirectoryName[..^(slotSuffix.Length + 1)];
         return Path.Combine(Path.GetTempPath(), $"interop-runner-build-{runStamp}");
     }
-
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
