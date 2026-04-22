@@ -4,6 +4,23 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S14P2P1_0007
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryApplyProvisionalIcmpMaximumDatagramSizeReduction_DoesNotMarkThePathProvisionalWhenValidationFails()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(1_400));
+
+        Assert.False(runtime.TryApplyProvisionalIcmpMaximumDatagramSizeReduction(
+            runtime.ActivePath!.Value.Identity,
+            [0x80, 0x00],
+            1_300));
+        Assert.False(runtime.ActivePath.Value.MaximumDatagramSizeState.IsProvisional);
+        Assert.Equal(1_400UL, runtime.ActivePath.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryApplyProvisionalIcmpMaximumDatagramSizeReduction_AllowsAProvisionalReductionOnTheActivePath()

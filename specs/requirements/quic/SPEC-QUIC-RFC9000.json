@@ -23108,6 +23108,11 @@
         "upstream_refs": [
           "RFC 9000 §14.2.1 RFC9000-S14.2.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0001.cs::Transition_AcceptsAValidatedReductionAtTheRfcMinimumBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0001.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_IgnoresClaimsBelowTheMinimum",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0001.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_AcceptsAClaimExactlyAtTheRfcMinimum"
         ]
       }
     },
@@ -23134,6 +23139,9 @@
         "upstream_refs": [
           "RFC 9000 §14.2.1 RFC9000-S14.2.1-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0002.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_ValidatesQuotedPacketBeforeReducingTheActivePath"
         ]
       }
     },
@@ -23160,6 +23168,10 @@
         "upstream_refs": [
           "RFC 9000 §14.2.1 RFC9000-S14.2.1-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0003.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_UsesTheQuotedPacketToMatchTheCurrentConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0003.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_IgnoresQuotedPacketsThatBelongToDifferentConnections"
         ]
       }
     },
@@ -23186,6 +23198,10 @@
         "upstream_refs": [
           "RFC 9000 §14.2.1 RFC9000-S14.2.1-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0004.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_AcceptsQuotedPacketsThatMatchTheActivePathAddressAndPort",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0004.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_RequiresTheQuotedPacketToMatchTheActivePathAddressAndPort"
         ]
       }
     },
@@ -23212,6 +23228,11 @@
         "upstream_refs": [
           "RFC 9000 §14.2.1 RFC9000-S14.2.1-B5-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0005.cs::Transition_AppliesTheReductionForAWellFormedQuotedPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0005.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_IgnoresMalformedQuotedPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0005.cs::Transition_IgnoresMalformedQuotedPackets"
         ]
       }
     },
@@ -23238,6 +23259,10 @@
         "upstream_refs": [
           "RFC 9000 §14.2.1 RFC9000-S14.2.1-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0006.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_AllowsAValidatedReductionWithoutAnyIncrease",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0006.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_DoesNotIncreaseTheMaximumDatagramSize"
         ]
       }
     },
@@ -23264,6 +23289,11 @@
         "upstream_refs": [
           "RFC 9000 §14.2.1 RFC9000-S14.2.1-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0007.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_DoesNotMarkThePathProvisionalWhenValidationFails",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0007.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_AllowsAProvisionalReductionOnTheActivePath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0007.cs::Transition_AppliesAProvisionalReductionWhenTheRuntimeReceivesTheICMPEvent"
         ]
       }
     },

@@ -12768,6 +12768,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.2.1 RFC9000-S14.2.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0001.cs::Transition_AcceptsAValidatedReductionAtTheRfcMinimumBoundary
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0001.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_IgnoresClaimsBelowTheMinimum
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0001.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_AcceptsAClaimExactlyAtTheRfcMinimum
 
 ## REQ-QUIC-RFC9000-S14P2P1-0002 Validate ICMP messages when using PMTUD
 QUIC endpoints using PMTUD SHOULD validate ICMP messages to protect from packet injection as specified in [RFC8201] and Section 5.2 of [RFC8085].
@@ -12782,6 +12786,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.2.1 RFC9000-S14.2.1-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0002.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_ValidatesQuotedPacketBeforeReducingTheActivePath
 
 ## REQ-QUIC-RFC9000-S14P2P1-0003 Use the quoted packet to associate ICMP messages with a connection
 This validation SHOULD use the quoted packet supplied in the payload of an ICMP message to associate the message with a corresponding transport connection.
@@ -12796,6 +12802,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.2.1 RFC9000-S14.2.1-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0003.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_UsesTheQuotedPacketToMatchTheCurrentConnection
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0003.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_IgnoresQuotedPacketsThatBelongToDifferentConnections
 
 ## REQ-QUIC-RFC9000-S14P2P1-0004 Validate ICMP messages with addresses, ports, and connection IDs
 ICMP message validation MUST include matching IP addresses and UDP ports and, when possible, connection IDs to an active QUIC session.
@@ -12810,6 +12819,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.2.1 RFC9000-S14.2.1-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0004.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_AcceptsQuotedPacketsThatMatchTheActivePathAddressAndPort
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0004.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_RequiresTheQuotedPacketToMatchTheActivePathAddressAndPort
 
 ## REQ-QUIC-RFC9000-S14P2P1-0005 Ignore ICMP messages that fail validation
 The endpoint SHOULD ignore all ICMP messages that fail validation.
@@ -12824,6 +12836,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.2.1 RFC9000-S14.2.1-B5-P4-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0005.cs::Transition_AppliesTheReductionForAWellFormedQuotedPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0005.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_IgnoresMalformedQuotedPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0005.cs::Transition_IgnoresMalformedQuotedPackets
 
 ## REQ-QUIC-RFC9000-S14P2P1-0006 Do not increase PMTU based on ICMP messages
 An endpoint MUST NOT increase the PMTU based on ICMP messages.
@@ -12838,6 +12854,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.2.1 RFC9000-S14.2.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0006.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_AllowsAValidatedReductionWithoutAnyIncrease
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0006.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_DoesNotIncreaseTheMaximumDatagramSize
 
 ## REQ-QUIC-RFC9000-S14P2P1-0007 Allow provisional reductions in maximum datagram size
 Any reduction in QUIC's maximum datagram size in response to ICMP messages MAY be provisional until QUIC's loss detection algorithm determines that the quoted packet has actually been lost.
@@ -12852,6 +12871,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §14.2.1 RFC9000-S14.2.1-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0007.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_DoesNotMarkThePathProvisionalWhenValidationFails
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0007.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_AllowsAProvisionalReductionOnTheActivePath
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0007.cs::Transition_AppliesAProvisionalReductionWhenTheRuntimeReceivesTheICMPEvent
 
 ## REQ-QUIC-RFC9000-S14P3-0001 DPLPMTUD [DPLPMTUD] relies on tracking loss or acknowledgment of QUIC packets that are carried in PMTU probes
 DPLPMTUD [DPLPMTUD] relies on tracking loss or acknowledgment of QUIC packets that MUST be carried in PMTU probes.
