@@ -1,0 +1,61 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0046",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC server-role ALPN selection verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests, preserved interop replay evidence, fuzzing, benchmark coverage, and SpecTrace render/validation checks.",
+  "scope": "Verify that the managed server-role handshake path preserves peer ClientHello ALPN offers, selects one configured local protocol deterministically, appends that selection inside local EncryptedExtensions, and fails with no_application_protocol before ServerHello publication when ALPN is missing or unsupported.",
+  "preconditions": [
+    "The repository builds successfully on net10.0.",
+    "The preserved post-HRR server-local quic-go handshake evidence remains available under `artifacts/interop-runner/20260422-125529196-server-nginx/`.",
+    "REQ-QUIC-CRT-0113 remains the landed server-role EncryptedExtensions continuation owner.",
+    "A permanent benchmark exists or is extended for the server handshake parser and continuation path."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0148.cs",
+    "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
+    "artifacts/interop-runner/20260422-125529196-server-nginx/runner-logs/nginx_quic-go/handshake/output.txt",
+    "artifacts/interop-runner/20260422-125529196-server-nginx/runner-logs/nginx_quic-go/handshake/client/log.txt",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "scripts/Validate-SpecTraceJson.ps1",
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
+  ],
+  "procedure": [
+    "Run focused requirement-home tests for positive server-role ALPN selection, negative missing-ALPN and no-overlap failure, and replay-style regression coverage for the preserved post-HRR server handshake lane.",
+    "Replay the preserved server-local quic-go handshake evidence rooted at `artifacts/interop-runner/20260422-125529196-server-nginx/` so the previous `server did not select an ALPN protocol` failure is proven against the captured lane.",
+    "Run fuzz coverage over ALPN offer ordering, duplicate ALPN extensions, and malformed ALPN lengths on the server ClientHello path.",
+    "Run the updated benchmark suite for the server handshake parser and continuation path.",
+    "Render the SpecTrace markdown from the canonical JSON and validate the generated artifacts."
+  ],
+  "expected_result": "The managed server-role path selects exactly one configured application protocol from the peer ALPN offer, appends that selection inside local EncryptedExtensions on the existing handshake seam, and fails with no_application_protocol before ServerHello publication when the peer omits ALPN or offers only unsupported protocols. The slice does not widen the cryptographic subset, general TLS group negotiation, certificate flight, or interop classification promises.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0044",
+    "WI-QUIC-CRT-0046"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- Exactly one mutual protocol is selected when the peer offer and local configuration overlap.\n- The emitted EncryptedExtensions message carries one ALPN extension containing only the selected protocol.\n- Missing ALPN or no overlap fails with no_application_protocol before ServerHello or Handshake keys are published.\n- The preserved post-HRR quic-go server handshake lane no longer fails with `server did not select an ALPN protocol`.\n- The slice does not widen x25519, hybrid groups, certificate flight, 0-RTT, 1-RTT, or interop classification promises."
+    },
+    {
+      "heading": "Preserved Interop Evidence",
+      "content": "- Use the preserved post-HRR server-local quic-go rerun under [`artifacts/interop-runner/20260422-125529196-server-nginx/`](../../../artifacts/interop-runner/20260422-125529196-server-nginx/) as the replay bundle for this slice.\n- The narrowed ALPN failure is captured in [`runner-logs/nginx_quic-go/handshake/output.txt`](../../../artifacts/interop-runner/20260422-125529196-server-nginx/runner-logs/nginx_quic-go/handshake/output.txt) and [`runner-logs/nginx_quic-go/handshake/client/log.txt`](../../../artifacts/interop-runner/20260422-125529196-server-nginx/runner-logs/nginx_quic-go/handshake/client/log.txt)."
+    }
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0148"
+  ]
+}

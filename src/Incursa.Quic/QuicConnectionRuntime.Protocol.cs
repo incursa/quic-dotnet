@@ -1076,6 +1076,23 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
+            if (QuicFrameCodec.TryParseConnectionCloseFrame(remaining, out QuicConnectionCloseFrame connectionCloseFrame, out int connectionCloseBytesConsumed))
+            {
+                if (connectionCloseBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                QuicConnectionCloseMetadata closeMetadata = CreateCloseMetadata(connectionCloseFrame);
+                stateChanged |= HandleConnectionCloseFrameReceived(
+                    new QuicConnectionConnectionCloseFrameReceivedEvent(
+                        nowTicks,
+                        closeMetadata),
+                    nowTicks,
+                    ref effects);
+                return stateChanged;
+            }
+
             if (QuicFrameCodec.TryParseNewConnectionIdFrame(remaining, out QuicNewConnectionIdFrame newConnectionIdFrame, out int newConnectionIdBytesConsumed))
             {
                 if (newConnectionIdBytesConsumed <= 0)
@@ -1339,6 +1356,25 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return candidatePacketNumber;
+    }
+
+    private static QuicConnectionCloseMetadata CreateCloseMetadata(QuicConnectionCloseFrame frame)
+    {
+        string? reasonPhrase = frame.ReasonPhrase.IsEmpty
+            ? null
+            : System.Text.Encoding.UTF8.GetString(frame.ReasonPhrase);
+
+        return frame.IsApplicationError
+            ? new QuicConnectionCloseMetadata(
+                TransportErrorCode: null,
+                ApplicationErrorCode: frame.ErrorCode,
+                TriggeringFrameType: null,
+                ReasonPhrase: reasonPhrase)
+            : new QuicConnectionCloseMetadata(
+                TransportErrorCode: (QuicTransportErrorCode)frame.ErrorCode,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: frame.TriggeringFrameType,
+                ReasonPhrase: reasonPhrase);
     }
 
     private bool HandleApplicationAckFrame(
@@ -1796,7 +1832,6 @@ internal sealed partial class QuicConnectionRuntime
 
             EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
-            tlsState.InitialEgressCryptoBuffer.DiscardFutureFrames();
             stateChanged = true;
 
             datagramsSent++;

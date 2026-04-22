@@ -418,6 +418,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         return handshakeFlowCoordinator.TrySetSourceConnectionId(connectionId);
     }
 
+    internal bool TryConfigureLocalApplicationProtocols(IReadOnlyList<SslApplicationProtocol> applicationProtocols)
+    {
+        return tlsBridgeDriver.TryConfigureLocalApplicationProtocols(applicationProtocols);
+    }
+
     internal bool TryConfigureServerAuthenticationMaterial(
         ReadOnlyMemory<byte> certificateDer,
         ReadOnlyMemory<byte> signingPrivateKey,

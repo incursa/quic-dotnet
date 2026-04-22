@@ -13,6 +13,7 @@ internal sealed class QuicTlsTranscriptProgress
 {
     private const ushort HandshakeTranscriptUnavailableAlertDescription = 0x0010;
     private const ushort HandshakeTranscriptParseFailureAlertDescription = 0x0032;
+    private const ushort NoApplicationProtocolAlertDescription = 0x0078;
     private const int HandshakeHeaderLength = 4;
     private const int UInt16Length = 2;
     private const int UInt24Length = 3;
@@ -23,7 +24,14 @@ internal sealed class QuicTlsTranscriptProgress
     private const ushort TlsLegacyVersion = 0x0303;
     private const ushort Tls13Version = 0x0304;
     private const ushort ApplicationLayerProtocolNegotiationExtensionType = 0x0010;
+    private const ushort EcPointFormatsExtensionType = 0x000b;
+    private const ushort ExtendedMasterSecretExtensionType = 0x0017;
+    private const ushort RenegotiationInfoExtensionType = 0xff01;
+    private const ushort ServerNameExtensionType = 0x0000;
     private const ushort SignatureAlgorithmsExtensionType = 0x000d;
+    private const ushort SignatureAlgorithmsCertExtensionType = 0x0032;
+    private const ushort SignedCertificateTimestampExtensionType = 0x0012;
+    private const ushort StatusRequestExtensionType = 0x0005;
     private const ushort SupportedGroupsExtensionType = 0x000a;
     private const byte NullCompressionMethod = 0x00;
     private const int MaximumSessionIdLength = 32;
@@ -35,6 +43,7 @@ internal sealed class QuicTlsTranscriptProgress
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
     private const ushort EcdsaSecp256r1Sha256SignatureScheme = (ushort)QuicTlsSignatureScheme.EcdsaSecp256r1Sha256;
     private const ushort TlsAes128GcmSha256Value = (ushort)QuicTlsCipherSuite.TlsAes128GcmSha256;
+    private const byte UncompressedEcPointFormat = 0x00;
     private const byte UncompressedPointFormat = 0x04;
     private const int Secp256r1CoordinateLength = 32;
     private const int Secp256r1KeyShareLength = 1 + (Secp256r1CoordinateLength * 2);
@@ -54,7 +63,9 @@ internal sealed class QuicTlsTranscriptProgress
     private QuicTlsCipherSuite? selectedCipherSuite;
     private QuicTlsTranscriptHashAlgorithm? transcriptHashAlgorithm;
     private ushort? terminalAlertDescription;
+    private ushort? currentParseFailureAlertDescription;
     private bool serverClientCertificateRequired;
+    private bool serverApplicationProtocolsConfigured;
     private bool serverHelloSelectedPreSharedKey;
 
     /// <summary>
@@ -81,6 +92,14 @@ internal sealed class QuicTlsTranscriptProgress
         serverClientCertificateRequired = clientCertificateRequired;
     }
 
+    internal void ConfigureServerApplicationProtocols(bool applicationProtocolsConfigured)
+    {
+        if (role == QuicTlsRole.Server && applicationProtocolsConfigured)
+        {
+            serverApplicationProtocolsConfigured = true;
+        }
+    }
+
     internal bool TryResetClientPeerHandshakeAttempt()
     {
         if (role != QuicTlsRole.Client)
@@ -100,6 +119,7 @@ internal sealed class QuicTlsTranscriptProgress
             || selectedCipherSuite.HasValue
             || transcriptHashAlgorithm.HasValue
             || terminalAlertDescription.HasValue
+            || currentParseFailureAlertDescription.HasValue
             || serverHelloSelectedPreSharedKey;
 
         partialTranscript.Clear();
@@ -114,6 +134,7 @@ internal sealed class QuicTlsTranscriptProgress
         selectedCipherSuite = null;
         transcriptHashAlgorithm = null;
         terminalAlertDescription = null;
+        currentParseFailureAlertDescription = null;
         serverHelloSelectedPreSharedKey = false;
         return stateChanged;
     }
@@ -316,6 +337,7 @@ internal sealed class QuicTlsTranscriptProgress
             HandshakeHeaderLength,
             checked((int)handshakeMessageBodyLength));
         ReadOnlyMemory<byte> handshakeMessageBytes = transcriptBytes.Slice(0, totalMessageLength).ToArray();
+        currentParseFailureAlertDescription = null;
 
         if (!TryParseCurrentMessage(
             messageType,
@@ -323,7 +345,7 @@ internal sealed class QuicTlsTranscriptProgress
             handshakeMessageBodyLength,
             out ParsedHandshakeMessage parsedMessage))
         {
-            return Fail(HandshakeTranscriptParseFailureAlertDescription);
+            return Fail(currentParseFailureAlertDescription ?? HandshakeTranscriptParseFailureAlertDescription);
         }
 
         CommitParsedMessage(parsedMessage);
@@ -435,6 +457,9 @@ internal sealed class QuicTlsTranscriptProgress
             HandshakeProgressState.AwaitingClientHello
                 => messageType == QuicTlsHandshakeMessageType.ClientHello
                     && TryParseClientHello(handshakeMessageBody, handshakeMessageLengthValue, out parsedMessage),
+            HandshakeProgressState.AwaitingRetryClientHello
+                => messageType == QuicTlsHandshakeMessageType.ClientHello
+                    && TryParseClientHello(handshakeMessageBody, handshakeMessageLengthValue, out parsedMessage),
             HandshakeProgressState.AwaitingServerHello
                 => messageType == QuicTlsHandshakeMessageType.ServerHello
                     && TryParseServerHello(handshakeMessageBody, handshakeMessageLengthValue, out parsedMessage),
@@ -461,6 +486,7 @@ internal sealed class QuicTlsTranscriptProgress
         out ParsedHandshakeMessage parsedMessage)
     {
         parsedMessage = default;
+        bool allowHelloRetryRequest = progressState == HandshakeProgressState.AwaitingClientHello;
 
         int index = 0;
         if (!TryReadUInt16(handshakeMessageBody, ref index, out ushort legacyVersion)
@@ -494,12 +520,28 @@ internal sealed class QuicTlsTranscriptProgress
                 out QuicTlsTranscriptHashAlgorithm hashAlgorithm)
             || !TryParseClientHelloExtensions(
                 handshakeMessageBody.Slice(handshakeMessageBody.Length - extensionsLength, extensionsLength),
+                allowHelloRetryRequest,
                 GetTransportParameterRoleForCurrentEndpoint(),
+                out ClientHelloKeyShareDisposition keyShareDisposition,
                 out QuicTlsNamedGroup peerNamedGroup,
                 out ReadOnlyMemory<byte> peerKeyShare,
                 out QuicTransportParameters? transportParameters))
         {
             return false;
+        }
+
+        if (keyShareDisposition == ClientHelloKeyShareDisposition.HelloRetryRequestRequired)
+        {
+            parsedMessage = new ParsedHandshakeMessage(
+                QuicTlsTranscriptStepKind.HelloRetryRequestRequested,
+                QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage,
+                HandshakeProgressState.AwaitingRetryClientHello,
+                QuicTlsHandshakeMessageType.ClientHello,
+                handshakeMessageLengthValue,
+                SelectedCipherSuite: cipherSuite,
+                TranscriptHashAlgorithm: hashAlgorithm,
+                NamedGroup: QuicTlsNamedGroup.Secp256r1);
+            return true;
         }
 
         parsedMessage = new ParsedHandshakeMessage(
@@ -869,20 +911,25 @@ internal sealed class QuicTlsTranscriptProgress
 
     private bool TryParseClientHelloExtensions(
         ReadOnlySpan<byte> extensions,
+        bool allowHelloRetryRequest,
         QuicTransportParameterRole receiverRole,
+        out ClientHelloKeyShareDisposition keyShareDisposition,
         out QuicTlsNamedGroup peerNamedGroup,
         out ReadOnlyMemory<byte> peerKeyShare,
         out QuicTransportParameters? transportParameters)
     {
+        keyShareDisposition = default;
         peerNamedGroup = default;
         peerKeyShare = default;
         transportParameters = null;
 
         bool foundSupportedVersions = false;
         bool foundSignatureAlgorithms = false;
+        bool foundSignatureAlgorithmsCert = false;
         bool foundSupportedGroups = false;
         bool foundKeyShare = false;
         bool foundTransportParameters = false;
+        bool foundApplicationProtocols = false;
         bool foundPskKeyExchangeModes = false;
         bool foundPreSharedKey = false;
         List<ushort> seenExtensionTypes = [];
@@ -923,11 +970,65 @@ internal sealed class QuicTlsTranscriptProgress
 
                 foundSignatureAlgorithms = true;
             }
+            else if (extensionType == SignatureAlgorithmsCertExtensionType)
+            {
+                if (foundSignatureAlgorithmsCert || !TryParseClientHelloSignatureAlgorithms(extensionValue))
+                {
+                    return false;
+                }
+
+                foundSignatureAlgorithmsCert = true;
+            }
             else if (extensionType == ApplicationLayerProtocolNegotiationExtensionType)
             {
                 if (!TryParseApplicationLayerProtocolNegotiationExtension(
                     extensionValue,
-                    requireSingleProtocol: false))
+                    requireSingleProtocol: false,
+                    rejectDuplicateProtocols: true)
+                    || foundApplicationProtocols)
+                {
+                    if (role == QuicTlsRole.Server && serverApplicationProtocolsConfigured)
+                    {
+                        currentParseFailureAlertDescription = NoApplicationProtocolAlertDescription;
+                    }
+
+                    return false;
+                }
+
+                foundApplicationProtocols = true;
+            }
+            else if (extensionType == ServerNameExtensionType)
+            {
+                if (!TryParseClientHelloServerName(extensionValue))
+                {
+                    return false;
+                }
+            }
+            else if (extensionType == EcPointFormatsExtensionType)
+            {
+                if (!TryParseClientHelloEcPointFormats(extensionValue))
+                {
+                    return false;
+                }
+            }
+            else if (extensionType == RenegotiationInfoExtensionType)
+            {
+                if (!TryParseClientHelloRenegotiationInfo(extensionValue))
+                {
+                    return false;
+                }
+            }
+            else if (extensionType == ExtendedMasterSecretExtensionType
+                || extensionType == SignedCertificateTimestampExtensionType)
+            {
+                if (extensionValue.Length != 0)
+                {
+                    return false;
+                }
+            }
+            else if (extensionType == StatusRequestExtensionType)
+            {
+                if (!TryParseClientHelloStatusRequest(extensionValue))
                 {
                     return false;
                 }
@@ -943,7 +1044,12 @@ internal sealed class QuicTlsTranscriptProgress
             }
             else if (extensionType == KeyShareExtensionType)
             {
-                if (foundKeyShare || !TryParseClientHelloKeyShare(extensionValue, out peerNamedGroup, out peerKeyShare))
+                if (foundKeyShare
+                    || !TryParseClientHelloKeyShare(
+                        extensionValue,
+                        out keyShareDisposition,
+                        out peerNamedGroup,
+                        out peerKeyShare))
                 {
                     return false;
                 }
@@ -990,10 +1096,20 @@ internal sealed class QuicTlsTranscriptProgress
             }
         }
 
-        return foundSupportedVersions
-            && foundKeyShare
-            && foundTransportParameters
-            && foundPskKeyExchangeModes == foundPreSharedKey;
+        if (!foundSupportedVersions
+            || !foundKeyShare
+            || !foundTransportParameters
+            || foundPskKeyExchangeModes != foundPreSharedKey)
+        {
+            return false;
+        }
+
+        if (keyShareDisposition == ClientHelloKeyShareDisposition.HelloRetryRequestRequired)
+        {
+            return allowHelloRetryRequest && foundSupportedGroups;
+        }
+
+        return true;
     }
 
     private static bool TryParseClientHelloSupportedVersions(ReadOnlySpan<byte> extensionValue)
@@ -1071,7 +1187,8 @@ internal sealed class QuicTlsTranscriptProgress
 
     private static bool TryParseApplicationLayerProtocolNegotiationExtension(
         ReadOnlySpan<byte> extensionValue,
-        bool requireSingleProtocol)
+        bool requireSingleProtocol,
+        bool rejectDuplicateProtocols = false)
     {
         int index = 0;
         if (!TryReadUInt16(extensionValue, ref index, out ushort protocolNameListLength)
@@ -1082,6 +1199,7 @@ internal sealed class QuicTlsTranscriptProgress
         }
 
         int protocolCount = 0;
+        List<byte[]>? seenProtocols = rejectDuplicateProtocols ? [] : null;
         int protocolListEnd = index + protocolNameListLength;
         while (index < protocolListEnd)
         {
@@ -1092,6 +1210,19 @@ internal sealed class QuicTlsTranscriptProgress
                 return false;
             }
 
+            if (rejectDuplicateProtocols)
+            {
+                List<byte[]> duplicateCheckedProtocols = seenProtocols ?? [];
+                seenProtocols = duplicateCheckedProtocols;
+                byte[] protocolName = extensionValue.Slice(index - protocolNameLength, protocolNameLength).ToArray();
+                if (ContainsProtocolName(duplicateCheckedProtocols, protocolName))
+                {
+                    return false;
+                }
+
+                duplicateCheckedProtocols.Add(protocolName);
+            }
+
             protocolCount++;
         }
 
@@ -1100,11 +1231,107 @@ internal sealed class QuicTlsTranscriptProgress
             && (!requireSingleProtocol || protocolCount == 1);
     }
 
+    private static bool ContainsProtocolName(IReadOnlyList<byte[]> seenProtocols, ReadOnlySpan<byte> protocolName)
+    {
+        foreach (byte[] seenProtocol in seenProtocols)
+        {
+            if (seenProtocol.AsSpan().SequenceEqual(protocolName))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool TryParseClientHelloServerName(ReadOnlySpan<byte> extensionValue)
+    {
+        int index = 0;
+        if (!TryReadUInt16(extensionValue, ref index, out ushort serverNameListLength)
+            || serverNameListLength == 0
+            || index + serverNameListLength != extensionValue.Length)
+        {
+            return false;
+        }
+
+        bool foundHostName = false;
+        int serverNameListEnd = index + serverNameListLength;
+        while (index < serverNameListEnd)
+        {
+            if (!TryReadUInt8(extensionValue, ref index, out int serverNameType)
+                || serverNameType != 0
+                || !TryReadUInt16(extensionValue, ref index, out ushort serverNameLength)
+                || serverNameLength == 0
+                || !TrySkipBytes(extensionValue, ref index, serverNameLength))
+            {
+                return false;
+            }
+
+            foundHostName = true;
+        }
+
+        return index == extensionValue.Length && foundHostName;
+    }
+
+    private static bool TryParseClientHelloStatusRequest(ReadOnlySpan<byte> extensionValue)
+    {
+        int index = 0;
+        if (!TryReadUInt8(extensionValue, ref index, out int statusType)
+            || statusType != 1
+            || !TryReadUInt16(extensionValue, ref index, out ushort responderIdListLength)
+            || !TrySkipBytes(extensionValue, ref index, responderIdListLength)
+            || !TryReadUInt16(extensionValue, ref index, out ushort requestExtensionsLength)
+            || !TrySkipBytes(extensionValue, ref index, requestExtensionsLength))
+        {
+            return false;
+        }
+
+        return index == extensionValue.Length;
+    }
+
+    private static bool TryParseClientHelloEcPointFormats(ReadOnlySpan<byte> extensionValue)
+    {
+        int index = 0;
+        if (!TryReadUInt8(extensionValue, ref index, out int pointFormatsLength)
+            || pointFormatsLength == 0
+            || index + pointFormatsLength != extensionValue.Length)
+        {
+            return false;
+        }
+
+        bool foundUncompressedFormat = false;
+        int pointFormatsEnd = index + pointFormatsLength;
+        while (index < pointFormatsEnd)
+        {
+            if (!TryReadUInt8(extensionValue, ref index, out int pointFormat))
+            {
+                return false;
+            }
+
+            if (pointFormat == UncompressedEcPointFormat)
+            {
+                foundUncompressedFormat = true;
+            }
+        }
+
+        return index == extensionValue.Length && foundUncompressedFormat;
+    }
+
+    private static bool TryParseClientHelloRenegotiationInfo(ReadOnlySpan<byte> extensionValue)
+    {
+        int index = 0;
+        return TryReadUInt8(extensionValue, ref index, out int renegotiatedConnectionLength)
+            && renegotiatedConnectionLength == 0
+            && index == extensionValue.Length;
+    }
+
     private static bool TryParseClientHelloKeyShare(
         ReadOnlySpan<byte> extensionValue,
+        out ClientHelloKeyShareDisposition keyShareDisposition,
         out QuicTlsNamedGroup namedGroup,
         out ReadOnlyMemory<byte> peerKeyShare)
     {
+        keyShareDisposition = default;
         namedGroup = default;
         peerKeyShare = default;
 
@@ -1116,24 +1343,44 @@ internal sealed class QuicTlsTranscriptProgress
             return false;
         }
 
-        if (!TryReadUInt16(extensionValue, ref index, out ushort namedGroupValue)
-            || namedGroupValue != Secp256r1NamedGroup
-            || !TryReadUInt16(extensionValue, ref index, out ushort keyExchangeLength)
-            || keyExchangeLength != Secp256r1KeyShareLength
-            || !TrySkipBytes(extensionValue, ref index, keyExchangeLength)
-            || index != extensionValue.Length)
+        bool foundUsableSecp256r1KeyShare = false;
+        int keyShareVectorEnd = index + keyShareVectorLength;
+        while (index < keyShareVectorEnd)
+        {
+            if (!TryReadUInt16(extensionValue, ref index, out ushort namedGroupValue)
+                || !TryReadUInt16(extensionValue, ref index, out ushort keyExchangeLength)
+                || keyExchangeLength == 0
+                || !TrySkipBytes(extensionValue, ref index, keyExchangeLength))
+            {
+                return false;
+            }
+
+            ReadOnlySpan<byte> keyExchange = extensionValue.Slice(index - keyExchangeLength, keyExchangeLength);
+            if (namedGroupValue != Secp256r1NamedGroup)
+            {
+                continue;
+            }
+
+            if (foundUsableSecp256r1KeyShare
+                || keyExchangeLength != Secp256r1KeyShareLength
+                || keyExchange[0] != UncompressedPointFormat)
+            {
+                return false;
+            }
+
+            namedGroup = QuicTlsNamedGroup.Secp256r1;
+            peerKeyShare = keyExchange.ToArray();
+            foundUsableSecp256r1KeyShare = true;
+        }
+
+        if (index != extensionValue.Length)
         {
             return false;
         }
 
-        ReadOnlySpan<byte> keyExchange = extensionValue.Slice(extensionValue.Length - keyExchangeLength, keyExchangeLength);
-        if (keyExchange[0] != UncompressedPointFormat)
-        {
-            return false;
-        }
-
-        namedGroup = QuicTlsNamedGroup.Secp256r1;
-        peerKeyShare = keyExchange.ToArray();
+        keyShareDisposition = foundUsableSecp256r1KeyShare
+            ? ClientHelloKeyShareDisposition.Accepted
+            : ClientHelloKeyShareDisposition.HelloRetryRequestRequired;
         return true;
     }
 
@@ -1300,6 +1547,7 @@ internal sealed class QuicTlsTranscriptProgress
         expectedMessageType = progressState switch
         {
             HandshakeProgressState.AwaitingClientHello => QuicTlsHandshakeMessageType.ClientHello,
+            HandshakeProgressState.AwaitingRetryClientHello => QuicTlsHandshakeMessageType.ClientHello,
             HandshakeProgressState.AwaitingServerHello => QuicTlsHandshakeMessageType.ServerHello,
             HandshakeProgressState.AwaitingEncryptedExtensions => QuicTlsHandshakeMessageType.EncryptedExtensions,
             HandshakeProgressState.AwaitingCertificate => QuicTlsHandshakeMessageType.Certificate,
@@ -1451,10 +1699,32 @@ internal sealed class QuicTlsTranscriptProgress
         transcriptHashAlgorithmValue = default;
 
         int index = 0;
-        if (cipherSuites.Length != UInt16Length
-            || !TryReadUInt16(cipherSuites, ref index, out ushort cipherSuiteValue)
-            || cipherSuiteValue != TlsAes128GcmSha256Value
-            || index != cipherSuites.Length)
+        if (cipherSuites.Length < UInt16Length
+            || (cipherSuites.Length & 1) != 0)
+        {
+            return false;
+        }
+
+        bool foundSupportedCipherSuite = false;
+        while (index < cipherSuites.Length)
+        {
+            if (!TryReadUInt16(cipherSuites, ref index, out ushort cipherSuiteValue))
+            {
+                return false;
+            }
+
+            if (cipherSuiteValue == TlsAes128GcmSha256Value)
+            {
+                if (foundSupportedCipherSuite)
+                {
+                    return false;
+                }
+
+                foundSupportedCipherSuite = true;
+            }
+        }
+
+        if (!foundSupportedCipherSuite)
         {
             return false;
         }
@@ -1555,13 +1825,20 @@ internal sealed class QuicTlsTranscriptProgress
     private enum HandshakeProgressState
     {
         AwaitingClientHello = 0,
-        AwaitingServerHello = 1,
-        AwaitingEncryptedExtensions = 2,
-        AwaitingCertificate = 3,
-        AwaitingCertificateVerify = 4,
-        AwaitingFinished = 5,
-        Completed = 6,
-        Failed = 7,
+        AwaitingRetryClientHello = 1,
+        AwaitingServerHello = 2,
+        AwaitingEncryptedExtensions = 3,
+        AwaitingCertificate = 4,
+        AwaitingCertificateVerify = 5,
+        AwaitingFinished = 6,
+        Completed = 7,
+        Failed = 8,
+    }
+
+    private enum ClientHelloKeyShareDisposition
+    {
+        Accepted = 0,
+        HelloRetryRequestRequired = 1,
     }
 
     private readonly record struct ParsedHandshakeMessage(
@@ -1590,6 +1867,7 @@ internal enum QuicTlsTranscriptStepKind
     PostHandshakeTicketAvailable = 3,
     Fatal = 4,
     ProhibitedKeyUpdateViolation = 5,
+    HelloRetryRequestRequested = 6,
 }
 
 /// <summary>

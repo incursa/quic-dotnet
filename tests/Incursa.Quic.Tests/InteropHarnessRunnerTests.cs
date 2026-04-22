@@ -188,6 +188,47 @@ public sealed class InteropHarnessRunnerTests
         Assert.Equal("ROLE must be set to client or server." + Environment.NewLine, stderr.ToString());
     }
 
+    [Fact]
+    public void ServerRequestLoopTreatsRemoteApplicationCloseNoErrorAsCompletionOnlyAfterAnEmptyRequestServerHasServedARequest()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-132744806-server-nginx
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-134139006-server-nginx
+        //   the live server-role handshake completed the response and then the peer sent
+        //   APPLICATION_CLOSE 0x0. The helper should only treat that as completion for the
+        //   empty-REQUESTS server lane after at least one request was already served.
+        QuicException cleanRemoteClose = new(QuicError.ConnectionAborted, 0, "The connection terminated.");
+
+        Assert.True(InteropHarnessRunner.ShouldTreatServerCloseAsRequestLoopCompletion(
+            cleanRemoteClose,
+            expectedRequestCount: 0,
+            servedRequestCount: 1));
+        Assert.False(InteropHarnessRunner.ShouldTreatServerCloseAsRequestLoopCompletion(
+            cleanRemoteClose,
+            expectedRequestCount: 1,
+            servedRequestCount: 1));
+        Assert.False(InteropHarnessRunner.ShouldTreatServerCloseAsRequestLoopCompletion(
+            cleanRemoteClose,
+            expectedRequestCount: 0,
+            servedRequestCount: 0));
+    }
+
+    [Fact]
+    public void ServerRequestLoopDoesNotTreatOtherTerminalOutcomesAsCompletion()
+    {
+        QuicException nonZeroApplicationClose = new(QuicError.ConnectionAborted, 7, "The connection terminated.");
+        QuicException idleTimeout = new(QuicError.ConnectionIdle, null, "The connection idled.");
+
+        Assert.False(InteropHarnessRunner.ShouldTreatServerCloseAsRequestLoopCompletion(
+            nonZeroApplicationClose,
+            expectedRequestCount: 0,
+            servedRequestCount: 1));
+        Assert.False(InteropHarnessRunner.ShouldTreatServerCloseAsRequestLoopCompletion(
+            idleTimeout,
+            expectedRequestCount: 0,
+            servedRequestCount: 1));
+    }
+
     private static IDictionary CreateEnvironment(
         string? role,
         string testcase,

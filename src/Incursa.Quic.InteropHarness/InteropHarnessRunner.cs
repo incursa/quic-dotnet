@@ -27,9 +27,19 @@ internal static class InteropHarnessRunner
         string SourcePath,
         string DestinationPath);
 
+    internal sealed record ServerTransferDispatchPlan(
+        IPEndPoint ListenEndPoint,
+        int ExpectedRequestCount,
+        int ConfiguredRequestCount);
+
     private sealed record SequentialTransferPlanBuildResult(
         bool Success,
         IReadOnlyList<SequentialTransferPlan>? TransferPlans,
+        string? ErrorMessage);
+
+    internal sealed record ServerTransferDispatchPlanBuildResult(
+        bool Success,
+        ServerTransferDispatchPlan? Plan,
         string? ErrorMessage);
 
     private static InteropHarnessPreflightPlanner CreatePlanner(InteropHarnessEnvironment settings, TextWriter stdout)
@@ -889,16 +899,15 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            SequentialTransferPlanBuildResult transferPlanResult = await TryCreateSequentialTransferPlans(settings).ConfigureAwait(false);
-            if (!transferPlanResult.Success)
+            ServerTransferDispatchPlanBuildResult dispatchPlanResult = await TryCreateServerTransferDispatchPlanAsync(settings, planner).ConfigureAwait(false);
+            if (!dispatchPlanResult.Success)
             {
-                WriteLineAndFlush(stderr, transferPlanResult.ErrorMessage ?? string.Empty);
+                WriteLineAndFlush(stderr, dispatchPlanResult.ErrorMessage ?? string.Empty);
                 return 1;
             }
 
-            ArgumentNullException.ThrowIfNull(transferPlanResult.TransferPlans);
-            IReadOnlyList<SequentialTransferPlan> transferPlans = transferPlanResult.TransferPlans;
-            SequentialTransferPlan firstPlan = transferPlans[0];
+            ArgumentNullException.ThrowIfNull(dispatchPlanResult.Plan);
+            ServerTransferDispatchPlan dispatchPlan = dispatchPlanResult.Plan;
 
             string? errorMessage;
             if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out errorMessage) ||
@@ -917,10 +926,9 @@ internal static class InteropHarnessRunner
 
             using (serverCertificate)
             {
-                IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(firstPlan.RequestUri).ConfigureAwait(false);
                 QuicListenerOptions listenerOptions = new()
                 {
-                    ListenEndPoint = listenEndPoint,
+                    ListenEndPoint = dispatchPlan.ListenEndPoint,
                     ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
                     ListenBacklog = 1,
                     ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(InteropHarnessPreflightPlanner.CreateSupportedServerOptions(serverCertificate)),
@@ -936,15 +944,15 @@ internal static class InteropHarnessRunner
                 await Task.Yield();
                 WriteLineAndFlush(
                     stdout,
-                    $"interop harness: role=server, testcase=transfer, requestCount={transferPlans.Count} listening on {listenEndPoint}.");
+                    $"interop harness: role=server, testcase=transfer, requestCount={dispatchPlan.ConfiguredRequestCount} listening on {dispatchPlan.ListenEndPoint}.");
 
                 await using QuicConnection connection = await acceptTask.ConfigureAwait(false);
                 int servedRequestCount = await ServeHttp09RequestsAsync(
                     connection,
                     stdout,
                     "transfer",
-                    expectedRequestCount: transferPlans.Count,
-                    configuredRequestCount: transferPlans.Count).ConfigureAwait(false);
+                    expectedRequestCount: dispatchPlan.ExpectedRequestCount,
+                    configuredRequestCount: dispatchPlan.ConfiguredRequestCount).ConfigureAwait(false);
 
                 if (servedRequestCount == 0)
                 {
@@ -961,6 +969,42 @@ internal static class InteropHarnessRunner
             WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=transfer failed: {ex.Message}");
             return 1;
         }
+    }
+
+    internal static async Task<ServerTransferDispatchPlanBuildResult> TryCreateServerTransferDispatchPlanAsync(
+        InteropHarnessEnvironment settings,
+        InteropHarnessPreflightPlanner planner)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+        ArgumentNullException.ThrowIfNull(planner);
+
+        if (!planner.TryGetDispatchRequestUri(out Uri? requestUri, out string? errorMessage, allowEmptyRequests: true))
+        {
+            return new ServerTransferDispatchPlanBuildResult(false, null, errorMessage);
+        }
+
+        int expectedRequestCount = 0;
+        int configuredRequestCount = settings.Requests.Count;
+        if (settings.Requests.Count > 0)
+        {
+            SequentialTransferPlanBuildResult transferPlanResult = await TryCreateSequentialTransferPlans(settings).ConfigureAwait(false);
+            if (!transferPlanResult.Success)
+            {
+                return new ServerTransferDispatchPlanBuildResult(false, null, transferPlanResult.ErrorMessage);
+            }
+
+            ArgumentNullException.ThrowIfNull(transferPlanResult.TransferPlans);
+            IReadOnlyList<SequentialTransferPlan> transferPlans = transferPlanResult.TransferPlans;
+            requestUri = transferPlans[0].RequestUri;
+            expectedRequestCount = transferPlans.Count;
+            configuredRequestCount = transferPlans.Count;
+        }
+
+        IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(requestUri).ConfigureAwait(false);
+        return new ServerTransferDispatchPlanBuildResult(
+            true,
+            new ServerTransferDispatchPlan(listenEndPoint, expectedRequestCount, configuredRequestCount),
+            null);
     }
 
     private static async Task<SequentialTransferPlanBuildResult> TryCreateSequentialTransferPlans(
@@ -1204,6 +1248,16 @@ internal static class InteropHarnessRunner
             {
                 break;
             }
+            catch (QuicException ex) when (
+                ShouldTreatServerCloseAsRequestLoopCompletion(
+                    ex,
+                    expectedRequestCount,
+                    servedRequestCount))
+            {
+                // Server-role handshake runs intentionally start with REQUESTS="". Once at least one
+                // request has been served, a peer APPLICATION_CLOSE 0 is the expected clean teardown.
+                break;
+            }
 
             await using (stream.ConfigureAwait(false))
             {
@@ -1267,6 +1321,19 @@ internal static class InteropHarnessRunner
         }
 
         return servedRequestCount;
+    }
+
+    internal static bool ShouldTreatServerCloseAsRequestLoopCompletion(
+        QuicException exception,
+        int expectedRequestCount,
+        int servedRequestCount)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
+
+        return expectedRequestCount == 0
+            && servedRequestCount > 0
+            && exception.QuicError == QuicError.ConnectionAborted
+            && exception.ApplicationErrorCode == 0;
     }
 
     private static async Task<string> ReadHttp09RequestTargetAsync(QuicStream stream)

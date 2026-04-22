@@ -130,36 +130,6 @@ public sealed class REQ_QUIC_CRT_0112
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void CapturedQuicGoServerHandshakeClientHelloOutsideTheCurrentSecp256r1FloorFailsDeterministically()
-    {
-        // Regression from the preserved 2026-04-22 server-role quic-go handshake repro:
-        //   C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-110409619-server-nginx
-        //   runner-logs\nginx_quic-go\handshake\output.txt
-        //   runner-logs\nginx_quic-go\handshake\server\qlog\server-handshake-929cd4466b6d4e8dba49b1be5f1b6d0e.qlog
-        byte[] capturedClientHello = CreateCapturedQuicGoServerHandshakeClientHelloTranscript();
-        string clientHelloDescription = DescribeClientHello(capturedClientHello);
-        Assert.Contains("0x0033(keyshare=0x11EC:1216/0x001D:32)", clientHelloDescription, StringComparison.Ordinal);
-
-        QuicTlsTransportBridgeDriver driver = new(
-            QuicTlsRole.Server,
-            localHandshakePrivateKey: CreateScalar(0x22));
-
-        _ = driver.StartHandshake(CreateBootstrapLocalTransportParameters());
-
-        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
-            QuicTlsEncryptionLevel.Initial,
-            capturedClientHello);
-
-        Assert.Single(updates);
-        Assert.Equal(QuicTlsUpdateKind.FatalAlert, updates[0].Kind);
-        Assert.Equal((ushort)0x0032, updates[0].AlertDescription);
-        Assert.False(driver.State.HandshakeKeysAvailable);
-        Assert.True(driver.State.IsTerminal);
-    }
-
-    [Fact]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     public void HandshakeKeysStayUnavailableUntilTheSupportedClientHelloCompletes()
     {
         QuicTransportParameters peerTransportParameters = CreateClientTransportParameters();
@@ -255,7 +225,7 @@ public sealed class REQ_QUIC_CRT_0112
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void UnsupportedClientHelloNamedGroupOrKeyShareFailsDeterministically()
+    public void UnsupportedClientHelloNamedGroupWithoutAdvertisedSecp256r1SupportFailsDeterministically()
     {
         QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
         _ = driver.StartHandshake(CreateBootstrapLocalTransportParameters());
@@ -264,6 +234,7 @@ public sealed class REQ_QUIC_CRT_0112
             QuicTlsEncryptionLevel.Handshake,
             CreateClientHelloTranscript(
                 CreateClientTransportParameters(),
+                supportedGroups: [0x001d],
                 keyShareNamedGroup: 0x001d,
                 keyShare: CreateSequentialBytes(0x90, 32)));
 
@@ -337,7 +308,7 @@ public sealed class REQ_QUIC_CRT_0112
         Assert.True(driver.State.IsTerminal);
     }
 
-    private static QuicTransportParameters CreateBootstrapLocalTransportParameters()
+    internal static QuicTransportParameters CreateBootstrapLocalTransportParameters()
     {
         return new QuicTransportParameters
         {
@@ -346,7 +317,7 @@ public sealed class REQ_QUIC_CRT_0112
         };
     }
 
-    private static QuicTransportParameters CreateClientTransportParameters()
+    internal static QuicTransportParameters CreateClientTransportParameters()
     {
         return new QuicTransportParameters
         {
@@ -356,7 +327,7 @@ public sealed class REQ_QUIC_CRT_0112
         };
     }
 
-    private static byte[] CreateClientHelloTranscript(
+    internal static byte[] CreateClientHelloTranscript(
         QuicTransportParameters transportParameters,
         ushort[]? supportedVersions = null,
         ushort[]? cipherSuites = null,
@@ -420,7 +391,7 @@ public sealed class REQ_QUIC_CRT_0112
         return WrapHandshakeMessage(QuicTlsHandshakeMessageType.ClientHello, body);
     }
 
-    private static byte[] CreateMalformedClientHelloTranscript(QuicTransportParameters transportParameters)
+    internal static byte[] CreateMalformedClientHelloTranscript(QuicTransportParameters transportParameters)
     {
         byte[] transcript = CreateClientHelloTranscript(transportParameters);
         ushort declaredExtensionsLength = (ushort)(BinaryPrimitives.ReadUInt16BigEndian(transcript.AsSpan(43, 2)) + 1);
@@ -553,7 +524,7 @@ public sealed class REQ_QUIC_CRT_0112
         return transcript;
     }
 
-    private static byte[] CreateCapturedQuicGoServerHandshakeClientHelloTranscript()
+    internal static byte[] CreateCapturedQuicGoServerHandshakeClientHelloTranscript()
     {
         Assert.True(QuicInitialPacketProtection.TryCreate(
             QuicTlsRole.Server,
@@ -627,7 +598,7 @@ public sealed class REQ_QUIC_CRT_0112
         }
     }
 
-    private static string DescribeClientHello(byte[] clientHello)
+    internal static string DescribeClientHello(byte[] clientHello)
     {
         int index = 4;
         ushort legacyVersion = ReadUInt16(clientHello, ref index);
@@ -738,14 +709,14 @@ public sealed class REQ_QUIC_CRT_0112
         return value;
     }
 
-    private static byte[] CreateScalar(byte value)
+    internal static byte[] CreateScalar(byte value)
     {
         byte[] scalar = new byte[32];
         scalar[^1] = value;
         return scalar;
     }
 
-    private static byte[] CreateSequentialBytes(byte start, int length)
+    internal static byte[] CreateSequentialBytes(byte start, int length)
     {
         byte[] bytes = new byte[length];
         for (int index = 0; index < bytes.Length; index++)

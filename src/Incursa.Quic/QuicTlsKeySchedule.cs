@@ -25,6 +25,7 @@ internal sealed class QuicTlsKeySchedule
     private const byte UncompressedPointFormat = 0x04;
     private const ushort HandshakeTranscriptVerificationFailureAlertDescription = 0x0033;
     private const ushort HandshakeTranscriptParseFailureAlertDescription = 0x0032;
+    private const ushort NoApplicationProtocolAlertDescription = 0x0078;
     private const int UInt16Length = sizeof(ushort);
     private const int UInt24Length = 3;
     private const int CertificateRequestContextLength = 0;
@@ -65,6 +66,7 @@ internal sealed class QuicTlsKeySchedule
     private const int EcdsaP256KeySizeBits = 256;
     private const byte CertificateVerifySignedDataPrefixByte = 0x20;
     private const DSASignatureFormat CertificateVerifySignatureFormat = DSASignatureFormat.Rfc3279DerSequence;
+    private const byte MessageHashHandshakeType = 0xFE;
 
     private static readonly byte[] HkdfLabelPrefix = Encoding.ASCII.GetBytes("tls13 ");
     private static readonly byte[] DerivedLabel = Encoding.ASCII.GetBytes("derived");
@@ -84,6 +86,7 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] QuicKeyLabel = Encoding.ASCII.GetBytes("quic key");
     private static readonly byte[] QuicIvLabel = Encoding.ASCII.GetBytes("quic iv");
     private static readonly byte[] QuicHpLabel = Encoding.ASCII.GetBytes("quic hp");
+    private static readonly byte[] HelloRetryRequestRandom = Convert.FromHexString("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
     private static readonly byte[] ZeroHashInput = new byte[HashLength];
     private static readonly byte[] EmptyTranscriptHash = SHA256.HashData(Array.Empty<byte>());
     private static readonly QuicAeadUsageLimits HandshakeUsageLimits = new(64, 128);
@@ -94,7 +97,7 @@ internal sealed class QuicTlsKeySchedule
     private readonly ArrayBufferWriter<byte> transcriptBytes = new();
     private readonly byte[] localKeyShare;
     private readonly byte[]? deterministicClientHelloRandom;
-    private readonly byte[][] applicationProtocols;
+    private byte[][] applicationProtocols;
     private byte[]? localHandshakeTranscriptPrefix;
 
     private byte[]? handshakeSecret;
@@ -110,7 +113,9 @@ internal sealed class QuicTlsKeySchedule
     private bool peerCertificateVerifyVerified;
     private bool peerFinishedVerified;
     private bool resumptionAttemptPending;
+    private bool serverHelloRetryRequestPending;
     private bool isTerminal;
+    private ulong nextServerInitialCryptoOffset;
 
     /// <summary>
     /// Creates the client-role TLS key schedule, optionally seeded with a deterministic local private key for tests.
@@ -189,6 +194,28 @@ internal sealed class QuicTlsKeySchedule
         {
             serverClientCertificateRequired = clientCertificateRequired;
         }
+    }
+
+    internal bool TryConfigureLocalApplicationProtocols(IReadOnlyList<SslApplicationProtocol> applicationProtocols)
+    {
+        if (role != QuicTlsRole.Server)
+        {
+            return false;
+        }
+
+        byte[][] normalizedProtocols = NormalizeApplicationProtocols(applicationProtocols);
+        if (normalizedProtocols.Length == 0)
+        {
+            return false;
+        }
+
+        if (this.applicationProtocols.Length == 0)
+        {
+            this.applicationProtocols = normalizedProtocols;
+            return true;
+        }
+
+        return HaveSameApplicationProtocols(this.applicationProtocols, normalizedProtocols);
     }
 
     /// <summary>
@@ -460,6 +487,59 @@ internal sealed class QuicTlsKeySchedule
 
         try
         {
+            if (step.Kind == QuicTlsTranscriptStepKind.HelloRetryRequestRequested)
+            {
+                if (handshakeSecretsDerived
+                    || serverHelloRetryRequestPending
+                    || step.TranscriptPhase != QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage
+                    || step.HandshakeMessageType != QuicTlsHandshakeMessageType.ClientHello
+                    || step.HandshakeMessageLength is null
+                    || step.TransportParameters is not null
+                    || step.SelectedCipherSuite != profile.CipherSuite
+                    || step.TranscriptHashAlgorithm != profile.TranscriptHashAlgorithm
+                    || step.NamedGroup != profile.NamedGroup
+                    || !step.KeyShare.IsEmpty
+                    || localTransportParameters is null)
+                {
+                    return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+                }
+
+                if (applicationProtocols.Length > 0
+                    && !TryValidatePeerApplicationProtocolOffer(
+                        step.HandshakeMessageBytes.Span,
+                        out bool parseFailed))
+                {
+                    return BuildFatalAlert(
+                        parseFailed
+                            ? HandshakeTranscriptParseFailureAlertDescription
+                            : NoApplicationProtocolAlertDescription);
+                }
+
+                if (!TryCreateHelloRetryRequest(step.HandshakeMessageBytes.Span, out byte[] helloRetryRequestBytes))
+                {
+                    return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+                }
+
+                ReplaceTranscriptWithHelloRetryRequestPrefix(
+                    step.HandshakeMessageBytes.Span,
+                    helloRetryRequestBytes);
+                serverHelloRetryRequestPending = true;
+
+                ulong helloRetryRequestOffset = nextServerInitialCryptoOffset;
+                nextServerInitialCryptoOffset = SaturatingAdd(
+                    nextServerInitialCryptoOffset,
+                    (ulong)helloRetryRequestBytes.Length);
+
+                return
+                [
+                    new QuicTlsStateUpdate(
+                        QuicTlsUpdateKind.CryptoDataAvailable,
+                        QuicTlsEncryptionLevel.Initial,
+                        CryptoDataOffset: helloRetryRequestOffset,
+                        CryptoData: helloRetryRequestBytes),
+                ];
+            }
+
             if (handshakeSecretsDerived
                 || step.Kind != QuicTlsTranscriptStepKind.PeerTransportParametersStaged
                 || step.TranscriptPhase != QuicTlsTranscriptPhase.PeerTransportParametersStaged
@@ -473,6 +553,23 @@ internal sealed class QuicTlsKeySchedule
                 || localTransportParameters is null)
             {
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+            }
+
+            ReadOnlySpan<byte> selectedApplicationProtocol = default;
+            if (applicationProtocols.Length > 0)
+            {
+                if (!TrySelectPeerApplicationProtocol(
+                    step.HandshakeMessageBytes.Span,
+                    out byte[] selectedApplicationProtocolBytes,
+                    out bool parseFailed))
+                {
+                    return BuildFatalAlert(
+                        parseFailed
+                            ? HandshakeTranscriptParseFailureAlertDescription
+                            : NoApplicationProtocolAlertDescription);
+                }
+
+                selectedApplicationProtocol = selectedApplicationProtocolBytes;
             }
 
             if (!localServerLeafCertificateDer.IsEmpty
@@ -513,19 +610,26 @@ internal sealed class QuicTlsKeySchedule
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
             }
 
-            if (!TryCreateEncryptedExtensions(localTransportParameters, out byte[] encryptedExtensionsBytes))
+            if (!TryCreateEncryptedExtensions(
+                localTransportParameters,
+                selectedApplicationProtocol,
+                out byte[] encryptedExtensionsBytes))
             {
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
             }
 
             AppendTranscriptMessage(encryptedExtensionsBytes);
+            ulong serverHelloOffset = nextServerInitialCryptoOffset;
+            nextServerInitialCryptoOffset = SaturatingAdd(
+                nextServerInitialCryptoOffset,
+                (ulong)serverHelloBytes.Length);
             List<QuicTlsStateUpdate> updates =
             [
                 new QuicTlsStateUpdate(
                     QuicTlsUpdateKind.CryptoDataAvailable,
-                    // ServerHello is the server's first Initial-flight CRYPTO payload.
+                    // After an optional HelloRetryRequest, ServerHello resumes at the next Initial CRYPTO offset.
                     QuicTlsEncryptionLevel.Initial,
-                    CryptoDataOffset: 0,
+                    CryptoDataOffset: serverHelloOffset,
                     CryptoData: serverHelloBytes),
                 new QuicTlsStateUpdate(
                     QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
@@ -607,6 +711,7 @@ internal sealed class QuicTlsKeySchedule
             }
 
             handshakeSecretsDerived = true;
+            serverHelloRetryRequestPending = false;
             return updates;
         }
         finally
@@ -1409,23 +1514,112 @@ internal sealed class QuicTlsKeySchedule
         return true;
     }
 
-    private static bool TryCreateEncryptedExtensions(
-        QuicTransportParameters localTransportParameters,
-        out byte[] encryptedExtensionsBytes)
+    private bool TryCreateHelloRetryRequest(
+        ReadOnlySpan<byte> clientHelloBytes,
+        out byte[] helloRetryRequestBytes)
     {
-        encryptedExtensionsBytes = Array.Empty<byte>();
+        helloRetryRequestBytes = Array.Empty<byte>();
 
-        Span<byte> encodedMessage = stackalloc byte[512];
-        if (!QuicTlsTranscriptProgress.TryFormatDeterministicEncryptedExtensionsTransportParametersMessage(
-            localTransportParameters,
-            QuicTransportParameterRole.Server,
-            encodedMessage,
-            out int bytesWritten))
+        if (!TryParseClientHelloSessionId(clientHelloBytes, out byte[] sessionId))
         {
             return false;
         }
 
-        encryptedExtensionsBytes = encodedMessage[..bytesWritten].ToArray();
+        int sessionIdLength = sessionId.Length;
+        int selectedGroupExtensionLength = UInt16Length;
+        int extensionsLength =
+            (UInt16Length + UInt16Length + UInt16Length)
+            + (UInt16Length + UInt16Length + selectedGroupExtensionLength);
+        byte[] body = new byte[
+            UInt16Length
+            + TlsRandomLength
+            + 1
+            + sessionIdLength
+            + UInt16Length
+            + 1
+            + UInt16Length
+            + extensionsLength];
+
+        int index = 0;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), TlsLegacyVersion);
+        index += UInt16Length;
+        HelloRetryRequestRandom.CopyTo(body, index);
+        index += TlsRandomLength;
+
+        body[index++] = checked((byte)sessionIdLength);
+        if (sessionIdLength > 0)
+        {
+            sessionId.CopyTo(body, index);
+            index += sessionIdLength;
+        }
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), (ushort)profile.CipherSuite);
+        index += UInt16Length;
+        body[index++] = NullCompressionMethod;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)extensionsLength));
+        index += UInt16Length;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedVersionsExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), UInt16Length);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Tls13Version);
+        index += UInt16Length;
+
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), KeyShareExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)selectedGroupExtensionLength));
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Secp256r1NamedGroup);
+
+        helloRetryRequestBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.ServerHello, body);
+        return true;
+    }
+
+    private static bool TryCreateEncryptedExtensions(
+        QuicTransportParameters localTransportParameters,
+        ReadOnlySpan<byte> selectedApplicationProtocol,
+        out byte[] encryptedExtensionsBytes)
+    {
+        encryptedExtensionsBytes = Array.Empty<byte>();
+
+        Span<byte> encodedTransportParameters = stackalloc byte[512];
+        if (!QuicTransportParametersCodec.TryFormatTransportParameters(
+            localTransportParameters,
+            QuicTransportParameterRole.Server,
+            encodedTransportParameters,
+            out int encodedTransportParametersBytes))
+        {
+            return false;
+        }
+
+        int transportParametersExtensionLength = checked(UInt16Length + UInt16Length + encodedTransportParametersBytes);
+        int applicationProtocolExtensionLength = GetApplicationLayerProtocolNegotiationExtensionLength(selectedApplicationProtocol);
+        int extensionsLength = checked(transportParametersExtensionLength + applicationProtocolExtensionLength);
+        int messageBodyLength = checked(UInt16Length + extensionsLength);
+
+        byte[] body = new byte[messageBodyLength];
+        int index = 0;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)extensionsLength));
+        index += UInt16Length;
+
+        BinaryPrimitives.WriteUInt16BigEndian(
+            body.AsSpan(index, UInt16Length),
+            QuicTransportParametersCodec.QuicTransportParametersExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)encodedTransportParametersBytes));
+        index += UInt16Length;
+        encodedTransportParameters[..encodedTransportParametersBytes].CopyTo(body.AsSpan(index, encodedTransportParametersBytes));
+        index += encodedTransportParametersBytes;
+
+        WriteApplicationLayerProtocolNegotiationExtension(selectedApplicationProtocol, body, ref index);
+
+        if (index != body.Length)
+        {
+            return false;
+        }
+
+        encryptedExtensionsBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.EncryptedExtensions, body);
         return true;
     }
 
@@ -1528,9 +1722,12 @@ internal sealed class QuicTlsKeySchedule
     }
 
     private static byte[] WrapHandshakeMessage(QuicTlsHandshakeMessageType messageType, ReadOnlySpan<byte> body)
+        => WrapHandshakeMessage((byte)messageType, body);
+
+    private static byte[] WrapHandshakeMessage(byte messageType, ReadOnlySpan<byte> body)
     {
         byte[] transcript = new byte[HandshakeHeaderLength + body.Length];
-        transcript[0] = (byte)messageType;
+        transcript[0] = messageType;
         WriteUInt24(transcript.AsSpan(1, UInt24Length), body.Length);
         body.CopyTo(transcript.AsSpan(HandshakeHeaderLength));
         return transcript;
@@ -1686,6 +1883,203 @@ internal sealed class QuicTlsKeySchedule
         {
             return false;
         }
+    }
+
+    private bool TryValidatePeerApplicationProtocolOffer(
+        ReadOnlySpan<byte> clientHelloBytes,
+        out bool parseFailed)
+    {
+        parseFailed = false;
+
+        if (!TryReadClientHelloApplicationProtocols(
+            clientHelloBytes,
+            out byte[][] peerApplicationProtocols,
+            out ClientHelloApplicationProtocolOfferState offerState))
+        {
+            parseFailed = true;
+            return false;
+        }
+
+        return offerState == ClientHelloApplicationProtocolOfferState.Present
+            && TrySelectConfiguredApplicationProtocol(peerApplicationProtocols, out _);
+    }
+
+    private bool TrySelectPeerApplicationProtocol(
+        ReadOnlySpan<byte> clientHelloBytes,
+        out byte[] selectedApplicationProtocol,
+        out bool parseFailed)
+    {
+        selectedApplicationProtocol = Array.Empty<byte>();
+        parseFailed = false;
+
+        if (!TryReadClientHelloApplicationProtocols(
+            clientHelloBytes,
+            out byte[][] peerApplicationProtocols,
+            out ClientHelloApplicationProtocolOfferState offerState))
+        {
+            parseFailed = true;
+            return false;
+        }
+
+        return offerState == ClientHelloApplicationProtocolOfferState.Present
+            && TrySelectConfiguredApplicationProtocol(peerApplicationProtocols, out selectedApplicationProtocol);
+    }
+
+    private bool TrySelectConfiguredApplicationProtocol(
+        IReadOnlyList<byte[]> peerApplicationProtocols,
+        out byte[] selectedApplicationProtocol)
+    {
+        selectedApplicationProtocol = Array.Empty<byte>();
+
+        foreach (byte[] localApplicationProtocol in applicationProtocols)
+        {
+            foreach (byte[] peerApplicationProtocol in peerApplicationProtocols)
+            {
+                if (localApplicationProtocol.AsSpan().SequenceEqual(peerApplicationProtocol))
+                {
+                    selectedApplicationProtocol = localApplicationProtocol;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static bool TryReadClientHelloApplicationProtocols(
+        ReadOnlySpan<byte> clientHelloBytes,
+        out byte[][] applicationProtocols,
+        out ClientHelloApplicationProtocolOfferState offerState)
+    {
+        applicationProtocols = [];
+        offerState = ClientHelloApplicationProtocolOfferState.Missing;
+
+        if (clientHelloBytes.Length <= HandshakeHeaderLength
+            || clientHelloBytes[0] != (byte)QuicTlsHandshakeMessageType.ClientHello)
+        {
+            return false;
+        }
+
+        int declaredBodyLength = checked((int)ReadUInt24(clientHelloBytes.Slice(1, UInt24Length)));
+        if (declaredBodyLength != clientHelloBytes.Length - HandshakeHeaderLength)
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> clientHelloBody = clientHelloBytes.Slice(HandshakeHeaderLength);
+        int index = 0;
+        if (!TryReadUInt16(clientHelloBody, ref index, out ushort legacyVersion)
+            || legacyVersion != TlsLegacyVersion
+            || !TrySkipBytes(clientHelloBody, ref index, TlsRandomLength)
+            || !TryReadUInt8(clientHelloBody, ref index, out int sessionIdLength)
+            || sessionIdLength > MaximumSessionIdLength
+            || !TrySkipBytes(clientHelloBody, ref index, sessionIdLength)
+            || !TryReadUInt16(clientHelloBody, ref index, out ushort cipherSuitesLength)
+            || cipherSuitesLength < TlsCipherSuitesListLength
+            || (cipherSuitesLength & 1) != 0
+            || !TrySkipBytes(clientHelloBody, ref index, cipherSuitesLength)
+            || !TryReadUInt8(clientHelloBody, ref index, out int compressionMethodsLength)
+            || compressionMethodsLength != 1
+            || !TryReadUInt8(clientHelloBody, ref index, out int compressionMethod)
+            || compressionMethod != NullCompressionMethod
+            || !TryReadUInt16(clientHelloBody, ref index, out ushort extensionsLength)
+            || !TrySkipBytes(clientHelloBody, ref index, extensionsLength)
+            || index != clientHelloBody.Length)
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> extensions = clientHelloBody.Slice(clientHelloBody.Length - extensionsLength, extensionsLength);
+        int extensionsIndex = 0;
+        while (extensionsIndex < extensions.Length)
+        {
+            if (!TryReadUInt16(extensions, ref extensionsIndex, out ushort extensionType)
+                || !TryReadUInt16(extensions, ref extensionsIndex, out ushort extensionLength)
+                || !TrySkipBytes(extensions, ref extensionsIndex, extensionLength))
+            {
+                return false;
+            }
+
+            if (extensionType != ApplicationLayerProtocolNegotiationExtensionType)
+            {
+                continue;
+            }
+
+            if (offerState != ClientHelloApplicationProtocolOfferState.Missing)
+            {
+                offerState = ClientHelloApplicationProtocolOfferState.Invalid;
+                return true;
+            }
+
+            if (!TryReadApplicationLayerProtocolOfferList(
+                extensions.Slice(extensionsIndex - extensionLength, extensionLength),
+                out applicationProtocols))
+            {
+                offerState = ClientHelloApplicationProtocolOfferState.Invalid;
+                applicationProtocols = [];
+                return true;
+            }
+
+            offerState = ClientHelloApplicationProtocolOfferState.Present;
+        }
+
+        return true;
+    }
+
+    private static bool TryReadApplicationLayerProtocolOfferList(
+        ReadOnlySpan<byte> extensionValue,
+        out byte[][] applicationProtocols)
+    {
+        applicationProtocols = [];
+
+        int index = 0;
+        if (!TryReadUInt16(extensionValue, ref index, out ushort protocolNameListLength)
+            || protocolNameListLength == 0
+            || index + protocolNameListLength != extensionValue.Length)
+        {
+            return false;
+        }
+
+        List<byte[]> offeredProtocols = [];
+        int protocolListEnd = index + protocolNameListLength;
+        while (index < protocolListEnd)
+        {
+            if (!TryReadUInt8(extensionValue, ref index, out int protocolNameLength)
+                || protocolNameLength == 0
+                || !TrySkipBytes(extensionValue, ref index, protocolNameLength))
+            {
+                return false;
+            }
+
+            byte[] protocolName = extensionValue.Slice(index - protocolNameLength, protocolNameLength).ToArray();
+            if (ContainsApplicationProtocol(offeredProtocols, protocolName))
+            {
+                return false;
+            }
+
+            offeredProtocols.Add(protocolName);
+        }
+
+        if (index != extensionValue.Length || offeredProtocols.Count == 0)
+        {
+            return false;
+        }
+
+        applicationProtocols = [.. offeredProtocols];
+        return true;
+    }
+
+    private static bool ContainsApplicationProtocol(IReadOnlyList<byte[]> applicationProtocols, ReadOnlySpan<byte> candidate)
+    {
+        foreach (byte[] applicationProtocol in applicationProtocols)
+        {
+            if (applicationProtocol.AsSpan().SequenceEqual(candidate))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static bool TryValidateEcdsaP256PublicKey(ECDsa publicKey)
@@ -1858,6 +2252,18 @@ internal sealed class QuicTlsKeySchedule
         return Array.Empty<QuicTlsStateUpdate>();
     }
 
+    private void ReplaceTranscriptWithHelloRetryRequestPrefix(
+        ReadOnlySpan<byte> initialClientHelloBytes,
+        ReadOnlySpan<byte> helloRetryRequestBytes)
+    {
+        byte[] initialClientHelloHash = SHA256.HashData(initialClientHelloBytes.ToArray());
+        byte[] messageHashBytes = WrapHandshakeMessage(MessageHashHandshakeType, initialClientHelloHash);
+
+        transcriptBytes.Clear();
+        transcriptBytes.Write(messageHashBytes);
+        transcriptBytes.Write(helloRetryRequestBytes);
+    }
+
     private byte[] HashTranscript()
     {
         return SHA256.HashData(transcriptBytes.WrittenSpan);
@@ -1928,6 +2334,8 @@ internal sealed class QuicTlsKeySchedule
     private IReadOnlyList<QuicTlsStateUpdate> BuildFatalAlert(ushort alertDescription)
     {
         isTerminal = true;
+        serverHelloRetryRequestPending = false;
+        nextServerInitialCryptoOffset = 0;
         if (handshakeSecret is not null)
         {
             CryptographicOperations.ZeroMemory(handshakeSecret);
@@ -1951,6 +2359,12 @@ internal sealed class QuicTlsKeySchedule
         peerLeafCertificateDer = null;
         peerCertificateVerifyVerified = false;
         return [new QuicTlsStateUpdate(QuicTlsUpdateKind.FatalAlert, AlertDescription: alertDescription)];
+    }
+
+    private static ulong SaturatingAdd(ulong left, ulong right)
+    {
+        ulong sum = left + right;
+        return sum < left ? ulong.MaxValue : sum;
     }
 
     private static bool TryReadUInt8(ReadOnlySpan<byte> source, ref int index, out int value)
@@ -2142,6 +2556,40 @@ internal sealed class QuicTlsKeySchedule
             return;
         }
 
+        WriteApplicationLayerProtocolNegotiationExtension(applicationProtocols, body, ref index);
+    }
+
+    private static int GetApplicationLayerProtocolNegotiationExtensionLength(IReadOnlyList<byte[]> applicationProtocols)
+    {
+        if (applicationProtocols.Count == 0)
+        {
+            return 0;
+        }
+
+        int protocolListLength = 0;
+        foreach (byte[] applicationProtocol in applicationProtocols)
+        {
+            protocolListLength = checked(protocolListLength + 1 + applicationProtocol.Length);
+        }
+
+        return checked(UInt16Length + UInt16Length + UInt16Length + protocolListLength);
+    }
+
+    private static int GetApplicationLayerProtocolNegotiationExtensionLength(ReadOnlySpan<byte> applicationProtocol)
+    {
+        if (applicationProtocol.IsEmpty)
+        {
+            return 0;
+        }
+
+        return checked(UInt16Length + UInt16Length + UInt16Length + 1 + applicationProtocol.Length);
+    }
+
+    private static void WriteApplicationLayerProtocolNegotiationExtension(
+        IReadOnlyList<byte[]> applicationProtocols,
+        byte[] body,
+        ref int index)
+    {
         int protocolListLength = 0;
         foreach (byte[] applicationProtocol in applicationProtocols)
         {
@@ -2163,20 +2611,25 @@ internal sealed class QuicTlsKeySchedule
         }
     }
 
-    private static int GetApplicationLayerProtocolNegotiationExtensionLength(IReadOnlyList<byte[]> applicationProtocols)
+    private static void WriteApplicationLayerProtocolNegotiationExtension(
+        ReadOnlySpan<byte> applicationProtocol,
+        byte[] body,
+        ref int index)
     {
-        if (applicationProtocols.Count == 0)
+        if (applicationProtocol.IsEmpty)
         {
-            return 0;
+            return;
         }
 
-        int protocolListLength = 0;
-        foreach (byte[] applicationProtocol in applicationProtocols)
-        {
-            protocolListLength = checked(protocolListLength + 1 + applicationProtocol.Length);
-        }
-
-        return checked(UInt16Length + UInt16Length + UInt16Length + protocolListLength);
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), ApplicationLayerProtocolNegotiationExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(UInt16Length + 1 + applicationProtocol.Length)));
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(1 + applicationProtocol.Length)));
+        index += UInt16Length;
+        body[index++] = checked((byte)applicationProtocol.Length);
+        applicationProtocol.CopyTo(body.AsSpan(index, applicationProtocol.Length));
+        index += applicationProtocol.Length;
     }
 
     private static byte[][] NormalizeApplicationProtocols(IReadOnlyList<SslApplicationProtocol>? applicationProtocols)
@@ -2195,6 +2648,26 @@ internal sealed class QuicTlsKeySchedule
         return normalizedProtocols;
     }
 
+    private static bool HaveSameApplicationProtocols(
+        IReadOnlyList<byte[]> left,
+        IReadOnlyList<byte[]> right)
+    {
+        if (left.Count != right.Count)
+        {
+            return false;
+        }
+
+        for (int index = 0; index < left.Count; index++)
+        {
+            if (!left[index].AsSpan().SequenceEqual(right[index]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private static uint ComputeObfuscatedTicketAge(
         QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot,
         long nowTicks)
@@ -2207,5 +2680,12 @@ internal sealed class QuicTlsKeySchedule
             : (unchecked((ulong)elapsedTicks) * 1_000UL) / (ulong)Stopwatch.Frequency;
         uint ticketAgeMilliseconds32 = unchecked((uint)ticketAgeMilliseconds);
         return unchecked(ticketAgeMilliseconds32 + detachedResumptionTicketSnapshot.TicketAgeAdd);
+    }
+
+    private enum ClientHelloApplicationProtocolOfferState
+    {
+        Missing = 0,
+        Present = 1,
+        Invalid = 2,
     }
 }

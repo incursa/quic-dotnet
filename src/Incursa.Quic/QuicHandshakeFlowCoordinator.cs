@@ -788,7 +788,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         plaintextPacket = [];
         packetNumber = default;
 
-        if (destinationConnectionId.Length == 0 || sourceConnectionId.Length == 0)
+        if (sourceConnectionId.Length == 0)
         {
             return false;
         }

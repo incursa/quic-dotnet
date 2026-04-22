@@ -586,6 +586,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             if (!runtime.TryConfigureInitialPacketProtection(initialDestinationConnectionId)
                 || !runtime.TrySetHandshakeDestinationConnectionId(clientSourceConnectionId)
                 || !runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId)
+                || !runtime.TryConfigureLocalApplicationProtocols(applicationProtocols)
                 || !runtime.TryConfigureServerAuthenticationMaterial(
                     validatedOptions.ServerLeafCertificateDer,
                     validatedOptions.ServerLeafSigningPrivateKey,

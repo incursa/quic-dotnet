@@ -608,6 +608,81 @@ function Test-InteropRunnerTransferClientOutput {
     return $OutputText.IndexOf('client exited with code 0', [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 }
 
+function Test-InteropRunnerTransferServerOutput {
+    param(
+        [Parameter(Mandatory)]
+        [string]$OutputText
+    )
+
+    $completionMatches = [System.Text.RegularExpressions.Regex]::Matches(
+        $OutputText,
+        'completed managed transfer response .* stream (?<index>\d+)\.',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+
+    if ($completionMatches.Count -eq 0) {
+        return $false
+    }
+
+    $completedStreams = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($completionMatch in $completionMatches) {
+        $streamIndex = [int]$completionMatch.Groups['index'].Value
+        if ($streamIndex -lt 1) {
+            return $false
+        }
+
+        $null = $completedStreams.Add($streamIndex)
+    }
+
+    if ($completedStreams.Count -ne $completionMatches.Count) {
+        return $false
+    }
+
+    for ($streamIndex = 1; $streamIndex -le $completedStreams.Count; $streamIndex++) {
+        if (-not $completedStreams.Contains($streamIndex)) {
+            return $false
+        }
+    }
+
+    return $OutputText.IndexOf('client exited with code 0', [System.StringComparison]::OrdinalIgnoreCase) -ge 0 `
+        -and $OutputText.IndexOf('server exited with code 0', [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+}
+
+function Test-InteropRunnerContainsMarkers {
+    param(
+        [Parameter(Mandatory)]
+        [string]$OutputText,
+
+        [Parameter(Mandatory)]
+        [string[]]$RequiredMarkers
+    )
+
+    foreach ($requiredMarker in $RequiredMarkers) {
+        if ($OutputText.IndexOf($requiredMarker, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-InteropRunnerHandshakeOutput {
+    param(
+        [Parameter(Mandatory)]
+        [string]$OutputText,
+
+        [Parameter(Mandatory)]
+        [string]$LocalRole
+    )
+
+    $requiredMarkers = switch ($LocalRole) {
+        'client' { @('completed managed handshake download', 'client exited with code 0') }
+        'server' { @('completed managed handshake response', 'client exited with code 0', 'server exited with code 0') }
+        default { @('completed managed handshake download', 'completed managed handshake response', 'client exited with code 0', 'server exited with code 0') }
+    }
+
+    return Test-InteropRunnerContainsMarkers -OutputText $OutputText -RequiredMarkers $requiredMarkers
+}
+
 function Test-InteropRunnerMulticonnectClientOutput {
     param(
         [Parameter(Mandatory)]
@@ -692,10 +767,17 @@ function Get-InteropRunnerFallbackClassification {
         }
     }
 
-    if ($testCase -in @('transfer', 'multiconnect') -and $LocalRole -ne 'client') {
+    if ($testCase -eq 'transfer' -and $LocalRole -notin @('client', 'server')) {
         return [pscustomobject]@{
             TreatAsSuccess = $false
-            Summary = "The runner hit a post-check FileNotFoundError, and $testCase fallback classification is only enabled for the client-role testcase when preserved output proves every managed download completed."
+            Summary = 'The runner hit a post-check FileNotFoundError, and transfer fallback classification is only enabled for the client-role testcase when preserved output proves every managed download completed, or for the server-role testcase when preserved output proves managed transfer responses completed with clean client/server exits.'
+        }
+    }
+
+    if ($testCase -eq 'multiconnect' -and $LocalRole -ne 'client') {
+        return [pscustomobject]@{
+            TreatAsSuccess = $false
+            Summary = 'The runner hit a post-check FileNotFoundError, and multiconnect fallback classification is only enabled for the client-role testcase when preserved output proves every managed download completed.'
         }
     }
 
@@ -711,10 +793,16 @@ function Get-InteropRunnerFallbackClassification {
         $outputText = Get-Content -LiteralPath $outputFile.FullName -Raw
         switch ($testCase) {
             'handshake' {
-                if (($outputText -match 'completed managed .* download') -and ($outputText -match '(client|server) exited with code 0')) {
+                if (Test-InteropRunnerHandshakeOutput -OutputText $outputText -LocalRole $LocalRole) {
+                    $handshakeSummary = switch ($LocalRole) {
+                        'client' { 'shows a completed managed handshake download and a clean local client exit.' }
+                        'server' { 'shows a completed managed handshake response and clean client/server exits.' }
+                        default { 'shows completed managed handshake request/response evidence and clean client/server exits.' }
+                    }
+
                     return [pscustomobject]@{
                         TreatAsSuccess = $true
-                        Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows a completed managed download and a clean endpoint exit."
+                        Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' $handshakeSummary"
                     }
                 }
             }
@@ -726,15 +814,7 @@ function Get-InteropRunnerFallbackClassification {
                     default { @('completed managed client bootstrap.', 'client exited with code 0', 'completed managed listener bootstrap.', 'server exited with code 0') }
                 }
 
-                $containsAllMarkers = $true
-                foreach ($requiredMarker in $requiredMarkers) {
-                    if ($outputText.IndexOf($requiredMarker, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
-                        $containsAllMarkers = $false
-                        break
-                    }
-                }
-
-                if ($containsAllMarkers) {
+                if (Test-InteropRunnerContainsMarkers -OutputText $outputText -RequiredMarkers $requiredMarkers) {
                     return [pscustomobject]@{
                         TreatAsSuccess = $true
                         Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows a completed managed Retry bootstrap and a clean local endpoint exit."
@@ -743,10 +823,23 @@ function Get-InteropRunnerFallbackClassification {
             }
 
             'transfer' {
-                if (Test-InteropRunnerTransferClientOutput -OutputText $outputText) {
-                    return [pscustomobject]@{
-                        TreatAsSuccess = $true
-                        Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows completed managed downloads for every transfer request and a clean local client exit."
+                switch ($LocalRole) {
+                    'client' {
+                        if (Test-InteropRunnerTransferClientOutput -OutputText $outputText) {
+                            return [pscustomobject]@{
+                                TreatAsSuccess = $true
+                                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows completed managed downloads for every transfer request and a clean local client exit."
+                            }
+                        }
+                    }
+
+                    'server' {
+                        if (Test-InteropRunnerTransferServerOutput -OutputText $outputText) {
+                            return [pscustomobject]@{
+                                TreatAsSuccess = $true
+                                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows completed managed transfer responses with clean client/server exits."
+                            }
+                        }
                     }
                 }
             }
@@ -768,13 +861,21 @@ function Get-InteropRunnerFallbackClassification {
             'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a completed managed Retry bootstrap with a clean local endpoint exit.'
         }
         elseif ($testCase -eq 'transfer') {
-            'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain completed managed downloads for every transfer request with a clean local client exit.'
+            switch ($LocalRole) {
+                'client' { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain completed managed downloads for every transfer request with a clean local client exit.' }
+                'server' { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain completed managed transfer responses with clean client/server exits.' }
+                default { 'The runner hit a post-check FileNotFoundError, and transfer fallback classification is only enabled for the client-role testcase when preserved output proves every managed download completed, or for the server-role testcase when preserved output proves managed transfer responses completed with clean client/server exits.' }
+            }
         }
         elseif ($testCase -eq 'multiconnect') {
             'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain completed managed downloads for every multiconnect request with a clean local client exit.'
         }
         else {
-            'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a completed managed download with a clean endpoint exit.'
+            switch ($LocalRole) {
+                'client' { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a completed managed handshake download with a clean local client exit.' }
+                'server' { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a completed managed handshake response with clean client/server exits.' }
+                default { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain completed managed handshake request/response evidence with clean client/server exits.' }
+            }
         }
     }
 }

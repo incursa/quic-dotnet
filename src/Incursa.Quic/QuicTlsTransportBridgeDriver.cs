@@ -209,6 +209,22 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         return true;
     }
 
+    internal bool TryConfigureLocalApplicationProtocols(IReadOnlyList<SslApplicationProtocol> applicationProtocols)
+    {
+        if (Role != QuicTlsRole.Server || keySchedule is null)
+        {
+            return false;
+        }
+
+        if (!keySchedule.TryConfigureLocalApplicationProtocols(applicationProtocols))
+        {
+            return false;
+        }
+
+        handshakeTranscriptProgress.ConfigureServerApplicationProtocols(applicationProtocolsConfigured: true);
+        return true;
+    }
+
     /// <inheritdoc />
     public IReadOnlyList<QuicTlsStateUpdate> ProcessCryptoFrame(
         QuicTlsEncryptionLevel encryptionLevel,
@@ -1043,6 +1059,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
                 case QuicTlsTranscriptStepKind.Progressed:
                 case QuicTlsTranscriptStepKind.PeerTransportParametersStaged:
+                case QuicTlsTranscriptStepKind.HelloRetryRequestRequested:
                 {
                     QuicTlsEarlyDataDisposition? earlyDataDisposition = null;
                     if (step.EarlyDataAccepted.HasValue)

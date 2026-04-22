@@ -71,6 +71,85 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundHandshakeServerSuccessTreatsTheRunAsAdvisorySuccess()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        // Provenance: artifacts\interop-runner\20260422-134852409-server-nginx showed a completed
+        // managed handshake response with both endpoints exiting cleanly before the external
+        // runner's FileNotFoundError post-check failed.
+        fixture.WriteRunnerScript("file-not-found-handshake-server-success");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "nginx",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "handshake");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Exit code: 7", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Advisory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "completed managed handshake response and clean client/server exits",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-report.json")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-report.md")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner.stderr.log")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "quic-go_nginx", "handshake", "output.txt")));
+    }
+
+    [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundHandshakeServerWithoutCleanClientExitStillFails()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-handshake-server-incomplete");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "nginx",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "handshake");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "did not contain a completed managed handshake response with clean client/server exits",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task RunnerExitNonZeroAfterFileNotFoundTransferClientSuccessTreatsTheRunAsAdvisorySuccess()
     {
         using InteropRunnerScriptFixture fixture = new();
@@ -113,6 +192,51 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundTransferServerSuccessTreatsTheRunAsAdvisorySuccess()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        // Provenance: artifacts\interop-runner\20260422-141028552-server-nginx showed the
+        // managed server completing all transfer responses with both endpoints exiting cleanly
+        // before the external runner's FileNotFoundError post-check failed.
+        fixture.WriteRunnerScript("file-not-found-transfer-server-success");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "nginx",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "transfer");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Exit code: 7", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Advisory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "completed managed transfer responses with clean client/server exits",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-report.json")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-report.md")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner.stderr.log")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "quic-go_nginx", "transfer", "output.txt")));
+    }
+
+    [Fact]
     public async Task RunnerExitNonZeroAfterFileNotFoundTransferClientWithoutAllCompletedDownloadsStillFails()
     {
         using InteropRunnerScriptFixture fixture = new();
@@ -147,10 +271,10 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
-    public async Task RunnerExitNonZeroAfterFileNotFoundTransferServerRoleStillFails()
+    public async Task RunnerExitNonZeroAfterFileNotFoundTransferServerWithoutCleanClientExitStillFails()
     {
         using InteropRunnerScriptFixture fixture = new();
-        fixture.WriteRunnerScript("file-not-found-transfer-client-success");
+        fixture.WriteRunnerScript("file-not-found-transfer-server-incomplete");
 
         ScriptRunResult result = await fixture.RunAsync(
             "-RepoRoot",
@@ -174,7 +298,7 @@ public sealed class InteropRunnerScriptFailureSummaryTests
         Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
         Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(
-            "transfer fallback classification is only enabled for the client-role testcase",
+            "did not contain completed managed transfer responses with clean client/server exits",
             output,
             StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
@@ -731,7 +855,11 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 set "mode=success"
 
                 findstr /c:"# fake-runner: non-zero-valid-outputs" run.py >nul && set "mode=non-zero-valid-outputs"
+                findstr /c:"# fake-runner: file-not-found-handshake-server-success" run.py >nul && set "mode=file-not-found-handshake-server-success"
+                findstr /c:"# fake-runner: file-not-found-handshake-server-incomplete" run.py >nul && set "mode=file-not-found-handshake-server-incomplete"
                 findstr /c:"# fake-runner: file-not-found-transfer-client-success" run.py >nul && set "mode=file-not-found-transfer-client-success"
+                findstr /c:"# fake-runner: file-not-found-transfer-server-success" run.py >nul && set "mode=file-not-found-transfer-server-success"
+                findstr /c:"# fake-runner: file-not-found-transfer-server-incomplete" run.py >nul && set "mode=file-not-found-transfer-server-incomplete"
                 findstr /c:"# fake-runner: file-not-found-transfer-incomplete" run.py >nul && set "mode=file-not-found-transfer-incomplete"
                 findstr /c:"# fake-runner: file-not-found-multiconnect-client-success" run.py >nul && set "mode=file-not-found-multiconnect-client-success"
                 findstr /c:"# fake-runner: file-not-found-multiconnect-incomplete" run.py >nul && set "mode=file-not-found-multiconnect-incomplete"
@@ -773,6 +901,33 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                   exit /b 7
                 )
 
+                if /I "%mode%"=="file-not-found-handshake-server-success" (
+                  echo fake-runner sentinel file-not-found-handshake-server-success
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_nginx\handshake" md "%logsDir%\quic-go_nginx\handshake" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-handshake-server-success"}
+                  > "%logsDir%\quic-go_nginx\handshake\output.txt" (
+                    echo server ^| interop harness: role=server, testcase=handshake, requestCount=0 completed managed handshake response from /www/temperate-surprised-zip for target=temperate-surprised-zip, bytes=1024, stream 1.
+                    echo client exited with code 0
+                    echo server exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="file-not-found-handshake-server-incomplete" (
+                  echo fake-runner sentinel file-not-found-handshake-server-incomplete
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_nginx\handshake" md "%logsDir%\quic-go_nginx\handshake" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-handshake-server-incomplete"}
+                  > "%logsDir%\quic-go_nginx\handshake\output.txt" (
+                    echo server ^| interop harness: role=server, testcase=handshake, requestCount=0 completed managed handshake response from /www/temperate-surprised-zip for target=temperate-surprised-zip, bytes=1024, stream 1.
+                    echo server exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
                 if /I "%mode%"=="file-not-found-transfer-client-success" (
                   echo fake-runner sentinel file-not-found-transfer-client-success
                   if not defined jsonPath exit /b 2
@@ -783,6 +938,37 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                     echo client ^| interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/zestful-aquamarine-hat from /zestful-aquamarine-hat, bytes=3145728, stream 2/3.
                     echo client ^| interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/envious-mild-warlock from /envious-mild-warlock, bytes=5242880, stream 3/3.
                     echo client exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="file-not-found-transfer-server-success" (
+                  echo fake-runner sentinel file-not-found-transfer-server-success
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_nginx\transfer" md "%logsDir%\quic-go_nginx\transfer" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-transfer-server-success"}
+                  > "%logsDir%\quic-go_nginx\transfer\output.txt" (
+                    echo server ^| interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/savory-thin-bluetooth for target=savory-thin-bluetooth, bytes=5242880, stream 1.
+                    echo server ^| interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/dull-jubilant-otter for target=dull-jubilant-otter, bytes=2097152, stream 2.
+                    echo server ^| interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/quiet-copious-assassin for target=quiet-copious-assassin, bytes=3145728, stream 3.
+                    echo client exited with code 0
+                    echo server exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="file-not-found-transfer-server-incomplete" (
+                  echo fake-runner sentinel file-not-found-transfer-server-incomplete
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_nginx\transfer" md "%logsDir%\quic-go_nginx\transfer" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-transfer-server-incomplete"}
+                  > "%logsDir%\quic-go_nginx\transfer\output.txt" (
+                    echo server ^| interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/savory-thin-bluetooth for target=savory-thin-bluetooth, bytes=5242880, stream 1.
+                    echo server ^| interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/dull-jubilant-otter for target=dull-jubilant-otter, bytes=2097152, stream 2.
+                    echo server ^| interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/quiet-copious-assassin for target=quiet-copious-assassin, bytes=3145728, stream 3.
+                    echo server exited with code 0
                   )
                   echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
                   exit /b 7
@@ -847,8 +1033,16 @@ public sealed class InteropRunnerScriptFailureSummaryTests
             mode=success
             if grep -q '# fake-runner: non-zero-valid-outputs' run.py; then
                 mode=non-zero-valid-outputs
+            elif grep -q '# fake-runner: file-not-found-handshake-server-success' run.py; then
+                mode=file-not-found-handshake-server-success
+            elif grep -q '# fake-runner: file-not-found-handshake-server-incomplete' run.py; then
+                mode=file-not-found-handshake-server-incomplete
             elif grep -q '# fake-runner: file-not-found-transfer-client-success' run.py; then
                 mode=file-not-found-transfer-client-success
+            elif grep -q '# fake-runner: file-not-found-transfer-server-success' run.py; then
+                mode=file-not-found-transfer-server-success
+            elif grep -q '# fake-runner: file-not-found-transfer-server-incomplete' run.py; then
+                mode=file-not-found-transfer-server-incomplete
             elif grep -q '# fake-runner: file-not-found-transfer-incomplete' run.py; then
                 mode=file-not-found-transfer-incomplete
             elif grep -q '# fake-runner: file-not-found-multiconnect-client-success' run.py; then
@@ -893,6 +1087,37 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 exit 7
             fi
 
+            if [ "$mode" = "file-not-found-handshake-server-success" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-handshake-server-success'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_nginx/handshake"
+                printf '%s\n' '{"mode":"file-not-found-handshake-server-success"}' > "$json_path"
+                {
+                    printf '%s\n' 'server | interop harness: role=server, testcase=handshake, requestCount=0 completed managed handshake response from /www/temperate-surprised-zip for target=temperate-surprised-zip, bytes=1024, stream 1.'
+                    printf '%s\n' 'client exited with code 0'
+                    printf '%s\n' 'server exited with code 0'
+                } > "$logs_dir/quic-go_nginx/handshake/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-handshake-server-incomplete" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-handshake-server-incomplete'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_nginx/handshake"
+                printf '%s\n' '{"mode":"file-not-found-handshake-server-incomplete"}' > "$json_path"
+                {
+                    printf '%s\n' 'server | interop harness: role=server, testcase=handshake, requestCount=0 completed managed handshake response from /www/temperate-surprised-zip for target=temperate-surprised-zip, bytes=1024, stream 1.'
+                    printf '%s\n' 'server exited with code 0'
+                } > "$logs_dir/quic-go_nginx/handshake/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
             if [ "$mode" = "file-not-found-transfer-client-success" ]; then
                 printf '%s\n' 'fake-runner sentinel file-not-found-transfer-client-success'
                 if [ -z "$json_path" ]; then
@@ -906,6 +1131,41 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                     printf '%s\n' 'client | interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/envious-mild-warlock from /envious-mild-warlock, bytes=5242880, stream 3/3.'
                     printf '%s\n' 'client exited with code 0'
                 } > "$logs_dir/quic-go_chrome/transfer/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-transfer-server-success" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-transfer-server-success'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_nginx/transfer"
+                printf '%s\n' '{"mode":"file-not-found-transfer-server-success"}' > "$json_path"
+                {
+                    printf '%s\n' 'server | interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/savory-thin-bluetooth for target=savory-thin-bluetooth, bytes=5242880, stream 1.'
+                    printf '%s\n' 'server | interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/dull-jubilant-otter for target=dull-jubilant-otter, bytes=2097152, stream 2.'
+                    printf '%s\n' 'server | interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/quiet-copious-assassin for target=quiet-copious-assassin, bytes=3145728, stream 3.'
+                    printf '%s\n' 'client exited with code 0'
+                    printf '%s\n' 'server exited with code 0'
+                } > "$logs_dir/quic-go_nginx/transfer/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-transfer-server-incomplete" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-transfer-server-incomplete'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_nginx/transfer"
+                printf '%s\n' '{"mode":"file-not-found-transfer-server-incomplete"}' > "$json_path"
+                {
+                    printf '%s\n' 'server | interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/savory-thin-bluetooth for target=savory-thin-bluetooth, bytes=5242880, stream 1.'
+                    printf '%s\n' 'server | interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/dull-jubilant-otter for target=dull-jubilant-otter, bytes=2097152, stream 2.'
+                    printf '%s\n' 'server | interop harness: role=server, testcase=transfer, requestCount=0 completed managed transfer response from /www/quiet-copious-assassin for target=quiet-copious-assassin, bytes=3145728, stream 3.'
+                    printf '%s\n' 'server exited with code 0'
+                } > "$logs_dir/quic-go_nginx/transfer/output.txt"
                 printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
                 exit 7
             fi

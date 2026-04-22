@@ -34,6 +34,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicInitialPacketProtectionBenchmarks`
 - `QuicHandshakePacketProtectionBenchmarks`
 - `QuicRetryIntegrityBenchmarks`
+- `QuicTlsServerHelloRetryRequestBenchmarks`
 - `QuicTlsServerFinishedPublicationBenchmarks`
 - `QuicTlsClientFinishedPublicationBenchmarks`
 - `QuicApplicationPacketKeyPhaseBenchmarks`
