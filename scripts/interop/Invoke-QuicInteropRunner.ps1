@@ -608,6 +608,48 @@ function Test-InteropRunnerTransferClientOutput {
     return $OutputText.IndexOf('client exited with code 0', [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 }
 
+function Test-InteropRunnerMulticonnectClientOutput {
+    param(
+        [Parameter(Mandatory)]
+        [string]$OutputText
+    )
+
+    $completionMatches = [System.Text.RegularExpressions.Regex]::Matches(
+        $OutputText,
+        'completed managed multiconnect download .* connection (?<index>\d+)/(?<count>\d+)\.',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+
+    if ($completionMatches.Count -eq 0) {
+        return $false
+    }
+
+    $expectedConnectionCount = 0
+    $completedConnections = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($completionMatch in $completionMatches) {
+        $connectionIndex = [int]$completionMatch.Groups['index'].Value
+        $connectionCount = [int]$completionMatch.Groups['count'].Value
+
+        if ($expectedConnectionCount -eq 0) {
+            $expectedConnectionCount = $connectionCount
+        }
+        elseif ($expectedConnectionCount -ne $connectionCount) {
+            return $false
+        }
+
+        if ($connectionIndex -lt 1 -or $connectionIndex -gt $expectedConnectionCount) {
+            return $false
+        }
+
+        $null = $completedConnections.Add($connectionIndex)
+    }
+
+    if (($expectedConnectionCount -le 0) -or ($completionMatches.Count -ne $expectedConnectionCount) -or ($completedConnections.Count -ne $expectedConnectionCount)) {
+        return $false
+    }
+
+    return $OutputText.IndexOf('client exited with code 0', [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+}
+
 function Get-InteropRunnerFallbackClassification {
     param(
         [Parameter(Mandatory)]
@@ -643,17 +685,17 @@ function Get-InteropRunnerFallbackClassification {
     }
 
     $testCase = $TestCases[0]
-    if ($testCase -notin @('handshake', 'retry', 'transfer')) {
+    if ($testCase -notin @('handshake', 'retry', 'transfer', 'multiconnect')) {
         return [pscustomobject]@{
             TreatAsSuccess = $false
-            Summary = 'The runner hit a post-check FileNotFoundError, and fallback classification is only enabled for the plain handshake and retry testcases, plus the client-role transfer testcase when preserved output proves every managed download completed.'
+            Summary = 'The runner hit a post-check FileNotFoundError, and fallback classification is only enabled for the plain handshake and retry testcases, plus the client-role transfer and multiconnect testcases when preserved output proves every managed download completed.'
         }
     }
 
-    if ($testCase -eq 'transfer' -and $LocalRole -ne 'client') {
+    if ($testCase -in @('transfer', 'multiconnect') -and $LocalRole -ne 'client') {
         return [pscustomobject]@{
             TreatAsSuccess = $false
-            Summary = 'The runner hit a post-check FileNotFoundError, and transfer fallback classification is only enabled for the client-role testcase when preserved output proves every managed download completed.'
+            Summary = "The runner hit a post-check FileNotFoundError, and $testCase fallback classification is only enabled for the client-role testcase when preserved output proves every managed download completed."
         }
     }
 
@@ -708,6 +750,15 @@ function Get-InteropRunnerFallbackClassification {
                     }
                 }
             }
+
+            'multiconnect' {
+                if (Test-InteropRunnerMulticonnectClientOutput -OutputText $outputText) {
+                    return [pscustomobject]@{
+                        TreatAsSuccess = $true
+                        Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows completed managed downloads for every multiconnect request and a clean local client exit."
+                    }
+                }
+            }
         }
     }
 
@@ -718,6 +769,9 @@ function Get-InteropRunnerFallbackClassification {
         }
         elseif ($testCase -eq 'transfer') {
             'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain completed managed downloads for every transfer request with a clean local client exit.'
+        }
+        elseif ($testCase -eq 'multiconnect') {
+            'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain completed managed downloads for every multiconnect request with a clean local client exit.'
         }
         else {
             'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a completed managed download with a clean endpoint exit.'

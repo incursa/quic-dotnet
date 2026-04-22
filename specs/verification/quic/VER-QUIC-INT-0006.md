@@ -46,7 +46,7 @@ The helper produces repo-local execution-report artifacts for local runner runs 
 
 ## Status
 
-Landed; the local helper built the harness image, invoked the external runner through image replacement, and captured repo-local execution-report bundles while preserving the runner's noncompliant result honestly. The helper now covers both same-slot and split-role local runs, the harness tolerates empty server-side `REQUESTS` on supported dispatch paths, and the proof now also includes helper-validation coverage for the narrow advisory-only `FileNotFoundError` classification used by handshake, retry, and client-role transfer when preserved output proves completion.
+Passed on 2026-04-22; the local helper built the harness image, invoked the external runner through image replacement, and captured repo-local execution-report bundles while preserving the runner's noncompliant result honestly. The helper now covers both same-slot and split-role local runs, the harness tolerates empty server-side `REQUESTS` on supported dispatch paths, and the proof now also includes helper-validation coverage for the narrow advisory-only `FileNotFoundError` classification used by handshake, retry, client-role transfer, and client-role multiconnect when preserved output proves completion, including the fresh client-role quic-go multiconnect evidence at `artifacts/interop-runner/20260422-084330170-client-chrome/`.
 
 ## Related Artifacts
 

@@ -181,6 +181,116 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundMulticonnectClientSuccessTreatsTheRunAsAdvisorySuccess()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-multiconnect-client-success");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "multiconnect");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Exit code: 7", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Advisory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "completed managed downloads for every multiconnect request and a clean local client exit",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-report.json")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-report.md")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner.stderr.log")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "quic-go_chrome", "handshakeloss", "output.txt")));
+    }
+
+    [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundMulticonnectClientWithoutAllCompletedDownloadsStillFails()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-multiconnect-incomplete");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "multiconnect");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "did not contain completed managed downloads for every multiconnect request with a clean local client exit",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundMulticonnectServerRoleStillFails()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-multiconnect-client-success");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "nginx",
+            "-PeerImplementationSlots",
+            "chrome",
+            "-TestCases",
+            "multiconnect");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "multiconnect fallback classification is only enabled for the client-role testcase",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task RunnerExitZeroAfterValidOutputsButMissingRunnerStderrLogReportsFailureSummary()
     {
         using InteropRunnerScriptFixture fixture = new();
@@ -623,6 +733,8 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 findstr /c:"# fake-runner: non-zero-valid-outputs" run.py >nul && set "mode=non-zero-valid-outputs"
                 findstr /c:"# fake-runner: file-not-found-transfer-client-success" run.py >nul && set "mode=file-not-found-transfer-client-success"
                 findstr /c:"# fake-runner: file-not-found-transfer-incomplete" run.py >nul && set "mode=file-not-found-transfer-incomplete"
+                findstr /c:"# fake-runner: file-not-found-multiconnect-client-success" run.py >nul && set "mode=file-not-found-multiconnect-client-success"
+                findstr /c:"# fake-runner: file-not-found-multiconnect-incomplete" run.py >nul && set "mode=file-not-found-multiconnect-incomplete"
 
                 set "jsonPath="
                 set "logsDir="
@@ -690,6 +802,35 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                   exit /b 7
                 )
 
+                if /I "%mode%"=="file-not-found-multiconnect-client-success" (
+                  echo fake-runner sentinel file-not-found-multiconnect-client-success
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_chrome\handshakeloss" md "%logsDir%\quic-go_chrome\handshakeloss" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-multiconnect-client-success"}
+                  > "%logsDir%\quic-go_chrome\handshakeloss\output.txt" (
+                    echo client ^| interop harness: role=client, testcase=multiconnect, requestCount=3 completed managed multiconnect download to /downloads/moderate-red-car from /moderate-red-car, bytes=2097152, connection 1/3.
+                    echo client ^| interop harness: role=client, testcase=multiconnect, requestCount=3 completed managed multiconnect download to /downloads/zestful-aquamarine-hat from /zestful-aquamarine-hat, bytes=3145728, connection 2/3.
+                    echo client ^| interop harness: role=client, testcase=multiconnect, requestCount=3 completed managed multiconnect download to /downloads/envious-mild-warlock from /envious-mild-warlock, bytes=5242880, connection 3/3.
+                    echo client exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="file-not-found-multiconnect-incomplete" (
+                  echo fake-runner sentinel file-not-found-multiconnect-incomplete
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_chrome\handshakeloss" md "%logsDir%\quic-go_chrome\handshakeloss" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-multiconnect-incomplete"}
+                  > "%logsDir%\quic-go_chrome\handshakeloss\output.txt" (
+                    echo client ^| interop harness: role=client, testcase=multiconnect, requestCount=3 completed managed multiconnect download to /downloads/moderate-red-car from /moderate-red-car, bytes=2097152, connection 1/3.
+                    echo client ^| interop harness: role=client, testcase=multiconnect, requestCount=3 completed managed multiconnect download to /downloads/zestful-aquamarine-hat from /zestful-aquamarine-hat, bytes=3145728, connection 2/3.
+                    echo client exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
                 echo fake-runner sentinel success
                 if defined jsonPath (
                   > "%jsonPath%" echo {"mode":"success"}
@@ -710,6 +851,10 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 mode=file-not-found-transfer-client-success
             elif grep -q '# fake-runner: file-not-found-transfer-incomplete' run.py; then
                 mode=file-not-found-transfer-incomplete
+            elif grep -q '# fake-runner: file-not-found-multiconnect-client-success' run.py; then
+                mode=file-not-found-multiconnect-client-success
+            elif grep -q '# fake-runner: file-not-found-multiconnect-incomplete' run.py; then
+                mode=file-not-found-multiconnect-incomplete
             fi
 
             json_path=
@@ -777,6 +922,39 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                     printf '%s\n' 'client | interop harness: role=client, testcase=transfer, requestCount=3 completed managed transfer download to /downloads/zestful-aquamarine-hat from /zestful-aquamarine-hat, bytes=3145728, stream 2/3.'
                     printf '%s\n' 'client exited with code 0'
                 } > "$logs_dir/quic-go_chrome/transfer/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-multiconnect-client-success" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-multiconnect-client-success'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_chrome/handshakeloss"
+                printf '%s\n' '{"mode":"file-not-found-multiconnect-client-success"}' > "$json_path"
+                {
+                    printf '%s\n' 'client | interop harness: role=client, testcase=multiconnect, requestCount=3 completed managed multiconnect download to /downloads/moderate-red-car from /moderate-red-car, bytes=2097152, connection 1/3.'
+                    printf '%s\n' 'client | interop harness: role=client, testcase=multiconnect, requestCount=3 completed managed multiconnect download to /downloads/zestful-aquamarine-hat from /zestful-aquamarine-hat, bytes=3145728, connection 2/3.'
+                    printf '%s\n' 'client | interop harness: role=client, testcase=multiconnect, requestCount=3 completed managed multiconnect download to /downloads/envious-mild-warlock from /envious-mild-warlock, bytes=5242880, connection 3/3.'
+                    printf '%s\n' 'client exited with code 0'
+                } > "$logs_dir/quic-go_chrome/handshakeloss/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-multiconnect-incomplete" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-multiconnect-incomplete'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_chrome/handshakeloss"
+                printf '%s\n' '{"mode":"file-not-found-multiconnect-incomplete"}' > "$json_path"
+                {
+                    printf '%s\n' 'client | interop harness: role=client, testcase=multiconnect, requestCount=3 completed managed multiconnect download to /downloads/moderate-red-car from /moderate-red-car, bytes=2097152, connection 1/3.'
+                    printf '%s\n' 'client | interop harness: role=client, testcase=multiconnect, requestCount=3 completed managed multiconnect download to /downloads/zestful-aquamarine-hat from /zestful-aquamarine-hat, bytes=3145728, connection 2/3.'
+                    printf '%s\n' 'client exited with code 0'
+                } > "$logs_dir/quic-go_chrome/handshakeloss/output.txt"
                 printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
                 exit 7
             fi

@@ -58,7 +58,7 @@ Run the helper against the local `C:\src\quic-interop\quic-interop-runner` check
 
 ## Completion Notes
 
-The helper now builds the local harness image, runs the external quic-interop-runner through image replacement, and captures repo-local JSON, Markdown, stderr, build-log, and log-tree artifacts without requiring any runner-repository registry change. It now supports both same-slot and split-role local runs, and the harness tolerates empty server-side `REQUESTS` on supported dispatch paths. The helper's post-check `FileNotFoundError` handling remains narrow and evidence-backed: handshake, retry, and client-role transfer can be downgraded to advisory only when the preserved output proves the supported testcase completed, while other cases continue to preserve the failure bundle honestly.
+The helper now builds the local harness image, runs the external quic-interop-runner through image replacement, and captures repo-local JSON, Markdown, stderr, build-log, and log-tree artifacts without requiring any runner-repository registry change. It now supports both same-slot and split-role local runs, and the harness tolerates empty server-side `REQUESTS` on supported dispatch paths. The helper's post-check `FileNotFoundError` handling remains narrow and evidence-backed: handshake, retry, client-role transfer, and client-role multiconnect can be downgraded to advisory only when the preserved output proves the supported testcase completed, while other cases continue to preserve the failure bundle honestly.
 
 ## Trace Links
 
