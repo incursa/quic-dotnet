@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -607,6 +608,69 @@ public sealed class QuicCapturedInteropReplayTests
     }
 
     [Fact]
+    public async Task CapturedQuicGoServerResponsePacketIsStillProcessedWhileTheRuntimeIsEstablishing()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-094800030-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\output.txt
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-094800030-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\server\log.txt
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-094800030-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\sim\trace_node_left.pcap
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-094800030-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\sim\trace_node_right.pcap
+        // In the preserved connection 40/50, quic-go received "GET /happy-polar-camel" and the simulator
+        // recorded multiple server 1-RTT response packets reaching the client host before the managed
+        // client idled. The bounded repo bug was the establishing-phase router silently skipping those
+        // short-header packets. Force just that routing shape here with a finished runtime and a peer packet
+        // built from its own 1-RTT material so the regression stays deterministic.
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            connectionReceiveLimit: 4096,
+            localBidirectionalReceiveLimit: 2048);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await using QuicStream requestStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        Assert.Equal(0L, requestStream.Id);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+
+        QuicHandshakeFlowCoordinator peerCoordinator = new(runtime.CurrentHandshakeSourceConnectionId);
+        byte[] response = Enumerable.Range(0, 1024).Select(static index => (byte)(index % 251)).ToArray();
+        byte[] responsePayload = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0E,
+            streamId: (ulong)requestStream.Id,
+            streamData: response,
+            offset: 0);
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            responsePayload,
+            minimumPacketNumberExclusive: 5,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            keyPhase: false,
+            out _,
+            out byte[] responsePacket));
+
+        ForcePhase(runtime, QuicConnectionPhase.Establishing);
+
+        QuicConnectionTransitionResult responseResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 12,
+                PathIdentity: runtime.ActivePath.Value.Identity,
+                Datagram: responsePacket),
+            nowTicks: 12);
+
+        string detail = $"streamId={requestStream.Id}; activePath={runtime.ActivePath.HasValue}; phase=Establishing";
+
+        Assert.True(responseResult.StateChanged, detail);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(0, out QuicConnectionStreamSnapshot snapshot), detail);
+        Assert.Equal(1024UL, snapshot.UniqueBytesReceived);
+        Assert.Equal(1024, snapshot.BufferedReadableBytes);
+    }
+
+    [Fact]
     public void CapturedQuicGoTransferPacket77ReplaysAsStreamDataBlockedThenTheNextResponseChunk()
     {
         Assert.Equal(
@@ -678,6 +742,14 @@ public sealed class QuicCapturedInteropReplayTests
                 $"effectDiagnostics={string.Join(" || ", result.Effects.OfType<QuicConnectionEmitDiagnosticEffect>().Select(static effect => $"{effect.Diagnostic.Name}: {effect.Diagnostic.Message}"))}",
                 $"sinkDiagnostics={string.Join(" || ", diagnosticsSink.Events.Select(static diagnostic => $"{diagnostic.Name}: {diagnostic.Message}"))}",
             ]);
+    }
+
+    private static void ForcePhase(QuicConnectionRuntime runtime, QuicConnectionPhase phase)
+    {
+        FieldInfo field = typeof(QuicConnectionRuntime).GetField(
+            "phase",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        field.SetValue(runtime, phase);
     }
 
     private static bool TryCreateHandshakePacketProtectionMaterial(

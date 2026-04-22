@@ -95,6 +95,9 @@ internal sealed partial class QuicConnectionRuntime
                 case QuicConnectionPhase.Establishing:
                     stateChanged |= TryHandleInitialPacketReceived(packetEvent, nowTicks, ref effects);
                     stateChanged |= TryHandleHandshakePacketReceived(packetEvent, nowTicks, ref effects);
+                    // The peer can legally send protected 1-RTT packets before the runtime flips to the
+                    // fully active phase, so the establishing path cannot blanket-drop short-header ingress.
+                    stateChanged |= TryHandleApplicationPacketReceived(packetEvent, nowTicks, ref effects);
                     break;
 
                 case QuicConnectionPhase.Active:

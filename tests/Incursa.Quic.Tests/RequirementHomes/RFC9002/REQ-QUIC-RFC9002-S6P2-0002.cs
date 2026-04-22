@@ -44,6 +44,48 @@ public sealed class REQ_QUIC_RFC9002_S6P2_0002
         Assert.Equal(scenario.ExpectedProbeTimeoutMicros, probeTimeoutMicros);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TrySelectPtoTimeAndSpace_UsesTheCurrentPathRttForHandshakeAfterAnInitialAck()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-092456744-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\output.txt
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-092456744-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\server\log.txt
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-092456744-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\sim\trace_node_left.pcap
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-092456744-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\sim\trace_node_right.pcap
+        // In preserved connection 37/50 the client received prompt peer progress on the path, but the
+        // next client Handshake repair still waited roughly three seconds. Regress that bounded failure:
+        // an Initial-space RTT sample must immediately tighten the later Handshake PTO on the same path.
+        QuicRecoveryController controller = new();
+
+        controller.RecordPacketSent(QuicPacketNumberSpace.Initial, packetNumber: 1, sentAtMicros: 100_000);
+        controller.RecordPacketSent(QuicPacketNumberSpace.Handshake, packetNumber: 2, sentAtMicros: 100_000);
+
+        Assert.True(controller.RecordAcknowledgment(
+            QuicPacketNumberSpace.Initial,
+            largestAcknowledgedPacketNumber: 1,
+            ackReceivedAtMicros: 140_000,
+            newlyAcknowledgedAckElicitingPacketNumbers: new ulong[] { 1 },
+            isInitialPacket: true,
+            ignoreAckDelayForInitialPacket: true));
+
+        Assert.True(controller.TrySelectPtoTimeAndSpace(
+            nowMicros: 140_000,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: false,
+            handshakeKeysAvailable: true,
+            out ulong selectedProbeTimeoutMicros,
+            out QuicPacketNumberSpace selectedPacketNumberSpace));
+
+        Assert.Equal(QuicPacketNumberSpace.Handshake, selectedPacketNumberSpace);
+        Assert.Equal(260_000UL, selectedProbeTimeoutMicros);
+    }
+
     internal sealed record ProbeTimeoutSpaceCase(
         QuicPacketNumberSpace PacketNumberSpace,
         bool HandshakeConfirmed,

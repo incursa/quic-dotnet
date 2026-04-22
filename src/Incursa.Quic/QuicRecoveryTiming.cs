@@ -491,19 +491,20 @@ internal readonly record struct QuicRecoverySentPacketState(
 internal sealed class QuicRecoveryController
 {
     private readonly Dictionary<QuicPacketNumberSpace, QuicRecoveryPacketNumberSpaceState> states;
-    private readonly ulong initialRttMicros;
+    private readonly QuicRttEstimator pathRttEstimator;
 
     /// <summary>
-    /// Initializes a new RFC 9002 recovery controller with a single estimator seed for each packet number space.
+    /// Initializes a new RFC 9002 recovery controller with one shared path RTT estimator and
+    /// separate packet-number-space ledgers.
     /// </summary>
-    /// <param name="initialRttMicros">Initial RTT seed used by each packet number space.</param>
+    /// <param name="initialRttMicros">Initial RTT seed used by the path RTT estimator.</param>
     internal QuicRecoveryController(ulong initialRttMicros = QuicRttEstimator.DefaultInitialRttMicros)
     {
-        this.initialRttMicros = initialRttMicros;
+        pathRttEstimator = new QuicRttEstimator(initialRttMicros);
         states = new Dictionary<QuicPacketNumberSpace, QuicRecoveryPacketNumberSpaceState>(3);
-        states[QuicPacketNumberSpace.Initial] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.Initial, initialRttMicros);
-        states[QuicPacketNumberSpace.Handshake] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.Handshake, initialRttMicros);
-        states[QuicPacketNumberSpace.ApplicationData] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.ApplicationData, initialRttMicros);
+        states[QuicPacketNumberSpace.Initial] = CreatePacketNumberSpaceState(QuicPacketNumberSpace.Initial);
+        states[QuicPacketNumberSpace.Handshake] = CreatePacketNumberSpaceState(QuicPacketNumberSpace.Handshake);
+        states[QuicPacketNumberSpace.ApplicationData] = CreatePacketNumberSpaceState(QuicPacketNumberSpace.ApplicationData);
     }
 
     /// <summary>
@@ -648,9 +649,10 @@ internal sealed class QuicRecoveryController
     /// </summary>
     internal void Reset()
     {
-        states[QuicPacketNumberSpace.Initial] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.Initial, initialRttMicros);
-        states[QuicPacketNumberSpace.Handshake] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.Handshake, initialRttMicros);
-        states[QuicPacketNumberSpace.ApplicationData] = new QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace.ApplicationData, initialRttMicros);
+        pathRttEstimator.Reset();
+        states[QuicPacketNumberSpace.Initial] = CreatePacketNumberSpaceState(QuicPacketNumberSpace.Initial);
+        states[QuicPacketNumberSpace.Handshake] = CreatePacketNumberSpaceState(QuicPacketNumberSpace.Handshake);
+        states[QuicPacketNumberSpace.ApplicationData] = CreatePacketNumberSpaceState(QuicPacketNumberSpace.ApplicationData);
         ProbeTimeoutBackoffCount = 0;
     }
 
@@ -666,7 +668,7 @@ internal sealed class QuicRecoveryController
             return false;
         }
 
-        states[packetNumberSpace] = new QuicRecoveryPacketNumberSpaceState(packetNumberSpace, initialRttMicros);
+        states[packetNumberSpace] = CreatePacketNumberSpaceState(packetNumberSpace);
         if (resetProbeTimeoutBackoff)
         {
             ProbeTimeoutBackoffCount = 0;
@@ -801,6 +803,9 @@ internal sealed class QuicRecoveryController
 
     private QuicRecoveryPacketNumberSpaceState StateFor(QuicPacketNumberSpace packetNumberSpace) =>
         states[packetNumberSpace];
+
+    private QuicRecoveryPacketNumberSpaceState CreatePacketNumberSpaceState(QuicPacketNumberSpace packetNumberSpace) =>
+        new(packetNumberSpace, pathRttEstimator);
 }
 
 /// <summary>
@@ -813,10 +818,12 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     /// <summary>
     /// Initializes a new per-space recovery state.
     /// </summary>
-    internal QuicRecoveryPacketNumberSpaceState(QuicPacketNumberSpace packetNumberSpace, ulong initialRttMicros)
+    internal QuicRecoveryPacketNumberSpaceState(
+        QuicPacketNumberSpace packetNumberSpace,
+        QuicRttEstimator rttEstimator)
     {
         PacketNumberSpace = packetNumberSpace;
-        RttEstimator = new QuicRttEstimator(initialRttMicros);
+        RttEstimator = rttEstimator ?? throw new ArgumentNullException(nameof(rttEstimator));
         ackElicitingPacketsInFlight = new SortedList<ulong, QuicRecoverySentPacketState>();
         LargestAcknowledgedPacketNumber = 0;
     }

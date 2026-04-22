@@ -961,7 +961,7 @@ Trace:
 
 Notes:
 - This slice is intentionally client-role only and permanent. It does not add transfer or retry enablement, 0-RTT, key update, or server-role handshake crypto.
-- The client role publishes the 1-RTT readiness material from the post-Finished transcript boundary, but the runtime still requires the existing Active-phase transition before any application stream open or application packet receive.
+- The client role publishes the 1-RTT readiness material from the post-Finished transcript boundary. Application stream open still waits for the later Active-phase transition, but once 1-RTT open material exists the runtime may consume protected peer 1-RTT ingress needed to complete that transition and its post-Finished follow-ons.
 - This slice is the client counterpart to server-role 1-RTT packet-protection publication in REQ-QUIC-CRT-0119.
 
 ## REQ-QUIC-CRT-0122 Retain one retry bootstrap handoff across a single replay

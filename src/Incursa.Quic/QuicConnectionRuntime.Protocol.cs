@@ -812,7 +812,7 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (phase != QuicConnectionPhase.Active
+        if ((phase != QuicConnectionPhase.Active && phase != QuicConnectionPhase.Establishing)
             || activePath is null
             || !tlsState.OneRttKeysAvailable
             || !tlsState.OneRttOpenPacketProtectionMaterial.HasValue)
