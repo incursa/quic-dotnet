@@ -28,15 +28,18 @@
     "Confirm the output shows connection 1/2 and 2/2 markers instead of a generic unsupported exit.",
     "Confirm malformed multiconnect input fails before transport success is claimed and does not produce qlog output.",
     "Confirm the stalled-response negative coverage sends the HTTP/0.9 request line, then fails with a timeout-driven exit code `1` and no preserved partial download.",
+    "Run the local interop helper against `quic-go` with `-LocalRole client -PeerImplementationSlots quic-go -TestCases multiconnect`, then inspect the preserved run root when the helper reports advisory-only `FileNotFoundError` handling.",
+    "Confirm the live preserved `handshakeloss` output shows `completed managed multiconnect download` through the final `50/50` connection together with `client exited with code 0`, even if the upstream runner's own Markdown/JSON report still records a failed post-check result.",
     "If the tree is temporarily mid-edit and a run fails for an unrelated build reason, wait briefly and rerun once to confirm the lane still behaves honestly after the transient issue clears."
   ],
-  "expected_result": "The local interop harness routes `multiconnect` through the real endpoint-host transfer path one URL at a time, the sequential smoke run completes with qlog artifacts, malformed input fails early without broadening the supported promise, and a stalled response fails with exit code `1` before the outer runner timeout can mask the outcome.",
+  "expected_result": "The local interop harness routes `multiconnect` through the real endpoint-host transfer path one URL at a time, the sequential smoke run completes with qlog artifacts, malformed input fails early without broadening the supported promise, a stalled response fails with exit code `1` before the outer runner timeout can mask the outcome, and the fresh client-role `quic-go` `handshakeloss` replay completes all managed downloads even if the upstream runner's post-check later throws an external `FileNotFoundError`.",
   "evidence": [
     "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
     "src/Incursa.Quic.InteropHarness/InteropHarnessPreflightPlanner.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0015.cs",
     "artifacts/interop-runner/20260421-194357479-client-chrome/",
+    "artifacts/interop-runner/20260422-100630446-client-chrome/",
     "artifacts/interop-runner/"
   ],
-  "status_summary": "Passed; the requirement-home test lane confirmed sequential `multiconnect` dispatch, qlog capture, malformed-input rejection, and stalled-response honest failure on 2026-04-21."
+  "status_summary": "Passed; the requirement-home test lane confirmed sequential `multiconnect` dispatch, qlog capture, malformed-input rejection, and stalled-response honest failure on 2026-04-21, and the fresh client-role `quic-go` `handshakeloss` rerun on 2026-04-22 completed managed downloads through connection `50/50` with a clean local client exit at `artifacts/interop-runner/20260422-100630446-client-chrome/`. The remaining upstream report failure is the external runner's post-check `FileNotFoundError`, not a managed multiconnect transport failure."
 }

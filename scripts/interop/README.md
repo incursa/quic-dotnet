@@ -76,6 +76,7 @@ When `QLOGDIR` is enabled by the runner, the harness writes contained qlog JSON 
 
 - If the runner aborts with `Unable to create certificates`, check `runner.stderr.log` first. That comes from the upstream runner's shell-based certificate bootstrap, not from the helper itself.
 - The helper still keeps the build log, runner stdout/Markdown, stderr, invocation summary, and the partial log tree so you can inspect the failure without rerunning with extra flags.
+- On the narrow advisory-only `FileNotFoundError` path, the helper itself exits `0` and prints an `Advisory:` line, but it intentionally preserves the upstream runner's own inner exit code plus the failed `runner-report.json` and `runner-report.md` bundle for audit. Treat the helper exit code and advisory text as the local classification result, and treat the preserved runner report as evidence of the external post-check failure rather than a managed transport regression.
 
 ## `Invoke-QuicInteropAutopilot.ps1`
 

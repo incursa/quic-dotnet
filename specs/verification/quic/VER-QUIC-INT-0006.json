@@ -28,6 +28,7 @@
     "Run the helper in client-local mode and server-local mode against the established peer slots, then confirm each run creates a timestamped artifact root under `artifacts/interop-runner/` and that it contains the runner JSON report, the captured Markdown or console table, the log directory tree, and the harness image build output.",
     "Confirm supported server-role harness paths still start when the runner supplies an empty `REQUESTS` list, while client-role paths continue to require request URLs.",
     "Inspect the captured output to verify unsupported testcases still map to the runner's honest unsupported result, build failures remain build failures rather than pass results, and any advisory-only `FileNotFoundError` downgrade stays tied to testcase-specific preserved evidence.",
+    "For the client-role `multiconnect` advisory path, confirm the helper itself exits `0`, prints an advisory that cites the preserved `output.txt`, and leaves the upstream runner's own inner exit code and failed report bundle intact for audit.",
     "If the tree is temporarily mid-edit and the first run fails for an unrelated build reason, wait briefly and rerun once to confirm the helper still behaves honestly after the transient issue clears."
   ],
   "expected_result": "The helper produces repo-local execution-report artifacts for local runner runs without requiring any change to the runner repository, supported server-role paths tolerate empty runner REQUESTS, split-role client/server local executions work, unsupported or build-blocked cases are not misreported as successful runs, and the runner's post-check `FileNotFoundError` is downgraded to advisory only on testcase-specific, evidence-backed paths.",
@@ -39,9 +40,10 @@
     "scripts/README.md",
     "src/Incursa.Quic.InteropHarness/README.md",
     "src/Incursa.Quic.InteropHarness/Dockerfile",
+    "artifacts/interop-runner/20260422-100630446-client-chrome/",
     "artifacts/interop-runner/"
   ],
-  "status_summary": "Passed on 2026-04-22; the local helper built the harness image, invoked the external runner through image replacement, and captured repo-local execution-report bundles while preserving the runner's noncompliant result honestly. The helper now covers both same-slot and split-role local runs, the harness tolerates empty server-side `REQUESTS` on supported dispatch paths, and the proof now also includes helper-validation coverage for the narrow advisory-only `FileNotFoundError` classification used by handshake, retry, client-role transfer, and client-role multiconnect when preserved output proves completion, including the fresh client-role quic-go multiconnect evidence at `artifacts/interop-runner/20260422-084330170-client-chrome/`.",
+  "status_summary": "Passed on 2026-04-22; the local helper built the harness image, invoked the external runner through image replacement, and captured repo-local execution-report bundles while preserving the runner's noncompliant result honestly. The helper now covers both same-slot and split-role local runs, the harness tolerates empty server-side `REQUESTS` on supported dispatch paths, and the proof includes the narrow advisory-only `FileNotFoundError` classification used by handshake, retry, client-role transfer, and client-role multiconnect when preserved output proves completion. The fresh client-role quic-go multiconnect evidence at `artifacts/interop-runner/20260422-100630446-client-chrome/` shows the helper exiting successfully while the preserved upstream runner report remains failed because its own post-check threw `FileNotFoundError` after all managed downloads completed.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
