@@ -24,7 +24,7 @@ related_artifacts:
 
 ## Summary
 
-Route the `multiconnect` testcase through the existing managed endpoint-host transfer path sequentially, add requirement-home coverage, and keep unsupported runner cases honest.
+Route the `multiconnect` testcase through the existing managed endpoint-host transfer path sequentially, add requirement-home coverage, and keep both unsupported and stalled-response cases honest.
 
 ## Requirements Addressed
 
@@ -38,7 +38,8 @@ Route the `multiconnect` testcase through the existing managed endpoint-host tra
 
 - Add a sequential `multiconnect` plan builder to `InteropHarnessRunner` that validates each `REQUESTS` URL, requires a shared `https` host/port, and opens one managed connection per request.
 - Keep the client and server paths on the existing endpoint-host transfer path rather than introducing a generalized multipath dispatcher.
-- Add a new requirement-home test file that proves the sequential happy path, qlog capture, and malformed-URL rejection.
+- Bound the client-side response wait so a stalled sequential response fails the child process honestly instead of hanging until the external runner times out.
+- Add a requirement-home test file that proves the sequential happy path, qlog capture, the stalled-response failure path, and malformed-URL rejection.
 - Update local interop helper docs and testcase whitelists so `multiconnect` is recognized honestly.
 
 ## Out of Scope
@@ -55,11 +56,11 @@ Route the `multiconnect` testcase through the existing managed endpoint-host tra
 
 ## Verification Plan
 
-Run the new requirement-home test file with a narrow `REQ_QUIC_INT_0015` filter, confirm the sequential connection markers and qlog capture, and confirm malformed multiconnect input fails before transport success is claimed. Re-run once if the tree is temporarily mid-edit and a first pass fails for an unrelated build reason.
+Run the `REQ_QUIC_INT_0015` lane, confirm the sequential connection markers and qlog capture on the smoke path, confirm malformed multiconnect input fails before transport success is claimed, and confirm a stalled response fails with exit code `1` and no preserved partial download. Re-run once if the tree is temporarily mid-edit and a first pass fails for an unrelated build reason.
 
 ## Completion Notes
 
-Implemented and verified; the requirement-home `REQ-QUIC-INT-0015` lane passed locally on 2026-04-20.
+Implemented and verified; the requirement-home `REQ-QUIC-INT-0015` lane passed locally on 2026-04-21 with sequential smoke, malformed-input, and stalled-response honest-failure coverage.
 
 ## Trace Links
 

@@ -632,10 +632,19 @@ internal static class InteropHarnessRunner
         }
     }
 
-    private static async Task<int> RunMulticonnectClientAsync(
+    private static Task<int> RunMulticonnectClientAsync(
         InteropHarnessEnvironment settings,
         TextWriter stdout,
         TextWriter stderr)
+    {
+        return RunMulticonnectClientAsync(settings, stdout, stderr, InteropRequestWaitTimeout);
+    }
+
+    internal static async Task<int> RunMulticonnectClientAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr,
+        TimeSpan responseReadTimeout)
     {
         try
         {
@@ -681,7 +690,8 @@ internal static class InteropHarnessRunner
                     "multiconnect",
                     settings.Requests.Count,
                     index,
-                    transferPlans.Count).ConfigureAwait(false);
+                    transferPlans.Count,
+                    responseReadTimeout).ConfigureAwait(false);
                 await connection.CloseAsync(0).ConfigureAwait(false);
 
                 WriteLineAndFlush(
@@ -1018,7 +1028,8 @@ internal static class InteropHarnessRunner
         string testCase,
         int configuredRequestCount,
         int requestIndex,
-        int totalRequestCount)
+        int totalRequestCount,
+        TimeSpan responseReadTimeout = default)
     {
         await using QuicStream stream = await RetryTransientSendCreditAsync(
             () => connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional),
@@ -1057,7 +1068,26 @@ internal static class InteropHarnessRunner
             long bytesDownloaded = 0;
             while (true)
             {
-                int bytesRead = await stream.ReadAsync(responseBuffer, 0, responseBuffer.Length).ConfigureAwait(false);
+                int bytesRead;
+                if (responseReadTimeout > TimeSpan.Zero && responseReadTimeout != Timeout.InfiniteTimeSpan)
+                {
+                    using CancellationTokenSource responseTimeout = new(responseReadTimeout);
+                    try
+                    {
+                        bytesRead = await stream.ReadAsync(responseBuffer, 0, responseBuffer.Length, responseTimeout.Token).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException ex) when (responseTimeout.IsCancellationRequested)
+                    {
+                        throw new TimeoutException(
+                            $"Timed out waiting for {testCase} response bytes or EOF for {transferPlan.RequestUri.PathAndQuery}.",
+                            ex);
+                    }
+                }
+                else
+                {
+                    bytesRead = await stream.ReadAsync(responseBuffer, 0, responseBuffer.Length).ConfigureAwait(false);
+                }
+
                 if (bytesRead == 0)
                 {
                     break;

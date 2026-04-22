@@ -21,20 +21,22 @@
     "The test host can create temporary PEM files and qlog directories.",
     "The managed QUIC runtime is available in the current .NET environment."
   ],
-  "scope": "Verify that the `multiconnect` testcase uses the real endpoint-host transfer path sequentially, one managed connection per URL, and that malformed input fails before transport success is claimed.",
+  "scope": "Verify that the `multiconnect` testcase uses the real endpoint-host transfer path sequentially, one managed connection per URL, that malformed input fails before transport success is claimed, and that a stalled response fails the child process honestly instead of hanging behind the external runner timeout.",
   "procedure": [
     "Run the new requirement-home test file or a narrow filter that selects `REQ_QUIC_INT_0015`.",
     "Inspect the captured stdout, stderr, and qlog artifacts from the sequential multiconnect smoke run.",
     "Confirm the output shows connection 1/2 and 2/2 markers instead of a generic unsupported exit.",
     "Confirm malformed multiconnect input fails before transport success is claimed and does not produce qlog output.",
+    "Confirm the stalled-response negative coverage sends the HTTP/0.9 request line, then fails with a timeout-driven exit code `1` and no preserved partial download.",
     "If the tree is temporarily mid-edit and a run fails for an unrelated build reason, wait briefly and rerun once to confirm the lane still behaves honestly after the transient issue clears."
   ],
-  "expected_result": "The local interop harness routes `multiconnect` through the real endpoint-host transfer path one URL at a time, the sequential smoke run completes with qlog artifacts, and malformed input fails early without broadening the supported promise.",
+  "expected_result": "The local interop harness routes `multiconnect` through the real endpoint-host transfer path one URL at a time, the sequential smoke run completes with qlog artifacts, malformed input fails early without broadening the supported promise, and a stalled response fails with exit code `1` before the outer runner timeout can mask the outcome.",
   "evidence": [
     "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
     "src/Incursa.Quic.InteropHarness/InteropHarnessPreflightPlanner.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0015.cs",
+    "artifacts/interop-runner/20260421-194357479-client-chrome/",
     "artifacts/interop-runner/"
   ],
-  "status_summary": "Passed; the requirement-home test lane confirmed sequential `multiconnect` dispatch, qlog capture, and malformed-input rejection on 2026-04-20."
+  "status_summary": "Passed; the requirement-home test lane confirmed sequential `multiconnect` dispatch, qlog capture, malformed-input rejection, and stalled-response honest failure on 2026-04-21."
 }

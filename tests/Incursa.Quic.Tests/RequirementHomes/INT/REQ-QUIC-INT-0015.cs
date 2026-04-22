@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Incursa.Quic.InteropHarness;
 using Incursa.Qlog;
@@ -88,6 +89,84 @@ public sealed class REQ_QUIC_INT_0015
             TryDelete(sourcePathTwo);
             TryDelete(destinationPathOne);
             TryDelete(destinationPathTwo);
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task MulticonnectClientFailsHonestlyWhenASequentialResponseStallsAfterTheRequestLine()
+    {
+        // Regression from the preserved 2026-04-21 client-role quic-go multiconnect handshakeloss run:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-182027795-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\output.txt
+        //   runner-logs\quic-go_chrome\handshakeloss\client\qlog\client-multiconnect-b7d0662decde48a0bbd3ea68033bf1d8.qlog
+        // Connection 7/50 sent the HTTP/0.9 request line for /dry-jealous-tie and then
+        // stalled without response bytes or EOF, which kept the child process alive until the
+        // outer runner timed out. The bounded multiconnect slice must fail honestly instead of
+        // hanging when one sequential response stops making progress after the request is sent.
+        using TempDirectoryFixture fixture = new("incursa-quic-preflight-stalled-multiconnect");
+        string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+        string relativePath = $"stalled-multiconnect-{Guid.NewGuid():N}.txt";
+        string destinationPath = Path.Combine(destinationRoot, relativePath);
+        string stagingPath = destinationPath + ".partial";
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        string requests = $"https://localhost:{listenEndPoint.Port}/{relativePath}";
+        RecordingTextWriter clientStdout = new();
+        RecordingTextWriter clientStderr = new();
+
+        Directory.CreateDirectory(destinationRoot);
+        TryDelete(destinationPath);
+        TryDelete(stagingPath);
+
+        try
+        {
+            Assert.True(
+                InteropHarnessEnvironment.TryCreate(
+                    InteropHarnessTestSupport.CreateEnvironment("client", "multiconnect", requests),
+                    out InteropHarnessEnvironment? settings,
+                    out string? errorMessage));
+            Assert.Null(errorMessage);
+            Assert.NotNull(settings);
+
+            using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+            QuicListenerOptions listenerOptions = new()
+            {
+                ListenEndPoint = listenEndPoint,
+                ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
+                ListenBacklog = 1,
+                ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(InteropHarnessPreflightPlanner.CreateSupportedServerOptions(serverCertificate)),
+            };
+
+            await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+            Task stalledServerTask = Task.Run(async () =>
+            {
+                await using QuicConnection serverConnection = await listener.AcceptConnectionAsync().ConfigureAwait(false);
+                await using QuicStream requestStream = await serverConnection.AcceptInboundStreamAsync().ConfigureAwait(false);
+                await DrainClientRequestAsync(requestStream).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+            });
+
+            int exitCode = await InteropHarnessRunner.RunMulticonnectClientAsync(
+                settings!,
+                clientStdout,
+                clientStderr,
+                TimeSpan.FromMilliseconds(250)).WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.Equal(1, exitCode);
+            Assert.Contains("sent HTTP/0.9 request line", clientStdout.ToString(), StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Timed out waiting for multiconnect response bytes or EOF", clientStdout.ToString(), StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("completed managed multiconnect download", clientStdout.ToString(), StringComparison.OrdinalIgnoreCase);
+            Assert.Empty(clientStderr.ToString());
+            Assert.False(File.Exists(destinationPath));
+            Assert.False(File.Exists(stagingPath));
+
+            await stalledServerTask.WaitAsync(TimeSpan.FromSeconds(5));
+        }
+        finally
+        {
+            TryDelete(destinationPath);
+            TryDelete(stagingPath);
         }
     }
 
@@ -310,6 +389,25 @@ public sealed class REQ_QUIC_INT_0015
         }
 
         throw new TimeoutException($"The harness did not write '{expected}' within {timeout}.\nSTDOUT:\n{writer}");
+    }
+
+    private static async Task DrainClientRequestAsync(QuicStream requestStream)
+    {
+        byte[] buffer = new byte[128];
+        int totalBytesRead = 0;
+
+        while (true)
+        {
+            int bytesRead = await requestStream.ReadAsync(buffer, 0, buffer.Length).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (bytesRead == 0)
+            {
+                break;
+            }
+
+            totalBytesRead += bytesRead;
+        }
+
+        Assert.True(totalBytesRead > 0);
     }
 
     private static void TryDelete(string path)

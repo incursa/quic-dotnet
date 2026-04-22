@@ -306,7 +306,7 @@ Notes:
 - The localhost smoke lane exists to separate harness and setup failures from library behavior without loosening certificate or hostname validation.
 
 ## REQ-QUIC-INT-0015 Dispatch multiconnect as sequential managed connections
-The interop harness MUST define a child-process-only `multiconnect` testcase in which the ordered space-separated `REQUESTS` URLs are interpreted as a sequential dispatch plan, one managed connection is opened per URL on the existing endpoint-host active-phase path, the client sends exactly one HTTP/0.9 GET and downloads exactly one mounted response per connection, the server accepts exactly one request stream and serves exactly one mounted response per connection, and exit code `0` is considered honest only after byte delivery plus EOF have completed for every ordered response on both sides. This slice must not claim parallel connection handling, generalized multipath routing, migration or rebinding support, retry enablement, `0-RTT`, key update, or any public API widening.
+The interop harness MUST define a child-process-only `multiconnect` testcase in which the ordered space-separated `REQUESTS` URLs are interpreted as a sequential dispatch plan, one managed connection is opened per URL on the existing endpoint-host active-phase path, the client sends exactly one HTTP/0.9 GET and downloads exactly one mounted response per connection, the server accepts exactly one request stream and serves exactly one mounted response per connection, exit code `0` is considered honest only after byte delivery plus EOF have completed for every ordered response on both sides, and a response that stalls before byte delivery plus EOF complete MUST fail the child process with exit code `1` rather than hanging behind the external runner timeout. This slice must not claim parallel connection handling, generalized multipath routing, migration or rebinding support, retry enablement, `0-RTT`, key update, or any public API widening.
 
 Trace:
 - Satisfied By:
@@ -330,3 +330,4 @@ Trace:
 Notes:
 - The testcase stays on the same real endpoint-host transfer path as the existing transfer slice, but uses one HTTP/0.9 request and one response per connection instead of reusing the transfer slice's single-connection request loop.
 - The ordered `REQUESTS` list must fail honestly when it contains malformed input or conflicting host and port values.
+- A response that stops making progress after the request line is sent must leave the testcase in a failed state and clean up partial output instead of waiting indefinitely for the external runner to time out.

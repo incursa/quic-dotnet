@@ -16,7 +16,7 @@ This design covers only the sequential `multiconnect` dispatch slice. The broade
 
 ## Design Summary
 
-The harness adds a small sequential transfer-plan builder for the `multiconnect` testcase. It parses every space-separated `REQUESTS` URL, requires `https` and a shared host/port, resolves the same managed endpoint-host path used by transfer, and then opens one managed connection per URL in order. The client side creates a fresh managed connection per request, emits exactly one HTTP/0.9 GET on that connection, and downloads exactly one mounted response before closing. The server side listens once, accepts one connection per request, and serves exactly one HTTP/0.9 response on that connection before moving to the next accept. Requirement-home tests prove the sequential happy path, the request/response markers, and malformed-input rejection without claiming parallel connection handling, migration, retry enablement, `0-RTT`, key update, or public API widening.
+The harness adds a small sequential transfer-plan builder for the `multiconnect` testcase. It parses every space-separated `REQUESTS` URL, requires `https` and a shared host/port, resolves the same managed endpoint-host path used by transfer, and then opens one managed connection per URL in order. The client side creates a fresh managed connection per request, emits exactly one HTTP/0.9 GET on that connection, waits for response progress on that one connection, and fails the testcase honestly if response bytes or EOF stall instead of leaving the child process hung behind the outer runner timeout. The server side listens once, accepts one connection per request, and serves exactly one HTTP/0.9 response on that connection before moving to the next accept. Requirement-home tests prove the sequential happy path, the request/response markers, the stalled-response failure path, and malformed-input rejection without claiming parallel connection handling, migration, retry enablement, `0-RTT`, key update, or public API widening.
 
 ## Key Components
 
@@ -33,6 +33,7 @@ Sequential plans are derived from the immutable runner request list. qlog captur
 
 - All `REQUESTS` entries must share the same host and port so the sequential plan stays on the same endpoint-host path.
 - Malformed or empty `REQUESTS` input must fail before any transport success is claimed.
+- A response that stalls after the client has sent the HTTP/0.9 request line must fail the testcase and remove any partial output instead of waiting indefinitely for the external runner timeout.
 - The implementation must not claim migration, parallel connection handling, or any public API widening.
 
 ## Alternatives Considered
@@ -45,3 +46,4 @@ Sequential plans are derived from the immutable runner request list. qlog captur
 - A reused connection-options object could hide a host/port mismatch if the plan builder does not enforce consistency or if the client reuses the wrong remote endpoint across sequential connects.
 - The sequential server loop must remain bounded to one accepted connection and one served request per URL or the testcase could accidentally drift into a transfer-style multi-request connection or a parallel-connection claim.
 - Malformed input should fail before listener startup so the negative path stays honest.
+- If the client waits forever on a stalled response stream, the testcase can mask the real transport outcome behind a runner-level timeout and leave misleading partial downloads behind.
