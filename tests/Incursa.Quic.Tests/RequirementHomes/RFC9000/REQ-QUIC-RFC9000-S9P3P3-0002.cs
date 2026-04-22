@@ -20,9 +20,8 @@ public sealed class REQ_QUIC_RFC9000_S9P3P3_0002
         ];
         byte[] applicationPayload = QuicFrameTestData.BuildPathChallengeFrame(new QuicPathChallengeFrame(challengeData));
 
-        Assert.True(runtime.TlsState.TryGetPacketProtectionMaterial(
-            QuicTlsEncryptionLevel.OneRtt,
-            out QuicTlsPacketProtectionMaterial material));
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+        QuicTlsPacketProtectionMaterial material = runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value;
 
         byte[] protectedPacket = QuicS17P3P1TestSupport.CreateProtectedApplicationDataPacket(
             runtime.CurrentPeerDestinationConnectionId.Span,
@@ -38,7 +37,9 @@ public sealed class REQ_QUIC_RFC9000_S9P3P3_0002
                 protectedPacket),
             nowTicks: 9);
 
-        QuicConnectionSendDatagramEffect send = Assert.Single(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        QuicConnectionSendDatagramEffect send = Assert.Single(
+            result.Effects.OfType<QuicConnectionSendDatagramEffect>(),
+            effect => QuicFrameCodec.TryParsePathResponseFrame(effect.Datagram.Span, out _, out _));
         Assert.Equal(activePath, send.PathIdentity);
         Assert.True(QuicFrameCodec.TryParsePathResponseFrame(
             send.Datagram.Span,

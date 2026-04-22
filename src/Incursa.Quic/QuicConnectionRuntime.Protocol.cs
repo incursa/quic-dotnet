@@ -873,6 +873,8 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        bool packetNumberAdvancesTheHighestObservedValue = !hasObservedApplicationPacketNumber
+            || packetNumber > largestObservedApplicationPacketNumber;
         bool processedCryptoFrame = false;
         bool processedStreamFrame = false;
         bool processedMaxStreamsFrame = false;
@@ -1248,6 +1250,17 @@ internal sealed partial class QuicConnectionRuntime
             {
                 streamCapacityObserver?.Invoke(bidirectionalIncrement, unidirectionalIncrement);
             }
+        }
+
+        if (packetNumberAdvancesTheHighestObservedValue
+            && activePath is not null
+            && !EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, packetReceivedEvent.PathIdentity)
+            && TryGetCandidatePath(packetReceivedEvent.PathIdentity, out QuicConnectionCandidatePathRecord receivePathCandidate)
+            && receivePathCandidate.Validation.IsValidated
+            && !receivePathCandidate.Validation.IsAbandoned
+            && TryPromoteValidatedCandidatePath(packetReceivedEvent.PathIdentity, nowTicks, ref effects))
+        {
+            stateChanged = true;
         }
 
         sendRuntime.FlowController.RecordIncomingPacket(

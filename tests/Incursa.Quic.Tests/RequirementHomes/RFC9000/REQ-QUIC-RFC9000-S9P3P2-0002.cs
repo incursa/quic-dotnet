@@ -4,6 +4,33 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S9P3P2_0002
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ValidationFailureWithoutALastValidatedPeerAddressDiscardsAllConnectionState()
+    {
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(new("203.0.113.19", RemotePort: 443));
+        Assert.False(runtime.HasValidatedPath);
+        Assert.Null(runtime.LastValidatedRemoteAddress);
+        Assert.Empty(runtime.CandidatePaths);
+
+        QuicConnectionTransitionResult failureResult = runtime.Transition(
+            new QuicConnectionPathValidationFailedEvent(
+                ObservedAtTicks: 20,
+                new QuicConnectionPathIdentity("203.0.113.20", RemotePort: 443),
+                IsAbandoned: true),
+            nowTicks: 20);
+
+        Assert.True(failureResult.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
+        Assert.Equal(QuicConnectionSendingMode.None, runtime.SendingMode);
+        Assert.False(runtime.CanSendOrdinaryPackets);
+        Assert.True(runtime.TerminalState.HasValue);
+        Assert.Equal(QuicConnectionPhase.Discarded, runtime.TerminalState.Value.Phase);
+        Assert.Contains(failureResult.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+        Assert.DoesNotContain(failureResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ValidationFailureWithoutAnyValidatedPathDiscardsTheConnectionSilently()

@@ -26,7 +26,12 @@ internal sealed partial class QuicConnectionRuntime
         }
         else
         {
-            stateChanged = HandleAddressChangePacket(packetReceivedEvent.PathIdentity, payloadBytes, nowTicks, ref effects);
+            stateChanged = HandleAddressChangePacket(
+                packetReceivedEvent.PathIdentity,
+                payloadBytes,
+                nowTicks,
+                ShouldDeferTrustedPathReusePromotion(packetReceivedEvent.PathIdentity, packetReceivedEvent.Datagram.Span),
+                ref effects);
         }
 
         if (idleTimeoutState is not null)

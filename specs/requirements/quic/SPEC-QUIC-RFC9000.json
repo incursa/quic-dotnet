@@ -11525,6 +11525,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0009.cs::AValidatedMigratedAddressReplacesTheLastValidatedPeerAddressOnlyAfterValidationSucceeds",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0009.cs::SpoofedPeerAddressTrafficDoesNotReplaceTheLastValidatedAddressBeforeValidationSucceeds"
         ]
       }
@@ -11554,7 +11555,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0010.cs::AStaleCandidatePathCanBeAbandonedAfterTheConnectionHasMovedToAnotherValidatedAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0010.cs::AStaleCandidatePathCanBeAbandonedAfterTheConnectionHasMovedToAnotherValidatedAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0010.cs::PendingValidationForOtherAddressesContinuesBeforeNonProbingTrafficMovesToANewAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0010.cs::ChangingToAnotherValidatedAddressDoesNotAutomaticallyAbandonOtherPendingPathValidation"
         ]
       }
     },
@@ -11672,6 +11675,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.2"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0002.cs::ValidationFailureWithoutALastValidatedPeerAddressDiscardsAllConnectionState",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0002.cs::ValidationFailureWithoutAnyValidatedPathDiscardsTheConnectionSilently"
         ]
       }
@@ -11787,6 +11791,9 @@
         "upstream_refs": [
           "RFC 9000 §9.3.3 RFC9000-S9.3.3-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0001.cs::PacketFromANewAddressStartsPathValidationWithAChallenge"
         ]
       }
     },
@@ -11813,6 +11820,9 @@
         "upstream_refs": [
           "RFC 9000 §9.3.3 RFC9000-S9.3.3-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0002.cs::PathChallengeFramesOnTheActivePathAreAnsweredWithPathResponseFrames"
         ]
       }
     },
@@ -11839,6 +11849,11 @@
         "upstream_refs": [
           "RFC 9000 §9.3.3 RFC9000-S9.3.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0003.cs::AProtectedNonProbingPacketOnTheOriginalPathMovesTheConnectionBack",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0003.cs::AnOriginalPathPacketThatDoesNotExceedTheHighestObservedPacketNumberDoesNotNeedToTriggerAReturn",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0003.cs::AnOriginalPathPacketAtTheHighestObservedPacketNumberDoesNotCreateANewReturnTrigger"
         ]
       }
     },
@@ -11865,6 +11880,12 @@
         "upstream_refs": [
           "RFC 9000 §9.3.3 RFC9000-S9.3.3-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0004.cs::ASecondMigratedAddressIsClassifiedAsNoiseWhenTheCandidateBudgetIsExhausted",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0004.cs::ASecondMigratedAddressContinuesValidationWhenCandidateCapacityRemains",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0004.cs::AMigratedAddressIsClassifiedAsNoiseWhenTheCandidateBudgetIsZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0004.cs::ARecentlyValidatedAddressIsReusedEvenWhenAnotherCandidateOccupiesTheBudget"
         ]
       }
     },

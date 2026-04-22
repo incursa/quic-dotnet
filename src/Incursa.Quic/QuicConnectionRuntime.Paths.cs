@@ -133,6 +133,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPathIdentity pathIdentity,
         int payloadBytes,
         long nowTicks,
+        bool deferTrustedPathReusePromotion,
         ref List<QuicConnectionEffect>? effects)
     {
         QuicConnectionPathClassification classification = ClassifyPathChange(pathIdentity);
@@ -154,7 +155,13 @@ internal sealed partial class QuicConnectionRuntime
 
         if (TryGetRecentlyValidatedPath(pathIdentity, out QuicConnectionValidatedPathRecord recentlyValidatedPath))
         {
-            return TryHandleTrustedPathReuse(pathIdentity, payloadBytes, nowTicks, recentlyValidatedPath, ref effects);
+            return TryHandleTrustedPathReuse(
+                pathIdentity,
+                payloadBytes,
+                nowTicks,
+                recentlyValidatedPath,
+                deferTrustedPathReusePromotion,
+                ref effects);
         }
 
         if (MaximumCandidatePaths == 0 || candidatePaths.Count >= MaximumCandidatePaths)
@@ -245,6 +252,7 @@ internal sealed partial class QuicConnectionRuntime
         int payloadBytes,
         long nowTicks,
         QuicConnectionValidatedPathRecord recentlyValidatedPath,
+        bool deferPromotion,
         ref List<QuicConnectionEffect>? effects)
     {
         QuicConnectionPathAmplificationState amplificationState = recentlyValidatedPath.AmplificationState.MarkAddressValidated();
@@ -275,6 +283,13 @@ internal sealed partial class QuicConnectionRuntime
         };
 
         candidatePaths[pathIdentity] = candidatePath;
+
+        if (deferPromotion)
+        {
+            UpdatePeerAddressValidationFlag();
+            return true;
+        }
+
         AppendRecentlyValidatedPath(
             pathIdentity,
             nowTicks,
@@ -290,6 +305,17 @@ internal sealed partial class QuicConnectionRuntime
 
         UpdatePeerAddressValidationFlag();
         return true;
+    }
+
+    private bool ShouldDeferTrustedPathReusePromotion(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> datagram)
+    {
+        return activePath is not null
+            && !EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity)
+            && TryGetRecentlyValidatedPath(pathIdentity, out _)
+            && QuicPacketParser.TryGetPacketNumberSpace(datagram, out QuicPacketNumberSpace packetNumberSpace)
+            && packetNumberSpace == QuicPacketNumberSpace.ApplicationData;
     }
 
     private bool TryCreateCandidatePath(

@@ -6322,6 +6322,7 @@ Trace:
   - RFC 9000 §9.3 RFC9000-S9.3-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
 - Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0009.cs::AValidatedMigratedAddressReplacesTheLastValidatedPeerAddressOnlyAfterValidationSucceeds
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0009.cs::SpoofedPeerAddressTrafficDoesNotReplaceTheLastValidatedAddressBeforeValidationSucceeds
 
 ## REQ-QUIC-RFC9000-S9P3-0010 Allow Abandoning Other Path Validation
@@ -6339,6 +6340,8 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0010.cs::AStaleCandidatePathCanBeAbandonedAfterTheConnectionHasMovedToAnotherValidatedAddress
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0010.cs::PendingValidationForOtherAddressesContinuesBeforeNonProbingTrafficMovesToANewAddress
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0010.cs::ChangingToAnotherValidatedAddressDoesNotAutomaticallyAbandonOtherPendingPathValidation
 
 ## REQ-QUIC-RFC9000-S9P3-0011 Send New Address Validation Tokens
 After verifying a new client address, the server SHOULD send new address validation tokens to the client.
@@ -6404,6 +6407,7 @@ Trace:
   - RFC 9000 §9.3.2 RFC9000-S9.3.2-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.2
 - Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0002.cs::ValidationFailureWithoutALastValidatedPeerAddressDiscardsAllConnectionState
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P2-0002.cs::ValidationFailureWithoutAnyValidatedPathDiscardsTheConnectionSilently
 
 ## REQ-QUIC-RFC9000-S9P3P2-0003 For instance, an endpoint MAY send a Stateless Reset in response to any further incoming packets
@@ -6468,6 +6472,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3.3 RFC9000-S9.3.3-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0001.cs::PacketFromANewAddressStartsPathValidationWithAChallenge
 
 ## REQ-QUIC-RFC9000-S9P3P3-0002 That receives a PATH_CHALLENGE on an active path SHOULD send a non-probing packet in response
 An endpoint that receives a PATH_CHALLENGE on an active path SHOULD send a non-probing packet in response.
@@ -6482,6 +6488,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3.3 RFC9000-S9.3.3-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0002.cs::PathChallengeFramesOnTheActivePathAreAnsweredWithPathResponseFrames
 
 ## REQ-QUIC-RFC9000-S9P3P3-0003 Return to the Original Path After a New Highest Packet Number
 A non-probing packet received on the original path that increases the maximum received packet number MUST cause the endpoint to move back to that path.
@@ -6496,6 +6504,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3.3 RFC9000-S9.3.3-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0003.cs::AProtectedNonProbingPacketOnTheOriginalPathMovesTheConnectionBack
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0003.cs::AnOriginalPathPacketThatDoesNotExceedTheHighestObservedPacketNumberDoesNotNeedToTriggerAReturn
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0003.cs::AnOriginalPathPacketAtTheHighestObservedPacketNumberDoesNotCreateANewReturnTrigger
 
 ## REQ-QUIC-RFC9000-S9P3P3-0004 Use Heuristics for Attack Detection
 An endpoint MAY use heuristics to improve detection of this style of attack.
@@ -6510,6 +6522,11 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.3.3 RFC9000-S9.3.3-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0004.cs::ASecondMigratedAddressIsClassifiedAsNoiseWhenTheCandidateBudgetIsExhausted
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0004.cs::ASecondMigratedAddressContinuesValidationWhenCandidateCapacityRemains
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0004.cs::AMigratedAddressIsClassifiedAsNoiseWhenTheCandidateBudgetIsZero
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0004.cs::ARecentlyValidatedAddressIsReusedEvenWhenAnotherCandidateOccupiesTheBudget
 
 ## REQ-QUIC-RFC9000-S9P4-0001 Sent on the old path MUST NOT contribute to congestion control or RTT estimation for the new path
 Packets sent on the old path MUST NOT contribute to congestion control or RTT estimation for the new path.
