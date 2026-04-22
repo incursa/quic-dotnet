@@ -338,6 +338,116 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task GapAckForLaterPacketsOnZeroLengthPeerDestinationCidMakesPtoRetransmitTheMissingApplicationData()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-160400023-server-nginx
+        //   runner-logs\nginx_quic-go\handshakeloss\output.txt:
+        //     the managed server completed the 1024-byte multiconnect response, the simulator dropped one
+        //     1077-byte server->client datagram, then later forwarded only a 53-byte FIN-only packet and
+        //     subsequent 3-byte PTO probes.
+        //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt:
+        //     quic-go later received only STREAM stream_id=0 offset=1024 len=0 fin=true and timed out
+        //     waiting for the missing 1024 body bytes.
+        // The live failure was observed on the server-role multiconnect lane, but the bounded repo-owned seam is
+        // the shared runtime's application repair path when the peer destination connection ID is zero-length.
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(ReadOnlySpan<byte>.Empty));
+        Assert.True(runtime.CurrentPeerDestinationConnectionId.IsEmpty);
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        QuicConnectionSendDatagramEffect openEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedOpenPacket = FindTrackedPacket(runtime, openEffect.Datagram);
+        outboundEffects.Clear();
+
+        byte[] payload = CreateSequentialPayload(0x30, 40);
+        await stream.WriteAsync(payload, 0, payload.Length);
+        QuicConnectionSendDatagramEffect dataEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedDataPacket = FindTrackedPacket(runtime, dataEffect.Datagram);
+        outboundEffects.Clear();
+
+        await stream.CompleteWritesAsync().AsTask();
+        QuicConnectionSendDatagramEffect finEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedFinPacket = FindTrackedPacket(runtime, finEffect.Datagram);
+
+        Assert.Equal(trackedOpenPacket.Key.PacketNumber + 1, trackedDataPacket.Key.PacketNumber);
+        Assert.Equal(trackedDataPacket.Key.PacketNumber + 1, trackedFinPacket.Key.PacketNumber);
+
+        byte[] protectedAckPacket = BuildProtectedAckPacket(
+            runtime,
+            largestAcknowledged: trackedFinPacket.Key.PacketNumber,
+            firstAckRange: 0,
+            additionalRanges:
+            [
+                new QuicAckRange(
+                    gap: trackedFinPacket.Key.PacketNumber - trackedOpenPacket.Key.PacketNumber - 2,
+                    ackRangeLength: 0,
+                    smallestAcknowledged: trackedOpenPacket.Key.PacketNumber,
+                    largestAcknowledged: trackedOpenPacket.Key.PacketNumber),
+            ]);
+
+        QuicConnectionTransitionResult ackResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 100,
+                runtime.ActivePath!.Value.Identity,
+                protectedAckPacket),
+            nowTicks: 100);
+
+        Assert.Empty(ackResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+
+        long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(recoveryDueTicks);
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+        outboundEffects.Clear();
+
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: recoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: recoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect[] sendEffects = timerResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] sendEffectDescriptions = sendEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.NotEmpty(sendEffects);
+        Assert.DoesNotContain(sendEffects, sendEffect => IsPingOnlyPayload(runtime, sendEffect.Datagram));
+
+        QuicConnectionSendDatagramEffect repairEffect = FindApplicationStreamProbeEffect(
+            runtime,
+            sendEffects,
+            (ulong)stream.Id,
+            payload,
+            isFin: false,
+            out bool keyPhase);
+        QuicStreamFrame repairFrame = OpenSingleStreamFrame(runtime, repairEffect.Datagram, out keyPhase);
+
+        Assert.False(keyPhase);
+        Assert.Equal((ulong)stream.Id, repairFrame.StreamId.Value);
+        Assert.Equal(0UL, repairFrame.Offset);
+        Assert.False(repairFrame.IsFin);
+        Assert.True(repairFrame.StreamData.SequenceEqual(payload));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task AckingTheResponseBodyStillMakesPtoRetransmitTheOutstandingFinOnlyClose()
     {
         // Provenance:
@@ -380,9 +490,27 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
 
         byte[] protectedAckPacket = BuildProtectedAckPacket(
             runtime,
+            runtime.CurrentHandshakeSourceConnectionId.Span,
             largestAcknowledged: trackedDataPacket.Key.PacketNumber,
             firstAckRange: trackedDataPacket.Key.PacketNumber - trackedOpenPacket.Key.PacketNumber,
             additionalRanges: []);
+
+        QuicHandshakeFlowCoordinator peerAckOpenCoordinator = new(
+            runtime.CurrentPeerDestinationConnectionId.ToArray(),
+            runtime.CurrentHandshakeSourceConnectionId.ToArray());
+        Assert.True(peerAckOpenCoordinator.TryOpenProtectedApplicationDataPacket(
+            protectedAckPacket,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+            out byte[] openedAckPacket,
+            out int ackPayloadOffset,
+            out int ackPayloadLength,
+            out _));
+        Assert.True(QuicFrameCodec.TryParseAckFrame(
+            openedAckPacket.AsSpan(ackPayloadOffset, ackPayloadLength),
+            out QuicAckFrame openedAckFrame,
+            out _));
+        Assert.Equal(trackedDataPacket.Key.PacketNumber, openedAckFrame.LargestAcknowledged);
+        Assert.Equal(trackedDataPacket.Key.PacketNumber - trackedOpenPacket.Key.PacketNumber, openedAckFrame.FirstAckRange);
 
         QuicConnectionTransitionResult ackResult = runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
@@ -656,6 +784,21 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         ulong firstAckRange,
         QuicAckRange[] additionalRanges)
     {
+        return BuildProtectedAckPacket(
+            runtime,
+            PacketConnectionId,
+            largestAcknowledged,
+            firstAckRange,
+            additionalRanges);
+    }
+
+    private static byte[] BuildProtectedAckPacket(
+        QuicConnectionRuntime runtime,
+        ReadOnlySpan<byte> destinationConnectionId,
+        ulong largestAcknowledged,
+        ulong firstAckRange,
+        QuicAckRange[] additionalRanges)
+    {
         byte[] ackPayload = QuicFrameTestData.BuildAckFrame(new QuicAckFrame
         {
             FrameType = 0x02,
@@ -665,7 +808,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             AdditionalRanges = additionalRanges,
         });
 
-        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        QuicHandshakeFlowCoordinator coordinator = new(destinationConnectionId.ToArray());
         Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
             ackPayload,
             runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
@@ -819,7 +962,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
     {
         keyPhase = false;
 
-        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        QuicHandshakeFlowCoordinator coordinator = CreateOutgoingApplicationDataOpenCoordinator(runtime);
         if (!coordinator.TryOpenProtectedApplicationDataPacket(
                 datagram.Span,
                 runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
@@ -889,7 +1032,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         ReadOnlyMemory<byte> datagram,
         out bool keyPhase)
     {
-        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        QuicHandshakeFlowCoordinator coordinator = CreateOutgoingApplicationDataOpenCoordinator(runtime);
         Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
             datagram.Span,
             runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
@@ -912,7 +1055,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         frame = default;
         keyPhase = false;
 
-        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        QuicHandshakeFlowCoordinator coordinator = CreateOutgoingApplicationDataOpenCoordinator(runtime);
         if (!coordinator.TryOpenProtectedApplicationDataPacket(
                 datagram.Span,
                 runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
@@ -931,7 +1074,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
 
     private static bool IsPingOnlyPayload(QuicConnectionRuntime runtime, ReadOnlyMemory<byte> datagram)
     {
-        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        QuicHandshakeFlowCoordinator coordinator = CreateOutgoingApplicationDataOpenCoordinator(runtime);
         if (!coordinator.TryOpenProtectedApplicationDataPacket(
                 datagram.Span,
                 runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
@@ -962,7 +1105,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
 
     private static string DescribeApplicationPayload(QuicConnectionRuntime runtime, ReadOnlyMemory<byte> datagram)
     {
-        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        QuicHandshakeFlowCoordinator coordinator = CreateOutgoingApplicationDataOpenCoordinator(runtime);
         if (!coordinator.TryOpenProtectedApplicationDataPacket(
                 datagram.Span,
                 runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
@@ -1026,6 +1169,11 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         }
 
         return $"keyPhase={keyPhase} {string.Join(",", frames)}";
+    }
+
+    private static QuicHandshakeFlowCoordinator CreateOutgoingApplicationDataOpenCoordinator(QuicConnectionRuntime runtime)
+    {
+        return new QuicHandshakeFlowCoordinator(runtime.CurrentPeerDestinationConnectionId);
     }
 
     private static QuicConnectionRuntime CreateEstablishingRuntimeWithActivePath()

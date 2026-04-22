@@ -2125,7 +2125,6 @@ internal sealed partial class QuicConnectionRuntime
         plaintextPayload = default;
 
         if (retransmission.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
-            || CurrentPeerDestinationConnectionId.IsEmpty
             || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
         {
             return false;

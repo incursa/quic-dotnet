@@ -828,8 +828,7 @@ internal sealed partial class QuicConnectionRuntime
         closesStream = false;
         streamEndOffset = 0;
 
-        if (!tlsState.OneRttProtectPacketProtectionMaterial.HasValue
-            || CurrentPeerDestinationConnectionId.IsEmpty)
+        if (!tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
         {
             return false;
         }
