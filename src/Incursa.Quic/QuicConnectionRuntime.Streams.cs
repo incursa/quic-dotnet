@@ -1499,6 +1499,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         int selectedIndex = -1;
+        bool selectedProbePacket = false;
         bool selectedHasPreferredPayload = false;
         bool selectedCarriesStreamData = false;
         bool selectedClosesStream = false;
@@ -1512,6 +1513,7 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
+            bool candidateProbePacket = candidatePlan.ProbePacket;
             bool candidateHasPreferredPayload = candidatePlan.StreamIds is { Length: > 0 };
             bool candidateCarriesStreamData = false;
             bool candidateClosesStream = false;
@@ -1527,33 +1529,46 @@ internal sealed partial class QuicConnectionRuntime
 
             if (selectedIndex >= 0)
             {
-                if (selectedHasPreferredPayload && !candidateHasPreferredPayload)
+                bool samePayloadClass = selectedHasPreferredPayload == candidateHasPreferredPayload;
+                bool preferCandidateForFreshness = selectedProbePacket
+                    && !candidateProbePacket
+                    && samePayloadClass;
+                if (!selectedProbePacket && candidateProbePacket && samePayloadClass)
                 {
                     continue;
                 }
 
-                if (!selectedHasPreferredPayload && candidateHasPreferredPayload)
+                if (!preferCandidateForFreshness)
                 {
-                    // Prefer application retransmissions that actually repair stream progress.
-                }
-                else
-                {
-                    if (!IsPreferredApplicationProbeCandidate(
-                            selectedCarriesStreamData,
-                            selectedClosesStream,
-                            selectedStreamEndOffset,
-                            queuedPlans[selectedIndex].PacketNumber,
-                            candidateCarriesStreamData,
-                            candidateClosesStream,
-                            candidateStreamEndOffset,
-                            candidatePlan.PacketNumber))
+                    if (selectedHasPreferredPayload && !candidateHasPreferredPayload)
                     {
                         continue;
+                    }
+
+                    if (!selectedHasPreferredPayload && candidateHasPreferredPayload)
+                    {
+                        // Prefer application retransmissions that actually repair stream progress.
+                    }
+                    else
+                    {
+                        if (!IsPreferredApplicationProbeCandidate(
+                                selectedCarriesStreamData,
+                                selectedClosesStream,
+                                selectedStreamEndOffset,
+                                queuedPlans[selectedIndex].PacketNumber,
+                                candidateCarriesStreamData,
+                                candidateClosesStream,
+                                candidateStreamEndOffset,
+                                candidatePlan.PacketNumber))
+                        {
+                            continue;
+                        }
                     }
                 }
             }
 
             selectedIndex = index;
+            selectedProbePacket = candidateProbePacket;
             selectedHasPreferredPayload = candidateHasPreferredPayload;
             selectedCarriesStreamData = candidateCarriesStreamData;
             selectedClosesStream = candidateClosesStream;

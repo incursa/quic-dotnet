@@ -27,6 +27,117 @@ public sealed class REQ_QUIC_RFC9002_S6P4_0004
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ClientRuntimeDiscardsInitialRecoveryStateAfterTheFirstSuccessfulHandshakePacket()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-182027795-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\server\qlog\6a002c060ffc5da0.sqlog
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-192025145-client-chrome\
+        //   live simulator trace + server log
+        // The stalled multiconnect path kept sending stale Initial+Handshake probes after
+        // 1-RTT was already live. The first missing cleanup boundary was that the client
+        // never discarded Initial recovery state after it successfully processed the peer's
+        // first Handshake packet.
+        using QuicCapturedInteropReplayTestSupport.CapturedInteropHandshakeScenario scenario =
+            QuicCapturedInteropReplayTestSupport.CreateDeterministicQuicGoClientHandshakeScenario();
+
+        QuicConnectionRuntime runtime = scenario.ClientRuntime;
+
+        QuicConnectionTransitionResult initialResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                PathIdentity: scenario.PathIdentity,
+                Datagram: scenario.CapturedServerInitialPacket),
+            nowTicks: 10);
+
+        Assert.True(initialResult.StateChanged);
+        Assert.True(runtime.TlsState.HandshakeKeysAvailable);
+        Assert.False(runtime.TlsState.OldKeysDiscarded);
+
+        SeedTrackedPacket(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 99,
+            sentAtMicros: 9,
+            QuicTlsEncryptionLevel.Initial);
+        SeedTrackedPacket(
+            runtime,
+            QuicPacketNumberSpace.Handshake,
+            packetNumber: 41,
+            sentAtMicros: 10,
+            QuicTlsEncryptionLevel.Handshake);
+
+        QuicConnectionTransitionResult handshakeResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 11,
+                PathIdentity: scenario.PathIdentity,
+                Datagram: scenario.CapturedServerHandshakePacket),
+            nowTicks: 11);
+
+        Assert.True(handshakeResult.StateChanged);
+        Assert.True(runtime.TlsState.HandshakeKeysAvailable);
+        Assert.True(runtime.TlsState.OldKeysDiscarded);
+        Assert.DoesNotContain(
+            runtime.SendRuntime.SentPackets.Keys,
+            key => key.PacketNumberSpace == QuicPacketNumberSpace.Initial
+                && key.PacketNumber == 99);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Keys,
+            key => key.PacketNumberSpace == QuicPacketNumberSpace.Handshake
+                && key.PacketNumber == 41);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ClientRuntimeDiscardsHandshakeRecoveryStateWhenHandshakeDoneConfirmsTheHandshake()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-182027795-client-chrome\
+        //   runner-logs\quic-go_chrome\handshakeloss\client\qlog\client-multiconnect-b7d0662decde48a0bbd3ea68033bf1d8.qlog
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-192025145-client-chrome\
+        //   live simulator trace + server log
+        // After the request stream was already open on the stalled multiconnect connection,
+        // the client still emitted Handshake probes instead of clearing the Handshake space
+        // when HANDSHAKE_DONE confirmed the handshake.
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+
+        Assert.False(runtime.HandshakeConfirmed);
+        Assert.True(runtime.TlsState.HandshakeKeysAvailable);
+        Assert.True(runtime.TlsState.OneRttKeysAvailable);
+
+        SeedTrackedPacket(
+            runtime,
+            QuicPacketNumberSpace.Handshake,
+            packetNumber: 77,
+            sentAtMicros: 7,
+            QuicTlsEncryptionLevel.Handshake);
+        SeedTrackedPacket(
+            runtime,
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 78,
+            sentAtMicros: 7,
+            QuicTlsEncryptionLevel.OneRtt);
+
+        QuicConnectionTransitionResult handshakeDoneResult =
+            QuicPostHandshakeTicketTestSupport.ReceiveProtectedHandshakeDonePacket(runtime, observedAtTicks: 12);
+
+        Assert.True(handshakeDoneResult.StateChanged);
+        Assert.True(runtime.HandshakeConfirmed);
+        Assert.False(runtime.TlsState.HandshakeKeysAvailable);
+        Assert.DoesNotContain(
+            runtime.SendRuntime.SentPackets.Keys,
+            key => key.PacketNumberSpace == QuicPacketNumberSpace.Handshake
+                && key.PacketNumber == 77);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Keys,
+            key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && key.PacketNumber == 78);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryAddFrame_ClosesWithBufferExceededBeforeReplacementKeysExist()
@@ -58,5 +169,25 @@ public sealed class REQ_QUIC_RFC9002_S6P4_0004
 
         Assert.True(buffer.TryAddFrame(new QuicCryptoFrame(4096, [0xEE]), out QuicCryptoBufferResult overflowResult));
         Assert.Equal(QuicCryptoBufferResult.DiscardedAndAcknowledged, overflowResult);
+    }
+
+    private static void SeedTrackedPacket(
+        QuicConnectionRuntime runtime,
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        ulong sentAtMicros,
+        QuicTlsEncryptionLevel packetProtectionLevel)
+    {
+        runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            packetNumberSpace,
+            packetNumber,
+            PayloadBytes: 1_200,
+            SentAtMicros: sentAtMicros,
+            AckEliciting: true,
+            PacketBytes: new byte[] { 0x01 },
+            PacketProtectionLevel: packetProtectionLevel,
+            CryptoMetadata: packetNumberSpace is QuicPacketNumberSpace.Initial or QuicPacketNumberSpace.Handshake
+                ? new QuicConnectionCryptoSendMetadata(packetProtectionLevel)
+                : null));
     }
 }

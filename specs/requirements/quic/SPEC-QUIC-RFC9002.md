@@ -1769,6 +1769,8 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_DiscardOverflowFramesAsSoonAsReplacementKeysExist
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::ClientRuntimeDiscardsInitialRecoveryStateAfterTheFirstSuccessfulHandshakePacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::ClientRuntimeDiscardsHandshakeRecoveryStateWhenHandshakeDoneConfirmsTheHandshake
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_ClosesWithBufferExceededBeforeReplacementKeysExist
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_TransitionsFromBufferingToDiscardingAtTheHandshakeCompleteBoundary
   - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs::BridgeDriverHandshakeKeyDiscardFlowsThroughTheRuntimeAndClearsHandshakeSendState

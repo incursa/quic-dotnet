@@ -704,15 +704,17 @@ internal sealed partial class QuicConnectionRuntime
 
             if (candidateKey is not null)
             {
-                if (candidateIsProbePacket && !entryIsProbePacket)
-                {
-                    // Prefer retransmitting an older outstanding packet before retransmitting a
-                    // probe packet we already emitted during this PTO event.
-                }
-                else if (!candidateIsProbePacket && entryIsProbePacket)
+                bool samePayloadClass = candidateHasPreferredPayload == entryHasPreferredPayload;
+                bool preferEntryForFreshness = candidateIsProbePacket
+                    && !entryIsProbePacket
+                    && samePayloadClass;
+                if (!candidateIsProbePacket && entryIsProbePacket && samePayloadClass)
                 {
                     continue;
                 }
+
+                if (!preferEntryForFreshness)
+                {
                 if (candidateHasPreferredPayload && !entryHasPreferredPayload)
                 {
                     continue;
@@ -740,6 +742,7 @@ internal sealed partial class QuicConnectionRuntime
                 else if (entry.Key.PacketNumber >= candidateKey.Value.PacketNumber)
                 {
                     continue;
+                }
                 }
             }
 

@@ -926,6 +926,77 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
                 && entry.Value.PacketBytes.Span.SequenceEqual(applicationProbeEffects[finishProbeIndex].Datagram.Span));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDequeuePreferredProbeRetransmission_PrefersAnUnprobedFinOnlyCloseOverARequestPacketThatAlreadyServedAsAProbe()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-191124687-client-chrome\
+        //   live docker logs server:
+        //     packet 5 -> STREAM offset 0 length 26
+        //     packets 8/10/11/14/15 -> repeated STREAM offset 0 length 26
+        //   The server never observed the FIN-only close for stream 0 before timing out, so the
+        //   request repair packet had already been spent as a PTO probe while the original close
+        //   packet still needed its first repair attempt.
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+        byte[] requestPayload = Encoding.ASCII.GetBytes("GET /bright-clean-floppy\r\n");
+        byte[] requestFrame = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0E,
+            streamId: 0,
+            requestPayload,
+            offset: 0);
+        byte[] finishFrame = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0F,
+            streamId: 0,
+            streamData: [],
+            offset: (ulong)requestPayload.Length);
+
+        Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
+        byte[] requestProbePacketBytes = QuicS17P3P1TestSupport.CreateProtectedApplicationDataPacket(
+            runtime.CurrentPeerDestinationConnectionId.Span,
+            packetNumberBytes: [0x05],
+            requestFrame,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial.Value,
+            declaredPacketNumberLength: 1);
+        byte[] finishPacketBytes = QuicS17P3P1TestSupport.CreateProtectedApplicationDataPacket(
+            runtime.CurrentPeerDestinationConnectionId.Span,
+            packetNumberBytes: [0x02],
+            finishFrame,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial.Value,
+            declaredPacketNumberLength: 1);
+
+        runtime.SendRuntime.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 5,
+            PayloadBytes: (ulong)requestProbePacketBytes.Length,
+            SentAtMicros: 5,
+            ProbePacket: true,
+            PacketBytes: requestProbePacketBytes,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            StreamIds: [0UL],
+            PlaintextPayload: requestFrame));
+        runtime.SendRuntime.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 2,
+            PayloadBytes: (ulong)finishPacketBytes.Length,
+            SentAtMicros: 2,
+            ProbePacket: false,
+            PacketBytes: finishPacketBytes,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            StreamIds: [0UL],
+            PlaintextPayload: finishFrame));
+
+        Assert.True(TryDequeuePreferredProbeRetransmission(
+            runtime,
+            QuicPacketNumberSpace.ApplicationData,
+            out QuicConnectionRetransmissionPlan selectedRetransmission));
+        Assert.Equal(2UL, selectedRetransmission.PacketNumber);
+        Assert.False(selectedRetransmission.ProbePacket);
+        Assert.True(selectedRetransmission.PacketBytes.Span.SequenceEqual(finishPacketBytes));
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+    }
+
     private static QuicConnectionSendDatagramEffect FindInitialProbeEffect(
         IEnumerable<QuicConnectionSendDatagramEffect> sendEffects)
     {
@@ -1187,6 +1258,27 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(recoveryControllerField);
         return Assert.IsType<QuicRecoveryController>(recoveryControllerField.GetValue(runtime));
+    }
+
+    private static bool TryDequeuePreferredProbeRetransmission(
+        QuicConnectionRuntime runtime,
+        QuicPacketNumberSpace packetNumberSpace,
+        out QuicConnectionRetransmissionPlan retransmission)
+    {
+        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
+            "TryDequeuePreferredProbeRetransmission",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        object?[] arguments =
+        [
+            packetNumberSpace,
+            default(QuicConnectionRetransmissionPlan),
+        ];
+
+        bool dequeued = (bool)method.Invoke(runtime, arguments)!;
+        retransmission = dequeued
+            ? (QuicConnectionRetransmissionPlan)arguments[1]!
+            : default;
+        return dequeued;
     }
 
     private static QuicConnectionRuntime CreateRuntimeWithActivePath()

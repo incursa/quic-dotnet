@@ -49,6 +49,14 @@ internal sealed partial class QuicConnectionRuntime
 
             stateChanged |= TryFlushHandshakeDonePacket(ref effects);
             stateChanged |= TryFlushNewTokenEmissions(nowTicks, ref effects);
+
+            if (tlsState.Role == QuicTlsRole.Server)
+            {
+                stateChanged |= TryPublishTlsKeyDiscard(
+                    QuicTlsEncryptionLevel.Handshake,
+                    nowTicks,
+                    ref effects);
+            }
         }
 
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
@@ -578,11 +586,20 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        return TryProcessHandshakePacketPayload(
+        bool processed = TryProcessHandshakePacketPayload(
             openedPacket.AsSpan(payloadOffset, payloadLength),
             QuicTlsEncryptionLevel.Handshake,
             nowTicks,
             ref effects);
+        if (processed)
+        {
+            processed |= TryPublishTlsKeyDiscard(
+                QuicTlsEncryptionLevel.Initial,
+                nowTicks,
+                ref effects);
+        }
+
+        return processed;
     }
 
     private bool TryBufferEstablishmentHandshakePacketForDeferredRetry(
@@ -722,11 +739,11 @@ internal sealed partial class QuicConnectionRuntime
                     _ => throw new InvalidOperationException($"Unsupported handshake packet encryption level {encryptionLevel}."),
                 };
 
-                stateChanged |= sendRuntime.FlowController.TryProcessAckFrame(
+                stateChanged |= HandleAckFrame(
                     packetNumberSpace,
                     ackFrame,
-                    GetElapsedMicros(nowTicks),
-                    pathValidated: HasValidatedPath);
+                    nowTicks,
+                    ref effects);
                 payloadOffset += ackBytesConsumed;
                 continue;
             }
@@ -786,11 +803,6 @@ internal sealed partial class QuicConnectionRuntime
 
         stateChanged |= TryFlushInitialPackets(ref effects);
         stateChanged |= TryFlushHandshakePackets(ref effects);
-
-        if (!processedCryptoFrame)
-        {
-            return false;
-        }
 
         return stateChanged || processedCryptoFrame;
     }
@@ -1321,6 +1333,19 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
+        return HandleAckFrame(
+            QuicPacketNumberSpace.ApplicationData,
+            ackFrame,
+            nowTicks,
+            ref effects);
+    }
+
+    private bool HandleAckFrame(
+        QuicPacketNumberSpace packetNumberSpace,
+        QuicAckFrame ackFrame,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
         ArgumentNullException.ThrowIfNull(ackFrame);
 
         ulong ackReceivedAtMicros = GetElapsedMicros(nowTicks);
@@ -1335,7 +1360,7 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             if (sendRuntime.SentPackets.TryGetValue(
-                    new QuicConnectionSentPacketKey(QuicPacketNumberSpace.ApplicationData, packetNumber),
+                    new QuicConnectionSentPacketKey(packetNumberSpace, packetNumber),
                     out QuicConnectionSentPacket sentPacket)
                 && sentPacket.AckEliciting)
             {
@@ -1344,7 +1369,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool stateChanged = sendRuntime.FlowController.TryProcessAckFrame(
-            QuicPacketNumberSpace.ApplicationData,
+            packetNumberSpace,
             ackFrame,
             ackReceivedAtMicros,
             pathValidated: HasValidatedPath);
@@ -1352,13 +1377,13 @@ internal sealed partial class QuicConnectionRuntime
         foreach (ulong packetNumber in acknowledgedPacketNumbers)
         {
             stateChanged |= sendRuntime.TryAcknowledgePacket(
-                QuicPacketNumberSpace.ApplicationData,
+                packetNumberSpace,
                 packetNumber,
                 handshakeConfirmed: HandshakeConfirmed);
         }
 
         stateChanged |= recoveryController.RecordAcknowledgment(
-            QuicPacketNumberSpace.ApplicationData,
+            packetNumberSpace,
             ackFrame.LargestAcknowledged,
             ackReceivedAtMicros,
             newlyAcknowledgedAckElicitingPacketNumbers.ToArray(),
@@ -1368,7 +1393,7 @@ internal sealed partial class QuicConnectionRuntime
 
         stateChanged |= TryRegisterDetectedLosses(nowTicks);
         if (TryFlushPendingRetransmissions(
-            QuicPacketNumberSpace.ApplicationData,
+            packetNumberSpace,
             nowTicks,
             probePacket: false,
             ref effects))
@@ -2085,7 +2110,12 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         handshakeConfirmed = true;
-        return true;
+        bool stateChanged = true;
+        stateChanged |= TryPublishTlsKeyDiscard(
+            QuicTlsEncryptionLevel.Handshake,
+            nowTicks,
+            ref effects);
+        return stateChanged;
     }
 
     private bool TryFlushNewTokenEmissions(long nowTicks, ref List<QuicConnectionEffect>? effects)
@@ -2468,6 +2498,29 @@ internal sealed partial class QuicConnectionRuntime
                 break;
             case QuicTlsEncryptionLevel.OneRtt:
                 break;
+        }
+
+        return stateChanged;
+    }
+
+    private bool TryPublishTlsKeyDiscard(
+        QuicTlsEncryptionLevel encryptionLevel,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        IReadOnlyList<QuicTlsStateUpdate> updates = tlsBridgeDriver.PublishKeyDiscard(encryptionLevel);
+        if (updates.Count == 0)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        foreach (QuicTlsStateUpdate update in updates)
+        {
+            stateChanged |= HandleTlsStateUpdated(
+                new QuicConnectionTlsStateUpdatedEvent(nowTicks, update),
+                nowTicks,
+                ref effects);
         }
 
         return stateChanged;
