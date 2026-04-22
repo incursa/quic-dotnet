@@ -1508,3 +1508,25 @@ Notes:
 - The slice keeps the client's current 1-RTT application traffic secret material alive long enough to derive the successor pair and then installs the new bridge-state view on the first observed 0->1 transition.
 - Outbound 1-RTT packet formatting must switch to the installed phase-1 bit once the successor pair is installed.
 - The slice does not introduce a general RFC 9001 key-update engine, TLS KeyUpdate support, transfer, retry, public API widening, or any public key-update promise.
+
+## REQ-QUIC-CRT-0146 Reset the pre-transcript client peer handshake attempt only when a replacement Initial proves a new attempt
+In the client role, while the connection is still establishing and before `PeerHandshakeTranscriptCompleted` is true, the library MUST remember the first accepted peer Initial source connection ID together with the first offset-zero Initial CRYPTO prefix from that attempt. If a later peer Initial arrives with a different source connection ID and a different offset-zero Initial CRYPTO prefix, the runtime MUST treat that packet as a replacement peer handshake attempt, MUST reset the current peer-handshake attempt state before applying the replacement Initial, MUST clear the buffered Initial ingress CRYPTO and transcript offsets derived from the earlier attempt, and MUST rederive later Handshake and 1-RTT state from the replacement attempt. If the later peer Initial changes only the source connection ID while repeating the same offset-zero Initial CRYPTO prefix, the runtime MUST keep the current attempt instead of resetting it. This slice must remain client-role only, managed client/runtime only, and closed to broader multi-attempt handshake orchestration, server-role behavior, public API widening, transfer, retry, or general token-lifecycle claims.
+
+Trace:
+- Source Refs:
+  - RFC 9001 Sections 4.1.2 and 5.2
+  - specs/requirements/quic/REQUIREMENT-GAPS.md
+  - src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs
+  - src/Incursa.Quic/QuicCryptoBuffer.cs
+  - src/Incursa.Quic/QuicTlsKeySchedule.cs
+  - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
+  - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
+  - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+  - tests/Incursa.Quic.Tests/QuicCapturedInteropReplayTests.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0146.cs
+
+Notes:
+- The reset boundary is narrower than Retry ownership in REQ-QUIC-CRT-0122 and does not widen into a general multi-attempt handshake engine.
+- The discriminant is the combination of a changed peer Initial source connection ID and a changed offset-zero Initial CRYPTO prefix; source-connection-ID drift alone can still be a same-attempt retransmission.
+- The slice only covers the client-side pre-transcript reset and rederive path; server-role behavior, broader interop claims, and public API widening remain out of scope.

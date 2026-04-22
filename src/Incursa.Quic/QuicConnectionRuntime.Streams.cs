@@ -1028,7 +1028,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryProtectAndAccountApplicationPayload(
-        ReadOnlySpan<byte> payload,
+        ReadOnlyMemory<byte> payload,
         string protectFailureMessage,
         string amplificationFailureMessage,
         out QuicConnectionActivePathRecord currentPath,
@@ -1050,7 +1050,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryProtectAndAccountApplicationPayload(
-        ReadOnlySpan<byte> payload,
+        ReadOnlyMemory<byte> payload,
         string protectFailureMessage,
         string amplificationFailureMessage,
         ulong[]? streamIds,
@@ -1073,7 +1073,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryProtectAndAccountApplicationPayload(
-        ReadOnlySpan<byte> payload,
+        ReadOnlyMemory<byte> payload,
         string protectFailureMessage,
         string amplificationFailureMessage,
         bool probePacket,
@@ -1096,7 +1096,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
-            payload,
+            payload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhase == 1,
             out ulong packetNumber,
@@ -1137,14 +1137,15 @@ internal sealed partial class QuicConnectionRuntime
             ackOnlyPacket: ackOnlyPacket,
             retransmittable: !ackOnlyPacket,
             probePacket: probePacket,
-            streamIds: streamIds);
+            streamIds: streamIds,
+            plaintextPayload: payload);
         exception = null;
         return true;
     }
 
     private bool TryProtectAndAccountApplicationPayloadOnPath(
         QuicConnectionPathIdentity pathIdentity,
-        ReadOnlySpan<byte> payload,
+        ReadOnlyMemory<byte> payload,
         string protectFailureMessage,
         string amplificationFailureMessage,
         out QuicConnectionPathIdentity sendPathIdentity,
@@ -1160,7 +1161,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
-            payload,
+            payload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhase == 1,
             out ulong packetNumber,
@@ -1217,7 +1218,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        TrackApplicationPacket(packetNumber, protectedPacket);
+        TrackApplicationPacket(packetNumber, protectedPacket, plaintextPayload: payload);
         sendPathIdentity = pathIdentity;
         exception = null;
         return true;
@@ -1270,6 +1271,7 @@ internal sealed partial class QuicConnectionRuntime
                 out QuicTlsEncryptionLevel cryptoProtectionLevel);
             ulong rebuiltPacketNumber = default;
             byte[] rebuiltDatagram = [];
+            ReadOnlyMemory<byte> rebuiltApplicationPayload = default;
             bool rebuildableApplicationRetransmission =
                 !rebuildableCryptoRetransmission
                 && probeRetransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData;
@@ -1283,7 +1285,8 @@ internal sealed partial class QuicConnectionRuntime
                     && !TryBuildApplicationRetransmissionPacket(
                         probeRetransmission,
                         out rebuiltPacketNumber,
-                        out rebuiltDatagram)))
+                        out rebuiltDatagram,
+                        out rebuiltApplicationPayload)))
             {
                 sendRuntime.QueueRetransmission(probeRetransmission);
                 return false;
@@ -1338,7 +1341,8 @@ internal sealed partial class QuicConnectionRuntime
                     datagram.ToArray(),
                     sentAtMicros,
                     probePacket,
-                    probeRetransmission.StreamIds);
+                    probeRetransmission.StreamIds,
+                    rebuiltApplicationPayload);
             }
             else
             {
@@ -1374,6 +1378,7 @@ internal sealed partial class QuicConnectionRuntime
                 out QuicTlsEncryptionLevel cryptoProtectionLevel);
             ulong rebuiltPacketNumber = default;
             byte[] rebuiltDatagram = [];
+            ReadOnlyMemory<byte> rebuiltApplicationPayload = default;
             bool rebuildableApplicationRetransmission =
                 !rebuildableCryptoRetransmission
                 && retransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData;
@@ -1387,7 +1392,8 @@ internal sealed partial class QuicConnectionRuntime
                     && !TryBuildApplicationRetransmissionPacket(
                         retransmission,
                         out rebuiltPacketNumber,
-                        out rebuiltDatagram)))
+                        out rebuiltDatagram,
+                        out rebuiltApplicationPayload)))
             {
                 sendRuntime.QueueRetransmission(retransmission);
                 break;
@@ -1442,7 +1448,8 @@ internal sealed partial class QuicConnectionRuntime
                     datagram.ToArray(),
                     sentAtMicros,
                     probePacket,
-                    retransmission.StreamIds);
+                    retransmission.StreamIds,
+                    rebuiltApplicationPayload);
             }
             else
             {
@@ -1512,7 +1519,7 @@ internal sealed partial class QuicConnectionRuntime
             if (candidateHasPreferredPayload)
             {
                 _ = TryGetApplicationProbeSelectionPriority(
-                    candidatePlan.PacketBytes,
+                    candidatePlan,
                     out candidateCarriesStreamData,
                     out candidateClosesStream,
                     out candidateStreamEndOffset);
@@ -1962,29 +1969,44 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryBuildApplicationRetransmissionPacket(
         QuicConnectionRetransmissionPlan retransmission,
         out ulong packetNumber,
-        out byte[] protectedPacket)
+        out byte[] protectedPacket,
+        out ReadOnlyMemory<byte> plaintextPayload)
     {
         protectedPacket = [];
         packetNumber = default;
+        plaintextPayload = default;
 
         if (retransmission.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
-            || retransmission.PacketBytes.IsEmpty
             || CurrentPeerDestinationConnectionId.IsEmpty
             || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
         {
             return false;
         }
 
-        QuicHandshakeFlowCoordinator retransmissionOpenCoordinator = new(CurrentPeerDestinationConnectionId.ToArray());
-        if (!retransmissionOpenCoordinator.TryOpenProtectedApplicationDataPacket(
-                retransmission.PacketBytes.Span,
-                tlsState.OneRttProtectPacketProtectionMaterial.Value,
-                out byte[] openedPacket,
-                out int payloadOffset,
-                out int payloadLength,
-                out _))
+        if (!retransmission.PlaintextPayload.IsEmpty)
         {
-            return false;
+            plaintextPayload = retransmission.PlaintextPayload;
+        }
+        else
+        {
+            if (retransmission.PacketBytes.IsEmpty)
+            {
+                return false;
+            }
+
+            QuicHandshakeFlowCoordinator retransmissionOpenCoordinator = new(CurrentPeerDestinationConnectionId.ToArray());
+            if (!retransmissionOpenCoordinator.TryOpenProtectedApplicationDataPacket(
+                    retransmission.PacketBytes.Span,
+                    tlsState.OneRttProtectPacketProtectionMaterial.Value,
+                    out byte[] openedPacket,
+                    out int payloadOffset,
+                    out int payloadLength,
+                    out _))
+            {
+                return false;
+            }
+
+            plaintextPayload = openedPacket.AsMemory(payloadOffset, payloadLength).ToArray();
         }
 
         ulong minimumPacketNumberExclusive = retransmission.PacketNumber;
@@ -1997,7 +2019,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
-            openedPacket.AsSpan(payloadOffset, payloadLength),
+            plaintextPayload.Span,
             minimumPacketNumberExclusive,
             tlsState.OneRttProtectPacketProtectionMaterial.Value,
             tlsState.CurrentOneRttKeyPhase == 1,
@@ -2041,7 +2063,8 @@ internal sealed partial class QuicConnectionRuntime
         byte[] protectedPacket,
         ulong sentAtMicros,
         bool probePacket,
-        ulong[]? streamIds)
+        ulong[]? streamIds,
+        ReadOnlyMemory<byte> plaintextPayload)
     {
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.ApplicationData,
@@ -2054,7 +2077,8 @@ internal sealed partial class QuicConnectionRuntime
             Retransmittable: true,
             PacketBytes: protectedPacket,
             PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
-            StreamIds: streamIds));
+            StreamIds: streamIds,
+            PlaintextPayload: plaintextPayload));
         recoveryController.RecordPacketSent(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber,
@@ -2090,9 +2114,10 @@ internal sealed partial class QuicConnectionRuntime
             ProbePacket: probePacket,
             Retransmittable: true,
             CryptoMetadata: retransmission.CryptoMetadata,
-            PacketBytes: retransmission.PacketBytes,
-            PacketProtectionLevel: retransmission.PacketProtectionLevel,
-            StreamIds: retransmission.StreamIds));
+                PacketBytes: retransmission.PacketBytes,
+                PacketProtectionLevel: retransmission.PacketProtectionLevel,
+                StreamIds: retransmission.StreamIds,
+                PlaintextPayload: retransmission.PlaintextPayload));
         recoveryController.RecordPacketSent(
             retransmission.PacketNumberSpace,
             retransmission.PacketNumber,
@@ -2202,7 +2227,8 @@ internal sealed partial class QuicConnectionRuntime
         bool retransmittable = true,
         bool probePacket = false,
         QuicTlsEncryptionLevel packetProtectionLevel = QuicTlsEncryptionLevel.OneRtt,
-        ulong[]? streamIds = null)
+        ulong[]? streamIds = null,
+        ReadOnlyMemory<byte> plaintextPayload = default)
     {
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.ApplicationData,
@@ -2215,7 +2241,8 @@ internal sealed partial class QuicConnectionRuntime
             Retransmittable: retransmittable,
             PacketBytes: protectedPacket,
             PacketProtectionLevel: packetProtectionLevel,
-            StreamIds: streamIds));
+            StreamIds: streamIds,
+            PlaintextPayload: plaintextPayload));
         recoveryController.RecordPacketSent(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber,

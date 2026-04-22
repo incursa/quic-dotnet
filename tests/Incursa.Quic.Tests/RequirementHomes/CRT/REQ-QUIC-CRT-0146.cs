@@ -1,43 +1,31 @@
-using System.Collections;
 using System.Net.Security;
-using System.Reflection;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S5P2P1-0004")]
-public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
+[Requirement("REQ-QUIC-CRT-0146")]
+public sealed class REQ_QUIC_CRT_0146
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ReplacementHandshakePacketsCanBeBufferedUntilTheMatchingReplacementInitialArrives()
+    public void ReplacementInitialCryptoFromANewPeerAttemptResetsTheClientHandshakeAttempt()
     {
-        // Provenance:
-        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-180141270-client-chrome\
-        //   runner-logs\quic-go_chrome\handshakeloss\client\qlog\client-multiconnect-3b891db978f74293ad0ce8ec2fe178e5.qlog
-        //   runner-logs\quic-go_chrome\handshakeloss\server\log.txt
-        // The stalled client-role quic-go multiconnect connection first accepted server attempt
-        // 2310e7da, then received replacement Handshake packets from fd0f0e4a before a later
-        // replacement Initial from that same source CID. RFC 9000 allows the client to buffer
-        // packets encrypted with keys it has not yet computed; this proof keeps the slice narrow
-        // by replaying those buffered replacement Handshake packets only after the replacement
-        // Initial rederives the matching Handshake-open material.
         byte[] originalDestinationConnectionId = [0x11, 0x12, 0x13, 0x14];
-        byte[] clientSourceConnectionId = [0x21, 0x22, 0x23, 0x24];
+        byte[] initialSourceConnectionId = [0x21, 0x22, 0x23, 0x24];
         byte[] firstServerSourceConnectionId = [0x31, 0x32, 0x33, 0x34];
         byte[] replacementServerSourceConnectionId = [0x41, 0x42, 0x43, 0x44];
         QuicConnectionPathIdentity pathIdentity = new("203.0.113.10", "198.51.100.20", 443, 12345);
 
         using QuicConnectionRuntime clientRuntime = CreateClientRuntime(
             originalDestinationConnectionId,
-            clientSourceConnectionId);
+            initialSourceConnectionId);
 
         QuicConnectionTransitionResult bootstrapResult = clientRuntime.Transition(
             new QuicConnectionHandshakeBootstrapRequestedEvent(
                 ObservedAtTicks: 0,
-                LocalTransportParameters: QuicLoopbackEstablishmentTestSupport.CreateSupportedTransportParameters(clientSourceConnectionId)),
+                LocalTransportParameters: QuicLoopbackEstablishmentTestSupport.CreateSupportedTransportParameters(initialSourceConnectionId)),
             nowTicks: 0);
         QuicConnectionSendDatagramEffect[] clientInitialDatagrams = bootstrapResult.Effects
             .OfType<QuicConnectionSendDatagramEffect>()
@@ -46,14 +34,14 @@ public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
 
         ServerHandshakeFlight firstFlight = CreateServerHandshakeFlight(
             originalDestinationConnectionId,
-            clientSourceConnectionId,
+            initialSourceConnectionId,
             firstServerSourceConnectionId,
             CreateScalar(0x21),
             pathIdentity,
             clientInitialDatagrams);
         ServerHandshakeFlight replacementFlight = CreateServerHandshakeFlight(
             originalDestinationConnectionId,
-            clientSourceConnectionId,
+            initialSourceConnectionId,
             replacementServerSourceConnectionId,
             CreateScalar(0x22),
             pathIdentity,
@@ -65,64 +53,60 @@ public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
                 pathIdentity,
                 firstFlight.InitialPacket),
             nowTicks: 1);
-        Assert.True(firstInitialResult.StateChanged, DescribeState(clientRuntime, firstInitialResult));
+        Assert.True(firstInitialResult.StateChanged);
+        Assert.True(
+            clientRuntime.TlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial firstHandshakeOpenMaterial));
         Assert.True(
             clientRuntime.CurrentPeerDestinationConnectionId.Span.SequenceEqual(firstServerSourceConnectionId),
             DescribeState(clientRuntime, firstInitialResult));
 
-        QuicConnectionTransitionResult bufferedHandshakeResult = clientRuntime.Transition(
+        QuicConnectionTransitionResult replacementInitialResult = clientRuntime.Transition(
             new QuicConnectionPacketReceivedEvent(
                 ObservedAtTicks: 2,
                 pathIdentity,
-                replacementFlight.HandshakePacket),
-            nowTicks: 2);
-        Assert.Equal(1, GetBufferedEstablishmentHandshakePacketCount(clientRuntime));
-        Assert.False(clientRuntime.PeerHandshakeTranscriptCompleted, DescribeState(clientRuntime, bufferedHandshakeResult));
-        Assert.True(clientRuntime.Phase == QuicConnectionPhase.Establishing, DescribeState(clientRuntime, bufferedHandshakeResult));
-
-        QuicConnectionTransitionResult replacementInitialResult = clientRuntime.Transition(
-            new QuicConnectionPacketReceivedEvent(
-                ObservedAtTicks: 3,
-                pathIdentity,
                 replacementFlight.InitialPacket),
-            nowTicks: 3);
-
+            nowTicks: 2);
         Assert.True(replacementInitialResult.StateChanged, DescribeState(clientRuntime, replacementInitialResult));
-        Assert.Equal(0, GetBufferedEstablishmentHandshakePacketCount(clientRuntime));
-        Assert.True(clientRuntime.Phase == QuicConnectionPhase.Active, DescribeState(clientRuntime, replacementInitialResult));
-        Assert.True(clientRuntime.PeerHandshakeTranscriptCompleted, DescribeState(clientRuntime, replacementInitialResult));
-        Assert.True(clientRuntime.TlsState.OneRttKeysAvailable, DescribeState(clientRuntime, replacementInitialResult));
+        Assert.True(
+            clientRuntime.TlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial replacementHandshakeOpenMaterial));
+        Assert.False(firstHandshakeOpenMaterial.Matches(replacementHandshakeOpenMaterial));
         Assert.True(
             clientRuntime.CurrentPeerDestinationConnectionId.Span.SequenceEqual(replacementServerSourceConnectionId),
             DescribeState(clientRuntime, replacementInitialResult));
+
+        QuicConnectionTransitionResult replacementHandshakeResult = clientRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 3,
+                pathIdentity,
+                replacementFlight.HandshakePacket),
+            nowTicks: 3);
+
+        Assert.True(replacementHandshakeResult.StateChanged, DescribeState(clientRuntime, replacementHandshakeResult));
+        Assert.True(clientRuntime.Phase == QuicConnectionPhase.Active, DescribeState(clientRuntime, replacementHandshakeResult));
+        Assert.True(clientRuntime.PeerHandshakeTranscriptCompleted, DescribeState(clientRuntime, replacementHandshakeResult));
+        Assert.True(clientRuntime.TlsState.OneRttKeysAvailable, DescribeState(clientRuntime, replacementHandshakeResult));
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void CurrentAttemptHandshakeOpenFailuresAreNotDeferredForRetry()
+    public void DifferentPeerInitialSourceConnectionIdsDoNotResetWhenTheInitialCryptoPrefixIsTheSame()
     {
-        // Provenance:
-        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-180141270-client-chrome\
-        //   runner-logs\quic-go_chrome\handshakeloss\client\qlog\client-multiconnect-3b891db978f74293ad0ce8ec2fe178e5.qlog
-        // The live failure hinged on a replacement-attempt source-CID change before the client had
-        // the matching replacement Initial. This negative keeps the buffering scope bounded: a
-        // Handshake packet that still claims the current attempt source CID remains droppable, and
-        // the runtime must not retain it for deferred replay.
         byte[] originalDestinationConnectionId = [0x51, 0x52, 0x53, 0x54];
-        byte[] clientSourceConnectionId = [0x61, 0x62, 0x63, 0x64];
+        byte[] initialSourceConnectionId = [0x61, 0x62, 0x63, 0x64];
         byte[] firstServerSourceConnectionId = [0x71, 0x72, 0x73, 0x74];
-        byte[] replacementServerSourceConnectionId = [0x81, 0x82, 0x83, 0x84];
+        byte[] replayedServerSourceConnectionId = [0x81, 0x82, 0x83, 0x84];
+        byte[] sharedServerScalar = CreateScalar(0x33);
         QuicConnectionPathIdentity pathIdentity = new("203.0.113.11", "198.51.100.21", 443, 12346);
 
         using QuicConnectionRuntime clientRuntime = CreateClientRuntime(
             originalDestinationConnectionId,
-            clientSourceConnectionId);
+            initialSourceConnectionId);
 
         QuicConnectionTransitionResult bootstrapResult = clientRuntime.Transition(
             new QuicConnectionHandshakeBootstrapRequestedEvent(
                 ObservedAtTicks: 0,
-                LocalTransportParameters: QuicLoopbackEstablishmentTestSupport.CreateSupportedTransportParameters(clientSourceConnectionId)),
+                LocalTransportParameters: QuicLoopbackEstablishmentTestSupport.CreateSupportedTransportParameters(initialSourceConnectionId)),
             nowTicks: 0);
         QuicConnectionSendDatagramEffect[] clientInitialDatagrams = bootstrapResult.Effects
             .OfType<QuicConnectionSendDatagramEffect>()
@@ -131,18 +115,22 @@ public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
 
         ServerHandshakeFlight firstFlight = CreateServerHandshakeFlight(
             originalDestinationConnectionId,
-            clientSourceConnectionId,
+            initialSourceConnectionId,
             firstServerSourceConnectionId,
-            CreateScalar(0x31),
+            sharedServerScalar,
             pathIdentity,
             clientInitialDatagrams);
-        ServerHandshakeFlight replacementFlight = CreateServerHandshakeFlight(
+        ServerHandshakeFlight sameCryptoDifferentSourceFlight = CreateServerHandshakeFlight(
             originalDestinationConnectionId,
-            clientSourceConnectionId,
-            replacementServerSourceConnectionId,
-            CreateScalar(0x32),
+            initialSourceConnectionId,
+            replayedServerSourceConnectionId,
+            sharedServerScalar,
             pathIdentity,
             clientInitialDatagrams);
+
+        Assert.Equal(
+            Convert.ToHexString(firstFlight.InitialCryptoPayload),
+            Convert.ToHexString(sameCryptoDifferentSourceFlight.InitialCryptoPayload));
 
         QuicConnectionTransitionResult firstInitialResult = clientRuntime.Transition(
             new QuicConnectionPacketReceivedEvent(
@@ -150,33 +138,23 @@ public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
                 pathIdentity,
                 firstFlight.InitialPacket),
             nowTicks: 1);
-        Assert.True(firstInitialResult.StateChanged, DescribeState(clientRuntime, firstInitialResult));
+        Assert.True(firstInitialResult.StateChanged);
         Assert.True(
-            clientRuntime.CurrentPeerDestinationConnectionId.Span.SequenceEqual(firstServerSourceConnectionId),
-            DescribeState(clientRuntime, firstInitialResult));
+            clientRuntime.TlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial firstHandshakeOpenMaterial));
 
-        byte[] sameAttemptCorruptedHandshakePacket = RewriteLongHeaderSourceConnectionId(
-            replacementFlight.HandshakePacket,
-            firstServerSourceConnectionId);
-        QuicConnectionTransitionResult corruptedHandshakeResult = clientRuntime.Transition(
+        QuicConnectionTransitionResult replayedInitialResult = clientRuntime.Transition(
             new QuicConnectionPacketReceivedEvent(
                 ObservedAtTicks: 2,
                 pathIdentity,
-                sameAttemptCorruptedHandshakePacket),
+                sameCryptoDifferentSourceFlight.InitialPacket),
             nowTicks: 2);
-        Assert.Equal(0, GetBufferedEstablishmentHandshakePacketCount(clientRuntime));
-        Assert.True(clientRuntime.Phase == QuicConnectionPhase.Establishing, DescribeState(clientRuntime, corruptedHandshakeResult));
-        Assert.False(clientRuntime.PeerHandshakeTranscriptCompleted, DescribeState(clientRuntime, corruptedHandshakeResult));
-
-        QuicConnectionTransitionResult firstHandshakeResult = clientRuntime.Transition(
-            new QuicConnectionPacketReceivedEvent(
-                ObservedAtTicks: 3,
-                pathIdentity,
-                firstFlight.HandshakePacket),
-            nowTicks: 3);
-        Assert.True(firstHandshakeResult.StateChanged, DescribeState(clientRuntime, firstHandshakeResult));
-        Assert.True(clientRuntime.Phase == QuicConnectionPhase.Active, DescribeState(clientRuntime, firstHandshakeResult));
-        Assert.True(clientRuntime.PeerHandshakeTranscriptCompleted, DescribeState(clientRuntime, firstHandshakeResult));
+        Assert.True(replayedInitialResult.StateChanged, DescribeState(clientRuntime, replayedInitialResult));
+        Assert.True(
+            clientRuntime.TlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial replayedHandshakeOpenMaterial));
+        Assert.True(firstHandshakeOpenMaterial.Matches(replayedHandshakeOpenMaterial));
+        Assert.True(
+            clientRuntime.CurrentPeerDestinationConnectionId.Span.SequenceEqual(firstServerSourceConnectionId),
+            DescribeState(clientRuntime, replayedInitialResult));
     }
 
     private static QuicConnectionRuntime CreateClientRuntime(
@@ -238,6 +216,7 @@ public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
 
         byte[]? initialPacket = null;
         byte[]? handshakePacket = null;
+        byte[]? initialCryptoPayload = null;
         long observedAtTicks = 1;
         foreach (QuicConnectionSendDatagramEffect clientInitialDatagram in clientInitialDatagrams)
         {
@@ -250,7 +229,14 @@ public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
 
             initialPacket ??= TryExtractFirstPacketBySpace(serverResult.Effects, QuicPacketNumberSpace.Initial);
             handshakePacket ??= TryExtractFirstPacketBySpace(serverResult.Effects, QuicPacketNumberSpace.Handshake);
-            if (initialPacket is not null && handshakePacket is not null)
+            if (initialPacket is not null && initialCryptoPayload is null)
+            {
+                initialCryptoPayload = TryExtractFirstCryptoFramePayloadFromInitial(
+                    originalDestinationConnectionId,
+                    initialPacket);
+            }
+
+            if (initialPacket is not null && handshakePacket is not null && initialCryptoPayload is not null)
             {
                 break;
             }
@@ -260,7 +246,8 @@ public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
 
         Assert.NotNull(initialPacket);
         Assert.NotNull(handshakePacket);
-        return new ServerHandshakeFlight(initialPacket!, handshakePacket!);
+        Assert.NotNull(initialCryptoPayload);
+        return new ServerHandshakeFlight(initialPacket!, handshakePacket!, initialCryptoPayload!);
     }
 
     private static byte[]? TryExtractFirstPacketBySpace(
@@ -272,15 +259,11 @@ public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
             int packetOffset = 0;
             while (packetOffset < sendEffect.Datagram.Length)
             {
-                ReadOnlySpan<byte> remaining = sendEffect.Datagram.Span[packetOffset..];
-                if (!QuicPacketParser.TryGetPacketLength(remaining, out int packetLength) || packetLength <= 0)
-                {
-                    break;
-                }
-
-                ReadOnlySpan<byte> packet = remaining[..packetLength];
-                if (QuicPacketParser.TryGetPacketNumberSpace(packet, out QuicPacketNumberSpace packetSpace)
-                    && packetSpace == packetNumberSpace)
+                ReadOnlyMemory<byte> remainingDatagram = sendEffect.Datagram[packetOffset..];
+                Assert.True(QuicPacketParser.TryGetPacketLength(remainingDatagram.Span, out int packetLength));
+                ReadOnlyMemory<byte> packet = remainingDatagram[..packetLength];
+                if (QuicPacketParser.TryGetPacketNumberSpace(packet.Span, out QuicPacketNumberSpace observedPacketNumberSpace)
+                    && observedPacketNumberSpace == packetNumberSpace)
                 {
                     return packet.ToArray();
                 }
@@ -292,41 +275,49 @@ public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
         return null;
     }
 
-    private static byte[] RewriteLongHeaderSourceConnectionId(
-        ReadOnlySpan<byte> packet,
-        ReadOnlySpan<byte> replacementSourceConnectionId)
+    private static byte[] TryExtractFirstCryptoFramePayloadFromInitial(
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        ReadOnlySpan<byte> initialPacket)
     {
-        byte[] mutatedPacket = packet.ToArray();
-        int destinationConnectionIdLengthOffset = 1 + sizeof(uint);
-        int destinationConnectionIdLength = mutatedPacket[destinationConnectionIdLengthOffset];
-        int sourceConnectionIdLengthOffset = destinationConnectionIdLengthOffset + 1 + destinationConnectionIdLength;
-        int sourceConnectionIdLength = mutatedPacket[sourceConnectionIdLengthOffset];
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            originalDestinationConnectionId,
+            out QuicInitialPacketProtection protection));
 
-        Assert.Equal(sourceConnectionIdLength, replacementSourceConnectionId.Length);
-        replacementSourceConnectionId.CopyTo(
-            mutatedPacket.AsSpan(sourceConnectionIdLengthOffset + 1, sourceConnectionIdLength));
-        return mutatedPacket;
+        QuicHandshakeFlowCoordinator coordinator = new();
+        Assert.True(coordinator.TryOpenInitialPacket(
+            initialPacket,
+            protection,
+            requireZeroTokenLength: true,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+
+        int frameOffset = 0;
+        while (frameOffset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[frameOffset..];
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                frameOffset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                frameOffset += ackBytesConsumed;
+                continue;
+            }
+
+            Assert.True(QuicFrameCodec.TryParseCryptoFrame(remaining, out QuicCryptoFrame cryptoFrame, out _));
+            return cryptoFrame.CryptoData.ToArray();
+        }
+
+        Assert.Fail("The server Initial did not contain a CRYPTO frame.");
+        return [];
     }
-
-    private static int GetBufferedEstablishmentHandshakePacketCount(QuicConnectionRuntime runtime)
-    {
-        FieldInfo field = typeof(QuicConnectionRuntime).GetField(
-            "bufferedEstablishmentHandshakePackets",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        ICollection bufferedPackets = (ICollection)field.GetValue(runtime)!;
-        return bufferedPackets.Count;
-    }
-
-    private static string DescribeState(
-        QuicConnectionRuntime runtime,
-        QuicConnectionTransitionResult result)
-    {
-        return $"stateChanged={result.StateChanged}; phase={runtime.Phase}; peerHandshakeCompleted={runtime.PeerHandshakeTranscriptCompleted}; " +
-               $"handshakeKeys={runtime.TlsState.HandshakeKeysAvailable}; oneRtt={runtime.TlsState.OneRttKeysAvailable}; " +
-               $"bufferedHandshakePackets={GetBufferedEstablishmentHandshakePacketCount(runtime)}";
-    }
-
-    private sealed record ServerHandshakeFlight(byte[] InitialPacket, byte[] HandshakePacket);
 
     private static byte[] CreateScalar(byte lastByte)
     {
@@ -334,4 +325,28 @@ public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
         scalar[^1] = lastByte;
         return scalar;
     }
+
+    private static string DescribeState(QuicConnectionRuntime runtime, QuicConnectionTransitionResult result)
+    {
+        return string.Join(
+            " | ",
+            [
+                $"stateChanged={result.StateChanged}",
+                $"phase={runtime.Phase}",
+                $"peerDestinationConnectionId={Convert.ToHexString(runtime.CurrentPeerDestinationConnectionId.ToArray())}",
+                $"handshakeOpenMaterial={runtime.TlsState.TryGetHandshakeOpenPacketProtectionMaterial(out _)}",
+                $"peerTransportParametersCommitted={runtime.TlsState.PeerTransportParametersCommitted}",
+                $"peerHandshakeTranscriptCompleted={runtime.PeerHandshakeTranscriptCompleted}",
+                $"oneRttKeys={runtime.TlsState.OneRttKeysAvailable}",
+                $"fatalAlertCode={runtime.TlsState.FatalAlertCode}",
+                $"fatalAlertDescription={runtime.TlsState.FatalAlertDescription ?? "<null>"}",
+                $"effects={result.Effects.Count()}",
+                $"effectTypes={string.Join(",", result.Effects.Select(effect => effect.GetType().Name))}",
+            ]);
+    }
+
+    private readonly record struct ServerHandshakeFlight(
+        byte[] InitialPacket,
+        byte[] HandshakePacket,
+        byte[] InitialCryptoPayload);
 }

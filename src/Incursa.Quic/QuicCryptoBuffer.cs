@@ -102,6 +102,19 @@ internal enum QuicCryptoBufferResult
     }
 
     /// <summary>
+    /// Clears buffered CRYPTO data and restarts offset tracking for a new handshake attempt.
+    /// </summary>
+    internal void Reset()
+    {
+        entries.Clear();
+        bufferedBytes = 0;
+        nextReadOffset = 0;
+        discardFutureFrames = false;
+        HandshakeComplete = false;
+        DiscardOverflowFramesAfterHandshakeComplete = true;
+    }
+
+    /// <summary>
     /// Attempts to buffer a CRYPTO frame.
     /// </summary>
     internal bool TryAddFrame(QuicCryptoFrame frame, out QuicCryptoBufferResult result)
@@ -372,4 +385,3 @@ internal enum QuicCryptoBufferResult
         internal ulong End => Offset + (ulong)Data.Length;
     }
 }
-

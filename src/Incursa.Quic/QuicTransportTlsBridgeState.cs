@@ -986,6 +986,82 @@ internal sealed class QuicTransportTlsBridgeState
         return true;
     }
 
+    internal bool TryResetClientPeerHandshakeAttempt()
+    {
+        if (role != QuicTlsRole.Client)
+        {
+            return false;
+        }
+
+        bool stateChanged = PeerTransportParameters is not null
+            || PeerTransportParametersCommitted
+            || StagedPeerTransportParameters is not null
+            || HandshakeKeysAvailable
+            || OneRttKeysAvailable
+            || PeerCertificateVerifyVerified
+            || PeerCertificatePolicyAccepted
+            || PeerHandshakeTranscriptCompleted
+            || PeerFinishedVerified
+            || KeyUpdateInstalled
+            || CurrentOneRttKeyPhase != 0
+            || HandshakeTranscriptPhase != QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage
+            || FatalAlertCode.HasValue
+            || FatalAlertDescription is not null
+            || handshakeOpenPacketProtectionMaterial.HasValue
+            || handshakeProtectPacketProtectionMaterial.HasValue
+            || oneRttOpenPacketProtectionMaterial.HasValue
+            || oneRttProtectPacketProtectionMaterial.HasValue
+            || initialIngressCryptoBuffer.BufferedBytes > 0
+            || handshakeIngressCryptoBuffer.BufferedBytes > 0
+            || oneRttIngressCryptoBuffer.BufferedBytes > 0
+            || handshakeEgressCryptoBuffer.BufferedBytes > 0
+            || packetProtectionMaterials.ContainsKey(QuicTlsEncryptionLevel.Handshake)
+            || packetProtectionMaterials.ContainsKey(QuicTlsEncryptionLevel.OneRtt)
+            || postHandshakeTicketBytes is not null
+            || postHandshakeTicketNonce is not null
+            || postHandshakeTicketLifetimeSeconds.HasValue
+            || postHandshakeTicketAgeAdd.HasValue
+            || postHandshakeTicketMaxEarlyDataSize.HasValue
+            || resumptionMasterSecret is not null;
+
+        PeerTransportParameters = null;
+        PeerTransportParametersCommitted = false;
+        StagedPeerTransportParameters = null;
+        HandshakeKeysAvailable = false;
+        OneRttKeysAvailable = false;
+        PeerCertificateVerifyVerified = false;
+        PeerCertificatePolicyAccepted = false;
+        PeerHandshakeTranscriptCompleted = false;
+        PeerFinishedVerified = false;
+        KeyUpdateInstalled = false;
+        OldKeysDiscarded = false;
+        CurrentOneRttKeyPhase = 0;
+        HandshakeTranscriptPhase = QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage;
+        FatalAlertCode = null;
+        FatalAlertDescription = null;
+        HandshakeMessageType = null;
+        HandshakeMessageLength = null;
+        SelectedCipherSuite = null;
+        TranscriptHashAlgorithm = null;
+        handshakeOpenPacketProtectionMaterial = null;
+        handshakeProtectPacketProtectionMaterial = null;
+        oneRttOpenPacketProtectionMaterial = null;
+        oneRttProtectPacketProtectionMaterial = null;
+        initialIngressCryptoBuffer.Reset();
+        handshakeIngressCryptoBuffer.Reset();
+        oneRttIngressCryptoBuffer.Reset();
+        handshakeEgressCryptoBuffer.Reset();
+        postHandshakeTicketBytes = null;
+        postHandshakeTicketNonce = null;
+        postHandshakeTicketLifetimeSeconds = null;
+        postHandshakeTicketAgeAdd = null;
+        postHandshakeTicketMaxEarlyDataSize = null;
+        resumptionMasterSecret = null;
+        _ = packetProtectionMaterials.Remove(QuicTlsEncryptionLevel.Handshake);
+        _ = packetProtectionMaterials.Remove(QuicTlsEncryptionLevel.OneRtt);
+        return stateChanged;
+    }
+
     private bool TryStorePostHandshakeTicket(
         ReadOnlyMemory<byte> ticketBytes,
         ReadOnlyMemory<byte> ticketNonce,

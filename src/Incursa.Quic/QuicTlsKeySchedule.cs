@@ -95,6 +95,7 @@ internal sealed class QuicTlsKeySchedule
     private readonly byte[] localKeyShare;
     private readonly byte[]? deterministicClientHelloRandom;
     private readonly byte[][] applicationProtocols;
+    private byte[]? localHandshakeTranscriptPrefix;
 
     private byte[]? handshakeSecret;
     private byte[]? clientHandshakeTrafficSecret;
@@ -259,7 +260,54 @@ internal sealed class QuicTlsKeySchedule
     /// </summary>
     internal void AppendLocalHandshakeMessage(ReadOnlySpan<byte> handshakeMessageBytes)
     {
+        if (role == QuicTlsRole.Client
+            && localHandshakeTranscriptPrefix is null
+            && transcriptBytes.WrittenCount == 0
+            && !handshakeMessageBytes.IsEmpty)
+        {
+            localHandshakeTranscriptPrefix = handshakeMessageBytes.ToArray();
+        }
+
         AppendTranscriptMessage(handshakeMessageBytes);
+    }
+
+    internal bool TryResetClientPeerHandshakeAttempt()
+    {
+        if (role != QuicTlsRole.Client
+            || localHandshakeTranscriptPrefix is null)
+        {
+            return false;
+        }
+
+        bool stateChanged = transcriptBytes.WrittenCount != localHandshakeTranscriptPrefix.Length
+            || handshakeSecret is not null
+            || clientHandshakeTrafficSecret is not null
+            || serverHandshakeTrafficSecret is not null
+            || resumptionMasterSecret is not null
+            || clientApplicationTrafficSecret is not null
+            || serverApplicationTrafficSecret is not null
+            || peerLeafCertificateDer is not null
+            || handshakeSecretsDerived
+            || localServerFlightCompleted
+            || peerCertificateVerifyVerified
+            || peerFinishedVerified
+            || isTerminal;
+
+        transcriptBytes.Clear();
+        transcriptBytes.Write(localHandshakeTranscriptPrefix);
+        handshakeSecret = null;
+        clientHandshakeTrafficSecret = null;
+        serverHandshakeTrafficSecret = null;
+        resumptionMasterSecret = null;
+        clientApplicationTrafficSecret = null;
+        serverApplicationTrafficSecret = null;
+        peerLeafCertificateDer = null;
+        handshakeSecretsDerived = false;
+        localServerFlightCompleted = false;
+        peerCertificateVerifyVerified = false;
+        peerFinishedVerified = false;
+        isTerminal = false;
+        return stateChanged;
     }
 
     /// <summary>

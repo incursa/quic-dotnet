@@ -34,6 +34,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     // or sibling frame into one 1-RTT packet instead of emitting a second tiny packet.
     private const int ApplicationSendDelayThresholdBytes = 32;
     private const int HandshakeEgressChunkBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
+    private const int MaximumBufferedEstablishmentHandshakePackets = 8;
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
@@ -53,6 +54,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
     private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
     private readonly Dictionary<string, QuicConnectionNewTokenEmissionRecord> newTokenEmissionsByRemoteAddress = new(StringComparer.Ordinal);
+    private readonly List<BufferedEstablishmentHandshakePacket> bufferedEstablishmentHandshakePackets = [];
     private readonly QuicConnectionPeerConnectionIdState peerConnectionIdState = new();
     private readonly long timeOriginTicks;
     private readonly QuicHandshakeFlowCoordinator handshakeFlowCoordinator;
@@ -76,6 +78,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private byte[]? resumptionMasterSecret;
     private byte[]? retrySourceConnectionId;
     private byte[]? retryToken;
+    private byte[]? observedPeerInitialSourceConnectionId;
+    private byte[]? observedPeerInitialCryptoFrameData;
     private bool retryBootstrapPendingReplay;
     private bool zeroRttPacketSent;
     private bool handshakeDonePacketSent;
@@ -109,6 +113,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Action<int, int>? streamCapacityObserver;
     private long? pendingApplicationSendDelayDueTicks;
     private bool hasObservedApplicationPacketNumber;
+
+    private sealed record BufferedEstablishmentHandshakePacket(
+        QuicConnectionPathIdentity PathIdentity,
+        byte[] SourceConnectionId,
+        byte[] Datagram);
 
     public QuicConnectionRuntime(
         QuicConnectionStreamState bookkeeping,

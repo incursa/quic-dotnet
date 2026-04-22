@@ -65,6 +65,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0041.json`](WI-QUIC-CRT-0041.json): canonical CRT client-side 1-RTT Key Phase observation work item
 - [`WI-QUIC-CRT-0042.json`](WI-QUIC-CRT-0042.json): canonical CRT client-side successor 1-RTT Key Phase install work item
 - [`WI-QUIC-CRT-0043.json`](WI-QUIC-CRT-0043.json): canonical CRT remaining-work program partition and autopilot reset work item
+- [`WI-QUIC-CRT-0044.json`](WI-QUIC-CRT-0044.json): canonical CRT client-side replacement peer Initial reset work item
 
 ## Notes
 

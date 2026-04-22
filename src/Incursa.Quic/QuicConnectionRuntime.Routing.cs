@@ -769,8 +769,39 @@ internal sealed partial class QuicConnectionRuntime
         out bool closesStream,
         out ulong streamEndOffset)
     {
+        if (!packet.PlaintextPayload.IsEmpty)
+        {
+            return TryParseApplicationProbeSelectionPriority(
+                packet.PlaintextPayload.Span,
+                out carriesStreamData,
+                out closesStream,
+                out streamEndOffset);
+        }
+
         return TryGetApplicationProbeSelectionPriority(
             packet.PacketBytes,
+            out carriesStreamData,
+            out closesStream,
+            out streamEndOffset);
+    }
+
+    private bool TryGetApplicationProbeSelectionPriority(
+        QuicConnectionRetransmissionPlan retransmission,
+        out bool carriesStreamData,
+        out bool closesStream,
+        out ulong streamEndOffset)
+    {
+        if (!retransmission.PlaintextPayload.IsEmpty)
+        {
+            return TryParseApplicationProbeSelectionPriority(
+                retransmission.PlaintextPayload.Span,
+                out carriesStreamData,
+                out closesStream,
+                out streamEndOffset);
+        }
+
+        return TryGetApplicationProbeSelectionPriority(
+            retransmission.PacketBytes,
             out carriesStreamData,
             out closesStream,
             out streamEndOffset);
@@ -804,9 +835,25 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        return TryParseApplicationProbeSelectionPriority(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            out carriesStreamData,
+            out closesStream,
+            out streamEndOffset);
+    }
+
+    private static bool TryParseApplicationProbeSelectionPriority(
+        ReadOnlySpan<byte> payload,
+        out bool carriesStreamData,
+        out bool closesStream,
+        out ulong streamEndOffset)
+    {
+        carriesStreamData = false;
+        closesStream = false;
+        streamEndOffset = 0;
+
         bool parsedStreamFrame = false;
         int offset = 0;
-        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
         while (offset < payload.Length)
         {
             ReadOnlySpan<byte> remaining = payload[offset..];
@@ -914,23 +961,58 @@ internal sealed partial class QuicConnectionRuntime
             secondPacketNumberSpace,
             ref effects))
         {
+            _ = TrySendAdditionalRecoveryProbeDatagram(
+                firstPacketNumberSpace,
+                secondPacketNumberSpace,
+                thirdPacketNumberSpace,
+                nowTicks,
+                initialAndHandshakeAlreadyCoalesced: true,
+                ref effects);
             return true;
         }
-
-        _ = thirdPacketNumberSpace;
 
         if (!TrySendRecoveryProbeDatagram(firstPacketNumberSpace, nowTicks, ref effects))
         {
             return false;
         }
 
-        QuicPacketNumberSpace secondProbeSpace = IsInitialAndHandshakePair(
+        _ = TrySendAdditionalRecoveryProbeDatagram(
             firstPacketNumberSpace,
-            secondPacketNumberSpace)
-            ? secondPacketNumberSpace
-            : firstPacketNumberSpace;
-        _ = TrySendRecoveryProbeDatagram(secondProbeSpace, nowTicks, ref effects);
+            secondPacketNumberSpace,
+            thirdPacketNumberSpace,
+            nowTicks,
+            initialAndHandshakeAlreadyCoalesced: false,
+            ref effects);
         return true;
+    }
+
+    private bool TrySendAdditionalRecoveryProbeDatagram(
+        QuicPacketNumberSpace firstPacketNumberSpace,
+        QuicPacketNumberSpace secondPacketNumberSpace,
+        QuicPacketNumberSpace thirdPacketNumberSpace,
+        long nowTicks,
+        bool initialAndHandshakeAlreadyCoalesced,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (initialAndHandshakeAlreadyCoalesced)
+        {
+            return TrySendRecoveryProbeDatagram(thirdPacketNumberSpace, nowTicks, ref effects);
+        }
+
+        if (IsInitialAndHandshakePair(firstPacketNumberSpace, secondPacketNumberSpace)
+            && thirdPacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+            && TrySendRecoveryProbeDatagram(thirdPacketNumberSpace, nowTicks, ref effects))
+        {
+            return true;
+        }
+
+        if (IsInitialAndHandshakePair(firstPacketNumberSpace, secondPacketNumberSpace))
+        {
+            return TrySendRecoveryProbeDatagram(secondPacketNumberSpace, nowTicks, ref effects)
+                || TrySendRecoveryProbeDatagram(firstPacketNumberSpace, nowTicks, ref effects);
+        }
+
+        return TrySendRecoveryProbeDatagram(firstPacketNumberSpace, nowTicks, ref effects);
     }
 
     private bool TrySendRecoveryPingProbe(ref List<QuicConnectionEffect>? effects)

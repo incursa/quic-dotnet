@@ -129,7 +129,14 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
         QuicConnectionSendDatagramEffect[] sendEffects = timerResult.Effects
             .OfType<QuicConnectionSendDatagramEffect>()
             .ToArray();
-        Assert.Single(sendEffects);
+        Assert.Equal(2, sendEffects.Length);
+        Assert.All(sendEffects, sendEffect =>
+            Assert.True(coordinator.TryOpenHandshakePacket(
+                sendEffect.Datagram.Span,
+                handshakeMaterial,
+                out _,
+                out _,
+                out _)));
 
         QuicConnectionSendDatagramEffect sendEffect = FindHandshakeProbeEffect(
             sendEffects,
@@ -146,10 +153,10 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             out QuicCryptoFrame cryptoFrame,
             out int bytesConsumed));
         Assert.True(bytesConsumed > 0);
-        QuicConnectionSentPacket sentProbePacket = Assert.Single(
+        Assert.Contains(
             runtime.SendRuntime.SentPackets.Values,
-            packet => packet.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
-        Assert.True(sentProbePacket.ProbePacket);
+            packet => packet.ProbePacket
+                && packet.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
         QuicConnectionArmTimerEffect rearmedRecovery = Assert.Single(
             timerResult.Effects.OfType<QuicConnectionArmTimerEffect>(),
             effect => effect.TimerKind == QuicConnectionTimerKind.Recovery);
@@ -362,15 +369,18 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task HandleRecoveryTimerExpired_DoesNotEmitApplicationDataProbesBeforeHandshakeConfirmation()
+    public async Task HandleRecoveryTimerExpired_UsesTheRemainingProbeDatagramForApplicationDataBeforeHandshakeConfirmation()
     {
         // Provenance:
-        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-151453678-client-chrome
-        //   live-server-qlog\74ee1c872fe7b3f5.sqlog:
-        //     quic-go buffered the client's 1-RTT request packets at 1274-1275ms because the client
-        //     Handshake CRYPTO that carried Finished did not arrive until 6473ms. Emitting a 1-RTT PTO
-        //     probe before HANDSHAKE_DONE confirms the handshake can therefore consume the peer's idle
-        //     timeout budget without repairing the selected Handshake packet number space first.
+        // C:\src\incursa\quic-dotnet.local\interop-evidence\20260421-multiconnect-live-run\
+        //   client-multiconnect-be72d46ba7e14dd0b42d9b95f2a6544f.qlog
+        //   server-log.txt
+        // The stalled client-role quic-go multiconnect connection reached the point where the
+        // server had 1-RTT read keys and the client had both Handshake and Application Data
+        // outstanding, but the server never received the HTTP/0.9 request stream and timed out.
+        // The captured client trace spent PTO budget on repeated Initial+Handshake probes only.
+        // REQ-QUIC-RFC9002-S6P2P4-0004 requires the sender to use the remaining probe budget for
+        // other spaces with in-flight data as well.
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
         List<QuicConnectionEffect> outboundEffects = [];
 
@@ -461,7 +471,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
         QuicConnectionSendDatagramEffect[] sendEffects = timerResult.Effects
             .OfType<QuicConnectionSendDatagramEffect>()
             .ToArray();
-        Assert.Single(sendEffects);
+        Assert.Equal(2, sendEffects.Length);
 
         QuicConnectionSendDatagramEffect coalescedProbeEffect = Assert.Single(
             sendEffects,
@@ -477,12 +487,166 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             runtime.SendRuntime.SentPackets.Values,
             packet => packet.ProbePacket
                 && packet.PacketBytes.Span.SequenceEqual(handshakePacket.Span));
+
+        QuicConnectionSendDatagramEffect applicationProbeEffect = Assert.Single(
+            sendEffects,
+            sendEffect => !sendEffect.Datagram.Span.SequenceEqual(coalescedProbeEffect.Datagram.Span));
+        Assert.True(
+            TryOpenSingleStreamFrame(runtime, applicationProbeEffect.Datagram, out QuicStreamFrame applicationProbeFrame, out _));
+        Assert.Equal(0UL, applicationProbeFrame.StreamId.Value);
+        Assert.Equal(0UL, applicationProbeFrame.Offset);
+        Assert.True(applicationProbeFrame.StreamData.SequenceEqual(requestPayload));
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => packet.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && packet.ProbePacket
+                && packet.PacketBytes.Span.SequenceEqual(applicationProbeEffect.Datagram.Span));
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task HandleRecoveryTimerExpired_AfterHandshakeConfirmationKeepsCryptoSpaceProbesAheadOfApplicationRepairWhileCryptoPacketsRemainOutstanding()
+    public async Task HandleRecoveryTimerExpired_RebuildsTheApplicationRepairUnderTheLatestPeerConnectionIdBeforeHandshakeConfirmation()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet.local\interop-evidence\20260421-multiconnect-conn9-live\
+        //   server-log.txt lines 1240-1366:
+        //     connection c62a05b3c913eeef issued NEW_CONNECTION_ID a19b5b6e,
+        //     then quic-go later received only packet 1 with a zero-length STREAM open marker on that new CID,
+        //     dropped repeated Initial+Handshake probes after key discard,
+        //     and timed out without ever receiving the request-bearing STREAM repair.
+        // Re-enact the peer CID update before PTO and require the remaining Application Data repair
+        // datagram to rebuild the request bytes under the latest destination CID instead of depending
+        // on reopening the old protected packet with its earlier short-header connection ID.
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            ApplicationPacketConnectionId,
+            out QuicInitialPacketProtection initialPacketProtection));
+
+        QuicHandshakeFlowCoordinator cryptoProbeCoordinator = new(
+            ApplicationPacketConnectionId,
+            ApplicationPacketSourceConnectionId);
+        Assert.True(cryptoProbeCoordinator.TrySetHandshakeDestinationConnectionId(ApplicationPacketConnectionId));
+
+        byte[] initialCrypto = CreateSequentialBytes(0x30, 16);
+        Assert.True(cryptoProbeCoordinator.TryBuildProtectedInitialPacket(
+            initialCrypto,
+            0,
+            initialPacketProtection,
+            out ulong initialPacketNumber,
+            out byte[] initialPacketBytes));
+        SeedOutstandingRecoveryPacket(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            initialPacketNumber,
+            initialPacketBytes,
+            sentAtMicros: 1,
+            QuicTlsEncryptionLevel.Initial);
+
+        Assert.True(runtime.TlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial));
+        byte[] handshakeCrypto = CreateSequentialBytes(0x40, 16);
+        Assert.True(cryptoProbeCoordinator.TryBuildProtectedHandshakePacket(
+            handshakeCrypto,
+            0,
+            handshakeMaterial,
+            out ulong handshakePacketNumber,
+            out byte[] handshakePacketBytes));
+        SeedOutstandingRecoveryPacket(
+            runtime,
+            QuicPacketNumberSpace.Handshake,
+            handshakePacketNumber,
+            handshakePacketBytes,
+            sentAtMicros: 2,
+            QuicTlsEncryptionLevel.Handshake);
+
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 9,
+                runtime.ActivePath.Value.Identity,
+                new byte[1400]),
+            nowTicks: 9).StateChanged);
+        outboundEffects.Clear();
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        outboundEffects.Clear();
+
+        byte[] requestPayload = Encoding.ASCII.GetBytes("GET /conn9-cid-drift\r\n");
+        await stream.WriteAsync(requestPayload, 0, requestPayload.Length);
+        outboundEffects.Clear();
+
+        await stream.CompleteWritesAsync().AsTask();
+        QuicConnectionSendDatagramEffect requestEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.True(
+            TryOpenSingleStreamFrame(runtime, requestEffect.Datagram, out QuicStreamFrame originalRequestFrame, out _));
+        Assert.Equal(0UL, originalRequestFrame.StreamId.Value);
+        Assert.Equal(0UL, originalRequestFrame.Offset);
+        Assert.True(originalRequestFrame.StreamData.SequenceEqual(requestPayload));
+
+        byte[] rotatedPeerDestinationConnectionId = [0xA1, 0x9B, 0x5B, 0x6E];
+        byte[] statelessResetToken = CreateSequentialBytes(0xD0, QuicStatelessReset.StatelessResetTokenLength);
+        Assert.True(ProcessNewConnectionIdFrame(
+            runtime,
+            sequenceNumber: 1,
+            retirePriorTo: 0,
+            connectionId: rotatedPeerDestinationConnectionId,
+            statelessResetToken,
+            observedAtTicks: 10).StateChanged);
+        Assert.Equal(
+            Convert.ToHexString(rotatedPeerDestinationConnectionId),
+            Convert.ToHexString(runtime.CurrentPeerDestinationConnectionId.ToArray()));
+
+        long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(recoveryDueTicks);
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+        outboundEffects.Clear();
+
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: recoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: recoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect[] sendEffects = timerResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        Assert.Equal(2, sendEffects.Length);
+
+        QuicConnectionSendDatagramEffect coalescedProbeEffect = Assert.Single(
+            sendEffects,
+            sendEffect => TrySplitCoalescedInitialAndHandshakeProbeDatagram(sendEffect, out _, out _));
+        QuicConnectionSendDatagramEffect applicationProbeEffect = Assert.Single(
+            sendEffects,
+            sendEffect => !sendEffect.Datagram.Span.SequenceEqual(coalescedProbeEffect.Datagram.Span));
+
+        Assert.True(
+            TryOpenSingleStreamFrame(runtime, applicationProbeEffect.Datagram, out QuicStreamFrame applicationProbeFrame, out _));
+        Assert.Equal(0UL, applicationProbeFrame.StreamId.Value);
+        Assert.Equal(0UL, applicationProbeFrame.Offset);
+        Assert.True(applicationProbeFrame.StreamData.SequenceEqual(requestPayload));
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => packet.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && packet.ProbePacket
+                && packet.PacketBytes.Span.SequenceEqual(applicationProbeEffect.Datagram.Span));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task HandleRecoveryTimerExpired_AfterHandshakeConfirmationKeepsCryptoSpaceProbesAheadOfApplicationRepairWhileRepairingApplicationData()
     {
         // Provenance:
         // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260421-124332682-client-chrome
@@ -491,8 +655,9 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
         // The confirmed client opened stream 0, logged that it sent "GET /clean-blue-chef\r\n",
         // and still had outstanding Initial and Handshake packets in flight. Even after
         // HANDSHAKE_DONE, those older crypto packet-number spaces remain responsible for the next
-        // PTO until their repair is exhausted; the timer must not leak a 1-RTT request repair into
-        // the same probe event while those crypto probes are still pending.
+        // PTO. REQ-QUIC-RFC9002-S6P2P4-0004 still expects the sender to use the remaining probe
+        // budget for other spaces with in-flight data, so the probe event must keep the crypto
+        // repair present while also repairing the 1-RTT request stream.
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
         List<QuicConnectionEffect> outboundEffects = [];
 
@@ -584,12 +749,29 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             .OfType<QuicConnectionSendDatagramEffect>()
             .ToArray();
         Assert.NotEmpty(sendEffects);
-        Assert.Contains(
+        int cryptoProbeIndex = Array.FindIndex(
             sendEffects,
             sendEffect => QuicPacketParser.TryParseLongHeader(sendEffect.Datagram.Span, out _));
-        Assert.DoesNotContain(
+        Assert.True(cryptoProbeIndex >= 0, "Expected a crypto-space PTO probe datagram.");
+
+        int applicationProbeIndex = Array.FindIndex(
             sendEffects,
-            sendEffect => TryOpenSingleStreamFrame(runtime, sendEffect.Datagram, out _, out _));
+            sendEffect => TryOpenSingleStreamFrame(runtime, sendEffect.Datagram, out QuicStreamFrame frame, out _)
+                && frame.StreamId.Value == 0UL
+                && frame.Offset == 0UL
+                && frame.StreamData.SequenceEqual(requestPayload));
+        Assert.True(applicationProbeIndex >= 0, "Expected the PTO event to repair the in-flight 1-RTT request stream.");
+        Assert.True(
+            cryptoProbeIndex < applicationProbeIndex,
+            $"Expected the crypto-space PTO probe to precede the application repair probe, but cryptoProbeIndex was {cryptoProbeIndex} and applicationProbeIndex was {applicationProbeIndex}.");
+        Assert.Contains(
+            sendEffects,
+            sendEffect => sendEffect.Datagram.Span.SequenceEqual(sendEffects[applicationProbeIndex].Datagram.Span));
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => packet.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && packet.ProbePacket
+                && packet.PacketBytes.Span.SequenceEqual(sendEffects[applicationProbeIndex].Datagram.Span));
     }
 
     [Fact]
@@ -937,6 +1119,34 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
         return QuicStreamParser.TryParseStreamFrame(
             openedPacket.AsSpan(payloadOffset, payloadLength),
             out frame);
+    }
+
+    private static QuicConnectionTransitionResult ProcessNewConnectionIdFrame(
+        QuicConnectionRuntime runtime,
+        ulong sequenceNumber,
+        ulong retirePriorTo,
+        ReadOnlySpan<byte> connectionId,
+        ReadOnlySpan<byte> statelessResetToken,
+        long observedAtTicks)
+    {
+        byte[] payload = QuicFrameTestData.BuildNewConnectionIdFrame(new QuicNewConnectionIdFrame(
+            sequenceNumber,
+            retirePriorTo,
+            connectionId,
+            statelessResetToken));
+
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+        byte[] protectedPacket = QuicS17P2P3TestSupport.BuildExpectedOneRttPacket(
+            payload,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+            keyPhase: false);
+
+        return runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: observedAtTicks,
+                runtime.ActivePath!.Value.Identity,
+                protectedPacket),
+            nowTicks: observedAtTicks);
     }
 
     private static void SeedOutstandingRecoveryPacket(

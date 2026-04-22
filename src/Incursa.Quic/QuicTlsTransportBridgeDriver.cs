@@ -361,6 +361,22 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             AlertDescription: alertDescription));
     }
 
+    internal bool TryResetClientPeerHandshakeAttempt()
+    {
+        if (Role != QuicTlsRole.Client)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        stateChanged |= handshakeTranscriptProgress.TryResetClientPeerHandshakeAttempt();
+        stateChanged |= keySchedule?.TryResetClientPeerHandshakeAttempt() ?? false;
+        stateChanged |= bridgeState.TryResetClientPeerHandshakeAttempt();
+        nextIngressOffsets.Clear();
+        transcriptIngressBaseOffsets.Clear();
+        return stateChanged;
+    }
+
     /// <summary>
     /// Publishes the QUIC-specific TLS KeyUpdate violation into the bridge state.
     /// </summary>

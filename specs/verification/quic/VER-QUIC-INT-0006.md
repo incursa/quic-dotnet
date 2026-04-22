@@ -26,18 +26,19 @@ Local execution, artifact inspection, and report review.
 - Run the helper against the local runner checkout with the default both-role replacement slot and the supported testcase subset.
 - Run the helper in client-local mode and server-local mode against the established peer slots, then confirm each run creates a timestamped artifact root under `artifacts/interop-runner/` and that it contains the runner JSON report, the captured Markdown or console table, the log directory tree, and the harness image build output.
 - Confirm supported server-role harness paths still start when the runner supplies an empty `REQUESTS` list, while client-role paths continue to require request URLs.
-- Inspect the captured output to verify unsupported testcases still map to the runner's honest unsupported result and build failures remain build failures rather than pass results.
+- Inspect the captured output to verify unsupported testcases still map to the runner's honest unsupported result, build failures remain build failures rather than pass results, and any advisory-only `FileNotFoundError` downgrade stays tied to testcase-specific preserved evidence.
 - If the tree is temporarily mid-edit and the first run fails for an unrelated build reason, wait briefly and rerun once to confirm the helper still behaves honestly after the transient issue clears.
 
 ## Expected Result
 
-The helper produces repo-local execution-report artifacts for local runner runs without requiring any change to the runner repository, supported server-role paths tolerate empty runner REQUESTS, split-role client/server local executions work, and unsupported or build-blocked cases are not misreported as successful runs.
+The helper produces repo-local execution-report artifacts for local runner runs without requiring any change to the runner repository, supported server-role paths tolerate empty runner REQUESTS, split-role client/server local executions work, unsupported or build-blocked cases are not misreported as successful runs, and the runner's post-check `FileNotFoundError` is downgraded to advisory only on testcase-specific, evidence-backed paths.
 
 ## Evidence
 
 - scripts/interop/Invoke-QuicInteropRunner.ps1
 - scripts/interop/README.md
 - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0013.cs
+- tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs
 - scripts/README.md
 - src/Incursa.Quic.InteropHarness/README.md
 - src/Incursa.Quic.InteropHarness/Dockerfile
@@ -45,7 +46,7 @@ The helper produces repo-local execution-report artifacts for local runner runs 
 
 ## Status
 
-Landed; the local helper built the harness image, invoked the external runner through image replacement, and captured repo-local execution-report bundles while preserving the runner's noncompliant result honestly. The helper now covers both same-slot and split-role local runs, the harness tolerates empty server-side `REQUESTS` on supported dispatch paths, and the requirement-home proof now includes helper-validation coverage for unsupported testcase lists, default local-slot planning, peer-slot compatibility, and empty split-role peer-slot rejection.
+Landed; the local helper built the harness image, invoked the external runner through image replacement, and captured repo-local execution-report bundles while preserving the runner's noncompliant result honestly. The helper now covers both same-slot and split-role local runs, the harness tolerates empty server-side `REQUESTS` on supported dispatch paths, and the proof now also includes helper-validation coverage for the narrow advisory-only `FileNotFoundError` classification used by handshake, retry, and client-role transfer when preserved output proves completion.
 
 ## Related Artifacts
 

@@ -1,8 +1,14 @@
 **/bin/
 **/obj/
 **/TestResults/
+.artifacts/
+.config/
+.dotnet-home/
 .git/
 .vs/
+.workbench/
+BenchmarkDotNet.Artifacts/
+StrykerOutput/
 artifacts/
 coverage/
 *.user

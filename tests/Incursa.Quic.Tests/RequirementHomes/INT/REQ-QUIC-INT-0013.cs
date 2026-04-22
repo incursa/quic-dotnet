@@ -169,6 +169,67 @@ public sealed class REQ_QUIC_INT_0013
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task LocalHelperStagesTheDockerContextWithoutRepoLocalBuildState()
+    {
+        using InteropRunnerScriptFixture fixture = new(quicGoRole: "both");
+        string[] excludedRelativePaths = fixture.SeedExcludedBuildContextState();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "both",
+            "-ImplementationSlot",
+            "quic-go");
+
+        Assert.True(
+            result.ExitCode == 0,
+            $"Helper exit code was {result.ExitCode}.\nException message:\n{result.ExceptionMessage}\nSTDOUT:\n{result.Stdout}\nSTDERR:\n{result.Stderr}");
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+
+        string[] runRoots = Directory.GetDirectories(fixture.ArtifactsRoot);
+        Assert.Single(runRoots);
+
+        string dockerBuildStageRoot = GetDockerBuildStageRoot(runRoots[0], "both", "quic-go");
+        try
+        {
+            Assert.True(Directory.Exists(dockerBuildStageRoot));
+            Assert.True(Directory.Exists(Path.Combine(dockerBuildStageRoot, "quic-dotnet", "src", "Incursa.Quic.InteropHarness")));
+
+            string dockerIgnorePath = Path.Combine(dockerBuildStageRoot, ".dockerignore");
+            Assert.True(File.Exists(dockerIgnorePath));
+
+            string dockerIgnore = File.ReadAllText(dockerIgnorePath);
+            Assert.Contains("**/.artifacts", dockerIgnore, StringComparison.Ordinal);
+            Assert.Contains("**/.config", dockerIgnore, StringComparison.Ordinal);
+            Assert.Contains("**/.dotnet-home", dockerIgnore, StringComparison.Ordinal);
+            Assert.Contains("**/.workbench", dockerIgnore, StringComparison.Ordinal);
+            Assert.Contains("**/BenchmarkDotNet.Artifacts", dockerIgnore, StringComparison.Ordinal);
+            Assert.Contains("**/StrykerOutput", dockerIgnore, StringComparison.Ordinal);
+
+            foreach (string relativePath in excludedRelativePaths)
+            {
+                Assert.False(
+                    File.Exists(Path.Combine(dockerBuildStageRoot, "quic-dotnet", relativePath)),
+                    $"Excluded build-context file '{relativePath}' was unexpectedly staged.");
+            }
+        }
+        finally
+        {
+            if (Directory.Exists(dockerBuildStageRoot))
+            {
+                Directory.Delete(dockerBuildStageRoot, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task HelperRejectsUnsupportedTestcasesBeforeBuildWorkBegins()
@@ -503,6 +564,17 @@ public sealed class REQ_QUIC_INT_0013
         int colonIndex = line!.IndexOf(':');
         Assert.True(colonIndex >= 0, $"Expected a '{label}' line in the plan output.\n{output}");
         return line[(colonIndex + 1)..].Trim();
+    }
+
+    private static string GetDockerBuildStageRoot(string runRoot, string localRole, string localImplementationSlot)
+    {
+        string runDirectoryName = Path.GetFileName(runRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        string slotSuffix = $"{localRole}-{localImplementationSlot}";
+
+        Assert.EndsWith($"-{slotSuffix}", runDirectoryName, StringComparison.OrdinalIgnoreCase);
+
+        string runStamp = runDirectoryName[..^(slotSuffix.Length + 1)];
+        return Path.Combine(Path.GetTempPath(), $"interop-runner-build-{runStamp}");
     }
 
     [Fact]
@@ -900,6 +972,28 @@ public sealed class REQ_QUIC_INT_0013
         public void WriteRunnerScript(string mode)
         {
             File.WriteAllText(Path.Combine(RunnerRoot, "run.py"), BuildRunnerScriptContent(mode));
+        }
+
+        public string[] SeedExcludedBuildContextState()
+        {
+            string[] relativePaths =
+            [
+                ".artifacts\\interop\\context-marker.txt",
+                ".config\\context-marker.txt",
+                ".dotnet-home\\cache\\context-marker.txt",
+                ".workbench\\context-marker.txt",
+                "BenchmarkDotNet.Artifacts\\context-marker.txt",
+                "StrykerOutput\\context-marker.txt",
+            ];
+
+            foreach (string relativePath in relativePaths)
+            {
+                string fullPath = Path.Combine(RepoRoot, relativePath);
+                Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+                File.WriteAllText(fullPath, "excluded from interop docker context");
+            }
+
+            return relativePaths;
         }
 
         public async Task<ScriptRunResult> RunAsync(params object?[] arguments)

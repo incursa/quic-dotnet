@@ -23,6 +23,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             peerHandshakeTranscriptCompleted = true;
             stateChanged = true;
+            bufferedEstablishmentHandshakePackets.Clear();
 
             if (phase == QuicConnectionPhase.Establishing)
             {
@@ -133,6 +134,9 @@ internal sealed partial class QuicConnectionRuntime
         ResetRecoveryStateForRetry();
         retrySourceConnectionId = retryReceivedEvent.RetrySourceConnectionId.ToArray();
         retryToken = retryReceivedEvent.RetryToken.ToArray();
+        observedPeerInitialSourceConnectionId = null;
+        observedPeerInitialCryptoFrameData = null;
+        bufferedEstablishmentHandshakePackets.Clear();
         retryBootstrapPendingReplay = true;
         hasSuccessfullyProcessedAnotherPacket = true;
 
@@ -344,7 +348,11 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+        byte[]? acceptedPeerInitialSourceConnectionId = null;
         if (tlsState.Role == QuicTlsRole.Client
+            && phase == QuicConnectionPhase.Establishing
+            && !peerHandshakeTranscriptCompleted
             && QuicPacketParsing.TryParseLongHeaderFields(
                 openedPacket,
                 out _,
@@ -353,14 +361,60 @@ internal sealed partial class QuicConnectionRuntime
                 out ReadOnlySpan<byte> initialSourceConnectionId,
                 out _))
         {
-            _ = TrySetHandshakeDestinationConnectionId(initialSourceConnectionId);
+            acceptedPeerInitialSourceConnectionId = initialSourceConnectionId.ToArray();
+            bool hasOffsetZeroInitialCrypto = TryExtractOffsetZeroInitialCryptoFrameData(
+                payload,
+                out ReadOnlySpan<byte> initialCryptoFrameData);
+
+            if (observedPeerInitialSourceConnectionId is null)
+            {
+                observedPeerInitialSourceConnectionId = initialSourceConnectionId.ToArray();
+                _ = TrySetHandshakeDestinationConnectionId(initialSourceConnectionId);
+
+                if (hasOffsetZeroInitialCrypto)
+                {
+                    observedPeerInitialCryptoFrameData = initialCryptoFrameData.ToArray();
+                }
+            }
+            else if (hasOffsetZeroInitialCrypto)
+            {
+                bool differentInitialSourceConnectionId =
+                    !observedPeerInitialSourceConnectionId.AsSpan().SequenceEqual(initialSourceConnectionId);
+
+                if (differentInitialSourceConnectionId
+                    && observedPeerInitialCryptoFrameData is not null
+                    && !HasMatchingInitialCryptoPrefix(
+                        observedPeerInitialCryptoFrameData,
+                        initialCryptoFrameData))
+                {
+                    _ = TryResetClientPeerHandshakeAttempt(
+                        initialSourceConnectionId,
+                        initialCryptoFrameData);
+                }
+                else if (observedPeerInitialCryptoFrameData is null
+                    || (HasMatchingInitialCryptoPrefix(
+                            observedPeerInitialCryptoFrameData,
+                            initialCryptoFrameData)
+                        && initialCryptoFrameData.Length > observedPeerInitialCryptoFrameData.Length))
+                {
+                    observedPeerInitialCryptoFrameData = initialCryptoFrameData.ToArray();
+                }
+            }
         }
 
         bool processed = TryProcessHandshakePacketPayload(
-            openedPacket.AsSpan(payloadOffset, payloadLength),
+            payload,
             QuicTlsEncryptionLevel.Initial,
             nowTicks,
             ref effects);
+        if (processed
+            && acceptedPeerInitialSourceConnectionId is not null)
+        {
+            processed |= TryReplayBufferedEstablishmentHandshakePackets(
+                acceptedPeerInitialSourceConnectionId,
+                nowTicks,
+                ref effects);
+        }
 
         if (diagnosticsEnabled)
         {
@@ -370,9 +424,105 @@ internal sealed partial class QuicConnectionRuntime
         return processed;
     }
 
+    private bool TryResetClientPeerHandshakeAttempt(
+        ReadOnlySpan<byte> replacementSourceConnectionId,
+        ReadOnlySpan<byte> replacementInitialCryptoFrameData)
+    {
+        if (tlsState.Role != QuicTlsRole.Client
+            || phase != QuicConnectionPhase.Establishing
+            || tlsState.IsTerminal
+            || peerHandshakeTranscriptCompleted
+            || replacementSourceConnectionId.IsEmpty
+            || replacementInitialCryptoFrameData.IsEmpty
+            || !tlsBridgeDriver.TryResetClientPeerHandshakeAttempt())
+        {
+            return false;
+        }
+
+        ResetRecoveryStateForRetry();
+        observedPeerInitialSourceConnectionId = replacementSourceConnectionId.ToArray();
+        observedPeerInitialCryptoFrameData = replacementInitialCryptoFrameData.ToArray();
+        return TrySetHandshakeDestinationConnectionId(replacementSourceConnectionId);
+    }
+
+    private static bool TryExtractOffsetZeroInitialCryptoFrameData(
+        ReadOnlySpan<byte> payload,
+        out ReadOnlySpan<byte> cryptoData)
+    {
+        cryptoData = default;
+
+        int payloadOffset = 0;
+        while (payloadOffset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[payloadOffset..];
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                if (paddingBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                payloadOffset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                if (ackBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                payloadOffset += ackBytesConsumed;
+                continue;
+            }
+
+            if (!QuicFrameCodec.TryParseCryptoFrame(remaining, out QuicCryptoFrame cryptoFrame, out int cryptoBytesConsumed)
+                || cryptoBytesConsumed <= 0)
+            {
+                return false;
+            }
+
+            if (cryptoFrame.Offset == 0 && !cryptoFrame.CryptoData.IsEmpty)
+            {
+                cryptoData = cryptoFrame.CryptoData;
+                return true;
+            }
+
+            payloadOffset += cryptoBytesConsumed;
+        }
+
+        return false;
+    }
+
+    private static bool HasMatchingInitialCryptoPrefix(
+        ReadOnlySpan<byte> observedInitialCryptoFrameData,
+        ReadOnlySpan<byte> candidateInitialCryptoFrameData)
+    {
+        int sharedPrefixLength = Math.Min(
+            observedInitialCryptoFrameData.Length,
+            candidateInitialCryptoFrameData.Length);
+        return sharedPrefixLength == 0
+            || observedInitialCryptoFrameData[..sharedPrefixLength].SequenceEqual(
+                candidateInitialCryptoFrameData[..sharedPrefixLength]);
+    }
+
     private bool TryHandleHandshakePacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        return TryHandleHandshakePacketReceived(
+            packetReceivedEvent,
+            nowTicks,
+            allowDeferredBuffering: true,
+            ref effects);
+    }
+
+    private bool TryHandleHandshakePacketReceived(
+        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        long nowTicks,
+        bool allowDeferredBuffering,
         ref List<QuicConnectionEffect>? effects)
     {
         ReadOnlySpan<byte> datagram = packetReceivedEvent.Datagram.Span;
@@ -397,6 +547,11 @@ internal sealed partial class QuicConnectionRuntime
                     datagram));
             }
 
+            if (allowDeferredBuffering)
+            {
+                _ = TryBufferEstablishmentHandshakePacketForDeferredRetry(packetReceivedEvent);
+            }
+
             return false;
         }
 
@@ -415,6 +570,11 @@ internal sealed partial class QuicConnectionRuntime
                     datagram));
             }
 
+            if (allowDeferredBuffering)
+            {
+                _ = TryBufferEstablishmentHandshakePacketForDeferredRetry(packetReceivedEvent);
+            }
+
             return false;
         }
 
@@ -423,6 +583,94 @@ internal sealed partial class QuicConnectionRuntime
             QuicTlsEncryptionLevel.Handshake,
             nowTicks,
             ref effects);
+    }
+
+    private bool TryBufferEstablishmentHandshakePacketForDeferredRetry(
+        QuicConnectionPacketReceivedEvent packetReceivedEvent)
+    {
+        if (tlsState.Role != QuicTlsRole.Client
+            || phase != QuicConnectionPhase.Establishing
+            || tlsState.IsTerminal
+            || peerHandshakeTranscriptCompleted
+            || !QuicPacketParsing.TryParseLongHeaderFields(
+                packetReceivedEvent.Datagram.Span,
+                out _,
+                out _,
+                out _,
+                out ReadOnlySpan<byte> sourceConnectionId,
+                out _)
+            || sourceConnectionId.IsEmpty
+            || (observedPeerInitialSourceConnectionId is not null
+                && observedPeerInitialSourceConnectionId.AsSpan().SequenceEqual(sourceConnectionId)))
+        {
+            return false;
+        }
+
+        foreach (BufferedEstablishmentHandshakePacket bufferedPacket in bufferedEstablishmentHandshakePackets)
+        {
+            if (bufferedPacket.SourceConnectionId.AsSpan().SequenceEqual(sourceConnectionId)
+                && bufferedPacket.Datagram.AsSpan().SequenceEqual(packetReceivedEvent.Datagram.Span))
+            {
+                return true;
+            }
+        }
+
+        if (bufferedEstablishmentHandshakePackets.Count >= MaximumBufferedEstablishmentHandshakePackets)
+        {
+            bufferedEstablishmentHandshakePackets.RemoveAt(0);
+        }
+
+        bufferedEstablishmentHandshakePackets.Add(new BufferedEstablishmentHandshakePacket(
+            packetReceivedEvent.PathIdentity,
+            sourceConnectionId.ToArray(),
+            packetReceivedEvent.Datagram.ToArray()));
+        return true;
+    }
+
+    private bool TryReplayBufferedEstablishmentHandshakePackets(
+        byte[] acceptedPeerInitialSourceConnectionId,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (acceptedPeerInitialSourceConnectionId.Length == 0
+            || bufferedEstablishmentHandshakePackets.Count == 0)
+        {
+            return false;
+        }
+
+        List<BufferedEstablishmentHandshakePacket>? matchingPackets = null;
+        for (int index = bufferedEstablishmentHandshakePackets.Count - 1; index >= 0; index--)
+        {
+            BufferedEstablishmentHandshakePacket bufferedPacket = bufferedEstablishmentHandshakePackets[index];
+            if (!bufferedPacket.SourceConnectionId.AsSpan().SequenceEqual(acceptedPeerInitialSourceConnectionId))
+            {
+                continue;
+            }
+
+            matchingPackets ??= [];
+            matchingPackets.Insert(0, bufferedPacket);
+            bufferedEstablishmentHandshakePackets.RemoveAt(index);
+        }
+
+        if (matchingPackets is null)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        foreach (BufferedEstablishmentHandshakePacket bufferedPacket in matchingPackets)
+        {
+            stateChanged |= TryHandleHandshakePacketReceived(
+                new QuicConnectionPacketReceivedEvent(
+                    nowTicks,
+                    bufferedPacket.PathIdentity,
+                    bufferedPacket.Datagram),
+                nowTicks,
+                allowDeferredBuffering: false,
+                ref effects);
+        }
+
+        return stateChanged;
     }
 
     private bool TryProcessHandshakePacketPayload(

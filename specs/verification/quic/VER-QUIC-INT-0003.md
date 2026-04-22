@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify the narrow child-process transfer contract on the existing active-phase managed path: one application stream, first `REQUESTS` URL selection, fixed `/www` and `/downloads` mount-path contract, `Http3` ALPN, EOF-based completion, and honest exit `0` only after byte delivery is complete on both sides.
+Verify the narrow child-process transfer contract on the existing active-phase managed path: one managed connection, an ordered `REQUESTS` URL list, exactly one application stream per request, fixed `/www` and `/downloads` mount-path contract, `Http3` ALPN, EOF-based completion for every ordered request, and honest exit `0` only after byte delivery is complete on both sides.
 
 ## Requirements Verified
 
@@ -12,39 +12,47 @@ Verify the narrow child-process transfer contract on the existing active-phase m
 
 ## Verification Method
 
-Focused requirement-home tests, solution build execution, and artifact inspection of the README and gap ledger.
+Focused requirement-home tests, captured-packet replay, helper-script validation, local runner execution, and artifact inspection.
 
 ## Preconditions
 
 - The active-phase loopback stream lane and client-role 1-RTT readiness proof remain green.
 - The harness can still build and run the existing handshake path without widening retry support.
-- A transfer requirement-home test exists for the one-stream child-process contract.
+- Transfer requirement-home and localhost preflight proofs exist for the ordered one-connection child-process contract.
 
 ## Procedure or Approach
 
-- Run the transfer requirement-home test once implementation exists.
-- Run the existing handshake/public guard tests and the client 1-RTT readiness tests to keep the prerequisites green.
+- Run the focused transfer and preflight requirement-home lanes that cover `REQ_QUIC_INT_0010` and `REQ_QUIC_INT_0014`.
+- Run the existing handshake/public guard tests, the client 1-RTT readiness tests, and the captured transfer replay lane to keep the prerequisites green.
+- Run `InteropRunnerScriptFailureSummaryTests` so the helper's narrow advisory-only classification stays proven for the runner's `FileNotFoundError` post-check path.
+- Rerun the local helper against quic-go in client-role `transfer` mode and inspect the preserved `output.txt`, runner stderr log, and runner report under the fresh artifact root.
 - Inspect the README and gap ledger to confirm the transfer contract is wired into runner dispatch and that retry remains unsupported.
 
 ## Expected Result
 
-The child-process transfer slice only reports success after the single-stream byte exchange completes, EOF is observed on both sides, and the harness stays honest about unsupported retry and broader 1-RTT behavior.
+The child-process transfer slice only reports success after every ordered download completes on the single managed connection, EOF is observed on both sides, and the helper only downgrades the runner's post-check `FileNotFoundError` to advisory when the preserved client-role transfer output proves the full ordered request list completed cleanly.
 
 ## Evidence
 
 - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0010.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0014.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs
+- tests/Incursa.Quic.Tests/QuicCapturedInteropReplayTests.cs
+- tests/Incursa.Quic.Tests/QuicCapturedInteropTransferEvidence.cs
+- tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs
 - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs
 - src/Incursa.Quic/QuicStream.cs
+- scripts/interop/Invoke-QuicInteropRunner.ps1
 - src/Incursa.Quic.InteropHarness/README.md
 - specs/requirements/quic/REQUIREMENT-GAPS.md
+- artifacts/interop-runner/20260421-020851211-client-chrome/
 
 ## Status
 
-This verification slice records the proof contract for the narrow transfer-owned child-process completion boundary.
+Passed on 2026-04-21; the requirement-home, replay, helper-script, and fresh quic-go client-role helper lanes confirmed the ordered one-connection transfer contract and preserved a case-specific advisory-success bundle for the runner's post-check `FileNotFoundError` at `artifacts/interop-runner/20260421-020851211-client-chrome/`.
 
 ## Related Artifacts
 
@@ -54,4 +62,4 @@ This verification slice records the proof contract for the narrow transfer-owned
 
 ## Deferred Coverage
 
-Retry enablement, multi-stream transfer, broader 1-RTT claims, trust-store policy widening, 0-RTT, and key update remain intentionally deferred.
+Retry enablement, parallel or arbitrary multi-stream expansion, multiconnect interop proof, msquic interop proof, broader 1-RTT claims, trust-store policy widening, 0-RTT, and key update remain intentionally deferred outside this slice.

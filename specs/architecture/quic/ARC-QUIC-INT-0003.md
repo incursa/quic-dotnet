@@ -4,11 +4,11 @@
 
 ## Purpose
 
-Describe the narrow child-process transfer contract that sits on the already-supported active-phase managed path without widening retry or broader stream ownership.
+Describe the narrow child-process transfer contract that reuses one managed connection for ordered per-request streams on the already-supported active-phase managed path without widening retry or broader stream ownership.
 
 ## Scope
 
-This slice captures the narrowest honest transfer contract that can sit on the existing active-phase managed path: one child-process pair, one stream, one transfer selector derived from the first `REQUESTS` URL, and EOF-based completion. It does not claim the broader interop runner transfer feature set.
+This slice captures the narrowest honest transfer contract that can sit on the existing active-phase managed path: one child-process pair, one managed connection, one ordered application stream per `REQUESTS` URL, and EOF-based completion across the full ordered request list. It does not claim the broader interop runner transfer feature set.
 
 ## Requirements Satisfied
 
@@ -16,9 +16,9 @@ This slice captures the narrowest honest transfer contract that can sit on the e
 
 ## Design Summary
 
-The existing runtime already owns the active-phase stream open/accept/read/write/EOF mechanics and the client-role post-Finished 1-RTT readiness boundary. The transfer slice therefore stays in the harness and proof contract: the runner decides which side opens or accepts the single stream, how the first REQUESTS URL maps into the fixed /www and /downloads mount contract, and when EOF is complete enough for exit 0.
+The existing runtime already owns the active-phase stream open/accept/read/write/EOF mechanics, connection-level flow-control publication, control-frame handling, and the client-role post-Finished 1-RTT readiness boundary. The transfer slice therefore stays in the harness and proof contract: the runner provides an ordered `REQUESTS` list, the harness maps every URL into the fixed `/www` and `/downloads` contract, the client opens exactly one application stream per request on a single managed connection, the server accepts and serves each ordered stream, and exit code `0` is gated on the final ordered download reaching EOF.
 
-This architecture deliberately does not add retry enablement, multi-stream generalization, broader 1-RTT claims, or TLS policy widening. It simply records the smallest honest transfer-owned boundary on top of the already-proven active-phase path.
+This architecture deliberately does not add retry enablement, parallel or arbitrary multi-stream generalization, broader 1-RTT claims, or TLS policy widening. It records the smallest honest ordered transfer-owned boundary on top of the already-proven active-phase path while leaving broader transfer and interop widening to later slices.
 
 ## Key Components
 
@@ -38,25 +38,26 @@ This architecture deliberately does not add retry enablement, multi-stream gener
 
 ## Data and State Considerations
 
-The transfer contract reuses the current active-phase connection runtime, stream registry, and packet-protection readiness state. The harness remains responsible only for process orchestration and request/response framing; the library remains responsible for the actual stream and 1-RTT mechanics.
+The transfer contract reuses the current active-phase connection runtime, stream registry, connection-level flow-control state, and packet-protection readiness state across the full ordered request list. The harness remains responsible only for process orchestration and request/response framing; the library remains responsible for the actual stream, control-frame, and 1-RTT mechanics.
 
 ## Edge Cases and Constraints
 
-- The slice remains child-process only and single-stream only.
+- The slice remains child-process only and single-connection only.
+- Exactly one ordered application stream is opened per request; parallel stream fan-out remains out of scope.
 - Retry stays unsupported and out of scope.
 - Combined abort parity and broader stream-management parity remain separate concerns.
 - No trust-store, hostname, certificate-path, revocation, 0-RTT, or key-update widening is introduced here.
 
 ## Alternatives Considered
 
-- Treat transfer as a broad HTTP-like file-serving feature. Rejected because it would widen the slice into protocol semantics and multi-request behavior that are not needed for the narrow child-process proof.
+- Treat transfer as a broad HTTP-like file-serving feature. Rejected because it would widen the slice into protocol semantics and arbitrary request handling that are not needed for the narrow child-process proof.
 - Keep transfer as a 127-only placeholder with no canonical contract. Rejected because the repository already has enough active-phase stream support to specify the missing boundary honestly.
 
 ## Risks
 
-- A later implementation could accidentally widen the contract into multi-stream or HTTP-specific behavior if the single-stream boundary is not kept explicit.
-- The runner could still claim success too early unless EOF and byte-delivery completion are treated as the exit-0 gate.
-- The supported boundary must remain honest if a later change widens the transfer contract beyond the narrow one-stream, EOF-gated slice.
+- A later implementation could accidentally widen the contract into parallel multi-stream or HTTP-specific behavior if the single-connection ordered-stream boundary is not kept explicit.
+- The runner could still claim success too early unless EOF and byte-delivery completion for the final ordered request are treated as the exit-0 gate.
+- The supported boundary must remain honest if a later change widens the transfer contract beyond the narrow ordered one-connection slice.
 
 ## Boundary Split
 

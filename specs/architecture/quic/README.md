@@ -71,6 +71,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0039.json`](ARC-QUIC-CRT-0039.json): canonical CRT client-side 1-RTT Key Phase observation design source
 - [`ARC-QUIC-CRT-0040.json`](ARC-QUIC-CRT-0040.json): canonical CRT client-side successor 1-RTT Key Phase install design source
 - [`ARC-QUIC-CRT-0041.json`](ARC-QUIC-CRT-0041.json): canonical CRT remaining-work program partition and autopilot reset design source
+- [`ARC-QUIC-CRT-0042.json`](ARC-QUIC-CRT-0042.json): canonical CRT client-side replacement peer Initial reset design source
 
 ## Notes
 

@@ -81,6 +81,43 @@ internal sealed class QuicTlsTranscriptProgress
         serverClientCertificateRequired = clientCertificateRequired;
     }
 
+    internal bool TryResetClientPeerHandshakeAttempt()
+    {
+        if (role != QuicTlsRole.Client)
+        {
+            return false;
+        }
+
+        bool stateChanged = partialTranscript.WrittenCount > 0
+            || postHandshakeTranscript.WrittenCount > 0
+            || ingressCursor != 0
+            || postHandshakeIngressCursor != 0
+            || progressState != HandshakeProgressState.AwaitingServerHello
+            || phase != QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage
+            || stagedPeerTransportParameters is not null
+            || handshakeMessageType.HasValue
+            || handshakeMessageLength.HasValue
+            || selectedCipherSuite.HasValue
+            || transcriptHashAlgorithm.HasValue
+            || terminalAlertDescription.HasValue
+            || serverHelloSelectedPreSharedKey;
+
+        partialTranscript.Clear();
+        postHandshakeTranscript.Clear();
+        ingressCursor = 0;
+        postHandshakeIngressCursor = 0;
+        progressState = HandshakeProgressState.AwaitingServerHello;
+        phase = QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage;
+        stagedPeerTransportParameters = null;
+        handshakeMessageType = null;
+        handshakeMessageLength = null;
+        selectedCipherSuite = null;
+        transcriptHashAlgorithm = null;
+        terminalAlertDescription = null;
+        serverHelloSelectedPreSharedKey = false;
+        return stateChanged;
+    }
+
     internal ulong IngressCursor => ingressCursor;
 
     internal QuicTlsTranscriptPhase Phase => phase;

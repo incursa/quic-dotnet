@@ -1281,6 +1281,12 @@ raise SystemExit(run.main())
     New-Item -Path $dockerBuildStageRoot -ItemType Directory -Force | Out-Null
     $stagingExcludes = @(
         '.git',
+        '.artifacts',
+        '.config',
+        '.dotnet-home',
+        '.workbench',
+        'BenchmarkDotNet.Artifacts',
+        'StrykerOutput',
         'artifacts',
         'bin',
         'obj',
@@ -1296,9 +1302,15 @@ raise SystemExit(run.main())
 
     @"
 **/.git
+**/.artifacts
+**/.config
+**/.dotnet-home
+**/.workbench
+**/BenchmarkDotNet.Artifacts
 **/bin
 **/obj
 **/artifacts
+**/StrykerOutput
 **/TestResults
 **/.vs
 **/.idea

@@ -22,7 +22,8 @@ internal readonly record struct QuicConnectionSentPacket(
     QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
     ReadOnlyMemory<byte> PacketBytes = default,
     QuicTlsEncryptionLevel? PacketProtectionLevel = null,
-    ulong[]? StreamIds = null);
+    ulong[]? StreamIds = null,
+    ReadOnlyMemory<byte> PlaintextPayload = default);
 
 internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicPacketNumberSpace PacketNumberSpace,
@@ -32,7 +33,8 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
     ReadOnlyMemory<byte> PacketBytes = default,
     QuicTlsEncryptionLevel? PacketProtectionLevel = null,
-    ulong[]? StreamIds = null);
+    ulong[]? StreamIds = null,
+    ReadOnlyMemory<byte> PlaintextPayload = default);
 
 /// <summary>
 /// Owns connection-scoped send state, PTO bookkeeping, and retransmission planning.
@@ -403,7 +405,8 @@ internal sealed class QuicConnectionSendRuntime
                 packet.CryptoMetadata,
                 packet.PacketBytes,
                 packet.PacketProtectionLevel,
-                packet.StreamIds));
+                packet.StreamIds,
+                packet.PlaintextPayload));
         }
 
         ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(

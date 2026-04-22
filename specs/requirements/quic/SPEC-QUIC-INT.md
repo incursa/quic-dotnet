@@ -8,11 +8,11 @@ Define the interop-runner-facing companion harness contract that hosts Incursa.Q
 
 ## Scope
 
-This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, and CI participation.
+This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, and CI participation.
 
 ## Context
 
-Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` contract is tracked separately as a child-process-only open/accept contract on the existing managed path and is now green in the current implementation, the narrow transfer slice is now wired as a child-process completion contract on the existing active-phase path, the narrow `retry` slice now dispatches into the managed one-Retry replay path instead of falling through to `127`, and the sequential `multiconnect` slice now dispatches through the same real endpoint-host transfer path one URL at a time. The harness now also needs to tolerate an empty server-side `REQUESTS` list so the runner can start supported server-role paths locally, while the one-Retry bootstrap handoff itself remains library-owned under `REQ-QUIC-CRT-0122`, this spec still owns the child-process dispatch and proof under `REQ-QUIC-INT-0012`, and the new localhost preflight lane in `REQ-QUIC-INT-0014` exists so harness setup and endpoint selection can be isolated locally before the external runner is involved.
+Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` contract is tracked separately as a child-process-only open/accept contract on the existing managed path and is now green in the current implementation, the narrow transfer slice is now wired as an ordered one-connection child-process transfer contract on the existing active-phase path, the narrow `retry` slice now dispatches into the managed one-Retry replay path instead of falling through to `127`, and the sequential `multiconnect` slice now dispatches sequential HTTP/0.9 downloads through the same real endpoint-host transfer path with one fresh connection per URL. The harness now also needs to tolerate an empty server-side `REQUESTS` list so the runner can start supported server-role paths locally, while the one-Retry bootstrap handoff itself remains library-owned under `REQ-QUIC-CRT-0122`, this spec still owns the child-process dispatch and proof under `REQ-QUIC-INT-0012`, and the new localhost preflight lane in `REQ-QUIC-INT-0014` exists so harness setup and endpoint selection can be isolated locally before the external runner is involved.
 
 ## Open Questions
 
@@ -20,7 +20,7 @@ Incursa.Quic remains the owner of reusable transport/runtime behavior. The inter
 
 ## Current Support Posture
 
-The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap, server Initial-response emission, and one-Retry replay handoff. The harness `handshake` testcase now dispatches into that managed path, the smaller `post-handshake-stream` testcase now dispatches into the managed open/accept path and is green in the current implementation, the narrow transfer testcase now dispatches into its managed active-phase path, the narrow `retry` testcase now dispatches into its managed one-Retry replay path, and the sequential `multiconnect` testcase now dispatches through the same real endpoint-host transfer path one URL at a time. Supported server-role paths now also tolerate the empty `REQUESTS` list the runner sends, so local execution reports can be produced without changing the runner repository. Unsupported testcases still return exit code `127`.
+The repository now has a thin endpoint-host shell that can bridge one library-owned runtime connection through a real UDP socket boundary, and the managed client/listener host path already owns honest Initial/DCID bootstrap, server Initial-response emission, and one-Retry replay handoff. The harness `handshake` testcase now dispatches into that managed path, the smaller `post-handshake-stream` testcase now dispatches into the managed open/accept path and is green in the current implementation, the ordered transfer testcase now dispatches into its managed active-phase path, the narrow `retry` testcase now dispatches into its managed one-Retry replay path, and the sequential `multiconnect` testcase now dispatches sequential HTTP/0.9 downloads through the same real endpoint-host transfer path with one fresh connection per URL. Supported server-role paths now also tolerate the empty `REQUESTS` list the runner sends, so local execution reports can be produced without changing the runner repository. Unsupported testcases still return exit code `127`.
 
 ## Boundary Split
 
@@ -146,8 +146,8 @@ Notes:
 - The shell remains adapter-only: it owns socket/process lifecycle and observers, not protocol behavior.
 - The harness handshake testcase now routes through this seam; the narrow transfer slice now has its own managed active-phase path and the narrow retry slice now has its own managed one-Retry path.
 
-## REQ-QUIC-INT-0010 Define the first transfer slice as narrow and proof-gated
-The interop harness MUST define a child-process-only transfer slice on the existing Active-phase managed path in which the client and server each participate in exactly one application stream, the first `REQUESTS` URL selects the transfer target, the fixed `/www` and `/downloads` mount-path contract remains in force, the existing `Http3` ALPN remains in force, and exit code `0` is considered honest only after byte delivery and EOF have completed on both sides. This slice must not widen retry, multi-stream generalization, broader 1-RTT claims, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.
+## REQ-QUIC-INT-0010 Define the ordered transfer slice as narrow and proof-gated
+The interop harness MUST define a child-process-only `transfer` slice on the existing Active-phase managed path in which one managed connection is established for the ordered space-separated `REQUESTS` URL list, exactly one application stream is opened per request in request order, the fixed `/www` and `/downloads` mount-path contract remains in force for every request, the existing `Http3` ALPN remains in force, and exit code `0` is considered honest only after byte delivery and EOF have completed for every ordered request on both sides. This slice must not widen retry, parallel or arbitrary multi-stream generalization, broader 1-RTT claims, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.
 
 Trace:
 - Satisfied By:
@@ -167,6 +167,8 @@ Trace:
   - src/Incursa.Quic/QuicListenerHost.cs
   - src/Incursa.Quic/QuicTlsKeySchedule.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0010.cs
+  - tests/Incursa.Quic.Tests/QuicCapturedInteropReplayTests.cs
+  - tests/Incursa.Quic.Tests/QuicCapturedInteropTransferEvidence.cs
 - Related:
   - REQ-QUIC-INT-0003
   - REQ-QUIC-INT-0008
@@ -177,7 +179,7 @@ Trace:
 
 Notes:
 - This requirement owns only the managed child-process transfer boundary on the existing active path. It does not widen the public promise, `IsSupported`, or broader interop compatibility claims.
-- The current runtime already owns the narrow stream open, write, read, and EOF mechanics on the supported active-loopback path; this requirement closes the harness-owned file-pump completion contract and proof.
+- The current runtime already owns the ordered stream open, write, read, flow-control, and EOF mechanics on the supported active-loopback path; this requirement closes the harness-owned ordered file-pump completion contract and proof.
 
 ## REQ-QUIC-INT-0011 Sequence the first application stream open and accept after handshake
 The interop harness MUST define a child-process-only `post-handshake-stream` testcase on the managed child-process harness path in which, after the existing handshake completes, the client opens the first application stream and the server accepts that first application stream. This requirement must remain limited to the managed child-process path and must not claim byte delivery, EOF completion, transfer enablement, retry enablement, multi-stream behavior, broader 1-RTT data-path readiness, trust-store policy widening, hostname validation, certificate-path validation, revocation, 0-RTT, or key update.
@@ -254,6 +256,7 @@ Trace:
   - scripts/interop/Invoke-QuicInteropRunner.ps1
   - scripts/interop/README.md
   - tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0013.cs
+  - tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs
   - src/Incursa.Quic.InteropHarness/README.md
   - src/Incursa.Quic.InteropHarness/Dockerfile
   - README.md
@@ -270,6 +273,7 @@ Notes:
 - The helper is intentionally local-only and may use the runner's image-replacement mechanism rather than adding an Incursa.Quic entry to the runner repository.
 - Split-role runs should keep the opposite side on established implementations such as quic-go or msquic, while same-slot both-role runs remain supported for the local harness image.
 - The helper records execution-report artifacts; it does not introduce new testcase support or any new protocol behavior.
+- Any advisory-only downgrade for the runner's post-check `FileNotFoundError` must remain testcase-specific and evidence-backed by preserved local logs; unsupported, unproven, or ambiguous runs still fail honestly.
 
 ## REQ-QUIC-INT-0014 Separate local preflight planning from localhost smoke execution
 The interop harness MUST expose repo-local preflight decisions for request parsing, qlog selection, endpoint resolution, and transfer-path mapping as independently testable harness behavior, and must support a localhost smoke lane in which the managed client and managed server can be exercised directly with matching certificate names while preserving the existing hostname and certificate-validation rules. This slice must not weaken hostname or certificate validation for IP-literal hosts or require changes to the external `quic-interop-runner` repository.
@@ -302,7 +306,7 @@ Notes:
 - The localhost smoke lane exists to separate harness and setup failures from library behavior without loosening certificate or hostname validation.
 
 ## REQ-QUIC-INT-0015 Dispatch multiconnect as sequential managed connections
-The interop harness MUST define a child-process-only `multiconnect` testcase in which the ordered space-separated `REQUESTS` URLs are interpreted as a sequential dispatch plan, one managed connection is opened per URL on the existing endpoint-host active-phase path, and exactly one file is transferred per connection. This slice must not claim parallel connection handling, generalized multipath routing, migration or rebinding support, retry enablement, `0-RTT`, key update, or any public API widening.
+The interop harness MUST define a child-process-only `multiconnect` testcase in which the ordered space-separated `REQUESTS` URLs are interpreted as a sequential dispatch plan, one managed connection is opened per URL on the existing endpoint-host active-phase path, the client sends exactly one HTTP/0.9 GET and downloads exactly one mounted response per connection, the server accepts exactly one request stream and serves exactly one mounted response per connection, and exit code `0` is considered honest only after byte delivery plus EOF have completed for every ordered response on both sides. This slice must not claim parallel connection handling, generalized multipath routing, migration or rebinding support, retry enablement, `0-RTT`, key update, or any public API widening.
 
 Trace:
 - Satisfied By:
@@ -324,5 +328,5 @@ Trace:
   - SPEC-QUIC-CRT
 
 Notes:
-- The testcase stays on the same real endpoint-host transfer path as the existing transfer slice, but processes each URL one at a time instead of claiming any generalized multipath support.
+- The testcase stays on the same real endpoint-host transfer path as the existing transfer slice, but uses one HTTP/0.9 request and one response per connection instead of reusing the transfer slice's single-connection request loop.
 - The ordered `REQUESTS` list must fail honestly when it contains malformed input or conflicting host and port values.
