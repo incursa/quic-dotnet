@@ -335,6 +335,127 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             $"No application-data repair probe was sent after the gap ACK. PendingRetransmissions={runtime.SendRuntime.PendingRetransmissionCount}, SentPackets={runtime.SendRuntime.SentPackets.Count}.");
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task AckingTheResponseBodyStillMakesPtoRetransmitTheOutstandingFinOnlyClose()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-143509531-server-nginx
+        //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt:
+        //     packet 57 carried STREAM stream_id=0 offset=0 length=1024,
+        //     packet 58 remained missing, and the next server PTO emitted packet 59 with only PING.
+        // The bounded regression is the application PTO content choice after the peer has already
+        // acknowledged the body packet but not the later FIN-only close for the same stream.
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        QuicConnectionSendDatagramEffect openEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedOpenPacket = FindTrackedPacket(runtime, openEffect.Datagram);
+        outboundEffects.Clear();
+
+        byte[] payload = CreateSequentialPayload(0x20, 40);
+        await stream.WriteAsync(payload, 0, payload.Length);
+        QuicConnectionSendDatagramEffect dataEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedDataPacket = FindTrackedPacket(runtime, dataEffect.Datagram);
+        outboundEffects.Clear();
+
+        await stream.CompleteWritesAsync().AsTask();
+        QuicConnectionSendDatagramEffect finEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedFinPacket = FindTrackedPacket(runtime, finEffect.Datagram);
+
+        Assert.Equal(trackedOpenPacket.Key.PacketNumber + 1, trackedDataPacket.Key.PacketNumber);
+        Assert.Equal(trackedDataPacket.Key.PacketNumber + 1, trackedFinPacket.Key.PacketNumber);
+
+        byte[] protectedAckPacket = BuildProtectedAckPacket(
+            runtime,
+            largestAcknowledged: trackedDataPacket.Key.PacketNumber,
+            firstAckRange: trackedDataPacket.Key.PacketNumber - trackedOpenPacket.Key.PacketNumber,
+            additionalRanges: []);
+
+        QuicConnectionTransitionResult ackResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 100,
+                runtime.ActivePath!.Value.Identity,
+                protectedAckPacket),
+            nowTicks: 100);
+
+        Assert.Empty(ackResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.DoesNotContain(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumber == trackedOpenPacket.Key.PacketNumber);
+        Assert.DoesNotContain(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumber == trackedDataPacket.Key.PacketNumber);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumber == trackedFinPacket.Key.PacketNumber);
+
+        long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(recoveryDueTicks);
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+        outboundEffects.Clear();
+
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: recoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: recoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect[] sendEffects = timerResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] sendEffectDescriptions = sendEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.NotEmpty(sendEffects);
+        Assert.DoesNotContain(sendEffects, sendEffect => IsPingOnlyPayload(runtime, sendEffect.Datagram));
+
+        bool foundFinRepair = false;
+        bool finRepairKeyPhase = false;
+        QuicStreamFrame finRepairFrame = default;
+        foreach (QuicConnectionSendDatagramEffect sendEffect in sendEffects)
+        {
+            if (!TryOpenSingleStreamFrame(runtime, sendEffect.Datagram, out QuicStreamFrame frame, out bool keyPhase))
+            {
+                continue;
+            }
+
+            if (frame.StreamId.Value == (ulong)stream.Id
+                && frame.Offset == (ulong)payload.Length
+                && frame.IsFin
+                && frame.StreamDataLength == 0)
+            {
+                foundFinRepair = true;
+                finRepairKeyPhase = keyPhase;
+                finRepairFrame = frame;
+                break;
+            }
+        }
+
+        Assert.True(
+            foundFinRepair,
+            $"Expected PTO to retransmit the outstanding FIN-only close packet, but sent {string.Join(" || ", sendEffectDescriptions)}.");
+        Assert.False(finRepairKeyPhase);
+        Assert.Equal((ulong)stream.Id, finRepairFrame.StreamId.Value);
+        Assert.Equal((ulong)payload.Length, finRepairFrame.Offset);
+        Assert.True(finRepairFrame.IsFin);
+        Assert.Equal(0, finRepairFrame.StreamDataLength);
+    }
+
     [Theory]
     [InlineData(22)]
     [InlineData(24)]

@@ -32,6 +32,11 @@ internal static class InteropHarnessRunner
         int ExpectedRequestCount,
         int ConfiguredRequestCount);
 
+    internal sealed record ServerMulticonnectDispatchPlan(
+        IPEndPoint ListenEndPoint,
+        int ExpectedConnectionCount,
+        int ConfiguredConnectionCount);
+
     private sealed record SequentialTransferPlanBuildResult(
         bool Success,
         IReadOnlyList<SequentialTransferPlan>? TransferPlans,
@@ -40,6 +45,11 @@ internal static class InteropHarnessRunner
     internal sealed record ServerTransferDispatchPlanBuildResult(
         bool Success,
         ServerTransferDispatchPlan? Plan,
+        string? ErrorMessage);
+
+    internal sealed record ServerMulticonnectDispatchPlanBuildResult(
+        bool Success,
+        ServerMulticonnectDispatchPlan? Plan,
         string? ErrorMessage);
 
     private static InteropHarnessPreflightPlanner CreatePlanner(InteropHarnessEnvironment settings, TextWriter stdout)
@@ -803,16 +813,15 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            SequentialTransferPlanBuildResult transferPlanResult = await TryCreateSequentialTransferPlans(settings).ConfigureAwait(false);
-            if (!transferPlanResult.Success)
+            ServerMulticonnectDispatchPlanBuildResult dispatchPlanResult = await TryCreateServerMulticonnectDispatchPlanAsync(settings, planner).ConfigureAwait(false);
+            if (!dispatchPlanResult.Success)
             {
-                WriteLineAndFlush(stderr, transferPlanResult.ErrorMessage ?? string.Empty);
+                WriteLineAndFlush(stderr, dispatchPlanResult.ErrorMessage ?? string.Empty);
                 return 1;
             }
 
-            ArgumentNullException.ThrowIfNull(transferPlanResult.TransferPlans);
-            IReadOnlyList<SequentialTransferPlan> transferPlans = transferPlanResult.TransferPlans;
-            SequentialTransferPlan firstPlan = transferPlans[0];
+            ArgumentNullException.ThrowIfNull(dispatchPlanResult.Plan);
+            ServerMulticonnectDispatchPlan dispatchPlan = dispatchPlanResult.Plan;
 
             if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out string? tlsErrorMessage) ||
                 materials is null)
@@ -830,12 +839,11 @@ internal static class InteropHarnessRunner
 
             using (serverCertificate)
             {
-                IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(firstPlan.RequestUri).ConfigureAwait(false);
                 QuicListenerOptions listenerOptions = new()
                 {
-                    ListenEndPoint = listenEndPoint,
+                    ListenEndPoint = dispatchPlan.ListenEndPoint,
                     ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
-                    ListenBacklog = transferPlans.Count,
+                    ListenBacklog = dispatchPlan.ExpectedConnectionCount,
                     ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(InteropHarnessPreflightPlanner.CreateSupportedServerOptions(serverCertificate)),
                 };
 
@@ -844,32 +852,55 @@ internal static class InteropHarnessRunner
                 {
                     WriteQlogCaptureEnabled(stdout, settings, qlogScope);
                 }
-
                 await using QuicListener listener = await ListenWithQlogCaptureAsync(qlogScope, listenerOptions).ConfigureAwait(false);
                 WriteLineAndFlush(
                     stdout,
-                    $"interop harness: role=server, testcase=multiconnect, requestCount={settings.Requests.Count} listening on {listenEndPoint}, connectionCount={transferPlans.Count}.");
+                    $"interop harness: role=server, testcase=multiconnect, requestCount={dispatchPlan.ConfiguredConnectionCount} listening on {dispatchPlan.ListenEndPoint}, connectionCount={dispatchPlan.ExpectedConnectionCount}.");
 
-                for (int index = 0; index < transferPlans.Count; index++)
+                int servedConnectionCount = 0;
+                int remainingExpectedConnections = dispatchPlan.ExpectedConnectionCount > 0 ? dispatchPlan.ExpectedConnectionCount : int.MaxValue;
+                while (servedConnectionCount < remainingExpectedConnections)
                 {
-                    await using QuicConnection connection = await listener.AcceptConnectionAsync().ConfigureAwait(false);
-                    WriteLineAndFlush(
-                        stdout,
-                        $"interop harness: role=server, testcase=multiconnect, requestCount={settings.Requests.Count} accepted managed connection {index + 1}/{transferPlans.Count}.");
-                    int servedRequestCount = await ServeHttp09RequestsAsync(
-                        connection,
-                        stdout,
-                        "multiconnect",
-                        expectedRequestCount: 1,
-                        configuredRequestCount: settings.Requests.Count).ConfigureAwait(false);
-
-                    if (servedRequestCount == 0)
+                    QuicConnection connection;
+                    using CancellationTokenSource acceptTimeout = new(InteropRequestWaitTimeout);
+                    try
                     {
-                        WriteLineAndFlush(stderr, "interop harness: role=server, testcase=multiconnect did not observe an HTTP/0.9 request stream.");
+                        connection = await listener.AcceptConnectionAsync(acceptTimeout.Token).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException) when (dispatchPlan.ExpectedConnectionCount == 0 && servedConnectionCount > 0)
+                    {
+                        break;
+                    }
+                    catch (OperationCanceledException) when (dispatchPlan.ExpectedConnectionCount == 0)
+                    {
+                        WriteLineAndFlush(stderr, "interop harness: role=server, testcase=multiconnect did not observe a managed connection.");
                         return 1;
                     }
 
-                    await connection.CloseAsync(0).ConfigureAwait(false);
+                    await using (connection.ConfigureAwait(false))
+                    {
+                        string connectionProgressLabel = dispatchPlan.ExpectedConnectionCount > 0
+                            ? $"{servedConnectionCount + 1}/{dispatchPlan.ExpectedConnectionCount}"
+                            : (servedConnectionCount + 1).ToString();
+                        WriteLineAndFlush(
+                            stdout,
+                            $"interop harness: role=server, testcase=multiconnect, requestCount={dispatchPlan.ConfiguredConnectionCount} accepted managed connection {connectionProgressLabel}.");
+                        int servedRequestCount = await ServeHttp09RequestsAsync(
+                            connection,
+                            stdout,
+                            "multiconnect",
+                            expectedRequestCount: 1,
+                            configuredRequestCount: dispatchPlan.ConfiguredConnectionCount).ConfigureAwait(false);
+
+                        if (servedRequestCount == 0)
+                        {
+                            WriteLineAndFlush(stderr, "interop harness: role=server, testcase=multiconnect did not observe an HTTP/0.9 request stream.");
+                            return 1;
+                        }
+
+                        await connection.CloseAsync(0).ConfigureAwait(false);
+                        servedConnectionCount++;
+                    }
                 }
 
                 return 0;
@@ -880,6 +911,42 @@ internal static class InteropHarnessRunner
             WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=multiconnect failed: {ex.Message}");
             return 1;
         }
+    }
+
+    internal static async Task<ServerMulticonnectDispatchPlanBuildResult> TryCreateServerMulticonnectDispatchPlanAsync(
+        InteropHarnessEnvironment settings,
+        InteropHarnessPreflightPlanner planner)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+        ArgumentNullException.ThrowIfNull(planner);
+
+        if (!planner.TryGetDispatchRequestUri(out Uri? requestUri, out string? errorMessage, allowEmptyRequests: true))
+        {
+            return new ServerMulticonnectDispatchPlanBuildResult(false, null, errorMessage);
+        }
+
+        int expectedConnectionCount = 0;
+        int configuredConnectionCount = settings.Requests.Count;
+        if (settings.Requests.Count > 0)
+        {
+            SequentialTransferPlanBuildResult transferPlanResult = await TryCreateSequentialTransferPlans(settings).ConfigureAwait(false);
+            if (!transferPlanResult.Success)
+            {
+                return new ServerMulticonnectDispatchPlanBuildResult(false, null, transferPlanResult.ErrorMessage);
+            }
+
+            ArgumentNullException.ThrowIfNull(transferPlanResult.TransferPlans);
+            IReadOnlyList<SequentialTransferPlan> transferPlans = transferPlanResult.TransferPlans;
+            requestUri = transferPlans[0].RequestUri;
+            expectedConnectionCount = transferPlans.Count;
+            configuredConnectionCount = transferPlans.Count;
+        }
+
+        IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(requestUri).ConfigureAwait(false);
+        return new ServerMulticonnectDispatchPlanBuildResult(
+            true,
+            new ServerMulticonnectDispatchPlan(listenEndPoint, expectedConnectionCount, configuredConnectionCount),
+            null);
     }
 
     private static async Task<int> RunTransferServerAsync(

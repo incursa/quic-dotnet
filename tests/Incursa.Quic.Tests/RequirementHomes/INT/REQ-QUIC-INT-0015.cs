@@ -93,6 +93,37 @@ public sealed class REQ_QUIC_INT_0015
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task MulticonnectServerRoleAcceptsEmptyRequestsForRunnerDispatch()
+    {
+        // Provenance: artifacts\interop-runner\20260422-142116187-server-nginx failed before QUIC
+        // work because the external runner passed REQUESTS_SERVER="" for server-role multiconnect,
+        // so this regression locks the empty-server-REQUESTS dispatch plan locally.
+        Assert.True(InteropHarnessEnvironment.TryCreate(
+            InteropHarnessTestSupport.CreateEnvironment(
+                role: "server",
+                testcase: "multiconnect",
+                requests: string.Empty),
+            out InteropHarnessEnvironment? settings,
+            out string? errorMessage));
+        Assert.NotNull(settings);
+        Assert.Null(errorMessage);
+
+        InteropHarnessPreflightPlanner planner = new(settings!, TextWriter.Null);
+        InteropHarnessRunner.ServerMulticonnectDispatchPlanBuildResult result =
+            await InteropHarnessRunner.TryCreateServerMulticonnectDispatchPlanAsync(settings!, planner);
+
+        Assert.True(result.Success);
+        Assert.NotNull(result.Plan);
+        Assert.Null(result.ErrorMessage);
+        Assert.Equal(IPAddress.Any, result.Plan!.ListenEndPoint.Address);
+        Assert.Equal(443, result.Plan.ListenEndPoint.Port);
+        Assert.Equal(0, result.Plan.ExpectedConnectionCount);
+        Assert.Equal(0, result.Plan.ConfiguredConnectionCount);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task MulticonnectClientFailsHonestlyWhenASequentialResponseStallsAfterTheRequestLine()
