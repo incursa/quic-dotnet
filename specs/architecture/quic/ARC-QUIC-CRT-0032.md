@@ -19,7 +19,7 @@ This slice is observational only. It does not add qlog file emission, serializer
 
 ## Design Summary
 
-The transport core resolves one diagnostics sink per connection during connection setup and stores only the resolved sink inside the runtime. The runtime emits structured transport facts through that sink, but it never references qlog builders, JSON writers, or file paths. A sibling Incursa.Quic.Qlog adapter package depends on Incursa.Quic, Incursa.Qlog, and Incursa.Qlog.Quic, registers the qlog schema once per trace, and converts the transport facts into qlog events and trace append operations. A narrow host-facing capture helper above that adapter can aggregate one or many traces in memory and hand the resulting qlog file to the existing JSON serializer without moving file rotation, serializer choice, or QLOGDIR ownership into the transport core.
+The transport core resolves one diagnostics sink per connection during connection setup and stores only the resolved sink inside the runtime. The runtime emits structured transport facts through that sink, but it never references qlog builders, JSON writers, or file paths. A sibling Incursa.Quic.Qlog adapter package depends on Incursa.Quic, Incursa.Qlog, and Incursa.Qlog.Quic, registers the qlog schema once per trace, and converts the transport facts into qlog events and trace append operations. A narrow host-facing capture helper above that adapter can aggregate one or many traces in memory and hand the resulting qlog file to the existing JSON serializer without moving file rotation, serializer choice, or QLOGDIR ownership into the transport core. When a caller serializes captured output, the helper snapshots the mutable file and trace state under its capture gate and performs the JSON write after releasing that gate so live diagnostic append paths are not pinned behind serializer or filesystem latency.
 
 ## Key Components
 
@@ -37,7 +37,7 @@ The transport core resolves one diagnostics sink per connection during connectio
 
 ## Data and State Considerations
 
-The client and listener hosts are the natural sink-resolution points because they already own connection setup and endpoint metadata. The runtime should store only the resolved sink or null object, while the adapter package owns the qlog trace and per-trace event append order. The consumer or host chooses whether to serialize one trace or many traces after the adapter has captured the events, and the host-facing capture helper may aggregate that in-memory file before handing it to the serializer.
+The client and listener hosts are the natural sink-resolution points because they already own connection setup and endpoint metadata. The runtime should store only the resolved sink or null object, while the adapter package owns the qlog trace and per-trace event append order. The consumer or host chooses whether to serialize one trace or many traces after the adapter has captured the events, and the host-facing capture helper may aggregate that in-memory file before handing it to the serializer. That helper must clone the mutable qlog envelope, traces, and events while holding the capture gate only long enough to obtain a stable snapshot, then release the gate before the serializer or filesystem work begins.
 
 ## Edge Cases and Constraints
 
@@ -47,6 +47,7 @@ The client and listener hosts are the natural sink-resolution points because the
 - qlog schema registration must happen once per trace, not once per event.
 - The adapter must not influence scheduling, routing, or recovery behavior.
 - A host-facing capture helper may own the in-memory `QlogFile` envelope and collected `QlogTrace` instances, but it must keep file policy above the transport core.
+- Serialization must operate on a stable snapshot rather than holding the live append lock across the full JSON write.
 
 ## Alternatives Considered
 

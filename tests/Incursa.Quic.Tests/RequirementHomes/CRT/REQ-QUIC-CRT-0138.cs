@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Incursa.Quic.Qlog;
 using Incursa.Qlog;
 using Incursa.Qlog.Quic;
@@ -131,6 +132,140 @@ public sealed class REQ_QUIC_CRT_0138
             await serverConnection1.DisposeAsync();
             await clientConnection2.DisposeAsync();
             await clientConnection1.DisposeAsync();
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task WriteJson_SerializesASnapshotWithoutBlockingLiveDiagnosticsEmission()
+    {
+        // Provenance: preserved multiconnect handshakeloss evidence under
+        // artifacts/interop-runner/20260422-085849660-client-chrome showed later connections
+        // stalling while qlog capture was enabled, making it necessary to prove snapshot
+        // serialization does not hold the live diagnostics append path behind file I/O.
+        QuicQlogCapture capture = new(title: "snapshot qlog capture");
+        QuicQlogDiagnosticsSink sink = Assert.IsType<QuicQlogDiagnosticsSink>(capture.CreateClientDiagnosticsSinkFactory()());
+        QuicConnectionPathIdentity pathIdentity = new(
+            RemoteAddress: "193.167.100.100",
+            LocalAddress: "193.167.0.100",
+            RemotePort: 443,
+            LocalPort: 47878);
+
+        sink.Emit(QuicDiagnostics.InitialPacketSent(pathIdentity, new byte[1200]));
+
+        using BlockingWriteStream stream = new();
+        Task serializeTask = Task.Run(() => capture.WriteJson(stream, indented: true));
+        Assert.True(stream.WaitForFirstWrite(TimeSpan.FromSeconds(5)), "Timed out waiting for qlog serialization to begin writing.");
+
+        Task emitTask = Task.Run(() => sink.Emit(QuicDiagnostics.HandshakePacketSent(pathIdentity, [0x01, 0x02, 0x03])));
+
+        try
+        {
+            await emitTask.WaitAsync(TimeSpan.FromSeconds(1));
+        }
+        finally
+        {
+            stream.ReleaseWrites();
+            await serializeTask.WaitAsync(TimeSpan.FromSeconds(5));
+        }
+
+        Assert.Equal(2, sink.Trace.Events.Count);
+
+        QlogFile serializedFile = QlogJsonSerializer.Deserialize(stream.GetWrittenText());
+        QlogTrace serializedTrace = Assert.IsType<QlogTrace>(Assert.Single(serializedFile.Traces));
+        Assert.Single(serializedTrace.Events);
+        Assert.Equal(QlogQuicKnownValues.PacketSentEventName, serializedTrace.Events[0].Name);
+    }
+
+    private sealed class BlockingWriteStream : Stream
+    {
+        private readonly MemoryStream inner = new();
+        private readonly ManualResetEventSlim firstWriteStarted = new(false);
+        private readonly ManualResetEventSlim allowWrites = new(false);
+        private int firstWriteObserved;
+
+        public override bool CanRead => false;
+
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => true;
+
+        public override long Length => inner.Length;
+
+        public override long Position
+        {
+            get => inner.Position;
+            set => throw new NotSupportedException();
+        }
+
+        public bool WaitForFirstWrite(TimeSpan timeout)
+        {
+            return firstWriteStarted.Wait(timeout);
+        }
+
+        public void ReleaseWrites()
+        {
+            allowWrites.Set();
+        }
+
+        public string GetWrittenText()
+        {
+            return Encoding.UTF8.GetString(inner.ToArray());
+        }
+
+        public override void Flush()
+        {
+            inner.Flush();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void SetLength(long value)
+        {
+            inner.SetLength(value);
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            WaitForRelease();
+            inner.Write(buffer, offset, count);
+        }
+
+        public override void Write(ReadOnlySpan<byte> buffer)
+        {
+            WaitForRelease();
+            inner.Write(buffer);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                inner.Dispose();
+                firstWriteStarted.Dispose();
+                allowWrites.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private void WaitForRelease()
+        {
+            if (Interlocked.Exchange(ref firstWriteObserved, 1) == 0)
+            {
+                firstWriteStarted.Set();
+            }
+
+            allowWrites.Wait();
         }
     }
 }

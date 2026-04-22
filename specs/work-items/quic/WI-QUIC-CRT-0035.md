@@ -36,7 +36,8 @@ Add a narrow opt-in host-facing qlog capture helper above the adapter boundary t
 - Add a small `Incursa.Quic.Qlog` capture helper that owns the in-memory `QlogFile` envelope, per-connection trace collection, and contained JSON serialization.
 - Thread the minimum generic diagnostics sink plumbing through the existing client and listener creation paths so the capture helper can attach the existing adapter sink per connection or listener instance.
 - Keep file output policy, rotation, and retention above the transport core.
-- Add focused end-to-end smoke tests proving capture enablement, typed diagnostics flow, and successful JSON serialization.
+- Snapshot the mutable qlog model before JSON serialization so live diagnostics emission is not held behind serializer or file I/O stalls.
+- Add focused end-to-end smoke tests proving capture enablement, typed diagnostics flow, successful JSON serialization, and the non-blocking snapshot behavior.
 - Keep the disabled path unchanged for callers who do not opt in.
 
 ## Out of Scope
@@ -49,11 +50,11 @@ Add a narrow opt-in host-facing qlog capture helper above the adapter boundary t
 
 ## Verification Plan
 
-Run the new capture smoke tests, inspect the serialized qlog output, and confirm the transport core remains free of qlog serializer and file-output dependencies.
+Run the capture smoke tests and blocking-stream regression, inspect the serialized qlog output, and confirm the transport core remains free of qlog serializer and file-output dependencies.
 
 ## Completion Notes
 
-The host-facing capture helper now enables opt-in in-memory qlog collection per client connection or listener host instance, routes transport diagnostics through the existing adapter, and serializes the captured contained qlog file through the existing JSON serializer. Focused smoke tests cover client and listener capture paths plus round-trip serialization.
+The host-facing capture helper now enables opt-in in-memory qlog collection per client connection or listener host instance, routes transport diagnostics through the existing adapter, snapshots the mutable qlog state before serialization, and serializes the captured contained qlog file through the existing JSON serializer without pinning live diagnostics emission behind the write path. Focused smoke tests cover client and listener capture paths, round-trip serialization, and the non-blocking snapshot regression.
 
 ## Trace Links
 

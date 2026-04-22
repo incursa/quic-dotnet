@@ -12,7 +12,7 @@ This verification artifact proves the narrow host-facing capture slice above the
 
 ## Verification Method
 
-Focused smoke tests and dependency/serialization inspection.
+Focused smoke tests, blocking-stream serialization regression coverage, and dependency/serialization inspection.
 
 ## Preconditions
 
@@ -22,13 +22,13 @@ Focused smoke tests and dependency/serialization inspection.
 
 ## Procedure or Approach
 
-- Run the focused capture smoke tests for client-side capture enablement, listener-side per-connection trace ownership, and contained JSON serialization.
+- Run the focused capture smoke tests for client-side capture enablement, listener-side per-connection trace ownership, contained JSON serialization, and the blocking-stream regression that proves live diagnostics emission can continue while a captured snapshot is being written.
 - Inspect the capture helper, client/listener hookups, and serializer usage to confirm they stay in the adapter/host layer.
 - Inspect assembly references to confirm `Incursa.Quic` remains free of qlog serializer and file-output dependencies.
 
 ## Expected Result
 
-The library exposes a narrow opt-in host-facing qlog capture path that collects per-connection traces in memory, the traces serialize successfully through the existing JSON serializer, and the transport core remains qlog-free.
+The library exposes a narrow opt-in host-facing qlog capture path that collects per-connection traces in memory, serializes a stable snapshot successfully through the existing JSON serializer without pinning live diagnostics emission behind the JSON write, and keeps the transport core qlog-free.
 
 ## Evidence
 
@@ -56,3 +56,9 @@ passed
 - SPEC-QUIC-CRT
 - ARC-QUIC-CRT-0032
 - WI-QUIC-CRT-0035
+
+## Captured Interop Motivation
+
+- artifacts/interop-runner/20260422-085849660-client-chrome/runner-logs/quic-go_chrome/handshakeloss/output.txt
+- artifacts/interop-runner/20260422-085849660-client-chrome/runner-logs/quic-go_chrome/handshakeloss/client/qlog/client-multiconnect-2cbb095b35ca4a6e9c8ea6750e7f67c1.qlog
+- artifacts/interop-runner/20260422-085849660-client-chrome/runner-logs/quic-go_chrome/handshakeloss/server/log.txt

@@ -1607,7 +1607,7 @@
     {
       "id": "REQ-QUIC-CRT-0138",
       "title": "Add a narrow host-facing qlog capture helper above the adapter",
-      "statement": "The library MUST provide a narrow opt-in host-facing qlog capture helper above the sibling adapter boundary so a caller can enable qlog capture per client connection or per listener host instance, collect the resulting qlog trace data in memory through the existing `Incursa.Quic.Qlog` adapter, and serialize the captured contained qlog file through `Incursa.Qlog.Serialization.Json.QlogJsonSerializer` without moving file-system output policy into `Incursa.Quic`. The disabled path must remain unchanged, the transport core must remain qlog-free, and the capture helper must not broaden app-wide logging control.",
+      "statement": "The library MUST provide a narrow opt-in host-facing qlog capture helper above the sibling adapter boundary so a caller can enable qlog capture per client connection or per listener host instance, collect the resulting qlog trace data in memory through the existing `Incursa.Quic.Qlog` adapter, and serialize the captured contained qlog file through `Incursa.Qlog.Serialization.Json.QlogJsonSerializer` without moving file-system output policy into `Incursa.Quic`. When the helper serializes captured output, it MUST snapshot the mutable in-memory file and trace state under the capture gate and complete the JSON serialization after releasing that live diagnostics append path so active connections do not block on serializer or file I/O stalls. The disabled path must remain unchanged, the transport core must remain qlog-free, and the capture helper must not broaden app-wide logging control.",
       "trace": {
         "upstream_refs": [
           "docs/requirements-workflow.md",
@@ -1628,6 +1628,7 @@
       "notes": [
         "The helper may own the in-memory `QlogFile` envelope and collected `QlogTrace` instances, but serializer choice, file paths, rotation, and retention remain above the transport core.",
         "The listener-facing path MUST create one trace per accepted connection rather than sharing a single trace for the listener host instance.",
+        "The helper's serialization path must not hold the same live append lock across the full JSON write or file write window once a stable snapshot has been captured.",
         "Sequential JSON Text Sequences output is optional for this slice and remains subordinate to the contained JSON path unless a consumer explicitly needs it."
       ]
     },
